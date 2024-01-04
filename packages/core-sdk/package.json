@@ -1,0 +1,91 @@
+{
+  "name": "@story-protocol/core-sdk",
+  "version": "0.1.0-alpha",
+  "description": "Story Protocol Core SDK",
+  "main": "dist/story-protocol-core-sdk.cjs.js",
+  "module": "dist/story-protocol-core-sdk.esm.js",
+  "exports": {
+    ".": {
+      "module": "./dist/story-protocol-core-sdk.esm.js",
+      "default": "./dist/story-protocol-core-sdk.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "pnpm run fix && preconstruct build",
+    "test": "pnpm run test:unit && pnpm run test:integration",
+    "test:unit": "TS_NODE_PROJECT='./tsconfig.test.json' c8 --all --src ./src mocha -r ts-node/register './test/unit/**/*.test.ts'",
+    "test:integration": "TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register './test/integration/**/*.test.ts' --timeout 240000",
+    "fix": "pnpm run format:fix && pnpm run lint:fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint:fix": "pnpm run lint --fix",
+    "lint": "eslint ./src",
+    "tsc": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "abitype": "^0.10.2",
+    "axios": "^1.5.1",
+    "dotenv": "^16.3.1",
+    "viem": "^1.18.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-typescript": "^7.23.0",
+    "@preconstruct/cli": "^2.8.1",
+    "@story-protocol/eslint-config": "workspace:*",
+    "@story-protocol/prettier-config": "workspace:*",
+    "@story-protocol/tsconfig": "workspace:*",
+    "@types/chai": "^4.3.6",
+    "@types/chai-as-promised": "^7.1.6",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^20.8.2",
+    "@types/sinon": "^10.0.18",
+    "c8": "^8.0.1",
+    "chai": "^4.3.10",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^8.50.0",
+    "mocha": "^10.2.0",
+    "prettier": "^2.8.8",
+    "sinon": "^16.0.0",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.3.1",
+    "typescript": "^5.2.2"
+  },
+  "prettier": "@story-protocol/prettier-config",
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript"
+    ]
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts"
+    ],
+    "exports": true
+  },
+  "c8": {
+    "exclude": [
+      "test/**/*",
+      "src/abi/**/*",
+      "src/index.ts",
+      "src/types/**/*"
+    ],
+    "check-coverage": true,
+    "lines": 100,
+    "functions": 100,
+    "branches": 100,
+    "statements": 100
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "tsconfig": "./tsconfig.json"
+  }
+}

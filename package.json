@@ -1,0 +1,24 @@
+{
+  "name": "typescript-sdk",
+  "version": "0.0.0",
+  "private": true,
+  "repository": "https://github.com/storyprotocol/typescript-sdk",
+  "author": "storyprotocol engineering <eng@storyprotocol.xyz>",
+  "license": "MIT",
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "fix": "turbo run fix",
+    "test": "turbo run test --no-cache",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.2",
+    "turbo": "^1.10.13",
+    "husky": "^8.0.0"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "packageManager": "pnpm@8.7.5"
+}

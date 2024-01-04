@@ -1,0 +1,19 @@
+[
+  "registerIPAsset",
+  "IPAssetRegistered",
+  "registerIpOrg",
+  "IPOrgRegistered",
+  "createLicense",
+  "createLicenseNft",
+  "createIpaBoundLicense",
+  "LicenseRegistered",
+  "createRelationship",
+  "RelationshipCreated",
+  "addRelationshipType",
+  "RelationshipTypeSet",
+  "configureIpOrgLicensing",
+  "comTermsConfig",
+  "nonComTermsConfig",
+  "TermsConfig",
+  "LicensorConfigEnum"
+]
