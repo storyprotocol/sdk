@@ -16,7 +16,7 @@ export { TransactionClient } from "./resources/transaction";
 export { PlatformClient } from "./utils/platform";
 export { AddressZero, HashZero } from "./constants/common";
 
-export type { StoryConfig, StoryReadOnlyConfig } from "./types/config";
+export type { StoryConfig, StoryReadOnlyConfig, SupportedChainIds } from "./types/config";
 export type { Client, ReadOnlyClient } from "./types/client";
 export type { Hex, TypedData } from "./types/common";
 
