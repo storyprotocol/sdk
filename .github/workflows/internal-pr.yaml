@@ -14,29 +14,31 @@ jobs:
   build_and_test:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     environment: 'alpha-sepolia'
-    uses: ./.github/workflows/build-and-test.yaml 
-    with: 
-      sha: ${{ github.event.pull_request.head.sha }}
-    secrets:
-      API_BASE_URL: ${{ secrets.API_BASE_URL }} 
-      STORY_PROTOCOL_CONTRACT: ${{ secrets.STORY_PROTOCOL_CONTRACT }}
-      IP_ASSET_REGISTRY_CONTRACT: ${{ secrets.IP_ASSET_REGISTRY_CONTRACT }} 
-      IP_ORG_CONTROLLER_CONTRACT: ${{ secrets.IP_ORG_CONTROLLER_CONTRACT }}
-      RELATIONSHIP_MODULE_CONTRACT: ${{ secrets.RELATIONSHIP_MODULE_CONTRACT }}
-      REGISTRATION_MODULE_CONTRACT: ${{ secrets.REGISTRATION_MODULE_CONTRACT }}
-      LICENSE_REGISTRY_CONTRACT: ${{ secrets.LICENSE_REGISTRY_CONTRACT }}
-      MODULE_REGISTRY_CONTRACT: ${{ secrets.MODULE_REGISTRY_CONTRACT }}
-      LICENSE_MODULE_CONTRACT: ${{ secrets.LICENSE_MODULE_CONTRACT }}
-      RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
-      TEST_IPORG_ID: ${{ secrets.TEST_IPORG_ID }}
-      TEST_IPORG_ID_WITH_HOOK: ${{ secrets.TEST_IPORG_ID_WITH_HOOK }}
-      TEST_IPASSET_ID1: ${{ secrets.TEST_IPASSET_ID1 }}
-      TEST_IPASSET_ID2: ${{ secrets.TEST_IPASSET_ID2 }}
-      TEST_RELATIONSHIP_ID: ${{ secrets.TEST_RELATIONSHIP_ID }}
-      TEST_RELATIONSHIP_TYPE: ${{ secrets.TEST_RELATIONSHIP_TYPE }}
-      TEST_LICENSE_ID: ${{ secrets.TEST_LICENSE_ID }}
-      TEST_HOOK_ID: ${{ secrets.TEST_HOOK_ID }}
-      TEST_MODULE_ID: ${{ secrets.TEST_MODULE_ID }}
-      TEST_TRANSACTION_ID: ${{ secrets.TEST_TRANSACTION_ID }}
+    steps:
+    - name: Trigger the build-and-test workflow
+      uses: ./.github/workflows/build-and-test.yaml 
+      with: 
+        sha: ${{ github.event.pull_request.head.sha }}
+      secrets:
+        API_BASE_URL: ${{ secrets.API_BASE_URL }} 
+        STORY_PROTOCOL_CONTRACT: ${{ secrets.STORY_PROTOCOL_CONTRACT }}
+        IP_ASSET_REGISTRY_CONTRACT: ${{ secrets.IP_ASSET_REGISTRY_CONTRACT }} 
+        IP_ORG_CONTROLLER_CONTRACT: ${{ secrets.IP_ORG_CONTROLLER_CONTRACT }}
+        RELATIONSHIP_MODULE_CONTRACT: ${{ secrets.RELATIONSHIP_MODULE_CONTRACT }}
+        REGISTRATION_MODULE_CONTRACT: ${{ secrets.REGISTRATION_MODULE_CONTRACT }}
+        LICENSE_REGISTRY_CONTRACT: ${{ secrets.LICENSE_REGISTRY_CONTRACT }}
+        MODULE_REGISTRY_CONTRACT: ${{ secrets.MODULE_REGISTRY_CONTRACT }}
+        LICENSE_MODULE_CONTRACT: ${{ secrets.LICENSE_MODULE_CONTRACT }}
+        RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
+        WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+        TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+        TEST_IPORG_ID: ${{ secrets.TEST_IPORG_ID }}
+        TEST_IPORG_ID_WITH_HOOK: ${{ secrets.TEST_IPORG_ID_WITH_HOOK }}
+        TEST_IPASSET_ID1: ${{ secrets.TEST_IPASSET_ID1 }}
+        TEST_IPASSET_ID2: ${{ secrets.TEST_IPASSET_ID2 }}
+        TEST_RELATIONSHIP_ID: ${{ secrets.TEST_RELATIONSHIP_ID }}
+        TEST_RELATIONSHIP_TYPE: ${{ secrets.TEST_RELATIONSHIP_TYPE }}
+        TEST_LICENSE_ID: ${{ secrets.TEST_LICENSE_ID }}
+        TEST_HOOK_ID: ${{ secrets.TEST_HOOK_ID }}
+        TEST_MODULE_ID: ${{ secrets.TEST_MODULE_ID }}
+        TEST_TRANSACTION_ID: ${{ secrets.TEST_TRANSACTION_ID }}
