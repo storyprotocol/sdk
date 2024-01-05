@@ -189,11 +189,13 @@ export function paramsTagValueDecoder(paramTag: Hex, paramValue: unknown) {
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
-    case "1" || "mainnet":
+    case "1":
+    case "mainnet":
       return mainnet;
-    case "11155111" || "sepolia":
+    case "11155111":
+    case "sepolia":
       return sepolia;
     default:
-      throw new Error(`chainId ${chainId} not supported`);
+      throw new Error(`chainId ${chainId as string} not supported`);
   }
 }
