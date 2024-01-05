@@ -13,10 +13,10 @@ jobs:
       - run: true
   build_and_test:
     needs: authorize
-    environment: 'alpha-sepolia'
     uses: ./.github/workflows/build-and-test.yaml 
     with: 
       sha: ${{ github.event.pull_request.head.sha }}
+      ENVIRONMENT: 'alpha-sepolia'
     secrets:
       API_BASE_URL: ${{ secrets.API_BASE_URL }} 
       STORY_PROTOCOL_CONTRACT: ${{ secrets.STORY_PROTOCOL_CONTRACT }}

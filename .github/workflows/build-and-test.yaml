@@ -6,6 +6,9 @@ on:
       sha:
         required: true
         type: string
+      ENVIRONMENT: 
+        required: true
+        type: string
     secrets:
       API_BASE_URL:
         required: true
@@ -57,6 +60,8 @@ jobs:
     name: Build and Test
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    ## Example to fix envrionment secret not passing in: https://github.com/AllanOricil/workflow-template-bug/blob/master/.github/workflows/workflow-template-fix-without-required-secret.yml
+    environment: ${{ inputs.ENVIRONMENT }}
     env:
       ## To use Remote Caching, uncomment the next lines and follow the steps below.
       # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
