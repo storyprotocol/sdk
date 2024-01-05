@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig, Client } from "../../src";
-import { sepolia } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -10,7 +9,7 @@ describe("IPOrg Functions", () => {
 
   before(function () {
     const config: StoryConfig = {
-      chain: sepolia,
+      chainId: "sepolia",
       transport: http(process.env.RPC_PROVIDER_URL),
       account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
     };

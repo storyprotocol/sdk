@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig, Client } from "../../src";
-import { sepolia } from "viem/chains";
 import { http, parseGwei, PrivateKeyAccount, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -19,7 +18,7 @@ describe("License Functions", () => {
     wallet = privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as `0x${string}`);
 
     const config: StoryConfig = {
-      chain: sepolia,
+      chainId: "sepolia",
       transport: http(process.env.RPC_PROVIDER_URL),
       account: wallet,
     };

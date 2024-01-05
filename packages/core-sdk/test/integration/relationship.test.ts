@@ -2,14 +2,13 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig, Client, RegisterRelationshipRequest } from "../../src";
 import { privateKeyToAccount } from "viem/accounts";
 import { Hex, http } from "viem";
-import { sepolia } from "viem/chains";
 
 describe("Relationship Functions", function () {
   let client: Client;
 
   before(function () {
     const config: StoryConfig = {
-      chain: sepolia,
+      chainId: "sepolia",
       transport: http(process.env.RPC_PROVIDER_URL),
       account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
     };
