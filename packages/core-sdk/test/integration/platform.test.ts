@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig, Client } from "../../src";
 import { createFileReaderMock } from "../unit/testUtils";
-import { goerli } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -16,7 +15,7 @@ describe("Platform client integration tests", () => {
 
   beforeEach(function () {
     const config: StoryConfig = {
-      chain: goerli,
+      chainId: "sepolia",
       transport: http(process.env.RPC_PROVIDER_URL),
       account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
     };
