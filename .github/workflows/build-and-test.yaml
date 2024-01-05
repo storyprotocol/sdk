@@ -1,0 +1,113 @@
+name: Build and Test
+
+on:
+  workflow_call:
+    inputs:
+      sha:
+        required: true
+        type: string
+    secrets:
+      API_BASE_URL:
+        required: true
+      STORY_PROTOCOL_CONTRACT:
+        required: true
+      IP_ASSET_REGISTRY_CONTRACT:
+        required: true
+      IP_ORG_CONTROLLER_CONTRACT:
+        required: true
+      RELATIONSHIP_MODULE_CONTRACT:
+        required: true
+      REGISTRATION_MODULE_CONTRACT:
+        required: true
+      LICENSE_REGISTRY_CONTRACT:
+        required: true
+      MODULE_REGISTRY_CONTRACT:
+        required: true
+      LICENSE_MODULE_CONTRACT:
+        required: true
+      RPC_PROVIDER_URL:
+        required: true
+      WALLET_PRIVATE_KEY:
+        required: true
+      TEST_WALLET_ADDRESS:
+        required: true 
+      TEST_IPORG_ID:
+        required: true 
+      TEST_IPORG_ID_WITH_HOOK:
+        required: true
+      TEST_IPASSET_ID1:
+        required: true
+      TEST_IPASSET_ID2:
+        required: true
+      TEST_RELATIONSHIP_ID:
+        required: true
+      TEST_RELATIONSHIP_TYPE:
+        required: true
+      TEST_LICENSE_ID:
+        required: true
+      TEST_HOOK_ID:
+        required: true
+      TEST_MODULE_ID:
+        required: true
+      TEST_TRANSACTION_ID:
+        required: true
+
+jobs:
+  build:
+    name: Build and Test
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      ## To use Remote Caching, uncomment the next lines and follow the steps below.
+      # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      NEXT_PUBLIC_API_BASE_URL: ${{ secrets.API_BASE_URL }}
+      NEXT_PUBLIC_STORY_PROTOCOL_CONTRACT: ${{ secrets.STORY_PROTOCOL_CONTRACT }}
+      NEXT_PUBLIC_IP_ASSET_REGISTRY_CONTRACT: ${{ secrets.IP_ASSET_REGISTRY_CONTRACT }} 
+      NEXT_PUBLIC_IP_ORG_CONTROLLER_CONTRACT: ${{ secrets.IP_ORG_CONTROLLER_CONTRACT }}
+      NEXT_PUBLIC_RELATIONSHIP_MODULE_CONTRACT: ${{ secrets.RELATIONSHIP_MODULE_CONTRACT }}
+      NEXT_PUBLIC_REGISTRATION_MODULE_CONTRACT: ${{ secrets.REGISTRATION_MODULE_CONTRACT }}
+      NEXT_PUBLIC_LICENSE_REGISTRY_CONTRACT: ${{ secrets.LICENSE_REGISTRY_CONTRACT }}
+      NEXT_PUBLIC_MODULE_REGISTRY_CONTRACT: ${{ secrets.MODULE_REGISTRY_CONTRACT }}
+      NEXT_PUBLIC_LICENSE_MODULE_CONTRACT: ${{secrets.LICENSE_MODULE_CONTRACT}}
+      RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+      TEST_IPORG_ID: ${{ secrets.TEST_IPORG_ID }}
+      TEST_IPORG_ID_WITH_HOOK: ${{ secrets.TEST_IPORG_ID_WITH_HOOK }}
+      TEST_IPASSET_ID1: ${{ secrets.TEST_IPASSET_ID1 }}
+      TEST_IPASSET_ID2: ${{ secrets.TEST_IPASSET_ID2 }}
+      TEST_RELATIONSHIP_ID: ${{ secrets.TEST_RELATIONSHIP_ID }}
+      TEST_RELATIONSHIP_TYPE: ${{ secrets.TEST_RELATIONSHIP_TYPE }}
+      TEST_LICENSE_ID: ${{ secrets.TEST_LICENSE_ID }}
+      TEST_HOOK_ID: ${{ secrets.TEST_HOOK_ID }}
+      TEST_MODULE_ID: ${{ secrets.TEST_MODULE_ID }}
+      TEST_TRANSACTION_ID: ${{ secrets.TEST_TRANSACTION_ID }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.sha }}
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 8.8.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.0.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Fix
+        run: pnpm fix
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
