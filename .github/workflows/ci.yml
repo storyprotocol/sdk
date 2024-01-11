@@ -1,4 +1,4 @@
-name: External PR
+name: CI workflow
 
 on: 
   pull_request_target:
@@ -6,16 +6,19 @@ on:
 
 jobs:
   authorize:
-    if: github.event.pull_request.head.repo.full_name != github.repository
-    environment: 'external'
+    environment:
+      ${{ github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      'external' || 'internal' }} 
     runs-on: ubuntu-latest
     steps:
       - run: true
+
   build_and_test:
     needs: authorize
     uses: ./.github/workflows/build-and-test.yaml 
     with: 
-      sha: ${{ github.event.pull_request.head.sha }}
+      sha: ${{ github.event.pull_request.head.sha || github.sha }}
       ENVIRONMENT: 'alpha-sepolia'
     secrets:
       API_BASE_URL: ${{ secrets.API_BASE_URL }} 
