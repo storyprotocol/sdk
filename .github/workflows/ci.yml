@@ -1,4 +1,4 @@
-name: CI workflow
+name: CI workflow 
 
 on: 
   pull_request_target:
@@ -9,7 +9,7 @@ jobs:
     environment:
       ${{ github.event_name == 'pull_request_target' &&
       github.event.pull_request.head.repo.full_name != github.repository &&
-      'external' || 'internal' }} 
+      'external' || 'internal' }}
     runs-on: ubuntu-latest
     steps:
       - run: true
@@ -43,4 +43,3 @@ jobs:
       TEST_HOOK_ID: ${{ secrets.TEST_HOOK_ID }}
       TEST_MODULE_ID: ${{ secrets.TEST_MODULE_ID }}
       TEST_TRANSACTION_ID: ${{ secrets.TEST_TRANSACTION_ID }}
-  
