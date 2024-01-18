@@ -21,6 +21,7 @@ jobs:
       - name: Generate timestamp
         run: |
           echo "TIMESTAMP=$(TZ='America/Los_Angeles' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo github.event.pull_request.head.repo.full_name
 
       - name: Print timestamp
         run: |
