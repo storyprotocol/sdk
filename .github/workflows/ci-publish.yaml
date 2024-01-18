@@ -19,7 +19,7 @@ jobs:
     # if: github.event.pull_request.head.repo.full_name == 'dev2'
     steps:
       - name: Generate timestamp
-        run: |q
+        run: |
           echo "TIMESTAMP=$(TZ='America/Los_Angeles' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
 
       - name: Print timestamp
