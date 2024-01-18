@@ -4,12 +4,12 @@ on:
   pull_request:
     # PR is targeting main branch
     branches:
-      - main2
+      - main
     # Triggered only when package.json is modified 
-    # paths:
-    #   - 'package.json'
+    paths:
+      - 'package.json'
     # Triggered only the PR is merged
-    # types: [closed]
+    types: [opened, synchronize, reopened, closed]
     
 jobs:
   # Add  timestamp
@@ -19,7 +19,7 @@ jobs:
     # if: github.event.pull_request.head.repo.full_name == 'dev2'
     steps:
       - name: Generate timestamp
-        run: |
+        run: |q
           echo "TIMESTAMP=$(TZ='America/Los_Angeles' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
 
       - name: Print timestamp
