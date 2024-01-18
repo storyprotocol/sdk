@@ -1,0 +1,120 @@
+name: CI workflow to publish to npm
+
+on:
+  pull_request:
+    # PR is targeting main branch
+    branches:
+      - main
+    # Triggered only when package.json is modified 
+    paths:
+      - 'package.json'
+    # Triggered only the PR is merged
+    types: [opened, synchronize, reopened, closed]
+    
+jobs:
+  # Add  timestamp
+  timestamp: 
+    runs-on: ubuntu-latest
+    outputs:
+      PR_BRANCH_NAME: ${{ steps.get_pr_branch_name.outputs.PR_BRANCH_NAME }}
+    steps:
+      - name: Generate timestamp
+        run: |
+          echo "TIMESTAMP=$(TZ='America/Los_Angeles' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo ${{ github.head_ref }}
+
+      - name: Print timestamp
+        run: |
+          echo "Execution time (Pacific Time Zone): $TIMESTAMP"
+
+      - name: Get PR branch name
+        id: get_pr_branch_name
+        run: |
+          echo "PR_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+
+  # Parse version from main branch
+  parse-package-version-main:
+    runs-on: ubuntu-latest
+    needs: timestamp
+    # Trigger the workflow only if the PR is from dev branch
+    if: ${{ needs.timestamp.outputs.PR_BRANCH_NAME == 'dev' }}
+    outputs:
+      MAIN_VERSION: ${{ steps.parse_package_json.outputs.MAIN_VERSION }}
+    steps:
+      # checkout the main branch
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: main
+
+      - name: Parse package.json
+        id: parse_package_json
+        run: |
+          content=$(cat package.json)
+          echo "MAIN_VERSION=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
+
+  # Parse version from dev branch
+  parse-package-version-dev:
+    runs-on: ubuntu-latest
+    needs: timestamp
+    # Trigger the workflow only if the PR is from dev branch
+    if: ${{ needs.timestamp.outputs.PR_BRANCH_NAME == 'dev' }}
+    outputs:
+      DEV_VERSION: ${{ steps.parse_package_json.outputs.DEV_VERSION }}
+    steps:
+      # checkout the dev branch
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: dev2
+
+      - name: Parse package.json
+        id: parse_package_json
+        run: |
+          content=$(cat package.json)
+          echo "DEV_VERSION=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
+
+  build-test-publish:
+    runs-on: ubuntu-latest
+    needs: [timestamp, parse-package-version-main, parse-package-version-dev]
+    # Trigger the workflow only if the PR is from dev branch, and DEV_VERSION is different from MAIN_VERSION
+    if: ${{ needs.timestamp.outputs.PR_BRANCH_NAME == 'dev' }} && needs.parse-package-version-main.outputs.MAIN_VERSION != needs.parse-package-version-dev.outputs.DEV_VERSION
+    steps:
+      - name: QA Check
+        run: |
+          echo "MAIN_VERSION=${{ needs.parse-package-version-main.outputs.MAIN_VERSION }}"
+          echo "DEV_VERSION=${{ needs.parse-package-version-dev.outputs.DEV_VERSION }}"
+          if [ "${{ needs.parse-package-version-main.outputs.MAIN_VERSION }}" == "${{ needs.parse-package-version-dev.outputs.DEV_VERSION }}" ]; then
+            echo "QA Check failed: MAIN_VERSION and DEV_VERSION are the same"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      
+      - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
+        with:
+          version: 8.8.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        with:
+          node-version: 20.0.0
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      # Disabled test for now for later validation
+      # - name: Test
+      #   run: pnpm test
+
+      - name: Publish to npm
+        run: |
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
