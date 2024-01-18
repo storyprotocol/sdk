@@ -6,8 +6,8 @@ on:
     branches:
       - main
     # Triggered only when package.json is modified 
-    paths:
-      - 'package.json'
+    # paths:
+    #   - 'package.json'
     # Triggered only the PR is merged
     types: [opened, synchronize, reopened, closed]
     
