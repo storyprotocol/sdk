@@ -1,6 +1,6 @@
 {
   "name": "typescript-sdk",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "repository": "https://github.com/storyprotocol/typescript-sdk",
   "author": "storyprotocol engineering <eng@storyprotocol.xyz>",
