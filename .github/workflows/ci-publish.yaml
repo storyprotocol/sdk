@@ -16,7 +16,7 @@ jobs:
   timestamp: 
     runs-on: ubuntu-latest
     # Trigger the workflow only if the PR is from dev branch
-    if: github.event.pull_request.head.repo.full_name == 'dev2'
+    # if: github.event.pull_request.head.repo.full_name == 'dev2'
     steps:
       - name: Generate timestamp
         run: |
