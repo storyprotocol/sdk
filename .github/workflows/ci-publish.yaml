@@ -6,8 +6,8 @@ on:
     branches:
       - main
     # Triggered only when package.json is modified 
-    paths:
-      - 'package.json'
+    # paths:
+    #   - 'package.json'
     # Triggered only the PR is merged
     types: [opened, synchronize, reopened, closed]
     
@@ -50,7 +50,7 @@ jobs:
       - name: Parse package.json
         id: parse_package_json
         run: |
-          content=$(cat package.json)
+          content=$(cat packages/core-sdk/package.json)
           echo "MAIN_VERSION=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
 
   # Parse version from dev branch
@@ -66,12 +66,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          ref: dev2
+          ref: dev
 
       - name: Parse package.json
         id: parse_package_json
         run: |
-          content=$(cat package.json)
+          content=$(cat packages/core-sdk/package.json)
           echo "DEV_VERSION=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
 
   build-test-publish:
@@ -115,6 +115,7 @@ jobs:
 
       - name: Publish to npm
         run: |
+          cd packages/core-sdk
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
