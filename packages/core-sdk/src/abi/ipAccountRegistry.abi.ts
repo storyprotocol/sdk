@@ -1,16 +1,13 @@
+import { formatAbi } from "abitype";
 import { getAddress } from "viem";
-import * as dotenv from "dotenv";
 
-import IPAccountRegistryABI from "./json/ipAccountRegistry.json";
+import IPAccountRegistryABI from "./json/IPAccountRegistry.abi";
 
-if (typeof process !== "undefined") {
-  dotenv.config();
-}
+export const IPAccountRegistryRaw = IPAccountRegistryABI;
+export const IPAccountRegistryReadable = formatAbi(IPAccountRegistryRaw);
 
-export const ipAccountRegistryAbi = IPAccountRegistryABI;
-
-export const ipAccountRegistryConfig = {
-  abi: ipAccountRegistryAbi,
+export const IPAccountRegistryConfig = {
+  abi: IPAccountRegistryRaw,
   address: getAddress(
     process.env.IP_ACCOUNT_REGISTRY || process.env.NEXT_PUBLIC_IP_ACCOUNT_REGISTRY || "",
   ),
