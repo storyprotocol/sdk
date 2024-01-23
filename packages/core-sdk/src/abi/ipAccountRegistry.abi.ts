@@ -1,7 +1,7 @@
 import { formatAbi } from "abitype";
 import { getAddress } from "viem";
 
-import IPAccountRegistryABI from "./json/IPAccountRegistry.abi";
+import IPAccountRegistryABI from "./json/IIPAccountRegistry.abi";
 
 export const IPAccountRegistryRaw = IPAccountRegistryABI;
 export const IPAccountRegistryReadable = formatAbi(IPAccountRegistryRaw);
