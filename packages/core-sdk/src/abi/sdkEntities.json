@@ -1,1 +1,13 @@
-[]
+[
+  "ipAccount",
+  "registerRootIp",
+  "registerDerivativeIp",
+  "addPolicy",
+  "addPolicyToIp",
+  "linkIpToParent",
+  "setPermission",
+  "setTag",
+  "removeTag",
+  "registerModule",
+  "isRegistered"
+]
