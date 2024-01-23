@@ -9,6 +9,8 @@ import { TransactionReadOnlyClient } from "./resources/transactionReadOnly";
 import { HTTP_TIMEOUT } from "./constants/http";
 import { Client, ReadOnlyClient } from "./types/client";
 import { PlatformClient } from "./utils/platform";
+import { IPAccountClient } from "./resources/ipAccount";
+import { IPAccountReadOnlyClient } from "./resources/ipAccountReadOnly";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -23,6 +25,7 @@ export class StoryClient {
   private readonly rpcClient: PublicClient;
   private readonly wallet?: WalletClient;
 
+  private _ipAccount: IPAccountClient | IPAccountReadOnlyClient | null = null;
   private _transaction: TransactionClient | TransactionReadOnlyClient | null = null;
   private _platform: PlatformClient | null = null;
 
@@ -78,6 +81,16 @@ export class StoryClient {
    */
   static newClient(config: StoryConfig): Client {
     return new StoryClient(config, false) as Client;
+  }
+
+  public get ipAccount(): IPAccountClient | IPAccountReadOnlyClient {
+    if (this._ipAccount === null) {
+      this._ipAccount = this.isReadOnly
+        ? new IPAccountReadOnlyClient(this.httpClient, this.rpcClient)
+        : new IPAccountClient(this.httpClient, this.rpcClient, this.wallet!);
+    }
+
+    return this._ipAccount;
   }
 
   /**
