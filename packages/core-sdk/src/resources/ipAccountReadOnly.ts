@@ -53,4 +53,6 @@ export class IPAccountReadOnlyClient {
       handleError(error, "Failed to list IP Asset.");
     }
   }
+
+  public async getIpId() {}
 }
