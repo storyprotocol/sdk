@@ -47,7 +47,7 @@ export class AccessControlClient extends AccessControlReadOnlyClient {
       return { txHash: txHash };
       // }
     } catch (error) {
-      handleError(error, "Failed to register root IP");
+      handleError(error, "Failed to set permissions");
     }
   }
 }
