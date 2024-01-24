@@ -28,7 +28,7 @@ export default [
       },
       {
         internalType: "bytes32",
-        name: "hash",
+        name: "contentHash",
         type: "bytes32",
       },
     ],
