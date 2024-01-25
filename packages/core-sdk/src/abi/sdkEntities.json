@@ -11,5 +11,7 @@
   "registerModule",
   "isRegistered",
   "execute",
-  "isValidSigner"
+  "isValidSigner",
+  "IPAccountRegistered",
+  "IPRegistered"
 ]
