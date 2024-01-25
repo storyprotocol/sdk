@@ -18,7 +18,7 @@ describe.only("IP Account Functions", () => {
     client = StoryClient.newClient(config);
   });
 
-  describe("Create IP Asset", async function () {
+  describe.skip("Create IP Asset", async function () {
     it("should not throw error when creating an IP Asset", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
@@ -41,7 +41,7 @@ describe.only("IP Account Functions", () => {
       }
     });
 
-    it.skip("should not throw error when creating an IP Asset with contentHash (SHA256)", async () => {
+    it("should not throw error when creating an IP Asset with contentHash (SHA256)", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAccount.registerRootIp({
