@@ -4,7 +4,7 @@ import { PublicClient } from "viem";
 /**
  * IPAssetReadOnlyClient allows you to view and search IP Assets on Story Protocol.
  */
-export class AccessControlReadOnlyClient {
+export class PermissionReadOnlyClient {
   protected readonly httpClient: AxiosInstance;
   protected readonly rpcClient: PublicClient;
 

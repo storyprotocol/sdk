@@ -2,13 +2,13 @@ import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
-import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/accessControl";
+import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
 // import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
-import { AccessControlReadOnlyClient } from "./accessControlReadOnly";
+import { PermissionReadOnlyClient } from "./permissionReadOnly";
 import { AccessControllerConfig } from "../abi/accessController.abi";
 // import { HashZero } from "../constants/common";
 
-export class AccessControlClient extends AccessControlReadOnlyClient {
+export class PermissionClient extends PermissionReadOnlyClient {
   private readonly wallet: WalletClient;
 
   constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
@@ -28,7 +28,7 @@ export class AccessControlClient extends AccessControlReadOnlyClient {
         ...AccessControllerConfig,
         functionName: "setPermission",
         args: [
-          getAddress(request.ipAccount), // 0x Address
+          getAddress(request.ipAsset), // 0x Address
           getAddress(request.signer), // 0x Address
           getAddress(request.to), // 0x Address
           getAddress(request.func), // bytes4

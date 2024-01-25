@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { AxiosInstance } from "axios";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { IPAccountClient, AddressZero } from "../../../src";
+import { IPAssetClient, AddressZero } from "../../../src";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient, Account } from "viem";
@@ -10,7 +10,7 @@ import { PublicClient, WalletClient, Account } from "viem";
 chai.use(chaiAsPromised);
 
 describe("Test IpAccountClient", function () {
-  let ipAccountClient: IPAccountClient;
+  let ipAccountClient: IPAssetClient;
   let axiosMock: AxiosInstance;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
@@ -22,7 +22,7 @@ describe("Test IpAccountClient", function () {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    ipAccountClient = new IPAccountClient(axiosMock, rpcMock, walletMock);
+    ipAccountClient = new IPAssetClient(axiosMock, rpcMock, walletMock);
   });
 
   afterEach(function () {

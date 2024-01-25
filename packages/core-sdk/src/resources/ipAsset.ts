@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress } from "viem";
 
 // import { handleError } from "../utils/errors";
-import { IPAccountReadOnlyClient } from "./ipAccountReadOnly";
+import { IPAssetReadOnlyClient } from "./ipAssetReadOnly";
 import { handleError } from "../utils/errors";
 import { IPAccountRegistryConfig } from "../abi/ipAccountRegistry.abi";
 import {
@@ -14,13 +14,13 @@ import {
   addPolicyResponse,
   // addPolicyToIpRequest,
   // addPolicyToIpResponse,
-} from "../types/resources/ipAccount";
+} from "../types/resources/ipAsset";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { RegistrationModuleConfig } from "../abi/registrationModule.abi";
 import { LicenseRegistryConfig } from "../abi/licenseRegistry.abi";
 // import { HashZero } from "../constants/common";
 
-export class IPAccountClient extends IPAccountReadOnlyClient {
+export class IPAssetClient extends IPAssetReadOnlyClient {
   private readonly wallet: WalletClient;
 
   constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { AxiosInstance } from "axios";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { IPAccountReadOnlyClient } from "../../../src";
+import { IPAssetReadOnlyClient } from "../../../src";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient } from "viem";
@@ -10,14 +10,14 @@ import { PublicClient } from "viem";
 chai.use(chaiAsPromised);
 
 // describe("Test IpAccountReadOnlyClient", function () {
-//   let ipAccountClient: IPAccountReadOnlyClient;
+//   let ipAccountClient: IPAssetReadOnlyClient;
 //   let axiosMock: AxiosInstance;
 //   let rpcMock: PublicClient;
 
 //   beforeEach(function () {
 //     axiosMock = createMock<AxiosInstance>();
 //     rpcMock = createMock<PublicClient>();
-//     ipAccountClient = new IPAccountReadOnlyClient(axiosMock, rpcMock);
+//     ipAccountClient = new IPAssetReadOnlyClient(axiosMock, rpcMock);
 //   });
 
 //   afterEach(function () {
@@ -37,14 +37,14 @@ chai.use(chaiAsPromised);
 //       };
 //       axiosMock.get = sinon.stub().returns({
 //         data: {
-//           ipAccount: expectedAccount,
+//           ipAsset: expectedAccount,
 //         },
 //       });
 
 //       const response = await ipAccountClient.get({
 //         ipAccountId: "7",
 //       });
-//       expect(response.ipAccount).to.deep.equal(expectedAccount);
+//       expect(response.ipAsset).to.deep.equal(expectedAccount);
 //     });
 
 //     it("should throw error", async function () {

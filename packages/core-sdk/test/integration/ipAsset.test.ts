@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig, Client } from "../../src";
-import { sepolia, goerli } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -10,6 +10,7 @@ describe("IP Account Functions", () => {
 
   before(function () {
     const config: StoryConfig = {
+      chain: sepolia,
       transport: http(process.env.RPC_PROVIDER_URL),
       account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
     };
@@ -18,11 +19,11 @@ describe("IP Account Functions", () => {
     client = StoryClient.newClient(config);
   });
 
-  describe.skip("Create IP Asset", async function () {
+  describe("Create IP Asset", async function () {
     it("should not throw error when creating an IP Asset", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.ipAccount.registerRootIp({
+        client.ipAsset.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",
@@ -41,10 +42,10 @@ describe("IP Account Functions", () => {
       }
     });
 
-    it("should not throw error when creating an IP Asset with contentHash (SHA256)", async () => {
+    it.skip("should not throw error when creating an IP Asset with contentHash (SHA256)", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.ipAccount.registerRootIp({
+        client.ipAsset.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",

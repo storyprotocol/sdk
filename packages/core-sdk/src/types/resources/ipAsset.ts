@@ -90,7 +90,7 @@ export type GetIpAccountRequest = {
 };
 
 export type GetIpAccountResponse = {
-  ipAccount: IpAccount;
+  ipAsset: IpAccount;
 };
 
 export type ListIpAccountRequest = {
