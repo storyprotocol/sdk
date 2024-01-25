@@ -44,6 +44,7 @@ export class IPAccountClient extends IPAccountReadOnlyClient {
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
         ],
+        account: this.wallet.account,
       });
 
       const txHash = await this.wallet.writeContract(call);

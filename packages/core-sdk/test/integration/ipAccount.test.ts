@@ -15,8 +15,6 @@ describe.only("IP Account Functions", () => {
     };
 
     senderAddress = config.account.address;
-    console.log("sender address: ", senderAddress);
-    console.log("url: ", process.env.RPC_PROVIDER_URL);
     client = StoryClient.newClient(config);
   });
 
