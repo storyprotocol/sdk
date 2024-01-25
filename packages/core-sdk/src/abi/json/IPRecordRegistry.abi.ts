@@ -3,15 +3,9 @@ export default [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "implementation",
+        name: "ipId",
         type: "address",
       },
       {
@@ -21,45 +15,70 @@ export default [
         type: "uint256",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "tokenContract",
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "resolver",
+        type: "address",
+      },
     ],
-    name: "IPAccountRegistered",
+    name: "IPRegistered",
     type: "event",
   },
   {
     inputs: [
       {
         internalType: "uint256",
-        name: "chainId_",
+        name: "chainId",
         type: "uint256",
       },
       {
         internalType: "address",
-        name: "tokenContract_",
+        name: "tokenContract",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "tokenId_",
+        name: "tokenId",
         type: "uint256",
       },
     ],
-    name: "ipAccount",
+    name: "isRegistered",
     outputs: [
       {
-        internalType: "address",
+        internalType: "bool",
         name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "id",
         type: "address",
+      },
+    ],
+    name: "isRegistered",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
