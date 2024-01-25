@@ -1,4 +1,4 @@
-import { QueryOptions, TxOptions } from "../options";
+import { TxOptions } from "../options";
 
 export type setPermissionsRequest = {
   ipAccount: string;

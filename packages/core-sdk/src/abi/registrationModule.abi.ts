@@ -1,13 +1,14 @@
-import { formatAbi } from "abitype";
 import { getAddress } from "viem";
 
 import RegistrationModuleABI from "./json/RegistrationModule.abi";
+import errorsJson from "./json/Errors.json";
 
-export const RegistrationModuleRaw = RegistrationModuleABI;
-export const RegistrationModuleReadable = formatAbi(RegistrationModuleRaw);
+export const ErrorsAbi = errorsJson;
+
+const storyProtocolMerged = [...RegistrationModuleABI, ...ErrorsAbi];
 
 export const RegistrationModuleConfig = {
-  abi: RegistrationModuleRaw,
+  abi: storyProtocolMerged,
   address: getAddress(
     process.env.REGISTRATION_MODULE || process.env.NEXT_PUBLIC_REGISTRATION_MODULE || "",
   ),
