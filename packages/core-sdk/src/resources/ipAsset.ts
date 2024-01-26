@@ -135,6 +135,6 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
 
   // TODO: move to License resource
   // public async addPolicyToIp(request: addPolicyToIpRequest): Promise<addPolicyToIpResponse> {
-  //   // TODO: use getIpAccount to get the ipId
+  // TODO: use getIpAccount to get the ipId
   // }
 }

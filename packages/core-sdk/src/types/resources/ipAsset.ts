@@ -76,39 +76,41 @@ export type ListIPOrgResponse = {
   ipOrgs: IPOrg[];
 };
 
+// -----------------------------------------------------
 // IPAccountRegistry
-export type IpAccount = {
-  IpId: string;
+// -----------------------------------------------------
+export type IpAsset = {
+  ipAccountAddress: string;
+  chainId: number;
+  tokenContract: string;
+  tokenId: number;
+  metadataResolverAddress: string;
 };
 
-export type GetIpAccountRequest = {
+export type GetIpAssetRequest = {
   ipId: string;
-
-  // chainId: string;
-  // tokenContractAddress: string;
-  // tokenId: string;
 };
 
-export type GetIpAccountResponse = {
-  ipAsset: IpAccount;
+export type GetIpAssetResponse = {
+  data: IpAsset;
 };
 
-export type ListIpAccountRequest = {
+export type ListIpAssetRequest = {
   options?: QueryOptions;
 };
 
-export type ListIpAccountResponse = {
-  data: IpAccount[];
+export type ListIpAssetResponse = {
+  data: IpAsset[];
 };
 
-export type RegisterIpAccountRequest = {
+export type RegisterIpAssetRequest = {
   chainId: string;
   tokenContractAddress: string;
   tokenId: string;
   txOptions?: TxOptions;
 };
 
-export type RegisterIpAccountResponse = {
+export type RegisterIpAssetResponse = {
   txHash: string;
   ipAccountId?: string;
 };

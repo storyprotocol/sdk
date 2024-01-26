@@ -2,10 +2,10 @@ import { AxiosInstance } from "axios";
 import { PublicClient } from "viem";
 
 import {
-  GetIpAccountRequest,
-  GetIpAccountResponse,
-  ListIpAccountRequest,
-  ListIpAccountResponse,
+  GetIpAssetRequest,
+  GetIpAssetResponse,
+  ListIpAssetRequest,
+  ListIpAssetResponse,
 } from "../types/resources/ipAsset";
 import { handleError } from "../utils/errors";
 import { isIntegerString } from "../utils/utils";
@@ -28,13 +28,13 @@ export class IPAssetReadOnlyClient {
    * @param request - the request object for getting an IP Asset.
    * @returns the response object the contains the fetched IP Asset.
    */
-  public async get(request: GetIpAccountRequest): Promise<GetIpAccountResponse> {
+  public async get(request: GetIpAssetRequest): Promise<GetIpAssetResponse> {
     try {
       if (!isIntegerString(request.ipId)) {
         throw new Error(`Invalid chain id. Must be an integer. But get: ${request.ipId}`);
       }
       const response = await this.httpClient.get(`/accounts/${request.ipId}`);
-      return response.data as GetIpAccountResponse;
+      return response.data as GetIpAssetResponse;
     } catch (error: unknown) {
       handleError(error, "Failed to get IP account");
     }
@@ -45,10 +45,10 @@ export class IPAssetReadOnlyClient {
    *
    * @returns the response object that contains results from listing query.
    */
-  public async list(request?: ListIpAccountRequest): Promise<ListIpAccountResponse> {
+  public async list(request?: ListIpAssetRequest): Promise<ListIpAssetResponse> {
     try {
-      const response = await this.httpClient.post(`/accounts/ipaccount`, request || {});
-      return response.data as ListIpAccountResponse;
+      const response = await this.httpClient.post(`/accounts`, request || {});
+      return response.data as ListIpAssetResponse;
     } catch (error) {
       handleError(error, "Failed to list IP Asset.");
     }

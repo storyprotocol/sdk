@@ -10,7 +10,7 @@ import { PublicClient, WalletClient, Account } from "viem";
 chai.use(chaiAsPromised);
 
 describe("Test Permission", function () {
-  let PermissionClient: PermissionClient;
+  let permissionClient: PermissionClient;
   let axiosMock: AxiosInstance;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
@@ -22,7 +22,7 @@ describe("Test Permission", function () {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    PermissionClient = new PermissionClient(axiosMock, rpcMock, walletMock);
+    permissionClient = new PermissionClient(axiosMock, rpcMock, walletMock);
   });
 
   afterEach(function () {
@@ -36,7 +36,7 @@ describe("Test Permission", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
-      const res = await PermissionClient.setPermission({
+      const res = await permissionClient.setPermission({
         ipAsset: AddressZero,
         signer: AddressZero,
         to: AddressZero,
@@ -56,7 +56,7 @@ describe("Test Permission", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
-      const res = await PermissionClient.setPermission({
+      const res = await permissionClient.setPermission({
         ipAsset: AddressZero,
         signer: AddressZero,
         to: AddressZero,
@@ -113,7 +113,7 @@ describe("Test Permission", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
       await expect(
-        PermissionClient.setPermission({
+        permissionClient.setPermission({
           ipAsset: AddressZero,
           signer: AddressZero,
           to: AddressZero,
@@ -133,7 +133,7 @@ describe("Test Permission", function () {
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
       await expect(
-        PermissionClient.setPermission({
+        permissionClient.setPermission({
           ipAsset: AddressZero,
           signer: AddressZero,
           to: AddressZero,

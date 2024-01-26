@@ -9,7 +9,7 @@ import { PublicClient, WalletClient, Account } from "viem";
 
 chai.use(chaiAsPromised);
 
-describe("Test IpAccountClient", function () {
+describe("Test IpAssetClient", function () {
   let ipAccountClient: IPAssetClient;
   let axiosMock: AxiosInstance;
   let rpcMock: PublicClient;
