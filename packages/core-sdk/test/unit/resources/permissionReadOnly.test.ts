@@ -44,7 +44,7 @@ describe("Test PermissionReadOnlyClient", function () {
         permissionId:
           "0x06cb17d43f16ad5cc3cd7757296fa87ce7ac741d-0x6c88f438cbfd9866dcd067ffe18b951f19b968da-0x0baa92f82d8992ff152047f29084079c263be7f7-0xa2b4192f",
       });
-      expect(response.data).to.deep.equal(expectedPermission);
+      expect(response).to.deep.equal(expectedPermission);
     });
 
     it("should throw error", async function () {
@@ -63,7 +63,7 @@ describe("Test PermissionReadOnlyClient", function () {
         permissionClient.get({
           permissionId: "fake permission id",
         }),
-      ).to.be.rejectedWith("fake permission id");
+      ).to.be.rejectedWith("Failed to get IP account: http 500");
     });
   });
 

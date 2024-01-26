@@ -25,7 +25,7 @@ describe("Test IpAssetReadOnlyClient", function () {
   });
 
   describe("Test ipAssetClient.get", function () {
-    it("should return Account when the franchise id is valid", async function () {
+    it("should return Account when the ipId is valid", async function () {
       const expectedAccount = {
         id: "0x6c4c9e252ed8196a261f7c1c4258f707f5268045",
         ipId: "0x6c4c9e252ed8196a261f7c1c4258f707f5268045",
@@ -41,7 +41,7 @@ describe("Test IpAssetReadOnlyClient", function () {
       const response = await ipAssetClient.get({
         ipId: "0x6c4c9e252ed8196a261f7c1c4258f707f5268045",
       });
-      expect(response.data).to.deep.equal(expectedAccount);
+      expect(response).to.deep.equal(expectedAccount);
     });
 
     it("should throw error", async function () {

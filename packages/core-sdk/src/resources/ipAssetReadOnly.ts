@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios";
-import { PublicClient } from "viem";
+import { PublicClient, isAddress } from "viem";
 
 import {
   GetIpAssetRequest,
@@ -30,8 +30,8 @@ export class IPAssetReadOnlyClient {
    */
   public async get(request: GetIpAssetRequest): Promise<GetIpAssetResponse> {
     try {
-      if (!isIntegerString(request.ipId)) {
-        throw new Error(`Invalid chain id. Must be an integer. But get: ${request.ipId}`);
+      if (!isAddress(request.ipId)) {
+        throw new Error(`Invalid ip id. Must be an address. But get: ${request.ipId}`);
       }
       const response = await this.httpClient.get(`/accounts/${request.ipId}`);
       return response.data as GetIpAssetResponse;
@@ -48,7 +48,7 @@ export class IPAssetReadOnlyClient {
   public async list(request?: ListIpAssetRequest): Promise<ListIpAssetResponse> {
     try {
       const response = await this.httpClient.post(`/accounts`, request || {});
-      return response.data as ListIpAssetResponse;
+      return response as ListIpAssetResponse;
     } catch (error) {
       handleError(error, "Failed to list IP Asset.");
     }

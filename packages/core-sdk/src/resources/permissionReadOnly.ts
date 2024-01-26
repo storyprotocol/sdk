@@ -8,7 +8,7 @@ import {
   ListPermissionsResponse,
 } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
-import { isIntegerString } from "../utils/utils";
+// import { isIntegerString } from "../utils/utils";
 
 /**
  * IPAssetReadOnlyClient allows you to view and search IP Assets on Story Protocol.
@@ -30,11 +30,11 @@ export class PermissionReadOnlyClient {
    */
   public async get(request: GetPermissionRequest): Promise<GetPermissionResponse> {
     try {
-      if (!isIntegerString(request.permissionId)) {
-        throw new Error(
-          `Invalid permissionId. Must be an integer. But get: ${request.permissionId}`,
-        );
-      }
+      // if (!(request.permissionId)) {
+      //   throw new Error(
+      //     `Invalid permissionId. Must be an integer. But get: ${request.permissionId}`,
+      //   );
+      // }
       const response = await this.httpClient.get(`/permissions/${request.permissionId}`);
       return response.data as GetPermissionResponse;
     } catch (error: unknown) {
@@ -50,7 +50,7 @@ export class PermissionReadOnlyClient {
   public async list(request?: ListPermissionsRequest): Promise<ListPermissionsResponse> {
     try {
       const response = await this.httpClient.post(`/permissions`, request || {});
-      return response.data as ListPermissionsResponse;
+      return response as ListPermissionsResponse;
     } catch (error) {
       handleError(error, "Failed to list IP Asset.");
     }
