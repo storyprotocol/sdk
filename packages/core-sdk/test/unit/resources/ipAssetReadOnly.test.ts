@@ -64,7 +64,7 @@ describe("Test IpAssetReadOnlyClient", function () {
   });
 
   describe("Test ipAssetClient.list", async function () {
-    const ipAccountMock = {
+    const ipAssetMock = {
       id: "0x6c4c9e252ed8196a261f7c1c4258f707f5268045",
       ipId: "0x6c4c9e252ed8196a261f7c1c4258f707f5268045",
       chainId: "11155111",
@@ -74,23 +74,21 @@ describe("Test IpAssetReadOnlyClient", function () {
     };
 
     const mockResponse = sinon.stub().returns({
-      data: {
-        ipAccounts: [ipAccountMock],
-      },
+      data: [ipAssetMock],
     });
 
     it("should return ipAsset on a successful query", async function () {
       axiosMock.post = mockResponse;
       const response = await ipAssetClient.list();
 
-      expect(response.data[0]).to.deep.equal(ipAccountMock);
+      expect(response.data[0]).to.deep.equal(ipAssetMock);
     });
 
     it("should return ipAsset without the request object", async function () {
       axiosMock.post = mockResponse;
       const response = await ipAssetClient.list();
 
-      expect(response.data[0]).to.deep.equal(ipAccountMock);
+      expect(response.data[0]).to.deep.equal(ipAssetMock);
     });
 
     it("should throw error", async function () {

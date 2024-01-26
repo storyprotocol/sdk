@@ -3,7 +3,7 @@ import { PublicClient, WalletClient, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
-// import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { waitTxAndFilterLog } from "../utils/utils";
 import { PermissionReadOnlyClient } from "./permissionReadOnly";
 import { AccessControllerConfig } from "../abi/accessController.abi";
 // import { HashZero } from "../constants/common";
@@ -34,18 +34,20 @@ export class PermissionClient extends PermissionReadOnlyClient {
           getAddress(request.func), // bytes4
           request.permission, // uint8
         ],
+        account: this.wallet.account,
       });
 
       const txHash = await this.wallet.writeContract(call);
-      // if (request.txOptions?.waitForTransaction) {
-      //   const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-      //     ...IPAccountRegistryConfig,
-      //     eventName: "IPAccountRegistered",
-      //   });
-      //   return { txHash: txHash };
-      // } else {
-      return { txHash: txHash };
-      // }
+      // TODO: the emit event doesn't return anything
+      if (request.txOptions?.waitForTransaction) {
+        await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...AccessControllerConfig,
+          eventName: "PermissionSet",
+        });
+        return { txHash: txHash };
+      } else {
+        return { txHash: txHash };
+      }
     } catch (error) {
       handleError(error, "Failed to set permissions");
     }
