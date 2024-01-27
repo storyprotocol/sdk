@@ -1,4 +1,5 @@
 import { IPAccountClient } from "../resources/ipAccount";
+import { TaggingClient } from "../resources/tagging";
 import { TransactionClient } from "../resources/transaction";
 import { TransactionReadOnlyClient } from "../resources/transactionReadOnly";
 import { PlatformClient } from "../utils/platform";
@@ -11,4 +12,5 @@ export interface Client {
   ipAccount: IPAccountClient;
   transaction: TransactionClient;
   platform: PlatformClient;
+  tagging: TaggingClient;
 }

@@ -11,6 +11,8 @@ import { Client, ReadOnlyClient } from "./types/client";
 import { PlatformClient } from "./utils/platform";
 import { IPAccountClient } from "./resources/ipAccount";
 import { IPAccountReadOnlyClient } from "./resources/ipAccountReadOnly";
+import { TaggingClient } from "./resources/tagging";
+import { TaggingReadOnlyClient } from "./resources/taggingReadOnly";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -28,6 +30,7 @@ export class StoryClient {
   private _ipAccount: IPAccountClient | IPAccountReadOnlyClient | null = null;
   private _transaction: TransactionClient | TransactionReadOnlyClient | null = null;
   private _platform: PlatformClient | null = null;
+  private _tagging: TaggingClient | TaggingReadOnlyClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -107,6 +110,22 @@ export class StoryClient {
     }
 
     return this._transaction;
+  }
+
+  /**
+   * Getter for the tagging client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the TaggingReadOnlyClient or TaggingClient instance
+   */
+  public get tagging(): TaggingClient | TaggingReadOnlyClient {
+    if (this._tagging === null) {
+      this._tagging = this.isReadOnly
+        ? new TaggingReadOnlyClient(this.httpClient, this.rpcClient)
+        : new TaggingClient(this.httpClient, this.rpcClient, this.wallet!);
+    }
+
+    return this._tagging;
   }
 
   /**
