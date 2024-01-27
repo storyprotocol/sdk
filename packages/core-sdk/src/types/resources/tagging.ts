@@ -1,10 +1,8 @@
-import { Address } from "viem";
-
 import { QueryOptions, TxOptions } from "../options";
 
 export type Tag = {
   id: string;
-  ipId: Address;
+  ipId: `0x${string}`;
   tag: string;
 };
 
@@ -26,7 +24,7 @@ export type GetTagResponse = {
 
 export type SetTagRequest = {
   tag: string;
-  ipId: Address;
+  ipId: ``;
   txOptions?: TxOptions;
 };
 
@@ -36,7 +34,7 @@ export type SetTagResponse = {
 
 export type RemoveTagRequest = {
   tag: string;
-  ipId: Address;
+  ipId: ``;
   txOptions?: TxOptions;
 };
 
