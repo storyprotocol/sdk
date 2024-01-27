@@ -91,6 +91,7 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
           ...IPAccountRegistryConfig,
           eventName: "IPAccountRegistered",
         });
+        console.log({ targetLog });
         return { txHash: txHash, ipAccountId: targetLog?.args.account.toString() };
       } else {
         return { txHash: txHash };
@@ -101,37 +102,37 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
   }
 
   // TODO: move to License resource
-  public async createPolicy(request: addPolicyRequest): Promise<addPolicyResponse> {
-    try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...LicenseRegistryConfig,
-        functionName: "addPolicy",
-        args: [
-          {
-            frameworkId: parseToBigInt(request.frameworkId),
-            mintingParamValues: request.mintingParamValues.map((add) => getAddress(add)),
-            activationParamValues: request.activationParamValues.map((add) => getAddress(add)),
-            needsActivation: request.needsActivation,
-            linkParentParamValues: request.linkParentParamValues.map((add) => getAddress(add)),
-          },
-        ], // TODO: add args
-      });
+  // public async createPolicy(request: addPolicyRequest): Promise<addPolicyResponse> {
+  //   try {
+  //     const { request: call } = await this.rpcClient.simulateContract({
+  //       ...LicenseRegistryConfig,
+  //       functionName: "addPolicy",
+  //       args: [
+  //         {
+  //           frameworkId: parseToBigInt(request.frameworkId),
+  //           mintingParamValues: request.mintingParamValues.map((add) => getAddress(add)),
+  //           activationParamValues: request.activationParamValues.map((add) => getAddress(add)),
+  //           needsActivation: request.needsActivation,
+  //           linkParentParamValues: request.linkParentParamValues.map((add) => getAddress(add)),
+  //         },
+  //       ], // TODO: add args
+  //     });
 
-      const txHash = await this.wallet.writeContract(call);
-      // TODO: need an emitted event
-      // if (request.txOptions?.waitForTransaction) {
-      //   const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-      //     ...IPAccountRegistryConfig,
-      //     eventName: "IPAccountRegistered",
-      //   });
-      //   return { txHash: txHash, policyId: targetLog?.args.account.toString() };
-      // } else {
-      return { txHash: txHash };
-      // }
-    } catch (error) {
-      handleError(error, "Failed to register derivative IP");
-    }
-  }
+  //     const txHash = await this.wallet.writeContract(call);
+  //     // TODO: need an emitted event
+  //     // if (request.txOptions?.waitForTransaction) {
+  //     //   const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+  //     //     ...IPAccountRegistryConfig,
+  //     //     eventName: "IPAccountRegistered",
+  //     //   });
+  //     //   return { txHash: txHash, policyId: targetLog?.args.account.toString() };
+  //     // } else {
+  //     return { txHash: txHash };
+  //     // }
+  //   } catch (error) {
+  //     handleError(error, "Failed to register derivative IP");
+  //   }
+  // }
 
   // TODO: move to License resource
   // public async addPolicyToIp(request: addPolicyToIpRequest): Promise<addPolicyToIpResponse> {

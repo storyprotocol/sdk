@@ -65,7 +65,7 @@ describe("Test IpAssetClient", function () {
       expect(res.txHash).equal(txHash);
     });
 
-    it.skip("should not throw error when creating a root IP and wait for transaction confirmed", async function () {
+    it("should not throw error when creating a root IP and wait for transaction confirmed", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
@@ -96,7 +96,7 @@ describe("Test IpAssetClient", function () {
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
         txOptions: {
-          waitForTransaction: false,
+          waitForTransaction: true,
         },
       });
       expect(response.txHash).equal(txHash);
@@ -159,7 +159,7 @@ describe("Test IpAssetClient", function () {
       expect(res.txHash).equal(txHash);
     });
 
-    it.skip("should not throw error when creating a derivative IP and wait for transaction confirmed", async function () {
+    it("should not throw error when creating a derivative IP and wait for transaction confirmed", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
