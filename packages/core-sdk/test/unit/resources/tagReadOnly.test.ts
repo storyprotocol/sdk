@@ -6,11 +6,12 @@ import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient } from "viem";
 import { ResourceType, ActionType, TaggingReadOnlyClient } from "../../../src";
+import { TaggingClient } from "../../../src/resources/tagging";
 
 chai.use(chaiAsPromised);
 
 describe("Test TaggingReadOnlyClient", function () {
-  let TaggingReadOnlyClient: TaggingReadOnlyClient;
+  let taggingClient: TaggingReadOnlyClient;
   let axiosMock: AxiosInstance;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
@@ -19,7 +20,7 @@ describe("Test TaggingReadOnlyClient", function () {
     axiosMock = createMock<AxiosInstance>();
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
-    TaggingReadOnlyClient = new TaggingReadOnlyClient(axiosMock, rpcMock);
+    taggingClient = new TaggingClient(axiosMock, rpcMock, walletMock);
   });
 
   afterEach(function () {
@@ -37,14 +38,14 @@ describe("Test TaggingReadOnlyClient", function () {
       ipId: "0xabcc2421f927c128b9f5a94b612f4541c8e624b6",
       tag: "premium",
     };
-    it.only("should return list of tags", async function () {
+    it("should return list of tags", async function () {
       axiosMock.post = sinon.stub().resolves({
         data: {
           tags: [tagMock1, tagMock2],
         },
       });
 
-      const response = await TaggingReadOnlyClient.list();
+      const response = await taggingClient.list();
       const tags = response.tags;
 
       expect(tags[0]).to.be.deep.equal(tagMock1);
@@ -53,7 +54,7 @@ describe("Test TaggingReadOnlyClient", function () {
 
     it("should be able to throw an error", async function () {
       axiosMock.post = sinon.stub().rejects(new Error("HTTP 500"));
-      await expect(TaggingReadOnlyClient.list()).to.be.rejectedWith("HTTP 500");
+      await expect(taggingClient.list()).to.be.rejectedWith("HTTP 500");
     });
   });
 });

@@ -4,7 +4,7 @@ import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { GetTagRequest } from "../../src/types/resources/tagging";
 
-describe.only("Tagging Indexer Functions", () => {
+describe("Tagging Indexer Functions", () => {
   let client: Client;
   let senderAddress: string;
 

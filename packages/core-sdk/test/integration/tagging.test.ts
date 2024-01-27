@@ -3,7 +3,7 @@ import { StoryClient, StoryConfig, Client } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe.only("Tagging Functions", () => {
+describe("Tagging Functions", () => {
   let client: Client;
   let senderAddress: string;
 
@@ -18,20 +18,48 @@ describe.only("Tagging Functions", () => {
   });
 
   describe("Set Tag", async function () {
-    it("should be able to set tag", async () => {
-      const waitForTransaction: boolean = true;
+    it("should be able to set tag and wait for transaction", async () => {
       const response = await expect(
         client.tagging.setTag({
           tag: "testTag",
           ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
           txOptions: {
-            waitForTransaction: waitForTransaction,
+            waitForTransaction: true,
           },
         }),
       ).to.not.be.rejected;
 
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
+    });
+
+    it("should be able to call set tag without waiting for transaction", async () => {
+      const response = await expect(
+        client.tagging.setTag({
+          tag: "testTag",
+          ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
+          txOptions: {
+            waitForTransaction: false,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+    });
+
+    it("should revert setting tag with incorrect ipId type", async () => {
+      const waitForTransaction: boolean = true;
+      await expect(
+        client.tagging.setTag({
+          tag: "testTag",
+          //@ts-expect-error
+          ipId: 0xabcc2421f927c128b9f5a94b612f4541c8e624b6,
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.be.rejected;
     });
 
     it("should be able to remove tag", async () => {
