@@ -6,7 +6,7 @@ on:
       sha:
         required: true
         type: string
-      ENVIRONMENT: 
+      ENVIRONMENT:
         required: true
         type: string
     secrets:
@@ -15,6 +15,8 @@ on:
       IP_ACCOUNT_REGISTRY:
         required: true
       REGISTRATION_MODULE:
+        required: true
+      TAGGING_MODULE:
         required: true
       LICENSE_REGISTRY:
         required: true
@@ -37,7 +39,8 @@ jobs:
       # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       NEXT_PUBLIC_API_BASE_URL: ${{ secrets.API_BASE_URL }}
       NEXT_PUBLIC_IP_ACCOUNT_REGISTRY: ${{ secrets.IP_ACCOUNT_REGISTRY }}
-      NEXT_PUBLIC_REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }} 
+      NEXT_PUBLIC_REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }}
+      NEXT_PUBLIC_TAGGING_MODULE: ${{ secrets.TAGGING_MODULE }}
       NEXT_PUBLIC_LICENSE_REGISTRY: ${{ secrets.LICENSE_REGISTRY }}
       NEXT_PUBLIC_ACCESS_CONTROLLER: ${{ secrets.ACCESS_CONTROLLER }}
       RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}

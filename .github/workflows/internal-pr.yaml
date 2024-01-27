@@ -1,4 +1,4 @@
-name: Internal PR 
+name: Internal PR
 
 on:
   push:
@@ -13,15 +13,16 @@ on:
 jobs:
   build_and_test:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    uses: ./.github/workflows/build-and-test.yaml 
-    with: 
+    uses: ./.github/workflows/build-and-test.yaml
+    with:
       sha: ${{ github.event.pull_request.head.sha }}
-      ENVIRONMENT: 'beta-sepolia' 
+      ENVIRONMENT: 'beta-sepolia'
     secrets:
-      IP_ACCOUNT_REGISTRY: ${{ secrets.IP_ACCOUNT_REGISTRY }} 
-      REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }} 
-      LICENSE_REGISTRY: ${{ secrets.LICENSE_REGISTRY }} 
-      ACCESS_CONTROLLER: ${{ secrets.ACCESS_CONTROLLER }} 
-      API_BASE_URL: ${{ secrets.API_BASE_URL }} 
+      IP_ACCOUNT_REGISTRY: ${{ secrets.IP_ACCOUNT_REGISTRY }}
+      REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }}
+      TAGGING_MODULE: ${{ secrets.TAGGING_MODULE }}
+      LICENSE_REGISTRY: ${{ secrets.LICENSE_REGISTRY }}
+      ACCESS_CONTROLLER: ${{ secrets.ACCESS_CONTROLLER }}
+      API_BASE_URL: ${{ secrets.API_BASE_URL }}
       RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
