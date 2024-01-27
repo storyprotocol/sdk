@@ -4,7 +4,7 @@ import { sepolia, goerli } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe.only("IP Account Functions", () => {
+describe("IP Account Functions", () => {
   let client: Client;
   let senderAddress: string;
 
