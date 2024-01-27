@@ -25,7 +25,7 @@ export type GetModuleRequest = {
  * @public
  */
 export type GetModuleResponse = {
-  module: Module;
+  data: Module;
 };
 
 /**
@@ -43,5 +43,5 @@ export type ListModuleRequest = {
  * @public
  */
 export type ListModuleResponse = {
-  modules: Module[];
+  data: Module[];
 };

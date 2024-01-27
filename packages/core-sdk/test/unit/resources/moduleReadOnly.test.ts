@@ -56,15 +56,15 @@ describe("Test ModuleReadOnlyClient", function () {
       name: "foo2",
       module: "bar2",
     };
-    it("should return list of collections", async function () {
+    it("should return list of modules", async function () {
       axiosMock.post = sinon.stub().resolves({
         data: {
-          modules: [moduleMock1, moduleMock2],
+          data: [moduleMock1, moduleMock2],
         },
       });
 
       const response = await moduleReadOnlyClient.list();
-      const modules = response.modules;
+      const modules = response.data;
 
       // Get each modules in array
       expect(modules[0]).to.be.deep.equal(moduleMock1);
