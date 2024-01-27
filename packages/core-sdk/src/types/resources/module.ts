@@ -1,5 +1,3 @@
-import { Address } from "viem";
-
 import { QueryOptions } from "../options";
 
 /**
@@ -9,7 +7,7 @@ import { QueryOptions } from "../options";
  */
 export type Module = {
   name: string;
-  module: Address;
+  module: `0x${string}`;
 };
 
 /**
@@ -27,7 +25,7 @@ export type GetModuleRequest = {
  * @public
  */
 export type GetModuleResponse = {
-  module: Address;
+  module: Module;
 };
 
 /**

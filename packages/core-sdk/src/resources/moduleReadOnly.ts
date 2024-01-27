@@ -22,22 +22,22 @@ export class ModuleReadOnlyClient {
   }
 
   /**
-   * Get an IP Asset based on the specified IP asset ID.
+   * Get an module based on the module name.
    *
-   * @param request - the request object for getting an IP Asset.
-   * @returns the response object the contains the fetched IP Asset.
+   * @param request - the request object for getting a module.
+   * @returns the response object the contains the fetched module.
    */
   public async get(request: GetModuleRequest): Promise<GetModuleResponse> {
     try {
       const response = await this.httpClient.get(`/modules/${request.name}`);
       return response.data as GetModuleResponse;
     } catch (error: unknown) {
-      handleError(error, "Failed to get IP account");
+      handleError(error, "Failed to get module");
     }
   }
 
   /**
-   * List IP accounts.
+   * List modules.
    *
    * @returns the response object that contains results from listing query.
    */
@@ -49,6 +49,4 @@ export class ModuleReadOnlyClient {
       handleError(error, "Failed to list modules.");
     }
   }
-
-  public async getIpId() {}
 }

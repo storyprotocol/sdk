@@ -29,7 +29,7 @@ describe("Test ModuleReadOnlyClient", function () {
       name: "foo",
       module: "bar",
     };
-    it("should get module ", async function () {
+    it("should get module", async function () {
       axiosMock.get = sinon.stub().resolves({
         data: {
           name: "foo",
@@ -38,7 +38,7 @@ describe("Test ModuleReadOnlyClient", function () {
       });
 
       const response = await moduleReadOnlyClient.get({ name: "foo" });
-      expect(response.module).to.deep.equal(moduleMock);
+      expect(response).to.deep.equal(moduleMock);
     });
 
     it("should be able to throw an error", async function () {
