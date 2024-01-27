@@ -72,7 +72,7 @@ describe("Test TaggingReadOnlyClient", function () {
       await expect(taggingClient.list()).to.be.rejectedWith("HTTP 500");
     });
     it("get(id) should be able to throw an error", async function () {
-      axiosMock.post = sinon.stub().rejects(new Error("HTTP 500"));
+      axiosMock.get = sinon.stub().rejects(new Error("HTTP 500"));
       await expect(taggingClient.get({ id: "foo" })).to.be.rejectedWith("HTTP 500");
     });
   });
