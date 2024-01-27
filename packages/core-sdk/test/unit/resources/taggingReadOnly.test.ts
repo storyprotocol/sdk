@@ -7,6 +7,7 @@ import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient } from "viem";
 import { ResourceType, ActionType, TaggingReadOnlyClient } from "../../../src";
 import { TaggingClient } from "../../../src/resources/tagging";
+import { GetTagRequest } from "../../../src/types/resources/tagging";
 
 chai.use(chaiAsPromised);
 
@@ -38,7 +39,7 @@ describe("Test TaggingReadOnlyClient", function () {
       ipId: "0xabcc2421f927c128b9f5a94b612f4541c8e624b6",
       tag: "premium",
     };
-    it("should return list of tags", async function () {
+    it("list() should return an array of tags", async function () {
       axiosMock.post = sinon.stub().resolves({
         data: {
           tags: [tagMock1, tagMock2],
@@ -51,10 +52,28 @@ describe("Test TaggingReadOnlyClient", function () {
       expect(tags[0]).to.be.deep.equal(tagMock1);
       expect(tags[1]).to.be.deep.equal(tagMock2);
     });
+    it("get(id) should return a tag", async function () {
+      axiosMock.get = sinon.stub().resolves({
+        data: {
+          tag: tagMock1,
+        },
+      });
+      const getTagRequest: GetTagRequest = {
+        id: tagMock1.id,
+      };
+      const response = await taggingClient.get(getTagRequest);
+      const tag = response.tag;
 
-    it("should be able to throw an error", async function () {
+      expect(tag).to.be.deep.equal(tagMock1);
+    });
+
+    it("list() should be able to throw an error", async function () {
       axiosMock.post = sinon.stub().rejects(new Error("HTTP 500"));
       await expect(taggingClient.list()).to.be.rejectedWith("HTTP 500");
+    });
+    it("get(id) should be able to throw an error", async function () {
+      axiosMock.post = sinon.stub().rejects(new Error("HTTP 500"));
+      await expect(taggingClient.get({ id: "foo" })).to.be.rejectedWith("HTTP 500");
     });
   });
 });
