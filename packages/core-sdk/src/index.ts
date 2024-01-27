@@ -9,6 +9,7 @@ export { IPAccountClient } from "./resources/ipAccount";
 export { IPAccountReadOnlyClient } from "./resources/ipAccountReadOnly";
 export { AccessControlClient } from "./resources/accessControl";
 export { AccessControlReadOnlyClient } from "./resources/accessControlReadOnly";
+export { TaggingReadOnlyClient } from "./resources/taggingReadOnly";
 export { ModuleReadOnlyClient } from "./resources/moduleReadOnly";
 
 export type { StoryConfig, StoryReadOnlyConfig } from "./types/config";
@@ -23,6 +24,7 @@ export type {
   ListTransactionResponse,
 } from "./types/resources/transaction";
 
+export type { Tag, ListTagRequest, ListTagResponse } from "./types/resources/tagging";
 export type {
   Module,
   GetModuleRequest,
