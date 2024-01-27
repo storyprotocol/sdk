@@ -50,7 +50,7 @@ export class PermissionReadOnlyClient {
   public async list(request?: ListPermissionsRequest): Promise<ListPermissionsResponse> {
     try {
       const response = await this.httpClient.post(`/permissions`, request || {});
-      return response as ListPermissionsResponse;
+      return response.data as ListPermissionsResponse;
     } catch (error) {
       handleError(error, "Failed to list IP Asset.");
     }

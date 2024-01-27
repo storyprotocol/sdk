@@ -74,7 +74,7 @@ describe("Test IpAssetReadOnlyClient", function () {
     };
 
     const mockResponse = sinon.stub().returns({
-      data: [ipAssetMock],
+      data: { data: [ipAssetMock] },
     });
 
     it("should return ipAsset on a successful query", async function () {

@@ -80,7 +80,8 @@ export type ListIPOrgResponse = {
 // IPAccountRegistry
 // -----------------------------------------------------
 export type IpAsset = {
-  ipAccountAddress: string;
+  id: string;
+  ipId: string;
   chainId: number;
   tokenContract: string;
   tokenId: number;

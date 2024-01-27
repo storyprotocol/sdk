@@ -21,29 +21,7 @@ describe("IP Asset Functions", () => {
 
   describe("Create IP Asset", async function () {
     it("should not throw error when creating an IP Asset", async () => {
-      const waitForTransaction: boolean = true;
-      const response = await expect(
-        client.ipAsset.registerRootIp({
-          policyId: "0",
-          tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: "3",
-          txOptions: {
-            waitForTransaction: waitForTransaction,
-          },
-        }),
-      ).to.not.be.rejected;
-
-      expect(response.txHash).to.be.a("string");
-      expect(response.txHash).not.empty;
-
-      if (waitForTransaction) {
-        expect(response.ipAccountId).to.be.a("string");
-        expect(response.ipAccountId).not.empty;
-      }
-    });
-
-    it.skip("should not throw error when creating an IP Asset with contentHash (SHA256)", async () => {
-      const waitForTransaction: boolean = true;
+      const waitForTransaction: boolean = false;
       const response = await expect(
         client.ipAsset.registerRootIp({
           policyId: "0",

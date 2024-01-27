@@ -80,7 +80,7 @@ describe("Test PermissionReadOnlyClient", function () {
     };
 
     const mockResponse = sinon.stub().returns({
-      data: [permissionMock],
+      data: { data: [permissionMock] },
     });
 
     it("should return permission on a successful query", async function () {

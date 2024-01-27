@@ -8,7 +8,6 @@ import {
   ListIpAssetResponse,
 } from "../types/resources/ipAsset";
 import { handleError } from "../utils/errors";
-import { isIntegerString } from "../utils/utils";
 
 /**
  * IPAssetReadOnlyClient allows you to view and search IP Assets on Story Protocol.
@@ -48,7 +47,7 @@ export class IPAssetReadOnlyClient {
   public async list(request?: ListIpAssetRequest): Promise<ListIpAssetResponse> {
     try {
       const response = await this.httpClient.post(`/accounts`, request || {});
-      return response as ListIpAssetResponse;
+      return response.data as ListIpAssetResponse;
     } catch (error) {
       handleError(error, "Failed to list IP Asset.");
     }

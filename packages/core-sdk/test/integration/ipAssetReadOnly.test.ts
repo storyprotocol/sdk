@@ -60,7 +60,8 @@ describe("IPAsset client integration tests", function () {
   });
 
   function expectIPAssetFields(ipAsset: IpAsset) {
-    expect(ipAsset).to.have.property("ipAccountAddress");
+    expect(ipAsset).to.have.property("id");
+    expect(ipAsset).to.have.property("ipId");
     expect(ipAsset).to.have.property("chainId");
     expect(ipAsset).to.have.property("tokenContract");
     expect(ipAsset).to.have.property("tokenId");
