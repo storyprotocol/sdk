@@ -40,15 +40,15 @@ export class PermissionClient extends PermissionReadOnlyClient {
 
       const txHash = await this.wallet.writeContract(call);
       // TODO: the emit event doesn't return anything
-      if (request.txOptions?.waitForTransaction) {
-        await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...AccessControllerConfig,
-          eventName: "PermissionSet",
-        });
-        return { txHash: txHash };
-      } else {
-        return { txHash: txHash };
-      }
+      // if (request.txOptions?.waitForTransaction) {
+      //   await waitTxAndFilterLog(this.rpcClient, txHash, {
+      //     ...AccessControllerConfig,
+      //     eventName: "PermissionSet",
+      //   });
+      //   return { txHash: txHash };
+      // } else {
+      return { txHash: txHash };
+      // }
     } catch (error) {
       handleError(error, "Failed to set permissions");
     }
