@@ -31,9 +31,9 @@ describe("Tagging Indexer Functions", () => {
 
     it("should be able to get a tag by it's tag id", async () => {
       const getTagRequest: GetTagRequest = {
-        id: "3f00d5103788c499de7aa690f5f2c70f2cbef9840ceecf995da99ff4c24516d9a35db6bd0d0bbe86f1e6f9678d2e1865388a36d7f6f430b9cce462f8ecf5b4a719f9ede4fdfbacfd3e34c07e37702724",
+        id: "0xabcc2421f927c128b9f5a94b612f4541c8e624b6-testTag",
       };
-      const response = await expect(client.tagging.get(getTagRequest)).to.not.be.rejected;
+      const response = await client.tagging.get(getTagRequest);
 
       expect(response.data).to.be.an("object");
       expect(response.data).to.have.property("id");

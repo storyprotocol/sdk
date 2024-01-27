@@ -42,12 +42,13 @@ describe("Test TaggingReadOnlyClient", function () {
     it("list() should return an array of tags", async function () {
       axiosMock.post = sinon.stub().resolves({
         data: {
-          tags: [tagMock1, tagMock2],
+          data: [tagMock1, tagMock2],
         },
       });
 
       const response = await taggingClient.list();
-      const tags = response.tags;
+      console.log("List response:", response);
+      const tags = response.data;
 
       expect(tags[0]).to.be.deep.equal(tagMock1);
       expect(tags[1]).to.be.deep.equal(tagMock2);
@@ -55,14 +56,14 @@ describe("Test TaggingReadOnlyClient", function () {
     it("get(id) should return a tag", async function () {
       axiosMock.get = sinon.stub().resolves({
         data: {
-          tag: tagMock1,
+          data: tagMock1,
         },
       });
       const getTagRequest: GetTagRequest = {
         id: tagMock1.id,
       };
       const response = await taggingClient.get(getTagRequest);
-      const tag = response.tag;
+      const tag = response.data;
 
       expect(tag).to.be.deep.equal(tagMock1);
     });

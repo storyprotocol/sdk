@@ -13,7 +13,7 @@ export type ListTagRequest = {
 };
 
 export type ListTagResponse = {
-  tags: Tag[];
+  data: Tag[];
 };
 
 export type GetTagRequest = {
@@ -21,7 +21,7 @@ export type GetTagRequest = {
 };
 
 export type GetTagResponse = {
-  tag: Tag;
+  data: Tag;
 };
 
 export type SetTagRequest = {
