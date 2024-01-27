@@ -3,7 +3,6 @@ import { PublicClient, WalletClient, getAddress, Hex } from "viem";
 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
-import { waitTxAndFilterLog } from "../utils/utils";
 import { PermissionReadOnlyClient } from "./permissionReadOnly";
 import { AccessControllerConfig } from "../abi/accessController.abi";
 
