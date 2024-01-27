@@ -24,7 +24,7 @@ export type GetTagResponse = {
 
 export type SetTagRequest = {
   tag: string;
-  ipId: ``;
+  ipId: `0x${string}`;
   txOptions?: TxOptions;
 };
 
@@ -34,7 +34,7 @@ export type SetTagResponse = {
 
 export type RemoveTagRequest = {
   tag: string;
-  ipId: ``;
+  ipId: `0x${string}`;
   txOptions?: TxOptions;
 };
 
