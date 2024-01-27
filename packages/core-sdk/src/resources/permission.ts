@@ -1,11 +1,12 @@
 import { AxiosInstance } from "axios";
-import { PublicClient, WalletClient, getAddress } from "viem";
+import { PublicClient, WalletClient, getAddress, Hex } from "viem";
 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
 import { waitTxAndFilterLog } from "../utils/utils";
 import { PermissionReadOnlyClient } from "./permissionReadOnly";
 import { AccessControllerConfig } from "../abi/accessController.abi";
+
 // import { HashZero } from "../constants/common";
 
 export class PermissionClient extends PermissionReadOnlyClient {
@@ -31,7 +32,7 @@ export class PermissionClient extends PermissionReadOnlyClient {
           getAddress(request.ipAsset), // 0x Address
           getAddress(request.signer), // 0x Address
           getAddress(request.to), // 0x Address
-          getAddress(request.func), // bytes4
+          request.func as Hex, // bytes4
           request.permission, // uint8
         ],
         account: this.wallet.account,

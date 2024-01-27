@@ -22,6 +22,8 @@ describe.only("Permission Functions", () => {
   describe("Set Permission", async function () {
     it("should not throw error when setting permission", async () => {
       const waitForTransaction: boolean = false;
+
+      // TODO: this test is failing because only the IPAccount/IPAsset owner can set permission for the IPAccount. (wrong wallet)
       const response = await expect(
         client.permission.setPermission({
           ipAsset: "0x06cb17d43f16ad5cc3cd7757296fa87ce7ac741d",
