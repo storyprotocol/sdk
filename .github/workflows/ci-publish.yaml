@@ -9,7 +9,7 @@ on:
     # paths:
     #   - 'package.json'
     # Triggered only the PR is merged
-    types: [opened, synchronize, reopened, closed]
+    types: [closed]
     
 jobs:
   # Add  timestamp
@@ -110,8 +110,8 @@ jobs:
         run: pnpm build
 
       # Disabled test for now for later validation
-      # - name: Test
-      #   run: pnpm test
+      - name: Test
+        run: pnpm test
 
       - name: Publish to npm
         run: |
