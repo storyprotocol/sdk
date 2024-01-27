@@ -4,25 +4,18 @@ import { sepolia } from "viem/chains";
 import * as dotenv from "dotenv";
 
 import { StoryConfig, StoryReadOnlyConfig } from "./types/config";
-import { IPOrgClient } from "./resources/ipOrg";
-import { IPOrgReadOnlyClient } from "./resources/ipOrgReadOnly";
-import { RelationshipReadOnlyClient } from "./resources/relationshipReadOnly";
-import { IPAssetClient } from "./resources/ipAsset";
-import { IPAssetReadOnlyClient } from "./resources/ipAssetReadOnly";
-import { LicenseReadOnlyClient } from "./resources/licenseReadOnly";
 import { TransactionClient } from "./resources/transaction";
 import { TransactionReadOnlyClient } from "./resources/transactionReadOnly";
 import { HTTP_TIMEOUT } from "./constants/http";
 import { Client, ReadOnlyClient } from "./types/client";
-import { ModuleClient } from "./resources/module";
-import { ModuleReadOnlyClient } from "./resources/moduleReadOnly";
-import { HookClient } from "./resources/hook";
-import { HookReadOnlyClient } from "./resources/hookReadOnly";
 import { PlatformClient } from "./utils/platform";
-import { LicenseClient } from "./resources/license";
-import { RelationshipClient } from "./resources/relationship";
-import { RelationshipTypeClient } from "./resources/relationshipType";
-import { RelationshipTypeReadOnlyClient } from "./resources/relationshipTypeReadOnly";
+import { ModuleReadOnlyClient } from "./resources/moduleReadOnly";
+import { TaggingClient } from "./resources/tagging";
+import { TaggingReadOnlyClient } from "./resources/taggingReadOnly";
+import { IPAssetClient } from "./resources/ipAsset";
+import { IPAssetReadOnlyClient } from "./resources/ipAssetReadOnly";
+import { PermissionClient } from "./resources/permission";
+import { PermissionReadOnlyClient } from "./resources/permissionReadOnly";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -37,15 +30,12 @@ export class StoryClient {
   private readonly rpcClient: PublicClient;
   private readonly wallet?: WalletClient;
 
-  private _ipOrg: IPOrgClient | IPOrgReadOnlyClient | null = null;
-  private _license: LicenseReadOnlyClient | null = null;
+  private _ipAccount: IPAssetClient | IPAssetReadOnlyClient | null = null;
+  private _permission: PermissionClient | PermissionReadOnlyClient | null = null;
   private _transaction: TransactionClient | TransactionReadOnlyClient | null = null;
-  private _ipAsset: IPAssetClient | IPAssetReadOnlyClient | null = null;
-  private _relationship: RelationshipReadOnlyClient | null = null;
-  private _relationshipType: RelationshipTypeReadOnlyClient | null = null;
-  private _module: ModuleClient | ModuleReadOnlyClient | null = null;
-  private _hook: HookClient | HookReadOnlyClient | null = null;
   private _platform: PlatformClient | null = null;
+  private _module: ModuleReadOnlyClient | null = null;
+  private _tagging: TaggingClient | TaggingReadOnlyClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -101,83 +91,24 @@ export class StoryClient {
     return new StoryClient(config, false) as Client;
   }
 
-  /**
-   * Getter for the ipOrg client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the IPOrgClient or IPOrgReadOnlyClient instance
-   */
-  public get ipOrg(): IPOrgClient | IPOrgReadOnlyClient {
-    if (this._ipOrg === null) {
-      this._ipOrg = this.isReadOnly
-        ? new IPOrgReadOnlyClient(this.httpClient, this.rpcClient)
-        : new IPOrgClient(this.httpClient, this.rpcClient, this.wallet!);
-    }
-
-    return this._ipOrg;
-  }
-
-  /**
-   * Getter for the relationship client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the RelationshipReadOnlyClient or RelationshipClient instance
-   */
-  public get relationship(): RelationshipClient | RelationshipReadOnlyClient {
-    if (this._relationship === null) {
-      this._relationship = this.isReadOnly
-        ? new RelationshipReadOnlyClient(this.httpClient, this.rpcClient)
-        : new RelationshipClient(this.httpClient, this.rpcClient, this.wallet!);
-    }
-
-    return this._relationship;
-  }
-
-  /**
-   * Getter for the relationship type client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the RelationshipTypeReadOnlyClient or RelationshipTypeClient instance
-   */
-  public get relationshipType(): RelationshipTypeClient | RelationshipTypeReadOnlyClient {
-    if (this._relationshipType === null) {
-      this._relationshipType = this.isReadOnly
-        ? new RelationshipTypeReadOnlyClient(this.httpClient, this.rpcClient)
-        : new RelationshipTypeClient(this.httpClient, this.rpcClient, this.wallet!);
-    }
-
-    return this._relationshipType;
-  }
-
-  /**
-   * Getter for the IP Asset client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the IPAssetReadOnlyClient or IpAssetClient instance
-   */
   public get ipAsset(): IPAssetClient | IPAssetReadOnlyClient {
-    if (this._ipAsset === null) {
-      this._ipAsset = this.isReadOnly
+    if (this._ipAccount === null) {
+      this._ipAccount = this.isReadOnly
         ? new IPAssetReadOnlyClient(this.httpClient, this.rpcClient)
         : new IPAssetClient(this.httpClient, this.rpcClient, this.wallet!);
     }
-    return this._ipAsset;
+
+    return this._ipAccount;
   }
 
-  /**
-   * Getter for the license client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the LicenseReadOnlyClient or LicenseClient instance
-   */
-  public get license(): LicenseClient | LicenseReadOnlyClient {
-    if (this._license === null) {
-      this._license = this.isReadOnly
-        ? new LicenseReadOnlyClient(this.httpClient, this.rpcClient)
-        : new LicenseClient(this.httpClient, this.rpcClient, this.wallet!);
+  public get permission(): PermissionClient | PermissionReadOnlyClient {
+    if (this._permission === null) {
+      this._permission = this.isReadOnly
+        ? new PermissionReadOnlyClient(this.httpClient, this.rpcClient)
+        : new PermissionClient(this.httpClient, this.rpcClient, this.wallet!);
     }
 
-    return this._license;
+    return this._permission;
   }
 
   /**
@@ -197,35 +128,19 @@ export class StoryClient {
   }
 
   /**
-   * Getter for the module client. The client is lazily created when
+   * Getter for the tagging client. The client is lazily created when
    * this method is called.
    *
-   * @returns the ModuleReadOnlyClient or ModuleClient instance
+   * @returns the TaggingReadOnlyClient or TaggingClient instance
    */
-  public get module(): ModuleClient | ModuleReadOnlyClient {
-    if (this._module === null) {
-      this._module = this.isReadOnly
-        ? new ModuleReadOnlyClient(this.httpClient, this.rpcClient)
-        : new ModuleClient(this.httpClient, this.rpcClient, this.wallet!);
+  public get tagging(): TaggingClient | TaggingReadOnlyClient {
+    if (this._tagging === null) {
+      this._tagging = this.isReadOnly
+        ? new TaggingReadOnlyClient(this.httpClient, this.rpcClient)
+        : new TaggingClient(this.httpClient, this.rpcClient, this.wallet!);
     }
 
-    return this._module;
-  }
-
-  /**
-   * Getter for the hook client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the HookReadOnlyClient or HookClient instance
-   */
-  public get hook(): HookClient | HookReadOnlyClient {
-    if (this._hook === null) {
-      this._hook = this.isReadOnly
-        ? new HookReadOnlyClient(this.httpClient, this.rpcClient)
-        : new HookClient(this.httpClient, this.rpcClient, this.wallet!);
-    }
-
-    return this._hook;
+    return this._tagging;
   }
 
   /**
@@ -240,5 +155,19 @@ export class StoryClient {
     }
 
     return this._platform;
+  }
+
+  /**
+   * Getter for the module client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the Module instance
+   */
+  public get module(): ModuleReadOnlyClient {
+    if (this._module === null) {
+      this._module = new ModuleReadOnlyClient(this.httpClient, this.rpcClient);
+    }
+
+    return this._module;
   }
 }

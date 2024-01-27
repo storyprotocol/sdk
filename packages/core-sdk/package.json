@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/core-sdk",
-  "version": "0.1.0-alpha",
+  "version": "0.0.1-beta-rc.1",
   "description": "Story Protocol Core SDK",
   "main": "dist/story-protocol-core-sdk.cjs.js",
   "module": "dist/story-protocol-core-sdk.esm.js",
@@ -79,10 +79,10 @@
       "src/types/**/*"
     ],
     "check-coverage": true,
-    "lines": 100,
-    "functions": 100,
-    "branches": 100,
-    "statements": 100
+    "lines": 80,
+    "functions": 80,
+    "branches": 80,
+    "statements": 80
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

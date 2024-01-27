@@ -1,67 +1,70 @@
 import { expect } from "chai";
-import { StoryClient, StoryReadOnlyConfig, ListIpAssetRequest } from "../../src";
-import { ReadOnlyClient } from "../../src";
+import { StoryClient, StoryReadOnlyConfig, ReadOnlyClient } from "../../src";
+import { IpAsset, ListIpAssetRequest } from "../../src/types/resources/ipAsset";
 
-describe("IP Asset Read Only Functions", () => {
+describe("IPAsset client integration tests", function () {
   let client: ReadOnlyClient;
 
-  before(function () {
+  before(async function () {
     const config: StoryReadOnlyConfig = {};
-
     client = StoryClient.newReadOnlyClient(config);
   });
 
-  describe("Get IP Asset", async function () {
-    it("should return asset when the asset id is valid", async () => {
-      const response = await client.ipAsset.get({
-        ipAssetId: "1",
-      });
-      expect(response.ipAsset).is.not.null;
-    });
-  });
-
-  describe("List IP assets", async function () {
-    it("should return a list of IP assets successfully upon query", async () => {
-      const response = await client.ipAsset.list({
-        ipOrgId: process.env.TEST_IPORG_ID as string,
+  describe("List IPAssets", async function () {
+    it("should return array of IPAssets", async function () {
+      const req = {
         options: {
-          pagination: {
-            limit: 10,
-            offset: 0,
-          },
+          limit: 10,
+          offset: 0,
         },
-      });
-      expect(response).is.not.null;
+      } as ListIpAssetRequest;
+
+      const response = await client.ipAsset.list(req);
+      expect(response).to.have.property("data");
+      expect(response.data).to.be.an("array");
+      expect(response.data.length).to.gt(0);
+      expectIPAssetFields(response.data[0]);
     });
 
-    it("should return a list of IP assets with pagination", async () => {
-      const response = await client.ipAsset.list({
-        ipOrgId: process.env.TEST_IPORG_ID as string,
-        options: {
-          pagination: {
-            limit: 1,
-            offset: 0,
-          },
-        },
-      });
-
-      expect(response).is.not.null;
-      expect(response.ipAssets.length).to.equal(1);
-    });
-
-    it("should return a list of ipAssets successfully without options", async () => {
+    it("should return a list of ipAssets successfully without options", async function () {
       const response = await client.ipAsset.list();
-      expect(response).is.not.null;
-      expect(response.ipAssets.length).to.gt(0);
+
+      expect(response).to.have.property("data");
+      expect(response.data).to.be.an("array");
+      expect(response.data.length).to.gt(0);
+      expectIPAssetFields(response.data[0]);
     });
 
-    it("should return a list of ipAssets if the options are invalid", async () => {
+    it("should return a list of ipAssets if the options are invalid", async function () {
       const options = {
         options: {},
       } as ListIpAssetRequest;
       const response = await client.ipAsset.list(options);
-      expect(response).is.not.null;
-      expect(response.ipAssets.length).to.gt(0);
+
+      expect(response).to.have.property("data");
+      expect(response.data).to.be.an("array");
+      expect(response.data.length).to.gt(0);
+      expectIPAssetFields(response.data[0]);
     });
   });
+
+  describe("Get IPAsset", async function () {
+    it("should return IP Asset from request ipId", async function () {
+      const response = await client.ipAsset.get({
+        ipId: (process.env.TEST_IP_ID as string) || "0x06cb17d43f16ad5cc3cd7757296fa87ce7ac741d",
+      });
+
+      expect(response).to.have.property("data");
+      expectIPAssetFields(response.data);
+    });
+  });
+
+  function expectIPAssetFields(ipAsset: IpAsset) {
+    expect(ipAsset).to.have.property("id");
+    expect(ipAsset).to.have.property("ipId");
+    expect(ipAsset).to.have.property("chainId");
+    expect(ipAsset).to.have.property("tokenContract");
+    expect(ipAsset).to.have.property("tokenId");
+    expect(ipAsset).to.have.property("metadataResolverAddress");
+  }
 });

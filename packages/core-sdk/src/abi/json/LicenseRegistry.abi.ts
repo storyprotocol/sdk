@@ -1,73 +1,161 @@
 export default [
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: true,
+        components: [
+          {
+            internalType: "uint256",
+            name: "frameworkId",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes[]",
+            name: "mintingParamValues",
+            type: "bytes[]",
+          },
+          {
+            internalType: "bytes[]",
+            name: "activationParamValues",
+            type: "bytes[]",
+          },
+          {
+            internalType: "bool",
+            name: "needsActivation",
+            type: "bool",
+          },
+          {
+            internalType: "bytes[]",
+            name: "linkParentParamValues",
+            type: "bytes[]",
+          },
+        ],
+        internalType: "struct Licensing.Policy",
+        name: "pol",
+        type: "tuple",
+      },
+    ],
+    name: "addPolicy",
+    outputs: [
+      {
         internalType: "uint256",
-        name: "id",
+        name: "policyId",
         type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "isNew",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "ipId",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "polId",
+        type: "uint256",
+      },
+    ],
+    name: "addPolicyToIp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "indexOnIpId",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "ipId",
+        type: "address",
       },
       {
         components: [
           {
-            internalType: "enum Licensing.LicenseStatus",
-            name: "status",
-            type: "uint8",
-          },
-          {
-            internalType: "bool",
-            name: "derivativesAllowed",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "isReciprocal",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "derivativeNeedsApproval",
-            type: "bool",
-          },
-          {
-            internalType: "address",
-            name: "revoker",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "licensor",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "ipOrg",
-            type: "address",
-          },
-          {
-            internalType: "ShortString",
+            internalType: "uint256",
             name: "frameworkId",
-            type: "bytes32",
-          },
-          {
-            internalType: "uint256",
-            name: "ipaId",
             type: "uint256",
           },
           {
-            internalType: "uint256",
-            name: "parentLicenseId",
-            type: "uint256",
+            internalType: "bytes[]",
+            name: "mintingParamValues",
+            type: "bytes[]",
+          },
+          {
+            internalType: "bytes[]",
+            name: "activationParamValues",
+            type: "bytes[]",
+          },
+          {
+            internalType: "bool",
+            name: "needsActivation",
+            type: "bool",
+          },
+          {
+            internalType: "bytes[]",
+            name: "linkParentParamValues",
+            type: "bytes[]",
           },
         ],
-        indexed: false,
-        internalType: "struct Licensing.LicenseData",
-        name: "licenseData",
+        internalType: "struct Licensing.Policy",
+        name: "pol",
         type: "tuple",
       },
     ],
-    name: "LicenseRegistered",
-    type: "event",
+    name: "addPolicyToIp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "policyId",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "isNew",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "indexOnIpId",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "licenseId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "childIpId",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "holder",
+        type: "address",
+      },
+    ],
+    name: "linkIpToParent",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
 ] as const;

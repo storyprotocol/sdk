@@ -1,89 +1,172 @@
 import { QueryOptions, TxOptions } from "../options";
-import { TypedData } from "../common";
 
 /**
- * Core data model for IP Asset.
+ * Core data model for IP Org.
  *
  * @public
  */
-export type IPAsset = {
+export type IPOrg = {
   id: string;
   name: string;
-  type: IPAssetType;
-  ipOrgId: string;
+  symbol: string;
   owner: string;
-  mediaUrl: string;
-  contentHash?: string;
+  baseUri?: string;
+  contractUri?: string;
+  ipAssetTypes: Array<string>;
   createdAt: string; // ISO 8601
   txHash: string;
 };
 
-export type IPAssetType = {
-  index: number;
-  value: string;
-};
-
 /**
- * Request type for ipAsset.get method.
+ * Request type for iporg.get method.
  *
  * @public
  */
-export type GetIpAssetRequest = {
-  ipAssetId: string;
-};
-
-/**
- * Response type for ipAsset.get method.
- *
- * @public
- */
-export type GetIpAssetResponse = {
-  ipAsset: IPAsset;
-};
-
-/**
- * Request type for ipAsset.create method.
- *
- * @public
- */
-export type CreateIpAssetRequest = {
-  name: string;
-  typeIndex: number;
+export type GetIPOrgRequest = {
   ipOrgId: string;
-  licenseId?: number;
+};
+
+/**
+ * Response type for iporg.get method.
+ *
+ * @public
+ */
+export type GetIPOrgResponse = {
+  ipOrg: IPOrg;
+};
+
+/**
+ * Request type for iporg.create method.
+ *
+ * @public
+ */
+export type CreateIPOrgRequest = {
+  name: string;
+  symbol: string;
   owner?: string;
-  mediaUrl?: string;
-  contentHash?: `0x${string}`;
-  preHookData?: Array<TypedData>;
-  postHookData?: Array<TypedData>;
+  ipAssetTypes: Array<string>;
   txOptions?: TxOptions;
 };
 
 /**
- * Response type for ipAsset.create method.
+ * Response type for iporg.create method.
  *
  * @public
  */
-export type CreateIpAssetResponse = {
+export type CreateIPOrgResponse = {
   txHash: string;
-  ipAssetId?: string;
+  ipOrgId?: string;
 };
 
 /**
- * Request type for ipAsset.list method.
+ * Request type for iporg.list method.
  *
  * @public
  */
-export type ListIpAssetRequest = {
-  ipOrgId?: string;
+export type ListIPOrgRequest = {
   options?: QueryOptions;
 };
 
 /**
- * Response type for ipAsset.list method.
+ * Response type for iporg.list method.
  *
  * @public
  */
+export type ListIPOrgResponse = {
+  ipOrgs: IPOrg[];
+};
+
+// -----------------------------------------------------
+// IPAccountRegistry
+// -----------------------------------------------------
+export type IpAsset = {
+  id: string;
+  ipId: string;
+  chainId: number;
+  tokenContract: string;
+  tokenId: number;
+  metadataResolverAddress: string;
+};
+
+export type GetIpAssetRequest = {
+  ipId: string;
+};
+
+export type GetIpAssetResponse = {
+  data: IpAsset;
+};
+
+export type ListIpAssetRequest = {
+  options?: QueryOptions;
+};
+
 export type ListIpAssetResponse = {
-  ipAssets: IPAsset[];
+  data: IpAsset[];
+};
+
+export type RegisterIpAssetRequest = {
+  chainId: string;
+  tokenContractAddress: string;
+  tokenId: string;
+  txOptions?: TxOptions;
+};
+
+export type RegisterIpAssetResponse = {
+  txHash: string;
+  ipAccountId?: string;
+};
+
+// RegisrationModule
+export type RegisterRootIpRequest = {
+  policyId: string;
+  tokenContractAddress: string;
+  tokenId: string;
+  txOptions?: TxOptions;
+};
+
+export type RegisterRootIpResponse = {
+  txHash: string;
+  ipAccountId?: string;
+};
+
+export type RegisterDerivativeIpRequest = {
+  licenseId: string;
+  tokenContractAddress: string;
+  tokenId: string;
+  ipName: string;
+  ipDescription: string;
+  hash: string;
+  txOptions?: TxOptions;
+};
+
+export type RegisterDerivativeIpResponse = {
+  txHash: string;
+  ipAccountId?: string;
+};
+
+// LicenseRegistry
+export type addPolicyRequest = {
+  frameworkId: string;
+  mintingParamValues: string[];
+  activationParamValues: string[];
+  needsActivation: boolean;
+  linkParentParamValues: string[];
+  // ipId: string;
+  // policyId: string;
+  txOptions?: TxOptions;
+};
+
+export type addPolicyToIpRequest = {
+  ipId: string;
+  policyId: string;
+};
+
+export type addPolicyResponse = {
+  txHash: string;
+  policyId?: number;
+  isNew?: boolean;
+};
+
+export type addPolicyToIpResponse = {
+  indexOnIpId: number;
 };
