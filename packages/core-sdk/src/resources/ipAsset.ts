@@ -1,8 +1,7 @@
 import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress } from "viem";
 
-// import { handleError } from "../utils/errors";
-import { IPAccountReadOnlyClient } from "./ipAccountReadOnly";
+import { IPAssetReadOnlyClient } from "./ipAssetReadOnly";
 import { handleError } from "../utils/errors";
 import { IPAccountRegistryConfig } from "../abi/ipAccountRegistry.abi";
 import {
@@ -10,17 +9,11 @@ import {
   RegisterDerivativeIpResponse,
   RegisterRootIpRequest,
   RegisterRootIpResponse,
-  addPolicyRequest,
-  addPolicyResponse,
-  // addPolicyToIpRequest,
-  // addPolicyToIpResponse,
-} from "../types/resources/ipAccount";
+} from "../types/resources/ipAsset";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { RegistrationModuleConfig } from "../abi/registrationModule.abi";
-import { LicenseRegistryConfig } from "../abi/licenseRegistry.abi";
-// import { HashZero } from "../constants/common";
 
-export class IPAccountClient extends IPAccountReadOnlyClient {
+export class IPAssetClient extends IPAssetReadOnlyClient {
   private readonly wallet: WalletClient;
 
   constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
@@ -101,40 +94,40 @@ export class IPAccountClient extends IPAccountReadOnlyClient {
   }
 
   // TODO: move to License resource
-  public async createPolicy(request: addPolicyRequest): Promise<addPolicyResponse> {
-    try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...LicenseRegistryConfig,
-        functionName: "addPolicy",
-        args: [
-          {
-            frameworkId: parseToBigInt(request.frameworkId),
-            mintingParamValues: request.mintingParamValues.map((add) => getAddress(add)),
-            activationParamValues: request.activationParamValues.map((add) => getAddress(add)),
-            needsActivation: request.needsActivation,
-            linkParentParamValues: request.linkParentParamValues.map((add) => getAddress(add)),
-          },
-        ], // TODO: add args
-      });
+  // public async createPolicy(request: addPolicyRequest): Promise<addPolicyResponse> {
+  //   try {
+  //     const { request: call } = await this.rpcClient.simulateContract({
+  //       ...LicenseRegistryConfig,
+  //       functionName: "addPolicy",
+  //       args: [
+  //         {
+  //           frameworkId: parseToBigInt(request.frameworkId),
+  //           mintingParamValues: request.mintingParamValues.map((add) => getAddress(add)),
+  //           activationParamValues: request.activationParamValues.map((add) => getAddress(add)),
+  //           needsActivation: request.needsActivation,
+  //           linkParentParamValues: request.linkParentParamValues.map((add) => getAddress(add)),
+  //         },
+  //       ], // TODO: add args
+  //     });
 
-      const txHash = await this.wallet.writeContract(call);
-      // TODO: need an emitted event
-      // if (request.txOptions?.waitForTransaction) {
-      //   const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-      //     ...IPAccountRegistryConfig,
-      //     eventName: "IPAccountRegistered",
-      //   });
-      //   return { txHash: txHash, policyId: targetLog?.args.account.toString() };
-      // } else {
-      return { txHash: txHash };
-      // }
-    } catch (error) {
-      handleError(error, "Failed to register derivative IP");
-    }
-  }
+  //     const txHash = await this.wallet.writeContract(call);
+  //     // TODO: need an emitted event
+  //     // if (request.txOptions?.waitForTransaction) {
+  //     //   const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+  //     //     ...IPAccountRegistryConfig,
+  //     //     eventName: "IPAccountRegistered",
+  //     //   });
+  //     //   return { txHash: txHash, policyId: targetLog?.args.account.toString() };
+  //     // } else {
+  //     return { txHash: txHash };
+  //     // }
+  //   } catch (error) {
+  //     handleError(error, "Failed to register derivative IP");
+  //   }
+  // }
 
   // TODO: move to License resource
   // public async addPolicyToIp(request: addPolicyToIpRequest): Promise<addPolicyToIpResponse> {
-  //   // TODO: use getIpAccount to get the ipId
+  // TODO: use getIpAccount to get the ipId
   // }
 }

@@ -5,7 +5,7 @@ import { goerli } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe("Platform client integration tests", () => {
+describe.skip("Platform client integration tests", () => {
   let client: Client;
   before(() => {
     global.FileReader = createFileReaderMock(

@@ -2,15 +2,15 @@ import { expect } from "chai";
 import { AxiosInstance } from "axios";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { AccessControlClient, AddressZero } from "../../../src";
+import { PermissionClient, AddressZero } from "../../../src";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient, Account } from "viem";
 
 chai.use(chaiAsPromised);
 
-describe("Test AccessControl", function () {
-  let accessControlClient: AccessControlClient;
+describe("Test Permission", function () {
+  let permissionClient: PermissionClient;
   let axiosMock: AxiosInstance;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
@@ -22,25 +22,25 @@ describe("Test AccessControl", function () {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    accessControlClient = new AccessControlClient(axiosMock, rpcMock, walletMock);
+    permissionClient = new PermissionClient(axiosMock, rpcMock, walletMock);
   });
 
   afterEach(function () {
     sinon.restore();
   });
 
-  describe("Test accessControl.setPermission", async function () {
+  describe("Test permission.setPermission", async function () {
     it("should not throw error when setting permission", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
-      const res = await accessControlClient.setPermission({
-        ipAccount: AddressZero,
+      const res = await permissionClient.setPermission({
+        ipAsset: AddressZero,
         signer: AddressZero,
         to: AddressZero,
-        func: AddressZero,
+        func: "0x00000000",
         permission: 0,
         txOptions: {
           waitForTransaction: false,
@@ -56,11 +56,11 @@ describe("Test AccessControl", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
-      const res = await accessControlClient.setPermission({
-        ipAccount: AddressZero,
+      const res = await permissionClient.setPermission({
+        ipAsset: AddressZero,
         signer: AddressZero,
         to: AddressZero,
-        func: AddressZero,
+        func: "0x00000000",
         permission: 0,
         txOptions: {
           waitForTransaction: false,
@@ -95,8 +95,8 @@ describe("Test AccessControl", function () {
         // ],
       });
 
-      // const res = await accessControlClient.setPermission({
-      //   ipAccount: AddressZero,
+      // const res = await PermissionClient.setPermission({
+      //   ipAsset: AddressZero,
       //   signer: AddressZero,
       //   to: AddressZero,
       //   func: AddressZero,
@@ -113,11 +113,11 @@ describe("Test AccessControl", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
       await expect(
-        accessControlClient.setPermission({
-          ipAccount: AddressZero,
+        permissionClient.setPermission({
+          ipAsset: AddressZero,
           signer: AddressZero,
           to: AddressZero,
-          func: AddressZero,
+          func: "0x00000000",
           permission: 0,
           txOptions: {
             waitForTransaction: false,
@@ -133,8 +133,8 @@ describe("Test AccessControl", function () {
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
       await expect(
-        accessControlClient.setPermission({
-          ipAccount: AddressZero,
+        permissionClient.setPermission({
+          ipAsset: AddressZero,
           signer: AddressZero,
           to: AddressZero,
           func: AddressZero,

@@ -17,7 +17,7 @@ export default [
         type: "uint256",
       },
     ],
-    name: "ipAccount",
+    name: "ipAsset",
     outputs: [
       {
         internalType: "address",
