@@ -11,6 +11,7 @@ import { Client, ReadOnlyClient } from "./types/client";
 import { PlatformClient } from "./utils/platform";
 import { IPAccountClient } from "./resources/ipAccount";
 import { IPAccountReadOnlyClient } from "./resources/ipAccountReadOnly";
+import { ModuleReadOnlyClient } from "./resources/moduleReadOnly";
 import { TaggingClient } from "./resources/tagging";
 import { TaggingReadOnlyClient } from "./resources/taggingReadOnly";
 
@@ -30,6 +31,7 @@ export class StoryClient {
   private _ipAccount: IPAccountClient | IPAccountReadOnlyClient | null = null;
   private _transaction: TransactionClient | TransactionReadOnlyClient | null = null;
   private _platform: PlatformClient | null = null;
+  private _module: ModuleReadOnlyClient | null = null;
   private _tagging: TaggingClient | TaggingReadOnlyClient | null = null;
 
   /**
@@ -140,5 +142,19 @@ export class StoryClient {
     }
 
     return this._platform;
+  }
+
+  /**
+   * Getter for the module client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the Module instance
+   */
+  public get module(): ModuleReadOnlyClient {
+    if (this._module === null) {
+      this._module = new ModuleReadOnlyClient(this.httpClient, this.rpcClient);
+    }
+
+    return this._module;
   }
 }
