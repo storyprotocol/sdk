@@ -1,10 +1,11 @@
 import { AxiosInstance } from "axios";
-import { PublicClient, WalletClient, getAddress, Hex } from "viem";
+import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
 import { PermissionReadOnlyClient } from "./permissionReadOnly";
-import { AccessControllerConfig } from "../abi/accessController.abi";
+import { IPAccountImplMerged } from "../abi/ipAccountImpl.abi";
+import { AccessControllerABImerged } from "../abi/accessController.abi";
 
 // import { HashZero } from "../constants/common";
 
@@ -24,15 +25,30 @@ export class PermissionClient extends PermissionReadOnlyClient {
    */
   public async setPermission(request: setPermissionsRequest): Promise<setPermissionsResponse> {
     try {
+      const IPAccountConfig = {
+        abi: IPAccountImplMerged,
+        address: getAddress(request.ipAsset),
+      };
+      const accessController = getAddress(
+        process.env.ACCESS_CONTROLLER || process.env.NEXT_PUBLIC_ACCESS_CONTROLLER || "",
+      ); //to
       const { request: call } = await this.rpcClient.simulateContract({
-        ...AccessControllerConfig,
-        functionName: "setPermission",
+        ...IPAccountConfig,
+        functionName: "execute",
         args: [
-          getAddress(request.ipAsset), // 0x Address
-          getAddress(request.signer), // 0x Address
-          getAddress(request.to), // 0x Address
-          request.func as Hex, // bytes4
-          request.permission, // uint8
+          accessController,
+          0,
+          encodeFunctionData({
+            abi: AccessControllerABImerged,
+            functionName: "setPermission",
+            args: [
+              getAddress(request.ipAsset), // 0x Address
+              getAddress(request.signer), // 0x Address
+              getAddress(request.to), // 0x Address
+              request.func as Hex, // bytes4
+              request.permission, // uint8
+            ],
+          }),
         ],
         account: this.wallet.account,
       });

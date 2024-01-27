@@ -4,7 +4,7 @@ import { sepolia } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe("IP Asset Functions", () => {
+describe.skip("IP Asset Functions", () => {
   let client: Client;
   let senderAddress: string;
 

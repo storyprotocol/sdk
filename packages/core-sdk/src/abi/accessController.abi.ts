@@ -5,10 +5,10 @@ import errorsJson from "./json/Errors.json";
 
 export const ErrorsAbi = errorsJson;
 
-const mergedABI = [...AccessControllerABI, ...ErrorsAbi];
+export const AccessControllerABImerged = [...AccessControllerABI, ...ErrorsAbi];
 
 export const AccessControllerConfig = {
-  abi: mergedABI,
+  abi: AccessControllerABImerged,
   address: getAddress(
     process.env.ACCESS_CONTROLLER || process.env.NEXT_PUBLIC_ACCESS_CONTROLLER || "",
   ),

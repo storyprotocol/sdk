@@ -40,7 +40,7 @@ describe("Test Permission", function () {
         ipAsset: AddressZero,
         signer: AddressZero,
         to: AddressZero,
-        func: AddressZero,
+        func: "0x00000000",
         permission: 0,
         txOptions: {
           waitForTransaction: false,
@@ -60,7 +60,7 @@ describe("Test Permission", function () {
         ipAsset: AddressZero,
         signer: AddressZero,
         to: AddressZero,
-        func: AddressZero,
+        func: "0x00000000",
         permission: 0,
         txOptions: {
           waitForTransaction: false,
@@ -117,7 +117,7 @@ describe("Test Permission", function () {
           ipAsset: AddressZero,
           signer: AddressZero,
           to: AddressZero,
-          func: AddressZero,
+          func: "0x00000000",
           permission: 0,
           txOptions: {
             waitForTransaction: false,

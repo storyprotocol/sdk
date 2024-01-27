@@ -60,7 +60,7 @@ describe("Permission client integration tests", function () {
       const response = await client.permission.get({
         permissionId:
           (process.env.TEST_PERMISSION_ID as string) ||
-          "47d64d52821188b04d2d549917a6e639d71ba967a9020bc2a144a53932a9163223cee3c012e7aeb680b59573e290f9068e4ec1ce83ec813faa670e8c1857dcb2f08c652bf97d0273ebd0cc52a5160c66bba6d9d3909857f1962c854249a7c59d2de86705e74bf05d2efd29e9bc6f40f3e92e5a9e8e5c60f326e7b875fe63cbc00c2d85616fea2c2f8d3f03cdf29029c35f03f015ded2227446e2abdd8d1069ab",
+          "0x06cb17d43f16ad5cc3cd7757296fa87ce7ac741d-0x6c88f438cbfd9866dcd067ffe18b951f19b968da-0x0baa92f82d8992ff152047f29084079c263be7f7-0xa2b4192f",
       });
 
       expect(response).to.have.property("data");

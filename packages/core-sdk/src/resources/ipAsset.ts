@@ -1,7 +1,6 @@
 import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress } from "viem";
 
-// import { handleError } from "../utils/errors";
 import { IPAssetReadOnlyClient } from "./ipAssetReadOnly";
 import { handleError } from "../utils/errors";
 import { IPAccountRegistryConfig } from "../abi/ipAccountRegistry.abi";
@@ -10,15 +9,9 @@ import {
   RegisterDerivativeIpResponse,
   RegisterRootIpRequest,
   RegisterRootIpResponse,
-  addPolicyRequest,
-  addPolicyResponse,
-  // addPolicyToIpRequest,
-  // addPolicyToIpResponse,
 } from "../types/resources/ipAsset";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { RegistrationModuleConfig } from "../abi/registrationModule.abi";
-import { LicenseRegistryConfig } from "../abi/licenseRegistry.abi";
-// import { HashZero } from "../constants/common";
 
 export class IPAssetClient extends IPAssetReadOnlyClient {
   private readonly wallet: WalletClient;
@@ -91,7 +84,6 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
           ...IPAccountRegistryConfig,
           eventName: "IPAccountRegistered",
         });
-        console.log({ targetLog });
         return { txHash: txHash, ipAccountId: targetLog?.args.account.toString() };
       } else {
         return { txHash: txHash };
