@@ -51,7 +51,7 @@ describe("Module client integration tests", function () {
       const response = await client.module.get({
         name: "0x6c88f438cbfd9866dcd067ffe18b951f19b968da",
       });
-      console.log("Get module", response);
+
       expect(response).to.have.property("data");
       expect(response.data).to.have.property("name");
       expect(response.data).to.have.property("module");

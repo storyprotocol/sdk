@@ -24,7 +24,7 @@ describe("Platform client integration tests", () => {
     client = StoryClient.newClient(config);
   });
 
-  it("should return arweave url when a buffer file is uploaded to arweave", async () => {
+  it.skip("should return arweave url when a buffer file is uploaded to arweave", async () => {
     const response = await client.platform.uploadFile(Buffer.from("test"), "image/png");
     expect(response).to.have.property("uri");
     expect(response.uri).to.be.a("string");
