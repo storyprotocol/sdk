@@ -7,10 +7,16 @@ import { PermissionReadOnlyClient } from "../resources/permissionReadOnly";
 import { TransactionClient } from "../resources/transaction";
 import { TransactionReadOnlyClient } from "../resources/transactionReadOnly";
 import { PlatformClient } from "../utils/platform";
+import { LicenseClient } from "../resources/license";
+import { LicenseReadOnlyClient } from "../resources/licenseReadOnly";
+import { PolicyClient } from "../resources/policy";
+import { PolicyReadOnlyClient } from "../resources/policyReadOnly";
 
 export interface ReadOnlyClient {
   ipAsset: IPAssetReadOnlyClient;
   permission: PermissionReadOnlyClient;
+  license: LicenseReadOnlyClient;
+  policy: PolicyReadOnlyClient;
   transaction: TransactionReadOnlyClient;
   module: ModuleReadOnlyClient;
 }
@@ -18,6 +24,8 @@ export interface ReadOnlyClient {
 export interface Client {
   ipAsset: IPAssetClient;
   permission: PermissionClient;
+  license: LicenseClient;
+  policy: PolicyClient;
   transaction: TransactionClient;
   platform: PlatformClient;
   tagging: TaggingClient;

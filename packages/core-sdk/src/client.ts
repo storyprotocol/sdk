@@ -16,6 +16,10 @@ import { IPAssetClient } from "./resources/ipAsset";
 import { IPAssetReadOnlyClient } from "./resources/ipAssetReadOnly";
 import { PermissionClient } from "./resources/permission";
 import { PermissionReadOnlyClient } from "./resources/permissionReadOnly";
+import { LicenseReadOnlyClient } from "./resources/licenseReadOnly";
+import { PolicyReadOnlyClient } from "./resources/policyReadOnly";
+import { LicenseClient } from "./resources/license";
+import { PolicyClient } from "./resources/policy";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -32,6 +36,8 @@ export class StoryClient {
 
   private _ipAccount: IPAssetClient | IPAssetReadOnlyClient | null = null;
   private _permission: PermissionClient | PermissionReadOnlyClient | null = null;
+  private _license: LicenseClient | LicenseReadOnlyClient | null = null;
+  private _policy: PolicyClient | PolicyReadOnlyClient | null = null;
   private _transaction: TransactionClient | TransactionReadOnlyClient | null = null;
   private _platform: PlatformClient | null = null;
   private _module: ModuleReadOnlyClient | null = null;
@@ -109,6 +115,25 @@ export class StoryClient {
     }
 
     return this._permission;
+  }
+
+  public get license(): LicenseClient | LicenseReadOnlyClient {
+    if (this._license === null) {
+      this._license = this.isReadOnly
+        ? new LicenseReadOnlyClient(this.httpClient, this.rpcClient)
+        : new LicenseClient(this.httpClient, this.rpcClient, this.wallet!);
+    }
+
+    return this._license;
+  }
+  public get policy(): PolicyClient | PolicyReadOnlyClient {
+    if (this._policy === null) {
+      this._policy = this.isReadOnly
+        ? new PolicyReadOnlyClient(this.httpClient, this.rpcClient)
+        : new PolicyClient(this.httpClient, this.rpcClient, this.wallet!);
+    }
+
+    return this._policy;
   }
 
   /**

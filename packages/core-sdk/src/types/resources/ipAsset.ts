@@ -143,30 +143,3 @@ export type RegisterDerivativeIpResponse = {
   txHash: string;
   ipAccountId?: string;
 };
-
-// LicenseRegistry
-export type addPolicyRequest = {
-  frameworkId: string;
-  mintingParamValues: string[];
-  activationParamValues: string[];
-  needsActivation: boolean;
-  linkParentParamValues: string[];
-  // ipId: string;
-  // policyId: string;
-  txOptions?: TxOptions;
-};
-
-export type addPolicyToIpRequest = {
-  ipId: string;
-  policyId: string;
-};
-
-export type addPolicyResponse = {
-  txHash: string;
-  policyId?: number;
-  isNew?: boolean;
-};
-
-export type addPolicyToIpResponse = {
-  indexOnIpId: number;
-};
