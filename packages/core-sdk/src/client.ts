@@ -126,6 +126,7 @@ export class StoryClient {
 
     return this._license;
   }
+
   public get policy(): PolicyClient | PolicyReadOnlyClient {
     if (this._policy === null) {
       this._policy = this.isReadOnly

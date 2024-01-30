@@ -11,6 +11,10 @@ export { IPAssetClient } from "./resources/ipAsset";
 export { IPAssetReadOnlyClient } from "./resources/ipAssetReadOnly";
 export { PermissionClient } from "./resources/permission";
 export { PermissionReadOnlyClient } from "./resources/permissionReadOnly";
+export { LicenseClient } from "./resources/license";
+export { LicenseReadOnlyClient } from "./resources/licenseReadOnly";
+export { PolicyClient } from "./resources/policy";
+export { PolicyReadOnlyClient } from "./resources/policyReadOnly";
 
 export type { StoryConfig, StoryReadOnlyConfig } from "./types/config";
 export type { Client, ReadOnlyClient } from "./types/client";

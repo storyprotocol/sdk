@@ -63,7 +63,7 @@ describe("Test PermissionReadOnlyClient", function () {
         permissionClient.get({
           permissionId: "fake permission id",
         }),
-      ).to.be.rejectedWith("Failed to get IP account: http 500");
+      ).to.be.rejectedWith("Failed to get permission: http 500");
     });
   });
 
