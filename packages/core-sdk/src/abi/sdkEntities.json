@@ -6,6 +6,7 @@
   "addPolicyToIp",
   "linkIpToParent",
   "setPermission",
+  "PermissionSet",
   "setTag",
   "removeTag",
   "registerModule",
