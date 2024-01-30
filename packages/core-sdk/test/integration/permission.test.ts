@@ -28,7 +28,10 @@ describe("Permission Functions", () => {
         client.permission.setPermission({
           ipAsset: "0x0F710802c59255110874c58d9051e545f6e75D96",
           signer: "0x9A3A5EdDDFEe1E3A1BBef6Fdf0850B10D4979405",
-          to: "0x32f0471E404096B978248d0ECE3A8998D87a4b67",
+          to:
+            (process.env.LICENSE_REGISTRY as string) ||
+            (process.env.NEXT_PUBLIC_LICENSE_REGISTRY as string) ||
+            "0x4B8d88967Fd4f2FFF1c85c74DA20cCcF62Cb6e47",
           func: "0x00000000",
           permission: 1,
           txOptions: {
