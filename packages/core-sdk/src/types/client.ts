@@ -11,6 +11,7 @@ import { LicenseClient } from "../resources/license";
 import { LicenseReadOnlyClient } from "../resources/licenseReadOnly";
 import { PolicyClient } from "../resources/policy";
 import { PolicyReadOnlyClient } from "../resources/policyReadOnly";
+import { TaggingReadOnlyClient } from "../resources/taggingReadOnly";
 
 export interface ReadOnlyClient {
   ipAsset: IPAssetReadOnlyClient;
@@ -18,6 +19,7 @@ export interface ReadOnlyClient {
   license: LicenseReadOnlyClient;
   policy: PolicyReadOnlyClient;
   transaction: TransactionReadOnlyClient;
+  tagging: TaggingReadOnlyClient;
   module: ModuleReadOnlyClient;
 }
 

@@ -43,6 +43,14 @@ describe("Test StoryClient", function () {
         expect(transaction1).to.be.equal(transaction2);
       });
     });
+
+    describe("Test platform getter", function () {
+      it("should return the same platform client when every time it's called", function () {
+        const platform1 = client.platform;
+        const platform2 = client.platform;
+        expect(platform1).to.be.equal(platform2);
+      });
+    });
   });
 
   // describe("Test ipOrg getter w/o creating a client", function () {

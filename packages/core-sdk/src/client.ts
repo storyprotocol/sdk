@@ -34,7 +34,7 @@ export class StoryClient {
   private readonly rpcClient: PublicClient;
   private readonly wallet?: WalletClient;
 
-  private _ipAccount: IPAssetClient | IPAssetReadOnlyClient | null = null;
+  private _ipAsset: IPAssetClient | IPAssetReadOnlyClient | null = null;
   private _permission: PermissionClient | PermissionReadOnlyClient | null = null;
   private _license: LicenseClient | LicenseReadOnlyClient | null = null;
   private _policy: PolicyClient | PolicyReadOnlyClient | null = null;
@@ -98,13 +98,13 @@ export class StoryClient {
   }
 
   public get ipAsset(): IPAssetClient | IPAssetReadOnlyClient {
-    if (this._ipAccount === null) {
-      this._ipAccount = this.isReadOnly
+    if (this._ipAsset === null) {
+      this._ipAsset = this.isReadOnly
         ? new IPAssetReadOnlyClient(this.httpClient, this.rpcClient)
         : new IPAssetClient(this.httpClient, this.rpcClient, this.wallet!);
     }
 
-    return this._ipAccount;
+    return this._ipAsset;
   }
 
   public get permission(): PermissionClient | PermissionReadOnlyClient {
