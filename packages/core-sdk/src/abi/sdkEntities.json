@@ -13,5 +13,10 @@
   "execute",
   "isValidSigner",
   "IPAccountRegistered",
-  "IPRegistered"
+  "IPRegistered",
+  "mintLicense",
+  "transfer",
+  "LicenseMinted",
+  "LicenseBurnt",
+  "PolicyAddedToIpId"
 ]
