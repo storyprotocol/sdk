@@ -31,7 +31,7 @@ describe("Tagging Indexer Functions", () => {
 
     it("should be able to get a tag by it's tag id", async () => {
       const getTagRequest: GetTagRequest = {
-        id: "0xeae93c26ec1b50xc4-testTag",
+        id: "0xeae93c26ec1b50xc4",
       };
       const response = await client.tagging.get(getTagRequest);
 
