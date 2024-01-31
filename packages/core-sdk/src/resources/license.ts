@@ -2,10 +2,10 @@ import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
-import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { parseToBigInt } from "../utils/utils";
 import { LicenseReadOnlyClient } from "./licenseReadOnly";
 import { IPAccountImplMerged } from "../abi/ipAccountImpl.abi";
-import { LicenseRegistryConfig, LicenseRegistryRaw } from "../abi/licenseRegistry.abi";
+import { LicenseRegistryRaw } from "../abi/licenseRegistry.abi";
 import {
   linkIpToParentRequest,
   linkIpToParentResponse,
