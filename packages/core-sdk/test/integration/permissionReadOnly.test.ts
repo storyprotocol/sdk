@@ -1,12 +1,5 @@
 import { expect } from "chai";
-import {
-  StoryClient,
-  StoryReadOnlyConfig,
-  ReadOnlyClient,
-  ListTransactionRequest,
-  ResourceType,
-  Transaction,
-} from "../../src";
+import { StoryClient, StoryReadOnlyConfig, ReadOnlyClient } from "../../src";
 import { ListPermissionsRequest, Permission } from "../../src/types/resources/permission";
 
 describe("Permission client integration tests", function () {
@@ -58,9 +51,7 @@ describe("Permission client integration tests", function () {
   describe("Get Permission", async function () {
     it("should return permission from request permission id", async function () {
       const response = await client.permission.get({
-        permissionId:
-          (process.env.TEST_PERMISSION_ID as string) ||
-          "0x06cb17d43f16ad5cc3cd7757296fa87ce7ac741d-0x6c88f438cbfd9866dcd067ffe18b951f19b968da-0x0baa92f82d8992ff152047f29084079c263be7f7-0xa2b4192f",
+        permissionId: (process.env.TEST_PERMISSION_ID as string) || "0xb94a00bafe17e0x24",
       });
 
       expect(response).to.have.property("data");
