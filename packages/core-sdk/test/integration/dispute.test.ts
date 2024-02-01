@@ -3,7 +3,7 @@ import { StoryClient, StoryConfig, Client, AddressZero } from "../../src";
 import { Hex, http, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe.only("Dispute Functions", () => {
+describe("Dispute Functions", () => {
   let client: Client;
   let senderAddress: string;
 
