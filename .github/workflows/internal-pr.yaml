@@ -21,6 +21,7 @@ jobs:
       IP_ACCOUNT_REGISTRY: ${{ secrets.IP_ACCOUNT_REGISTRY }}
       REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }}
       TAGGING_MODULE: ${{ secrets.TAGGING_MODULE }}
+      DISPUTE_MODULE: ${{ secrets.DISPUTE_MODULE }}
       LICENSE_REGISTRY: ${{ secrets.LICENSE_REGISTRY }}
       ACCESS_CONTROLLER: ${{ secrets.ACCESS_CONTROLLER }}
       API_BASE_URL: ${{ secrets.API_BASE_URL }}
