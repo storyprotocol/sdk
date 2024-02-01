@@ -3,17 +3,17 @@ export default [
     inputs: [
       {
         internalType: "address",
-        name: "to_",
+        name: "to",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "value_",
+        name: "value",
         type: "uint256",
       },
       {
         internalType: "bytes",
-        name: "data_",
+        name: "data",
         type: "bytes",
       },
     ],

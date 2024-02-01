@@ -19,5 +19,10 @@
   "transfer",
   "LicenseMinted",
   "LicenseBurnt",
-  "PolicyAddedToIpId"
+  "PolicyAddedToIpId",
+  "whitelistDisputeTags",
+  "whitelistArbitrationPolicy",
+  "whitelistArbitrationRelayer",
+  "raiseDispute",
+  "setDisputeJudgement"
 ]
