@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 import { QueryOptions, TxOptions } from "../options";
 
 export type License = {
@@ -24,7 +26,8 @@ export type ListLicensesResponse = {
 
 export type mintLicenseRequest = {
   policyId: string;
-  licensorIp: string;
+  licensorIps: Address[];
+
   mintAmount: string;
   receiverAddress: string;
   txOptions?: TxOptions;
@@ -32,7 +35,7 @@ export type mintLicenseRequest = {
 
 export type mintLicenseResponse = {
   txHash: string;
-  // licenseId?: number;
+  licenseId?: string;
   // isNew?: boolean;
 };
 

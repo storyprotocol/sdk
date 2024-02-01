@@ -3,10 +3,7 @@ import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem
 
 import { handleError } from "../utils/errors";
 import { LicenseRegistryConfig, LicenseRegistryRaw } from "../abi/licenseRegistry.abi";
-import {
-  parseToBigInt,
-  // waitTxAndFilterLog
-} from "../utils/utils";
+import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { PolicyReadOnlyClient } from "./policyReadOnly";
 import {
   addPolicyRequest,
@@ -93,18 +90,17 @@ export class PolicyClient extends PolicyReadOnlyClient {
 
       const txHash = await this.wallet.writeContract(call);
       // TODO: the emit event doesn't return anything
-      // if (request.txOptions?.waitForTransaction) {
-      //   await waitTxAndFilterLog(this.rpcClient, txHash, {
-      //     ...AccessControllerConfig,
-      //     eventName: "PermissionSet",
-      //   });
-      //   return { txHash: txHash };
-      // } else {
-
-      return { txHash: txHash };
+      if (request.txOptions?.waitForTransaction) {
+        await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...LicenseRegistryConfig,
+          eventName: "PolicyAddedToIpId",
+        });
+        return { txHash: txHash };
+      } else {
+        return { txHash: txHash };
+      }
     } catch (error) {
       handleError(error, "Failed to add policy to IP");
     }
-    // TODO: use getIpAccount to get the ipId
   }
 }

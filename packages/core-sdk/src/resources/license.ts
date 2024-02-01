@@ -2,15 +2,15 @@ import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
-import { parseToBigInt } from "../utils/utils";
+import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { LicenseReadOnlyClient } from "./licenseReadOnly";
 import { IPAccountImplMerged } from "../abi/ipAccountImpl.abi";
-import { LicenseRegistryRaw } from "../abi/licenseRegistry.abi";
+import { LicenseRegistryConfig, LicenseRegistryRaw } from "../abi/licenseRegistry.abi";
 import {
   linkIpToParentRequest,
   linkIpToParentResponse,
-  // mintLicenseRequest,
-  // mintLicenseResponse,
+  mintLicenseRequest,
+  mintLicenseResponse,
   // transferRequest,
   // transferResponse,
 } from "../types/resources/license";
@@ -23,51 +23,50 @@ export class LicenseClient extends LicenseReadOnlyClient {
     this.wallet = wallet;
   }
 
-  // public async mintLicense(request: mintLicenseRequest): Promise<mintLicenseResponse> {
-  //   try {
-  //     const IPAccountConfig = {
-  //       abi: IPAccountImplMerged,
-  //       address: getAddress(request.licensorIp),
-  //     };
+  public async mintLicense(request: mintLicenseRequest): Promise<mintLicenseResponse> {
+    try {
+      const IPAccountConfig = {
+        abi: IPAccountImplMerged,
+        // TODO: find out which ipId to use to call the execute fn
+        address: getAddress(request.licensorIps[0]),
+      };
 
-  //     const licenseRegistry = getAddress(
-  //       process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
-  //     );
+      const licenseRegistry = getAddress(
+        process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
+      );
 
-  //     const { request: call } = await this.rpcClient.simulateContract({
-  //       ...IPAccountConfig,
-  //       functionName: "execute",
-  //       args: [
-  //         licenseRegistry,
-  //         0,
-  //         encodeFunctionData({
-  //           abi: LicenseRegistryRaw,
-  //           functionName: "mintLicense",
-  //           args: [
-  //             request.policyId,
-  //             request.licensorIp,
-  //             request.mintAmount,
-  //             request.receiverAddress,
-  //             // TODO:
-  //           ],
-  //         }),
-  //       ],
-  //       account: this.wallet.account,
-  //     });
-  //     const txHash = await this.wallet.writeContract(call);
-  //     // if (request.txOptions?.waitForTransaction) {
-  //     //   const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-  //     //     ...LicenseRegistryConfig,
-  //     //     eventName: "LicenseMinted",
-  //     //   });
-  //     //   return { txHash: txHash, licenseId: targetLog?.args.account.toString() };
-  //     // } else {
-  //     return { txHash: txHash };
-  //     // }
-  //   } catch (error) {
-  //     handleError(error, "Failed to mint license");
-  //   }
-  // }
+      const { request: call } = await this.rpcClient.simulateContract({
+        ...IPAccountConfig,
+        functionName: "execute",
+        args: [
+          licenseRegistry,
+          0,
+          encodeFunctionData({
+            abi: LicenseRegistryRaw,
+            functionName: "mintLicense",
+            args: [
+              { policyId: parseToBigInt(request.policyId), licensorIpIds: request.licensorIps },
+              parseToBigInt(request.mintAmount),
+              getAddress(request.receiverAddress),
+            ],
+          }),
+        ],
+        account: this.wallet.account,
+      });
+      const txHash = await this.wallet.writeContract(call);
+      if (request.txOptions?.waitForTransaction) {
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...LicenseRegistryConfig,
+          eventName: "LicenseMinted",
+        });
+        return { txHash: txHash, licenseId: targetLog?.args?.licenseId.toString() };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to mint license");
+    }
+  }
 
   public async linkIpToParent(request: linkIpToParentRequest): Promise<linkIpToParentResponse> {
     try {
