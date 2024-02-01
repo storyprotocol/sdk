@@ -25,6 +25,9 @@ on:
       RPC_PROVIDER_URL:
         required: true
       WALLET_PRIVATE_KEY:
+        required: true
+      DISPUTE_MODULE:
+        required: true
 
 jobs:
   build:
