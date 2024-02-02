@@ -7,6 +7,7 @@ import { PermissionReadOnlyClient } from "../resources/permissionReadOnly";
 import { TransactionClient } from "../resources/transaction";
 import { TransactionReadOnlyClient } from "../resources/transactionReadOnly";
 import { PlatformClient } from "../utils/platform";
+import { DisputeClient } from "../resources/dispute";
 
 export interface ReadOnlyClient {
   ipAsset: IPAssetReadOnlyClient;
@@ -21,4 +22,5 @@ export interface Client {
   transaction: TransactionClient;
   platform: PlatformClient;
   tagging: TaggingClient;
+  dispute: DisputeClient;
 }

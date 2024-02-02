@@ -34,9 +34,9 @@ export default [
             type: "uint256",
           },
           {
-            internalType: "address[]",
-            name: "licensorIpIds",
-            type: "address[]",
+            internalType: "address",
+            name: "licensorIpId",
+            type: "address",
           },
         ],
         indexed: false,
@@ -69,6 +69,18 @@ export default [
         name: "policyId",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "setByLinking",
+        type: "bool",
+      },
     ],
     name: "PolicyAddedToIpId",
     type: "event",
@@ -78,28 +90,28 @@ export default [
       {
         components: [
           {
+            internalType: "bool",
+            name: "commercialUse",
+            type: "bool",
+          },
+          {
+            internalType: "bool",
+            name: "derivatives",
+            type: "bool",
+          },
+          {
             internalType: "uint256",
             name: "frameworkId",
             type: "uint256",
           },
           {
-            internalType: "bytes[]",
-            name: "mintingParamValues",
-            type: "bytes[]",
+            internalType: "bytes32[]",
+            name: "paramNames",
+            type: "bytes32[]",
           },
           {
             internalType: "bytes[]",
-            name: "activationParamValues",
-            type: "bytes[]",
-          },
-          {
-            internalType: "bool",
-            name: "needsActivation",
-            type: "bool",
-          },
-          {
-            internalType: "bytes[]",
-            name: "linkParentParamValues",
+            name: "paramValues",
             type: "bytes[]",
           },
         ],
@@ -115,10 +127,66 @@ export default [
         name: "policyId",
         type: "uint256",
       },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "ipId",
+        type: "address",
+      },
+      {
+        components: [
+          {
+            internalType: "bool",
+            name: "commercialUse",
+            type: "bool",
+          },
+          {
+            internalType: "bool",
+            name: "derivatives",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "frameworkId",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "paramNames",
+            type: "bytes32[]",
+          },
+          {
+            internalType: "bytes[]",
+            name: "paramValues",
+            type: "bytes[]",
+          },
+        ],
+        internalType: "struct Licensing.Policy",
+        name: "pol",
+        type: "tuple",
+      },
+    ],
+    name: "addPolicyToIp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "policyId",
+        type: "uint256",
+      },
       {
         internalType: "bool",
         name: "isNew",
         type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "indexOnIpId",
+        type: "uint256",
       },
     ],
     stateMutability: "nonpayable",
@@ -139,67 +207,6 @@ export default [
     ],
     name: "addPolicyToIp",
     outputs: [
-      {
-        internalType: "uint256",
-        name: "indexOnIpId",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "ipId",
-        type: "address",
-      },
-      {
-        components: [
-          {
-            internalType: "uint256",
-            name: "frameworkId",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes[]",
-            name: "mintingParamValues",
-            type: "bytes[]",
-          },
-          {
-            internalType: "bytes[]",
-            name: "activationParamValues",
-            type: "bytes[]",
-          },
-          {
-            internalType: "bool",
-            name: "needsActivation",
-            type: "bool",
-          },
-          {
-            internalType: "bytes[]",
-            name: "linkParentParamValues",
-            type: "bytes[]",
-          },
-        ],
-        internalType: "struct Licensing.Policy",
-        name: "pol",
-        type: "tuple",
-      },
-    ],
-    name: "addPolicyToIp",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "policyId",
-        type: "uint256",
-      },
-      {
-        internalType: "bool",
-        name: "isNew",
-        type: "bool",
-      },
       {
         internalType: "uint256",
         name: "indexOnIpId",
@@ -235,21 +242,14 @@ export default [
   {
     inputs: [
       {
-        components: [
-          {
-            internalType: "uint256",
-            name: "policyId",
-            type: "uint256",
-          },
-          {
-            internalType: "address[]",
-            name: "licensorIpIds",
-            type: "address[]",
-          },
-        ],
-        internalType: "struct Licensing.License",
-        name: "licenseData",
-        type: "tuple",
+        internalType: "uint256",
+        name: "policyId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "licensorIp",
+        type: "address",
       },
       {
         internalType: "uint256",

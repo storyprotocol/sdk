@@ -22,14 +22,14 @@ export default [
         type: "string",
       },
       {
-        internalType: "string",
-        name: "ipDescription",
-        type: "string",
-      },
-      {
         internalType: "bytes32",
         name: "contentHash",
         type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "externalURL",
+        type: "string",
       },
     ],
     name: "registerDerivativeIp",
