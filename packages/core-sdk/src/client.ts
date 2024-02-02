@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from "axios";
 import { createPublicClient, createWalletClient, http, PublicClient, WalletClient } from "viem";
-import { sepolia } from "viem/chains";
 import * as dotenv from "dotenv";
 
 import { StoryConfig, StoryReadOnlyConfig } from "./types/config";
@@ -18,6 +17,7 @@ import { PermissionClient } from "./resources/permission";
 import { PermissionReadOnlyClient } from "./resources/permissionReadOnly";
 import { DisputeClient } from "./resources/dispute";
 import { DisputeReadOnlyClient } from "./resources/disputeReadOnly";
+import { chainStringToViemChain } from "./utils/utils";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -49,7 +49,7 @@ export class StoryClient {
     this.isReadOnly = isReadOnly;
 
     const clientConfig = {
-      chain: this.config.chain || sepolia,
+      chain: chainStringToViemChain(this.config.chainId || "sepolia"),
       transport: this.config.transport || http(process.env.RPC_PROVIDER_URL),
     };
 

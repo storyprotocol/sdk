@@ -1,27 +1,38 @@
 import { expect } from "chai";
 import { StoryClient, ReadOnlyClient } from "../../src";
-import { fantom } from "viem/chains";
 import { http } from "viem";
 
 describe("Test StoryReadOnlyClient", function () {
   describe("Test constructor", function () {
-    it("should succeed when passing in valid params", function () {
-      try {
-        StoryClient.newReadOnlyClient({});
-      } catch (error) {
-        expect.fail(`Function should not have thrown any error, but it threw: ${error}`);
-      }
+    it("should succeed when passing in default params", function () {
+      const client = StoryClient.newReadOnlyClient({});
+      expect(client).to.be.instanceOf(StoryClient);
+    });
+    it("should succeed when passing in chainId = '1' ", function () {
+      const client = StoryClient.newReadOnlyClient({ chainId: "1" });
+      expect(client).to.be.instanceOf(StoryClient);
+    });
+    it("should succeed when passing in chainId = 'mainnet' ", function () {
+      const client = StoryClient.newReadOnlyClient({ chainId: "mainnet" });
+      expect(client).to.be.instanceOf(StoryClient);
+    });
+    it("should succeed when passing in chainId = '11155111' ", function () {
+      const client = StoryClient.newReadOnlyClient({ chainId: "11155111" });
+      expect(client).to.be.instanceOf(StoryClient);
+    });
+    it("should succeed when passing in chainId = 'sepolia' ", function () {
+      const client = StoryClient.newReadOnlyClient({ chainId: "sepolia" });
+      expect(client).to.be.instanceOf(StoryClient);
     });
 
-    it("should succeed when passing in valid params w/ provider", function () {
-      try {
+    it("should fail when passing in unsupported chain ID", function () {
+      expect(() =>
         StoryClient.newReadOnlyClient({
-          chain: fantom,
+          //@ts-ignore
+          chainId: "fantom",
           transport: http(process.env.RPC_PROVIDER_URL),
-        });
-      } catch (error) {
-        expect.fail(`Function should not have thrown any error, but it threw: ${error}`);
-      }
+        }),
+      ).to.throw(`chainId fantom not supported`);
     });
   });
 
@@ -40,35 +51,4 @@ describe("Test StoryReadOnlyClient", function () {
       });
     });
   });
-
-  // describe("Test getters w/ provider", function () {
-  //   let client: ReadOnlyClient;
-
-  //   beforeEach(function () {
-  //     client = StoryClient.newReadOnlyClient({
-  //       environment: Environment.TEST,
-  //       provider: new providers.JsonRpcProvider(),
-  //     });
-  //   });
-
-  //   describe("Test franchise getter w/ provider", function () {
-  //     it("should return the same franchise when every time it's called", function () {
-  //       const franchise1 = client.franchise;
-  //       const franchise2 = client.franchise;
-  //       expect(franchise1).to.be.equal(franchise2);
-  //     });
-  //   });
-  // });
-
-  // describe("Test franchise getter w/o creating a client", function () {
-  //   let client: ReadOnlyClient;
-
-  //   it("should throw error when a client hasn't been created", function () {
-  //     try {
-  //       client.franchise;
-
-  //       expect.fail(`You haven't created a client yet.`);
-  //     } catch (error) {}
-  //   });
-  // });
 });
