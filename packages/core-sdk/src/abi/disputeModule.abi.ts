@@ -1,7 +1,12 @@
 import { formatAbi } from "abitype";
 import { getAddress } from "viem";
+import * as dotenv from "dotenv";
 
 import DisputeModuleABI from "./json/DisputeModule.abi";
+
+if (typeof process !== "undefined") {
+  dotenv.config();
+}
 
 export const DisputeModuleRaw = DisputeModuleABI;
 export const DisputeModuleReadable = formatAbi(DisputeModuleRaw);
