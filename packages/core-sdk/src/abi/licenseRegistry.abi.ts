@@ -3,10 +3,12 @@ import { getAddress } from "viem";
 
 import LicenseRegistryABI from "./json/LicenseRegistry.abi";
 
-export const licenseRegistryRaw = LicenseRegistryABI;
-export const licenseRegistryReadable = formatAbi(licenseRegistryRaw);
+export const LicenseRegistryRaw = LicenseRegistryABI;
+export const LicenseRegistryReadable = formatAbi(LicenseRegistryRaw);
 
-export const licenseRegistryConfig = {
-  abi: licenseRegistryRaw,
-  address: getAddress(process.env.NEXT_PUBLIC_LICENSE_REGISTRY_CONTRACT!),
+export const LicenseRegistryConfig = {
+  abi: LicenseRegistryRaw,
+  address: getAddress(
+    process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
+  ),
 };

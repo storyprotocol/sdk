@@ -1,57 +1,69 @@
 export default [
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: false,
         internalType: "uint256",
-        name: "ipAssetId",
+        name: "licenseId",
         type: "uint256",
       },
       {
-        indexed: true,
         internalType: "address",
-        name: "ipOrg",
+        name: "tokenContract",
         type: "address",
       },
       {
-        indexed: false,
         internalType: "uint256",
-        name: "ipOrgAssetId",
+        name: "tokenId",
         type: "uint256",
       },
       {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: false,
         internalType: "string",
-        name: "name",
+        name: "ipName",
         type: "string",
       },
       {
-        indexed: true,
-        internalType: "uint8",
-        name: "ipOrgAssetType",
-        type: "uint8",
+        internalType: "string",
+        name: "ipDescription",
+        type: "string",
       },
       {
-        indexed: false,
         internalType: "bytes32",
-        name: "hash",
+        name: "contentHash",
         type: "bytes32",
       },
+    ],
+    name: "registerDerivativeIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
       {
-        indexed: false,
-        internalType: "string",
-        name: "mediaUrl",
-        type: "string",
+        internalType: "uint256",
+        name: "policyId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "tokenContract",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
       },
     ],
-    name: "IPAssetRegistered",
-    type: "event",
+    name: "registerRootIp",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
   },
 ] as const;

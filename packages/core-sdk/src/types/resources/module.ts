@@ -1,18 +1,13 @@
-import { Hook } from "./hook";
 import { QueryOptions } from "../options";
 
 /**
- * Core data model for Module.
+ * Core data model for modules.
  *
  * @public
  */
 export type Module = {
-  id: string;
-  ipOrgId: string;
-  moduleKey: string;
-  interface?: string;
-  preHooks?: Hook[];
-  postHooks?: Hook[];
+  name: string;
+  module: `0x${string}`;
 };
 
 /**
@@ -21,7 +16,7 @@ export type Module = {
  * @public
  */
 export type GetModuleRequest = {
-  moduleId: string;
+  name: string;
 };
 
 /**
@@ -30,16 +25,15 @@ export type GetModuleRequest = {
  * @public
  */
 export type GetModuleResponse = {
-  module: Module;
+  data: Module;
 };
 
 /**
- * Request type for module.list method.
+ * Response type for module.list method.
  *
  * @public
  */
 export type ListModuleRequest = {
-  ipOrgId?: string;
   options?: QueryOptions;
 };
 
@@ -49,5 +43,5 @@ export type ListModuleRequest = {
  * @public
  */
 export type ListModuleResponse = {
-  modules: Module[];
+  data: Module[];
 };

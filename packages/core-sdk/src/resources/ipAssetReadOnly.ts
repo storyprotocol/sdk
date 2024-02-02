@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios";
-import { PublicClient } from "viem";
+import { PublicClient, isAddress } from "viem";
 
 import {
   GetIpAssetRequest,
@@ -8,7 +8,6 @@ import {
   ListIpAssetResponse,
 } from "../types/resources/ipAsset";
 import { handleError } from "../utils/errors";
-import { isIntegerString } from "../utils/utils";
 
 /**
  * IPAssetReadOnlyClient allows you to view and search IP Assets on Story Protocol.
@@ -30,28 +29,29 @@ export class IPAssetReadOnlyClient {
    */
   public async get(request: GetIpAssetRequest): Promise<GetIpAssetResponse> {
     try {
-      if (!isIntegerString(request.ipAssetId)) {
-        throw new Error(`Invalid IP Asset id. Must be an integer. But get: ${request.ipAssetId}`);
+      if (!isAddress(request.ipId)) {
+        throw new Error(`Invalid ip id. Must be an address. But get: ${request.ipId}`);
       }
-
-      const response = await this.httpClient.get(`/protocol/ipasset/${request.ipAssetId}`);
+      const response = await this.httpClient.get(`/accounts/${request.ipId}`);
       return response.data as GetIpAssetResponse;
     } catch (error: unknown) {
-      handleError(error, "Failed to get IP Asset");
+      handleError(error, "Failed to get IP account");
     }
   }
 
   /**
-   * List IP assets.
+   * List IP accounts.
    *
    * @returns the response object that contains results from listing query.
    */
   public async list(request?: ListIpAssetRequest): Promise<ListIpAssetResponse> {
     try {
-      const response = await this.httpClient.post(`/protocol/ipasset`, request || {});
+      const response = await this.httpClient.post(`/accounts`, request || {});
       return response.data as ListIpAssetResponse;
     } catch (error) {
       handleError(error, "Failed to list IP Asset.");
     }
   }
+
+  public async getIpId() {}
 }

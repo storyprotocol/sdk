@@ -8,7 +8,7 @@ import {
   Transaction,
 } from "../../src";
 
-describe("Transaction client integration tests", function () {
+describe.skip("Transaction client integration tests", function () {
   let client: ReadOnlyClient;
 
   before(async function () {

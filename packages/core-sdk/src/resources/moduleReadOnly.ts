@@ -22,14 +22,14 @@ export class ModuleReadOnlyClient {
   }
 
   /**
-   * Get module data based on the specified module id.
+   * Get an module based on the module name.
    *
-   * @param request - the request object for getting the module
-   * @returns the response object that contains the fetched module object
+   * @param request - the request object for getting a module.
+   * @returns the response object the contains the fetched module.
    */
   public async get(request: GetModuleRequest): Promise<GetModuleResponse> {
     try {
-      const response = await this.httpClient.get(`/protocol/module/${request.moduleId}`);
+      const response = await this.httpClient.get(`/modules/${request.name}`);
       return response.data as GetModuleResponse;
     } catch (error: unknown) {
       handleError(error, "Failed to get module");
@@ -37,20 +37,16 @@ export class ModuleReadOnlyClient {
   }
 
   /**
-   * List Modules.
+   * List modules.
    *
-   * @returns the response object that contains a list of modules
+   * @returns the response object that contains results from listing query.
    */
   public async list(request?: ListModuleRequest): Promise<ListModuleResponse> {
     try {
-      const response = await this.httpClient.post(`/protocol/module`, request || {}, {
-        params: {
-          ipOrgId: request?.ipOrgId,
-        },
-      });
+      const response = await this.httpClient.post(`/modules`, request || {});
       return response.data as ListModuleResponse;
-    } catch (error: unknown) {
-      handleError(error, `Failed to list modules`);
+    } catch (error) {
+      handleError(error, "Failed to list modules.");
     }
   }
 }
