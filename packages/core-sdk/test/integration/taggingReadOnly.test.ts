@@ -10,6 +10,7 @@ describe("Tagging Indexer Functions", () => {
 
   before(function () {
     const config: StoryConfig = {
+      chainId: "sepolia",
       transport: http(process.env.RPC_PROVIDER_URL),
       account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
     };
