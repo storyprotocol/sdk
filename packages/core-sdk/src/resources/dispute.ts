@@ -78,7 +78,7 @@ export class DisputeClient extends DisputeReadOnlyClient {
           request.arbitrationPolicy,
           request.linkToDisputeEvidence,
           stringToHex(request.targetTag, { size: 32 }),
-          request.calldata ? request.calldata : "",
+          request.calldata ? request.calldata : "0x",
         ],
       });
 
@@ -97,7 +97,11 @@ export class DisputeClient extends DisputeReadOnlyClient {
       const { request: call } = await this.rpcClient.simulateContract({
         ...DisputeModuleConfig,
         functionName: "setDisputeJudgement",
-        args: [request.disputeId, request.decision, request.calldata ? request.calldata : ""],
+        args: [
+          BigInt(request.disputeId),
+          request.decision,
+          request.calldata ? request.calldata : "0x",
+        ],
       });
 
       const txHash = await this.wallet.writeContract(call);
@@ -145,7 +149,7 @@ type RaiseDisputeRequest = {
   arbitrationPolicy: `0x${string}`;
   linkToDisputeEvidence: string;
   targetTag: string;
-  calldata?: string;
+  calldata?: `0x${string}`;
   txOptions?: TxOptions;
 };
 
@@ -156,7 +160,7 @@ type RaiseDisputeResponse = {
 type SetDisputeJudgementRequest = {
   disputeId: number;
   decision: boolean;
-  calldata?: string;
+  calldata?: `0x${string}`;
   txOptions?: TxOptions;
 };
 
