@@ -5,19 +5,23 @@ Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for d
 ## How to use Story Protocol SDK in Your Project
 
 ### Install Story Protocol core SDK
+
 Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following command to install the package:
 
 Use `npm`:
+
 ```
 npm install --save @story-protocol/core-sdk viem
 ```
 
 Use `pnpm`:
+
 ```
 pnpm install @story-protocol/core-sdk viem
 ```
 
 Use `yarn`:
+
 ```
 yarn add @story-protocol/core-sdk viem
 ```
@@ -57,39 +61,38 @@ Next, we need create a client to access Story Protocol by using private key or f
 Here is the way to create a Story Protocol client with the private key:
 
 ```typescript
-import { privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount } from 'viem/accounts';
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x";
+const PRIVATE_KEY = process.env.PRIVATE_KEY || '0x';
 const account = privateKeyToAccount(PRIVATE_KEY as `0x${string}`);
 
-// Instantiate the Story Client for readonly operations, using default 
+// Instantiate the Story Client for readonly operations, using default
 export const realonlyClient = StoryClient.newReadOnlyClient({});
 
 // Instantiate the Story Client, test environment required for alpha release.
 // The private key is also required for written operations.
-export const client = StoryClient.newClient({account});
+export const client = StoryClient.newClient({ account });
 ```
 
 Here is the way to create a Story Protocol with wallet app:
 
 ```typescript
-import { createWalletClient, custom } from 'viem'
-import { sepolia } from 'viem/chains'
+import { createWalletClient, custom } from 'viem';
 
 const walletClient = createWalletClient({
-  chain: sepolia,
-  transport: custom(window.ethereum)
-})
+  chainId: 'sepolia',
+  transport: custom(window.ethereum),
+});
 
 // Retrieve the first account for eth_requestAccounts method
-const account = await walletClient.requestAddresses()[0]
+const account = await walletClient.requestAddresses()[0];
 
-// Instantiate the Story Client for readonly operations, using default 
+// Instantiate the Story Client for readonly operations, using default
 export const realonlyClient = StoryClient.newReadOnlyClient({});
 
 // Instantiate the Story Client, test environment required for alpha release.
 // The private key is also required for written operations.
-export const client = StoryClient.newClient({account});
+export const client = StoryClient.newClient({ account });
 ```
 
 ### Use `Client` or `ReadOnlyClient` to access Story Protocol
@@ -104,32 +107,40 @@ This section provides the instructions on how to build Story Protocol SDK from s
 
 ### Prerequisite
 
-* Install PNPM: Execute `npm install -g pnpm`
-* Install TypeScript: Run `pnpm add typescript -D`
-* Install Yalc: Use `npm install -g yalc`
+- Install PNPM: Execute `npm install -g pnpm`
+- Install TypeScript: Run `pnpm add typescript -D`
+- Install Yalc: Use `npm install -g yalc`
 
 ### Steps for Using Yalc for Local Testing of Core-SDK
+
 For manual testing of the core-sdk, set up a separate web project. The guide below uses `yalc` to link the `core-sdk` locally, enabling its installation and import for testing.
 
 Under the `typescript-sdk/packages/core-sdk` directory:
-* Navigate to the `core-sdk` directory.
-* Execute `npm run build` to build your latest code.
-* Run `yalc publish`. You should see a message like `@story-protocol/core-sdk@<version> published in store.` (Note: The version number may vary).
+
+- Navigate to the `core-sdk` directory.
+- Execute `npm run build` to build your latest code.
+- Run `yalc publish`. You should see a message like `@story-protocol/core-sdk@<version> published in store.` (Note: The version number may vary).
 
 To set up your testing environment (e.g., a new Next.js project), use `yalc add @story-protocol/core-sdk@<version>` (ensure the version number is updated accordingly).
-* Run `pnpm install`. This installs `@story-protocol/core-sdk@<version>` with your local changes.
+
+- Run `pnpm install`. This installs `@story-protocol/core-sdk@<version>` with your local changes.
 
 ### Steps to Refresh the Changes
+
 Under the `typescript-sdk/packages/core-sdk` directory:
-* Execute `npm run build` to build your latest code.
-* Run `yalc push`.
+
+- Execute `npm run build` to build your latest code.
+- Run `yalc push`.
 
 In your testing environment:
-* Run `yalc update` to pull the latest changes.
+
+- Run `yalc update` to pull the latest changes.
 
 ## Steps to pull and compile latest smart contract ABIs (Currently pulls from the protocol-contracts `dev` branch)
+
 Must have `solc` installed (https://docs.soliditylang.org/en/v0.8.9/installing-solidity.html)
-* run `make compile_contracts`
+
+- run `make compile_contracts`
 
 ## Release
 
@@ -149,4 +160,3 @@ Please make sure to update tests as appropriate.
 [MIT License](/LICENSE.md)
 
 ## Contact Us
-

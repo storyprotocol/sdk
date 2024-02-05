@@ -25,6 +25,9 @@ on:
       RPC_PROVIDER_URL:
         required: true
       WALLET_PRIVATE_KEY:
+        required: true
+      DISPUTE_MODULE:
+        required: true
 
 jobs:
   build:
@@ -41,6 +44,7 @@ jobs:
       NEXT_PUBLIC_IP_ACCOUNT_REGISTRY: ${{ secrets.IP_ACCOUNT_REGISTRY }}
       NEXT_PUBLIC_REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }}
       NEXT_PUBLIC_TAGGING_MODULE: ${{ secrets.TAGGING_MODULE }}
+      NEXT_PUBLIC_DISPUTE_MODULE: ${{ secrets.DISPUTE_MODULE }}
       NEXT_PUBLIC_LICENSE_REGISTRY: ${{ secrets.LICENSE_REGISTRY }}
       NEXT_PUBLIC_ACCESS_CONTROLLER: ${{ secrets.ACCESS_CONTROLLER }}
       RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}

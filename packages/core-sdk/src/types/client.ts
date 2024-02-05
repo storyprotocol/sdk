@@ -12,6 +12,7 @@ import { LicenseReadOnlyClient } from "../resources/licenseReadOnly";
 import { PolicyClient } from "../resources/policy";
 import { PolicyReadOnlyClient } from "../resources/policyReadOnly";
 import { TaggingReadOnlyClient } from "../resources/taggingReadOnly";
+import { DisputeClient } from "../resources/dispute";
 
 export interface ReadOnlyClient {
   ipAsset: IPAssetReadOnlyClient;
@@ -31,4 +32,5 @@ export interface Client {
   transaction: TransactionClient;
   platform: PlatformClient;
   tagging: TaggingClient;
+  dispute: DisputeClient;
 }

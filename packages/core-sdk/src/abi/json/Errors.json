@@ -41,7 +41,32 @@
   },
   {
     "inputs": [],
+    "name": "BaseParamVerifier__Unauthorized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DerivativesParamVerifier__InvalidDerivativesConfig",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DerivativesParamVerifier__ZeroShare",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DisputeModule__NotAbleToResolve",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "DisputeModule__NotDisputeInitiator",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DisputeModule__NotInDisputeState",
     "type": "error"
   },
   {
@@ -76,7 +101,58 @@
   },
   {
     "inputs": [],
-    "name": "DisputeModule__ZeroLinkToDisputeSummary",
+    "name": "DisputeModule__ZeroLinkToDisputeEvidence",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Governance__InconsistentState",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Governance__NewStateIsTheSameWithOldState",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Governance__OnlyProtocolAdmin",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Governance__ProtocolPaused",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "interfaceName",
+        "type": "string"
+      }
+    ],
+    "name": "Governance__UnsupportedInterface",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Governance__ZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IPAccount__ExpiredSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IPAccount__InvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IPAccount__InvalidSigner",
     "type": "error"
   },
   {
@@ -126,6 +202,11 @@
   },
   {
     "inputs": [],
+    "name": "LicenseRegistry__InvalidLicensor",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "LicenseRegistry__InvalidParamVerifierType",
     "type": "error"
   },
@@ -141,12 +222,28 @@
   },
   {
     "inputs": [],
-    "name": "LicenseRegistry__MintParamFailed",
+    "name": "LicenseRegistry__NotLicensee",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "LicenseRegistry__NotLicensee",
+    "name": "LicenseRegistry__ParamVerifierAlreadySet",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "verifierType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "verifier",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__ParamVerifierFailed",
     "type": "error"
   },
   {
@@ -161,12 +258,22 @@
   },
   {
     "inputs": [],
+    "name": "LicenseRegistry__PolicyAlreadyAdded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "LicenseRegistry__PolicyAlreadySetForIpId",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "LicenseRegistry__PolicyNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MetadataProvider_Unauthorized",
     "type": "error"
   },
   {

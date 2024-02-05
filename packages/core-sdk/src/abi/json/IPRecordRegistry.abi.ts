@@ -32,6 +32,12 @@ export default [
         name: "resolver",
         type: "address",
       },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "provider",
+        type: "address",
+      },
     ],
     name: "IPRegistered",
     type: "event",

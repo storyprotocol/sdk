@@ -1,10 +1,19 @@
 import { Hash } from "viem/types/misc";
 import { DecodeEventLogReturnType } from "viem/_types/utils/abi/decodeEventLog";
-import { Abi, decodeEventLog, PublicClient, encodeAbiParameters, parseAbiParameters } from "viem";
+import {
+  Abi,
+  decodeEventLog,
+  PublicClient,
+  encodeAbiParameters,
+  parseAbiParameters,
+  Chain,
+} from "viem";
 import { InferEventName } from "viem/types/contract";
+import { mainnet, polygonMumbai, sepolia } from "viem/chains";
 
 import { Hex, TypedData } from "../types/common";
 import { DERIVATIVES_ALLOWED_OPTIONS, PARAMS_TAG } from "../constants/license";
+import { SupportedChainIds } from "../types/config";
 
 export function isIntegerString(s: string): boolean {
   const num = Number(s);
@@ -176,4 +185,21 @@ export function paramsTagValueDecoder(paramTag: Hex, paramValue: unknown) {
   }
 
   return { tag: parsedTag, value, type };
+}
+
+export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
+  switch (chainId) {
+    case "1":
+    case "mainnet":
+      return mainnet;
+    case "11155111":
+    case "sepolia":
+      return sepolia;
+    case "80001":
+    case "mumbai":
+    case "polygonMumbai":
+      return polygonMumbai;
+    default:
+      throw new Error(`chainId ${chainId as string} not supported`);
+  }
 }

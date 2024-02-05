@@ -1,4 +1,18 @@
-import { Account, Chain, Transport } from "viem";
+import { Account, Transport } from "viem";
+
+/**
+ * Supported chains. For convenience, both name or chain ID are supported.
+ *
+ * @public
+ */
+export type SupportedChainIds =
+  | "11155111"
+  | "sepolia"
+  | "1"
+  | "mainnet"
+  | "80001"
+  | "mumbai"
+  | "polygonMumbai";
 
 /**
  * Configuration for the SDK Client.
@@ -15,6 +29,6 @@ export interface StoryConfig extends StoryReadOnlyConfig {
  * @public
  */
 export interface StoryReadOnlyConfig {
-  readonly chain?: Chain;
+  readonly chainId?: SupportedChainIds;
   readonly transport?: Transport;
 }

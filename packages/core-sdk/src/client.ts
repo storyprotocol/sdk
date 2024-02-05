@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from "axios";
 import { createPublicClient, createWalletClient, http, PublicClient, WalletClient } from "viem";
-import { sepolia } from "viem/chains";
 import * as dotenv from "dotenv";
 
 import { StoryConfig, StoryReadOnlyConfig } from "./types/config";
@@ -20,6 +19,9 @@ import { LicenseReadOnlyClient } from "./resources/licenseReadOnly";
 import { PolicyReadOnlyClient } from "./resources/policyReadOnly";
 import { LicenseClient } from "./resources/license";
 import { PolicyClient } from "./resources/policy";
+import { DisputeClient } from "./resources/dispute";
+import { DisputeReadOnlyClient } from "./resources/disputeReadOnly";
+import { chainStringToViemChain } from "./utils/utils";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -42,6 +44,7 @@ export class StoryClient {
   private _platform: PlatformClient | null = null;
   private _module: ModuleReadOnlyClient | null = null;
   private _tagging: TaggingClient | TaggingReadOnlyClient | null = null;
+  private _dispute: DisputeClient | DisputeReadOnlyClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -52,7 +55,7 @@ export class StoryClient {
     this.isReadOnly = isReadOnly;
 
     const clientConfig = {
-      chain: this.config.chain || sepolia,
+      chain: chainStringToViemChain(this.config.chainId || "sepolia"),
       transport: this.config.transport || http(process.env.RPC_PROVIDER_URL),
     };
 
@@ -167,6 +170,22 @@ export class StoryClient {
     }
 
     return this._tagging;
+  }
+
+  /**
+   * Getter for the dispute client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the DisputeReadOnlyClient or DisputeClient instance
+   */
+  public get dispute(): DisputeClient | DisputeReadOnlyClient {
+    if (this._dispute === null) {
+      this._dispute = this.isReadOnly
+        ? new DisputeReadOnlyClient(this.httpClient, this.rpcClient)
+        : new DisputeClient(this.httpClient, this.rpcClient, this.wallet!);
+    }
+
+    return this._dispute;
   }
 
   /**

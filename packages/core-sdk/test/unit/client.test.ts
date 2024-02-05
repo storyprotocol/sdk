@@ -5,23 +5,19 @@ import { Account } from "viem";
 
 describe("Test StoryClient", function () {
   describe("Test constructor", function () {
-    it("should succeed when passing in valid params", function () {
-      try {
-        StoryClient.newClient({
-          account: privateKeyToAccount(generatePrivateKey()),
-        });
-      } catch (error) {
-        expect.fail(`Function should not have thrown any error, but it threw: ${error}`);
-      }
+    it("should succeed when passing in default params", function () {
+      const client = StoryClient.newClient({
+        account: privateKeyToAccount(generatePrivateKey()),
+      });
+      expect(client).to.be.instanceOf(StoryClient);
     });
 
-    it("throw error when wallet account is null", function () {
-      try {
-        StoryClient.newClient({
+    it("should throw error when wallet account is null", function () {
+      expect(() => {
+        const client = StoryClient.newClient({
           account: null as any as Account,
         });
-        expect.fail(`Function should not get here, it should throw an error `);
-      } catch (error) {}
+      }).to.throw("account is null");
     });
   });
 

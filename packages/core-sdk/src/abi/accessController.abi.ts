@@ -1,7 +1,12 @@
 import { getAddress } from "viem";
+import * as dotenv from "dotenv";
 
 import AccessControllerABI from "./json/AccessController.abi";
 import errorsJson from "./json/Errors.json";
+
+if (typeof process !== "undefined") {
+  dotenv.config();
+}
 
 export const ErrorsAbi = errorsJson;
 
