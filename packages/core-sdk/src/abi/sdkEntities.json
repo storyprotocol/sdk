@@ -24,5 +24,7 @@
   "whitelistArbitrationPolicy",
   "whitelistArbitrationRelayer",
   "raiseDispute",
-  "setDisputeJudgement"
+  "setDisputeJudgement",
+  "cancelDispute",
+  "resolveDispute"
 ]

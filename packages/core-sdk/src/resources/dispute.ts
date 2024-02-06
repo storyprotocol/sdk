@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios";
-import { PublicClient, WalletClient, stringToHex } from "viem";
+import { PublicClient, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
 import { TxOptions } from "../types/options";
@@ -13,7 +13,7 @@ export class DisputeClient extends DisputeReadOnlyClient {
     super(httpClient, rpcClient);
     this.wallet = wallet;
   }
-
+  /*
   public async whitelistDisputeTags(
     request: WhitelistDisputeTagsRequest,
   ): Promise<WhitelistDisputeTagsResponse> {
@@ -31,7 +31,7 @@ export class DisputeClient extends DisputeReadOnlyClient {
       handleError(error, "Failed to whitelist dispute tags");
     }
   }
-
+*/
   public async whitelistArbitrationPolicy(
     request: WhitelistArbitrationPolicyRequest,
   ): Promise<WhitelistArbitrationPolicyResponse> {
@@ -67,7 +67,7 @@ export class DisputeClient extends DisputeReadOnlyClient {
       handleError(error, "Failed to whitelist arbitration relayer");
     }
   }
-
+  /*
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
@@ -89,7 +89,7 @@ export class DisputeClient extends DisputeReadOnlyClient {
       handleError(error, "Failed to raise dispute");
     }
   }
-
+*/
   public async setDisputeJudgement(
     request: SetDisputeJudgementRequest,
   ): Promise<SetDisputeJudgementResponse> {
@@ -113,16 +113,6 @@ export class DisputeClient extends DisputeReadOnlyClient {
   }
 }
 
-type WhitelistDisputeTagsResponse = {
-  txHash: string;
-};
-
-type WhitelistDisputeTagsRequest = {
-  tag: string;
-  allowed: boolean;
-  txOptions?: TxOptions;
-};
-
 type WhitelistArbitrationPolicyRequest = {
   arbitrationPolicy: `0x${string}`;
   allowed: boolean;
@@ -141,19 +131,6 @@ type WhitelistArbitrationRelayerRequest = {
 };
 
 type WhitelistArbitrationRelayerResponse = {
-  txHash: string;
-};
-
-type RaiseDisputeRequest = {
-  targetIpId: `0x${string}`;
-  arbitrationPolicy: `0x${string}`;
-  linkToDisputeEvidence: string;
-  targetTag: string;
-  calldata?: `0x${string}`;
-  txOptions?: TxOptions;
-};
-
-type RaiseDisputeResponse = {
   txHash: string;
 };
 
