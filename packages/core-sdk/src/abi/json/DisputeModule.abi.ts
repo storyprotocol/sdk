@@ -2,13 +2,26 @@ export default [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_targetIpId",
-        type: "address",
+        internalType: "uint256",
+        name: "_disputeId",
+        type: "uint256",
       },
       {
+        internalType: "bytes",
+        name: "_data",
+        type: "bytes",
+      },
+    ],
+    name: "cancelDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
-        name: "_arbitrationPolicy",
+        name: "_targetIpId",
         type: "address",
       },
       {
@@ -45,77 +58,8 @@ export default [
         name: "_disputeId",
         type: "uint256",
       },
-      {
-        internalType: "bool",
-        name: "_decision",
-        type: "bool",
-      },
-      {
-        internalType: "bytes",
-        name: "_data",
-        type: "bytes",
-      },
     ],
-    name: "setDisputeJudgement",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_arbitrationPolicy",
-        type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "_allowed",
-        type: "bool",
-      },
-    ],
-    name: "whitelistArbitrationPolicy",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_arbitrationPolicy",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_arbPolicyRelayer",
-        type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "_allowed",
-        type: "bool",
-      },
-    ],
-    name: "whitelistArbitrationRelayer",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "_tag",
-        type: "bytes32",
-      },
-      {
-        internalType: "bool",
-        name: "_allowed",
-        type: "bool",
-      },
-    ],
-    name: "whitelistDisputeTags",
+    name: "resolveDispute",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
