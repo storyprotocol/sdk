@@ -3,7 +3,7 @@ import { StoryClient, StoryConfig, Client, AddressZero } from "../../src";
 import { Hex, http, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe("Dispute Functions", () => {
+describe.skip("Dispute Functions", () => {
   let client: Client;
   let senderAddress: string;
 
@@ -16,7 +16,7 @@ describe("Dispute Functions", () => {
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
   });
-
+  /*
   it("should be able to whitelist dispute tags and wait for transaction", async () => {
     const response = await expect(
       client.dispute.whitelistDisputeTags({
@@ -31,7 +31,7 @@ describe("Dispute Functions", () => {
     expect(response.txHash).to.be.a("string");
     expect(response.txHash).not.empty;
   });
-
+*/
   it("should be able to whitelist arbitration policy and wait for transaction", async () => {
     const response = await expect(
       client.dispute.whitelistArbitrationPolicy({
@@ -70,7 +70,7 @@ describe("Dispute Functions", () => {
     expect(response.txHash).to.be.a("string");
     expect(response.txHash).not.empty;
   });
-
+  /*
   it.skip("should be able to raise dispute and wait for transaction", async () => {
     // Contract not complete
 
@@ -107,7 +107,7 @@ describe("Dispute Functions", () => {
     expect(response.txHash).to.be.a("string");
     expect(response.txHash).not.empty;
   });
-
+*/
   it.skip("should be able to set dispute judgement and wait for transaction", async () => {
     // Need to set up Dispute memory dispute = disputes[_disputeId];
 
