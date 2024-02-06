@@ -547,11 +547,6 @@ export default [
   },
   {
     inputs: [],
-    name: "MetadataProvider_Unauthorized",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "ModuleRegistry__ModuleAddressNotContract",
     type: "error",
   },

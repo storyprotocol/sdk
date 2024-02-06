@@ -32,12 +32,6 @@ export default [
         name: "isInherited",
         type: "bool",
       },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "provider",
-        type: "address",
-      },
     ],
     name: "PolicyAddedToIpId",
     type: "event",

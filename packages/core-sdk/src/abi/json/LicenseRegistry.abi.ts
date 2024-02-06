@@ -65,57 +65,6 @@ export default [
         name: "licensorIp",
         type: "address",
       },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "ipId",
-        type: "address",
-      },
-      {
-        components: [
-          {
-            internalType: "bool",
-            name: "commercialUse",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "derivatives",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "frameworkId",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes32[]",
-            name: "paramNames",
-            type: "bytes32[]",
-          },
-          {
-            internalType: "bytes[]",
-            name: "paramValues",
-            type: "bytes[]",
-          },
-        ],
-        internalType: "struct Licensing.Policy",
-        name: "pol",
-        type: "tuple",
-      },
-    ],
-    name: "addPolicyToIp",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "policyId",
-        type: "uint256",
-      },
       {
         internalType: "bool",
         name: "transferable",
