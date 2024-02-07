@@ -1,18 +1,14 @@
-import { PublicClient, WalletClient, stringToHex } from "viem";
+import { PublicClient, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
 import { DisputeModuleConfig } from "../abi/disputeModule.abi";
 import {
-  RaiseDisputeRequest,
-  RaiseDisputeResponse,
   SetDisputeJudgementRequest,
   SetDisputeJudgementResponse,
   WhitelistArbitrationPolicyRequest,
   WhitelistArbitrationPolicyResponse,
   WhitelistArbitrationRelayerRequest,
   WhitelistArbitrationRelayerResponse,
-  WhitelistDisputeTagsRequest,
-  WhitelistDisputeTagsResponse,
 } from "../types/resources/dispute";
 
 export class DisputeClient {
@@ -23,7 +19,7 @@ export class DisputeClient {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
-
+  /*
   public async whitelistDisputeTags(
     request: WhitelistDisputeTagsRequest,
   ): Promise<WhitelistDisputeTagsResponse> {
@@ -41,7 +37,7 @@ export class DisputeClient {
       handleError(error, "Failed to whitelist dispute tags");
     }
   }
-
+*/
   public async whitelistArbitrationPolicy(
     request: WhitelistArbitrationPolicyRequest,
   ): Promise<WhitelistArbitrationPolicyResponse> {
@@ -77,7 +73,7 @@ export class DisputeClient {
       handleError(error, "Failed to whitelist arbitration relayer");
     }
   }
-
+  /*
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
@@ -99,7 +95,7 @@ export class DisputeClient {
       handleError(error, "Failed to raise dispute");
     }
   }
-
+*/
   public async setDisputeJudgement(
     request: SetDisputeJudgementRequest,
   ): Promise<SetDisputeJudgementResponse> {

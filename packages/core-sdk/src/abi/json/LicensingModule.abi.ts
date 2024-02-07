@@ -5,53 +5,60 @@ export default [
       {
         indexed: true,
         internalType: "address",
-        name: "creator",
+        name: "caller",
         type: "address",
       },
       {
         indexed: true,
         internalType: "address",
-        name: "receiver",
+        name: "ipId",
         type: "address",
       },
       {
         indexed: true,
         internalType: "uint256",
-        name: "licenseId",
+        name: "policyId",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "index",
         type: "uint256",
       },
       {
-        components: [
-          {
-            internalType: "uint256",
-            name: "policyId",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "licensorIpId",
-            type: "address",
-          },
-          {
-            internalType: "bool",
-            name: "transferable",
-            type: "bool",
-          },
-        ],
         indexed: false,
-        internalType: "struct Licensing.License",
-        name: "licenseData",
-        type: "tuple",
+        internalType: "bool",
+        name: "isInherited",
+        type: "bool",
       },
     ],
-    name: "LicenseMinted",
+    name: "PolicyAddedToIpId",
     type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "ipId",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "polId",
+        type: "uint256",
+      },
+    ],
+    name: "addPolicyToIp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "indexOnIpId",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [
@@ -64,11 +71,6 @@ export default [
         internalType: "address",
         name: "licensorIp",
         type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "transferable",
-        type: "bool",
       },
       {
         internalType: "uint256",

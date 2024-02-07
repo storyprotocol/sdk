@@ -2,9 +2,9 @@ export default [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "licenseId",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "licenseIds",
+        type: "uint256[]",
       },
       {
         internalType: "address",
@@ -31,6 +31,11 @@ export default [
         name: "externalURL",
         type: "string",
       },
+      {
+        internalType: "uint32",
+        name: "minRoyalty",
+        type: "uint32",
+      },
     ],
     name: "registerDerivativeIp",
     outputs: [],
@@ -53,6 +58,11 @@ export default [
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "metadata",
+        type: "bytes",
       },
     ],
     name: "registerRootIp",

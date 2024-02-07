@@ -2,13 +2,26 @@ export default [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_targetIpId",
-        type: "address",
+        internalType: "uint256",
+        name: "_disputeId",
+        type: "uint256",
       },
       {
+        internalType: "bytes",
+        name: "_data",
+        type: "bytes",
+      },
+    ],
+    name: "cancelDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
-        name: "_arbitrationPolicy",
+        name: "_targetIpId",
         type: "address",
       },
       {
@@ -35,6 +48,19 @@ export default [
         type: "uint256",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_disputeId",
+        type: "uint256",
+      },
+    ],
+    name: "resolveDispute",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -98,24 +124,6 @@ export default [
       },
     ],
     name: "whitelistArbitrationRelayer",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "_tag",
-        type: "bytes32",
-      },
-      {
-        internalType: "bool",
-        name: "_allowed",
-        type: "bool",
-      },
-    ],
-    name: "whitelistDisputeTags",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
