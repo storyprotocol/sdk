@@ -1,19 +1,18 @@
-import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
-import { PermissionReadOnlyClient } from "./permissionReadOnly";
 import { IPAccountImplMerged } from "../abi/ipAccountImpl.abi";
 import { AccessControllerABImerged } from "../abi/accessController.abi";
 
 // import { HashZero } from "../constants/common";
 
-export class PermissionClient extends PermissionReadOnlyClient {
+export class PermissionClient {
   private readonly wallet: WalletClient;
+  private readonly rpcClient: PublicClient;
 
-  constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
-    super(httpClient, rpcClient);
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+    this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
 

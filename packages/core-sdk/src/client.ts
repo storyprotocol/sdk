@@ -1,23 +1,14 @@
-import axios, { AxiosInstance } from "axios";
 import { createPublicClient, createWalletClient, http, PublicClient, WalletClient } from "viem";
+import axios, { AxiosInstance } from "axios";
 import * as dotenv from "dotenv";
 
-import { StoryConfig, StoryReadOnlyConfig } from "./types/config";
-import { TransactionClient } from "./resources/transaction";
-import { TransactionReadOnlyClient } from "./resources/transactionReadOnly";
-import { HTTP_TIMEOUT } from "./constants/http";
-import { Client, ReadOnlyClient } from "./types/client";
-import { PlatformClient } from "./utils/platform";
-import { ModuleReadOnlyClient } from "./resources/moduleReadOnly";
+import { StoryConfig } from "./types/config";
 import { TaggingClient } from "./resources/tagging";
-import { TaggingReadOnlyClient } from "./resources/taggingReadOnly";
 import { IPAssetClient } from "./resources/ipAsset";
-import { IPAssetReadOnlyClient } from "./resources/ipAssetReadOnly";
 import { PermissionClient } from "./resources/permission";
-import { PermissionReadOnlyClient } from "./resources/permissionReadOnly";
 import { DisputeClient } from "./resources/dispute";
-import { DisputeReadOnlyClient } from "./resources/disputeReadOnly";
 import { chainStringToViemChain } from "./utils/utils";
+import { PlatformClient } from "./utils/platform";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -26,27 +17,30 @@ if (typeof process !== "undefined") {
  * The StoryClient is the main entry point for the SDK.
  */
 export class StoryClient {
-  private readonly config: StoryConfig | StoryReadOnlyConfig;
-  private readonly httpClient: AxiosInstance;
-  private readonly isReadOnly: boolean = false;
+  private readonly config: StoryConfig;
   private readonly rpcClient: PublicClient;
-  private readonly wallet?: WalletClient;
+  private readonly wallet: WalletClient;
+  private readonly httpClient: AxiosInstance;
 
-  private _ipAccount: IPAssetClient | IPAssetReadOnlyClient | null = null;
-  private _permission: PermissionClient | PermissionReadOnlyClient | null = null;
-  private _transaction: TransactionClient | TransactionReadOnlyClient | null = null;
+  private _ipAccount: IPAssetClient | null = null;
+  private _permission: PermissionClient | null = null;
   private _platform: PlatformClient | null = null;
-  private _module: ModuleReadOnlyClient | null = null;
-  private _tagging: TaggingClient | TaggingReadOnlyClient | null = null;
-  private _dispute: DisputeClient | DisputeReadOnlyClient | null = null;
+  private _tagging: TaggingClient | null = null;
+  private _dispute: DisputeClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
-   * @param isReadOnly
    */
-  private constructor(config: StoryConfig | StoryReadOnlyConfig, isReadOnly: boolean = false) {
+  private constructor(config: StoryConfig) {
     this.config = config;
-    this.isReadOnly = isReadOnly;
+
+    this.httpClient = axios.create({
+      baseURL: "https://stag.api.storyprotocol.net",
+      timeout: 5000,
+      headers: {
+        version: "v0-alpha",
+      },
+    });
 
     const clientConfig = {
       chain: chainStringToViemChain(this.config.chainId || "sepolia"),
@@ -55,92 +49,51 @@ export class StoryClient {
 
     this.rpcClient = createPublicClient(clientConfig);
 
-    if (!isReadOnly) {
-      const account = (this.config as StoryConfig).account;
-      if (!account) {
-        throw new Error("account is null");
-      }
-
-      this.wallet = createWalletClient({
-        ...clientConfig,
-        account: account,
-      });
+    const account = this.config.account;
+    if (!account) {
+      throw new Error("account is null");
     }
 
-    this.httpClient = axios.create({
-      baseURL: process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL,
-      timeout: HTTP_TIMEOUT,
-      headers: {
-        version: "v0-alpha",
-      },
+    this.wallet = createWalletClient({
+      ...clientConfig,
+      account: account,
     });
-  }
-
-  /**
-   * Factory method for creating a read only SDK client.
-   *
-   * @param config - the configuration for a read only SDK client
-   */
-  static newReadOnlyClient(config: StoryReadOnlyConfig): ReadOnlyClient {
-    return new StoryClient(config, true) as ReadOnlyClient;
   }
 
   /**
    * Factory method for creating a SDK client with a signer.
    *
-   * @param config - the configuration for a new read/write SDK client
+   * @param config - the configuration for a new SDK client
    */
-  static newClient(config: StoryConfig): Client {
-    return new StoryClient(config, false) as Client;
+  static newClient(config: StoryConfig): StoryClient {
+    return new StoryClient(config);
   }
 
-  public get ipAsset(): IPAssetClient | IPAssetReadOnlyClient {
+  public get ipAsset(): IPAssetClient {
     if (this._ipAccount === null) {
-      this._ipAccount = this.isReadOnly
-        ? new IPAssetReadOnlyClient(this.httpClient, this.rpcClient)
-        : new IPAssetClient(this.httpClient, this.rpcClient, this.wallet!);
+      this._ipAccount = new IPAssetClient(this.rpcClient, this.wallet);
     }
 
     return this._ipAccount;
   }
 
-  public get permission(): PermissionClient | PermissionReadOnlyClient {
+  public get permission(): PermissionClient {
     if (this._permission === null) {
-      this._permission = this.isReadOnly
-        ? new PermissionReadOnlyClient(this.httpClient, this.rpcClient)
-        : new PermissionClient(this.httpClient, this.rpcClient, this.wallet!);
+      this._permission = new PermissionClient(this.rpcClient, this.wallet);
     }
 
     return this._permission;
   }
 
   /**
-   * Getter for the transaction client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the TransactionReadOnlyClient or TransactionClient instance
-   */
-  public get transaction(): TransactionClient | TransactionReadOnlyClient {
-    if (this._transaction === null) {
-      this._transaction = this.isReadOnly
-        ? new TransactionReadOnlyClient(this.httpClient, this.rpcClient)
-        : new TransactionClient(this.httpClient, this.rpcClient, this.wallet!);
-    }
-
-    return this._transaction;
-  }
-
-  /**
    * Getter for the tagging client. The client is lazily created when
    * this method is called.
    *
-   * @returns the TaggingReadOnlyClient or TaggingClient instance
+   * @returns the TaggingClient instance
    */
-  public get tagging(): TaggingClient | TaggingReadOnlyClient {
+  public get tagging(): TaggingClient {
     if (this._tagging === null) {
-      this._tagging = this.isReadOnly
-        ? new TaggingReadOnlyClient(this.httpClient, this.rpcClient)
-        : new TaggingClient(this.httpClient, this.rpcClient, this.wallet!);
+      this._tagging = new TaggingClient(this.rpcClient, this.wallet);
     }
 
     return this._tagging;
@@ -150,13 +103,11 @@ export class StoryClient {
    * Getter for the dispute client. The client is lazily created when
    * this method is called.
    *
-   * @returns the DisputeReadOnlyClient or DisputeClient instance
+   * @returns the DisputeClient instance
    */
-  public get dispute(): DisputeClient | DisputeReadOnlyClient {
+  public get dispute(): DisputeClient {
     if (this._dispute === null) {
-      this._dispute = this.isReadOnly
-        ? new DisputeReadOnlyClient(this.httpClient, this.rpcClient)
-        : new DisputeClient(this.httpClient, this.rpcClient, this.wallet!);
+      this._dispute = new DisputeClient(this.rpcClient, this.wallet);
     }
 
     return this._dispute;
@@ -174,19 +125,5 @@ export class StoryClient {
     }
 
     return this._platform;
-  }
-
-  /**
-   * Getter for the module client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the Module instance
-   */
-  public get module(): ModuleReadOnlyClient {
-    if (this._module === null) {
-      this._module = new ModuleReadOnlyClient(this.httpClient, this.rpcClient);
-    }
-
-    return this._module;
   }
 }

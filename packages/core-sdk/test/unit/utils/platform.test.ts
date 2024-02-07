@@ -1,4 +1,3 @@
-import { AxiosInstance } from "axios";
 import * as sinon from "sinon";
 import { PlatformClient } from "../../../src";
 import chai from "chai";
@@ -6,6 +5,7 @@ import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { createMock, createFileReaderMock } from "../testUtils";
 import { PublicClient, WalletClient } from "viem";
+import { AxiosInstance } from "axios";
 
 chai.use(chaiAsPromised);
 

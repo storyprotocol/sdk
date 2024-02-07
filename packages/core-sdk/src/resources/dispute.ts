@@ -1,16 +1,26 @@
-import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, stringToHex } from "viem";
 
 import { handleError } from "../utils/errors";
-import { TxOptions } from "../types/options";
-import { DisputeReadOnlyClient } from "./disputeReadOnly";
 import { DisputeModuleConfig } from "../abi/disputeModule.abi";
+import {
+  RaiseDisputeRequest,
+  RaiseDisputeResponse,
+  SetDisputeJudgementRequest,
+  SetDisputeJudgementResponse,
+  WhitelistArbitrationPolicyRequest,
+  WhitelistArbitrationPolicyResponse,
+  WhitelistArbitrationRelayerRequest,
+  WhitelistArbitrationRelayerResponse,
+  WhitelistDisputeTagsRequest,
+  WhitelistDisputeTagsResponse,
+} from "../types/resources/dispute";
 
-export class DisputeClient extends DisputeReadOnlyClient {
+export class DisputeClient {
   private readonly wallet: WalletClient;
+  private readonly rpcClient: PublicClient;
 
-  constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
-    super(httpClient, rpcClient);
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+    this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
 
@@ -112,58 +122,3 @@ export class DisputeClient extends DisputeReadOnlyClient {
     }
   }
 }
-
-type WhitelistDisputeTagsResponse = {
-  txHash: string;
-};
-
-type WhitelistDisputeTagsRequest = {
-  tag: string;
-  allowed: boolean;
-  txOptions?: TxOptions;
-};
-
-type WhitelistArbitrationPolicyRequest = {
-  arbitrationPolicy: `0x${string}`;
-  allowed: boolean;
-  txOptions?: TxOptions;
-};
-
-type WhitelistArbitrationPolicyResponse = {
-  txHash: string;
-};
-
-type WhitelistArbitrationRelayerRequest = {
-  arbitrationPolicy: `0x${string}`;
-  arbitrationRelayer: `0x${string}`;
-  allowed: boolean;
-  txOptions?: TxOptions;
-};
-
-type WhitelistArbitrationRelayerResponse = {
-  txHash: string;
-};
-
-type RaiseDisputeRequest = {
-  targetIpId: `0x${string}`;
-  arbitrationPolicy: `0x${string}`;
-  linkToDisputeEvidence: string;
-  targetTag: string;
-  calldata?: `0x${string}`;
-  txOptions?: TxOptions;
-};
-
-type RaiseDisputeResponse = {
-  txHash: string;
-};
-
-type SetDisputeJudgementRequest = {
-  disputeId: number;
-  decision: boolean;
-  calldata?: `0x${string}`;
-  txOptions?: TxOptions;
-};
-
-type SetDisputeJudgementResponse = {
-  txHash: string;
-};
