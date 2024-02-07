@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig, Client, AddressZero } from "../../src";
-import { sepolia } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 

@@ -1,7 +1,5 @@
-import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress } from "viem";
 
-import { IPAssetReadOnlyClient } from "./ipAssetReadOnly";
 import { handleError } from "../utils/errors";
 import { IPAccountRegistryConfig } from "../abi/ipAccountRegistry.abi";
 import {
@@ -13,12 +11,13 @@ import {
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { RegistrationModuleConfig } from "../abi/registrationModule.abi";
 
-export class IPAssetClient extends IPAssetReadOnlyClient {
+export class IPAssetClient {
   private readonly wallet: WalletClient;
+  private readonly rpcClient: PublicClient;
 
-  constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
-    super(httpClient, rpcClient);
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
+    this.rpcClient = rpcClient;
   }
 
   /**
@@ -94,7 +93,7 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
   }
 
   // TODO: move to License resource
-  // public async createPolicy(request: addPolicyRequest): Promise<addPolicyResponse> {
+  // public async createPolicy(request: AddPolicyRequest): Promise<AddPolicyResponse> {
   //   try {
   //     const { request: call } = await this.rpcClient.simulateContract({
   //       ...LicenseRegistryConfig,
@@ -127,7 +126,7 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
   // }
 
   // TODO: move to License resource
-  // public async addPolicyToIp(request: addPolicyToIpRequest): Promise<addPolicyToIpResponse> {
+  // public async addPolicyToIp(request: AddPolicyToIpRequest): Promise<AddPolicyToIpResponse> {
   // TODO: use getIpAccount to get the ipId
   // }
 }

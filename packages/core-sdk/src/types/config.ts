@@ -19,16 +19,8 @@ export type SupportedChainIds =
  *
  * @public
  */
-export interface StoryConfig extends StoryReadOnlyConfig {
+export interface StoryConfig {
   readonly account: Account;
-}
-
-/**
- * Configuration for the read-only SDK Client.
- *
- * @public
- */
-export interface StoryReadOnlyConfig {
   readonly chainId?: SupportedChainIds;
   readonly transport?: Transport;
 }

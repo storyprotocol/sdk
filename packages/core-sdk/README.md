@@ -68,18 +68,3 @@ const signer = new ethers.Wallet(<YOUR PRIVATE KEY>, provider)
 const client = StoryClient.newClient({ signer })
 
 ```
-
-## Use SDK client
-
-```typescript
-// Create a new franchise
-const response = await client.franchise.create({
-  franchiseName: "Alice in Wonderland",
-  franchiseSymbol: "Wonderland",
-  franchiseDescription:
-    "Fantastical journey, curious girl, whimsical characters, dreamlike adventures.",
-});
-
-// List franchises
-const { data: franchise } = await client.franchise.list();
-```

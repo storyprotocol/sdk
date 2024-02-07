@@ -1,9 +1,7 @@
-import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
 import { TaggingModuleConfig } from "../abi/taggingModule.abi";
-import { TaggingReadOnlyClient } from "./taggingReadOnly";
 import {
   RemoveTagRequest,
   RemoveTagResponse,
@@ -11,11 +9,12 @@ import {
   SetTagResponse,
 } from "../types/resources/tagging";
 
-export class TaggingClient extends TaggingReadOnlyClient {
+export class TaggingClient {
   private readonly wallet: WalletClient;
+  private readonly rpcClient: PublicClient;
 
-  constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
-    super(httpClient, rpcClient);
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+    this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
 

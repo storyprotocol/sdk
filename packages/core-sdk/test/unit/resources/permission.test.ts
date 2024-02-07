@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { AxiosInstance } from "axios";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { PermissionClient, AddressZero } from "../../../src";
@@ -11,18 +10,16 @@ chai.use(chaiAsPromised);
 
 describe("Test Permission", function () {
   let permissionClient: PermissionClient;
-  let axiosMock: AxiosInstance;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
 
   beforeEach(function () {
-    axiosMock = createMock<AxiosInstance>();
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    permissionClient = new PermissionClient(axiosMock, rpcMock, walletMock);
+    permissionClient = new PermissionClient(rpcMock, walletMock);
   });
 
   afterEach(function () {

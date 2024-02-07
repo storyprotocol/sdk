@@ -1,80 +1,4 @@
-import { QueryOptions, TxOptions } from "../options";
-
-/**
- * Core data model for IP Org.
- *
- * @public
- */
-export type IPOrg = {
-  id: string;
-  name: string;
-  symbol: string;
-  owner: string;
-  baseUri?: string;
-  contractUri?: string;
-  ipAssetTypes: Array<string>;
-  createdAt: string; // ISO 8601
-  txHash: string;
-};
-
-/**
- * Request type for iporg.get method.
- *
- * @public
- */
-export type GetIPOrgRequest = {
-  ipOrgId: string;
-};
-
-/**
- * Response type for iporg.get method.
- *
- * @public
- */
-export type GetIPOrgResponse = {
-  ipOrg: IPOrg;
-};
-
-/**
- * Request type for iporg.create method.
- *
- * @public
- */
-export type CreateIPOrgRequest = {
-  name: string;
-  symbol: string;
-  owner?: string;
-  ipAssetTypes: Array<string>;
-  txOptions?: TxOptions;
-};
-
-/**
- * Response type for iporg.create method.
- *
- * @public
- */
-export type CreateIPOrgResponse = {
-  txHash: string;
-  ipOrgId?: string;
-};
-
-/**
- * Request type for iporg.list method.
- *
- * @public
- */
-export type ListIPOrgRequest = {
-  options?: QueryOptions;
-};
-
-/**
- * Response type for iporg.list method.
- *
- * @public
- */
-export type ListIPOrgResponse = {
-  ipOrgs: IPOrg[];
-};
+import { TxOptions } from "../options";
 
 // -----------------------------------------------------
 // IPAccountRegistry
@@ -86,22 +10,6 @@ export type IpAsset = {
   tokenContract: string;
   tokenId: number;
   metadataResolverAddress: string;
-};
-
-export type GetIpAssetRequest = {
-  ipId: string;
-};
-
-export type GetIpAssetResponse = {
-  data: IpAsset;
-};
-
-export type ListIpAssetRequest = {
-  options?: QueryOptions;
-};
-
-export type ListIpAssetResponse = {
-  data: IpAsset[];
 };
 
 export type RegisterIpAssetRequest = {
@@ -145,7 +53,7 @@ export type RegisterDerivativeIpResponse = {
 };
 
 // LicenseRegistry
-export type addPolicyRequest = {
+export type AddPolicyRequest = {
   frameworkId: string;
   mintingParamValues: string[];
   activationParamValues: string[];
@@ -156,17 +64,17 @@ export type addPolicyRequest = {
   txOptions?: TxOptions;
 };
 
-export type addPolicyToIpRequest = {
+export type AddPolicyToIpRequest = {
   ipId: string;
   policyId: string;
 };
 
-export type addPolicyResponse = {
+export type AddPolicyResponse = {
   txHash: string;
   policyId?: number;
   isNew?: boolean;
 };
 
-export type addPolicyToIpResponse = {
+export type AddPolicyToIpResponse = {
   indexOnIpId: number;
 };
