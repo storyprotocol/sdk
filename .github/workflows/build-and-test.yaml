@@ -14,11 +14,15 @@ on:
         required: true
       IP_ACCOUNT_REGISTRY:
         required: true
+      IP_ASSET_REGISTRY:
+        required: true
       REGISTRATION_MODULE:
         required: true
       TAGGING_MODULE:
         required: true
       LICENSE_REGISTRY:
+        required: true
+      LICENSING_MODULE:
         required: true
       ACCESS_CONTROLLER:
         required: true
@@ -42,10 +46,12 @@ jobs:
       # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       NEXT_PUBLIC_API_BASE_URL: ${{ secrets.API_BASE_URL }}
       NEXT_PUBLIC_IP_ACCOUNT_REGISTRY: ${{ secrets.IP_ACCOUNT_REGISTRY }}
+      NEXT_PUBLIC_IP_ASSET_REGISTRY: ${{ secrets.IP_ASSET_REGISTRY }}
       NEXT_PUBLIC_REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }}
       NEXT_PUBLIC_TAGGING_MODULE: ${{ secrets.TAGGING_MODULE }}
       NEXT_PUBLIC_DISPUTE_MODULE: ${{ secrets.DISPUTE_MODULE }}
       NEXT_PUBLIC_LICENSE_REGISTRY: ${{ secrets.LICENSE_REGISTRY }}
+      NEXT_PUBLIC_LICENSING_MODULE: ${{ secrets.LICENSING_MODULE }}
       NEXT_PUBLIC_ACCESS_CONTROLLER: ${{ secrets.ACCESS_CONTROLLER }}
       RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
