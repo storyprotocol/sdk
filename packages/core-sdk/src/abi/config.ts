@@ -7,6 +7,7 @@ import IPAccountImplABI from "./json/IPAccountImpl.abi";
 import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
 import LicenseRegistryABI from "./json/LicenseRegistry.abi";
 import LicensingModuleABI from "./json/LicensingModule.abi";
+import UMLPolicyFrameworkManagerABI from "./json/UMLPolicyFrameworkManager.abi";
 import RegistrationModuleABI from "./json/RegistrationModule.abi";
 import TaggingModuleABI from "./json/TaggingModule.abi";
 import ErrorsABI from "./json/Errors.abi";
@@ -60,4 +61,13 @@ export const RegistrationModuleConfig = {
 export const TaggingModuleConfig = {
   abi: [...TaggingModuleABI, ...ErrorsABI],
   address: getAddress(process.env.TAGGING_MODULE || process.env.NEXT_PUBLIC_TAGGING_MODULE || ""),
+};
+
+export const UMLPolicyFrameworkManagerConfig = {
+  abi: UMLPolicyFrameworkManagerABI,
+  address: getAddress(
+    process.env.UML_POLICY_FRAMEWORK_MANAGER ||
+      process.env.NEXT_PUBLIC_UML_POLICY_FRAMEWORK_MANAGER ||
+      "",
+  ),
 };

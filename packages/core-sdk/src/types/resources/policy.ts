@@ -25,15 +25,26 @@ export type Policy = {
 };
 
 // LicenseRegistry
-export type RegisterPolicyRequest = {
-  data: `0x${string}`;
+export type RegisterUMLPolicyRequest = {
   transferable: boolean;
-  // ipId: string;
-  // policyId: string;
+  royaltyPolicy: `0x${string}`;
+  attribution?: boolean;
+  commercialUse?: boolean;
+  commercialAttribution?: boolean;
+  commercialRevShare?: number;
+  derivativesAllowed?: boolean;
+  derivativesAttribution?: boolean;
+  derivativesApproval?: boolean;
+  derivativesReciprocal?: boolean;
+  derivativesRevShare?: number;
+  territories?: string[];
+  distributionChannels?: string[];
+  contentRestrictions?: string[];
+  commercializers?: string[];
   txOptions?: TxOptions;
 };
 
-export type RegisterPolicyResponse = {
+export type RegisterUMLPolicyResponse = {
   txHash: string;
   policyId?: string;
 };
