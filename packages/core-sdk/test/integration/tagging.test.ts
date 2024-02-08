@@ -18,8 +18,8 @@ describe("Tagging Functions", () => {
     client = StoryClient.newClient(config);
   });
 
-  describe("Set Tag", async function () {
-    it("should be able to set tag and wait for transaction", async () => {
+  describe("[Write Functions] SDK should be able to", async function () {
+    it("set tag and wait for transaction", async () => {
       const response = await expect(
         client.tagging.setTag({
           tag: "testTag",
@@ -34,7 +34,7 @@ describe("Tagging Functions", () => {
       expect(response.txHash).not.empty;
     });
 
-    it("should be able to call set tag without waiting for transaction", async () => {
+    it("call set tag without waiting for transaction and still receive transaction hash", async () => {
       const response = await expect(
         client.tagging.setTag({
           tag: "testTag",
@@ -63,7 +63,7 @@ describe("Tagging Functions", () => {
       ).to.be.rejected;
     });
 
-    it("should be able to remove tag", async () => {
+    it("remove tag", async () => {
       // Set tag first, then remove it
       const tagString = "bad-tag69";
       const ipId = "0xabCc2421F927c128B9F5a94B612F4541C8E624B6";
@@ -88,6 +88,46 @@ describe("Tagging Functions", () => {
 
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
+    });
+  });
+
+  describe("[Read Functions] SDK should be able to", async function () {
+    it("read isTagged", async () => {
+      const response = await client.tagging.readIsTagged({
+        tag: "testTag",
+        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
+      });
+      expect(response).to.equal(true);
+      expect(response).to.be.a("boolean");
+    });
+
+    it("read totalTagsForIp", async () => {
+      const response = await client.tagging.readTotalTagsForIp({
+        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
+      });
+      expect(response).to.equal(BigInt(1));
+      expect(response).to.be.a("bigint");
+    });
+
+    it("read tagAtIndexForIp", async () => {
+      const response = await client.tagging.readTagAtIndexForIp({
+        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
+        index: 0,
+      });
+
+      expect(response).to.equal(
+        "0x7465737454616700000000000000000000000000000000000000000000000007",
+      );
+      expect(response).to.be.a("string");
+    });
+    it("read tagStringAtIndexForIp", async () => {
+      const response = await client.tagging.readTagStringAtIndexForIp({
+        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
+        index: 0,
+      });
+
+      expect(response).to.equal("testTag");
+      expect(response).to.be.a("string");
     });
   });
 });
