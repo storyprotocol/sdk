@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig, Client, AddressZero } from "../../src";
+import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 describe("Permission Functions", () => {
-  let client: Client;
+  let client: StoryClient;
   let senderAddress: string;
 
   before(function () {

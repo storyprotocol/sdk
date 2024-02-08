@@ -1,4 +1,4 @@
-import { QueryOptions, TxOptions } from "../options";
+import { TxOptions } from "../options";
 
 export type setPermissionsRequest = {
   ipAsset: string;
@@ -22,20 +22,4 @@ export type Permission = {
 
 export type setPermissionsResponse = {
   txHash: string;
-};
-
-export type GetPermissionRequest = {
-  permissionId: string;
-};
-
-export type GetPermissionResponse = {
-  data: Permission;
-};
-
-export type ListPermissionsRequest = {
-  options: QueryOptions;
-};
-
-export type ListPermissionsResponse = {
-  data: Permission[];
 };

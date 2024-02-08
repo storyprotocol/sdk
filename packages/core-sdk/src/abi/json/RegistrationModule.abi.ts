@@ -73,9 +73,19 @@ export default [
         type: "uint256",
       },
       {
-        internalType: "bytes",
-        name: "metadata",
-        type: "bytes",
+        internalType: "string",
+        name: "ipName",
+        type: "string",
+      },
+      {
+        internalType: "bytes32",
+        name: "contentHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "externalURL",
+        type: "string",
       },
     ],
     name: "registerRootIp",

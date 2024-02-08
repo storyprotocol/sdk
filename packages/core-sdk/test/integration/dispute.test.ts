@@ -1,7 +1,8 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig, Client, AddressZero } from "../../src";
 import { Hex, http, stringToHex, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+
+import { StoryClient, StoryConfig, AddressZero } from "../../src";
 import {
   CancelDisputeRequest,
   RaiseDisputeRequest,
@@ -10,7 +11,7 @@ import {
 } from "../../src/types/resources/dispute";
 
 describe("Dispute Functions", () => {
-  let client: Client;
+  let client: StoryClient;
   let senderAddress: string;
 
   before(function () {
