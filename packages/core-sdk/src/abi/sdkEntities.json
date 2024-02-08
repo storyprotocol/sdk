@@ -20,11 +20,17 @@
   "LicenseMinted",
   "LicenseBurnt",
   "PolicyAddedToIpId",
-  "whitelistDisputeTags",
-  "whitelistArbitrationPolicy",
-  "whitelistArbitrationRelayer",
   "raiseDispute",
   "setDisputeJudgement",
   "cancelDispute",
-  "resolveDispute"
+  "resolveDispute",
+  "setArbitrationPolicy",
+  "disputes",
+  "isWhitelistedArbitrationPolicy",
+  "isWhitelistedArbitrationRelayer",
+  "isWhitelistedDisputeTag",
+  "arbitrationPolicies",
+  "baseArbitrationPolicy",
+  "disputeId",
+  "name"
 ]
