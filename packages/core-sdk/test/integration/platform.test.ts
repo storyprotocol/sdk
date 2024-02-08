@@ -1,11 +1,11 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig, Client } from "../../src";
+import { StoryClient, StoryConfig } from "../../src";
 import { createFileReaderMock } from "../unit/testUtils";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 describe.skip("Platform client integration tests", () => {
-  let client: Client;
+  let client: StoryClient;
   before(() => {
     global.FileReader = createFileReaderMock(
       "data:base64,dGVzdCBzdHJpbmcgYmxvYg==",

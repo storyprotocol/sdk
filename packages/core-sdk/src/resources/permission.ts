@@ -2,8 +2,8 @@ import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from 
 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
-import { IPAccountImplMerged } from "../abi/ipAccountImpl.abi";
-import { AccessControllerABImerged } from "../abi/accessController.abi";
+import { IPAccountABI, AccessControllerConfig } from "../abi/config";
+import { parseToBigInt } from "../utils/utils";
 
 // import { HashZero } from "../constants/common";
 
@@ -25,7 +25,7 @@ export class PermissionClient {
   public async setPermission(request: setPermissionsRequest): Promise<setPermissionsResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountImplMerged,
+        abi: IPAccountABI,
         address: getAddress(request.ipAsset),
       };
       const accessController = getAddress(
@@ -36,9 +36,9 @@ export class PermissionClient {
         functionName: "execute",
         args: [
           accessController,
-          0,
+          parseToBigInt(0),
           encodeFunctionData({
-            abi: AccessControllerABImerged,
+            abi: AccessControllerConfig.abi,
             functionName: "setPermission",
             args: [
               getAddress(request.ipAsset), // 0x Address

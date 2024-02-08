@@ -6,6 +6,8 @@ import { StoryConfig } from "./types/config";
 import { TaggingClient } from "./resources/tagging";
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
+import { LicenseClient } from "./resources/license";
+import { PolicyClient } from "./resources/policy";
 import { DisputeClient } from "./resources/dispute";
 import { chainStringToViemChain } from "./utils/utils";
 import { PlatformClient } from "./utils/platform";
@@ -24,6 +26,8 @@ export class StoryClient {
 
   private _ipAccount: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
+  private _license: LicenseClient | null = null;
+  private _policy: PolicyClient | null = null;
   private _platform: PlatformClient | null = null;
   private _tagging: TaggingClient | null = null;
   private _dispute: DisputeClient | null = null;
@@ -83,6 +87,22 @@ export class StoryClient {
     }
 
     return this._permission;
+  }
+
+  public get license(): LicenseClient {
+    if (this._license === null) {
+      this._license = new LicenseClient(this.rpcClient, this.wallet);
+    }
+
+    return this._license;
+  }
+
+  public get policy(): PolicyClient {
+    if (this._policy === null) {
+      this._policy = new PolicyClient(this.rpcClient, this.wallet);
+    }
+
+    return this._policy;
   }
 
   /**

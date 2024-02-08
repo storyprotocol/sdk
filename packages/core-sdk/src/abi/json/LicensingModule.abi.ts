@@ -15,6 +15,31 @@ export default [
         type: "address",
       },
       {
+        indexed: false,
+        internalType: "address[]",
+        name: "parentIpIds",
+        type: "address[]",
+      },
+    ],
+    name: "IpIdLinkedToParents",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "ipId",
+        type: "address",
+      },
+      {
         indexed: true,
         internalType: "uint256",
         name: "policyId",
@@ -34,6 +59,31 @@ export default [
       },
     ],
     name: "PolicyAddedToIpId",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "policyFrameworkManager",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "policyId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "policy",
+        type: "bytes",
+      },
+    ],
+    name: "PolicyRegistered",
     type: "event",
   },
   {
@@ -57,6 +107,29 @@ export default [
         type: "uint256",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "licenseIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address",
+        name: "childIpId",
+        type: "address",
+      },
+      {
+        internalType: "uint32",
+        name: "minRoyalty",
+        type: "uint32",
+      },
+    ],
+    name: "linkIpToParents",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -88,6 +161,30 @@ export default [
       {
         internalType: "uint256",
         name: "licenseId",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bool",
+        name: "isLicenseTransferable",
+        type: "bool",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "registerPolicy",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "policyId",
         type: "uint256",
       },
     ],

@@ -3,15 +3,9 @@ export default [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "implementation",
+        name: "ipId",
         type: "address",
       },
       {
@@ -21,19 +15,37 @@ export default [
         type: "uint256",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "tokenContract",
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "resolver",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "provider",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "metadata",
+        type: "bytes",
+      },
     ],
-    name: "IPAccountRegistered",
+    name: "IPRegistered",
     type: "event",
   },
 ] as const;

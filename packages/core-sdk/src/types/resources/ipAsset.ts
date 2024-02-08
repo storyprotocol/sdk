@@ -1,17 +1,5 @@
 import { TxOptions } from "../options";
 
-// -----------------------------------------------------
-// IPAccountRegistry
-// -----------------------------------------------------
-export type IpAsset = {
-  id: string;
-  ipId: string;
-  chainId: number;
-  tokenContract: string;
-  tokenId: number;
-  metadataResolverAddress: string;
-};
-
 export type RegisterIpAssetRequest = {
   chainId: string;
   tokenContractAddress: string;
