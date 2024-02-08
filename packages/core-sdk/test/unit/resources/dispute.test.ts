@@ -6,7 +6,11 @@ import chaiAsPromised from "chai-as-promised";
 import { Address, PublicClient, WalletClient } from "viem";
 import { DisputeClient } from "../../../src/resources/dispute";
 import { AddressZero } from "../../../src";
-import { RaiseDisputeRequest } from "../../../src/types/resources/dispute";
+import {
+  CancelDisputeRequest,
+  RaiseDisputeRequest,
+  ResolveDisputeRequest,
+} from "../../../src/types/resources/dispute";
 
 chai.use(chaiAsPromised);
 
@@ -23,6 +27,10 @@ describe("Test DisputeClient", function () {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     disputeClient = new DisputeClient(rpcMock, walletMock);
+  });
+
+  afterEach(function () {
+    sinon.restore();
   });
 
   describe("[Write Functions] Should be able to", async function () {
@@ -47,9 +55,95 @@ describe("Test DisputeClient", function () {
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
     });
-  });
+    it("cancel a dispute", async () => {
+      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
-  afterEach(function () {
-    sinon.restore();
+      const cancelDisputeRequest: CancelDisputeRequest = {
+        disputeId: 1,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      };
+      const response = await expect(disputeClient.cancelDispute(cancelDisputeRequest)).to.not.be
+        .rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+    });
+    it("cancel a dispute", async () => {
+      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
+
+      const resolveDisputeRequest: ResolveDisputeRequest = {
+        disputeId: 1,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      };
+      const response = await expect(disputeClient.resolveDispute(resolveDisputeRequest)).to.not.be
+        .rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+    });
+  });
+  describe("Read Functions", function () {
+    it("should read disputes", async () => {
+      const mockDispute = {
+        // Mock response structure as per your contract's return type
+      };
+      const disputeId = 1;
+      rpcMock.readContract = sinon.stub().resolves(mockDispute);
+
+      const response = await disputeClient.readDisputes({ disputeId: disputeId });
+      expect(response).to.deep.equal(mockDispute);
+    });
+
+    it("should check if an arbitration policy is whitelisted", async () => {
+      const mockResponse = true; // Or false, depending on what you're testing
+      const arbitrationPolicy = "0x123";
+      rpcMock.readContract = sinon.stub().resolves(mockResponse);
+
+      const response = await disputeClient.readIsWhitelistedArbitrationPolicy({
+        arbitrationPolicy,
+      });
+      expect(response).to.equal(mockResponse);
+    });
+
+    it("should check if a dispute tag is whitelisted", async () => {
+      const mockResponse = true; // Or false, depending on what you're testing
+      const tag = "testTag";
+      rpcMock.readContract = sinon.stub().resolves(mockResponse);
+
+      const response = await disputeClient.readIsWhitelistedDisputeTag({ tag });
+      expect(response).to.equal(mockResponse);
+    });
+
+    it("should read the base arbitration policy", async () => {
+      const mockResponse = "0xBaseArbitrationPolicyAddress";
+      rpcMock.readContract = sinon.stub().resolves(mockResponse);
+
+      const response = await disputeClient.readBaseArbitrationPolicy();
+      expect(response).to.equal(mockResponse);
+    });
+
+    it("should read the dispute ID", async () => {
+      const mockResponse = "1"; // Your dispute ID format
+      rpcMock.readContract = sinon.stub().resolves(mockResponse);
+
+      const response = await disputeClient.readDisputeId();
+      expect(response).to.equal(mockResponse);
+    });
+
+    it("should read the module name", async () => {
+      const mockResponse = "DisputeModule";
+      rpcMock.readContract = sinon.stub().resolves(mockResponse);
+
+      const response = await disputeClient.readName();
+      expect(response).to.equal(mockResponse);
+    });
   });
 });
