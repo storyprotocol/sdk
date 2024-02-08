@@ -25,30 +25,26 @@ export type Policy = {
 };
 
 // LicenseRegistry
-export type addPolicyRequest = {
-  frameworkId: string;
-  mintingParamValues: string[];
-  activationParamValues: string[];
-  needsActivation: boolean;
-  linkParentParamValues: string[];
+export type RegisterPolicyRequest = {
+  data: `0x${string}`;
+  transferable: boolean;
   // ipId: string;
   // policyId: string;
   txOptions?: TxOptions;
 };
 
-export type addPolicyResponse = {
+export type RegisterPolicyResponse = {
   txHash: string;
-  policyId?: number;
-  isNew?: boolean;
+  policyId?: string;
 };
 
-export type addPolicyToIpRequest = {
+export type AddPolicyToIpRequest = {
   ipId: string;
   policyId: string;
   txOptions?: TxOptions;
 };
 
-export type addPolicyToIpResponse = {
+export type AddPolicyToIpResponse = {
   // indexOnIpId: number;
   txHash: string;
 };

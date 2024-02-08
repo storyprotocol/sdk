@@ -1,5 +1,3 @@
-import { Address } from "viem";
-
 import { TxOptions } from "../options";
 
 export type License = {
@@ -11,29 +9,29 @@ export type License = {
   licenseData: Record<string, unknown>;
 };
 
-export type mintLicenseRequest = {
+export type MintLicenseRequest = {
   policyId: string;
-  licensorIps: Address[];
+  licensorIpId: `0x${string}`;
 
-  mintAmount: string;
-  receiverAddress: string;
+  mintAmount: number;
+  receiverAddress: `0x${string}`;
   txOptions?: TxOptions;
 };
 
-export type mintLicenseResponse = {
+export type MintLicenseResponse = {
   txHash: string;
   licenseId?: string;
   // isNew?: boolean;
 };
 
-export type linkIpToParentRequest = {
-  licenseId: string;
+export type LinkIpToParentRequest = {
+  licenseIds: string[];
   childIpId: string;
-  holderAddress: string;
+  minRoyalty: number;
   txOptions?: TxOptions;
 };
 
-export type linkIpToParentResponse = {
+export type LinkIpToParentResponse = {
   txHash: string;
   // licenseId?: number;
   // isNew?: boolean;

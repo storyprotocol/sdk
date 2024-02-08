@@ -11,5 +11,3 @@ export { PolicyClient } from "./resources/policy";
 
 export type { StoryConfig } from "./types/config";
 export type { Hex, TypedData } from "./types/common";
-
-export type { Tag, ListTagRequest, ListTagResponse } from "./types/resources/tagging";

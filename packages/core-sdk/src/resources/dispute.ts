@@ -1,7 +1,7 @@
 import { PublicClient, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
-import { DisputeModuleConfig } from "../abi/disputeModule.abi";
+import { DisputeModuleConfig } from "../abi/config";
 import {
   SetDisputeJudgementRequest,
   SetDisputeJudgementResponse,

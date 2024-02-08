@@ -34,6 +34,9 @@ export class IPAssetClient {
           parseToBigInt(request.policyId),
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
+          request.ipName || "",
+          request.contentHash || "0x",
+          request.uri || "",
         ],
         account: this.wallet.account,
       });
@@ -44,7 +47,7 @@ export class IPAssetClient {
           ...IPAssetRegistryConfig,
           eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipAccountId: targetLog.args.ipId };
+        return { txHash: txHash, ipId: targetLog.args.ipId };
       } else {
         return { txHash: txHash };
       }
@@ -63,16 +66,21 @@ export class IPAssetClient {
     request: RegisterDerivativeIpRequest,
   ): Promise<RegisterDerivativeIpResponse> {
     try {
+      const licenseIds: bigint[] = [];
+      request.licenseIds.forEach(function (licenseId) {
+        licenseIds.push(parseToBigInt(licenseId));
+      });
       const { request: call } = await this.rpcClient.simulateContract({
         ...RegistrationModuleConfig,
         functionName: "registerDerivativeIp",
         args: [
-          parseToBigInt(request.licenseId),
+          licenseIds,
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
-          request.ipName,
-          request.ipDescription,
-          getAddress(request.hash), // Byte32
+          request.ipName || "",
+          request.contentHash || "0x",
+          request.uri || "",
+          request.minRoyalty || 0,
         ],
       });
 
@@ -82,7 +90,7 @@ export class IPAssetClient {
           ...IPAssetRegistryConfig,
           eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipAccountId: targetLog?.args.ipId };
+        return { txHash: txHash, ipId: targetLog?.args.ipId };
       } else {
         return { txHash: txHash };
       }

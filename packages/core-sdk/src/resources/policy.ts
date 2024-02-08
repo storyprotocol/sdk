@@ -4,10 +4,10 @@ import { handleError } from "../utils/errors";
 import { IPAccountABI, LicensingModuleConfig } from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import {
-  addPolicyRequest,
-  addPolicyResponse,
-  addPolicyToIpRequest,
-  addPolicyToIpResponse,
+  RegisterPolicyRequest,
+  RegisterPolicyResponse,
+  AddPolicyToIpRequest,
+  AddPolicyToIpResponse,
 } from "../types/resources/policy";
 
 export class PolicyClient {
@@ -25,20 +25,12 @@ export class PolicyClient {
    * @param request - the request object that contains all data needed to register a policy.
    * @returns the response object that contains results from the policy creation.
    */
-  public async createPolicy(request: addPolicyRequest): Promise<addPolicyResponse> {
+  public async createPolicy(request: RegisterPolicyRequest): Promise<RegisterPolicyResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
         ...LicensingModuleConfig,
         functionName: "registerPolicy",
-        args: [
-          {
-            frameworkId: parseToBigInt(request.frameworkId),
-            mintingParamValues: request.mintingParamValues.map((add) => getAddress(add)),
-            activationParamValues: request.activationParamValues.map((add) => getAddress(add)),
-            needsActivation: request.needsActivation,
-            linkParentParamValues: request.linkParentParamValues.map((add) => getAddress(add)),
-          },
-        ],
+        args: [request.transferable, request.data],
       });
 
       const txHash = await this.wallet.writeContract(call);
@@ -57,29 +49,23 @@ export class PolicyClient {
     }
   }
 
-  // TODO: move to License resource
-  public async addPolicyToIp(request: addPolicyToIpRequest): Promise<addPolicyToIpResponse> {
+  public async addPolicyToIp(request: AddPolicyToIpRequest): Promise<AddPolicyToIpResponse> {
     try {
       const IPAccountConfig = {
         abi: IPAccountABI,
         address: getAddress(request.ipId),
       };
-      const licenseRegistry = getAddress(
-        process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
-      );
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          licenseRegistry,
+          LicensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
             abi: LicensingModuleConfig.abi,
             functionName: "addPolicyToIp",
-            args: [
-              getAddress(request.ipId), // 0x Address
-              parseToBigInt(request.policyId),
-            ],
+            args: [getAddress(request.ipId), parseToBigInt(request.policyId)],
           }),
         ],
         account: this.wallet.account,

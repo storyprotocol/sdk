@@ -4,10 +4,10 @@ import { handleError } from "../utils/errors";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { IPAccountABI, LicensingModuleConfig, LicenseRegistryConfig } from "../abi/config";
 import {
-  linkIpToParentRequest,
-  linkIpToParentResponse,
-  mintLicenseRequest,
-  mintLicenseResponse,
+  LinkIpToParentRequest,
+  LinkIpToParentResponse,
+  MintLicenseRequest,
+  MintLicenseResponse,
 } from "../types/resources/license";
 
 export class LicenseClient {
@@ -19,28 +19,24 @@ export class LicenseClient {
     this.rpcClient = rpcClient;
   }
 
-  public async mintLicense(request: mintLicenseRequest): Promise<mintLicenseResponse> {
+  public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
     try {
       const IPAccountConfig = {
         abi: IPAccountABI,
-        address: getAddress(request.licensorIps[0]),
+        address: getAddress(request.licensorIpId),
       };
-
-      const licenseRegistry = getAddress(
-        process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
-      );
-
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          licenseRegistry,
+          LicensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
             abi: LicensingModuleConfig.abi,
             functionName: "mintLicense",
             args: [
-              { policyId: parseToBigInt(request.policyId), licensorIpIds: request.licensorIps },
+              parseToBigInt(request.policyId),
+              request.licensorIpId,
               parseToBigInt(request.mintAmount),
               getAddress(request.receiverAddress),
             ],
@@ -63,31 +59,28 @@ export class LicenseClient {
     }
   }
 
-  public async linkIpToParent(request: linkIpToParentRequest): Promise<linkIpToParentResponse> {
+  public async linkIpToParent(request: LinkIpToParentRequest): Promise<LinkIpToParentResponse> {
     try {
       const IPAccountConfig = {
         abi: IPAccountABI,
         address: getAddress(request.childIpId),
       };
 
-      const licenseRegistry = getAddress(
-        process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
-      );
+      const licenseIds: bigint[] = [];
+      request.licenseIds.forEach(function (licenseId) {
+        licenseIds.push(parseToBigInt(licenseId));
+      });
 
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          licenseRegistry,
+          LicensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
             abi: LicensingModuleConfig.abi,
             functionName: "linkIpToParents",
-            args: [
-              parseToBigInt(request.licenseId),
-              getAddress(request.childIpId),
-              getAddress(request.holderAddress),
-            ],
+            args: [licenseIds, getAddress(request.childIpId), request.minRoyalty],
           }),
         ],
         account: this.wallet.account,
