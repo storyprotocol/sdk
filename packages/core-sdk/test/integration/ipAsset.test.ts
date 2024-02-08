@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig, Client } from "../../src";
+import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 describe.skip("IP Asset Functions", () => {
-  let client: Client;
+  let client: StoryClient;
   let senderAddress: string;
 
   before(function () {

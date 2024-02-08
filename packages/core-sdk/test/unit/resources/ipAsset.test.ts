@@ -72,12 +72,12 @@ describe("Test IpAssetClient", function () {
           {
             address: "0x12054FC0F26F979b271dE691358FeDCF5a1DAe65",
             topics: [
-              "0x5be70b68c8361762980ec7d425d79fd33f6d49cac8a498e6ddf514f995b987f7",
+              "0xa3028b46ff4aeba585ebfa1c241ad4a453b6f10dc7bc3d3ebaa9cecc680a6f71",
               "0x0000000000000000000000005ef1ac0e6b9f3b99bb9c3040cc5bd3eeec0e909a",
               "0x00000000000000000000000097527bb0435b28836489ac3e1577ca1e2a099371",
               "0x0000000000000000000000000000000000000000000000000000000000aa36a7",
             ],
-            data: "0x000000000000000000000000e2a7213762caddb7438f21f82cefbb49311674630000000000000000000000000000000000000000000000000000000000000002",
+            data: "0x0000000000000000000000008c61b7fc58e5d4d6b43ef31f69c3ab8db8fd6d9e00000000000000000000000038a8630a1594ee1f49798924109438c0ca6e9e6e000000000000000000000000ecc7004863545a415db29dd8f8dee0413017627b00000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a0736f6d65206f66207468652062657374206465736372697074696f6e000000000000000000000000000000000000000000000000000000000000000065bc56b4000000000000000000000000b6288e57bf7406b35ab4f70fd1135e907107e38600000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000a49504163636f756e743400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001b68747470733a2f2f6578616d706c652e636f6d2f746573742d69700000000000",
             blockNumber: 4738934n,
             transactionHash: "0x3600464c4f0794de350e55a484d67cdb6ed4a89917274709b9bb48246935c891",
             transactionIndex: 106,
@@ -97,7 +97,7 @@ describe("Test IpAssetClient", function () {
         },
       });
       expect(response.txHash).equal(txHash);
-      expect(response.ipAccountId).equals("0x5Ef1Ac0e6b9f3b99BB9c3040Cc5BD3EEeC0E909A");
+      expect(response.ipId).equals("0x8C61b7fc58E5d4d6b43Ef31F69c3AB8Db8fD6D9E");
     });
 
     it("should throw error when request fails", async function () {
@@ -142,12 +142,12 @@ describe("Test IpAssetClient", function () {
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
       const res = await ipAccountClient.registerDerivativeIp({
-        licenseId: "2",
+        licenseIds: ["2"],
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
         ipName: "Test IP",
-        ipDescription: "This is a test IP description",
-        hash: AddressZero,
+        uri: "This is a test IP description",
+        contentHash: AddressZero,
         txOptions: {
           waitForTransaction: false,
         },
@@ -166,12 +166,12 @@ describe("Test IpAssetClient", function () {
           {
             address: "0x12054FC0F26F979b271dE691358FeDCF5a1DAe65",
             topics: [
-              "0x5be70b68c8361762980ec7d425d79fd33f6d49cac8a498e6ddf514f995b987f7",
+              "0xa3028b46ff4aeba585ebfa1c241ad4a453b6f10dc7bc3d3ebaa9cecc680a6f71",
               "0x0000000000000000000000005ef1ac0e6b9f3b99bb9c3040cc5bd3eeec0e909a",
               "0x00000000000000000000000097527bb0435b28836489ac3e1577ca1e2a099371",
               "0x0000000000000000000000000000000000000000000000000000000000aa36a7",
             ],
-            data: "0x000000000000000000000000e2a7213762caddb7438f21f82cefbb49311674630000000000000000000000000000000000000000000000000000000000000002",
+            data: "0x0000000000000000000000008c61b7fc58e5d4d6b43ef31f69c3ab8db8fd6d9e00000000000000000000000038a8630a1594ee1f49798924109438c0ca6e9e6e000000000000000000000000ecc7004863545a415db29dd8f8dee0413017627b00000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a0736f6d65206f66207468652062657374206465736372697074696f6e000000000000000000000000000000000000000000000000000000000000000065bc56b4000000000000000000000000b6288e57bf7406b35ab4f70fd1135e907107e38600000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000a49504163636f756e743400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001b68747470733a2f2f6578616d706c652e636f6d2f746573742d69700000000000",
             blockNumber: 4738934n,
             transactionHash: "0x3600464c4f0794de350e55a484d67cdb6ed4a89917274709b9bb48246935c891",
             transactionIndex: 106,
@@ -183,18 +183,18 @@ describe("Test IpAssetClient", function () {
       });
 
       const response = await ipAccountClient.registerDerivativeIp({
-        licenseId: "2",
+        licenseIds: ["2"],
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
         ipName: "Test IP",
-        ipDescription: "This is a test IP description",
-        hash: AddressZero,
+        uri: "This is a test IP description",
+        contentHash: AddressZero,
         txOptions: {
           waitForTransaction: true,
         },
       });
       expect(response.txHash).equal(txHash);
-      expect(response.ipAccountId).equals("0x5Ef1Ac0e6b9f3b99BB9c3040Cc5BD3EEeC0E909A");
+      expect(response.ipId).equals("0x8C61b7fc58E5d4d6b43Ef31F69c3AB8Db8fD6D9E");
     });
 
     it("should throw error when request fails", async function () {
@@ -202,12 +202,12 @@ describe("Test IpAssetClient", function () {
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
       await expect(
         ipAccountClient.registerDerivativeIp({
-          licenseId: "2",
+          licenseIds: ["2"],
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",
           ipName: "Test IP",
-          ipDescription: "This is a test IP description",
-          hash: AddressZero,
+          uri: "This is a test IP description",
+          contentHash: AddressZero,
           txOptions: {
             waitForTransaction: false,
           },
@@ -223,12 +223,12 @@ describe("Test IpAssetClient", function () {
 
       await expect(
         ipAccountClient.registerDerivativeIp({
-          licenseId: "2",
+          licenseIds: ["2"],
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",
           ipName: "Test IP",
-          ipDescription: "This is a test IP description",
-          hash: AddressZero,
+          uri: "This is a test IP description",
+          contentHash: AddressZero,
           txOptions: {
             waitForTransaction: false,
           },

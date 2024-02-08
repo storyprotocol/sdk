@@ -1,7 +1,7 @@
 import { PublicClient, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
-import { TaggingModuleConfig } from "../abi/taggingModule.abi";
+import { TaggingModuleConfig } from "../abi/config";
 import {
   RemoveTagRequest,
   RemoveTagResponse,

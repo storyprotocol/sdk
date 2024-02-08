@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { StoryClient, Client } from "../../src";
+import { StoryClient } from "../../src";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { Account } from "viem";
 
@@ -22,7 +22,7 @@ describe("Test StoryClient", function () {
   });
 
   describe("Test getters", function () {
-    let client: Client;
+    let client: StoryClient;
 
     beforeEach(function () {
       client = StoryClient.newClient({
