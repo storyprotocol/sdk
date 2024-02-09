@@ -48,16 +48,22 @@ export class DisputeClient {
           request.targetIpId,
           request.linkToDisputeEvidence,
           stringToHex(request.targetTag, { size: 32 }),
-          request.calldata ? request.calldata : "0x",
+          request.calldata || "0x",
         ],
       });
 
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        const logs = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...DisputeModuleConfig,
+          eventName: "DisputeRaised",
+        });
+        return {
+          txHash: txHash,
+          disputeId: BigInt(logs.args.disputeId).toString() as `0x${string}`,
+        };
       }
-
       return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to raise dispute");
@@ -156,106 +162,12 @@ export class DisputeClient {
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...DisputeModuleConfig,
-          eventName: "DisputeResolved",
-        });
+        await waitTx(this.rpcClient, txHash);
       }
 
       return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to cancel dispute");
     }
-  }
-
-  /* Read functions
-			- These functions are used to read storage variables from the contract
-			- If you want to read events data emitted, check out our indexer API documentation
-	*/
-
-  /**
-   * Reads from the contract's disputes mapping storage variable.
-   * @param disputeId string | number | bigint, The ID of the dispute to be read.
-   * @returns The address of the Dispute module that disputeId maps to
-   * @calls mapping(uint256 disputeId => Dispute dispute) public disputes;
-   */
-  public async readDisputes({ disputeId }: { disputeId: number | string | bigint }) {
-    return await this.rpcClient.readContract({
-      ...DisputeModuleConfig,
-      functionName: "disputes",
-      args: [BigInt(disputeId)],
-    });
-  }
-
-  /**
-   * Reads from the contract's `isWhitelistedArbitrationPolicy` mapping storage variable.
-   * @param arbitrationPolicy the address of the ArbitrationPolicy to check.
-   * @returns boolean if address is a whitelisted arbitration policy.
-   * @calls mapping(address arbitrationPolicy => bool allowed) public isWhitelistedArbitrationPolicy;
-   */
-  public async readIsWhitelistedArbitrationPolicy({
-    arbitrationPolicy,
-  }: {
-    arbitrationPolicy: `0x${string}`;
-  }) {
-    return await this.rpcClient.readContract({
-      ...DisputeModuleConfig,
-      functionName: "isWhitelistedArbitrationPolicy",
-      args: [arbitrationPolicy],
-    });
-  }
-
-  /**
-   * Reads from the contract's `isWhitelistedDisputeTag` mapping storage variable.
-   * @param tag string, the dispute tag to check.
-   * @returns boolean, if tag is whitelisted.
-   * @calls mapping(bytes32 tag => bool allowed) public isWhitelistedDisputeTag;
-   */
-  public async readIsWhitelistedDisputeTag({ tag }: { tag: string }) {
-    return await this.rpcClient.readContract({
-      ...DisputeModuleConfig,
-      functionName: "isWhitelistedDisputeTag",
-      args: [stringToHex(tag, { size: 32 })],
-    });
-  }
-
-  /**
-   * Reads from the contract's `baseArbitrationPolicy` address storage variable.
-   * address baseArbitrationPolicy;
-   * @param none
-   * @returns boolean, if tag is whitelisted.
-   */
-  public async readBaseArbitrationPolicy() {
-    return await this.rpcClient.readContract({
-      ...DisputeModuleConfig,
-      functionName: "baseArbitrationPolicy",
-    });
-  }
-
-  /**
-   * Reads from the contract's `disputeId` uint256 storage variable.
-   * @param none
-   * @returns string, the ID of the dispute.
-   * @calls uint256 disputeId;
-   */
-  public async readDisputeId() {
-    return await this.rpcClient.readContract({
-      ...DisputeModuleConfig,
-      functionName: "disputeId",
-    });
-  }
-
-  /**
-   * Reads from the contract's `name()` function.
-   * @param none
-   * @returns string, The protocol-wide module identifier for this module (aka the dispute module key).
-   * @calls name() public pure override returns (string memory);
-   */
-  public async readName() {
-    // @notice Indicates if a dispute tag is whitelisted
-    return await this.rpcClient.readContract({
-      ...DisputeModuleConfig,
-      functionName: "name",
-    });
   }
 }

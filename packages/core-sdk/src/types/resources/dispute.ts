@@ -20,6 +20,8 @@ export type RaiseDisputeRequest = {
 
 export type RaiseDisputeResponse = {
   txHash: string;
+  disputeId?: `0x${string}`;
+  arbitrationPolicy?: `0x${string}`;
 };
 
 export type SetDisputeJudgementRequest = {

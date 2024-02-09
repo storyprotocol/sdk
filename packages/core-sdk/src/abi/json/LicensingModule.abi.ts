@@ -15,6 +15,31 @@ export default [
         type: "address",
       },
       {
+        indexed: false,
+        internalType: "address[]",
+        name: "parentIpIds",
+        type: "address[]",
+      },
+    ],
+    name: "IpIdLinkedToParents",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "ipId",
+        type: "address",
+      },
+      {
         indexed: true,
         internalType: "uint256",
         name: "policyId",
@@ -140,19 +165,6 @@ export default [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "name",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {

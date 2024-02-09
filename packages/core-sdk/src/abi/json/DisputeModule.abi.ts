@@ -52,22 +52,58 @@ export default [
         name: "disputeId",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "targetIpId",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "disputeInitiator",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "arbitrationPolicy",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "linkToDisputeEvidence",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "targetTag",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
     ],
-    name: "DisputeResolved",
+    name: "DisputeRaised",
     type: "event",
   },
   {
-    inputs: [],
-    name: "baseArbitrationPolicy",
-    outputs: [
+    anonymous: false,
+    inputs: [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
+        indexed: false,
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
       },
     ],
-    stateMutability: "view",
-    type: "function",
+    name: "DisputeResolved",
+    type: "event",
   },
   {
     inputs: [
@@ -85,114 +121,6 @@ export default [
     name: "cancelDispute",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "disputeId",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "disputeId",
-        type: "uint256",
-      },
-    ],
-    name: "disputes",
-    outputs: [
-      {
-        internalType: "address",
-        name: "targetIpId",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "disputeInitiator",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "arbitrationPolicy",
-        type: "address",
-      },
-      {
-        internalType: "bytes32",
-        name: "linkToDisputeEvidence",
-        type: "bytes32",
-      },
-      {
-        internalType: "bytes32",
-        name: "targetTag",
-        type: "bytes32",
-      },
-      {
-        internalType: "bytes32",
-        name: "currentTag",
-        type: "bytes32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "arbitrationPolicy",
-        type: "address",
-      },
-    ],
-    name: "isWhitelistedArbitrationPolicy",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "allowed",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "tag",
-        type: "bytes32",
-      },
-    ],
-    name: "isWhitelistedDisputeTag",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "allowed",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "name",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "pure",
     type: "function",
   },
   {

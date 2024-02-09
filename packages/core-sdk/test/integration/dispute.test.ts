@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { Hex, http, stringToHex, zeroAddress } from "viem";
+import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-import { StoryClient, StoryConfig, AddressZero } from "../../src";
+import { StoryClient, StoryConfig } from "../../src";
 import {
   CancelDisputeRequest,
   RaiseDisputeRequest,
@@ -12,7 +12,6 @@ import {
 
 describe("Dispute Functions", () => {
   let client: StoryClient;
-  let senderAddress: string;
 
   before(function () {
     const config: StoryConfig = {
@@ -20,7 +19,6 @@ describe("Dispute Functions", () => {
       account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
     };
 
-    senderAddress = config.account.address;
     client = StoryClient.newClient(config);
   });
   describe("[Write Functions] Should be able to", async function () {
@@ -83,78 +81,4 @@ describe("Dispute Functions", () => {
       expect(response.txHash).not.empty;
     });
   });
-
-  describe("[Read Functions] Should be able to", async function () {
-    //
-    /** Should test reading:
-     * Module key
-     * disputeId
-     * baseArbitrationPolicy
-     * isWhitelistedDisputeTag
-     * isWhitelistedArbitrationPolicy
-     **/
-
-    it("read name", async () => {
-      const response = await client.dispute.readName();
-      expect(response).to.be.equal("DISPUTE_MODULE");
-    });
-
-    it("read disputeId", async () => {
-      const response = await client.dispute.readDisputeId();
-      expect(response.toString()).to.be.equal("2");
-    });
-
-    it("read baseArbitrationPolicy", async () => {
-      const response = await client.dispute.readBaseArbitrationPolicy();
-      expect(response.toString()).to.be.equal("0xC6A1c49BCeeE2E512167d5c03e4753776477730b");
-    });
-    it("read isWhitelistedDisputeTag", async () => {
-      const response = await client.dispute.readIsWhitelistedDisputeTag({ tag: "testTag" });
-      expect(response).to.be.equal(false);
-    });
-    it("read isWhitelistedArbitrationPolicy", async () => {
-      const response = await client.dispute.readIsWhitelistedArbitrationPolicy({
-        arbitrationPolicy: AddressZero,
-      });
-      expect(response).to.be.equal(false);
-    });
-  });
-  /*
-  it.skip("should be able to raise dispute and wait for transaction", async () => {
-    // Contract not complete
-
-    const whitelistTag = "testTag";
-    await client.dispute.whitelistDisputeTags({
-      tag: whitelistTag,
-      allowed: true,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-
-    const arbPolicy = "0x90B53D67250c45973E81a6F832d6c4496108ac39";
-    await client.dispute.whitelistArbitrationPolicy({
-      arbitrationPolicy: arbPolicy,
-      allowed: true,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-
-    const response = await expect(
-      client.dispute.raiseDispute({
-        arbitrationPolicy: arbPolicy,
-        targetIpId: "0x90B53D67250c45973E81a6F832d6c4496108ac31",
-        linkToDisputeEvidence: "https://example.com",
-        targetTag: whitelistTag,
-        txOptions: {
-          waitForTransaction: false,
-        },
-      }),
-    ).to.not.be.rejected;
-
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
-  });
-*/
 });

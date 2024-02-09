@@ -1,39 +1,43 @@
 [
   "ipAsset",
   "execute",
+
   "registerRootIp",
   "registerDerivativeIp",
+
   "registerPolicy",
   "addPolicyToIp",
+
+  "mintLicense",
   "linkIpToParents",
+
   "setPermission",
+
   "setTag",
   "removeTag",
-  "registerModule",
-  "isRegistered",
-  "isValidSigner",
-  "IPAccountRegistered",
-  "IPRegistered",
-  "mintLicense",
-  "transfer",
-  "LicenseMinted",
-  "LicenseBurnt",
-  "PolicyAddedToIpId",
-  "PolicyRegistered",
+
   "whitelistDisputeTags",
   "whitelistArbitrationPolicy",
   "whitelistArbitrationRelayer",
-  "disputes",
-  "isWhitelistedArbitrationPolicy",
-  "isWhitelistedDisputeTag",
-  "baseArbitrationPolicy",
-  "disputeId",
-  "name",
+  "raiseDispute",
+  "setDisputeJudgement",
+  "cancelDispute",
+  "resolveDispute",
+
+  "IPRegistered",
+  "PolicyRegistered",
+  "PolicyAddedToIpId",
+  "LicenseMinted",
+  "LicenseBurnt",
+  "IpIdLinkedToParents",
+  "PermissionSet",
+
   "raiseDispute",
   "setDisputeJudgement",
   "cancelDispute",
   "resolveDispute",
   "DisputeJudgementSet",
   "DisputeCancelled",
-  "DisputeResolved"
+  "DisputeResolved",
+  "DisputeRaised"
 ]
