@@ -28,4 +28,28 @@ export default [
     stateMutability: "payable",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "signer_",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "data_",
+        type: "bytes",
+      },
+    ],
+    name: "isValidSigner",
+    outputs: [
+      {
+        internalType: "bytes4",
+        name: "",
+        type: "bytes4",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ] as const;

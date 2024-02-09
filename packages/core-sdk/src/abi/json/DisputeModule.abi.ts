@@ -1,22 +1,60 @@
 export default [
   {
+    anonymous: false,
     inputs: [
       {
-        internalType: "address",
-        name: "ipId",
-        type: "address",
+        indexed: false,
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
       },
-    ],
-    name: "arbitrationPolicies",
-    outputs: [
       {
-        internalType: "address",
-        name: "arbitrationPolicy",
-        type: "address",
+        indexed: false,
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
       },
     ],
-    stateMutability: "view",
-    type: "function",
+    name: "DisputeCancelled",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "decision",
+        type: "bool",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "DisputeJudgementSet",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+    ],
+    name: "DisputeResolved",
+    type: "event",
   },
   {
     inputs: [],
@@ -128,30 +166,6 @@ export default [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "arbitrationPolicy",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "arbitrationRelayer",
-        type: "address",
-      },
-    ],
-    name: "isWhitelistedArbitrationRelayer",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "allowed",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "tag",
         type: "bytes32",
@@ -231,24 +245,6 @@ export default [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "_ipId",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "_arbitrationPolicy",
-        type: "address",
-      },
-    ],
-    name: "setArbitrationPolicy",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "_disputeId",
         type: "uint256",
@@ -270,78 +266,44 @@ export default [
     type: "function",
   },
   {
-    inputs: [],
-    name: "ArbitrationPolicySP__NotDisputeModule",
-    type: "error",
+    inputs: [
+      {
+        internalType: "address",
+        name: "_arbitrationPolicy",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "_allowed",
+        type: "bool",
+      },
+    ],
+    name: "whitelistArbitrationPolicy",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    inputs: [],
-    name: "ArbitrationPolicySP__ZeroDisputeModule",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ArbitrationPolicySP__ZeroPaymentToken",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__NotAbleToResolve",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__NotDisputeInitiator",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__NotInDisputeState",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__NotRegisteredIpId",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__NotWhitelistedArbitrationPolicy",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__NotWhitelistedArbitrationRelayer",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__NotWhitelistedDisputeTag",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__UnauthorizedAccess",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__ZeroArbitrationPolicy",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__ZeroArbitrationRelayer",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__ZeroDisputeTag",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__ZeroLinkToDisputeEvidence",
-    type: "error",
+    inputs: [
+      {
+        internalType: "address",
+        name: "_arbitrationPolicy",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_arbPolicyRelayer",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "_allowed",
+        type: "bool",
+      },
+    ],
+    name: "whitelistArbitrationRelayer",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
 ] as const;

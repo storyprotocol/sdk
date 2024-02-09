@@ -12,6 +12,7 @@ import {
   SetDisputeJudgementRequest,
   SetDisputeJudgementResponse,
 } from "../types/resources/dispute";
+import { waitTxAndFilterLog } from "../utils/utils";
 
 export class DisputeClient {
   private readonly wallet: WalletClient;
@@ -89,6 +90,13 @@ export class DisputeClient {
 
       const txHash = await this.wallet.writeContract(call);
 
+      if (request.txOptions?.waitForTransaction) {
+        await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...DisputeModuleConfig,
+          eventName: "DisputeJudgementSet",
+        });
+      }
+
       return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to raise dispute");
@@ -117,6 +125,13 @@ export class DisputeClient {
 
       const txHash = await this.wallet.writeContract(call);
 
+      if (request.txOptions?.waitForTransaction) {
+        await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...DisputeModuleConfig,
+          eventName: "DisputeCancelled",
+        });
+      }
+
       return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to cancel dispute");
@@ -141,6 +156,13 @@ export class DisputeClient {
       });
 
       const txHash = await this.wallet.writeContract(call);
+
+      if (request.txOptions?.waitForTransaction) {
+        await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...DisputeModuleConfig,
+          eventName: "DisputeResolved",
+        });
+      }
 
       return { txHash: txHash };
     } catch (error) {

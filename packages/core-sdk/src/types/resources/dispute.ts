@@ -31,6 +31,9 @@ export type SetDisputeJudgementRequest = {
 
 export type SetDisputeJudgementResponse = {
   txHash: string;
+  disputeId?: bigint;
+  decision?: boolean;
+  data?: `0x${string}`;
 };
 
 export type CancelDisputeRequest = {
