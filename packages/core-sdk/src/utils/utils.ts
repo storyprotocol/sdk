@@ -64,6 +64,21 @@ export async function waitTxAndFilterLog<
   throw new Error(`not found event ${params.eventName} in target transaction`);
 }
 
+export async function waitTx(
+  client: PublicClient,
+  txHash: Hash,
+  params?: {
+    confirmations?: number;
+    pollingInterval?: number;
+    timeout?: number;
+  },
+) {
+  await client.waitForTransactionReceipt({
+    hash: txHash,
+    ...params,
+  });
+}
+
 export function dictToQueryParams(params: Record<string, string | number>): string {
   const queryParamList: string[] = [];
   for (const key in params) {

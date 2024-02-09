@@ -37,6 +37,7 @@ describe("Test DisputeClient", function () {
     it("raise a dispute", async () => {
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
       const raiseDisputeRequest = {
@@ -55,9 +56,10 @@ describe("Test DisputeClient", function () {
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
     });
-    it("cancel a dispute", async () => {
+    it("cancel a dispute and wait for txn", async () => {
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
       const cancelDisputeRequest: CancelDisputeRequest = {
@@ -67,23 +69,6 @@ describe("Test DisputeClient", function () {
         },
       };
       const response = await expect(disputeClient.cancelDispute(cancelDisputeRequest)).to.not.be
-        .rejected;
-
-      expect(response.txHash).to.be.a("string");
-      expect(response.txHash).not.empty;
-    });
-    it("cancel a dispute", async () => {
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-
-      const resolveDisputeRequest: ResolveDisputeRequest = {
-        disputeId: 1,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      const response = await expect(disputeClient.resolveDispute(resolveDisputeRequest)).to.not.be
         .rejected;
 
       expect(response.txHash).to.be.a("string");

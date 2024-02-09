@@ -94,25 +94,25 @@ describe("Dispute Functions", () => {
      * isWhitelistedArbitrationPolicy
      **/
 
-    it.only("read name", async () => {
+    it("read name", async () => {
       const response = await client.dispute.readName();
       expect(response).to.be.equal("DISPUTE_MODULE");
     });
 
-    it.only("read disputeId", async () => {
+    it("read disputeId", async () => {
       const response = await client.dispute.readDisputeId();
       expect(response.toString()).to.be.equal("2");
     });
 
-    it.only("read baseArbitrationPolicy", async () => {
+    it("read baseArbitrationPolicy", async () => {
       const response = await client.dispute.readBaseArbitrationPolicy();
       expect(response.toString()).to.be.equal("0xC6A1c49BCeeE2E512167d5c03e4753776477730b");
     });
-    it.only("read isWhitelistedDisputeTag", async () => {
+    it("read isWhitelistedDisputeTag", async () => {
       const response = await client.dispute.readIsWhitelistedDisputeTag({ tag: "testTag" });
       expect(response).to.be.equal(false);
     });
-    it.only("read isWhitelistedArbitrationPolicy", async () => {
+    it("read isWhitelistedArbitrationPolicy", async () => {
       const response = await client.dispute.readIsWhitelistedArbitrationPolicy({
         arbitrationPolicy: AddressZero,
       });
