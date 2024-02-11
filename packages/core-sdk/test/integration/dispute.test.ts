@@ -24,8 +24,8 @@ describe("Dispute Functions", () => {
   describe("[Write Functions] Should be able to", async function () {
     it.skip("raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: "0xa3028b46ff4aeba585ebfa1c241ad4a453b6f10dc7bc3d3ebaa9cecc680a6f71",
-        arbitrationPolicy: "0xC6A1c49BCeeE2E512167d5c03e4753776477730b",
+        targetIpId: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
+        arbitrationPolicy: "0x61eb3DBc2c60Cf6aFde43a9286D89Da264899003",
         linkToDisputeEvidence: "foo",
         targetTag: "bar",
         txOptions: {
