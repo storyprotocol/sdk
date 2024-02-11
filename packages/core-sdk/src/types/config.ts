@@ -22,5 +22,5 @@ export type SupportedChainIds =
 export interface StoryConfig {
   readonly account: Account;
   readonly chainId?: SupportedChainIds;
-  readonly transport?: Transport;
+  readonly transport: Transport;
 }

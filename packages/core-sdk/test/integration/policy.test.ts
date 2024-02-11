@@ -63,7 +63,7 @@ describe.skip("Test Policy Functions", () => {
       }
     });
 
-    it.skip("should not throw error when registering UML Policy with commercial use", async () => {
+    it("should not throw error when registering UML Policy with commercial use", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerUMLPolicy({

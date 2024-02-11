@@ -25,7 +25,7 @@ describe("IP Asset Functions", () => {
         client.ipAsset.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
-          tokenId: "99",
+          tokenId: "110",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -61,7 +61,7 @@ describe("IP Asset Functions", () => {
         client.ipAsset.registerDerivativeIp({
           licenseIds: [licenseId],
           tokenContractAddress: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
-          tokenId: "100",
+          tokenId: "111",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

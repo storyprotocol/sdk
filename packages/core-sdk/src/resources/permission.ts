@@ -3,9 +3,7 @@ import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
 import { IPAccountABI, AccessControllerConfig } from "../abi/config";
-import { parseToBigInt } from "../utils/utils";
-
-// import { HashZero } from "../constants/common";
+import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 
 export class PermissionClient {
   private readonly wallet: WalletClient;
@@ -28,14 +26,12 @@ export class PermissionClient {
         abi: IPAccountABI,
         address: getAddress(request.ipAsset),
       };
-      const accessController = getAddress(
-        process.env.ACCESS_CONTROLLER || process.env.NEXT_PUBLIC_ACCESS_CONTROLLER || "",
-      ); //to
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          accessController,
+          AccessControllerConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
             abi: AccessControllerConfig.abi,
@@ -53,16 +49,16 @@ export class PermissionClient {
       });
 
       const txHash = await this.wallet.writeContract(call);
-      // TODO: the emit event doesn't return anything
-      // if (request.txOptions?.waitForTransaction) {
-      //   await waitTxAndFilterLog(this.rpcClient, txHash, {
-      //     ...AccessControllerConfig,
-      //     eventName: "PermissionSet",
-      //   });
-      //   return { txHash: txHash };
-      // } else {
-      return { txHash: txHash };
-      // }
+
+      if (request.txOptions?.waitForTransaction) {
+        await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...AccessControllerConfig,
+          eventName: "PermissionSet",
+        });
+        return { txHash: txHash, success: true };
+      } else {
+        return { txHash: txHash };
+      }
     } catch (error) {
       handleError(error, "Failed to set permissions");
     }
