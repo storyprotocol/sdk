@@ -30,5 +30,14 @@
   "LicenseMinted",
   "LicenseBurnt",
   "IpIdLinkedToParents",
-  "PermissionSet"
+  "PermissionSet",
+
+  "raiseDispute",
+  "setDisputeJudgement",
+  "cancelDispute",
+  "resolveDispute",
+  "DisputeJudgementSet",
+  "DisputeCancelled",
+  "DisputeResolved",
+  "DisputeRaised"
 ]

@@ -257,6 +257,11 @@ export default [
   },
   {
     inputs: [],
+    name: "IPAssetRegistry__RegistrantUnauthorized",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "IPAssetRegistry__ResolverInvalid",
     type: "error",
   },
@@ -458,11 +463,6 @@ export default [
   {
     inputs: [],
     name: "LicensingModule__ParentIdEqualThanChild",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LicensingModule__PolicyAlreadyAdded",
     type: "error",
   },
   {
