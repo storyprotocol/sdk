@@ -1,11 +1,11 @@
 import { getAddress } from "viem";
 import * as dotenv from "dotenv";
 
+import IERC1155ABI from "./json/IERC1155.abi";
 import AccessControllerABI from "./json/AccessController.abi";
 import DisputeModuleABI from "./json/DisputeModule.abi";
 import IPAccountImplABI from "./json/IPAccountImpl.abi";
 import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
-import LicenseRegistryABI from "./json/LicenseRegistry.abi";
 import LicensingModuleABI from "./json/LicensingModule.abi";
 import UMLPolicyFrameworkManagerABI from "./json/UMLPolicyFrameworkManager.abi";
 import RegistrationModuleABI from "./json/RegistrationModule.abi";
@@ -38,7 +38,7 @@ export const DisputeModuleConfig = {
 };
 
 export const LicenseRegistryConfig = {
-  abi: LicenseRegistryABI,
+  abi: IERC1155ABI,
   address: getAddress(
     process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
   ),
@@ -64,7 +64,7 @@ export const TaggingModuleConfig = {
 };
 
 export const UMLPolicyFrameworkManagerConfig = {
-  abi: UMLPolicyFrameworkManagerABI,
+  abi: [...UMLPolicyFrameworkManagerABI, ...ErrorsABI],
   address: getAddress(
     process.env.UML_POLICY_FRAMEWORK_MANAGER ||
       process.env.NEXT_PUBLIC_UML_POLICY_FRAMEWORK_MANAGER ||

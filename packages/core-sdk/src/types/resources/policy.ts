@@ -27,7 +27,7 @@ export type Policy = {
 // LicenseRegistry
 export type RegisterUMLPolicyRequest = {
   transferable: boolean;
-  royaltyPolicy: `0x${string}`;
+  royaltyPolicy?: `0x${string}`;
   attribution?: boolean;
   commercialUse?: boolean;
   commercialAttribution?: boolean;
@@ -58,4 +58,5 @@ export type AddPolicyToIpRequest = {
 export type AddPolicyToIpResponse = {
   // indexOnIpId: number;
   txHash: string;
+  index?: string;
 };

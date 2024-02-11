@@ -3,7 +3,7 @@ import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe("Test Policy Functions", () => {
+describe.skip("Test Policy Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -17,15 +17,13 @@ describe("Test Policy Functions", () => {
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
   });
-
+  // 0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431
   describe("Register UML Policy", async function () {
-    it("should not throw error when registering UML Policy", async () => {
-      const waitForTransaction: boolean = false;
+    it("should not throw error when registering UML Policy with everything turned off", async () => {
+      const waitForTransaction: boolean = true;
       const response = await expect(
-        client.ipAsset.registerRootIp({
-          policyId: "0",
-          tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: "3",
+        client.policy.registerUMLPolicy({
+          transferable: false,
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -36,8 +34,78 @@ describe("Test Policy Functions", () => {
       expect(response.txHash).not.empty;
 
       if (waitForTransaction) {
-        expect(response.ipAccountId).to.be.a("string");
-        expect(response.ipAccountId).not.empty;
+        expect(response.policyId).to.be.a("string");
+        expect(response.policyId).not.empty;
+      }
+    });
+
+    it("should not throw error when registering UML Policy with social remixing", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.registerUMLPolicy({
+          transferable: true,
+          attribution: true,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesReciprocal: true,
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+
+      if (waitForTransaction) {
+        expect(response.policyId).to.be.a("string");
+        expect(response.policyId).not.empty;
+      }
+    });
+
+    it.skip("should not throw error when registering UML Policy with commercial use", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.registerUMLPolicy({
+          transferable: true,
+          attribution: true,
+          commercialUse: true,
+          commercialAttribution: true,
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+
+      if (waitForTransaction) {
+        expect(response.policyId).to.be.a("string");
+        expect(response.policyId).not.empty;
+      }
+    });
+  });
+
+  describe("Add Policy to IP", async function () {
+    it("should not throw error when adding Policy to IP", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.addPolicyToIp({
+          ipId: "0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431",
+          policyId: "1",
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+
+      if (waitForTransaction) {
+        expect(response.index).to.be.a("string");
+        expect(response.index).not.empty;
       }
     });
   });

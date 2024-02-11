@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
+import { PublicClient, WalletClient, encodeFunctionData, getAddress, zeroAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -52,11 +52,11 @@ export class PolicyClient {
             territories: request.territories || [],
             distributionChannels: request.distributionChannels || [],
             contentRestrictions: request.contentRestrictions || [],
-            royaltyPolicy: request.royaltyPolicy,
+            royaltyPolicy: request.royaltyPolicy || zeroAddress,
           },
         ],
+        account: this.wallet.account,
       });
-
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
@@ -69,7 +69,7 @@ export class PolicyClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register derivative IP");
+      handleError(error, "Failed to register policy");
     }
   }
 
@@ -94,15 +94,14 @@ export class PolicyClient {
         ],
         account: this.wallet.account,
       });
-
       const txHash = await this.wallet.writeContract(call);
       // TODO: the emit event doesn't return anything
       if (request.txOptions?.waitForTransaction) {
-        await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...LicensingModuleConfig,
           eventName: "PolicyAddedToIpId",
         });
-        return { txHash: txHash };
+        return { txHash: txHash, index: targetLog.args.index.toString() };
       } else {
         return { txHash: txHash };
       }

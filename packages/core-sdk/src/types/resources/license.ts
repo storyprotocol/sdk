@@ -33,8 +33,7 @@ export type LinkIpToParentRequest = {
 
 export type LinkIpToParentResponse = {
   txHash: string;
-  // licenseId?: number;
-  // isNew?: boolean;
+  success?: boolean;
 };
 
 export type transferRequest = {

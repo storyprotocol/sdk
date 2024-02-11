@@ -48,9 +48,9 @@ export class LicenseClient {
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...LicenseRegistryConfig,
-          eventName: "LicenseMinted",
+          eventName: "TransferSingle",
         });
-        return { txHash: txHash, licenseId: targetLog.args.licenseId.toString() };
+        return { txHash: txHash, licenseId: targetLog.args.id.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -89,9 +89,9 @@ export class LicenseClient {
       if (request.txOptions?.waitForTransaction) {
         await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...LicenseRegistryConfig,
-          eventName: "LicenseMinted",
+          eventName: "TransferBatch",
         });
-        return { txHash: txHash };
+        return { txHash: txHash, success: true };
       } else {
         return { txHash: txHash };
       }
