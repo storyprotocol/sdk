@@ -28,10 +28,7 @@ before(async function () {
   });
 
   // @ts-ignore
-  (await client.request({
-    method: "evm_revert",
-    params: [process.env.TEST_CHECKPOINT!],
-  })) as string;
+  await client.request({ method: "evm_revert", params: [process.env.TEST_CHECKPOINT!] });
 
   // @ts-ignore
   const checkpoint = (await client.request({ method: "evm_snapshot", params: [] })) as string;
