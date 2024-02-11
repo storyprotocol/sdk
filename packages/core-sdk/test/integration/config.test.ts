@@ -9,6 +9,7 @@ chai.use(chaiAsPromised);
 chai.config.truncateThreshold = 0;
 
 before(async function () {
+  const TEST_CHECKPOINT = "0x9318010dbc5cb77ff108803dbfee082653fb3258a248650c0be0b9c4b0c13a07";
   const client = createPublicClient({
     chain: {
       id: 11155111,
@@ -28,7 +29,7 @@ before(async function () {
   });
 
   // @ts-ignore
-  await client.request({ method: "evm_revert", params: [process.env.TEST_CHECKPOINT!] });
+  await client.request({ method: "evm_revert", params: [TEST_CHECKPOINT] });
 
   // @ts-ignore
   const checkpoint = (await client.request({ method: "evm_snapshot", params: [] })) as string;

@@ -49,13 +49,8 @@ export const RegistrationModuleConfig = {
 };
 
 export const TaggingModuleConfig = {
-<<<<<<< HEAD
   abi: [...TaggingModuleABI, ...ErrorsABI],
-  address: getAddress(process.env.TAGGING_MODULE || process.env.NEXT_PUBLIC_TAGGING_MODULE || ""),
-=======
-  abi: TaggingModuleABI,
   address: getAddress("0x333BECf0FF68C02E4387005A89c30De885b8a38F"),
->>>>>>> 06c16dd (Remove env file dependency)
 };
 
 export const UMLPolicyFrameworkManagerConfig = {

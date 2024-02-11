@@ -10,27 +10,11 @@ on:
         required: true
         type: string
     secrets:
-      API_BASE_URL:
-        required: true
-      IP_ACCOUNT_REGISTRY:
-        required: true
-      IP_ASSET_REGISTRY:
-        required: true
-      REGISTRATION_MODULE:
-        required: true
-      TAGGING_MODULE:
-        required: true
-      LICENSE_REGISTRY:
-        required: true
-      LICENSING_MODULE:
-        required: true
-      ACCESS_CONTROLLER:
-        required: true
       RPC_PROVIDER_URL:
         required: true
       WALLET_PRIVATE_KEY:
         required: true
-      DISPUTE_MODULE:
+      TEST_WALLET_ADDRESS:
         required: true
 
 jobs:
@@ -41,20 +25,9 @@ jobs:
     ## Example to fix envrionment secret not passing in: https://github.com/AllanOricil/workflow-template-bug/blob/master/.github/workflows/workflow-template-fix-without-required-secret.yml
     environment: ${{ inputs.ENVIRONMENT }}
     env:
-      ## To use Remote Caching, uncomment the next lines and follow the steps below.
-      # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      NEXT_PUBLIC_API_BASE_URL: ${{ secrets.API_BASE_URL }}
-      NEXT_PUBLIC_IP_ACCOUNT_REGISTRY: ${{ secrets.IP_ACCOUNT_REGISTRY }}
-      NEXT_PUBLIC_IP_ASSET_REGISTRY: ${{ secrets.IP_ASSET_REGISTRY }}
-      NEXT_PUBLIC_REGISTRATION_MODULE: ${{ secrets.REGISTRATION_MODULE }}
-      NEXT_PUBLIC_TAGGING_MODULE: ${{ secrets.TAGGING_MODULE }}
-      NEXT_PUBLIC_DISPUTE_MODULE: ${{ secrets.DISPUTE_MODULE }}
-      NEXT_PUBLIC_LICENSE_REGISTRY: ${{ secrets.LICENSE_REGISTRY }}
-      NEXT_PUBLIC_LICENSING_MODULE: ${{ secrets.LICENSING_MODULE }}
-      NEXT_PUBLIC_ACCESS_CONTROLLER: ${{ secrets.ACCESS_CONTROLLER }}
       RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
 
     steps:
       - name: Check out code
