@@ -11,6 +11,11 @@
   "license": "ISC",
   "devDependencies": {
     "@wagmi/cli": "^2.1.0",
+    "dotenv": "^16.3.1",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "abitype": "^0.10.2",
+    "wagmi": "^2.5.6"
   }
 }
