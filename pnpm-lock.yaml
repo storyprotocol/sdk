@@ -252,6 +252,15 @@ importers:
         specifier: ^2.5.6
         version: 2.5.6(@tanstack/react-query@5.20.1)(react-native@0.73.4)(react@18.2.0)(typescript@5.3.3)(viem@2.0.0)
     devDependencies:
+      '@story-protocol/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config-story
+      '@story-protocol/prettier-config':
+        specifier: workspace:*
+        version: link:../prettier-config
+      '@story-protocol/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
       '@wagmi/cli':
         specifier: ^2.1.0
         version: 2.1.0(typescript@5.3.3)
@@ -8212,6 +8221,7 @@ packages:
       is-hex-prefixed: 1.0.0
       strip-hex-prefix: 1.0.0
     dev: true
+    bundledDependencies: false
 
   /event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
