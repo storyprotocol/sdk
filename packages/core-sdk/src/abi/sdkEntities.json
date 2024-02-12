@@ -34,7 +34,6 @@
   "totalTagsForIp",
   "tagAtIndexForIp",
   "tagStringAtIndexForIp",
-  "name",
   "MAX_TAG_PERMISSIONS_AT_ONCE",
 
   "raiseDispute",
