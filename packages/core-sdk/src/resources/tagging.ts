@@ -8,6 +8,7 @@ import {
   SetTagRequest,
   SetTagResponse,
 } from "../types/resources/tagging";
+import { waitTx } from "../utils/utils";
 
 export class TaggingClient {
   private readonly wallet: WalletClient;
@@ -28,6 +29,10 @@ export class TaggingClient {
 
       const txHash = await this.wallet.writeContract(call);
 
+      if (request.txOptions?.waitForTransaction) {
+        await waitTx(this.rpcClient, txHash);
+      }
+
       return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to set tag");
@@ -43,6 +48,10 @@ export class TaggingClient {
       });
 
       const txHash = await this.wallet.writeContract(call);
+
+      if (request.txOptions?.waitForTransaction) {
+        await waitTx(this.rpcClient, txHash);
+      }
 
       return { txHash: txHash };
     } catch (error) {

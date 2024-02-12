@@ -29,7 +29,7 @@ describe("Test DisputeClient", function () {
     sinon.restore();
   });
 
-  describe("[Write Functions] Should be able to", async function () {
+  describe("Should be able to", async function () {
     it.skip("raise a dispute", async () => {
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });

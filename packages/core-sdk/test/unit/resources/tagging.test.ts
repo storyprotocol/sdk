@@ -9,7 +9,7 @@ import { AddressZero } from "../../../src";
 
 chai.use(chaiAsPromised);
 
-describe("Test TaggingClient", function () {
+describe("Test TaggingClient (unit tests)", function () {
   let taggingClient: TaggingClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
@@ -24,11 +24,11 @@ describe("Test TaggingClient", function () {
     sinon.restore();
   });
 
-  describe("[Write functions] Should be able to", async function () {
+  describe("Should be able to", async function () {
     it("set tag and wait for transaction", async () => {
       const mockTxHash = "0xeef10fc5170f669b86c4cd0444882a96087221325f8bf2f55d6188633aa7be7c";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().resolves(mockTxHash);
 
       const response = await expect(
@@ -48,10 +48,10 @@ describe("Test TaggingClient", function () {
     it("remove tag", async () => {
       const tagString = "bad-tag69";
       const ipId = "0xabCc2421F927c128B9F5a94B612F4541C8E624B6";
-      const mockSetTxHash = "0xset123";
       const mockRemoveTxHash = "0xremove123";
 
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().resolves(mockRemoveTxHash);
 
       const response = await expect(

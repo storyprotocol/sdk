@@ -71,7 +71,7 @@ export async function waitTx(
     pollingInterval?: number;
     timeout?: number;
   },
-) {
+): Promise<void> {
   await client.waitForTransactionReceipt({
     hash: txHash,
     ...params,

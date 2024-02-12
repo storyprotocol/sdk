@@ -21,7 +21,7 @@ describe("Dispute Functions", () => {
 
     client = StoryClient.newClient(config);
   });
-  describe("[Write Functions] Should be able to", async function () {
+  describe("Should be able to", async function () {
     it.skip("raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
