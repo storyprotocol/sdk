@@ -3,7 +3,7 @@ import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe("Tagging Functions", () => {
+describe("Tagging Functions (integration tests)", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -18,7 +18,7 @@ describe("Tagging Functions", () => {
     client = StoryClient.newClient(config);
   });
 
-  describe("[Write Functions] SDK should be able to", async function () {
+  describe("Should be able to", async function () {
     it("set tag and wait for transaction", async () => {
       const response = await expect(
         client.tagging.setTag({
