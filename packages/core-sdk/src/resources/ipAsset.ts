@@ -1,6 +1,7 @@
 import { PublicClient, WalletClient, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
+import { HashZero } from "../constants/common";
 import { IPAssetRegistryConfig, RegistrationModuleConfig } from "../abi/config";
 import {
   RegisterDerivativeIpRequest,
@@ -35,7 +36,7 @@ export class IPAssetClient {
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
           request.ipName || "",
-          request.contentHash || "0x",
+          request.contentHash || HashZero,
           request.uri || "",
         ],
         account: this.wallet.account,
@@ -78,10 +79,11 @@ export class IPAssetClient {
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
           request.ipName || "",
-          request.contentHash || "0x",
+          request.contentHash || HashZero,
           request.uri || "",
           request.minRoyalty || 0,
         ],
+        account: this.wallet.account,
       });
 
       const txHash = await this.wallet.writeContract(call);
@@ -90,7 +92,7 @@ export class IPAssetClient {
           ...IPAssetRegistryConfig,
           eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipId: targetLog?.args.ipId };
+        return { txHash: txHash, ipId: targetLog.args.ipId };
       } else {
         return { txHash: txHash };
       }

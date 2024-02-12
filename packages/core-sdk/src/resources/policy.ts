@@ -1,11 +1,15 @@
-import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
+import { PublicClient, WalletClient, encodeFunctionData, getAddress, zeroAddress } from "viem";
 
 import { handleError } from "../utils/errors";
-import { IPAccountABI, LicensingModuleConfig } from "../abi/config";
+import {
+  IPAccountABI,
+  LicensingModuleConfig,
+  UMLPolicyFrameworkManagerConfig,
+} from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import {
-  RegisterPolicyRequest,
-  RegisterPolicyResponse,
+  RegisterUMLPolicyRequest,
+  RegisterUMLPolicyResponse,
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
 } from "../types/resources/policy";
@@ -25,14 +29,34 @@ export class PolicyClient {
    * @param request - the request object that contains all data needed to register a policy.
    * @returns the response object that contains results from the policy creation.
    */
-  public async createPolicy(request: RegisterPolicyRequest): Promise<RegisterPolicyResponse> {
+  public async registerUMLPolicy(
+    request: RegisterUMLPolicyRequest,
+  ): Promise<RegisterUMLPolicyResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...LicensingModuleConfig,
+        ...UMLPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
-        args: [request.transferable, request.data],
+        args: [
+          {
+            transferable: request.transferable,
+            attribution: request.attribution || false,
+            commercialUse: request.commercialUse || false,
+            commercialAttribution: request.commercialAttribution || false,
+            commercializers: request.commercializers || [],
+            commercialRevShare: request.commercialRevShare || 0,
+            derivativesAllowed: request.derivativesAllowed || false,
+            derivativesAttribution: request.commercialAttribution || false,
+            derivativesApproval: request.derivativesApproval || false,
+            derivativesReciprocal: request.derivativesReciprocal || false,
+            derivativesRevShare: request.derivativesRevShare || 0,
+            territories: request.territories || [],
+            distributionChannels: request.distributionChannels || [],
+            contentRestrictions: request.contentRestrictions || [],
+            royaltyPolicy: request.royaltyPolicy || zeroAddress,
+          },
+        ],
+        account: this.wallet.account,
       });
-
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
@@ -45,7 +69,7 @@ export class PolicyClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register derivative IP");
+      handleError(error, "Failed to register policy");
     }
   }
 
@@ -70,15 +94,14 @@ export class PolicyClient {
         ],
         account: this.wallet.account,
       });
-
       const txHash = await this.wallet.writeContract(call);
       // TODO: the emit event doesn't return anything
       if (request.txOptions?.waitForTransaction) {
-        await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...LicensingModuleConfig,
           eventName: "PolicyAddedToIpId",
         });
-        return { txHash: txHash };
+        return { txHash: txHash, index: targetLog.args.index.toString() };
       } else {
         return { txHash: txHash };
       }
