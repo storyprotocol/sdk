@@ -1,8 +1,20 @@
 {
-  "name": "react",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@story-protocol/react",
+  "version": "0.0.1-beta-rc.1",
+  "description": "Story Protocol React SDK",
+  "main": "dist/story-protocol-react-sdk.cjs.js",
+  "module": "dist/story-protocol-react-sdk.esm.js",
+  "exports": {
+    ".": {
+      "module": "./dist/story-protocol-react-sdk.esm.js",
+      "default": "./dist/story-protocol-react-sdk.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

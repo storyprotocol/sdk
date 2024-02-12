@@ -23,18 +23,7 @@ function generateConfig(
         address: address,
       },
     ],
-    plugins: [
-      actions({
-        overridePackageName: '@wagmi/core',
-        getActionName({ itemName, type }) {
-          if (!itemName) {
-            return type;
-          }
-          return `${type}${itemName}`;
-        },
-      }),
-      react(),
-    ],
+    plugins: [react()],
   };
 }
 
