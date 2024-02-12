@@ -13,9 +13,6 @@
 
   "setPermission",
 
-  "setTag",
-  "removeTag",
-
   "whitelistDisputeTags",
   "whitelistArbitrationPolicy",
   "whitelistArbitrationRelayer",
@@ -31,6 +28,13 @@
   "LicenseBurnt",
   "IpIdLinkedToParents",
   "PermissionSet",
+  "setTag",
+  "removeTag",
+  "isTagged",
+  "totalTagsForIp",
+  "tagAtIndexForIp",
+  "tagStringAtIndexForIp",
+  "MAX_TAG_PERMISSIONS_AT_ONCE",
 
   "raiseDispute",
   "setDisputeJudgement",

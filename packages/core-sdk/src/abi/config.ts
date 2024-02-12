@@ -58,6 +58,6 @@ export const RegistrationModuleConfig = {
 };
 
 export const TaggingModuleConfig = {
-  abi: TaggingModuleABI,
+  abi: [...TaggingModuleABI, ...ErrorsABI],
   address: getAddress(process.env.TAGGING_MODULE || process.env.NEXT_PUBLIC_TAGGING_MODULE || ""),
 };

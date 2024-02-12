@@ -18,8 +18,8 @@ describe("Tagging Functions", () => {
     client = StoryClient.newClient(config);
   });
 
-  describe("Set Tag", async function () {
-    it("should be able to set tag and wait for transaction", async () => {
+  describe("[Write Functions] SDK should be able to", async function () {
+    it("set tag and wait for transaction", async () => {
       const response = await expect(
         client.tagging.setTag({
           tag: "testTag",
@@ -34,7 +34,7 @@ describe("Tagging Functions", () => {
       expect(response.txHash).not.empty;
     });
 
-    it("should be able to call set tag without waiting for transaction", async () => {
+    it("set tag without waiting for transaction and still receive transaction hash", async () => {
       const response = await expect(
         client.tagging.setTag({
           tag: "testTag",
@@ -63,7 +63,7 @@ describe("Tagging Functions", () => {
       ).to.be.rejected;
     });
 
-    it("should be able to remove tag", async () => {
+    it("remove tag", async () => {
       // Set tag first, then remove it
       const tagString = "bad-tag69";
       const ipId = "0xabCc2421F927c128B9F5a94B612F4541C8E624B6";
