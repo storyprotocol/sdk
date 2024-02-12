@@ -1,6 +1,4 @@
 export { StoryClient } from "./client";
-export { ResourceType } from "./enums/ResourceType";
-export { ActionType } from "./enums/ActionType";
 export { PlatformClient } from "./utils/platform";
 export { AddressZero, HashZero } from "./constants/common";
 

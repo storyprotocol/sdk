@@ -12,7 +12,6 @@ import { InferEventName } from "viem/types/contract";
 import { mainnet, polygonMumbai, sepolia } from "viem/chains";
 
 import { Hex, TypedData } from "../types/common";
-import { DERIVATIVES_ALLOWED_OPTIONS, PARAMS_TAG } from "../constants/license";
 import { SupportedChainIds } from "../types/config";
 
 export function isIntegerString(s: string): boolean {
@@ -135,71 +134,6 @@ export function splitIntoBytes32(hexString: string): Hex[] {
   }
 
   return bytes32Array as Hex[];
-}
-
-export function decodeChannelsOfDistribution(value: Hex): string[] {
-  return splitIntoBytes32(value).map((bytes32) => {
-    // Set the last byte to zero
-    return decodeShortstring(bytes32);
-  });
-}
-
-function hexToFixedLengthBitmask(hexString: string): number[] {
-  if (hexString.startsWith("0x")) {
-    hexString = hexString.slice(2);
-  }
-
-  let binaryString = BigInt("0x" + hexString).toString(2);
-
-  // Pad or truncate the binary string to the desired length
-  binaryString = binaryString.padStart(3, "0").slice(-3);
-
-  return Array.from(binaryString).map((bit) => parseInt(bit));
-}
-
-function hexToBoolean(hexString: string): boolean {
-  if (hexString.toLowerCase() === "0x") {
-    return false;
-  }
-
-  if (hexString.toLowerCase().startsWith("0x")) {
-    hexString = hexString.slice(2);
-  }
-
-  return BigInt("0x" + hexString) !== BigInt(0);
-}
-
-export function decodeDerivativesAllowedOptions(bitmask: number[], options: string[]): string[] {
-  return options.filter((_, index) => bitmask[index] === 1);
-}
-
-export function paramsTagValueDecoder(paramTag: Hex, paramValue: unknown) {
-  const parsedTag = decodeShortstring(paramTag);
-  let value = paramValue;
-  let type = "unknown";
-  switch (parsedTag) {
-    case PARAMS_TAG.CHANNELS_OF_DISTRIBUTION:
-      value = decodeChannelsOfDistribution(paramValue as Hex);
-      type = "string[]";
-      break;
-    case PARAMS_TAG.ATTRIBUTION:
-      value = hexToBoolean(paramValue as Hex);
-      type = "boolean";
-      break;
-    case PARAMS_TAG.DERIVATIVES_ALLOWED:
-      value = hexToBoolean(paramValue as Hex);
-      type = "boolean";
-      break;
-    case PARAMS_TAG.DERIVATIVES_ALLOWED_OPTIONS:
-      value = decodeDerivativesAllowedOptions(
-        hexToFixedLengthBitmask(paramValue as Hex),
-        DERIVATIVES_ALLOWED_OPTIONS,
-      );
-      type = "string[]";
-      break;
-  }
-
-  return { tag: parsedTag, value, type };
 }
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
