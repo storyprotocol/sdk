@@ -1,0 +1,9 @@
+{
+  "extends": "@story-protocol/tsconfig/base.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "module": "CommonJS",
+    "lib": ["dom"]
+  },
+  "include": ["./test"]
+}

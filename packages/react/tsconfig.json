@@ -1,0 +1,11 @@
+{
+  "extends": "@story-protocol/tsconfig/base.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "module": "ESNext",
+    "outDir": "dist",
+    "types": ["mocha"],
+    "lib": ["dom"]
+  },
+  "include": ["src/**/*", "test/**/*"]
+}
