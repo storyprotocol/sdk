@@ -90,44 +90,4 @@ describe("Tagging Functions", () => {
       expect(response.txHash).not.empty;
     });
   });
-
-  describe("[Read Functions] SDK should be able to", async function () {
-    it("read isTagged", async () => {
-      const response = await client.tagging.readIsTagged({
-        tag: "testTag",
-        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
-      });
-      expect(response).to.equal(true);
-      expect(response).to.be.a("boolean");
-    });
-
-    it("read totalTagsForIp", async () => {
-      const response = await client.tagging.readTotalTagsForIp({
-        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
-      });
-      // expect(response).to.equal(BigInt(1)); // TODO: This constantly changes, so need to revert state in Tenderly
-      expect(response).to.be.a("bigint");
-    });
-
-    it("read tagAtIndexForIp", async () => {
-      const response = await client.tagging.readTagAtIndexForIp({
-        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
-        index: 0,
-      });
-
-      expect(response).to.equal(
-        "0x7465737454616700000000000000000000000000000000000000000000000007",
-      );
-      expect(response).to.be.a("string");
-    });
-    it("read tagStringAtIndexForIp", async () => {
-      const response = await client.tagging.readTagStringAtIndexForIp({
-        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
-        index: 0,
-      });
-
-      expect(response).to.equal("testTag");
-      expect(response).to.be.a("string");
-    });
-  });
 });

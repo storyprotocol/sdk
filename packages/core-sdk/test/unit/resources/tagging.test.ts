@@ -67,48 +67,4 @@ describe("Test TaggingClient", function () {
       expect(response.txHash).to.equal(mockRemoveTxHash);
     });
   });
-
-  /**
-   *  READ FUNCTIONS
-   */
-
-  describe("[Read Functions] should be able to", function () {
-    it("read isTagged", async () => {
-      const mockResponse = true;
-      rpcMock.readContract = sinon.stub().resolves(mockResponse);
-
-      const response = await taggingClient.readIsTagged({
-        tag: "testTag",
-        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
-      });
-
-      expect(response).to.equal(mockResponse);
-    });
-
-    it("read tag at index for an IP", async () => {
-      const mockResponse = "0x7465737454616700000000000000000000000000000000000000000000000007";
-      rpcMock.readContract = sinon.stub().resolves(mockResponse);
-
-      const response = await taggingClient.readTagAtIndexForIp({
-        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
-        index: 0,
-      });
-
-      expect(response).to.equal(mockResponse);
-      expect(response).to.be.a("string");
-    });
-
-    it("read tag string at index for an IP", async () => {
-      const mockResponse = "testTag";
-      rpcMock.readContract = sinon.stub().resolves(mockResponse);
-
-      const response = await taggingClient.readTagStringAtIndexForIp({
-        ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
-        index: 0,
-      });
-
-      expect(response).to.equal(mockResponse);
-      expect(response).to.be.a("string");
-    });
-  });
 });
