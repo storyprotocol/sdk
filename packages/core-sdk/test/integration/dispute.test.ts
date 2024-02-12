@@ -1,11 +1,17 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe.skip("Dispute Functions", () => {
+import { StoryClient, StoryConfig } from "../../src";
+import {
+  CancelDisputeRequest,
+  RaiseDisputeRequest,
+  ResolveDisputeRequest,
+  SetDisputeJudgementRequest,
+} from "../../src/types/resources/dispute";
+
+describe("Dispute Functions", () => {
   let client: StoryClient;
-  let senderAddress: string;
 
   before(function () {
     const config: StoryConfig = {
@@ -13,125 +19,66 @@ describe.skip("Dispute Functions", () => {
       account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
     };
 
-    senderAddress = config.account.address;
     client = StoryClient.newClient(config);
   });
-  /*
-  it("should be able to whitelist dispute tags and wait for transaction", async () => {
-    const response = await expect(
-      client.dispute.whitelistDisputeTags({
-        tag: "testTag",
-        allowed: true,
+  describe("[Write Functions] Should be able to", async function () {
+    it.skip("raise a dispute", async () => {
+      const raiseDisputeRequest: RaiseDisputeRequest = {
+        targetIpId: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
+        arbitrationPolicy: "0x61eb3DBc2c60Cf6aFde43a9286D89Da264899003",
+        linkToDisputeEvidence: "foo",
+        targetTag: "bar",
         txOptions: {
-          waitForTransaction: false,
+          waitForTransaction: true,
         },
-      }),
-    ).to.not.be.rejected;
+      };
+      const response = await expect(client.dispute.raiseDispute(raiseDisputeRequest)).to.not.be
+        .rejected;
 
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
-  });
-*/
-  it("should be able to whitelist arbitration policy and wait for transaction", async () => {
-    const response = await expect(
-      client.dispute.whitelistArbitrationPolicy({
-        arbitrationPolicy: "0x90B53D67250c45973E81a6F832d6c4496108ac39",
-        allowed: true,
-        txOptions: {
-          waitForTransaction: false,
-        },
-      }),
-    ).to.not.be.rejected;
-
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
-  });
-
-  it("should be able to whitelist arbitration relayer and wait for transaction", async () => {
-    await client.dispute.whitelistArbitrationPolicy({
-      arbitrationPolicy: "0x90B53D67250c45973E81a6F832d6c4496108ac39",
-      allowed: true,
-      txOptions: {
-        waitForTransaction: true,
-      },
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
     });
 
-    const response = await expect(
-      client.dispute.whitelistArbitrationRelayer({
-        arbitrationPolicy: "0x90B53D67250c45973E81a6F832d6c4496108ac39",
-        arbitrationRelayer: "0x90B53D67250c45973E81a6F832d6c4496108ac31",
-        allowed: true,
+    it.skip("resolve a dispute", async () => {
+      const resolveDisputeRequest: ResolveDisputeRequest = {
+        disputeId: 5,
         txOptions: {
-          waitForTransaction: false,
+          waitForTransaction: true,
         },
-      }),
-    ).to.not.be.rejected;
+      };
+      const response = await expect(client.dispute.resolveDispute(resolveDisputeRequest)).to.not.be
+        .rejected;
 
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
-  });
-  /*
-  it.skip("should be able to raise dispute and wait for transaction", async () => {
-    // Contract not complete
-
-    const whitelistTag = "testTag";
-    await client.dispute.whitelistDisputeTags({
-      tag: whitelistTag,
-      allowed: true,
-      txOptions: {
-        waitForTransaction: true,
-      },
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
     });
 
-    const arbPolicy = "0x90B53D67250c45973E81a6F832d6c4496108ac39";
-    await client.dispute.whitelistArbitrationPolicy({
-      arbitrationPolicy: arbPolicy,
-      allowed: true,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-
-    const response = await expect(
-      client.dispute.raiseDispute({
-        arbitrationPolicy: arbPolicy,
-        targetIpId: "0x90B53D67250c45973E81a6F832d6c4496108ac31",
-        linkToDisputeEvidence: "https://example.com",
-        targetTag: whitelistTag,
+    it.skip("cancel a dispute", async () => {
+      const cancelDispute: CancelDisputeRequest = {
+        disputeId: 5,
         txOptions: {
-          waitForTransaction: false,
+          waitForTransaction: true,
         },
-      }),
-    ).to.not.be.rejected;
+      };
+      const response = await expect(client.dispute.cancelDispute(cancelDispute)).to.not.be.rejected;
 
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
-  });
-*/
-  it.skip("should be able to set dispute judgement and wait for transaction", async () => {
-    // Need to set up Dispute memory dispute = disputes[_disputeId];
-
-    await client.dispute.whitelistArbitrationRelayer({
-      arbitrationPolicy: "0x90B53D67250c45973E81a6F832d6c4496108ac39",
-      arbitrationRelayer: "0x90B53D67250c45973E81a6F832d6c4496108ac31",
-      allowed: true,
-      txOptions: {
-        waitForTransaction: false,
-      },
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
     });
 
-    const response = await expect(
-      client.dispute.setDisputeJudgement({
-        disputeId: 1,
+    it.skip("set a dispute judgement", async () => {
+      const setDisputeJudgementRequest: SetDisputeJudgementRequest = {
+        disputeId: 5,
         decision: true,
-        calldata: "0x",
         txOptions: {
-          waitForTransaction: false,
+          waitForTransaction: true,
         },
-      }),
-    ).to.not.be.rejected;
+      };
+      const response = await expect(client.dispute.setDisputeJudgement(setDisputeJudgementRequest))
+        .to.not.be.rejected;
 
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+    });
   });
 });

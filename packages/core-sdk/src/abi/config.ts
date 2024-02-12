@@ -32,7 +32,7 @@ export const AccessControllerConfig = {
 };
 
 export const DisputeModuleConfig = {
-  abi: DisputeModuleABI,
+  abi: [...DisputeModuleABI, ...ErrorsABI],
   address: getAddress(process.env.DISPUTE_MODULE || process.env.NEXT_PUBLIC_DISPUTE_MODULE || ""),
 };
 
