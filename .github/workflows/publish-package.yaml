@@ -50,6 +50,11 @@ jobs:
   build-test-publish:
     needs: [print_version_to_publish, fetch_latest_version]
     runs-on: ubuntu-latest
+    environment: 'beta-sepolia'
+    env:
+      RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
