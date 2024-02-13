@@ -1,19 +1,16 @@
-import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
-import { PermissionReadOnlyClient } from "./permissionReadOnly";
-import { IPAccountImplMerged } from "../abi/ipAccountImpl.abi";
-import { AccessControllerABImerged } from "../abi/accessController.abi";
+import { IPAccountABI, AccessControllerConfig } from "../abi/config";
+import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 
-// import { HashZero } from "../constants/common";
-
-export class PermissionClient extends PermissionReadOnlyClient {
+export class PermissionClient {
   private readonly wallet: WalletClient;
+  private readonly rpcClient: PublicClient;
 
-  constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
-    super(httpClient, rpcClient);
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+    this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
 
@@ -26,20 +23,18 @@ export class PermissionClient extends PermissionReadOnlyClient {
   public async setPermission(request: setPermissionsRequest): Promise<setPermissionsResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountImplMerged,
+        abi: IPAccountABI,
         address: getAddress(request.ipAsset),
       };
-      const accessController = getAddress(
-        process.env.ACCESS_CONTROLLER || process.env.NEXT_PUBLIC_ACCESS_CONTROLLER || "",
-      ); //to
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          accessController,
-          0,
+          AccessControllerConfig.address,
+          parseToBigInt(0),
           encodeFunctionData({
-            abi: AccessControllerABImerged,
+            abi: AccessControllerConfig.abi,
             functionName: "setPermission",
             args: [
               getAddress(request.ipAsset), // 0x Address
@@ -54,16 +49,16 @@ export class PermissionClient extends PermissionReadOnlyClient {
       });
 
       const txHash = await this.wallet.writeContract(call);
-      // TODO: the emit event doesn't return anything
-      // if (request.txOptions?.waitForTransaction) {
-      //   await waitTxAndFilterLog(this.rpcClient, txHash, {
-      //     ...AccessControllerConfig,
-      //     eventName: "PermissionSet",
-      //   });
-      //   return { txHash: txHash };
-      // } else {
-      return { txHash: txHash };
-      // }
+
+      if (request.txOptions?.waitForTransaction) {
+        await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...AccessControllerConfig,
+          eventName: "PermissionSet",
+        });
+        return { txHash: txHash, success: true };
+      } else {
+        return { txHash: txHash };
+      }
     } catch (error) {
       handleError(error, "Failed to set permissions");
     }

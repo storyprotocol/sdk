@@ -1,10 +1,23 @@
 export default [
   {
+    inputs: [],
+    name: "name",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
     inputs: [
       {
-        internalType: "uint256",
-        name: "licenseId",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "licenseIds",
+        type: "uint256[]",
       },
       {
         internalType: "address",
@@ -22,14 +35,19 @@ export default [
         type: "string",
       },
       {
-        internalType: "string",
-        name: "ipDescription",
-        type: "string",
-      },
-      {
         internalType: "bytes32",
         name: "contentHash",
         type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "externalURL",
+        type: "string",
+      },
+      {
+        internalType: "uint32",
+        name: "minRoyalty",
+        type: "uint32",
       },
     ],
     name: "registerDerivativeIp",
@@ -53,6 +71,21 @@ export default [
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "ipName",
+        type: "string",
+      },
+      {
+        internalType: "bytes32",
+        name: "contentHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "externalURL",
+        type: "string",
       },
     ],
     name: "registerRootIp",

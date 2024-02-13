@@ -3,17 +3,17 @@ export default [
     inputs: [
       {
         internalType: "address",
-        name: "to_",
+        name: "to",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "value_",
+        name: "value",
         type: "uint256",
       },
       {
         internalType: "bytes",
-        name: "data_",
+        name: "data",
         type: "bytes",
       },
     ],
@@ -26,30 +26,6 @@ export default [
       },
     ],
     stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "signer_",
-        type: "address",
-      },
-      {
-        internalType: "bytes",
-        name: "data_",
-        type: "bytes",
-      },
-    ],
-    name: "isValidSigner",
-    outputs: [
-      {
-        internalType: "bytes4",
-        name: "",
-        type: "bytes4",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
 ] as const;

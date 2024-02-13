@@ -1,4 +1,3 @@
-import { AxiosInstance } from "axios";
 import * as sinon from "sinon";
 import { createMock } from "../testUtils";
 import chai from "chai";
@@ -10,67 +9,62 @@ import { AddressZero } from "../../../src";
 
 chai.use(chaiAsPromised);
 
-describe("Test TaggingClient", function () {
+describe("Test TaggingClient (unit tests)", function () {
   let taggingClient: TaggingClient;
-  let axiosMock: AxiosInstance;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
 
   beforeEach(function () {
-    axiosMock = createMock<AxiosInstance>();
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
-    taggingClient = new TaggingClient(axiosMock, rpcMock, walletMock);
+    taggingClient = new TaggingClient(rpcMock, walletMock);
   });
 
   afterEach(function () {
     sinon.restore();
   });
 
-  describe("Test TaggingReadOnlyClient.list", function () {
-    const tagMock1 = {
-      id: "0xef425fd7c8d9f1719d09d83c5a751f9cd62f4cb5-authentic",
-      ipId: "0xef425fd7c8d9f1719d09d83c5a751f9cd62f4cb5",
-      tag: "authentic",
-    };
-
-    it("should be able to set a tag", async function () {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+  describe("Should be able to", async function () {
+    it("set tag and wait for transaction", async () => {
+      const mockTxHash = "0xeef10fc5170f669b86c4cd0444882a96087221325f8bf2f55d6188633aa7be7c";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(txHash);
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
+      walletMock.writeContract = sinon.stub().resolves(mockTxHash);
 
-      const res = await taggingClient.setTag({
-        tag: "test",
-        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        txOptions: {
-          waitForTransaction: false,
-        },
-      });
+      const response = await expect(
+        taggingClient.setTag({
+          tag: "testTag",
+          ipId: "0xabCc2421F927c128B9F5a94B612F4541C8E624B6",
+          txOptions: {
+            waitForTransaction: true,
+          },
+        }),
+      ).to.not.be.rejected;
 
-      expect(res.txHash).equal(txHash);
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
     });
 
-    it("should be able to remove a tag", async function () {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+    it("remove tag", async () => {
+      const tagString = "bad-tag69";
+      const ipId = "0xabCc2421F927c128B9F5a94B612F4541C8E624B6";
+      const mockRemoveTxHash = "0xremove123";
+
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(txHash);
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
+      walletMock.writeContract = sinon.stub().resolves(mockRemoveTxHash);
 
-      const res = await taggingClient.removeTag({
-        tag: "test",
-        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        txOptions: {
-          waitForTransaction: false,
-        },
-      });
+      const response = await expect(
+        taggingClient.removeTag({
+          tag: tagString,
+          ipId: ipId,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        }),
+      ).to.not.be.rejected;
 
-      expect(res.txHash).equal(txHash);
-    });
-
-    it("should be able to throw an error", async function () {
-      axiosMock.post = sinon.stub().rejects(new Error("HTTP 500"));
-      await expect(taggingClient.list()).to.be.rejectedWith("HTTP 500");
+      expect(response.txHash).to.equal(mockRemoveTxHash);
     });
   });
 });

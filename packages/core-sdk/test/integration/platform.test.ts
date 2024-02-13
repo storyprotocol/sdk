@@ -1,12 +1,11 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig, Client } from "../../src";
+import { StoryClient, StoryConfig } from "../../src";
 import { createFileReaderMock } from "../unit/testUtils";
-import { goerli } from "viem/chains";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe.skip("Platform client integration tests", () => {
-  let client: Client;
+describe("Platform client integration tests", () => {
+  let client: StoryClient;
   before(() => {
     global.FileReader = createFileReaderMock(
       "data:base64,dGVzdCBzdHJpbmcgYmxvYg==",
@@ -16,7 +15,7 @@ describe.skip("Platform client integration tests", () => {
 
   beforeEach(function () {
     const config: StoryConfig = {
-      chain: goerli,
+      chainId: "sepolia",
       transport: http(process.env.RPC_PROVIDER_URL),
       account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
     };
@@ -24,7 +23,7 @@ describe.skip("Platform client integration tests", () => {
     client = StoryClient.newClient(config);
   });
 
-  it.skip("should return arweave url when a buffer file is uploaded to arweave", async () => {
+  it("should return arweave url when a buffer file is uploaded to arweave", async () => {
     const response = await client.platform.uploadFile(Buffer.from("test"), "image/png");
     expect(response).to.have.property("uri");
     expect(response.uri).to.be.a("string");

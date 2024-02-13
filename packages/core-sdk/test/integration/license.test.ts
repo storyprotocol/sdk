@@ -2,8 +2,9 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import "./ipAsset.test";
 
-describe("IP Asset Functions", () => {
+describe("License Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -18,14 +19,15 @@ describe("IP Asset Functions", () => {
     client = StoryClient.newClient(config);
   });
 
-  describe("Create root IP Asset", async function () {
-    it("should not throw error when creating a root IP Asset", async () => {
+  describe("Mint Licenses", async function () {
+    it("should not throw error when minting a license", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.ipAsset.registerRootIp({
-          policyId: "0",
-          tokenContractAddress: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
-          tokenId: "110",
+        client.license.mintLicense({
+          policyId: "2",
+          licensorIpId: "0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431",
+          mintAmount: 1,
+          receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -36,14 +38,14 @@ describe("IP Asset Functions", () => {
       expect(response.txHash).not.empty;
 
       if (waitForTransaction) {
-        expect(response.ipId).to.be.a("string");
-        expect(response.ipId).not.empty;
+        expect(response.licenseId).to.be.a("string");
+        expect(response.licenseId).not.empty;
       }
     });
   });
 
-  describe("Create derivative IP Asset", async function () {
-    it("should not throw error when creating a derivative IP Asset", async () => {
+  describe("Link IP To Parents", async function () {
+    it("should not throw error when link IP to parents", async () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
         policyId: "2",
@@ -55,13 +57,13 @@ describe("IP Asset Functions", () => {
         },
       });
       const licenseId = mintLicenseResponse.licenseId!;
-      // 2. register derivative
+      // 2. link ip to parents
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.ipAsset.registerDerivativeIp({
+        client.license.linkIpToParent({
           licenseIds: [licenseId],
-          tokenContractAddress: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
-          tokenId: "111",
+          childIpId: "0x92f54fe4cfca3c0f7bdf4798ed0d07a2c209577e",
+          minRoyalty: 1,
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -72,8 +74,8 @@ describe("IP Asset Functions", () => {
       expect(response.txHash).not.empty;
 
       if (waitForTransaction) {
-        expect(response.ipId).to.be.a("string");
-        expect(response.ipId).not.empty;
+        expect(response.success).to.be.a("boolean");
+        expect(response.success).to.equal(true);
       }
     });
   });

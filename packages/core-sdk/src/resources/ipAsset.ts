@@ -1,9 +1,8 @@
-import { AxiosInstance } from "axios";
 import { PublicClient, WalletClient, getAddress } from "viem";
 
-import { IPAssetReadOnlyClient } from "./ipAssetReadOnly";
 import { handleError } from "../utils/errors";
-import { IPAccountRegistryConfig } from "../abi/ipAccountRegistry.abi";
+import { HashZero } from "../constants/common";
+import { IPAssetRegistryConfig, RegistrationModuleConfig } from "../abi/config";
 import {
   RegisterDerivativeIpRequest,
   RegisterDerivativeIpResponse,
@@ -11,14 +10,14 @@ import {
   RegisterRootIpResponse,
 } from "../types/resources/ipAsset";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
-import { RegistrationModuleConfig } from "../abi/registrationModule.abi";
 
-export class IPAssetClient extends IPAssetReadOnlyClient {
+export class IPAssetClient {
   private readonly wallet: WalletClient;
+  private readonly rpcClient: PublicClient;
 
-  constructor(httpClient: AxiosInstance, rpcClient: PublicClient, wallet: WalletClient) {
-    super(httpClient, rpcClient);
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
+    this.rpcClient = rpcClient;
   }
 
   /**
@@ -36,6 +35,9 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
           parseToBigInt(request.policyId),
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
+          request.ipName || "",
+          request.contentHash || HashZero,
+          request.uri || "",
         ],
         account: this.wallet.account,
       });
@@ -43,10 +45,10 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...IPAccountRegistryConfig,
-          eventName: "IPAccountRegistered",
+          ...IPAssetRegistryConfig,
+          eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipAccountId: targetLog?.args.account.toString() };
+        return { txHash: txHash, ipId: targetLog.args.ipId };
       } else {
         return { txHash: txHash };
       }
@@ -65,26 +67,32 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
     request: RegisterDerivativeIpRequest,
   ): Promise<RegisterDerivativeIpResponse> {
     try {
+      const licenseIds: bigint[] = [];
+      request.licenseIds.forEach(function (licenseId) {
+        licenseIds.push(parseToBigInt(licenseId));
+      });
       const { request: call } = await this.rpcClient.simulateContract({
         ...RegistrationModuleConfig,
         functionName: "registerDerivativeIp",
         args: [
-          parseToBigInt(request.licenseId),
+          licenseIds,
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
-          request.ipName,
-          request.ipDescription,
-          getAddress(request.hash), // Byte32
+          request.ipName || "",
+          request.contentHash || HashZero,
+          request.uri || "",
+          request.minRoyalty || 0,
         ],
+        account: this.wallet.account,
       });
 
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...IPAccountRegistryConfig,
-          eventName: "IPAccountRegistered",
+          ...IPAssetRegistryConfig,
+          eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipAccountId: targetLog?.args.account.toString() };
+        return { txHash: txHash, ipId: targetLog.args.ipId };
       } else {
         return { txHash: txHash };
       }
@@ -92,42 +100,4 @@ export class IPAssetClient extends IPAssetReadOnlyClient {
       handleError(error, "Failed to register derivative IP");
     }
   }
-
-  // TODO: move to License resource
-  // public async createPolicy(request: addPolicyRequest): Promise<addPolicyResponse> {
-  //   try {
-  //     const { request: call } = await this.rpcClient.simulateContract({
-  //       ...LicenseRegistryConfig,
-  //       functionName: "addPolicy",
-  //       args: [
-  //         {
-  //           frameworkId: parseToBigInt(request.frameworkId),
-  //           mintingParamValues: request.mintingParamValues.map((add) => getAddress(add)),
-  //           activationParamValues: request.activationParamValues.map((add) => getAddress(add)),
-  //           needsActivation: request.needsActivation,
-  //           linkParentParamValues: request.linkParentParamValues.map((add) => getAddress(add)),
-  //         },
-  //       ], // TODO: add args
-  //     });
-
-  //     const txHash = await this.wallet.writeContract(call);
-  //     // TODO: need an emitted event
-  //     // if (request.txOptions?.waitForTransaction) {
-  //     //   const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-  //     //     ...IPAccountRegistryConfig,
-  //     //     eventName: "IPAccountRegistered",
-  //     //   });
-  //     //   return { txHash: txHash, policyId: targetLog?.args.account.toString() };
-  //     // } else {
-  //     return { txHash: txHash };
-  //     // }
-  //   } catch (error) {
-  //     handleError(error, "Failed to register derivative IP");
-  //   }
-  // }
-
-  // TODO: move to License resource
-  // public async addPolicyToIp(request: addPolicyToIpRequest): Promise<addPolicyToIpResponse> {
-  // TODO: use getIpAccount to get the ipId
-  // }
 }
