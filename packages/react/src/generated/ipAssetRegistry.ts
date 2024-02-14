@@ -3,451 +3,344 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from 'wagmi/codegen';
+} from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IpAssetRegistry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
+ */
 export const ipAssetRegistryAbi = [
   {
-    stateMutability: 'nonpayable',
-    type: 'constructor',
+    stateMutability: "nonpayable",
+    type: "constructor",
     inputs: [
-      { name: 'accessController', internalType: 'address', type: 'address' },
-      { name: 'erc6551Registry', internalType: 'address', type: 'address' },
-      { name: 'ipAccountImpl', internalType: 'address', type: 'address' },
-      { name: 'moduleRegistry', internalType: 'address', type: 'address' },
-      { name: 'governance', internalType: 'address', type: 'address' },
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "erc6551Registry", internalType: "address", type: "address" },
+      { name: "ipAccountImpl", internalType: "address", type: "address" },
+      { name: "moduleRegistry", internalType: "address", type: "address" },
+      { name: "governance", internalType: "address", type: "address" },
     ],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'ACCESS_CONTROLLER',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'ERC6551_PUBLIC_REGISTRY',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "ERC6551_PUBLIC_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'IP_ACCOUNT_IMPL',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "IP_ACCOUNT_IMPL",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'IP_ACCOUNT_SALT',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    name: "IP_ACCOUNT_SALT",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'MODULE_REGISTRY',
-    outputs: [
-      { name: '', internalType: 'contract IModuleRegistry', type: 'address' },
-    ],
+    name: "MODULE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IModuleRegistry", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'REGISTRATION_MODULE',
-    outputs: [
-      {
-        name: '',
-        internalType: 'contract IRegistrationModule',
-        type: 'address',
-      },
-    ],
+    name: "REGISTRATION_MODULE",
+    outputs: [{ name: "", internalType: "contract IRegistrationModule", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'getIPAccountImpl',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "getIPAccountImpl",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'governance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "governance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [
-      { name: 'chainId_', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract_', internalType: 'address', type: 'address' },
-      { name: 'tokenId_', internalType: 'uint256', type: 'uint256' },
+      { name: "chainId_", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract_", internalType: "address", type: "address" },
+      { name: "tokenId_", internalType: "uint256", type: "uint256" },
     ],
-    name: 'ipAccount',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "ipAccount",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [
-      { name: 'chainId', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'ipId',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "ipId",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [
-      { name: 'owner', internalType: 'address', type: 'address' },
-      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "operator", internalType: "address", type: "address" },
     ],
-    name: 'isApprovedForAll',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    name: "isApprovedForAll",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [{ name: 'id', internalType: 'address', type: 'address' }],
-    name: 'isRegistered',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: "view",
+    type: "function",
+    inputs: [{ name: "id", internalType: "address", type: "address" }],
+    name: "isRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [{ name: 'id', internalType: 'address', type: 'address' }],
-    name: 'metadata',
-    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: "view",
+    type: "function",
+    inputs: [{ name: "id", internalType: "address", type: "address" }],
+    name: "metadata",
+    outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [{ name: 'id', internalType: 'address', type: 'address' }],
-    name: 'metadataProvider',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: "view",
+    type: "function",
+    inputs: [{ name: "id", internalType: "address", type: "address" }],
+    name: "metadataProvider",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'metadataProvider',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: "metadataProvider",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
     inputs: [
-      { name: 'licenseIds', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: 'minRoyalty', internalType: 'uint32', type: 'uint32' },
-      { name: 'chainId', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
-      { name: 'resolverAddr', internalType: 'address', type: 'address' },
-      { name: 'createAccount', internalType: 'bool', type: 'bool' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "minRoyalty", internalType: "uint32", type: "uint32" },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "resolverAddr", internalType: "address", type: "address" },
+      { name: "createAccount", internalType: "bool", type: "bool" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'register',
-    outputs: [{ name: 'id', internalType: 'address', type: 'address' }],
+    name: "register",
+    outputs: [{ name: "id", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
     inputs: [
-      { name: 'chainId', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
-      { name: 'resolverAddr', internalType: 'address', type: 'address' },
-      { name: 'createAccount', internalType: 'bool', type: 'bool' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "resolverAddr", internalType: "address", type: "address" },
+      { name: "createAccount", internalType: "bool", type: "bool" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'register',
-    outputs: [{ name: 'id', internalType: 'address', type: 'address' }],
+    name: "register",
+    outputs: [{ name: "id", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
     inputs: [
-      { name: 'chainId_', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract_', internalType: 'address', type: 'address' },
-      { name: 'tokenId_', internalType: 'uint256', type: 'uint256' },
+      { name: "chainId_", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract_", internalType: "address", type: "address" },
+      { name: "tokenId_", internalType: "uint256", type: "uint256" },
     ],
-    name: 'registerIpAccount',
-    outputs: [
-      { name: 'ipAccountAddress', internalType: 'address', type: 'address' },
-    ],
+    name: "registerIpAccount",
+    outputs: [{ name: "ipAccountAddress", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [{ name: 'id', internalType: 'address', type: 'address' }],
-    name: 'resolver',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: "view",
+    type: "function",
+    inputs: [{ name: "id", internalType: "address", type: "address" }],
+    name: "resolver",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
     inputs: [
-      { name: 'operator', internalType: 'address', type: 'address' },
-      { name: 'approved', internalType: 'bool', type: 'bool' },
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "approved", internalType: "bool", type: "bool" },
     ],
-    name: 'setApprovalForAll',
+    name: "setApprovalForAll",
     outputs: [],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
-    ],
-    name: 'setGovernance',
+    stateMutability: "nonpayable",
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
     outputs: [],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
     inputs: [
-      { name: 'id', internalType: 'address', type: 'address' },
-      { name: 'provider', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "id", internalType: "address", type: "address" },
+      { name: "provider", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'setMetadata',
+    name: "setMetadata",
     outputs: [],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [
-      { name: 'newMetadataProvider', internalType: 'address', type: 'address' },
-    ],
-    name: 'setMetadataProvider',
+    stateMutability: "nonpayable",
+    type: "function",
+    inputs: [{ name: "newMetadataProvider", internalType: "address", type: "address" }],
+    name: "setMetadataProvider",
     outputs: [],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [
-      { name: 'registrationModule', internalType: 'address', type: 'address' },
-    ],
-    name: 'setRegistrationModule',
+    stateMutability: "nonpayable",
+    type: "function",
+    inputs: [{ name: "registrationModule", internalType: "address", type: "address" }],
+    name: "setRegistrationModule",
     outputs: [],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
     inputs: [
-      { name: 'id', internalType: 'address', type: 'address' },
-      { name: 'resolverAddr', internalType: 'address', type: 'address' },
+      { name: "id", internalType: "address", type: "address" },
+      { name: "resolverAddr", internalType: "address", type: "address" },
     ],
-    name: 'setResolver',
+    name: "setResolver",
     outputs: [],
   },
   {
-    stateMutability: 'view',
-    type: 'function',
+    stateMutability: "view",
+    type: "function",
     inputs: [],
-    name: 'totalSupply',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: "totalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      {
-        name: 'owner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'operator',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      { name: 'approved', internalType: 'bool', type: 'bool', indexed: false },
+      { name: "owner", internalType: "address", type: "address", indexed: true },
+      { name: "operator", internalType: "address", type: "address", indexed: true },
+      { name: "approved", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'ApprovalForAll',
+    name: "ApprovalForAll",
   },
   {
-    type: 'event',
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address", indexed: true }],
+    name: "GovernanceUpdated",
+  },
+  {
+    type: "event",
     anonymous: false,
     inputs: [
-      {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
+      { name: "account", internalType: "address", type: "address", indexed: true },
+      { name: "implementation", internalType: "address", type: "address", indexed: true },
+      { name: "chainId", internalType: "uint256", type: "uint256", indexed: true },
+      { name: "tokenContract", internalType: "address", type: "address", indexed: false },
+      { name: "tokenId", internalType: "uint256", type: "uint256", indexed: false },
     ],
-    name: 'GovernanceUpdated',
+    name: "IPAccountRegistered",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'chainId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'tokenContract',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
+      { name: "ipId", internalType: "address", type: "address", indexed: false },
+      { name: "chainId", internalType: "uint256", type: "uint256", indexed: true },
+      { name: "tokenContract", internalType: "address", type: "address", indexed: true },
+      { name: "tokenId", internalType: "uint256", type: "uint256", indexed: true },
+      { name: "resolver", internalType: "address", type: "address", indexed: false },
+      { name: "provider", internalType: "address", type: "address", indexed: false },
+      { name: "metadata", internalType: "bytes", type: "bytes", indexed: false },
     ],
-    name: 'IPAccountRegistered',
+    name: "IPRegistered",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      {
-        name: 'ipId',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'chainId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'tokenContract',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'resolver',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'provider',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'metadata',
-        internalType: 'bytes',
-        type: 'bytes',
-        indexed: false,
-      },
+      { name: "ipId", internalType: "address", type: "address", indexed: false },
+      { name: "resolver", internalType: "address", type: "address", indexed: false },
     ],
-    name: 'IPRegistered',
+    name: "IPResolverSet",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      {
-        name: 'ipId',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'resolver',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      { name: "metadataProvider", internalType: "address", type: "address", indexed: true },
+      { name: "metadata", internalType: "bytes", type: "bytes", indexed: false },
     ],
-    name: 'IPResolverSet',
+    name: "MetadataSet",
   },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
-      {
-        name: 'metadataProvider',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'metadata',
-        internalType: 'bytes',
-        type: 'bytes',
-        indexed: false,
-      },
-    ],
-    name: 'MetadataSet',
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
   },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
-  {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
-  },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
-  { type: 'error', inputs: [], name: 'IPAccountRegistry_InvalidIpAccountImpl' },
-  { type: 'error', inputs: [], name: 'IPAssetRegistry__AlreadyRegistered' },
-  { type: 'error', inputs: [], name: 'IPAssetRegistry__InvalidAccount' },
-  { type: 'error', inputs: [], name: 'IPAssetRegistry__NotYetRegistered' },
-  {
-    type: 'error',
-    inputs: [],
-    name: 'IPAssetRegistry__RegistrantUnauthorized',
-  },
-  { type: 'error', inputs: [], name: 'IPAssetRegistry__Unauthorized' },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "IPAccountRegistry_InvalidIpAccountImpl" },
+  { type: "error", inputs: [], name: "IPAssetRegistry__AlreadyRegistered" },
+  { type: "error", inputs: [], name: "IPAssetRegistry__InvalidAccount" },
+  { type: "error", inputs: [], name: "IPAssetRegistry__NotYetRegistered" },
+  { type: "error", inputs: [], name: "IPAssetRegistry__RegistrantUnauthorized" },
+  { type: "error", inputs: [], name: "IPAssetRegistry__Unauthorized" },
 ] as const;
 
-export const ipAssetRegistryAddress =
-  '0xF2c66aAd2287F3fa00C3461862612Eaf1FAAEcDb' as const;
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
+ */
+export const ipAssetRegistryAddress = {
+  11155111: "0x7567ea73697De50591EEc317Fe2b924252c41608",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
+ */
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
   abi: ipAssetRegistryAbi,
@@ -459,6 +352,8 @@ export const ipAssetRegistryConfig = {
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
@@ -467,175 +362,195 @@ export const useReadIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryAccessController =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'ACCESS_CONTROLLER',
-  });
+export const useReadIpAssetRegistryAccessController = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "ACCESS_CONTROLLER",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ERC6551_PUBLIC_REGISTRY"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryErc6551PublicRegistry =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'ERC6551_PUBLIC_REGISTRY',
-  });
+export const useReadIpAssetRegistryErc6551PublicRegistry = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "ERC6551_PUBLIC_REGISTRY",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"IP_ACCOUNT_IMPL"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryIpAccountImpl =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'IP_ACCOUNT_IMPL',
-  });
+export const useReadIpAssetRegistryIpAccountImpl = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "IP_ACCOUNT_IMPL",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"IP_ACCOUNT_SALT"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryIpAccountSalt =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'IP_ACCOUNT_SALT',
-  });
+export const useReadIpAssetRegistryIpAccountSalt = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "IP_ACCOUNT_SALT",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"MODULE_REGISTRY"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryModuleRegistry =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'MODULE_REGISTRY',
-  });
+export const useReadIpAssetRegistryModuleRegistry = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "MODULE_REGISTRY",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"REGISTRATION_MODULE"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryRegistrationModule =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'REGISTRATION_MODULE',
-  });
+export const useReadIpAssetRegistryRegistrationModule = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "REGISTRATION_MODULE",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"getGovernance"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryGetGovernance =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'getGovernance',
-  });
+export const useReadIpAssetRegistryGetGovernance = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "getGovernance",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"getIPAccountImpl"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryGetIpAccountImpl =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'getIPAccountImpl',
-  });
+export const useReadIpAssetRegistryGetIpAccountImpl = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "getIPAccountImpl",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"governance"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryGovernance =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'governance',
-  });
+export const useReadIpAssetRegistryGovernance = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "governance",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ipAccount"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryIpAccount =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'ipAccount',
-  });
+export const useReadIpAssetRegistryIpAccount = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "ipAccount",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ipId"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryIpId = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
-  functionName: 'ipId',
+  functionName: "ipId",
 });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"isApprovedForAll"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryIsApprovedForAll =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'isApprovedForAll',
-  });
+export const useReadIpAssetRegistryIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "isApprovedForAll",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"isRegistered"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryIsRegistered =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'isRegistered',
-  });
+export const useReadIpAssetRegistryIsRegistered = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "isRegistered",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"metadata"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryMetadata =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'metadata',
-  });
+export const useReadIpAssetRegistryMetadata = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "metadata",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"metadataProvider"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryMetadataProvider =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'metadataProvider',
-  });
+export const useReadIpAssetRegistryMetadataProvider = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "metadataProvider",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"resolver"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryResolver =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'resolver',
-  });
+export const useReadIpAssetRegistryResolver = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "resolver",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"totalSupply"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useReadIpAssetRegistryTotalSupply =
-  /*#__PURE__*/ createUseReadContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'totalSupply',
-  });
+export const useReadIpAssetRegistryTotalSupply = /*#__PURE__*/ createUseReadContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "totalSupply",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistry = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
@@ -644,238 +559,262 @@ export const useWriteIpAssetRegistry = /*#__PURE__*/ createUseWriteContract({
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"register"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistryRegister =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'register',
-  });
+export const useWriteIpAssetRegistryRegister = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "register",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"registerIpAccount"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistryRegisterIpAccount =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'registerIpAccount',
-  });
+export const useWriteIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "registerIpAccount",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistrySetApprovalForAll =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setApprovalForAll',
-  });
+export const useWriteIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setApprovalForAll",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setGovernance"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistrySetGovernance =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setGovernance',
-  });
+export const useWriteIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setGovernance",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadata"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistrySetMetadata =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setMetadata',
-  });
+export const useWriteIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setMetadata",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadataProvider"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistrySetMetadataProvider =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setMetadataProvider',
-  });
+export const useWriteIpAssetRegistrySetMetadataProvider = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setMetadataProvider",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setRegistrationModule"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistrySetRegistrationModule =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setRegistrationModule',
-  });
+export const useWriteIpAssetRegistrySetRegistrationModule = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setRegistrationModule",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setResolver"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWriteIpAssetRegistrySetResolver =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setResolver',
-  });
+export const useWriteIpAssetRegistrySetResolver = /*#__PURE__*/ createUseWriteContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setResolver",
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useSimulateIpAssetRegistry =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-  });
+export const useSimulateIpAssetRegistry = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"register"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useSimulateIpAssetRegistryRegister =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'register',
-  });
+export const useSimulateIpAssetRegistryRegister = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "register",
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"registerIpAccount"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useSimulateIpAssetRegistryRegisterIpAccount =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'registerIpAccount',
-  });
+export const useSimulateIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "registerIpAccount",
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useSimulateIpAssetRegistrySetApprovalForAll =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setApprovalForAll',
-  });
+export const useSimulateIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setApprovalForAll",
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setGovernance"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useSimulateIpAssetRegistrySetGovernance =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setGovernance',
-  });
+export const useSimulateIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setGovernance",
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadata"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useSimulateIpAssetRegistrySetMetadata =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setMetadata',
-  });
+export const useSimulateIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setMetadata",
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadataProvider"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetMetadataProvider =
   /*#__PURE__*/ createUseSimulateContract({
     abi: ipAssetRegistryAbi,
     address: ipAssetRegistryAddress,
-    functionName: 'setMetadataProvider',
+    functionName: "setMetadataProvider",
   });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setRegistrationModule"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetRegistrationModule =
   /*#__PURE__*/ createUseSimulateContract({
     abi: ipAssetRegistryAbi,
     address: ipAssetRegistryAddress,
-    functionName: 'setRegistrationModule',
+    functionName: "setRegistrationModule",
   });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setResolver"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useSimulateIpAssetRegistrySetResolver =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: 'setResolver',
-  });
+export const useSimulateIpAssetRegistrySetResolver = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setResolver",
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWatchIpAssetRegistryEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-  });
+export const useWatchIpAssetRegistry = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"ApprovalForAll"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWatchIpAssetRegistryApprovalForAllEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    eventName: 'ApprovalForAll',
-  });
+export const useWatchIpAssetRegistryApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  eventName: "ApprovalForAll",
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"GovernanceUpdated"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWatchIpAssetRegistryGovernanceUpdatedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    eventName: 'GovernanceUpdated',
-  });
+export const useWatchIpAssetRegistryGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  eventName: "GovernanceUpdated",
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPAccountRegistered"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWatchIpAssetRegistryIpAccountRegisteredEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    eventName: 'IPAccountRegistered',
-  });
+export const useWatchIpAssetRegistryIpAccountRegistered = /*#__PURE__*/ createUseWatchContractEvent(
+  { abi: ipAssetRegistryAbi, address: ipAssetRegistryAddress, eventName: "IPAccountRegistered" },
+);
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPRegistered"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWatchIpAssetRegistryIpRegisteredEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    eventName: 'IPRegistered',
-  });
+export const useWatchIpAssetRegistryIpRegistered = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  eventName: "IPRegistered",
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPResolverSet"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWatchIpAssetRegistryIpResolverSetEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    eventName: 'IPResolverSet',
-  });
+export const useWatchIpAssetRegistryIpResolverSet = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  eventName: "IPResolverSet",
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"MetadataSet"`
+ *
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
-export const useWatchIpAssetRegistryMetadataSetEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    eventName: 'MetadataSet',
-  });
+export const useWatchIpAssetRegistryMetadataSet = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  eventName: "MetadataSet",
+});

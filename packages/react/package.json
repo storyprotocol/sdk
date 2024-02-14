@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/react",
-  "version": "0.0.1-beta-rc.1",
+  "version": "0.0.1-test",
   "description": "Story Protocol React SDK",
   "main": "dist/story-protocol-react.cjs.js",
   "module": "dist/story-protocol-react.esm.js",
@@ -16,21 +16,52 @@
     "dist/**/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pnpm run fix && preconstruct build",
+    "test": "pnpm run test:unit && pnpm run test:integration",
+    "fix": "pnpm run format:fix && pnpm run lint:fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint:fix": "pnpm run lint --fix",
+    "lint": "eslint ./src",
+    "tsc": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-typescript": "^7.23.0",
+    "@preconstruct/cli": "^2.8.1",
     "@story-protocol/eslint-config": "workspace:*",
     "@story-protocol/prettier-config": "workspace:*",
     "@story-protocol/tsconfig": "workspace:*",
     "@wagmi/cli": "^2.1.0",
+    "change-case": "^5.4.3",
     "dotenv": "^16.3.1",
+    "eslint": "^8.50.0",
+    "prettier": "^2.8.8",
+    "react": "^18.2.0",
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@types/react": "^18.2.55",
     "abitype": "^0.10.2",
+    "tsc": "^2.0.4",
+    "viem": "^1.18.4",
     "wagmi": "^2.5.6"
-  }
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts"
+    ],
+    "exports": true
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript"
+    ]
+  },
+  "prettier": "@story-protocol/prettier-config"
 }
