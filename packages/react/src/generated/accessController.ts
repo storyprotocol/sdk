@@ -3,15 +3,12 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from "wagmi/codegen"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AccessController
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
- */
 export const accessControllerAbi = [
   {
     stateMutability: "nonpayable",
@@ -190,22 +187,14 @@ export const accessControllerAbi = [
     name: "Governance__UnsupportedInterface",
   },
   { type: "error", inputs: [], name: "Governance__ZeroAddress" },
-] as const;
+] as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
- */
-export const accessControllerAddress = {
-  11155111: "0x263f0634E64A191884cc778E58f505F758b295E0",
-} as const;
+export const accessControllerAddress = "0xfeDc2A52AA77977E291d9077C7AbB60be76399FC" as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
- */
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
-} as const;
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -213,251 +202,205 @@ export const accessControllerConfig = {
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessControllerIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"MODULE_REGISTRY"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessControllerModuleRegistry = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "MODULE_REGISTRY",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"checkPermission"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessControllerCheckPermission = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "checkPermission",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"getGovernance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessControllerGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "getGovernance",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"getPermission"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessControllerGetPermission = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "getPermission",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"governance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessControllerGovernance = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "governance",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"permissions"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useReadAccessControllerPermissions = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "permissions",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWriteAccessController = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"initialize"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWriteAccessControllerInitialize = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "initialize",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setBatchPermissions"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWriteAccessControllerSetBatchPermissions = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setBatchPermissions",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGlobalPermission"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWriteAccessControllerSetGlobalPermission = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGlobalPermission",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGovernance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWriteAccessControllerSetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGovernance",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setPermission"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWriteAccessControllerSetPermission = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setPermission",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useSimulateAccessController = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"initialize"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useSimulateAccessControllerInitialize = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "initialize",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setBatchPermissions"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useSimulateAccessControllerSetBatchPermissions =
   /*#__PURE__*/ createUseSimulateContract({
     abi: accessControllerAbi,
     address: accessControllerAddress,
     functionName: "setBatchPermissions",
-  });
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGlobalPermission"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useSimulateAccessControllerSetGlobalPermission =
   /*#__PURE__*/ createUseSimulateContract({
     abi: accessControllerAbi,
     address: accessControllerAddress,
     functionName: "setGlobalPermission",
-  });
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGovernance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useSimulateAccessControllerSetGovernance = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGovernance",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setPermission"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useSimulateAccessControllerSetPermission = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setPermission",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWatchAccessController = /*#__PURE__*/ createUseWatchContractEvent({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__ and `eventName` set to `"GovernanceUpdated"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWatchAccessControllerGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   eventName: "GovernanceUpdated",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__ and `eventName` set to `"PermissionSet"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x263f0634E64A191884cc778E58f505F758b295E0)
  */
 export const useWatchAccessControllerPermissionSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   eventName: "PermissionSet",
-});
+})

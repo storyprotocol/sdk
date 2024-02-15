@@ -3,15 +3,12 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from "wagmi/codegen"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IpAssetRegistry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
- */
 export const ipAssetRegistryAbi = [
   {
     stateMutability: "nonpayable",
@@ -329,22 +326,14 @@ export const ipAssetRegistryAbi = [
   { type: "error", inputs: [], name: "IPAssetRegistry__NotYetRegistered" },
   { type: "error", inputs: [], name: "IPAssetRegistry__RegistrantUnauthorized" },
   { type: "error", inputs: [], name: "IPAssetRegistry__Unauthorized" },
-] as const;
+] as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
- */
-export const ipAssetRegistryAddress = {
-  11155111: "0x7567ea73697De50591EEc317Fe2b924252c41608",
-} as const;
+export const ipAssetRegistryAddress = "0xef1d6eD8c51c63d3918ccb8377c62C039d27f9b2" as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
- */
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
   abi: ipAssetRegistryAbi,
-} as const;
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -352,469 +341,383 @@ export const ipAssetRegistryConfig = {
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryAccessController = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ACCESS_CONTROLLER",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ERC6551_PUBLIC_REGISTRY"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryErc6551PublicRegistry = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ERC6551_PUBLIC_REGISTRY",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"IP_ACCOUNT_IMPL"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryIpAccountImpl = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "IP_ACCOUNT_IMPL",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"IP_ACCOUNT_SALT"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryIpAccountSalt = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "IP_ACCOUNT_SALT",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"MODULE_REGISTRY"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryModuleRegistry = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "MODULE_REGISTRY",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"REGISTRATION_MODULE"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryRegistrationModule = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "REGISTRATION_MODULE",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"getGovernance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "getGovernance",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"getIPAccountImpl"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryGetIpAccountImpl = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "getIPAccountImpl",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"governance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryGovernance = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "governance",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ipAccount"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryIpAccount = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ipAccount",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ipId"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryIpId = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ipId",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"isApprovedForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "isApprovedForAll",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"isRegistered"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryIsRegistered = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "isRegistered",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"metadata"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryMetadata = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "metadata",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"metadataProvider"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryMetadataProvider = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "metadataProvider",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"resolver"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryResolver = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "resolver",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"totalSupply"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useReadIpAssetRegistryTotalSupply = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "totalSupply",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistry = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"register"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistryRegister = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "register",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"registerIpAccount"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "registerIpAccount",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setApprovalForAll",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setGovernance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setGovernance",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadata"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setMetadata",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadataProvider"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistrySetMetadataProvider = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setMetadataProvider",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setRegistrationModule"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistrySetRegistrationModule = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setRegistrationModule",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setResolver"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWriteIpAssetRegistrySetResolver = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setResolver",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistry = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"register"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistryRegister = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "register",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"registerIpAccount"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "registerIpAccount",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setApprovalForAll",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setGovernance"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setGovernance",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadata"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setMetadata",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadataProvider"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetMetadataProvider =
   /*#__PURE__*/ createUseSimulateContract({
     abi: ipAssetRegistryAbi,
     address: ipAssetRegistryAddress,
     functionName: "setMetadataProvider",
-  });
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setRegistrationModule"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetRegistrationModule =
   /*#__PURE__*/ createUseSimulateContract({
     abi: ipAssetRegistryAbi,
     address: ipAssetRegistryAddress,
     functionName: "setRegistrationModule",
-  });
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setResolver"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useSimulateIpAssetRegistrySetResolver = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setResolver",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWatchIpAssetRegistry = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"ApprovalForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWatchIpAssetRegistryApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "ApprovalForAll",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"GovernanceUpdated"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWatchIpAssetRegistryGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "GovernanceUpdated",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPAccountRegistered"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWatchIpAssetRegistryIpAccountRegistered = /*#__PURE__*/ createUseWatchContractEvent(
   { abi: ipAssetRegistryAbi, address: ipAssetRegistryAddress, eventName: "IPAccountRegistered" },
-);
+)
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPRegistered"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWatchIpAssetRegistryIpRegistered = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "IPRegistered",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPResolverSet"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWatchIpAssetRegistryIpResolverSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "IPResolverSet",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"MetadataSet"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x7567ea73697De50591EEc317Fe2b924252c41608)
  */
 export const useWatchIpAssetRegistryMetadataSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "MetadataSet",
-});
+})

@@ -1,17 +1,26 @@
 import { useCallback } from "react";
 import { useWriteIpAccountImplExecute } from "./generated/ipAccountImpl";
 
-// Define the type for the setPermission function
-type SetPermissionFunction = (ip: string, permission: string, value: boolean) => Promise<void>;
+interface SetPermissionState {
+  // Define the structure expected in your state
+  isPending: boolean;
+}
 
-// // Define the type for the hook return value
-// interface UseSetPermissionReturn {
-//   setPermission: SetPermissionFunction;
-//   // ... other state properties
-// }
+interface SetPermissionArgs {
+  address: `0x${string}`;
+  args: {
+    ipAsset: `0x${string}`;
+    signer: `0x${string}`;
+    to: `0x${string}`;
+    func: string;
+    permission: string | number | bigint;
+  };
+}
 
-export function useSetPermission(): any {
-  // This hook returns an object with { execute, isLoading, isError, etc. }
+export function useSetPermission(): {
+  writeContractAsync: (args: SetPermissionArgs) => Promise<void>;
+  state: SetPermissionState;
+} {
   const { writeContractAsync: writeContractAsyncRaw, ...state } = useWriteIpAccountImplExecute();
 
   const writeContractAsync = useCallback(
@@ -29,8 +38,9 @@ export function useSetPermission(): any {
       };
     }) => {
       await writeContractAsyncRaw({
+        functionName: "execute",
         address: address,
-        args: [args.ipAsset, args.signer, args.to, args.func, args.permission],
+        args: [args.ipAsset, args.signer, args.to, args.func, BigInt(args.permission)],
       });
     },
     [writeContractAsyncRaw],

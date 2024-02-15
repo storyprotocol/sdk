@@ -3,15 +3,12 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from "wagmi/codegen"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicenseRegistry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
- */
 export const licenseRegistryAbi = [
   { stateMutability: "nonpayable", type: "constructor", inputs: [] },
   {
@@ -294,22 +291,14 @@ export const licenseRegistryAbi = [
   { type: "error", inputs: [], name: "LicenseRegistry__CallerNotLicensingModule" },
   { type: "error", inputs: [], name: "LicenseRegistry__NotTransferable" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
-] as const;
+] as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
- */
-export const licenseRegistryAddress = {
-  11155111: "0xF157fe3F5Bc001176FB86f486d11EE28F85979d9",
-} as const;
+export const licenseRegistryAddress = "0x6F7FB37F668ba0F85b6a9C7Ffa02fEA1b3036aEF" as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
- */
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
   abi: licenseRegistryAbi,
-} as const;
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -317,347 +306,283 @@ export const licenseRegistryConfig = {
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistry = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOf"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryBalanceOf = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "balanceOf",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOfBatch"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryBalanceOfBatch = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "balanceOfBatch",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isApprovedForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "isApprovedForAll",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isLicensee"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryIsLicensee = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "isLicensee",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"license"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "license",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"licensingModule"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryLicensingModule = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "licensingModule",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"licensorIpId"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryLicensorIpId = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "licensorIpId",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintedLicenses"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryMintedLicenses = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintedLicenses",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"policyIdForLicense"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryPolicyIdForLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "policyIdForLicense",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"supportsInterface"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistrySupportsInterface = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "supportsInterface",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"uri"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useReadLicenseRegistryUri = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "uri",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWriteLicenseRegistry = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWriteLicenseRegistryBurnLicenses = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "burnLicenses",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWriteLicenseRegistryMintLicense = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintLicense",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWriteLicenseRegistrySafeBatchTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeBatchTransferFrom",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWriteLicenseRegistrySafeTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeTransferFrom",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWriteLicenseRegistrySetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setApprovalForAll",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWriteLicenseRegistrySetLicensingModule = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setLicensingModule",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useSimulateLicenseRegistry = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useSimulateLicenseRegistryBurnLicenses = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "burnLicenses",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useSimulateLicenseRegistryMintLicense = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintLicense",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useSimulateLicenseRegistrySafeBatchTransferFrom =
   /*#__PURE__*/ createUseSimulateContract({
     abi: licenseRegistryAbi,
     address: licenseRegistryAddress,
     functionName: "safeBatchTransferFrom",
-  });
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useSimulateLicenseRegistrySafeTransferFrom = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeTransferFrom",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useSimulateLicenseRegistrySetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setApprovalForAll",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useSimulateLicenseRegistrySetLicensingModule = /*#__PURE__*/ createUseSimulateContract(
   { abi: licenseRegistryAbi, address: licenseRegistryAddress, functionName: "setLicensingModule" },
-);
+)
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWatchLicenseRegistry = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"ApprovalForAll"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWatchLicenseRegistryApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "ApprovalForAll",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"LicenseMinted"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWatchLicenseRegistryLicenseMinted = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "LicenseMinted",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferBatch"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWatchLicenseRegistryTransferBatch = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "TransferBatch",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferSingle"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWatchLicenseRegistryTransferSingle = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "TransferSingle",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"URI"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF157fe3F5Bc001176FB86f486d11EE28F85979d9)
  */
 export const useWatchLicenseRegistryUri = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "URI",
-});
+})

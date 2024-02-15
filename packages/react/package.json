@@ -1,9 +1,11 @@
 {
   "name": "@story-protocol/react",
-  "version": "0.0.1-test",
+  "version": "0.0.2-test-1",
   "description": "Story Protocol React SDK",
   "main": "dist/story-protocol-react.cjs.js",
   "module": "dist/story-protocol-react.esm.js",
+  "types": "dist/story-protocol-react.cjs.d.ts",
+  "typings": "dist/story-protocol-react.cjs.d.ts",
   "exports": {
     ".": {
       "module": "./dist/story-protocol-react.esm.js",
@@ -22,7 +24,7 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint:fix": "pnpm run lint --fix",
-    "lint": "eslint ./src",
+    "lint": "eslint .",
     "tsc": "tsc --noEmit"
   },
   "keywords": [],
@@ -36,20 +38,23 @@
     "@story-protocol/eslint-config": "workspace:*",
     "@story-protocol/prettier-config": "workspace:*",
     "@story-protocol/tsconfig": "workspace:*",
+    "@types/react": "^18.2.55",
     "@wagmi/cli": "^2.1.0",
     "change-case": "^5.4.3",
     "dotenv": "^16.3.1",
     "eslint": "^8.50.0",
     "prettier": "^2.8.8",
-    "react": "^18.2.0",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@types/react": "^18.2.55",
     "abitype": "^0.10.2",
     "tsc": "^2.0.4",
     "viem": "^1.18.4",
     "wagmi": "^2.5.6"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "viem": ">=2.0.0"
   },
   "preconstruct": {
     "entrypoints": [

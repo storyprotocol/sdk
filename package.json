@@ -14,10 +14,14 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
-    "turbo": "^1.10.13",
-    "husky": "^8.0.0"
+    "husky": "^8.0.0",
+    "turbo": "^1.10.13"
   },
   "engines": {
     "node": "^20.0.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20"
   }
 }

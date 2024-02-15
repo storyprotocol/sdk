@@ -3,15 +3,12 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from "wagmi/codegen"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RegistrationModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
- */
 export const registrationModuleAbi = [
   {
     stateMutability: "nonpayable",
@@ -109,22 +106,14 @@ export const registrationModuleAbi = [
   },
   { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   { type: "error", inputs: [], name: "RegistrationModule__InvalidOwner" },
-] as const;
+] as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
- */
-export const registrationModuleAddress = {
-  11155111: "0x10966FF701d4c3c22c0D0360F0d11dA99144F199",
-} as const;
+export const registrationModuleAddress = "0x27c899af5AD9024570B9e5c58831726b48430212" as const
 
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
- */
 export const registrationModuleConfig = {
   address: registrationModuleAddress,
   abi: registrationModuleAbi,
-} as const;
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -132,161 +121,131 @@ export const registrationModuleConfig = {
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useReadRegistrationModule = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useReadRegistrationModuleAccessController = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "ACCESS_CONTROLLER",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useReadRegistrationModuleIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"IP_ASSET_REGISTRY"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useReadRegistrationModuleIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "IP_ASSET_REGISTRY",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"name"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useReadRegistrationModuleName = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "name",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"resolver"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useReadRegistrationModuleResolver = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "resolver",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useWriteRegistrationModule = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerDerivativeIp"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useWriteRegistrationModuleRegisterDerivativeIp = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "registerDerivativeIp",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerRootIp"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useWriteRegistrationModuleRegisterRootIp = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "registerRootIp",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useSimulateRegistrationModule = /*#__PURE__*/ createUseSimulateContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerDerivativeIp"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useSimulateRegistrationModuleRegisterDerivativeIp =
   /*#__PURE__*/ createUseSimulateContract({
     abi: registrationModuleAbi,
     address: registrationModuleAddress,
     functionName: "registerDerivativeIp",
-  });
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerRootIp"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useSimulateRegistrationModuleRegisterRootIp = /*#__PURE__*/ createUseSimulateContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "registerRootIp",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useWatchRegistrationModule = /*#__PURE__*/ createUseWatchContractEvent({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__ and `eventName` set to `"DerivativeIPRegistered"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useWatchRegistrationModuleDerivativeIpRegistered =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: registrationModuleAbi,
     address: registrationModuleAddress,
     eventName: "DerivativeIPRegistered",
-  });
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__ and `eventName` set to `"RootIPRegistered"`
- *
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x10966FF701d4c3c22c0D0360F0d11dA99144F199)
  */
 export const useWatchRegistrationModuleRootIpRegistered = /*#__PURE__*/ createUseWatchContractEvent(
   { abi: registrationModuleAbi, address: registrationModuleAddress, eventName: "RootIPRegistered" },
-);
+)

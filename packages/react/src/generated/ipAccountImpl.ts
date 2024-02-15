@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from "wagmi/codegen"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IPAccountImpl
@@ -159,7 +159,7 @@ export const ipAccountImplAbi = [
   { type: "error", inputs: [], name: "IPAccount__InvalidCalldata" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSignature" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSigner" },
-] as const;
+] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -168,7 +168,7 @@ export const ipAccountImplAbi = [
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__
  */
-export const useReadIpAccountImpl = /*#__PURE__*/ createUseReadContract({ abi: ipAccountImplAbi });
+export const useReadIpAccountImpl = /*#__PURE__*/ createUseReadContract({ abi: ipAccountImplAbi })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"accessController"`
@@ -176,7 +176,7 @@ export const useReadIpAccountImpl = /*#__PURE__*/ createUseReadContract({ abi: i
 export const useReadIpAccountImplAccessController = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "accessController",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"isValidSigner"`
@@ -184,7 +184,7 @@ export const useReadIpAccountImplAccessController = /*#__PURE__*/ createUseReadC
 export const useReadIpAccountImplIsValidSigner = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "isValidSigner",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"onERC1155BatchReceived"`
@@ -192,7 +192,7 @@ export const useReadIpAccountImplIsValidSigner = /*#__PURE__*/ createUseReadCont
 export const useReadIpAccountImplOnErc1155BatchReceived = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "onERC1155BatchReceived",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"onERC1155Received"`
@@ -200,7 +200,7 @@ export const useReadIpAccountImplOnErc1155BatchReceived = /*#__PURE__*/ createUs
 export const useReadIpAccountImplOnErc1155Received = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "onERC1155Received",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"onERC721Received"`
@@ -208,7 +208,7 @@ export const useReadIpAccountImplOnErc1155Received = /*#__PURE__*/ createUseRead
 export const useReadIpAccountImplOnErc721Received = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "onERC721Received",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"owner"`
@@ -216,7 +216,7 @@ export const useReadIpAccountImplOnErc721Received = /*#__PURE__*/ createUseReadC
 export const useReadIpAccountImplOwner = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "owner",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"state"`
@@ -224,7 +224,7 @@ export const useReadIpAccountImplOwner = /*#__PURE__*/ createUseReadContract({
 export const useReadIpAccountImplState = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "state",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"supportsInterface"`
@@ -232,7 +232,7 @@ export const useReadIpAccountImplState = /*#__PURE__*/ createUseReadContract({
 export const useReadIpAccountImplSupportsInterface = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "supportsInterface",
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"token"`
@@ -240,14 +240,12 @@ export const useReadIpAccountImplSupportsInterface = /*#__PURE__*/ createUseRead
 export const useReadIpAccountImplToken = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "token",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAccountImplAbi}__
  */
-export const useWriteIpAccountImpl = /*#__PURE__*/ createUseWriteContract({
-  abi: ipAccountImplAbi,
-});
+export const useWriteIpAccountImpl = /*#__PURE__*/ createUseWriteContract({ abi: ipAccountImplAbi })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"execute"`
@@ -255,7 +253,7 @@ export const useWriteIpAccountImpl = /*#__PURE__*/ createUseWriteContract({
 export const useWriteIpAccountImplExecute = /*#__PURE__*/ createUseWriteContract({
   abi: ipAccountImplAbi,
   functionName: "execute",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"executeWithSig"`
@@ -263,7 +261,7 @@ export const useWriteIpAccountImplExecute = /*#__PURE__*/ createUseWriteContract
 export const useWriteIpAccountImplExecuteWithSig = /*#__PURE__*/ createUseWriteContract({
   abi: ipAccountImplAbi,
   functionName: "executeWithSig",
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"initialize"`
@@ -271,14 +269,14 @@ export const useWriteIpAccountImplExecuteWithSig = /*#__PURE__*/ createUseWriteC
 export const useWriteIpAccountImplInitialize = /*#__PURE__*/ createUseWriteContract({
   abi: ipAccountImplAbi,
   functionName: "initialize",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAccountImplAbi}__
  */
 export const useSimulateIpAccountImpl = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAccountImplAbi,
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"execute"`
@@ -286,7 +284,7 @@ export const useSimulateIpAccountImpl = /*#__PURE__*/ createUseSimulateContract(
 export const useSimulateIpAccountImplExecute = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAccountImplAbi,
   functionName: "execute",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"executeWithSig"`
@@ -294,7 +292,7 @@ export const useSimulateIpAccountImplExecute = /*#__PURE__*/ createUseSimulateCo
 export const useSimulateIpAccountImplExecuteWithSig = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAccountImplAbi,
   functionName: "executeWithSig",
-});
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"initialize"`
@@ -302,14 +300,14 @@ export const useSimulateIpAccountImplExecuteWithSig = /*#__PURE__*/ createUseSim
 export const useSimulateIpAccountImplInitialize = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAccountImplAbi,
   functionName: "initialize",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAccountImplAbi}__
  */
 export const useWatchIpAccountImpl = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAccountImplAbi,
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAccountImplAbi}__ and `eventName` set to `"Executed"`
@@ -317,7 +315,7 @@ export const useWatchIpAccountImpl = /*#__PURE__*/ createUseWatchContractEvent({
 export const useWatchIpAccountImplExecuted = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAccountImplAbi,
   eventName: "Executed",
-});
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAccountImplAbi}__ and `eventName` set to `"ExecutedWithSig"`
@@ -325,4 +323,4 @@ export const useWatchIpAccountImplExecuted = /*#__PURE__*/ createUseWatchContrac
 export const useWatchIpAccountImplExecutedWithSig = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAccountImplAbi,
   eventName: "ExecutedWithSig",
-});
+})

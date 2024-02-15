@@ -13,29 +13,32 @@ import { abi as moduleRegistryAbi } from "../protocol-core/out/ModuleRegistry.so
 import { abi as licensingModuleAbi } from "../protocol-core/out/LicensingModule.sol/LicensingModule.json";
 import { abi as accessControllerAbi } from "../protocol-core/out/AccessController.sol/AccessController.json";
 import { abi as ipAccountImplAbi } from "../protocol-core/out/IPAccountImpl.sol/IPAccountImpl.json";
+import { abi as UMLPolicyFrameworkManagerAbi } from "../protocol-core/out/UMLPolicyFrameworkManager.sol/UMLPolicyFrameworkManager.json";
 
 dotenv.config();
 
 const contracts = {
-  AccessController: "0x263f0634E64A191884cc778E58f505F758b295E0",
-  ArbitrationPolicySP: "0x61eb3DBc2c60Cf6aFde43a9286D89Da264899003",
-  DisputeModule: "0x77160D22148C7468b472992ad51532c3d8af9264",
-  Governance: "0xc0F5bBc6D8853BC66a7a323aEC993c6AB5f23c90",
-  IPAccountImpl: "0x7c0Add64ed6A604E65979c3fc5836Fc4CBD30D04",
-  IPAccountRegistry: "0xAA12037BFc9117143e9476446FFE5a0a729a9aE1",
-  IPAssetRegistry: "0x7567ea73697De50591EEc317Fe2b924252c41608",
-  IPAssetRenderer: "0x92B4A6e131dBa650099300A5Bd73eFd7e1F1D186",
-  IPResolver: "0xEF808885355B3c88648D39c9DB5A0c08D99C6B71",
-  LicenseRegistry: "0xF157fe3F5Bc001176FB86f486d11EE28F85979d9",
-  LicensingModule: "0xC7FB0655bf248633235B79c961Ee033b34146BB2",
-  MetadataProviderV1: "0x2F11b29C0fC7BbaF40Be6c6B2c0Bb4cADB93328d",
-  MockERC20: "0x3C01C78e603f9294f45f4704cA75d69aF7C1972B",
-  MockERC721: "0x1e47f9cafBc2262Fb8aD1Bb6836244Dd6b9a07d2",
-  ModuleRegistry: "0xA32408A1d408Aa7cC88471Cc4912c029f67f0087",
-  RegistrationModule: "0x10966FF701d4c3c22c0D0360F0d11dA99144F199",
-  RoyaltyModule: "0x3D3c75C48A56B1F12e9cE514443749764e0D4811",
-  RoyaltyPolicyLS: "0x03C176B480a04E744d293D0530b2441d5F042832",
-  TaggingModule: "0x7e4f6B54Ecd6B6D1dBfA1d56593a71f77A80d37C",
+  AccessController: "0xfeDc2A52AA77977E291d9077C7AbB60be76399FC",
+  ArbitrationPolicySP: "0x7EcF3E32C61511fbfeC5bcA9040bD1b253C0d1fe",
+  DisputeModule: "0xfE1Af9c0F78Df4570Ed54A1bc21487AB88923dc6",
+  Governance: "0xA8A4DA2991BC4D17D1F95eA5B2ef9661187F2002",
+  IPAccountImpl: "0x0421369bC566A9f64edDcF8e8339564e1aB1a0f3",
+  IPAccountRegistry: "0x6F86118e938a5727f1f0914da4320c7D856Fd997",
+  IPAssetRegistry: "0xef1d6eD8c51c63d3918ccb8377c62C039d27f9b2",
+  IPAssetRenderer: "0x1ba70C07368131a644b8Be1d47d78CDdCb52cAdb",
+  IPMetadataProvider: "0xf71BaDfb93e94fCb8E3046D9dB07d43D2CF0b084",
+  IPResolver: "0x9A937de5C2960b269057E4BF94B37280E41A5910",
+  LicenseRegistry: "0x6F7FB37F668ba0F85b6a9C7Ffa02fEA1b3036aEF",
+  LicensingModule: "0xFA83236c5Ed58E0943652Ad075940517420498Ad",
+  MetadataProviderV1: "0xf71BaDfb93e94fCb8E3046D9dB07d43D2CF0b084",
+  MockERC20: "0x020D1075E73b555F4EbC059b8641DB53FE721c45",
+  MockERC721: "0xbfBb6753596C0937a939421de87987E4df7CF3E4",
+  ModuleRegistry: "0x1DA8Ae6f360bBD44b3f148B1274Dc3bf1af829a5",
+  RegistrationModule: "0x27c899af5AD9024570B9e5c58831726b48430212",
+  RoyaltyModule: "0x3290C74e287394E9a41329Da3Df6d7174f05b81b",
+  RoyaltyPolicyLS: "0xD781f120C8c3d95d9bf6230898096Dc59fEcB21b",
+  TaggingModule: "0x5c2Ce76e3BB99a05F797177E15D6E2abA101aCD1",
+  UMLPolicyFrameworkManager: "0x30A18EA9abca9ff72fB9ce33F4f060A44a09f515",
 };
 
 let counter = 0;
@@ -52,19 +55,18 @@ function generateConfig(
       {
         name: contractName,
         abi: abi,
-        address: address
-          ? {
-              11155111: address, // Only support Sepolia for now
-            }
-          : undefined,
+        address: address,
       },
     ],
     plugins: [
       react({
         getHookName: ({ contractName, itemName, type }) => {
           let functionName;
-
-          if (itemName === "LicenseRegistry") {
+          if (
+            itemName === "LicenseRegistry" ||
+            (itemName === "LicensingModule" &&
+              contractName.toLowerCase() === "umlpolicyframeworkmanager")
+          ) {
             // Handle duplicate function names
             counter = counter + 1;
             functionName =
@@ -123,6 +125,20 @@ const ipAccountImplConfig = generateConfig(
   ipAccountImplAbi as Abi,
 );
 
+const disputeModuleConfig = generateConfig(
+  "disputeModule",
+  "DisputeModule",
+  disputeModuleAbi as Abi,
+  contracts.DisputeModule as `0x${string}`,
+);
+
+const UMLPolicyFrameworkManager = generateConfig(
+  "UMLPolicyFrameworkManager",
+  "UMLPolicyFrameworkManager",
+  UMLPolicyFrameworkManagerAbi as Abi,
+  contracts.UMLPolicyFrameworkManager as `0x${string}`,
+);
+
 export default defineConfig([
   ipAssetRegistryConfig,
   licenseRegistryConfig,
@@ -130,6 +146,8 @@ export default defineConfig([
   accessControllerConfig,
   licensingModuleConfig,
   ipAccountImplConfig,
+  disputeModuleConfig,
+  UMLPolicyFrameworkManager,
 ]);
 
 // export default defineConfig({
