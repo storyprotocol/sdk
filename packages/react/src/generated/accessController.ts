@@ -211,7 +211,7 @@ export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
  */
-export const useReadAccessControllerIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
+export const useReadIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
@@ -220,7 +220,7 @@ export const useReadAccessControllerIpAccountRegistry = /*#__PURE__*/ createUseR
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"MODULE_REGISTRY"`
  */
-export const useReadAccessControllerModuleRegistry = /*#__PURE__*/ createUseReadContract({
+export const useReadModuleRegistry = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "MODULE_REGISTRY",
@@ -229,7 +229,7 @@ export const useReadAccessControllerModuleRegistry = /*#__PURE__*/ createUseRead
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"checkPermission"`
  */
-export const useReadAccessControllerCheckPermission = /*#__PURE__*/ createUseReadContract({
+export const useReadCheckPermission = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "checkPermission",
@@ -238,7 +238,7 @@ export const useReadAccessControllerCheckPermission = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"getGovernance"`
  */
-export const useReadAccessControllerGetGovernance = /*#__PURE__*/ createUseReadContract({
+export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "getGovernance",
@@ -247,7 +247,7 @@ export const useReadAccessControllerGetGovernance = /*#__PURE__*/ createUseReadC
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"getPermission"`
  */
-export const useReadAccessControllerGetPermission = /*#__PURE__*/ createUseReadContract({
+export const useReadGetPermission = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "getPermission",
@@ -256,7 +256,7 @@ export const useReadAccessControllerGetPermission = /*#__PURE__*/ createUseReadC
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"governance"`
  */
-export const useReadAccessControllerGovernance = /*#__PURE__*/ createUseReadContract({
+export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "governance",
@@ -265,7 +265,7 @@ export const useReadAccessControllerGovernance = /*#__PURE__*/ createUseReadCont
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"permissions"`
  */
-export const useReadAccessControllerPermissions = /*#__PURE__*/ createUseReadContract({
+export const useReadPermissions = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "permissions",
@@ -282,7 +282,7 @@ export const useWriteAccessController = /*#__PURE__*/ createUseWriteContract({
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"initialize"`
  */
-export const useWriteAccessControllerInitialize = /*#__PURE__*/ createUseWriteContract({
+export const useInitialize = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "initialize",
@@ -291,7 +291,7 @@ export const useWriteAccessControllerInitialize = /*#__PURE__*/ createUseWriteCo
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setBatchPermissions"`
  */
-export const useWriteAccessControllerSetBatchPermissions = /*#__PURE__*/ createUseWriteContract({
+export const useSetBatchPermissions = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setBatchPermissions",
@@ -300,7 +300,7 @@ export const useWriteAccessControllerSetBatchPermissions = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGlobalPermission"`
  */
-export const useWriteAccessControllerSetGlobalPermission = /*#__PURE__*/ createUseWriteContract({
+export const useSetGlobalPermission = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGlobalPermission",
@@ -309,7 +309,7 @@ export const useWriteAccessControllerSetGlobalPermission = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGovernance"`
  */
-export const useWriteAccessControllerSetGovernance = /*#__PURE__*/ createUseWriteContract({
+export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGovernance",
@@ -318,7 +318,7 @@ export const useWriteAccessControllerSetGovernance = /*#__PURE__*/ createUseWrit
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setPermission"`
  */
-export const useWriteAccessControllerSetPermission = /*#__PURE__*/ createUseWriteContract({
+export const useSetPermission = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setPermission",
@@ -335,7 +335,7 @@ export const useSimulateAccessController = /*#__PURE__*/ createUseSimulateContra
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"initialize"`
  */
-export const useSimulateAccessControllerInitialize = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateInitialize = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "initialize",
@@ -344,27 +344,25 @@ export const useSimulateAccessControllerInitialize = /*#__PURE__*/ createUseSimu
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setBatchPermissions"`
  */
-export const useSimulateAccessControllerSetBatchPermissions =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: accessControllerAbi,
-    address: accessControllerAddress,
-    functionName: "setBatchPermissions",
-  })
+export const useSimulateSetBatchPermissions = /*#__PURE__*/ createUseSimulateContract({
+  abi: accessControllerAbi,
+  address: accessControllerAddress,
+  functionName: "setBatchPermissions",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGlobalPermission"`
  */
-export const useSimulateAccessControllerSetGlobalPermission =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: accessControllerAbi,
-    address: accessControllerAddress,
-    functionName: "setGlobalPermission",
-  })
+export const useSimulateSetGlobalPermission = /*#__PURE__*/ createUseSimulateContract({
+  abi: accessControllerAbi,
+  address: accessControllerAddress,
+  functionName: "setGlobalPermission",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGovernance"`
  */
-export const useSimulateAccessControllerSetGovernance = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGovernance",
@@ -373,7 +371,7 @@ export const useSimulateAccessControllerSetGovernance = /*#__PURE__*/ createUseS
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setPermission"`
  */
-export const useSimulateAccessControllerSetPermission = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetPermission = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setPermission",
@@ -390,7 +388,7 @@ export const useWatchAccessController = /*#__PURE__*/ createUseWatchContractEven
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__ and `eventName` set to `"GovernanceUpdated"`
  */
-export const useWatchAccessControllerGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   eventName: "GovernanceUpdated",
@@ -399,7 +397,7 @@ export const useWatchAccessControllerGovernanceUpdated = /*#__PURE__*/ createUse
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__ and `eventName` set to `"PermissionSet"`
  */
-export const useWatchAccessControllerPermissionSet = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchPermissionSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   eventName: "PermissionSet",

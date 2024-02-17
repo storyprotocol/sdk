@@ -350,7 +350,7 @@ export const useReadIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
  */
-export const useReadIpAssetRegistryAccessController = /*#__PURE__*/ createUseReadContract({
+export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ACCESS_CONTROLLER",
@@ -359,7 +359,7 @@ export const useReadIpAssetRegistryAccessController = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ERC6551_PUBLIC_REGISTRY"`
  */
-export const useReadIpAssetRegistryErc6551PublicRegistry = /*#__PURE__*/ createUseReadContract({
+export const useReadErc6551PublicRegistry = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ERC6551_PUBLIC_REGISTRY",
@@ -368,7 +368,7 @@ export const useReadIpAssetRegistryErc6551PublicRegistry = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"IP_ACCOUNT_IMPL"`
  */
-export const useReadIpAssetRegistryIpAccountImpl = /*#__PURE__*/ createUseReadContract({
+export const useReadIpAccountImpl = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "IP_ACCOUNT_IMPL",
@@ -377,7 +377,7 @@ export const useReadIpAssetRegistryIpAccountImpl = /*#__PURE__*/ createUseReadCo
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"IP_ACCOUNT_SALT"`
  */
-export const useReadIpAssetRegistryIpAccountSalt = /*#__PURE__*/ createUseReadContract({
+export const useReadIpAccountSalt = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "IP_ACCOUNT_SALT",
@@ -386,7 +386,7 @@ export const useReadIpAssetRegistryIpAccountSalt = /*#__PURE__*/ createUseReadCo
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"MODULE_REGISTRY"`
  */
-export const useReadIpAssetRegistryModuleRegistry = /*#__PURE__*/ createUseReadContract({
+export const useReadModuleRegistry = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "MODULE_REGISTRY",
@@ -395,7 +395,7 @@ export const useReadIpAssetRegistryModuleRegistry = /*#__PURE__*/ createUseReadC
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"REGISTRATION_MODULE"`
  */
-export const useReadIpAssetRegistryRegistrationModule = /*#__PURE__*/ createUseReadContract({
+export const useReadRegistrationModule = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "REGISTRATION_MODULE",
@@ -404,7 +404,7 @@ export const useReadIpAssetRegistryRegistrationModule = /*#__PURE__*/ createUseR
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"getGovernance"`
  */
-export const useReadIpAssetRegistryGetGovernance = /*#__PURE__*/ createUseReadContract({
+export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "getGovernance",
@@ -413,7 +413,7 @@ export const useReadIpAssetRegistryGetGovernance = /*#__PURE__*/ createUseReadCo
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"getIPAccountImpl"`
  */
-export const useReadIpAssetRegistryGetIpAccountImpl = /*#__PURE__*/ createUseReadContract({
+export const useReadGetIpAccountImpl = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "getIPAccountImpl",
@@ -422,7 +422,7 @@ export const useReadIpAssetRegistryGetIpAccountImpl = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"governance"`
  */
-export const useReadIpAssetRegistryGovernance = /*#__PURE__*/ createUseReadContract({
+export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "governance",
@@ -431,7 +431,7 @@ export const useReadIpAssetRegistryGovernance = /*#__PURE__*/ createUseReadContr
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ipAccount"`
  */
-export const useReadIpAssetRegistryIpAccount = /*#__PURE__*/ createUseReadContract({
+export const useReadIpAccount = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ipAccount",
@@ -440,7 +440,7 @@ export const useReadIpAssetRegistryIpAccount = /*#__PURE__*/ createUseReadContra
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"ipId"`
  */
-export const useReadIpAssetRegistryIpId = /*#__PURE__*/ createUseReadContract({
+export const useReadIpId = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "ipId",
@@ -449,7 +449,7 @@ export const useReadIpAssetRegistryIpId = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"isApprovedForAll"`
  */
-export const useReadIpAssetRegistryIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
+export const useReadIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "isApprovedForAll",
@@ -458,7 +458,7 @@ export const useReadIpAssetRegistryIsApprovedForAll = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"isRegistered"`
  */
-export const useReadIpAssetRegistryIsRegistered = /*#__PURE__*/ createUseReadContract({
+export const useReadIsRegistered = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "isRegistered",
@@ -467,7 +467,7 @@ export const useReadIpAssetRegistryIsRegistered = /*#__PURE__*/ createUseReadCon
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"metadata"`
  */
-export const useReadIpAssetRegistryMetadata = /*#__PURE__*/ createUseReadContract({
+export const useReadMetadata = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "metadata",
@@ -476,7 +476,7 @@ export const useReadIpAssetRegistryMetadata = /*#__PURE__*/ createUseReadContrac
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"metadataProvider"`
  */
-export const useReadIpAssetRegistryMetadataProvider = /*#__PURE__*/ createUseReadContract({
+export const useReadMetadataProvider = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "metadataProvider",
@@ -485,7 +485,7 @@ export const useReadIpAssetRegistryMetadataProvider = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"resolver"`
  */
-export const useReadIpAssetRegistryResolver = /*#__PURE__*/ createUseReadContract({
+export const useReadResolver = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "resolver",
@@ -494,7 +494,7 @@ export const useReadIpAssetRegistryResolver = /*#__PURE__*/ createUseReadContrac
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"totalSupply"`
  */
-export const useReadIpAssetRegistryTotalSupply = /*#__PURE__*/ createUseReadContract({
+export const useReadTotalSupply = /*#__PURE__*/ createUseReadContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "totalSupply",
@@ -511,7 +511,7 @@ export const useWriteIpAssetRegistry = /*#__PURE__*/ createUseWriteContract({
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"register"`
  */
-export const useWriteIpAssetRegistryRegister = /*#__PURE__*/ createUseWriteContract({
+export const useRegister = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "register",
@@ -520,7 +520,7 @@ export const useWriteIpAssetRegistryRegister = /*#__PURE__*/ createUseWriteContr
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"registerIpAccount"`
  */
-export const useWriteIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createUseWriteContract({
+export const useRegisterIpAccount = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "registerIpAccount",
@@ -529,7 +529,7 @@ export const useWriteIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createUseW
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
  */
-export const useWriteIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
+export const useSetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setApprovalForAll",
@@ -538,7 +538,7 @@ export const useWriteIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createUseW
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setGovernance"`
  */
-export const useWriteIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseWriteContract({
+export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setGovernance",
@@ -547,7 +547,7 @@ export const useWriteIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseWrite
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadata"`
  */
-export const useWriteIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseWriteContract({
+export const useSetMetadata = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setMetadata",
@@ -556,7 +556,7 @@ export const useWriteIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseWriteCo
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadataProvider"`
  */
-export const useWriteIpAssetRegistrySetMetadataProvider = /*#__PURE__*/ createUseWriteContract({
+export const useSetMetadataProvider = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setMetadataProvider",
@@ -565,7 +565,7 @@ export const useWriteIpAssetRegistrySetMetadataProvider = /*#__PURE__*/ createUs
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setRegistrationModule"`
  */
-export const useWriteIpAssetRegistrySetRegistrationModule = /*#__PURE__*/ createUseWriteContract({
+export const useSetRegistrationModule = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setRegistrationModule",
@@ -574,7 +574,7 @@ export const useWriteIpAssetRegistrySetRegistrationModule = /*#__PURE__*/ create
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setResolver"`
  */
-export const useWriteIpAssetRegistrySetResolver = /*#__PURE__*/ createUseWriteContract({
+export const useSetResolver = /*#__PURE__*/ createUseWriteContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setResolver",
@@ -591,7 +591,7 @@ export const useSimulateIpAssetRegistry = /*#__PURE__*/ createUseSimulateContrac
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"register"`
  */
-export const useSimulateIpAssetRegistryRegister = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateRegister = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "register",
@@ -600,7 +600,7 @@ export const useSimulateIpAssetRegistryRegister = /*#__PURE__*/ createUseSimulat
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"registerIpAccount"`
  */
-export const useSimulateIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateRegisterIpAccount = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "registerIpAccount",
@@ -609,7 +609,7 @@ export const useSimulateIpAssetRegistryRegisterIpAccount = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
  */
-export const useSimulateIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setApprovalForAll",
@@ -618,7 +618,7 @@ export const useSimulateIpAssetRegistrySetApprovalForAll = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setGovernance"`
  */
-export const useSimulateIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setGovernance",
@@ -627,7 +627,7 @@ export const useSimulateIpAssetRegistrySetGovernance = /*#__PURE__*/ createUseSi
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadata"`
  */
-export const useSimulateIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetMetadata = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setMetadata",
@@ -636,27 +636,25 @@ export const useSimulateIpAssetRegistrySetMetadata = /*#__PURE__*/ createUseSimu
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setMetadataProvider"`
  */
-export const useSimulateIpAssetRegistrySetMetadataProvider =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: "setMetadataProvider",
-  })
+export const useSimulateSetMetadataProvider = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setMetadataProvider",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setRegistrationModule"`
  */
-export const useSimulateIpAssetRegistrySetRegistrationModule =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: ipAssetRegistryAbi,
-    address: ipAssetRegistryAddress,
-    functionName: "setRegistrationModule",
-  })
+export const useSimulateSetRegistrationModule = /*#__PURE__*/ createUseSimulateContract({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  functionName: "setRegistrationModule",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `functionName` set to `"setResolver"`
  */
-export const useSimulateIpAssetRegistrySetResolver = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetResolver = /*#__PURE__*/ createUseSimulateContract({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   functionName: "setResolver",
@@ -673,7 +671,7 @@ export const useWatchIpAssetRegistry = /*#__PURE__*/ createUseWatchContractEvent
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"ApprovalForAll"`
  */
-export const useWatchIpAssetRegistryApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "ApprovalForAll",
@@ -682,7 +680,7 @@ export const useWatchIpAssetRegistryApprovalForAll = /*#__PURE__*/ createUseWatc
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"GovernanceUpdated"`
  */
-export const useWatchIpAssetRegistryGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "GovernanceUpdated",
@@ -691,14 +689,16 @@ export const useWatchIpAssetRegistryGovernanceUpdated = /*#__PURE__*/ createUseW
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPAccountRegistered"`
  */
-export const useWatchIpAssetRegistryIpAccountRegistered = /*#__PURE__*/ createUseWatchContractEvent(
-  { abi: ipAssetRegistryAbi, address: ipAssetRegistryAddress, eventName: "IPAccountRegistered" },
-)
+export const useWatchIpAccountRegistered = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ipAssetRegistryAbi,
+  address: ipAssetRegistryAddress,
+  eventName: "IPAccountRegistered",
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPRegistered"`
  */
-export const useWatchIpAssetRegistryIpRegistered = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchIpRegistered = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "IPRegistered",
@@ -707,7 +707,7 @@ export const useWatchIpAssetRegistryIpRegistered = /*#__PURE__*/ createUseWatchC
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"IPResolverSet"`
  */
-export const useWatchIpAssetRegistryIpResolverSet = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchIpResolverSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "IPResolverSet",
@@ -716,7 +716,7 @@ export const useWatchIpAssetRegistryIpResolverSet = /*#__PURE__*/ createUseWatch
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ipAssetRegistryAbi}__ and `eventName` set to `"MetadataSet"`
  */
-export const useWatchIpAssetRegistryMetadataSet = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchMetadataSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: ipAssetRegistryAbi,
   address: ipAssetRegistryAddress,
   eventName: "MetadataSet",

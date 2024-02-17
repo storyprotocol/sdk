@@ -45,7 +45,7 @@ export const disputeModuleAbi = [
     type: "function",
     inputs: [],
     name: "IP_ASSET_REGISTRY",
-    outputs: [{ name: "", internalType: "contract IPAssetRegistry", type: "address" }],
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
   },
   {
     stateMutability: "view",
@@ -190,6 +190,13 @@ export const disputeModuleAbi = [
     inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
     name: "setGovernance",
     outputs: [],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
   },
   {
     stateMutability: "nonpayable",
@@ -364,7 +371,7 @@ export const useReadDisputeModule = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
  */
-export const useReadDisputeModuleAccessController = /*#__PURE__*/ createUseReadContract({
+export const useReadDisputeModuleAccessController3 = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "ACCESS_CONTROLLER",
@@ -373,7 +380,7 @@ export const useReadDisputeModuleAccessController = /*#__PURE__*/ createUseReadC
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"IN_DISPUTE"`
  */
-export const useReadDisputeModuleInDispute = /*#__PURE__*/ createUseReadContract({
+export const useReadInDispute = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "IN_DISPUTE",
@@ -382,7 +389,7 @@ export const useReadDisputeModuleInDispute = /*#__PURE__*/ createUseReadContract
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
  */
-export const useReadDisputeModuleIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
+export const useReadDisputeModuleIpAccountRegistry4 = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
@@ -391,7 +398,7 @@ export const useReadDisputeModuleIpAccountRegistry = /*#__PURE__*/ createUseRead
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"IP_ASSET_REGISTRY"`
  */
-export const useReadDisputeModuleIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
+export const useReadIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "IP_ASSET_REGISTRY",
@@ -400,7 +407,7 @@ export const useReadDisputeModuleIpAssetRegistry = /*#__PURE__*/ createUseReadCo
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"arbitrationPolicies"`
  */
-export const useReadDisputeModuleArbitrationPolicies = /*#__PURE__*/ createUseReadContract({
+export const useReadArbitrationPolicies = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "arbitrationPolicies",
@@ -409,7 +416,7 @@ export const useReadDisputeModuleArbitrationPolicies = /*#__PURE__*/ createUseRe
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"baseArbitrationPolicy"`
  */
-export const useReadDisputeModuleBaseArbitrationPolicy = /*#__PURE__*/ createUseReadContract({
+export const useReadBaseArbitrationPolicy = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "baseArbitrationPolicy",
@@ -418,7 +425,7 @@ export const useReadDisputeModuleBaseArbitrationPolicy = /*#__PURE__*/ createUse
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"disputeId"`
  */
-export const useReadDisputeModuleDisputeId = /*#__PURE__*/ createUseReadContract({
+export const useReadDisputeId = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "disputeId",
@@ -427,7 +434,7 @@ export const useReadDisputeModuleDisputeId = /*#__PURE__*/ createUseReadContract
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"disputes"`
  */
-export const useReadDisputeModuleDisputes = /*#__PURE__*/ createUseReadContract({
+export const useReadDisputes = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "disputes",
@@ -436,7 +443,7 @@ export const useReadDisputeModuleDisputes = /*#__PURE__*/ createUseReadContract(
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"getGovernance"`
  */
-export const useReadDisputeModuleGetGovernance = /*#__PURE__*/ createUseReadContract({
+export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "getGovernance",
@@ -445,7 +452,7 @@ export const useReadDisputeModuleGetGovernance = /*#__PURE__*/ createUseReadCont
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"governance"`
  */
-export const useReadDisputeModuleGovernance = /*#__PURE__*/ createUseReadContract({
+export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "governance",
@@ -454,27 +461,25 @@ export const useReadDisputeModuleGovernance = /*#__PURE__*/ createUseReadContrac
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"isWhitelistedArbitrationPolicy"`
  */
-export const useReadDisputeModuleIsWhitelistedArbitrationPolicy =
-  /*#__PURE__*/ createUseReadContract({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    functionName: "isWhitelistedArbitrationPolicy",
-  })
+export const useReadIsWhitelistedArbitrationPolicy = /*#__PURE__*/ createUseReadContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "isWhitelistedArbitrationPolicy",
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"isWhitelistedArbitrationRelayer"`
  */
-export const useReadDisputeModuleIsWhitelistedArbitrationRelayer =
-  /*#__PURE__*/ createUseReadContract({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    functionName: "isWhitelistedArbitrationRelayer",
-  })
+export const useReadIsWhitelistedArbitrationRelayer = /*#__PURE__*/ createUseReadContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "isWhitelistedArbitrationRelayer",
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"isWhitelistedDisputeTag"`
  */
-export const useReadDisputeModuleIsWhitelistedDisputeTag = /*#__PURE__*/ createUseReadContract({
+export const useReadIsWhitelistedDisputeTag = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "isWhitelistedDisputeTag",
@@ -490,6 +495,15 @@ export const useReadDisputeModuleName = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const useReadDisputeModuleSupportsInterface = /*#__PURE__*/ createUseReadContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "supportsInterface",
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__
  */
 export const useWriteDisputeModule = /*#__PURE__*/ createUseWriteContract({
@@ -500,7 +514,7 @@ export const useWriteDisputeModule = /*#__PURE__*/ createUseWriteContract({
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"cancelDispute"`
  */
-export const useWriteDisputeModuleCancelDispute = /*#__PURE__*/ createUseWriteContract({
+export const useCancelDispute = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "cancelDispute",
@@ -509,7 +523,7 @@ export const useWriteDisputeModuleCancelDispute = /*#__PURE__*/ createUseWriteCo
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"raiseDispute"`
  */
-export const useWriteDisputeModuleRaiseDispute = /*#__PURE__*/ createUseWriteContract({
+export const useRaiseDispute = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "raiseDispute",
@@ -518,7 +532,7 @@ export const useWriteDisputeModuleRaiseDispute = /*#__PURE__*/ createUseWriteCon
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"resolveDispute"`
  */
-export const useWriteDisputeModuleResolveDispute = /*#__PURE__*/ createUseWriteContract({
+export const useResolveDispute = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "resolveDispute",
@@ -527,7 +541,7 @@ export const useWriteDisputeModuleResolveDispute = /*#__PURE__*/ createUseWriteC
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setArbitrationPolicy"`
  */
-export const useWriteDisputeModuleSetArbitrationPolicy = /*#__PURE__*/ createUseWriteContract({
+export const useSetArbitrationPolicy = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setArbitrationPolicy",
@@ -536,7 +550,7 @@ export const useWriteDisputeModuleSetArbitrationPolicy = /*#__PURE__*/ createUse
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setBaseArbitrationPolicy"`
  */
-export const useWriteDisputeModuleSetBaseArbitrationPolicy = /*#__PURE__*/ createUseWriteContract({
+export const useSetBaseArbitrationPolicy = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setBaseArbitrationPolicy",
@@ -545,7 +559,7 @@ export const useWriteDisputeModuleSetBaseArbitrationPolicy = /*#__PURE__*/ creat
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setDisputeJudgement"`
  */
-export const useWriteDisputeModuleSetDisputeJudgement = /*#__PURE__*/ createUseWriteContract({
+export const useSetDisputeJudgement = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setDisputeJudgement",
@@ -554,7 +568,7 @@ export const useWriteDisputeModuleSetDisputeJudgement = /*#__PURE__*/ createUseW
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setGovernance"`
  */
-export const useWriteDisputeModuleSetGovernance = /*#__PURE__*/ createUseWriteContract({
+export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setGovernance",
@@ -563,28 +577,25 @@ export const useWriteDisputeModuleSetGovernance = /*#__PURE__*/ createUseWriteCo
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationPolicy"`
  */
-export const useWriteDisputeModuleWhitelistArbitrationPolicy = /*#__PURE__*/ createUseWriteContract(
-  {
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    functionName: "whitelistArbitrationPolicy",
-  },
-)
+export const useWhitelistArbitrationPolicy = /*#__PURE__*/ createUseWriteContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "whitelistArbitrationPolicy",
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationRelayer"`
  */
-export const useWriteDisputeModuleWhitelistArbitrationRelayer =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    functionName: "whitelistArbitrationRelayer",
-  })
+export const useWhitelistArbitrationRelayer = /*#__PURE__*/ createUseWriteContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "whitelistArbitrationRelayer",
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistDisputeTag"`
  */
-export const useWriteDisputeModuleWhitelistDisputeTag = /*#__PURE__*/ createUseWriteContract({
+export const useWhitelistDisputeTag = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistDisputeTag",
@@ -601,7 +612,7 @@ export const useSimulateDisputeModule = /*#__PURE__*/ createUseSimulateContract(
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"cancelDispute"`
  */
-export const useSimulateDisputeModuleCancelDispute = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateCancelDispute = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "cancelDispute",
@@ -610,7 +621,7 @@ export const useSimulateDisputeModuleCancelDispute = /*#__PURE__*/ createUseSimu
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"raiseDispute"`
  */
-export const useSimulateDisputeModuleRaiseDispute = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateRaiseDispute = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "raiseDispute",
@@ -619,7 +630,7 @@ export const useSimulateDisputeModuleRaiseDispute = /*#__PURE__*/ createUseSimul
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"resolveDispute"`
  */
-export const useSimulateDisputeModuleResolveDispute = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateResolveDispute = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "resolveDispute",
@@ -628,24 +639,25 @@ export const useSimulateDisputeModuleResolveDispute = /*#__PURE__*/ createUseSim
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setArbitrationPolicy"`
  */
-export const useSimulateDisputeModuleSetArbitrationPolicy = /*#__PURE__*/ createUseSimulateContract(
-  { abi: disputeModuleAbi, address: disputeModuleAddress, functionName: "setArbitrationPolicy" },
-)
+export const useSimulateSetArbitrationPolicy = /*#__PURE__*/ createUseSimulateContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "setArbitrationPolicy",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setBaseArbitrationPolicy"`
  */
-export const useSimulateDisputeModuleSetBaseArbitrationPolicy =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    functionName: "setBaseArbitrationPolicy",
-  })
+export const useSimulateSetBaseArbitrationPolicy = /*#__PURE__*/ createUseSimulateContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "setBaseArbitrationPolicy",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setDisputeJudgement"`
  */
-export const useSimulateDisputeModuleSetDisputeJudgement = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetDisputeJudgement = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setDisputeJudgement",
@@ -654,7 +666,7 @@ export const useSimulateDisputeModuleSetDisputeJudgement = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setGovernance"`
  */
-export const useSimulateDisputeModuleSetGovernance = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setGovernance",
@@ -663,27 +675,25 @@ export const useSimulateDisputeModuleSetGovernance = /*#__PURE__*/ createUseSimu
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationPolicy"`
  */
-export const useSimulateDisputeModuleWhitelistArbitrationPolicy =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    functionName: "whitelistArbitrationPolicy",
-  })
+export const useSimulateWhitelistArbitrationPolicy = /*#__PURE__*/ createUseSimulateContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "whitelistArbitrationPolicy",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationRelayer"`
  */
-export const useSimulateDisputeModuleWhitelistArbitrationRelayer =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    functionName: "whitelistArbitrationRelayer",
-  })
+export const useSimulateWhitelistArbitrationRelayer = /*#__PURE__*/ createUseSimulateContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "whitelistArbitrationRelayer",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistDisputeTag"`
  */
-export const useSimulateDisputeModuleWhitelistDisputeTag = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateWhitelistDisputeTag = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistDisputeTag",
@@ -700,7 +710,7 @@ export const useWatchDisputeModule = /*#__PURE__*/ createUseWatchContractEvent({
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"ArbitrationPolicySet"`
  */
-export const useWatchDisputeModuleArbitrationPolicySet = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchArbitrationPolicySet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "ArbitrationPolicySet",
@@ -709,37 +719,36 @@ export const useWatchDisputeModuleArbitrationPolicySet = /*#__PURE__*/ createUse
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"ArbitrationPolicyWhitelistUpdated"`
  */
-export const useWatchDisputeModuleArbitrationPolicyWhitelistUpdated =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    eventName: "ArbitrationPolicyWhitelistUpdated",
-  })
+export const useWatchArbitrationPolicyWhitelistUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  eventName: "ArbitrationPolicyWhitelistUpdated",
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"ArbitrationRelayerWhitelistUpdated"`
  */
-export const useWatchDisputeModuleArbitrationRelayerWhitelistUpdated =
-  /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchArbitrationRelayerWhitelistUpdated = /*#__PURE__*/ createUseWatchContractEvent(
+  {
     abi: disputeModuleAbi,
     address: disputeModuleAddress,
     eventName: "ArbitrationRelayerWhitelistUpdated",
-  })
+  },
+)
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DefaultArbitrationPolicyUpdated"`
  */
-export const useWatchDisputeModuleDefaultArbitrationPolicyUpdated =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: disputeModuleAbi,
-    address: disputeModuleAddress,
-    eventName: "DefaultArbitrationPolicyUpdated",
-  })
+export const useWatchDefaultArbitrationPolicyUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  eventName: "DefaultArbitrationPolicyUpdated",
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeCancelled"`
  */
-export const useWatchDisputeModuleDisputeCancelled = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchDisputeCancelled = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeCancelled",
@@ -748,7 +757,7 @@ export const useWatchDisputeModuleDisputeCancelled = /*#__PURE__*/ createUseWatc
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeJudgementSet"`
  */
-export const useWatchDisputeModuleDisputeJudgementSet = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchDisputeJudgementSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeJudgementSet",
@@ -757,7 +766,7 @@ export const useWatchDisputeModuleDisputeJudgementSet = /*#__PURE__*/ createUseW
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeRaised"`
  */
-export const useWatchDisputeModuleDisputeRaised = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchDisputeRaised = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeRaised",
@@ -766,7 +775,7 @@ export const useWatchDisputeModuleDisputeRaised = /*#__PURE__*/ createUseWatchCo
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeResolved"`
  */
-export const useWatchDisputeModuleDisputeResolved = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchDisputeResolved = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeResolved",
@@ -775,7 +784,7 @@ export const useWatchDisputeModuleDisputeResolved = /*#__PURE__*/ createUseWatch
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"GovernanceUpdated"`
  */
-export const useWatchDisputeModuleGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "GovernanceUpdated",
@@ -784,7 +793,7 @@ export const useWatchDisputeModuleGovernanceUpdated = /*#__PURE__*/ createUseWat
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"TagWhitelistUpdated"`
  */
-export const useWatchDisputeModuleTagWhitelistUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchTagWhitelistUpdated = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "TagWhitelistUpdated",

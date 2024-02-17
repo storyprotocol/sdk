@@ -93,7 +93,8 @@ export const umlPolicyFrameworkManagerAbi = [
           { name: "attribution", internalType: "bool", type: "bool" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          { name: "commercializers", internalType: "string[]", type: "string[]" },
+          { name: "commercializerChecker", internalType: "address", type: "address" },
+          { name: "commercializerCheckerData", internalType: "bytes", type: "bytes" },
           { name: "commercialRevShare", internalType: "uint32", type: "uint32" },
           { name: "derivativesAllowed", internalType: "bool", type: "bool" },
           { name: "derivativesAttribution", internalType: "bool", type: "bool" },
@@ -121,7 +122,8 @@ export const umlPolicyFrameworkManagerAbi = [
           { name: "attribution", internalType: "bool", type: "bool" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          { name: "commercializers", internalType: "string[]", type: "string[]" },
+          { name: "commercializerChecker", internalType: "address", type: "address" },
+          { name: "commercializerCheckerData", internalType: "bytes", type: "bytes" },
           { name: "commercialRevShare", internalType: "uint32", type: "uint32" },
           { name: "derivativesAllowed", internalType: "bool", type: "bool" },
           { name: "derivativesAttribution", internalType: "bool", type: "bool" },
@@ -184,7 +186,7 @@ export const umlPolicyFrameworkManagerAbi = [
     outputs: [{ name: "", internalType: "string", type: "string" }],
   },
   {
-    stateMutability: "view",
+    stateMutability: "pure",
     type: "function",
     inputs: [{ name: "policyData", internalType: "bytes", type: "bytes" }],
     name: "policyToJson",
@@ -217,7 +219,8 @@ export const umlPolicyFrameworkManagerAbi = [
           { name: "attribution", internalType: "bool", type: "bool" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          { name: "commercializers", internalType: "string[]", type: "string[]" },
+          { name: "commercializerChecker", internalType: "address", type: "address" },
+          { name: "commercializerCheckerData", internalType: "bytes", type: "bytes" },
           { name: "commercialRevShare", internalType: "uint32", type: "uint32" },
           { name: "derivativesAllowed", internalType: "bool", type: "bool" },
           { name: "derivativesAttribution", internalType: "bool", type: "bool" },
@@ -257,7 +260,7 @@ export const umlPolicyFrameworkManagerAbi = [
     type: "function",
     inputs: [
       { name: "licenseId", internalType: "uint256", type: "uint256" },
-      { name: "", internalType: "address", type: "address" },
+      { name: "caller", internalType: "address", type: "address" },
       { name: "ipId", internalType: "address", type: "address" },
       { name: "", internalType: "address", type: "address" },
       { name: "policyData", internalType: "bytes", type: "bytes" },
@@ -281,7 +284,7 @@ export const umlPolicyFrameworkManagerAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "", internalType: "address", type: "address" },
+      { name: "caller", internalType: "address", type: "address" },
       { name: "policyWasInherited", internalType: "bool", type: "bool" },
       { name: "", internalType: "address", type: "address" },
       { name: "", internalType: "address", type: "address" },
@@ -309,7 +312,21 @@ export const umlPolicyFrameworkManagerAbi = [
   },
   { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   { type: "error", inputs: [], name: "LicensingModuleAware__CallerNotLicensingModule" },
+  {
+    type: "error",
+    inputs: [{ name: "commercializer", internalType: "address", type: "address" }],
+    name: "PolicyFrameworkManager__CommercializerCheckerDoesNotSupportHook",
+  },
   { type: "error", inputs: [], name: "PolicyFrameworkManager__GettingPolicyWrongFramework" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
+    ],
+    name: "StringsInsufficientHexLength",
+  },
   {
     type: "error",
     inputs: [],
@@ -412,18 +429,16 @@ export const useReadUmlPolicyFrameworkManagerIpAccountRegistry =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"LICENSE_REGISTRY"`
  */
-export const useReadUmlPolicyFrameworkManagerLicenseRegistry3 = /*#__PURE__*/ createUseReadContract(
-  {
-    abi: umlPolicyFrameworkManagerAbi,
-    address: umlPolicyFrameworkManagerAddress,
-    functionName: "LICENSE_REGISTRY",
-  },
-)
+export const useReadUmlPolicyFrameworkManagerLicenseRegistry = /*#__PURE__*/ createUseReadContract({
+  abi: umlPolicyFrameworkManagerAbi,
+  address: umlPolicyFrameworkManagerAddress,
+  functionName: "LICENSE_REGISTRY",
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"LICENSING_MODULE"`
  */
-export const useReadUmlPolicyFrameworkManagerLicensingModule4 = /*#__PURE__*/ createUseReadContract(
+export const useReadUmlPolicyFrameworkManagerLicensingModule5 = /*#__PURE__*/ createUseReadContract(
   {
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
@@ -511,7 +526,7 @@ export const useReadUmlPolicyFrameworkManagerLicenseTextUrl = /*#__PURE__*/ crea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"licensingModule"`
  */
-export const useReadUmlPolicyFrameworkManagerLicensingModule5 = /*#__PURE__*/ createUseReadContract(
+export const useReadUmlPolicyFrameworkManagerLicensingModule6 = /*#__PURE__*/ createUseReadContract(
   {
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
@@ -579,7 +594,7 @@ export const useWriteUmlPolicyFrameworkManagerRegisterPolicy = /*#__PURE__*/ cre
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"setApproval"`
  */
-export const useWriteUmlPolicyFrameworkManagerSetApproval = /*#__PURE__*/ createUseWriteContract({
+export const useSetApproval = /*#__PURE__*/ createUseWriteContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "setApproval",
@@ -588,7 +603,7 @@ export const useWriteUmlPolicyFrameworkManagerSetApproval = /*#__PURE__*/ create
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"verifyLink"`
  */
-export const useWriteUmlPolicyFrameworkManagerVerifyLink = /*#__PURE__*/ createUseWriteContract({
+export const useVerifyLink = /*#__PURE__*/ createUseWriteContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "verifyLink",
@@ -597,7 +612,7 @@ export const useWriteUmlPolicyFrameworkManagerVerifyLink = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"verifyMint"`
  */
-export const useWriteUmlPolicyFrameworkManagerVerifyMint = /*#__PURE__*/ createUseWriteContract({
+export const useVerifyMint = /*#__PURE__*/ createUseWriteContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "verifyMint",

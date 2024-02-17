@@ -263,6 +263,13 @@ export const licensingModuleAbi = [
   {
     stateMutability: "view",
     type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "totalParentsForIpId",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
@@ -358,6 +365,7 @@ export const licensingModuleAbi = [
   { type: "error", inputs: [], name: "LicensingModule__ParentIdEqualThanChild" },
   { type: "error", inputs: [], name: "LicensingModule__PolicyAlreadySetForIpId" },
   { type: "error", inputs: [], name: "LicensingModule__PolicyNotFound" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
 ] as const
 
 export const licensingModuleAddress = "0x6F7FB37F668ba0F85b6a9C7Ffa02fEA1b3036aEF" as const
@@ -382,7 +390,7 @@ export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
  */
-export const useReadLicensingModuleAccessController = /*#__PURE__*/ createUseReadContract({
+export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "ACCESS_CONTROLLER",
@@ -391,7 +399,7 @@ export const useReadLicensingModuleAccessController = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
  */
-export const useReadLicensingModuleIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
+export const useReadIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
@@ -409,7 +417,7 @@ export const useReadLicensingModuleLicenseRegistry1 = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"ROYALTY_MODULE"`
  */
-export const useReadLicensingModuleRoyaltyModule = /*#__PURE__*/ createUseReadContract({
+export const useReadRoyaltyModule = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "ROYALTY_MODULE",
@@ -418,7 +426,7 @@ export const useReadLicensingModuleRoyaltyModule = /*#__PURE__*/ createUseReadCo
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"getPolicyId"`
  */
-export const useReadLicensingModuleGetPolicyId = /*#__PURE__*/ createUseReadContract({
+export const useReadGetPolicyId = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "getPolicyId",
@@ -427,7 +435,7 @@ export const useReadLicensingModuleGetPolicyId = /*#__PURE__*/ createUseReadCont
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isFrameworkRegistered"`
  */
-export const useReadLicensingModuleIsFrameworkRegistered = /*#__PURE__*/ createUseReadContract({
+export const useReadIsFrameworkRegistered = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isFrameworkRegistered",
@@ -436,7 +444,7 @@ export const useReadLicensingModuleIsFrameworkRegistered = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isParent"`
  */
-export const useReadLicensingModuleIsParent = /*#__PURE__*/ createUseReadContract({
+export const useReadIsParent = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isParent",
@@ -445,7 +453,7 @@ export const useReadLicensingModuleIsParent = /*#__PURE__*/ createUseReadContrac
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyDefined"`
  */
-export const useReadLicensingModuleIsPolicyDefined = /*#__PURE__*/ createUseReadContract({
+export const useReadIsPolicyDefined = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isPolicyDefined",
@@ -454,7 +462,7 @@ export const useReadLicensingModuleIsPolicyDefined = /*#__PURE__*/ createUseRead
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyIdSetForIp"`
  */
-export const useReadLicensingModuleIsPolicyIdSetForIp = /*#__PURE__*/ createUseReadContract({
+export const useReadIsPolicyIdSetForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isPolicyIdSetForIp",
@@ -463,7 +471,7 @@ export const useReadLicensingModuleIsPolicyIdSetForIp = /*#__PURE__*/ createUseR
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyInherited"`
  */
-export const useReadLicensingModuleIsPolicyInherited = /*#__PURE__*/ createUseReadContract({
+export const useReadIsPolicyInherited = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isPolicyInherited",
@@ -490,7 +498,7 @@ export const useReadLicensingModuleName = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"parentIpIds"`
  */
-export const useReadLicensingModuleParentIpIds = /*#__PURE__*/ createUseReadContract({
+export const useReadParentIpIds = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "parentIpIds",
@@ -499,7 +507,7 @@ export const useReadLicensingModuleParentIpIds = /*#__PURE__*/ createUseReadCont
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policy"`
  */
-export const useReadLicensingModulePolicy = /*#__PURE__*/ createUseReadContract({
+export const useReadPolicy = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policy",
@@ -508,7 +516,7 @@ export const useReadLicensingModulePolicy = /*#__PURE__*/ createUseReadContract(
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyAggregatorData"`
  */
-export const useReadLicensingModulePolicyAggregatorData = /*#__PURE__*/ createUseReadContract({
+export const useReadPolicyAggregatorData = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyAggregatorData",
@@ -517,7 +525,7 @@ export const useReadLicensingModulePolicyAggregatorData = /*#__PURE__*/ createUs
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyForIpAtIndex"`
  */
-export const useReadLicensingModulePolicyForIpAtIndex = /*#__PURE__*/ createUseReadContract({
+export const useReadPolicyForIpAtIndex = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyForIpAtIndex",
@@ -526,7 +534,7 @@ export const useReadLicensingModulePolicyForIpAtIndex = /*#__PURE__*/ createUseR
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyIdForIpAtIndex"`
  */
-export const useReadLicensingModulePolicyIdForIpAtIndex = /*#__PURE__*/ createUseReadContract({
+export const useReadPolicyIdForIpAtIndex = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyIdForIpAtIndex",
@@ -535,7 +543,7 @@ export const useReadLicensingModulePolicyIdForIpAtIndex = /*#__PURE__*/ createUs
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyIdsForIp"`
  */
-export const useReadLicensingModulePolicyIdsForIp = /*#__PURE__*/ createUseReadContract({
+export const useReadPolicyIdsForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyIdsForIp",
@@ -544,16 +552,25 @@ export const useReadLicensingModulePolicyIdsForIp = /*#__PURE__*/ createUseReadC
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyStatus"`
  */
-export const useReadLicensingModulePolicyStatus = /*#__PURE__*/ createUseReadContract({
+export const useReadPolicyStatus = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyStatus",
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const useReadLicensingModuleSupportsInterface = /*#__PURE__*/ createUseReadContract({
+  abi: licensingModuleAbi,
+  address: licensingModuleAddress,
+  functionName: "supportsInterface",
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalParentsForIpId"`
  */
-export const useReadLicensingModuleTotalParentsForIpId = /*#__PURE__*/ createUseReadContract({
+export const useReadTotalParentsForIpId = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "totalParentsForIpId",
@@ -562,7 +579,7 @@ export const useReadLicensingModuleTotalParentsForIpId = /*#__PURE__*/ createUse
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalPolicies"`
  */
-export const useReadLicensingModuleTotalPolicies = /*#__PURE__*/ createUseReadContract({
+export const useReadTotalPolicies = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "totalPolicies",
@@ -571,7 +588,7 @@ export const useReadLicensingModuleTotalPolicies = /*#__PURE__*/ createUseReadCo
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalPoliciesForIp"`
  */
-export const useReadLicensingModuleTotalPoliciesForIp = /*#__PURE__*/ createUseReadContract({
+export const useReadTotalPoliciesForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "totalPoliciesForIp",
@@ -588,7 +605,7 @@ export const useWriteLicensingModule = /*#__PURE__*/ createUseWriteContract({
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"addPolicyToIp"`
  */
-export const useWriteLicensingModuleAddPolicyToIp = /*#__PURE__*/ createUseWriteContract({
+export const useAddPolicyToIp = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "addPolicyToIp",
@@ -597,7 +614,7 @@ export const useWriteLicensingModuleAddPolicyToIp = /*#__PURE__*/ createUseWrite
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"linkIpToParents"`
  */
-export const useWriteLicensingModuleLinkIpToParents = /*#__PURE__*/ createUseWriteContract({
+export const useLinkIpToParents = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "linkIpToParents",
@@ -606,7 +623,7 @@ export const useWriteLicensingModuleLinkIpToParents = /*#__PURE__*/ createUseWri
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"mintLicense"`
  */
-export const useWriteLicensingModuleMintLicense = /*#__PURE__*/ createUseWriteContract({
+export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "mintLicense",
@@ -615,7 +632,7 @@ export const useWriteLicensingModuleMintLicense = /*#__PURE__*/ createUseWriteCo
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicy"`
  */
-export const useWriteLicensingModuleRegisterPolicy = /*#__PURE__*/ createUseWriteContract({
+export const useRegisterPolicy = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "registerPolicy",
@@ -624,12 +641,11 @@ export const useWriteLicensingModuleRegisterPolicy = /*#__PURE__*/ createUseWrit
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicyFrameworkManager"`
  */
-export const useWriteLicensingModuleRegisterPolicyFrameworkManager =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: licensingModuleAbi,
-    address: licensingModuleAddress,
-    functionName: "registerPolicyFrameworkManager",
-  })
+export const useRegisterPolicyFrameworkManager = /*#__PURE__*/ createUseWriteContract({
+  abi: licensingModuleAbi,
+  address: licensingModuleAddress,
+  functionName: "registerPolicyFrameworkManager",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__
@@ -642,7 +658,7 @@ export const useSimulateLicensingModule = /*#__PURE__*/ createUseSimulateContrac
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"addPolicyToIp"`
  */
-export const useSimulateLicensingModuleAddPolicyToIp = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateAddPolicyToIp = /*#__PURE__*/ createUseSimulateContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "addPolicyToIp",
@@ -651,7 +667,7 @@ export const useSimulateLicensingModuleAddPolicyToIp = /*#__PURE__*/ createUseSi
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"linkIpToParents"`
  */
-export const useSimulateLicensingModuleLinkIpToParents = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateLinkIpToParents = /*#__PURE__*/ createUseSimulateContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "linkIpToParents",
@@ -660,7 +676,7 @@ export const useSimulateLicensingModuleLinkIpToParents = /*#__PURE__*/ createUse
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"mintLicense"`
  */
-export const useSimulateLicensingModuleMintLicense = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateMintLicense = /*#__PURE__*/ createUseSimulateContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "mintLicense",
@@ -669,7 +685,7 @@ export const useSimulateLicensingModuleMintLicense = /*#__PURE__*/ createUseSimu
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicy"`
  */
-export const useSimulateLicensingModuleRegisterPolicy = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateRegisterPolicy = /*#__PURE__*/ createUseSimulateContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "registerPolicy",
@@ -678,12 +694,11 @@ export const useSimulateLicensingModuleRegisterPolicy = /*#__PURE__*/ createUseS
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicyFrameworkManager"`
  */
-export const useSimulateLicensingModuleRegisterPolicyFrameworkManager =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: licensingModuleAbi,
-    address: licensingModuleAddress,
-    functionName: "registerPolicyFrameworkManager",
-  })
+export const useSimulateRegisterPolicyFrameworkManager = /*#__PURE__*/ createUseSimulateContract({
+  abi: licensingModuleAbi,
+  address: licensingModuleAddress,
+  functionName: "registerPolicyFrameworkManager",
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__
@@ -696,14 +711,16 @@ export const useWatchLicensingModule = /*#__PURE__*/ createUseWatchContractEvent
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"IpIdLinkedToParents"`
  */
-export const useWatchLicensingModuleIpIdLinkedToParents = /*#__PURE__*/ createUseWatchContractEvent(
-  { abi: licensingModuleAbi, address: licensingModuleAddress, eventName: "IpIdLinkedToParents" },
-)
+export const useWatchIpIdLinkedToParents = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: licensingModuleAbi,
+  address: licensingModuleAddress,
+  eventName: "IpIdLinkedToParents",
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyAddedToIpId"`
  */
-export const useWatchLicensingModulePolicyAddedToIpId = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchPolicyAddedToIpId = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   eventName: "PolicyAddedToIpId",
@@ -712,17 +729,16 @@ export const useWatchLicensingModulePolicyAddedToIpId = /*#__PURE__*/ createUseW
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyFrameworkRegistered"`
  */
-export const useWatchLicensingModulePolicyFrameworkRegistered =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: licensingModuleAbi,
-    address: licensingModuleAddress,
-    eventName: "PolicyFrameworkRegistered",
-  })
+export const useWatchPolicyFrameworkRegistered = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: licensingModuleAbi,
+  address: licensingModuleAddress,
+  eventName: "PolicyFrameworkRegistered",
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyRegistered"`
  */
-export const useWatchLicensingModulePolicyRegistered = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchPolicyRegistered = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   eventName: "PolicyRegistered",

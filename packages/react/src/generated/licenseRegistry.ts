@@ -315,7 +315,7 @@ export const useReadLicenseRegistry = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOf"`
  */
-export const useReadLicenseRegistryBalanceOf = /*#__PURE__*/ createUseReadContract({
+export const useReadBalanceOf = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "balanceOf",
@@ -324,7 +324,7 @@ export const useReadLicenseRegistryBalanceOf = /*#__PURE__*/ createUseReadContra
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOfBatch"`
  */
-export const useReadLicenseRegistryBalanceOfBatch = /*#__PURE__*/ createUseReadContract({
+export const useReadBalanceOfBatch = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "balanceOfBatch",
@@ -333,7 +333,7 @@ export const useReadLicenseRegistryBalanceOfBatch = /*#__PURE__*/ createUseReadC
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isApprovedForAll"`
  */
-export const useReadLicenseRegistryIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
+export const useReadIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "isApprovedForAll",
@@ -342,7 +342,7 @@ export const useReadLicenseRegistryIsApprovedForAll = /*#__PURE__*/ createUseRea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isLicensee"`
  */
-export const useReadLicenseRegistryIsLicensee = /*#__PURE__*/ createUseReadContract({
+export const useReadIsLicensee = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "isLicensee",
@@ -351,7 +351,7 @@ export const useReadLicenseRegistryIsLicensee = /*#__PURE__*/ createUseReadContr
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"license"`
  */
-export const useReadLicenseRegistryLicense = /*#__PURE__*/ createUseReadContract({
+export const useReadLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "license",
@@ -360,7 +360,7 @@ export const useReadLicenseRegistryLicense = /*#__PURE__*/ createUseReadContract
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"licensingModule"`
  */
-export const useReadLicenseRegistryLicensingModule = /*#__PURE__*/ createUseReadContract({
+export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "licensingModule",
@@ -369,7 +369,7 @@ export const useReadLicenseRegistryLicensingModule = /*#__PURE__*/ createUseRead
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"licensorIpId"`
  */
-export const useReadLicenseRegistryLicensorIpId = /*#__PURE__*/ createUseReadContract({
+export const useReadLicensorIpId = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "licensorIpId",
@@ -378,7 +378,7 @@ export const useReadLicenseRegistryLicensorIpId = /*#__PURE__*/ createUseReadCon
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintedLicenses"`
  */
-export const useReadLicenseRegistryMintedLicenses = /*#__PURE__*/ createUseReadContract({
+export const useReadMintedLicenses = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintedLicenses",
@@ -387,7 +387,7 @@ export const useReadLicenseRegistryMintedLicenses = /*#__PURE__*/ createUseReadC
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"policyIdForLicense"`
  */
-export const useReadLicenseRegistryPolicyIdForLicense = /*#__PURE__*/ createUseReadContract({
+export const useReadPolicyIdForLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "policyIdForLicense",
@@ -405,7 +405,7 @@ export const useReadLicenseRegistrySupportsInterface = /*#__PURE__*/ createUseRe
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"uri"`
  */
-export const useReadLicenseRegistryUri = /*#__PURE__*/ createUseReadContract({
+export const useReadUri = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "uri",
@@ -422,7 +422,7 @@ export const useWriteLicenseRegistry = /*#__PURE__*/ createUseWriteContract({
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
  */
-export const useWriteLicenseRegistryBurnLicenses = /*#__PURE__*/ createUseWriteContract({
+export const useBurnLicenses = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "burnLicenses",
@@ -431,7 +431,7 @@ export const useWriteLicenseRegistryBurnLicenses = /*#__PURE__*/ createUseWriteC
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
  */
-export const useWriteLicenseRegistryMintLicense = /*#__PURE__*/ createUseWriteContract({
+export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintLicense",
@@ -440,7 +440,7 @@ export const useWriteLicenseRegistryMintLicense = /*#__PURE__*/ createUseWriteCo
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
  */
-export const useWriteLicenseRegistrySafeBatchTransferFrom = /*#__PURE__*/ createUseWriteContract({
+export const useSafeBatchTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeBatchTransferFrom",
@@ -449,7 +449,7 @@ export const useWriteLicenseRegistrySafeBatchTransferFrom = /*#__PURE__*/ create
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
  */
-export const useWriteLicenseRegistrySafeTransferFrom = /*#__PURE__*/ createUseWriteContract({
+export const useSafeTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeTransferFrom",
@@ -458,7 +458,7 @@ export const useWriteLicenseRegistrySafeTransferFrom = /*#__PURE__*/ createUseWr
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
  */
-export const useWriteLicenseRegistrySetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
+export const useSetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setApprovalForAll",
@@ -467,7 +467,7 @@ export const useWriteLicenseRegistrySetApprovalForAll = /*#__PURE__*/ createUseW
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
  */
-export const useWriteLicenseRegistrySetLicensingModule = /*#__PURE__*/ createUseWriteContract({
+export const useSetLicensingModule = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setLicensingModule",
@@ -484,7 +484,7 @@ export const useSimulateLicenseRegistry = /*#__PURE__*/ createUseSimulateContrac
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
  */
-export const useSimulateLicenseRegistryBurnLicenses = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateBurnLicenses = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "burnLicenses",
@@ -493,7 +493,7 @@ export const useSimulateLicenseRegistryBurnLicenses = /*#__PURE__*/ createUseSim
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
  */
-export const useSimulateLicenseRegistryMintLicense = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateMintLicense = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintLicense",
@@ -502,17 +502,16 @@ export const useSimulateLicenseRegistryMintLicense = /*#__PURE__*/ createUseSimu
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
  */
-export const useSimulateLicenseRegistrySafeBatchTransferFrom =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: licenseRegistryAbi,
-    address: licenseRegistryAddress,
-    functionName: "safeBatchTransferFrom",
-  })
+export const useSimulateSafeBatchTransferFrom = /*#__PURE__*/ createUseSimulateContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "safeBatchTransferFrom",
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
  */
-export const useSimulateLicenseRegistrySafeTransferFrom = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSafeTransferFrom = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeTransferFrom",
@@ -521,7 +520,7 @@ export const useSimulateLicenseRegistrySafeTransferFrom = /*#__PURE__*/ createUs
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
  */
-export const useSimulateLicenseRegistrySetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulateSetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setApprovalForAll",
@@ -530,9 +529,11 @@ export const useSimulateLicenseRegistrySetApprovalForAll = /*#__PURE__*/ createU
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
  */
-export const useSimulateLicenseRegistrySetLicensingModule = /*#__PURE__*/ createUseSimulateContract(
-  { abi: licenseRegistryAbi, address: licenseRegistryAddress, functionName: "setLicensingModule" },
-)
+export const useSimulateSetLicensingModule = /*#__PURE__*/ createUseSimulateContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "setLicensingModule",
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__
@@ -545,7 +546,7 @@ export const useWatchLicenseRegistry = /*#__PURE__*/ createUseWatchContractEvent
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"ApprovalForAll"`
  */
-export const useWatchLicenseRegistryApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "ApprovalForAll",
@@ -554,7 +555,7 @@ export const useWatchLicenseRegistryApprovalForAll = /*#__PURE__*/ createUseWatc
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"LicenseMinted"`
  */
-export const useWatchLicenseRegistryLicenseMinted = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchLicenseMinted = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "LicenseMinted",
@@ -563,7 +564,7 @@ export const useWatchLicenseRegistryLicenseMinted = /*#__PURE__*/ createUseWatch
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferBatch"`
  */
-export const useWatchLicenseRegistryTransferBatch = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchTransferBatch = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "TransferBatch",
@@ -572,7 +573,7 @@ export const useWatchLicenseRegistryTransferBatch = /*#__PURE__*/ createUseWatch
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferSingle"`
  */
-export const useWatchLicenseRegistryTransferSingle = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchTransferSingle = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "TransferSingle",
@@ -581,7 +582,7 @@ export const useWatchLicenseRegistryTransferSingle = /*#__PURE__*/ createUseWatc
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"URI"`
  */
-export const useWatchLicenseRegistryUri = /*#__PURE__*/ createUseWatchContractEvent({
+export const useWatchUri = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "URI",

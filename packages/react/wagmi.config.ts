@@ -15,6 +15,12 @@ import { abi as accessControllerAbi } from "../protocol-core/out/AccessControlle
 import { abi as ipAccountImplAbi } from "../protocol-core/out/IPAccountImpl.sol/IPAccountImpl.json";
 import { abi as UMLPolicyFrameworkManagerAbi } from "../protocol-core/out/UMLPolicyFrameworkManager.sol/UMLPolicyFrameworkManager.json";
 
+type GetHookNameProps = {
+  contractName: string;
+  type: string;
+  itemName?: string | undefined;
+};
+
 dotenv.config();
 
 const contracts = {
@@ -48,6 +54,15 @@ function generateConfig(
   contractName: string,
   abi: Abi,
   address?: `0x${string}`,
+  getHookName?: ({
+    contractName,
+    itemName,
+    type,
+  }: {
+    contractName: string;
+    itemName: string | undefined;
+    type: string;
+  }) => `use${string}`,
 ) {
   return {
     out: `src/generated/${generatedName}.ts`,
@@ -60,24 +75,10 @@ function generateConfig(
     ],
     plugins: [
       react({
-        getHookName: ({ contractName, itemName, type }) => {
-          let functionName;
-          if (
-            itemName === "LicenseRegistry" ||
-            (itemName === "LicensingModule" &&
-              contractName.toLowerCase() === "umlpolicyframeworkmanager")
-          ) {
-            // Handle duplicate function names
-            counter = counter + 1;
-            functionName =
-              `use${pascalCase(type)}${contractName}${itemName ? itemName : ""}` +
-              counter.toString();
-          } else {
-            functionName = `use${pascalCase(type)}${pascalCase(contractName)}${pascalCase(
-              itemName ? itemName : "",
-            )}`;
-          }
-          return functionName;
+        getHookName: ({ contractName, itemName, type }: GetHookNameProps) => {
+          return getHookName
+            ? getHookName({ contractName, itemName, type })
+            : defaultGetHookName({ contractName, itemName, type });
         },
       }),
     ],
@@ -103,6 +104,14 @@ const licensingModuleConfig = generateConfig(
   "LicensingModule",
   licensingModuleAbi as Abi,
   contracts.LicenseRegistry as `0x${string}`,
+  ({ contractName, itemName, type }: GetHookNameProps) => {
+    if (itemName === "LicenseRegistry") {
+      counter = counter + 1;
+      return (`use${pascalCase(type)}${contractName}${itemName ? itemName : ""}` +
+        counter.toString()) as `use${string}`;
+    }
+    return defaultGetHookName({ contractName, itemName, type });
+  },
 );
 
 const accessControllerConfig = generateConfig(
@@ -130,6 +139,17 @@ const disputeModuleConfig = generateConfig(
   "DisputeModule",
   disputeModuleAbi as Abi,
   contracts.DisputeModule as `0x${string}`,
+  ({ contractName, itemName, type }: GetHookNameProps) => {
+    if (
+      itemName?.toLowerCase() === "accesscontroller" ||
+      itemName?.toLowerCase() === "ipaccountregistry"
+    ) {
+      counter = counter + 1;
+      return (`use${pascalCase(type)}${contractName}${itemName ? itemName : ""}` +
+        counter.toString()) as `use${string}`;
+    }
+    return defaultGetHookName({ contractName, itemName, type });
+  },
 );
 
 const UMLPolicyFrameworkManager = generateConfig(
@@ -137,6 +157,16 @@ const UMLPolicyFrameworkManager = generateConfig(
   "UMLPolicyFrameworkManager",
   UMLPolicyFrameworkManagerAbi as Abi,
   contracts.UMLPolicyFrameworkManager as `0x${string}`,
+  ({ contractName, itemName, type }: GetHookNameProps) => {
+    if (itemName === "LicensingModule") {
+      counter = counter + 1;
+      return (`use${pascalCase(type)}${contractName}${itemName ? itemName : ""}` +
+        counter.toString()) as `use${string}`;
+    } else if (itemName?.toLowerCase() === "registerpolicy") {
+      return `use${pascalCase(type)}${pascalCase(contractName)}${pascalCase(itemName)}`;
+    }
+    return defaultWagmiGetHookName({ contractName, itemName, type });
+  },
 );
 
 export default defineConfig([
@@ -164,3 +194,75 @@ export default defineConfig([
 //     }),
 //   ],
 // });
+
+function defaultGetHookName({
+  contractName,
+  itemName,
+  type,
+}: {
+  contractName: string;
+  itemName: string | undefined;
+  type: string;
+}): `use${string}` {
+  if (itemName?.toLowerCase() === "name" || itemName?.toLowerCase() === "supportsinterface")
+    return `use${pascalCase(type)}${pascalCase(contractName)}${pascalCase(itemName)}`;
+
+  if (!itemName) return `use${pascalCase(type)}${pascalCase(contractName)}`;
+
+  if (type.toLowerCase() === "write") {
+    return `use${pascalCase(
+      itemName ? itemName : `${pascalCase(type)}${pascalCase(contractName)}`,
+    )}`;
+  }
+  return `use${pascalCase(type)}${itemName}`;
+}
+
+function defaultWagmiGetHookName({
+  contractName,
+  itemName,
+  type,
+}: {
+  contractName: string;
+  itemName: string | undefined;
+  type: string;
+}): `use${string}` {
+  if (!itemName) return `use${pascalCase(type)}${pascalCase(contractName)}`;
+
+  if (type.toLowerCase() === "write") {
+    return `use${pascalCase(
+      itemName ? itemName : `${pascalCase(type)}${pascalCase(contractName)}`,
+    )}`;
+  }
+  return `use${pascalCase(type)}${pascalCase(contractName)}${itemName}`;
+}
+
+// let functionName;
+// if (
+//   itemName === "LicenseRegistry" ||
+//   (itemName === "LicensingModule" && contractName.toLowerCase() === "umlpolicyframeworkmanager")
+// ) {
+//   // Handle duplicate function names
+//   counter = counter + 1;
+//   functionName =
+//     `use${pascalCase(type)}${contractName}${itemName ? itemName : ""}` + counter.toString();
+// } else {
+//   if (type.toLowerCase() === "write") {
+//     functionName = `use${pascalCase(
+//       itemName ? itemName : `${pascalCase(type)}${pascalCase(contractName)}`,
+//     )}`;
+//   } else {
+//     if (
+//       itemName &&
+//       itemName.toLowerCase() !== "name" &&
+//       itemName.toLowerCase() !== "supportsinterface"
+//     ) {
+//       functionName = `use${pascalCase(type)}${pascalCase(itemName as string)}`;
+//     } else {
+//       functionName = `use${pascalCase(type)}${pascalCase(contractName)}${itemName}`;
+//     }
+//   }
+//   // functionName = `use${pascalCase(type)}${pascalCase(contractName)}${pascalCase(
+//   //   itemName ? itemName : "",
+//   // )}`;
+// }
+// return functionName;
