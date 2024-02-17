@@ -25,11 +25,11 @@ export class PermissionClient {
    * bytes4(0) => wildcard
    * Specific permission overrides wildcard permission.
    * @param request The request object containing necessary data to set permissions.
-   * @param ipAccount The address of the IP account that grants the permission for `signer`
-   * @param signer The address that can call `to` on behalf of the `ipAccount`
-   * @param to The address that can be called by the `signer` (currently only modules can be `to`)
-   * @param func The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`
-   * @param permission The new permission level
+   *   @param request.ipAccount The address of the IP account that grants the permission for `signer`
+   *   @param request.signer The address that can call `to` on behalf of the `ipAccount`
+   *   @param request.to The address that can be called by the `signer` (currently only modules can be `to`)
+   *   @param request.func The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`
+   *   @param request.permission The new permission level
    * @returns A Promise that resolves to an object containing the transaction hash
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
