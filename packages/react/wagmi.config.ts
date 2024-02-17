@@ -132,6 +132,18 @@ const ipAccountImplConfig = generateConfig(
   "ipAccountImpl",
   "IPAccountImpl",
   ipAccountImplAbi as Abi,
+  undefined,
+  ({ contractName, itemName, type }: GetHookNameProps) => {
+    if (
+      itemName?.toLowerCase() === "accesscontroller" ||
+      itemName?.toLowerCase() === "ipaccountregistry"
+    ) {
+      counter = counter + 1;
+      return (`use${pascalCase(type)}${contractName}${itemName ? itemName : ""}` +
+        counter.toString()) as `use${string}`;
+    }
+    return defaultGetHookName({ contractName, itemName, type });
+  },
 );
 
 const disputeModuleConfig = generateConfig(

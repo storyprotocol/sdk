@@ -173,7 +173,7 @@ export const useReadIpAccountImpl = /*#__PURE__*/ createUseReadContract({ abi: i
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link ipAccountImplAbi}__ and `functionName` set to `"accessController"`
  */
-export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
+export const useReadIpAccountImplAccessController3 = /*#__PURE__*/ createUseReadContract({
   abi: ipAccountImplAbi,
   functionName: "accessController",
 })

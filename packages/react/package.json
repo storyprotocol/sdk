@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/react",
-  "version": "0.0.2-test-4",
+  "version": "0.0.3-test-1",
   "description": "Story Protocol React SDK",
   "main": "dist/story-protocol-react.cjs.js",
   "module": "dist/story-protocol-react.esm.js",
@@ -26,8 +26,7 @@
     "lint:fix": "pnpm run lint --fix",
     "lint": "eslint .",
     "tsc": "tsc --noEmit",
-    "build-all": "cd ../protocol-core && git pull origin main && yarn && forge build && cd ../react && pnpm wagmi generate && preconstruct build",
-    "publish": "pnpm run build && npm publish"
+    "build-all": "cd ../protocol-core && git pull origin main && yarn && forge build && cd ../react && pnpm wagmi generate && preconstruct build"
   },
   "keywords": [],
   "author": "",

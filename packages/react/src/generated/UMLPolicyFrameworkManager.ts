@@ -438,7 +438,7 @@ export const useReadUmlPolicyFrameworkManagerLicenseRegistry = /*#__PURE__*/ cre
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"LICENSING_MODULE"`
  */
-export const useReadUmlPolicyFrameworkManagerLicensingModule5 = /*#__PURE__*/ createUseReadContract(
+export const useReadUmlPolicyFrameworkManagerLicensingModule6 = /*#__PURE__*/ createUseReadContract(
   {
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
@@ -526,7 +526,7 @@ export const useReadUmlPolicyFrameworkManagerLicenseTextUrl = /*#__PURE__*/ crea
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"licensingModule"`
  */
-export const useReadUmlPolicyFrameworkManagerLicensingModule6 = /*#__PURE__*/ createUseReadContract(
+export const useReadUmlPolicyFrameworkManagerLicensingModule7 = /*#__PURE__*/ createUseReadContract(
   {
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,

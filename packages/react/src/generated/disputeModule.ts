@@ -371,7 +371,7 @@ export const useReadDisputeModule = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
  */
-export const useReadDisputeModuleAccessController3 = /*#__PURE__*/ createUseReadContract({
+export const useReadDisputeModuleAccessController4 = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "ACCESS_CONTROLLER",
@@ -389,7 +389,7 @@ export const useReadInDispute = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
  */
-export const useReadDisputeModuleIpAccountRegistry4 = /*#__PURE__*/ createUseReadContract({
+export const useReadDisputeModuleIpAccountRegistry5 = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
