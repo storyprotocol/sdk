@@ -25,7 +25,7 @@ export class PermissionClient {
    * bytes4(0) => wildcard
    * Specific permission overrides wildcard permission.
    * @param request The request object containing necessary data to set permissions.
-   *   @param request.ipAccount The address of the IP account that grants the permission for `signer`
+   *   @param request.ipAsset The address of the IP account that grants the permission for `signer`
    *   @param request.signer The address that can call `to` on behalf of the `ipAccount`
    *   @param request.to The address that can be called by the `signer` (currently only modules can be `to`)
    *   @param request.func The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`
@@ -37,7 +37,7 @@ export class PermissionClient {
     try {
       const IPAccountConfig = {
         abi: IPAccountABI,
-        address: getAddress(request.ipAccount),
+        address: getAddress(request.ipAsset),
       };
 
       const { request: call } = await this.rpcClient.simulateContract({
@@ -50,7 +50,7 @@ export class PermissionClient {
             abi: AccessControllerConfig.abi,
             functionName: "setPermission",
             args: [
-              getAddress(request.ipAccount), // 0x Address
+              getAddress(request.ipAsset), // 0x Address
               getAddress(request.signer), // 0x Address
               getAddress(request.to), // 0x Address
               request.func as Hex, // bytes4
