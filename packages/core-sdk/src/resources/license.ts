@@ -19,6 +19,18 @@ export class LicenseClient {
     this.rpcClient = rpcClient;
   }
 
+  /**
+   * Mints license NFTs representing a policy granted by a set of ipIds (licensors). This NFT needs to be
+   * burned in order to link a derivative IP with its parents. If this is the first combination of policy and
+   * licensors, a new licenseId will be created. If not, the license is fungible and an id will be reused.
+   * @dev Only callable by the licensing module.
+   * @param request The request object containing necessary data to mint a license.
+   * 		@param request.policyId The ID of the policy to be minted
+   * 		@param request.licensorIpId_ The ID of the IP granting the license (ie. licensor)
+   * 		@param request.mintAmount Number of licenses to mint. License NFT is fungible for same policy and same licensors
+   * 		@param request.receiver Receiver address of the minted license NFT(s).
+   * @return licenseId The ID of the minted license NFT(s).
+   */
   public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
     try {
       const IPAccountConfig = {

@@ -24,7 +24,7 @@ export class DisputeClient {
   }
 
   /**
-   * Initiates a dispute on an IP.
+   * Raises a dispute on a given ipId
    * @param request - The request object containing necessary data to raise a dispute.
    *   @param request.targetIpId - The IP ID that is the target of the dispute.
    *   @param request.arbitrationPolicy - The address of the arbitration policy.
@@ -71,7 +71,7 @@ export class DisputeClient {
   }
 
   /**
-   * Sets the judgement for an existing dispute.
+   * Sets the dispute judgement on a given dispute. Only whitelisted arbitration relayers can call to judge.
    * @param request The request object containing details for setting the dispute judgement.
    *   @param request.disputeId The ID of the dispute to be judged.
    *   @param request.decision The decision of the dispute.
@@ -111,7 +111,7 @@ export class DisputeClient {
   }
 
   /**
-   * Cancels an existing dispute.
+   * Cancels an ongoing dispute
    * @param request The request object containing details to cancel the dispute.
    *   @param request.disputeId The ID of the dispute to be cancelled.
    *   @param request.calldata Optional additional data used in the cancellation process.
@@ -143,7 +143,7 @@ export class DisputeClient {
   }
 
   /**
-   * Resolves an existing dispute after a judgement has been set.
+   * Resolves a dispute after it has been judged
    * @param request The request object containing details to resolve the dispute.
    *   @param request.disputeId The ID of the dispute to be resolved.
    * @returns A Promise that resolves to a ResolveDisputeResponse.
