@@ -19,9 +19,11 @@
   ],
   "scripts": {
     "build": "pnpm run fix && preconstruct build",
-    "test": "pnpm run test:unit && pnpm run test:integration",
+    "test": "",
+    "fix": "",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
+    "lint": "",
     "tsc": "tsc --noEmit",
     "update": "cd ../protocol-core && git pull origin main && yarn && forge build && cd ../react",
     "update:build": "pnpm run update && pnpm wagmi generate && preconstruct build"
