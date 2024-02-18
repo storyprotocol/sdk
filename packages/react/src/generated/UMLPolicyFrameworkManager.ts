@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen"
+} from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // UMLPolicyFrameworkManager
@@ -383,15 +383,15 @@ export const umlPolicyFrameworkManagerAbi = [
   { type: "error", inputs: [], name: "UMLPolicyFrameworkManager__ReciprocalValueMismatch" },
   { type: "error", inputs: [], name: "UMLPolicyFrameworkManager__RightsNotFound" },
   { type: "error", inputs: [], name: "UMLPolicyFrameworkManager__StringArrayMismatch" },
-] as const
+] as const;
 
 export const umlPolicyFrameworkManagerAddress =
-  "0x30A18EA9abca9ff72fB9ce33F4f060A44a09f515" as const
+  "0x30A18EA9abca9ff72fB9ce33F4f060A44a09f515" as const;
 
 export const umlPolicyFrameworkManagerConfig = {
   address: umlPolicyFrameworkManagerAddress,
   abi: umlPolicyFrameworkManagerAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -403,7 +403,7 @@ export const umlPolicyFrameworkManagerConfig = {
 export const useReadUmlPolicyFrameworkManager = /*#__PURE__*/ createUseReadContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
@@ -414,7 +414,7 @@ export const useReadUmlPolicyFrameworkManagerAccessController = /*#__PURE__*/ cr
     address: umlPolicyFrameworkManagerAddress,
     functionName: "ACCESS_CONTROLLER",
   },
-)
+);
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
@@ -424,7 +424,7 @@ export const useReadUmlPolicyFrameworkManagerIpAccountRegistry =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "IP_ACCOUNT_REGISTRY",
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"LICENSE_REGISTRY"`
@@ -433,7 +433,7 @@ export const useReadUmlPolicyFrameworkManagerLicenseRegistry = /*#__PURE__*/ cre
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "LICENSE_REGISTRY",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"LICENSING_MODULE"`
@@ -444,7 +444,7 @@ export const useReadUmlPolicyFrameworkManagerLicensingModule6 = /*#__PURE__*/ cr
     address: umlPolicyFrameworkManagerAddress,
     functionName: "LICENSING_MODULE",
   },
-)
+);
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"getAggregator"`
@@ -453,7 +453,7 @@ export const useReadUmlPolicyFrameworkManagerGetAggregator = /*#__PURE__*/ creat
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "getAggregator",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"getCommercialRevenueShare"`
@@ -463,7 +463,7 @@ export const useReadUmlPolicyFrameworkManagerGetCommercialRevenueShare =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "getCommercialRevenueShare",
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"getPolicy"`
@@ -472,7 +472,7 @@ export const useReadUmlPolicyFrameworkManagerGetPolicy = /*#__PURE__*/ createUse
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "getPolicy",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"getPolicyId"`
@@ -481,7 +481,7 @@ export const useReadUmlPolicyFrameworkManagerGetPolicyId = /*#__PURE__*/ createU
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "getPolicyId",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"getRoyaltyPolicy"`
@@ -492,7 +492,7 @@ export const useReadUmlPolicyFrameworkManagerGetRoyaltyPolicy = /*#__PURE__*/ cr
     address: umlPolicyFrameworkManagerAddress,
     functionName: "getRoyaltyPolicy",
   },
-)
+);
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"isDerivativeApproved"`
@@ -502,7 +502,7 @@ export const useReadUmlPolicyFrameworkManagerIsDerivativeApproved =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "isDerivativeApproved",
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"isPolicyCommercial"`
@@ -512,7 +512,7 @@ export const useReadUmlPolicyFrameworkManagerIsPolicyCommercial =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "isPolicyCommercial",
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"licenseTextUrl"`
@@ -521,7 +521,7 @@ export const useReadUmlPolicyFrameworkManagerLicenseTextUrl = /*#__PURE__*/ crea
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "licenseTextUrl",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"licensingModule"`
@@ -532,7 +532,7 @@ export const useReadUmlPolicyFrameworkManagerLicensingModule7 = /*#__PURE__*/ cr
     address: umlPolicyFrameworkManagerAddress,
     functionName: "licensingModule",
   },
-)
+);
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"name"`
@@ -541,7 +541,7 @@ export const useReadUmlPolicyFrameworkManagerName = /*#__PURE__*/ createUseReadC
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "name",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"policyToJson"`
@@ -550,7 +550,7 @@ export const useReadUmlPolicyFrameworkManagerPolicyToJson = /*#__PURE__*/ create
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "policyToJson",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"processInheritedPolicies"`
@@ -560,7 +560,7 @@ export const useReadUmlPolicyFrameworkManagerProcessInheritedPolicies =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "processInheritedPolicies",
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"supportsInterface"`
@@ -570,7 +570,7 @@ export const useReadUmlPolicyFrameworkManagerSupportsInterface =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "supportsInterface",
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__
@@ -578,7 +578,7 @@ export const useReadUmlPolicyFrameworkManagerSupportsInterface =
 export const useWriteUmlPolicyFrameworkManager = /*#__PURE__*/ createUseWriteContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"registerPolicy"`
@@ -589,7 +589,7 @@ export const useWriteUmlPolicyFrameworkManagerRegisterPolicy = /*#__PURE__*/ cre
     address: umlPolicyFrameworkManagerAddress,
     functionName: "registerPolicy",
   },
-)
+);
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"setApproval"`
@@ -598,7 +598,7 @@ export const useSetApproval = /*#__PURE__*/ createUseWriteContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "setApproval",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"verifyLink"`
@@ -607,7 +607,7 @@ export const useVerifyLink = /*#__PURE__*/ createUseWriteContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "verifyLink",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"verifyMint"`
@@ -616,7 +616,7 @@ export const useVerifyMint = /*#__PURE__*/ createUseWriteContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
   functionName: "verifyMint",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__
@@ -624,7 +624,7 @@ export const useVerifyMint = /*#__PURE__*/ createUseWriteContract({
 export const useSimulateUmlPolicyFrameworkManager = /*#__PURE__*/ createUseSimulateContract({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"registerPolicy"`
@@ -634,7 +634,7 @@ export const useSimulateUmlPolicyFrameworkManagerRegisterPolicy =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "registerPolicy",
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"setApproval"`
@@ -644,7 +644,7 @@ export const useSimulateUmlPolicyFrameworkManagerSetApproval =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "setApproval",
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"verifyLink"`
@@ -654,7 +654,7 @@ export const useSimulateUmlPolicyFrameworkManagerVerifyLink =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "verifyLink",
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `functionName` set to `"verifyMint"`
@@ -664,7 +664,7 @@ export const useSimulateUmlPolicyFrameworkManagerVerifyMint =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     functionName: "verifyMint",
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__
@@ -672,7 +672,7 @@ export const useSimulateUmlPolicyFrameworkManagerVerifyMint =
 export const useWatchUmlPolicyFrameworkManager = /*#__PURE__*/ createUseWatchContractEvent({
   abi: umlPolicyFrameworkManagerAbi,
   address: umlPolicyFrameworkManagerAddress,
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link umlPolicyFrameworkManagerAbi}__ and `eventName` set to `"DerivativeApproved"`
@@ -682,4 +682,4 @@ export const useWatchUmlPolicyFrameworkManagerDerivativeApproved =
     abi: umlPolicyFrameworkManagerAbi,
     address: umlPolicyFrameworkManagerAddress,
     eventName: "DerivativeApproved",
-  })
+  });

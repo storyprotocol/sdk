@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen"
+} from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RegistrationModule
@@ -20,7 +20,14 @@ export const registrationModuleAbi = [
     ],
   },
   {
-    stateMutability: "pure",
+    stateMutability: "view",
+    type: "function",
+    inputs: [],
+    name: "ipResolver",
+    outputs: [{ name: "", internalType: "contract IPResolver", type: "address" }],
+  },
+  {
+    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
@@ -36,7 +43,7 @@ export const registrationModuleAbi = [
       { name: "ipName", internalType: "string", type: "string" },
       { name: "contentHash", internalType: "bytes32", type: "bytes32" },
       { name: "externalURL", internalType: "string", type: "string" },
-      { name: "minRoyalty", internalType: "uint32", type: "uint32" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
     ],
     name: "registerDerivativeIp",
     outputs: [],
@@ -54,13 +61,6 @@ export const registrationModuleAbi = [
     ],
     name: "registerRootIp",
     outputs: [{ name: "", internalType: "address", type: "address" }],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    inputs: [],
-    name: "resolver",
-    outputs: [{ name: "", internalType: "contract IPResolver", type: "address" }],
   },
   {
     stateMutability: "view",
@@ -90,14 +90,14 @@ export const registrationModuleAbi = [
     name: "RootIPRegistered",
   },
   { type: "error", inputs: [], name: "RegistrationModule__InvalidOwner" },
-] as const
+] as const;
 
-export const registrationModuleAddress = "0x27c899af5AD9024570B9e5c58831726b48430212" as const
+export const registrationModuleAddress = "0x248c8CbF469ec7CB22Dc9914E569920b93d717a3" as const;
 
 export const registrationModuleConfig = {
   address: registrationModuleAddress,
   abi: registrationModuleAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -109,7 +109,16 @@ export const registrationModuleConfig = {
 export const useReadRegistrationModule = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-})
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"ipResolver"`
+ */
+export const useReadIpResolver = /*#__PURE__*/ createUseReadContract({
+  abi: registrationModuleAbi,
+  address: registrationModuleAddress,
+  functionName: "ipResolver",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"name"`
@@ -118,16 +127,7 @@ export const useReadRegistrationModuleName = /*#__PURE__*/ createUseReadContract
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "name",
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"resolver"`
- */
-export const useReadResolver = /*#__PURE__*/ createUseReadContract({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-  functionName: "resolver",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"supportsInterface"`
@@ -136,7 +136,7 @@ export const useReadRegistrationModuleSupportsInterface = /*#__PURE__*/ createUs
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "supportsInterface",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__
@@ -144,7 +144,7 @@ export const useReadRegistrationModuleSupportsInterface = /*#__PURE__*/ createUs
 export const useWriteRegistrationModule = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerDerivativeIp"`
@@ -153,7 +153,7 @@ export const useRegisterDerivativeIp = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "registerDerivativeIp",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerRootIp"`
@@ -162,7 +162,7 @@ export const useRegisterRootIp = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "registerRootIp",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__
@@ -170,7 +170,7 @@ export const useRegisterRootIp = /*#__PURE__*/ createUseWriteContract({
 export const useSimulateRegistrationModule = /*#__PURE__*/ createUseSimulateContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerDerivativeIp"`
@@ -179,7 +179,7 @@ export const useSimulateRegisterDerivativeIp = /*#__PURE__*/ createUseSimulateCo
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "registerDerivativeIp",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerRootIp"`
@@ -188,7 +188,7 @@ export const useSimulateRegisterRootIp = /*#__PURE__*/ createUseSimulateContract
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   functionName: "registerRootIp",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__
@@ -196,7 +196,7 @@ export const useSimulateRegisterRootIp = /*#__PURE__*/ createUseSimulateContract
 export const useWatchRegistrationModule = /*#__PURE__*/ createUseWatchContractEvent({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__ and `eventName` set to `"DerivativeIPRegistered"`
@@ -205,7 +205,7 @@ export const useWatchDerivativeIpRegistered = /*#__PURE__*/ createUseWatchContra
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   eventName: "DerivativeIPRegistered",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__ and `eventName` set to `"RootIPRegistered"`
@@ -214,4 +214,4 @@ export const useWatchRootIpRegistered = /*#__PURE__*/ createUseWatchContractEven
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
   eventName: "RootIPRegistered",
-})
+});

@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen"
+} from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicensingModule
@@ -18,6 +18,7 @@ export const licensingModuleAbi = [
       { name: "ipAccountRegistry", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "registry", internalType: "address", type: "address" },
+      { name: "disputeModule", internalType: "address", type: "address" },
     ],
   },
   {
@@ -26,6 +27,13 @@ export const licensingModuleAbi = [
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    inputs: [],
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
   },
   {
     stateMutability: "view",
@@ -62,9 +70,20 @@ export const licensingModuleAbi = [
     stateMutability: "view",
     type: "function",
     inputs: [
-      { name: "framework", internalType: "address", type: "address" },
-      { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      {
+        name: "pol",
+        internalType: "struct Licensing.Policy",
+        type: "tuple",
+        components: [
+          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
+        ],
+      },
     ],
     name: "getPolicyId",
     outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
@@ -115,19 +134,12 @@ export const licensingModuleAbi = [
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [],
-    name: "licenseRegistry",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-  },
-  {
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "childIpId", internalType: "address", type: "address" },
-      { name: "minRoyalty", internalType: "uint32", type: "uint32" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
     ],
     name: "linkIpToParents",
     outputs: [],
@@ -137,9 +149,10 @@ export const licensingModuleAbi = [
     type: "function",
     inputs: [
       { name: "policyId", internalType: "uint256", type: "uint256" },
-      { name: "licensorIp", internalType: "address", type: "address" },
+      { name: "licensorIpId", internalType: "address", type: "address" },
       { name: "amount", internalType: "uint256", type: "uint256" },
       { name: "receiver", internalType: "address", type: "address" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
     ],
     name: "mintLicense",
     outputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
@@ -169,9 +182,13 @@ export const licensingModuleAbi = [
         internalType: "struct Licensing.Policy",
         type: "tuple",
         components: [
-          { name: "policyFramework", internalType: "address", type: "address" },
           { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "data", internalType: "bytes", type: "bytes" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
         ],
       },
     ],
@@ -201,9 +218,13 @@ export const licensingModuleAbi = [
         internalType: "struct Licensing.Policy",
         type: "tuple",
         components: [
-          { name: "policyFramework", internalType: "address", type: "address" },
           { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "data", internalType: "bytes", type: "bytes" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
         ],
       },
     ],
@@ -247,8 +268,20 @@ export const licensingModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      {
+        name: "pol",
+        internalType: "struct Licensing.Policy",
+        type: "tuple",
+        components: [
+          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
+        ],
+      },
     ],
     name: "registerPolicy",
     outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
@@ -327,9 +360,13 @@ export const licensingModuleAbi = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "policyFrameworkManager", internalType: "address", type: "address", indexed: true },
       { name: "policyId", internalType: "uint256", type: "uint256", indexed: true },
-      { name: "policy", internalType: "bytes", type: "bytes", indexed: false },
+      { name: "policyFrameworkManager", internalType: "address", type: "address", indexed: true },
+      { name: "frameworkData", internalType: "bytes", type: "bytes", indexed: false },
+      { name: "royaltyPolicy", internalType: "address", type: "address", indexed: false },
+      { name: "royaltyData", internalType: "bytes", type: "bytes", indexed: false },
+      { name: "mintingFee", internalType: "uint256", type: "uint256", indexed: false },
+      { name: "mintingFeeToken", internalType: "address", type: "address", indexed: false },
     ],
     name: "PolicyRegistered",
   },
@@ -340,40 +377,32 @@ export const licensingModuleAbi = [
   },
   { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   { type: "error", inputs: [], name: "LicensingModule__CallerNotLicensorAndPolicyNotSet" },
-  { type: "error", inputs: [], name: "LicensingModule__DerivativeRevShareSumExceedsMaxRNFTSupply" },
   { type: "error", inputs: [], name: "LicensingModule__DerivativesCannotAddPolicy" },
+  { type: "error", inputs: [], name: "LicensingModule__DisputedIpId" },
   { type: "error", inputs: [], name: "LicensingModule__EmptyLicenseUrl" },
   { type: "error", inputs: [], name: "LicensingModule__FrameworkNotFound" },
   { type: "error", inputs: [], name: "LicensingModule__IncompatibleLicensorCommercialPolicy" },
-  { type: "error", inputs: [], name: "LicensingModule__IncompatibleRoyaltyPolicyAddress" },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModule__IncompatibleRoyaltyPolicyDerivativeRevShare",
-  },
   { type: "error", inputs: [], name: "LicensingModule__InvalidPolicyFramework" },
   { type: "error", inputs: [], name: "LicensingModule__LicensorNotRegistered" },
   { type: "error", inputs: [], name: "LicensingModule__LinkParentParamFailed" },
+  { type: "error", inputs: [], name: "LicensingModule__LinkingRevokedLicense" },
   { type: "error", inputs: [], name: "LicensingModule__MintLicenseParamFailed" },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModule__MismatchBetweenCommercialRevenueShareAndMinRoyalty",
-  },
-  { type: "error", inputs: [], name: "LicensingModule__MismatchBetweenRoyaltyPolicy" },
+  { type: "error", inputs: [], name: "LicensingModule__MintingFeeTokenNotWhitelisted" },
   { type: "error", inputs: [], name: "LicensingModule__NotLicensee" },
   { type: "error", inputs: [], name: "LicensingModule__ParentIdEqualThanChild" },
   { type: "error", inputs: [], name: "LicensingModule__PolicyAlreadySetForIpId" },
   { type: "error", inputs: [], name: "LicensingModule__PolicyNotFound" },
+  { type: "error", inputs: [], name: "LicensingModule__RegisterPolicyFrameworkMismatch" },
+  { type: "error", inputs: [], name: "LicensingModule__RoyaltyPolicyNotWhitelisted" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-] as const
+] as const;
 
-export const licensingModuleAddress = "0x6F7FB37F668ba0F85b6a9C7Ffa02fEA1b3036aEF" as const
+export const licensingModuleAddress = "0x4D6a54B467332dF675cFa689cb294A4cB9122866" as const;
 
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
   abi: licensingModuleAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -385,7 +414,7 @@ export const licensingModuleConfig = {
 export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
@@ -394,7 +423,16 @@ export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "ACCESS_CONTROLLER",
-})
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"DISPUTE_MODULE"`
+ */
+export const useReadLicensingModuleDisputeModule1 = /*#__PURE__*/ createUseReadContract({
+  abi: licensingModuleAbi,
+  address: licensingModuleAddress,
+  functionName: "DISPUTE_MODULE",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
@@ -403,16 +441,16 @@ export const useReadIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"LICENSE_REGISTRY"`
  */
-export const useReadLicensingModuleLicenseRegistry1 = /*#__PURE__*/ createUseReadContract({
+export const useReadLicensingModuleLicenseRegistry2 = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "LICENSE_REGISTRY",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"ROYALTY_MODULE"`
@@ -421,7 +459,7 @@ export const useReadRoyaltyModule = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "ROYALTY_MODULE",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"getPolicyId"`
@@ -430,7 +468,7 @@ export const useReadGetPolicyId = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "getPolicyId",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isFrameworkRegistered"`
@@ -439,7 +477,7 @@ export const useReadIsFrameworkRegistered = /*#__PURE__*/ createUseReadContract(
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isFrameworkRegistered",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isParent"`
@@ -448,7 +486,7 @@ export const useReadIsParent = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isParent",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyDefined"`
@@ -457,7 +495,7 @@ export const useReadIsPolicyDefined = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isPolicyDefined",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyIdSetForIp"`
@@ -466,7 +504,7 @@ export const useReadIsPolicyIdSetForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isPolicyIdSetForIp",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyInherited"`
@@ -475,16 +513,7 @@ export const useReadIsPolicyInherited = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "isPolicyInherited",
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"licenseRegistry"`
- */
-export const useReadLicensingModuleLicenseRegistry2 = /*#__PURE__*/ createUseReadContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "licenseRegistry",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"name"`
@@ -493,7 +522,7 @@ export const useReadLicensingModuleName = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "name",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"parentIpIds"`
@@ -502,7 +531,7 @@ export const useReadParentIpIds = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "parentIpIds",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policy"`
@@ -511,7 +540,7 @@ export const useReadPolicy = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policy",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyAggregatorData"`
@@ -520,7 +549,7 @@ export const useReadPolicyAggregatorData = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyAggregatorData",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyForIpAtIndex"`
@@ -529,7 +558,7 @@ export const useReadPolicyForIpAtIndex = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyForIpAtIndex",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyIdForIpAtIndex"`
@@ -538,7 +567,7 @@ export const useReadPolicyIdForIpAtIndex = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyIdForIpAtIndex",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyIdsForIp"`
@@ -547,7 +576,7 @@ export const useReadPolicyIdsForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyIdsForIp",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyStatus"`
@@ -556,7 +585,7 @@ export const useReadPolicyStatus = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "policyStatus",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"supportsInterface"`
@@ -565,7 +594,7 @@ export const useReadLicensingModuleSupportsInterface = /*#__PURE__*/ createUseRe
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "supportsInterface",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalParentsForIpId"`
@@ -574,7 +603,7 @@ export const useReadTotalParentsForIpId = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "totalParentsForIpId",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalPolicies"`
@@ -583,7 +612,7 @@ export const useReadTotalPolicies = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "totalPolicies",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalPoliciesForIp"`
@@ -592,7 +621,7 @@ export const useReadTotalPoliciesForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "totalPoliciesForIp",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__
@@ -600,7 +629,7 @@ export const useReadTotalPoliciesForIp = /*#__PURE__*/ createUseReadContract({
 export const useWriteLicensingModule = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"addPolicyToIp"`
@@ -609,7 +638,7 @@ export const useAddPolicyToIp = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "addPolicyToIp",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"linkIpToParents"`
@@ -618,7 +647,7 @@ export const useLinkIpToParents = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "linkIpToParents",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"mintLicense"`
@@ -627,7 +656,7 @@ export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "mintLicense",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicy"`
@@ -636,7 +665,7 @@ export const useRegisterPolicy = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "registerPolicy",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicyFrameworkManager"`
@@ -645,7 +674,7 @@ export const useRegisterPolicyFrameworkManager = /*#__PURE__*/ createUseWriteCon
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "registerPolicyFrameworkManager",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__
@@ -653,7 +682,7 @@ export const useRegisterPolicyFrameworkManager = /*#__PURE__*/ createUseWriteCon
 export const useSimulateLicensingModule = /*#__PURE__*/ createUseSimulateContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"addPolicyToIp"`
@@ -662,7 +691,7 @@ export const useSimulateAddPolicyToIp = /*#__PURE__*/ createUseSimulateContract(
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "addPolicyToIp",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"linkIpToParents"`
@@ -671,7 +700,7 @@ export const useSimulateLinkIpToParents = /*#__PURE__*/ createUseSimulateContrac
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "linkIpToParents",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"mintLicense"`
@@ -680,7 +709,7 @@ export const useSimulateMintLicense = /*#__PURE__*/ createUseSimulateContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "mintLicense",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicy"`
@@ -689,7 +718,7 @@ export const useSimulateRegisterPolicy = /*#__PURE__*/ createUseSimulateContract
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "registerPolicy",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicyFrameworkManager"`
@@ -698,7 +727,7 @@ export const useSimulateRegisterPolicyFrameworkManager = /*#__PURE__*/ createUse
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   functionName: "registerPolicyFrameworkManager",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__
@@ -706,7 +735,7 @@ export const useSimulateRegisterPolicyFrameworkManager = /*#__PURE__*/ createUse
 export const useWatchLicensingModule = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"IpIdLinkedToParents"`
@@ -715,7 +744,7 @@ export const useWatchIpIdLinkedToParents = /*#__PURE__*/ createUseWatchContractE
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   eventName: "IpIdLinkedToParents",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyAddedToIpId"`
@@ -724,7 +753,7 @@ export const useWatchPolicyAddedToIpId = /*#__PURE__*/ createUseWatchContractEve
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   eventName: "PolicyAddedToIpId",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyFrameworkRegistered"`
@@ -733,7 +762,7 @@ export const useWatchPolicyFrameworkRegistered = /*#__PURE__*/ createUseWatchCon
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   eventName: "PolicyFrameworkRegistered",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyRegistered"`
@@ -742,4 +771,4 @@ export const useWatchPolicyRegistered = /*#__PURE__*/ createUseWatchContractEven
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
   eventName: "PolicyRegistered",
-})
+});

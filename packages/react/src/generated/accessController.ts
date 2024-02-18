@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen"
+} from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AccessController
@@ -33,10 +33,10 @@ export const accessControllerAbi = [
     stateMutability: "view",
     type: "function",
     inputs: [
-      { name: "ipAccount_", internalType: "address", type: "address" },
-      { name: "signer_", internalType: "address", type: "address" },
-      { name: "to_", internalType: "address", type: "address" },
-      { name: "func_", internalType: "bytes4", type: "bytes4" },
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
     ],
     name: "checkPermission",
     outputs: [],
@@ -78,18 +78,11 @@ export const accessControllerAbi = [
     outputs: [],
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    name: "permissions",
-    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
-  },
-  {
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
       {
-        name: "permissions_",
+        name: "permissions",
         internalType: "struct AccessPermission.Permission[]",
         type: "tuple[]",
         components: [
@@ -108,10 +101,10 @@ export const accessControllerAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "signer_", internalType: "address", type: "address" },
-      { name: "to_", internalType: "address", type: "address" },
-      { name: "func_", internalType: "bytes4", type: "bytes4" },
-      { name: "permission_", internalType: "uint8", type: "uint8" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
+      { name: "permission", internalType: "uint8", type: "uint8" },
     ],
     name: "setGlobalPermission",
     outputs: [],
@@ -127,11 +120,11 @@ export const accessControllerAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "ipAccount_", internalType: "address", type: "address" },
-      { name: "signer_", internalType: "address", type: "address" },
-      { name: "to_", internalType: "address", type: "address" },
-      { name: "func_", internalType: "bytes4", type: "bytes4" },
-      { name: "permission_", internalType: "uint8", type: "uint8" },
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
+      { name: "permission", internalType: "uint8", type: "uint8" },
     ],
     name: "setPermission",
     outputs: [],
@@ -146,6 +139,7 @@ export const accessControllerAbi = [
     type: "event",
     anonymous: false,
     inputs: [
+      { name: "ipAccountOwner", internalType: "address", type: "address", indexed: false },
       { name: "ipAccount", internalType: "address", type: "address", indexed: true },
       { name: "signer", internalType: "address", type: "address", indexed: true },
       { name: "to", internalType: "address", type: "address", indexed: true },
@@ -187,14 +181,14 @@ export const accessControllerAbi = [
     name: "Governance__UnsupportedInterface",
   },
   { type: "error", inputs: [], name: "Governance__ZeroAddress" },
-] as const
+] as const;
 
-export const accessControllerAddress = "0xfeDc2A52AA77977E291d9077C7AbB60be76399FC" as const
+export const accessControllerAddress = "0x31dd83a3FebB5fAD7F7bc8D4E05B623461B74a02" as const;
 
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -206,7 +200,7 @@ export const accessControllerConfig = {
 export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
@@ -215,7 +209,7 @@ export const useReadIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"MODULE_REGISTRY"`
@@ -224,7 +218,7 @@ export const useReadModuleRegistry = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "MODULE_REGISTRY",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"checkPermission"`
@@ -233,7 +227,7 @@ export const useReadCheckPermission = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "checkPermission",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"getGovernance"`
@@ -242,7 +236,7 @@ export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "getGovernance",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"getPermission"`
@@ -251,7 +245,7 @@ export const useReadGetPermission = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "getPermission",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"governance"`
@@ -260,16 +254,7 @@ export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "governance",
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"permissions"`
- */
-export const useReadPermissions = /*#__PURE__*/ createUseReadContract({
-  abi: accessControllerAbi,
-  address: accessControllerAddress,
-  functionName: "permissions",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__
@@ -277,7 +262,7 @@ export const useReadPermissions = /*#__PURE__*/ createUseReadContract({
 export const useWriteAccessController = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"initialize"`
@@ -286,7 +271,7 @@ export const useInitialize = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "initialize",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setBatchPermissions"`
@@ -295,7 +280,7 @@ export const useSetBatchPermissions = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setBatchPermissions",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGlobalPermission"`
@@ -304,7 +289,7 @@ export const useSetGlobalPermission = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGlobalPermission",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGovernance"`
@@ -313,7 +298,7 @@ export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGovernance",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setPermission"`
@@ -322,7 +307,7 @@ export const useSetPermission = /*#__PURE__*/ createUseWriteContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setPermission",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__
@@ -330,7 +315,7 @@ export const useSetPermission = /*#__PURE__*/ createUseWriteContract({
 export const useSimulateAccessController = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"initialize"`
@@ -339,7 +324,7 @@ export const useSimulateInitialize = /*#__PURE__*/ createUseSimulateContract({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "initialize",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setBatchPermissions"`
@@ -348,7 +333,7 @@ export const useSimulateSetBatchPermissions = /*#__PURE__*/ createUseSimulateCon
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setBatchPermissions",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGlobalPermission"`
@@ -357,7 +342,7 @@ export const useSimulateSetGlobalPermission = /*#__PURE__*/ createUseSimulateCon
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGlobalPermission",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setGovernance"`
@@ -366,7 +351,7 @@ export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract(
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setGovernance",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessControllerAbi}__ and `functionName` set to `"setPermission"`
@@ -375,7 +360,7 @@ export const useSimulateSetPermission = /*#__PURE__*/ createUseSimulateContract(
   abi: accessControllerAbi,
   address: accessControllerAddress,
   functionName: "setPermission",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__
@@ -383,7 +368,7 @@ export const useSimulateSetPermission = /*#__PURE__*/ createUseSimulateContract(
 export const useWatchAccessController = /*#__PURE__*/ createUseWatchContractEvent({
   abi: accessControllerAbi,
   address: accessControllerAddress,
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__ and `eventName` set to `"GovernanceUpdated"`
@@ -392,7 +377,7 @@ export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEve
   abi: accessControllerAbi,
   address: accessControllerAddress,
   eventName: "GovernanceUpdated",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link accessControllerAbi}__ and `eventName` set to `"PermissionSet"`
@@ -401,4 +386,4 @@ export const useWatchPermissionSet = /*#__PURE__*/ createUseWatchContractEvent({
   abi: accessControllerAbi,
   address: accessControllerAddress,
   eventName: "PermissionSet",
-})
+});

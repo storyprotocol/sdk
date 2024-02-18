@@ -19,9 +19,5 @@
   },
   "engines": {
     "node": "^20.0.0"
-  },
-  "dependencies": {
-    "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.22.20"
   }
 }

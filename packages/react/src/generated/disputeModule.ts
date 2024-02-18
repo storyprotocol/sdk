@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen"
+} from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DisputeModule
@@ -65,8 +65,8 @@ export const disputeModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "_disputeId", internalType: "uint256", type: "uint256" },
-      { name: "_data", internalType: "bytes", type: "bytes" },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
     name: "cancelDispute",
     outputs: [],
@@ -75,7 +75,7 @@ export const disputeModuleAbi = [
     stateMutability: "view",
     type: "function",
     inputs: [],
-    name: "disputeId",
+    name: "disputeCounter",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
   },
   {
@@ -109,6 +109,13 @@ export const disputeModuleAbi = [
   {
     stateMutability: "view",
     type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "isIpTagged",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     inputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
     name: "isWhitelistedArbitrationPolicy",
     outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
@@ -131,7 +138,7 @@ export const disputeModuleAbi = [
     outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
   },
   {
-    stateMutability: "pure",
+    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
@@ -141,10 +148,10 @@ export const disputeModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "_targetIpId", internalType: "address", type: "address" },
-      { name: "_linkToDisputeEvidence", internalType: "string", type: "string" },
-      { name: "_targetTag", internalType: "bytes32", type: "bytes32" },
-      { name: "_data", internalType: "bytes", type: "bytes" },
+      { name: "targetIpId", internalType: "address", type: "address" },
+      { name: "linkToDisputeEvidence", internalType: "string", type: "string" },
+      { name: "targetTag", internalType: "bytes32", type: "bytes32" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
     name: "raiseDispute",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
@@ -152,7 +159,7 @@ export const disputeModuleAbi = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    inputs: [{ name: "_disputeId", internalType: "uint256", type: "uint256" }],
+    inputs: [{ name: "disputeId", internalType: "uint256", type: "uint256" }],
     name: "resolveDispute",
     outputs: [],
   },
@@ -160,8 +167,8 @@ export const disputeModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "_ipId", internalType: "address", type: "address" },
-      { name: "_arbitrationPolicy", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
     ],
     name: "setArbitrationPolicy",
     outputs: [],
@@ -169,7 +176,7 @@ export const disputeModuleAbi = [
   {
     stateMutability: "nonpayable",
     type: "function",
-    inputs: [{ name: "_arbitrationPolicy", internalType: "address", type: "address" }],
+    inputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
     name: "setBaseArbitrationPolicy",
     outputs: [],
   },
@@ -177,9 +184,9 @@ export const disputeModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "_disputeId", internalType: "uint256", type: "uint256" },
-      { name: "_decision", internalType: "bool", type: "bool" },
-      { name: "_data", internalType: "bytes", type: "bytes" },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "decision", internalType: "bool", type: "bool" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
     name: "setDisputeJudgement",
     outputs: [],
@@ -202,8 +209,8 @@ export const disputeModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "_arbitrationPolicy", internalType: "address", type: "address" },
-      { name: "_allowed", internalType: "bool", type: "bool" },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
     name: "whitelistArbitrationPolicy",
     outputs: [],
@@ -212,9 +219,9 @@ export const disputeModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "_arbitrationPolicy", internalType: "address", type: "address" },
-      { name: "_arbPolicyRelayer", internalType: "address", type: "address" },
-      { name: "_allowed", internalType: "bool", type: "bool" },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
+      { name: "arbPolicyRelayer", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
     name: "whitelistArbitrationRelayer",
     outputs: [],
@@ -223,8 +230,8 @@ export const disputeModuleAbi = [
     stateMutability: "nonpayable",
     type: "function",
     inputs: [
-      { name: "_tag", internalType: "bytes32", type: "bytes32" },
-      { name: "_allowed", internalType: "bool", type: "bool" },
+      { name: "tag", internalType: "bytes32", type: "bytes32" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
     name: "whitelistDisputeTag",
     outputs: [],
@@ -350,11 +357,14 @@ export const disputeModuleAbi = [
     inputs: [{ name: "str", internalType: "string", type: "string" }],
     name: "StringTooLong",
   },
-] as const
+] as const;
 
-export const disputeModuleAddress = "0xfE1Af9c0F78Df4570Ed54A1bc21487AB88923dc6" as const
+export const disputeModuleAddress = "0x11dAA3F573C4d6673BBE7f2D96B4C91073A0d55d" as const;
 
-export const disputeModuleConfig = { address: disputeModuleAddress, abi: disputeModuleAbi } as const
+export const disputeModuleConfig = {
+  address: disputeModuleAddress,
+  abi: disputeModuleAbi,
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -366,7 +376,7 @@ export const disputeModuleConfig = { address: disputeModuleAddress, abi: dispute
 export const useReadDisputeModule = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
@@ -375,7 +385,7 @@ export const useReadDisputeModuleAccessController4 = /*#__PURE__*/ createUseRead
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "ACCESS_CONTROLLER",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"IN_DISPUTE"`
@@ -384,7 +394,7 @@ export const useReadInDispute = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "IN_DISPUTE",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
@@ -393,7 +403,7 @@ export const useReadDisputeModuleIpAccountRegistry5 = /*#__PURE__*/ createUseRea
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "IP_ACCOUNT_REGISTRY",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"IP_ASSET_REGISTRY"`
@@ -402,7 +412,7 @@ export const useReadIpAssetRegistry = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "IP_ASSET_REGISTRY",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"arbitrationPolicies"`
@@ -411,7 +421,7 @@ export const useReadArbitrationPolicies = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "arbitrationPolicies",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"baseArbitrationPolicy"`
@@ -420,16 +430,16 @@ export const useReadBaseArbitrationPolicy = /*#__PURE__*/ createUseReadContract(
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "baseArbitrationPolicy",
-})
+});
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"disputeId"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"disputeCounter"`
  */
-export const useReadDisputeId = /*#__PURE__*/ createUseReadContract({
+export const useReadDisputeCounter = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
-  functionName: "disputeId",
-})
+  functionName: "disputeCounter",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"disputes"`
@@ -438,7 +448,7 @@ export const useReadDisputes = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "disputes",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"getGovernance"`
@@ -447,7 +457,7 @@ export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "getGovernance",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"governance"`
@@ -456,7 +466,16 @@ export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "governance",
-})
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"isIpTagged"`
+ */
+export const useReadIsIpTagged = /*#__PURE__*/ createUseReadContract({
+  abi: disputeModuleAbi,
+  address: disputeModuleAddress,
+  functionName: "isIpTagged",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"isWhitelistedArbitrationPolicy"`
@@ -465,7 +484,7 @@ export const useReadIsWhitelistedArbitrationPolicy = /*#__PURE__*/ createUseRead
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "isWhitelistedArbitrationPolicy",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"isWhitelistedArbitrationRelayer"`
@@ -474,7 +493,7 @@ export const useReadIsWhitelistedArbitrationRelayer = /*#__PURE__*/ createUseRea
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "isWhitelistedArbitrationRelayer",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"isWhitelistedDisputeTag"`
@@ -483,7 +502,7 @@ export const useReadIsWhitelistedDisputeTag = /*#__PURE__*/ createUseReadContrac
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "isWhitelistedDisputeTag",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"name"`
@@ -492,7 +511,7 @@ export const useReadDisputeModuleName = /*#__PURE__*/ createUseReadContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "name",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"supportsInterface"`
@@ -501,7 +520,7 @@ export const useReadDisputeModuleSupportsInterface = /*#__PURE__*/ createUseRead
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "supportsInterface",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__
@@ -509,7 +528,7 @@ export const useReadDisputeModuleSupportsInterface = /*#__PURE__*/ createUseRead
 export const useWriteDisputeModule = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"cancelDispute"`
@@ -518,7 +537,7 @@ export const useCancelDispute = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "cancelDispute",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"raiseDispute"`
@@ -527,7 +546,7 @@ export const useRaiseDispute = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "raiseDispute",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"resolveDispute"`
@@ -536,7 +555,7 @@ export const useResolveDispute = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "resolveDispute",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setArbitrationPolicy"`
@@ -545,7 +564,7 @@ export const useSetArbitrationPolicy = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setArbitrationPolicy",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setBaseArbitrationPolicy"`
@@ -554,7 +573,7 @@ export const useSetBaseArbitrationPolicy = /*#__PURE__*/ createUseWriteContract(
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setBaseArbitrationPolicy",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setDisputeJudgement"`
@@ -563,7 +582,7 @@ export const useSetDisputeJudgement = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setDisputeJudgement",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setGovernance"`
@@ -572,7 +591,7 @@ export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setGovernance",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationPolicy"`
@@ -581,7 +600,7 @@ export const useWhitelistArbitrationPolicy = /*#__PURE__*/ createUseWriteContrac
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistArbitrationPolicy",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationRelayer"`
@@ -590,7 +609,7 @@ export const useWhitelistArbitrationRelayer = /*#__PURE__*/ createUseWriteContra
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistArbitrationRelayer",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistDisputeTag"`
@@ -599,7 +618,7 @@ export const useWhitelistDisputeTag = /*#__PURE__*/ createUseWriteContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistDisputeTag",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__
@@ -607,7 +626,7 @@ export const useWhitelistDisputeTag = /*#__PURE__*/ createUseWriteContract({
 export const useSimulateDisputeModule = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"cancelDispute"`
@@ -616,7 +635,7 @@ export const useSimulateCancelDispute = /*#__PURE__*/ createUseSimulateContract(
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "cancelDispute",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"raiseDispute"`
@@ -625,7 +644,7 @@ export const useSimulateRaiseDispute = /*#__PURE__*/ createUseSimulateContract({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "raiseDispute",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"resolveDispute"`
@@ -634,7 +653,7 @@ export const useSimulateResolveDispute = /*#__PURE__*/ createUseSimulateContract
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "resolveDispute",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setArbitrationPolicy"`
@@ -643,7 +662,7 @@ export const useSimulateSetArbitrationPolicy = /*#__PURE__*/ createUseSimulateCo
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setArbitrationPolicy",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setBaseArbitrationPolicy"`
@@ -652,7 +671,7 @@ export const useSimulateSetBaseArbitrationPolicy = /*#__PURE__*/ createUseSimula
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setBaseArbitrationPolicy",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setDisputeJudgement"`
@@ -661,7 +680,7 @@ export const useSimulateSetDisputeJudgement = /*#__PURE__*/ createUseSimulateCon
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setDisputeJudgement",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"setGovernance"`
@@ -670,7 +689,7 @@ export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract(
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "setGovernance",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationPolicy"`
@@ -679,7 +698,7 @@ export const useSimulateWhitelistArbitrationPolicy = /*#__PURE__*/ createUseSimu
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistArbitrationPolicy",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistArbitrationRelayer"`
@@ -688,7 +707,7 @@ export const useSimulateWhitelistArbitrationRelayer = /*#__PURE__*/ createUseSim
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistArbitrationRelayer",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link disputeModuleAbi}__ and `functionName` set to `"whitelistDisputeTag"`
@@ -697,7 +716,7 @@ export const useSimulateWhitelistDisputeTag = /*#__PURE__*/ createUseSimulateCon
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   functionName: "whitelistDisputeTag",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__
@@ -705,7 +724,7 @@ export const useSimulateWhitelistDisputeTag = /*#__PURE__*/ createUseSimulateCon
 export const useWatchDisputeModule = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"ArbitrationPolicySet"`
@@ -714,7 +733,7 @@ export const useWatchArbitrationPolicySet = /*#__PURE__*/ createUseWatchContract
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "ArbitrationPolicySet",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"ArbitrationPolicyWhitelistUpdated"`
@@ -723,7 +742,7 @@ export const useWatchArbitrationPolicyWhitelistUpdated = /*#__PURE__*/ createUse
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "ArbitrationPolicyWhitelistUpdated",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"ArbitrationRelayerWhitelistUpdated"`
@@ -734,7 +753,7 @@ export const useWatchArbitrationRelayerWhitelistUpdated = /*#__PURE__*/ createUs
     address: disputeModuleAddress,
     eventName: "ArbitrationRelayerWhitelistUpdated",
   },
-)
+);
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DefaultArbitrationPolicyUpdated"`
@@ -743,7 +762,7 @@ export const useWatchDefaultArbitrationPolicyUpdated = /*#__PURE__*/ createUseWa
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DefaultArbitrationPolicyUpdated",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeCancelled"`
@@ -752,7 +771,7 @@ export const useWatchDisputeCancelled = /*#__PURE__*/ createUseWatchContractEven
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeCancelled",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeJudgementSet"`
@@ -761,7 +780,7 @@ export const useWatchDisputeJudgementSet = /*#__PURE__*/ createUseWatchContractE
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeJudgementSet",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeRaised"`
@@ -770,7 +789,7 @@ export const useWatchDisputeRaised = /*#__PURE__*/ createUseWatchContractEvent({
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeRaised",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"DisputeResolved"`
@@ -779,7 +798,7 @@ export const useWatchDisputeResolved = /*#__PURE__*/ createUseWatchContractEvent
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "DisputeResolved",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"GovernanceUpdated"`
@@ -788,7 +807,7 @@ export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEve
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "GovernanceUpdated",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link disputeModuleAbi}__ and `eventName` set to `"TagWhitelistUpdated"`
@@ -797,4 +816,4 @@ export const useWatchTagWhitelistUpdated = /*#__PURE__*/ createUseWatchContractE
   abi: disputeModuleAbi,
   address: disputeModuleAddress,
   eventName: "TagWhitelistUpdated",
-})
+});

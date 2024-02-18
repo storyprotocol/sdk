@@ -3,14 +3,32 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen"
+} from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicenseRegistry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const licenseRegistryAbi = [
-  { stateMutability: "nonpayable", type: "constructor", inputs: [] },
+  {
+    stateMutability: "nonpayable",
+    type: "constructor",
+    inputs: [{ name: "governance", internalType: "address", type: "address" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    inputs: [],
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    inputs: [],
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+  },
   {
     stateMutability: "view",
     type: "function",
@@ -44,11 +62,32 @@ export const licenseRegistryAbi = [
   {
     stateMutability: "view",
     type: "function",
+    inputs: [],
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    inputs: [],
+    name: "governance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
     inputs: [
       { name: "account", internalType: "address", type: "address" },
       { name: "operator", internalType: "address", type: "address" },
     ],
     name: "isApprovedForAll",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+  },
+  {
+    stateMutability: "view",
+    type: "function",
+    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: "isLicenseRevoked",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
   },
   {
@@ -82,13 +121,6 @@ export const licenseRegistryAbi = [
   {
     stateMutability: "view",
     type: "function",
-    inputs: [],
-    name: "licensingModule",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
     inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
     name: "licensorIpId",
     outputs: [{ name: "", internalType: "address", type: "address" }],
@@ -98,7 +130,7 @@ export const licenseRegistryAbi = [
     type: "function",
     inputs: [
       { name: "policyId", internalType: "uint256", type: "uint256" },
-      { name: "licensorIp", internalType: "address", type: "address" },
+      { name: "licensorIpId_", internalType: "address", type: "address" },
       { name: "transferable", internalType: "bool", type: "bool" },
       { name: "amount", internalType: "uint256", type: "uint256" },
       { name: "receiver", internalType: "address", type: "address" },
@@ -159,6 +191,20 @@ export const licenseRegistryAbi = [
   {
     stateMutability: "nonpayable",
     type: "function",
+    inputs: [{ name: "newDisputeModule", internalType: "address", type: "address" }],
+    name: "setDisputeModule",
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
+    outputs: [],
+  },
+  {
+    stateMutability: "nonpayable",
+    type: "function",
     inputs: [{ name: "newLicensingModule", internalType: "address", type: "address" }],
     name: "setLicensingModule",
     outputs: [],
@@ -186,6 +232,12 @@ export const licenseRegistryAbi = [
       { name: "approved", internalType: "bool", type: "bool", indexed: false },
     ],
     name: "ApprovalForAll",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address", indexed: true }],
+    name: "GovernanceUpdated",
   },
   {
     type: "event",
@@ -288,17 +340,35 @@ export const licenseRegistryAbi = [
     ],
     name: "ERC1155MissingApprovalForAll",
   },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
+  {
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
+  },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
   { type: "error", inputs: [], name: "LicenseRegistry__CallerNotLicensingModule" },
   { type: "error", inputs: [], name: "LicenseRegistry__NotTransferable" },
+  { type: "error", inputs: [], name: "LicenseRegistry__RevokedLicense" },
+  { type: "error", inputs: [], name: "LicenseRegistry__ZeroDisputeModule" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
-] as const
+  {
+    type: "error",
+    inputs: [
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
+    ],
+    name: "StringsInsufficientHexLength",
+  },
+] as const;
 
-export const licenseRegistryAddress = "0x6F7FB37F668ba0F85b6a9C7Ffa02fEA1b3036aEF" as const
+export const licenseRegistryAddress = "0x4D6a54B467332dF675cFa689cb294A4cB9122866" as const;
 
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
   abi: licenseRegistryAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -310,7 +380,25 @@ export const licenseRegistryConfig = {
 export const useReadLicenseRegistry = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-})
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"DISPUTE_MODULE"`
+ */
+export const useReadDisputeModule = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "DISPUTE_MODULE",
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"LICENSING_MODULE"`
+ */
+export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "LICENSING_MODULE",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOf"`
@@ -319,7 +407,7 @@ export const useReadBalanceOf = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "balanceOf",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOfBatch"`
@@ -328,7 +416,25 @@ export const useReadBalanceOfBatch = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "balanceOfBatch",
-})
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"getGovernance"`
+ */
+export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "getGovernance",
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"governance"`
+ */
+export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "governance",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isApprovedForAll"`
@@ -337,7 +443,16 @@ export const useReadIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "isApprovedForAll",
-})
+});
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isLicenseRevoked"`
+ */
+export const useReadIsLicenseRevoked = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "isLicenseRevoked",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isLicensee"`
@@ -346,7 +461,7 @@ export const useReadIsLicensee = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "isLicensee",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"license"`
@@ -355,16 +470,7 @@ export const useReadLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "license",
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"licensingModule"`
- */
-export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "licensingModule",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"licensorIpId"`
@@ -373,7 +479,7 @@ export const useReadLicensorIpId = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "licensorIpId",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintedLicenses"`
@@ -382,7 +488,7 @@ export const useReadMintedLicenses = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintedLicenses",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"policyIdForLicense"`
@@ -391,7 +497,7 @@ export const useReadPolicyIdForLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "policyIdForLicense",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"supportsInterface"`
@@ -400,7 +506,7 @@ export const useReadLicenseRegistrySupportsInterface = /*#__PURE__*/ createUseRe
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "supportsInterface",
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"uri"`
@@ -409,7 +515,7 @@ export const useReadUri = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "uri",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__
@@ -417,7 +523,7 @@ export const useReadUri = /*#__PURE__*/ createUseReadContract({
 export const useWriteLicenseRegistry = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
@@ -426,7 +532,7 @@ export const useBurnLicenses = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "burnLicenses",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
@@ -435,7 +541,7 @@ export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintLicense",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
@@ -444,7 +550,7 @@ export const useSafeBatchTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeBatchTransferFrom",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
@@ -453,7 +559,7 @@ export const useSafeTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeTransferFrom",
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
@@ -462,7 +568,25 @@ export const useSetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setApprovalForAll",
-})
+});
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setDisputeModule"`
+ */
+export const useSetDisputeModule = /*#__PURE__*/ createUseWriteContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "setDisputeModule",
+});
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setGovernance"`
+ */
+export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "setGovernance",
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
@@ -471,7 +595,7 @@ export const useSetLicensingModule = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setLicensingModule",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__
@@ -479,7 +603,7 @@ export const useSetLicensingModule = /*#__PURE__*/ createUseWriteContract({
 export const useSimulateLicenseRegistry = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
@@ -488,7 +612,7 @@ export const useSimulateBurnLicenses = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "burnLicenses",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
@@ -497,7 +621,7 @@ export const useSimulateMintLicense = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "mintLicense",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
@@ -506,7 +630,7 @@ export const useSimulateSafeBatchTransferFrom = /*#__PURE__*/ createUseSimulateC
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeBatchTransferFrom",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
@@ -515,7 +639,7 @@ export const useSimulateSafeTransferFrom = /*#__PURE__*/ createUseSimulateContra
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "safeTransferFrom",
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
@@ -524,7 +648,25 @@ export const useSimulateSetApprovalForAll = /*#__PURE__*/ createUseSimulateContr
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setApprovalForAll",
-})
+});
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setDisputeModule"`
+ */
+export const useSimulateSetDisputeModule = /*#__PURE__*/ createUseSimulateContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "setDisputeModule",
+});
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setGovernance"`
+ */
+export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: "setGovernance",
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
@@ -533,7 +675,7 @@ export const useSimulateSetLicensingModule = /*#__PURE__*/ createUseSimulateCont
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: "setLicensingModule",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__
@@ -541,7 +683,7 @@ export const useSimulateSetLicensingModule = /*#__PURE__*/ createUseSimulateCont
 export const useWatchLicenseRegistry = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"ApprovalForAll"`
@@ -550,7 +692,16 @@ export const useWatchApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent(
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "ApprovalForAll",
-})
+});
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"GovernanceUpdated"`
+ */
+export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  eventName: "GovernanceUpdated",
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"LicenseMinted"`
@@ -559,7 +710,7 @@ export const useWatchLicenseMinted = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "LicenseMinted",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferBatch"`
@@ -568,7 +719,7 @@ export const useWatchTransferBatch = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "TransferBatch",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferSingle"`
@@ -577,7 +728,7 @@ export const useWatchTransferSingle = /*#__PURE__*/ createUseWatchContractEvent(
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "TransferSingle",
-})
+});
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"URI"`
@@ -586,4 +737,4 @@ export const useWatchUri = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   eventName: "URI",
-})
+});

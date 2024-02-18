@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useWriteIpAccountImplExecute } from "./generated/ipAccountImpl";
+import { useExecute } from "./generated/ipAccountImpl";
 
 interface SetPermissionState {
   // Define the structure expected in your state
@@ -21,7 +21,7 @@ export function useSetPermission(): {
   writeContractAsync: (args: SetPermissionArgs) => Promise<void>;
   state: SetPermissionState;
 } {
-  const { writeContractAsync: writeContractAsyncRaw, ...state } = useWriteIpAccountImplExecute();
+  const { writeContractAsync: writeContractAsyncRaw, ...state } = useExecute();
 
   const writeContractAsync = useCallback(
     async ({
