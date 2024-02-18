@@ -16,7 +16,7 @@ import { abi as ipAccountImplAbi } from "../protocol-core/out/IPAccountImpl.sol/
 import { abi as PILPolicyFrameworkManagerAbi } from "../protocol-core/out/PILPolicyFrameworkManager.sol/PILPolicyFrameworkManager.json";
 
 dotenv.config();
-console.log("Contracts:", contracts);
+
 type GetHookNameProps = {
   contractName: string;
   type: string;
