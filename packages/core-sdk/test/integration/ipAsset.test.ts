@@ -3,7 +3,7 @@ import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe.skip("IP Asset Functions", () => {
+describe("IP Asset Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -24,8 +24,8 @@ describe.skip("IP Asset Functions", () => {
       const response = await expect(
         client.ipAsset.registerRootIp({
           policyId: "0",
-          tokenContractAddress: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
-          tokenId: "110",
+          tokenContractAddress: "0x7a90a7acff8bf14f13f8d1bdac5b663ef4f379ee",
+          tokenId: "100",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -47,7 +47,7 @@ describe.skip("IP Asset Functions", () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
         policyId: "2",
-        licensorIpId: "0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431",
+        licensorIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
         mintAmount: 1,
         receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
         txOptions: {
@@ -60,8 +60,8 @@ describe.skip("IP Asset Functions", () => {
       const response = await expect(
         client.ipAsset.registerDerivativeIp({
           licenseIds: [licenseId],
-          tokenContractAddress: "0xcd3a91675b990f27eb544b85cdb6844573b66a43",
-          tokenId: "111",
+          tokenContractAddress: "0x7a90a7acff8bf14f13f8d1bdac5b663ef4f379ee",
+          tokenId: "101",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

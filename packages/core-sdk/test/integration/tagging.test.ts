@@ -3,7 +3,7 @@ import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-describe.skip("Tagging Functions (integration tests)", () => {
+describe("Tagging Functions (integration tests)", () => {
   let client: StoryClient;
   let senderAddress: string;
 

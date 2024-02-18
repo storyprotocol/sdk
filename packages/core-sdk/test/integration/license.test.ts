@@ -4,7 +4,7 @@ import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import "./ipAsset.test";
 
-describe.skip("License Functions", () => {
+describe("License Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -25,7 +25,7 @@ describe.skip("License Functions", () => {
       const response = await expect(
         client.license.mintLicense({
           policyId: "2",
-          licensorIpId: "0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431",
+          licensorIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
           mintAmount: 1,
           receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
           txOptions: {
@@ -49,7 +49,7 @@ describe.skip("License Functions", () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
         policyId: "2",
-        licensorIpId: "0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431",
+        licensorIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
         mintAmount: 1,
         receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
         txOptions: {
@@ -62,7 +62,7 @@ describe.skip("License Functions", () => {
       const response = await expect(
         client.license.linkIpToParent({
           licenseIds: [licenseId],
-          childIpId: "0x92f54fe4cfca3c0f7bdf4798ed0d07a2c209577e",
+          childIpId: "0x5a75ab16eaaee5fb1d2f66e3b217d36b4fc831f9",
           minRoyalty: 1,
           txOptions: {
             waitForTransaction: waitForTransaction,

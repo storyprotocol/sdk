@@ -23,9 +23,9 @@ describe("Permission Functions", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.permission.setPermission({
-          ipAsset: "0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431",
+          ipAsset: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
           signer: process.env.TEST_WALLET_ADDRESS!,
-          to: "0x83BADBEaee19cd0ADB786da57E2Ff5c500ee3A50",
+          to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
           func: "0x00000000",
           permission: 1,
           txOptions: {
