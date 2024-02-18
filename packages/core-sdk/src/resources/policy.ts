@@ -27,10 +27,10 @@ export class PolicyClient {
   }
 
   /**
-   * Create a policy on Story Protocol based on the specified params.
-   *
+   * Registers a PIL policy to the registry
+   * Internally, this function must generate a Licensing.Policy struct and call registerPolicy.
    * @param request - the request object that contains all data needed to register a policy.
-   * @returns the response object that contains results from the policy creation.
+   * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
    */
   public async registerPILPolicy(
     request: RegisterPILPolicyRequest,
