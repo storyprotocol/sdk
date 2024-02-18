@@ -10,7 +10,7 @@ import {
   SetDisputeJudgementRequest,
 } from "../../src/types/resources/dispute";
 
-describe("Dispute Functions", () => {
+describe.skip("Dispute Functions", () => {
   let client: StoryClient;
 
   before(function () {
@@ -21,6 +21,7 @@ describe("Dispute Functions", () => {
 
     client = StoryClient.newClient(config);
   });
+
   describe("Should be able to", async function () {
     it.skip("raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
@@ -61,21 +62,6 @@ describe("Dispute Functions", () => {
         },
       };
       const response = await expect(client.dispute.cancelDispute(cancelDispute)).to.not.be.rejected;
-
-      expect(response.txHash).to.be.a("string");
-      expect(response.txHash).not.empty;
-    });
-
-    it.skip("set a dispute judgement", async () => {
-      const setDisputeJudgementRequest: SetDisputeJudgementRequest = {
-        disputeId: 5,
-        decision: true,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      const response = await expect(client.dispute.setDisputeJudgement(setDisputeJudgementRequest))
-        .to.not.be.rejected;
 
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;

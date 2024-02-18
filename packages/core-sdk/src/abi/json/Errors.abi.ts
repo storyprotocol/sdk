@@ -96,6 +96,46 @@ export default [
   },
   {
     inputs: [],
+    name: "AncestorsVaultLAP__AlreadyClaimed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "AncestorsVaultLAP__ClaimerNotAnAncestor",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "AncestorsVaultLAP__ERC20BalanceNotZero",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "AncestorsVaultLAP__ETHBalanceNotZero",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "AncestorsVaultLAP__InvalidAncestorsHash",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "AncestorsVaultLAP__InvalidClaimer",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "AncestorsVaultLAP__TransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "AncestorsVaultLAP__ZeroRoyaltyPolicyLAP",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "ArbitrationPolicySP__NotDisputeModule",
     type: "error",
   },
@@ -217,6 +257,11 @@ export default [
   },
   {
     inputs: [],
+    name: "IPAccount__InvalidAccessController",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "IPAccount__InvalidCalldata",
     type: "error",
   },
@@ -282,57 +327,22 @@ export default [
   },
   {
     inputs: [],
-    name: "LSClaimer__AlreadyClaimed",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__ERC20BalanceNotZero",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__ETHBalanceNotZero",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__InvalidPath",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__InvalidPathFirstPosition",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__InvalidPathLastPosition",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__ZeroIpId",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__ZeroLicensingModule",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LSClaimer__ZeroRoyaltyPolicyLS",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "LicenseRegistry__CallerNotLicensingModule",
     type: "error",
   },
   {
     inputs: [],
     name: "LicenseRegistry__NotTransferable",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicenseRegistry__RevokedLicense",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicenseRegistry__ZeroDisputeModule",
     type: "error",
   },
   {
@@ -368,6 +378,11 @@ export default [
   {
     inputs: [],
     name: "LicensingModule__DerivativesCannotAddPolicy",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicensingModule__DisputedIpId",
     type: "error",
   },
   {
@@ -432,12 +447,17 @@ export default [
   },
   {
     inputs: [],
+    name: "LicensingModule__LinkingRevokedLicense",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "LicensingModule__MintLicenseParamFailed",
     type: "error",
   },
   {
     inputs: [],
-    name: "LicensingModule__MismatchBetweenCommercialRevenueShareAndMinRoyalty",
+    name: "LicensingModule__MintingFeeTokenNotWhitelisted",
     type: "error",
   },
   {
@@ -473,6 +493,16 @@ export default [
   {
     inputs: [],
     name: "LicensingModule__PolicyNotFound",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicensingModule__RegisterPolicyFrameworkMismatch",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicensingModule__RoyaltyPolicyNotWhitelisted",
     type: "error",
   },
   {
@@ -547,6 +577,11 @@ export default [
   },
   {
     inputs: [],
+    name: "ModuleRegistry__InterfaceIdZero",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "ModuleRegistry__ModuleAddressNotContract",
     type: "error",
   },
@@ -563,6 +598,26 @@ export default [
   {
     inputs: [],
     name: "ModuleRegistry__ModuleNotRegistered",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ModuleRegistry__ModuleNotSupportExpectedModuleTypeInterfaceId",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ModuleRegistry__ModuleTypeAlreadyRegistered",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ModuleRegistry__ModuleTypeEmptyString",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ModuleRegistry__ModuleTypeNotRegistered",
     type: "error",
   },
   {
@@ -586,6 +641,17 @@ export default [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "commercializer",
+        type: "address",
+      },
+    ],
+    name: "PolicyFrameworkManager__CommercializerCheckerDoesNotSupportHook",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "PolicyFrameworkManager__GettingPolicyWrongFramework",
     type: "error",
@@ -597,12 +663,17 @@ export default [
   },
   {
     inputs: [],
-    name: "RoyaltyModule__AlreadySetRoyaltyPolicy",
+    name: "RoyaltyModule__CanOnlyMintSelectedPolicy",
     type: "error",
   },
   {
     inputs: [],
     name: "RoyaltyModule__IncompatibleRoyaltyPolicy",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyModule__NoParentsOnLinking",
     type: "error",
   },
   {
@@ -613,6 +684,11 @@ export default [
   {
     inputs: [],
     name: "RoyaltyModule__NotAllowedCaller",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyModule__NotRegisteredIpId",
     type: "error",
   },
   {
@@ -642,47 +718,102 @@ export default [
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__InvalidMinRoyalty",
+    name: "RoyaltyPolicyLAP__AboveAncestorsLimit",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__InvalidRoyaltyStack",
+    name: "RoyaltyPolicyLAP__AboveParentLimit",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__NotRoyaltyModule",
+    name: "RoyaltyPolicyLAP__AboveRoyaltyStackLimit",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__TransferFailed",
+    name: "RoyaltyPolicyLAP__ImplementationAlreadySet",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__ZeroLicensingModule",
+    name: "RoyaltyPolicyLAP__InvalidAncestors",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__ZeroLiquidSplitFactory",
+    name: "RoyaltyPolicyLAP__InvalidAncestorsHash",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__ZeroLiquidSplitMain",
+    name: "RoyaltyPolicyLAP__InvalidAncestorsLength",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__ZeroMinRoyalty",
+    name: "RoyaltyPolicyLAP__InvalidAncestorsRoyalty",
     type: "error",
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLS__ZeroRoyaltyModule",
+    name: "RoyaltyPolicyLAP__InvalidParentRoyaltiesLength",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__InvalidRoyaltyAmountLength",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__LastPositionNotAbleToMintLicense",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__NotFullOwnership",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__NotRoyaltyModule",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__TransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__UnlinkableToParents",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__ZeroAncestorsVaultImpl",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__ZeroLicensingModule",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__ZeroLiquidSplitFactory",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__ZeroLiquidSplitMain",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__ZeroRoyaltyModule",
     type: "error",
   },
   {

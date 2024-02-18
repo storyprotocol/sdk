@@ -22,7 +22,7 @@ describe.skip("Test Policy Functions", () => {
     it("should not throw error when registering UML Policy with everything turned off", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.registerUMLPolicy({
+        client.policy.registerPILPolicy({
           transferable: false,
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -42,7 +42,7 @@ describe.skip("Test Policy Functions", () => {
     it("should not throw error when registering UML Policy with social remixing", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.registerUMLPolicy({
+        client.policy.registerPILPolicy({
           transferable: true,
           attribution: true,
           derivativesAllowed: true,
@@ -66,7 +66,7 @@ describe.skip("Test Policy Functions", () => {
     it("should not throw error when registering UML Policy with commercial use", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.registerUMLPolicy({
+        client.policy.registerPILPolicy({
           transferable: true,
           attribution: true,
           commercialUse: true,

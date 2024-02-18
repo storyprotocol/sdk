@@ -9,8 +9,6 @@ import {
   RaiseDisputeResponse,
   ResolveDisputeRequest,
   ResolveDisputeResponse,
-  SetDisputeJudgementRequest,
-  SetDisputeJudgementResponse,
 } from "../types/resources/dispute";
 import { waitTx, waitTxAndFilterLog } from "../utils/utils";
 
@@ -64,46 +62,6 @@ export class DisputeClient {
           disputeId: BigInt(logs.args.disputeId).toString() as `0x${string}`,
         };
       }
-      return { txHash: txHash };
-    } catch (error) {
-      handleError(error, "Failed to raise dispute");
-    }
-  }
-
-  /**
-   * Sets the judgement for an existing dispute.
-   * @param request The request object containing details for setting the dispute judgement.
-   *   @param request.disputeId The ID of the dispute to be judged.
-   *   @param request.decision The decision of the dispute.
-   *   @param request.calldata Optional additional data for the dispute judgement.
-   * @returns A Promise that resolves to a SetDisputeJudgementResponse containing the transaction hash.
-   * @throws An error if the process of setting the judgement fails.
-   * @throws `NotInDisputeState` if the currentTag of the Dispute is not being disputed.
-   * @throws `NotWhitelistedArbitrationRelayer` if the transaction executor is not a whitelisted arbitration relayer contract.
-   * @throws error if the Dispute's ArbitrationPolicy contract is not valid.
-   * @calls setDisputeJudgement(uint256 _disputeId, bool _decision, bytes calldata _data) external nonReentrant {
-   * @emits DisputeJudgementSet (_disputeId, _decision, _data);
-   */
-  public async setDisputeJudgement(
-    request: SetDisputeJudgementRequest,
-  ): Promise<SetDisputeJudgementResponse> {
-    try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...DisputeModuleConfig,
-        functionName: "setDisputeJudgement",
-        args: [
-          BigInt(request.disputeId),
-          request.decision,
-          request.calldata ? request.calldata : "0x",
-        ],
-      });
-
-      const txHash = await this.wallet.writeContract(call);
-
-      if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
-      }
-
       return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to raise dispute");

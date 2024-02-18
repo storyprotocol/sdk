@@ -39,6 +39,7 @@ export class LicenseClient {
               request.licensorIpId,
               parseToBigInt(request.mintAmount),
               getAddress(request.receiverAddress),
+              "0x",
             ],
           }),
         ],
@@ -80,7 +81,7 @@ export class LicenseClient {
           encodeFunctionData({
             abi: LicensingModuleConfig.abi,
             functionName: "linkIpToParents",
-            args: [licenseIds, getAddress(request.childIpId), request.minRoyalty],
+            args: [licenseIds, getAddress(request.childIpId), "0x"],
           }),
         ],
         account: this.wallet.account,

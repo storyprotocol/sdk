@@ -81,7 +81,7 @@ export class IPAssetClient {
           request.ipName || "",
           request.contentHash || HashZero,
           request.uri || "",
-          request.minRoyalty || 0,
+          "0x",
         ],
         account: this.wallet.account,
       });

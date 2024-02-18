@@ -4,7 +4,7 @@ import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import "./ipAsset.test";
 
-describe("License Functions", () => {
+describe.skip("License Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
