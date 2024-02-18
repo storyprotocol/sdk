@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 chai.config.truncateThreshold = 0;
 
 before(async function () {
-  const TEST_CHECKPOINT = "0x9318010dbc5cb77ff108803dbfee082653fb3258a248650c0be0b9c4b0c13a07";
+  const TEST_CHECKPOINT = "0x024c376000e3bb27344a6d8bbd5b99ee22c84eb9beefdfc3caa7bb367869dc09";
   const client = createPublicClient({
     chain: {
       id: 11155111,

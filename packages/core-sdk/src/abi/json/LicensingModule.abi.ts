@@ -66,21 +66,45 @@ export default [
     inputs: [
       {
         indexed: true,
-        internalType: "address",
-        name: "policyFrameworkManager",
-        type: "address",
-      },
-      {
-        indexed: true,
         internalType: "uint256",
         name: "policyId",
         type: "uint256",
       },
       {
+        indexed: true,
+        internalType: "address",
+        name: "policyFrameworkManager",
+        type: "address",
+      },
+      {
         indexed: false,
         internalType: "bytes",
-        name: "policy",
+        name: "frameworkData",
         type: "bytes",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "royaltyPolicy",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "royaltyData",
+        type: "bytes",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "mintingFee",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "mintingFeeToken",
+        type: "address",
       },
     ],
     name: "PolicyRegistered",
@@ -123,9 +147,9 @@ export default [
         type: "address",
       },
       {
-        internalType: "uint32",
-        name: "minRoyalty",
-        type: "uint32",
+        internalType: "bytes",
+        name: "royaltyContext",
+        type: "bytes",
       },
     ],
     name: "linkIpToParents",
@@ -142,7 +166,7 @@ export default [
       },
       {
         internalType: "address",
-        name: "licensorIp",
+        name: "licensorIpId",
         type: "address",
       },
       {
@@ -154,6 +178,11 @@ export default [
         internalType: "address",
         name: "receiver",
         type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "royaltyContext",
+        type: "bytes",
       },
     ],
     name: "mintLicense",
@@ -168,29 +197,48 @@ export default [
     type: "function",
   },
   {
-    inputs: [],
-    name: "name",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
-        internalType: "bool",
-        name: "isLicenseTransferable",
-        type: "bool",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
+        components: [
+          {
+            internalType: "bool",
+            name: "isLicenseTransferable",
+            type: "bool",
+          },
+          {
+            internalType: "address",
+            name: "policyFramework",
+            type: "address",
+          },
+          {
+            internalType: "bytes",
+            name: "frameworkData",
+            type: "bytes",
+          },
+          {
+            internalType: "address",
+            name: "royaltyPolicy",
+            type: "address",
+          },
+          {
+            internalType: "bytes",
+            name: "royaltyData",
+            type: "bytes",
+          },
+          {
+            internalType: "uint256",
+            name: "mintingFee",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "mintingFeeToken",
+            type: "address",
+          },
+        ],
+        internalType: "struct Licensing.Policy",
+        name: "pol",
+        type: "tuple",
       },
     ],
     name: "registerPolicy",
