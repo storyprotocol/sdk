@@ -2,6 +2,13 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import {
+  RegistrationModuleConfig,
+  IPAssetRegistryConfig,
+  IPAccountABI,
+  LicenseRegistryConfig,
+  LicensingModuleConfig,
+} from "./testABI";
 
 describe("IP Asset Functions", () => {
   let client: StoryClient;
@@ -16,6 +23,11 @@ describe("IP Asset Functions", () => {
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.ipAsset.registrationModuleConfig = RegistrationModuleConfig;
+    client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
+    client.license.ipAccountABI = IPAccountABI;
+    client.license.licenseRegistryConfig = LicenseRegistryConfig;
+    client.license.licensingModuleConfig = LicensingModuleConfig;
   });
 
   describe("Create root IP Asset", async function () {

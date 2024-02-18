@@ -17,6 +17,9 @@ import {
 export class PolicyClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public ipAccountABI = IPAccountABI;
+  public licensingModuleConfig = LicensingModuleConfig;
+  public pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
@@ -34,7 +37,7 @@ export class PolicyClient {
   ): Promise<RegisterPILPolicyResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...PILPolicyFrameworkManagerConfig,
+        ...this.pilPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
         args: [
           {
@@ -66,7 +69,7 @@ export class PolicyClient {
 
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicensingModuleConfig,
+          ...this.licensingModuleConfig,
           eventName: "PolicyRegistered",
         });
         return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
@@ -81,7 +84,7 @@ export class PolicyClient {
   public async addPolicyToIp(request: AddPolicyToIpRequest): Promise<AddPolicyToIpResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountABI,
+        abi: this.ipAccountABI,
         address: getAddress(request.ipId),
       };
 
@@ -89,10 +92,10 @@ export class PolicyClient {
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          LicensingModuleConfig.address,
+          this.licensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
-            abi: LicensingModuleConfig.abi,
+            abi: this.licensingModuleConfig.abi,
             functionName: "addPolicyToIp",
             args: [getAddress(request.ipId), parseToBigInt(request.policyId)],
           }),
@@ -103,7 +106,7 @@ export class PolicyClient {
       // TODO: the emit event doesn't return anything
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicensingModuleConfig,
+          ...this.licensingModuleConfig,
           eventName: "PolicyAddedToIpId",
         });
         return { txHash: txHash, index: targetLog.args.index.toString() };

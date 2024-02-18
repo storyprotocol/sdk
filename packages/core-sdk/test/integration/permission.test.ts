@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { IPAccountABI, AccessControllerConfig } from "./testABI";
 
 describe("Permission Functions", () => {
   let client: StoryClient;
@@ -16,6 +17,8 @@ describe("Permission Functions", () => {
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.permission.ipAccountABI = IPAccountABI;
+    client.permission.accessControllerConfig = AccessControllerConfig;
   });
 
   describe("Set Permission", async function () {

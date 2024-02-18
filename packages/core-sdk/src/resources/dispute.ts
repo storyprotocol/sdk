@@ -15,6 +15,7 @@ import { waitTx, waitTxAndFilterLog } from "../utils/utils";
 export class DisputeClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public disputeModuleConfig = DisputeModuleConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.rpcClient = rpcClient;
@@ -40,7 +41,7 @@ export class DisputeClient {
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...DisputeModuleConfig,
+        ...this.disputeModuleConfig,
         functionName: "raiseDispute",
         args: [
           request.targetIpId,
@@ -54,7 +55,7 @@ export class DisputeClient {
 
       if (request.txOptions?.waitForTransaction) {
         const logs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...DisputeModuleConfig,
+          ...this.disputeModuleConfig,
           eventName: "DisputeRaised",
         });
         return {
@@ -83,7 +84,7 @@ export class DisputeClient {
   public async cancelDispute(request: CancelDisputeRequest): Promise<CancelDisputeResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...DisputeModuleConfig,
+        ...this.disputeModuleConfig,
         functionName: "cancelDispute",
         args: [BigInt(request.disputeId), request.calldata ? request.calldata : "0x"],
       });
@@ -112,7 +113,7 @@ export class DisputeClient {
   public async resolveDispute(request: ResolveDisputeRequest): Promise<ResolveDisputeResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...DisputeModuleConfig,
+        ...this.disputeModuleConfig,
         functionName: "resolveDispute",
         args: [BigInt(request.disputeId)],
       });

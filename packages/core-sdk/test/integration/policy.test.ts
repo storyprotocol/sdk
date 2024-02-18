@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { IPAccountABI, LicensingModuleConfig, PILPolicyFrameworkManagerConfig } from "./testABI";
 
 describe("Test Policy Functions", () => {
   let client: StoryClient;
@@ -16,6 +17,9 @@ describe("Test Policy Functions", () => {
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.policy.ipAccountABI = IPAccountABI;
+    client.policy.licensingModuleConfig = LicensingModuleConfig;
+    client.policy.pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
   });
   // 0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431
   describe("Register PIL Policy", async function () {

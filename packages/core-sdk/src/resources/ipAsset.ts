@@ -14,6 +14,8 @@ import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 export class IPAssetClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public ipAssetRegistryConfig = IPAssetRegistryConfig;
+  public registrationModuleConfig = RegistrationModuleConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
@@ -29,7 +31,7 @@ export class IPAssetClient {
   public async registerRootIp(request: RegisterRootIpRequest): Promise<RegisterRootIpResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...RegistrationModuleConfig,
+        ...this.registrationModuleConfig,
         functionName: "registerRootIp",
         args: [
           parseToBigInt(request.policyId),
@@ -45,7 +47,7 @@ export class IPAssetClient {
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...IPAssetRegistryConfig,
+          ...this.ipAssetRegistryConfig,
           eventName: "IPRegistered",
         });
         return { txHash: txHash, ipId: targetLog.args.ipId };
@@ -72,7 +74,7 @@ export class IPAssetClient {
         licenseIds.push(parseToBigInt(licenseId));
       });
       const { request: call } = await this.rpcClient.simulateContract({
-        ...RegistrationModuleConfig,
+        ...this.registrationModuleConfig,
         functionName: "registerDerivativeIp",
         args: [
           licenseIds,
@@ -89,7 +91,7 @@ export class IPAssetClient {
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...IPAssetRegistryConfig,
+          ...this.ipAssetRegistryConfig,
           eventName: "IPRegistered",
         });
         return { txHash: txHash, ipId: targetLog.args.ipId };
