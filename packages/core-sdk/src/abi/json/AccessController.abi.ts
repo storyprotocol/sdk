@@ -3,6 +3,12 @@ export default [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "address",
+        name: "ipAccountOwner",
+        type: "address",
+      },
+      {
         indexed: true,
         internalType: "address",
         name: "ipAccount",
@@ -40,27 +46,27 @@ export default [
     inputs: [
       {
         internalType: "address",
-        name: "ipAccount_",
+        name: "ipAccount",
         type: "address",
       },
       {
         internalType: "address",
-        name: "signer_",
+        name: "signer",
         type: "address",
       },
       {
         internalType: "address",
-        name: "to_",
+        name: "to",
         type: "address",
       },
       {
         internalType: "bytes4",
-        name: "func_",
+        name: "func",
         type: "bytes4",
       },
       {
         internalType: "uint8",
-        name: "permission_",
+        name: "permission",
         type: "uint8",
       },
     ],

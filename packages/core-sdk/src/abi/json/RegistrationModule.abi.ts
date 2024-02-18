@@ -1,18 +1,5 @@
 export default [
   {
-    inputs: [],
-    name: "name",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint256[]",
@@ -45,9 +32,9 @@ export default [
         type: "string",
       },
       {
-        internalType: "uint32",
-        name: "minRoyalty",
-        type: "uint32",
+        internalType: "bytes",
+        name: "royaltyContext",
+        type: "bytes",
       },
     ],
     name: "registerDerivativeIp",

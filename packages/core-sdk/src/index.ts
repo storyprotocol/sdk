@@ -27,8 +27,8 @@ export type {
 } from "./types/resources/license";
 
 export type {
-  RegisterUMLPolicyRequest,
-  RegisterUMLPolicyResponse,
+  RegisterPILPolicyRequest,
+  RegisterPILPolicyResponse,
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
 } from "./types/resources/policy";

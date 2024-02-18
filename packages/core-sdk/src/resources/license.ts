@@ -13,6 +13,9 @@ import {
 export class LicenseClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public ipAccountABI = IPAccountABI;
+  public licenseRegistryConfig = LicenseRegistryConfig;
+  public licensingModuleConfig = LicensingModuleConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
@@ -34,23 +37,24 @@ export class LicenseClient {
   public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountABI,
+        abi: this.ipAccountABI,
         address: getAddress(request.licensorIpId),
       };
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          LicensingModuleConfig.address,
+          this.licensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
-            abi: LicensingModuleConfig.abi,
+            abi: this.licensingModuleConfig.abi,
             functionName: "mintLicense",
             args: [
               parseToBigInt(request.policyId),
               request.licensorIpId,
               parseToBigInt(request.mintAmount),
               getAddress(request.receiverAddress),
+              "0x",
             ],
           }),
         ],
@@ -59,7 +63,7 @@ export class LicenseClient {
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicenseRegistryConfig,
+          ...this.licenseRegistryConfig,
           eventName: "TransferSingle",
         });
         return { txHash: txHash, licenseId: targetLog.args.id.toString() };
@@ -74,7 +78,7 @@ export class LicenseClient {
   public async linkIpToParent(request: LinkIpToParentRequest): Promise<LinkIpToParentResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountABI,
+        abi: this.ipAccountABI,
         address: getAddress(request.childIpId),
       };
 
@@ -87,12 +91,12 @@ export class LicenseClient {
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          LicensingModuleConfig.address,
+          this.licensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
-            abi: LicensingModuleConfig.abi,
+            abi: this.licensingModuleConfig.abi,
             functionName: "linkIpToParents",
-            args: [licenseIds, getAddress(request.childIpId), request.minRoyalty],
+            args: [licenseIds, getAddress(request.childIpId), "0x"],
           }),
         ],
         account: this.wallet.account,

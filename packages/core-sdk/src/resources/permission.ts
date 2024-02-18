@@ -8,6 +8,8 @@ import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 export class PermissionClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public ipAccountABI = IPAccountABI;
+  public accessControllerConfig = AccessControllerConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.rpcClient = rpcClient;
@@ -36,7 +38,7 @@ export class PermissionClient {
   public async setPermission(request: setPermissionsRequest): Promise<setPermissionsResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountABI,
+        abi: this.ipAccountABI,
         address: getAddress(request.ipAsset),
       };
 
@@ -44,10 +46,10 @@ export class PermissionClient {
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          AccessControllerConfig.address,
+          this.accessControllerConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
-            abi: AccessControllerConfig.abi,
+            abi: this.accessControllerConfig.abi,
             functionName: "setPermission",
             args: [
               getAddress(request.ipAsset), // 0x Address
@@ -65,7 +67,7 @@ export class PermissionClient {
 
       if (request.txOptions?.waitForTransaction) {
         await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...AccessControllerConfig,
+          ...this.accessControllerConfig,
           eventName: "PermissionSet",
         });
         return { txHash: txHash, success: true };

@@ -4,12 +4,12 @@ import { handleError } from "../utils/errors";
 import {
   IPAccountABI,
   LicensingModuleConfig,
-  UMLPolicyFrameworkManagerConfig,
+  PILPolicyFrameworkManagerConfig,
 } from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import {
-  RegisterUMLPolicyRequest,
-  RegisterUMLPolicyResponse,
+  RegisterPILPolicyRequest,
+  RegisterPILPolicyResponse,
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
 } from "../types/resources/policy";
@@ -17,6 +17,9 @@ import {
 export class PolicyClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public ipAccountABI = IPAccountABI;
+  public licensingModuleConfig = LicensingModuleConfig;
+  public pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
@@ -29,30 +32,35 @@ export class PolicyClient {
    * @param request - the request object that contains all data needed to register a policy.
    * @returns the response object that contains results from the policy creation.
    */
-  public async registerUMLPolicy(
-    request: RegisterUMLPolicyRequest,
-  ): Promise<RegisterUMLPolicyResponse> {
+  public async registerPILPolicy(
+    request: RegisterPILPolicyRequest,
+  ): Promise<RegisterPILPolicyResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...UMLPolicyFrameworkManagerConfig,
+        ...this.pilPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
         args: [
           {
             transferable: request.transferable,
-            attribution: request.attribution || false,
-            commercialUse: request.commercialUse || false,
-            commercialAttribution: request.commercialAttribution || false,
-            commercializers: request.commercializers || [],
-            commercialRevShare: request.commercialRevShare || 0,
-            derivativesAllowed: request.derivativesAllowed || false,
-            derivativesAttribution: request.commercialAttribution || false,
-            derivativesApproval: request.derivativesApproval || false,
-            derivativesReciprocal: request.derivativesReciprocal || false,
-            derivativesRevShare: request.derivativesRevShare || 0,
-            territories: request.territories || [],
-            distributionChannels: request.distributionChannels || [],
-            contentRestrictions: request.contentRestrictions || [],
             royaltyPolicy: request.royaltyPolicy || zeroAddress,
+            mintingFee: parseToBigInt(request.mintingFee || 0),
+            mintingFeeToken: request.mintingFeeToken || zeroAddress,
+            policy: {
+              attribution: request.attribution || false,
+              commercialUse: request.commercialUse || false,
+              commercialAttribution: request.commercialAttribution || false,
+              commercialRevShare: request.commercialRevShare || 0,
+              derivativesAllowed: request.derivativesAllowed || false,
+              derivativesAttribution: request.commercialAttribution || false,
+              derivativesApproval: request.derivativesApproval || false,
+              derivativesReciprocal: request.derivativesReciprocal || false,
+              commercializerChecker: request.commercializerChecker || zeroAddress,
+              commercializerCheckerData: (request.commercializerCheckerData ||
+                "0x") as `0x${string}`,
+              territories: request.territories || [],
+              distributionChannels: request.distributionChannels || [],
+              contentRestrictions: request.contentRestrictions || [],
+            },
           },
         ],
         account: this.wallet.account,
@@ -61,7 +69,7 @@ export class PolicyClient {
 
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicensingModuleConfig,
+          ...this.licensingModuleConfig,
           eventName: "PolicyRegistered",
         });
         return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
@@ -76,7 +84,7 @@ export class PolicyClient {
   public async addPolicyToIp(request: AddPolicyToIpRequest): Promise<AddPolicyToIpResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountABI,
+        abi: this.ipAccountABI,
         address: getAddress(request.ipId),
       };
 
@@ -84,10 +92,10 @@ export class PolicyClient {
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          LicensingModuleConfig.address,
+          this.licensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
-            abi: LicensingModuleConfig.abi,
+            abi: this.licensingModuleConfig.abi,
             functionName: "addPolicyToIp",
             args: [getAddress(request.ipId), parseToBigInt(request.policyId)],
           }),
@@ -98,7 +106,7 @@ export class PolicyClient {
       // TODO: the emit event doesn't return anything
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicensingModuleConfig,
+          ...this.licensingModuleConfig,
           eventName: "PolicyAddedToIpId",
         });
         return { txHash: txHash, index: targetLog.args.index.toString() };

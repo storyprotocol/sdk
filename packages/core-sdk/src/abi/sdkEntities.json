@@ -1,47 +1,32 @@
 [
-  "ipAsset",
   "execute",
+  "executeWithSig",
 
   "registerRootIp",
   "registerDerivativeIp",
+  "IPRegistered",
 
   "registerPolicy",
   "addPolicyToIp",
+  "PolicyRegistered",
+  "PolicyAddedToIpId",
 
   "mintLicense",
   "linkIpToParents",
-
-  "setPermission",
-
-  "whitelistDisputeTags",
-  "whitelistArbitrationPolicy",
-  "whitelistArbitrationRelayer",
-  "raiseDispute",
-  "setDisputeJudgement",
-  "cancelDispute",
-  "resolveDispute",
-
-  "IPRegistered",
-  "PolicyRegistered",
-  "PolicyAddedToIpId",
   "TransferSingle",
   "TransferBatch",
   "IpIdLinkedToParents",
+
+  "setPermission",
   "PermissionSet",
-  "setTag",
-  "removeTag",
-  "isTagged",
-  "totalTagsForIp",
-  "tagAtIndexForIp",
-  "tagStringAtIndexForIp",
-  "MAX_TAG_PERMISSIONS_AT_ONCE",
 
   "raiseDispute",
-  "setDisputeJudgement",
   "cancelDispute",
   "resolveDispute",
-  "DisputeJudgementSet",
   "DisputeCancelled",
   "DisputeResolved",
-  "DisputeRaised"
+  "DisputeRaised",
+
+  "setTag",
+  "removeTag"
 ]

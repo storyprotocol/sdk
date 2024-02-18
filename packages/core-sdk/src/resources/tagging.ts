@@ -13,6 +13,7 @@ import { waitTx } from "../utils/utils";
 export class TaggingClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public taggingModuleConfig = TaggingModuleConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.rpcClient = rpcClient;
@@ -22,7 +23,7 @@ export class TaggingClient {
   public async setTag(request: SetTagRequest): Promise<SetTagResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...TaggingModuleConfig,
+        ...this.taggingModuleConfig,
         functionName: "setTag",
         args: [request.tag, request.ipId],
       });
@@ -42,7 +43,7 @@ export class TaggingClient {
   public async removeTag(request: RemoveTagRequest): Promise<RemoveTagResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...TaggingModuleConfig,
+        ...this.taggingModuleConfig,
         functionName: "removeTag",
         args: [request.tag, request.ipId],
       });
