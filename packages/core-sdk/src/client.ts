@@ -23,6 +23,7 @@ export class StoryClient {
   private readonly rpcClient: PublicClient;
   private readonly wallet: WalletClient;
   private readonly httpClient: AxiosInstance;
+  private readonly httpClient2: AxiosInstance;
 
   private _ipAccount: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
@@ -48,6 +49,14 @@ export class StoryClient {
       timeout: 5000,
       headers: {
         version: "v0-alpha",
+      },
+    });
+
+    this.httpClient2 = axios.create({
+      baseURL: "https://edgeapi.storyprotocol.net",
+      timeout: 5000,
+      headers: {
+        "x-api-key": "U3RvcnlQcm90b2NvbFRlc3RBUElLRVk=",
       },
     });
 
@@ -80,7 +89,7 @@ export class StoryClient {
 
   public get ipAsset(): IPAssetClient {
     if (this._ipAccount === null) {
-      this._ipAccount = new IPAssetClient(this.rpcClient, this.wallet);
+      this._ipAccount = new IPAssetClient(this.rpcClient, this.wallet, this.httpClient2);
     }
 
     return this._ipAccount;
@@ -96,7 +105,7 @@ export class StoryClient {
 
   public get license(): LicenseClient {
     if (this._license === null) {
-      this._license = new LicenseClient(this.rpcClient, this.wallet);
+      this._license = new LicenseClient(this.rpcClient, this.wallet, this.httpClient2);
     }
 
     return this._license;

@@ -2,7 +2,11 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { IPAccountABI, LicensingModuleConfig, PILPolicyFrameworkManagerConfig } from "./testABI";
+import {
+  IPAccountABI,
+  LicensingModuleConfig,
+  PILPolicyFrameworkManagerConfig,
+} from "./testABI.tenderly";
 
 describe("Test Policy Functions", () => {
   let client: StoryClient;

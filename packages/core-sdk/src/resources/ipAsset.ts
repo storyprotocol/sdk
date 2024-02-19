@@ -1,4 +1,5 @@
 import { PublicClient, WalletClient, getAddress } from "viem";
+import { AxiosInstance } from "axios";
 
 import { handleError } from "../utils/errors";
 import { HashZero } from "../constants/common";
@@ -14,12 +15,14 @@ import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 export class IPAssetClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  private readonly httpClient: AxiosInstance;
   public ipAssetRegistryConfig = IPAssetRegistryConfig;
   public registrationModuleConfig = RegistrationModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, httpClient: AxiosInstance) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
+    this.httpClient = httpClient;
   }
 
   /**

@@ -11,7 +11,7 @@ import RegistrationModuleABI from "../../src/abi/json/RegistrationModule.abi";
 import TaggingModuleABI from "../../src/abi/json/TaggingModule.abi";
 import ErrorsABI from "../../src/abi/json/Errors.abi";
 
-export const tenderly = {
+const tenderly = {
   AccessController: "0x674d6E1f7b5e2d714DBa588e9d046965225517c8",
   ArbitrationPolicySP: "0xb41BC78478878B338336C5E7a34292213779cd6F",
   DisputeModule: "0x3A96cad7b2aC783a6811c7c3e8DEF30E8a4cfcDb",

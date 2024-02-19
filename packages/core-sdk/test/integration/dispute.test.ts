@@ -8,7 +8,7 @@ import {
   RaiseDisputeRequest,
   ResolveDisputeRequest,
 } from "../../src/types/resources/dispute";
-import { DisputeModuleConfig } from "./testABI";
+import { DisputeModuleConfig } from "./testABI.tenderly";
 
 describe("Dispute Functions", () => {
   let client: StoryClient;

@@ -1,4 +1,5 @@
 import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
+import { AxiosInstance } from "axios";
 
 import { handleError } from "../utils/errors";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
@@ -13,13 +14,15 @@ import {
 export class LicenseClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  private readonly httpClient: AxiosInstance;
   public ipAccountABI = IPAccountABI;
   public licenseRegistryConfig = LicenseRegistryConfig;
   public licensingModuleConfig = LicensingModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, httpClient: AxiosInstance) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
+    this.httpClient = httpClient;
   }
 
   /**
@@ -37,6 +40,18 @@ export class LicenseClient {
   public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
     try {
       // 1. Call royalty policy API to get royalty policy for ipId
+      //console.log(`ipId: ${request.licensorIpId}`);
+      /*
+      const royaltyPoliciesResp = await this.httpClient.get(
+        `/api/v1/royaltypolicies/${request.licensorIpId}`,
+      );
+      
+      const data = royaltyPoliciesResp.data as {
+        targetAncestors: string[];
+        targetRoyaltyAmount: string[];
+      };
+      */
+      //console.log(data);
       // 1.1. If data: null, it's a root. Pass empty
       // 1.2. If not null, call royalty policy API for its parents and compose the 6 arrays
       // 1.2.1. encode the 6 arrays into royalty context
