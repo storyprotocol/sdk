@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { TaggingModuleConfig } from "./testABI";
 
 describe("Tagging Functions (integration tests)", () => {
   let client: StoryClient;
@@ -16,6 +17,7 @@ describe("Tagging Functions (integration tests)", () => {
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.tagging.taggingModuleConfig = TaggingModuleConfig;
   });
 
   describe("Should be able to", async function () {

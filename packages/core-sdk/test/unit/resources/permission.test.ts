@@ -34,7 +34,7 @@ describe("Test Permission", function () {
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
       const res = await permissionClient.setPermission({
-        ipAsset: AddressZero,
+        ipId: AddressZero,
         signer: AddressZero,
         to: AddressZero,
         func: "0x00000000",
@@ -54,7 +54,7 @@ describe("Test Permission", function () {
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
       const res = await permissionClient.setPermission({
-        ipAsset: AddressZero,
+        ipId: AddressZero,
         signer: AddressZero,
         to: AddressZero,
         func: "0x00000000",
@@ -111,7 +111,7 @@ describe("Test Permission", function () {
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
       await expect(
         permissionClient.setPermission({
-          ipAsset: AddressZero,
+          ipId: AddressZero,
           signer: AddressZero,
           to: AddressZero,
           func: "0x00000000",
@@ -131,7 +131,7 @@ describe("Test Permission", function () {
 
       await expect(
         permissionClient.setPermission({
-          ipAsset: AddressZero,
+          ipId: AddressZero,
           signer: AddressZero,
           to: AddressZero,
           func: AddressZero,

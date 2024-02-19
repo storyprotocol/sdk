@@ -2,8 +2,9 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { IPAccountABI, LicensingModuleConfig, PILPolicyFrameworkManagerConfig } from "./testABI";
 
-describe.skip("Test Policy Functions", () => {
+describe("Test Policy Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -16,13 +17,16 @@ describe.skip("Test Policy Functions", () => {
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.policy.ipAccountABI = IPAccountABI;
+    client.policy.licensingModuleConfig = LicensingModuleConfig;
+    client.policy.pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
   });
   // 0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431
-  describe("Register UML Policy", async function () {
-    it("should not throw error when registering UML Policy with everything turned off", async () => {
+  describe("Register PIL Policy", async function () {
+    it("should not throw error when registering PIL Policy with everything turned off", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.registerUMLPolicy({
+        client.policy.registerPILPolicy({
           transferable: false,
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -39,10 +43,10 @@ describe.skip("Test Policy Functions", () => {
       }
     });
 
-    it("should not throw error when registering UML Policy with social remixing", async () => {
+    it("should not throw error when registering PIL Policy with social remixing", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.registerUMLPolicy({
+        client.policy.registerPILPolicy({
           transferable: true,
           attribution: true,
           derivativesAllowed: true,
@@ -63,10 +67,10 @@ describe.skip("Test Policy Functions", () => {
       }
     });
 
-    it("should not throw error when registering UML Policy with commercial use", async () => {
+    it.skip("should not throw error when registering PIL Policy with commercial use", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.registerUMLPolicy({
+        client.policy.registerPILPolicy({
           transferable: true,
           attribution: true,
           commercialUse: true,
@@ -92,7 +96,7 @@ describe.skip("Test Policy Functions", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.addPolicyToIp({
-          ipId: "0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431",
+          ipId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
           policyId: "1",
           txOptions: {
             waitForTransaction: waitForTransaction,
