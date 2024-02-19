@@ -15,7 +15,7 @@ export type MintLicenseResponse = {
 
 export type LinkIpToParentRequest = {
   licenseIds: string[];
-  childIpId: string;
+  childIpId: `0x${string}`;
   minRoyalty: number;
   txOptions?: TxOptions;
 };

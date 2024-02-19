@@ -39,7 +39,7 @@ export class PermissionClient {
     try {
       const IPAccountConfig = {
         abi: this.ipAccountABI,
-        address: getAddress(request.ipAsset),
+        address: getAddress(request.ipId),
       };
 
       const { request: call } = await this.rpcClient.simulateContract({
@@ -52,7 +52,7 @@ export class PermissionClient {
             abi: this.accessControllerConfig.abi,
             functionName: "setPermission",
             args: [
-              getAddress(request.ipAsset), // 0x Address
+              getAddress(request.ipId), // 0x Address
               getAddress(request.signer), // 0x Address
               getAddress(request.to), // 0x Address
               request.func as Hex, // bytes4

@@ -127,7 +127,7 @@ export type RegisterPILPolicyResponse = {
 };
 
 export type AddPolicyToIpRequest = {
-  ipId: string;
+  ipId: `0x${string}`;
   policyId: string;
   txOptions?: TxOptions;
 };
