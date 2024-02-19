@@ -48,14 +48,12 @@ export const LicenseRegistryConfig = {
 };
 
 export const LicensingModuleConfig = {
-  abi: LicensingModuleABI,
-  //abi: [...LicensingModuleABI, ...ErrorsABI],
+  abi: [...LicensingModuleABI, ...ErrorsABI],
   address: getAddress(tenderly.LicensingModule),
 };
 
 export const RegistrationModuleConfig = {
-  abi: RegistrationModuleABI,
-  //abi: [...RegistrationModuleABI, ...ErrorsABI],
+  abi: [...RegistrationModuleABI, ...ErrorsABI],
   address: getAddress(tenderly.RegistrationModule),
 };
 
@@ -65,7 +63,6 @@ export const TaggingModuleConfig = {
 };
 
 export const PILPolicyFrameworkManagerConfig = {
-  abi: PILPolicyFrameworkManagerABI,
-  //abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
+  abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
   address: getAddress(tenderly.PILPolicyFrameworkManager),
 };

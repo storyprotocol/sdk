@@ -67,14 +67,16 @@ describe("Test Policy Functions", () => {
       }
     });
 
-    it.skip("should not throw error when registering PIL Policy with commercial use", async () => {
+    it("should not throw error when registering PIL Policy with commercial use", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILPolicy({
           transferable: true,
+          royaltyPolicy: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
           attribution: true,
           commercialUse: true,
           commercialAttribution: true,
+          derivativesAllowed: true,
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -97,7 +99,7 @@ describe("Test Policy Functions", () => {
       const response = await expect(
         client.policy.addPolicyToIp({
           ipId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
-          policyId: "1",
+          policyId: "3",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
