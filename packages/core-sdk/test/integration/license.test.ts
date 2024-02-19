@@ -23,6 +23,7 @@ describe("License Functions", () => {
   });
 
   describe("Mint Licenses", async function () {
+    // 1. mint non commercial license
     it("should not throw error when minting a license", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
@@ -45,9 +46,13 @@ describe("License Functions", () => {
         expect(response.licenseId).not.empty;
       }
     });
+    // 2. mint commercial license from root ip
+    // 3. mint commercial license from derivative ip - 1 parent
+    // 4. mint commercial license from derivative ip - 2 parent
   });
 
   describe("Link IP To Parents", async function () {
+    // 1. non commercial
     it("should not throw error when link IP to parents", async () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
@@ -81,5 +86,8 @@ describe("License Functions", () => {
         expect(response.success).to.equal(true);
       }
     });
+    // 2. commercial, upfront payment - 1 parent
+    // 3. commercial, rev share - 1 parent
+    // 4. commercial, upfront payment, rev share - 2 parents
   });
 });

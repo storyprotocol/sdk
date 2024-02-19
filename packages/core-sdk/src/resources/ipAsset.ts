@@ -87,6 +87,9 @@ export class IPAssetClient {
     request: RegisterDerivativeIpRequest,
   ): Promise<RegisterDerivativeIpResponse> {
     try {
+      // 1. get parent ipId from the license id, by calling license API
+      // 2. use ipId to get royalPolicy
+      // 3. compose the royaltyContext
       const licenseIds: bigint[] = [];
       request.licenseIds.forEach(function (licenseId) {
         licenseIds.push(parseToBigInt(licenseId));

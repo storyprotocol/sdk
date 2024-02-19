@@ -36,6 +36,10 @@ export class LicenseClient {
    */
   public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
     try {
+      // 1. Call royalty policy API to get royalty policy for ipId
+      // 1.1. If data: null, it's a root. Pass empty
+      // 1.2. If not null, call royalty policy API for its parents and compose the 6 arrays
+      // 1.2.1. encode the 6 arrays into royalty context
       const IPAccountConfig = {
         abi: this.ipAccountABI,
         address: getAddress(request.licensorIpId),

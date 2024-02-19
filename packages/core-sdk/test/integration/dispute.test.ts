@@ -7,10 +7,10 @@ import {
   CancelDisputeRequest,
   RaiseDisputeRequest,
   ResolveDisputeRequest,
-  SetDisputeJudgementRequest,
 } from "../../src/types/resources/dispute";
+import { DisputeModuleConfig } from "./testABI";
 
-describe.skip("Dispute Functions", () => {
+describe("Dispute Functions", () => {
   let client: StoryClient;
 
   before(function () {
@@ -20,17 +20,19 @@ describe.skip("Dispute Functions", () => {
     };
 
     client = StoryClient.newClient(config);
+    client.dispute.disputeModuleConfig = DisputeModuleConfig;
   });
 
   describe("Should be able to", async function () {
-    it.skip("raise a dispute", async () => {
+    it("raise a dispute", async () => {
+      const waitForTransaction = true;
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
         arbitrationPolicy: "0xb41BC78478878B338336C5E7a34292213779cd6F",
         linkToDisputeEvidence: "foo",
         targetTag: "PLAGIARISM",
         txOptions: {
-          waitForTransaction: true,
+          waitForTransaction: waitForTransaction,
         },
       };
       const response = await expect(client.dispute.raiseDispute(raiseDisputeRequest)).to.not.be
@@ -38,11 +40,17 @@ describe.skip("Dispute Functions", () => {
 
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
+      console.log(`disputeId:${response.disputeId}`);
+
+      if (waitForTransaction) {
+        expect(response.disputeId).to.be.a("string");
+        expect(response.disputeId).not.empty;
+      }
     });
 
     it.skip("resolve a dispute", async () => {
       const resolveDisputeRequest: ResolveDisputeRequest = {
-        disputeId: 5,
+        disputeId: 3,
         txOptions: {
           waitForTransaction: true,
         },
@@ -54,9 +62,9 @@ describe.skip("Dispute Functions", () => {
       expect(response.txHash).not.empty;
     });
 
-    it.skip("cancel a dispute", async () => {
+    it("cancel a dispute", async () => {
       const cancelDispute: CancelDisputeRequest = {
-        disputeId: 5,
+        disputeId: 3,
         txOptions: {
           waitForTransaction: true,
         },
