@@ -27,7 +27,7 @@ describe("Permission Functions", () => {
       const response = await expect(
         client.permission.setPermission({
           ipAsset: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
-          signer: process.env.TEST_WALLET_ADDRESS!,
+          signer: process.env.TEST_WALLET_ADDRESS as `0x${string}`,
           to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
           func: "0x00000000",
           permission: 1,

@@ -2,8 +2,8 @@ import { TxOptions } from "../options";
 
 export type setPermissionsRequest = {
   ipId: `0x${string}`;
-  signer: string;
-  to: string;
+  signer: `0x${string}`;
+  to: `0x${string}`;
   func: string;
   permission: number;
   txOptions?: TxOptions;
