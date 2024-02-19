@@ -1,7 +1,7 @@
 import { TxOptions } from "../options";
 
 export type MintLicenseRequest = {
-  policyId: `0x${string}`;
+  policyId: string;
   licensorIpId: `0x${string}`;
   mintAmount: number;
   receiverAddress: `0x${string}`;
