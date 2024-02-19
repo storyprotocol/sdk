@@ -23,10 +23,19 @@ export class IPAssetClient {
   }
 
   /**
-   * Register a root IP on Story Protocol based on the specified input asset data.
-   *
-   * @param request - the request object that contains all data needed to register a root IP.
-   * @returns the response object that contains results from the IP creation.
+   *  Registers a root-level IP into the protocol. Root-level IPs can be thought of as organizational hubs
+   *  for encapsulating policies that actual IPs can use to register through. As such, a root-level IP is not an
+   *  actual IP, but a container for IP policy management for their child IP assets.
+   * @param request The request object that contains all data needed to register a root IP.
+   *   @param request.policyId The policy that identifies the licensing terms of the IP.
+   *   @param request.tokenContract The address of the NFT bound to the root-level IP.
+   *   @param request.tokenId The token id of the NFT bound to the root-level IP.
+   *   @param request.ipName [Optional] The name assigned to the new IP.
+   *   @param request.contentHash [Optional] The content hash of the IP being registered.
+   *   @param request.uri [Optional] An external URI to link to the IP.
+   *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
+   * @emits RootIPRegistered (msg.sender, ipId, policyId)
    */
   public async registerRootIp(request: RegisterRootIpRequest): Promise<RegisterRootIpResponse> {
     try {
@@ -60,10 +69,19 @@ export class IPAssetClient {
   }
 
   /**
-   * Register a derivative IP on Story Protocol based on the specified input asset data.
-   *
-   * @param request - the request object that contains all data needed to register a derivative IP.
-   * @returns the response object that contains results from the IP creation.
+   *  Registers derivative IPs into the protocol. Derivative IPs are IP assets that inherit policies from
+   *  parent IPs by burning acquired license NFTs.
+   * @param request The request object that contains all data needed to register a root IP.
+   *   @param request.licenseIds The policy that identifies the licensing terms of the IP.
+   *   @param request.tokenContract The address of the NFT bound to the derivative IP.
+   *   @param request.tokenId The token id of the NFT bound to the derivative IP.
+   *   @param request.ipName [Optional] The name assigned to the new IP.
+   *   @param request.contentHash [Optional] The content hash of the IP being registered.
+   *   @param request.uri [Optional] An external URI to link to the IP.
+   *   @param request.minRoyalty [Optional] The minimum royalty percentage that the IP owner will receive.
+   *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
+   * @emits RootIPRegistered (msg.sender, ipId, policyId)
    */
   public async registerDerivativeIp(
     request: RegisterDerivativeIpRequest,
