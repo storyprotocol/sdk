@@ -1,7 +1,7 @@
 import { TxOptions } from "../options";
 
 export type MintLicenseRequest = {
-  policyId: string;
+  policyId: `0x${string}`;
   licensorIpId: `0x${string}`;
   mintAmount: number;
   receiverAddress: `0x${string}`;
@@ -15,7 +15,7 @@ export type MintLicenseResponse = {
 
 export type LinkIpToParentRequest = {
   licenseIds: string[];
-  childIpId: string;
+  childIpId: `0x${string}`;
   minRoyalty: number;
   txOptions?: TxOptions;
 };
