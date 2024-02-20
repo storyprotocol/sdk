@@ -1,5 +1,4 @@
 import { createPublicClient, createWalletClient, PublicClient, WalletClient } from "viem";
-import axios, { AxiosInstance } from "axios";
 import * as dotenv from "dotenv";
 
 import { StoryConfig } from "./types/config";
@@ -10,7 +9,7 @@ import { LicenseClient } from "./resources/license";
 import { PolicyClient } from "./resources/policy";
 import { DisputeClient } from "./resources/dispute";
 import { chainStringToViemChain } from "./utils/utils";
-import { PlatformClient } from "./utils/platform";
+import { StoryAPIClient } from "./clients/storyAPI";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -22,14 +21,12 @@ export class StoryClient {
   private readonly config: StoryConfig;
   private readonly rpcClient: PublicClient;
   private readonly wallet: WalletClient;
-  private readonly httpClient: AxiosInstance;
-  private readonly httpClient2: AxiosInstance;
+  private readonly storyClient: StoryAPIClient;
 
   private _ipAccount: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;
   private _policy: PolicyClient | null = null;
-  private _platform: PlatformClient | null = null;
   private _tagging: TaggingClient | null = null;
   private _dispute: DisputeClient | null = null;
 
@@ -44,28 +41,13 @@ export class StoryClient {
       );
     }
 
-    this.httpClient = axios.create({
-      baseURL: "https://stag.api.storyprotocol.net",
-      timeout: 5000,
-      headers: {
-        version: "v0-alpha",
-      },
-    });
-
-    this.httpClient2 = axios.create({
-      baseURL: "https://edgeapi.storyprotocol.net",
-      timeout: 5000,
-      headers: {
-        "x-api-key": "U3RvcnlQcm90b2NvbFRlc3RBUElLRVk=",
-      },
-    });
-
     const clientConfig = {
       chain: chainStringToViemChain(this.config.chainId || "sepolia"),
       transport: this.config.transport,
     };
 
     this.rpcClient = createPublicClient(clientConfig);
+    this.storyClient = new StoryAPIClient();
 
     const account = this.config.account;
     if (!account) {
@@ -89,7 +71,7 @@ export class StoryClient {
 
   public get ipAsset(): IPAssetClient {
     if (this._ipAccount === null) {
-      this._ipAccount = new IPAssetClient(this.rpcClient, this.wallet, this.httpClient2);
+      this._ipAccount = new IPAssetClient(this.rpcClient, this.wallet, this.storyClient);
     }
 
     return this._ipAccount;
@@ -105,7 +87,7 @@ export class StoryClient {
 
   public get license(): LicenseClient {
     if (this._license === null) {
-      this._license = new LicenseClient(this.rpcClient, this.wallet, this.httpClient2);
+      this._license = new LicenseClient(this.rpcClient, this.wallet, this.storyClient);
     }
 
     return this._license;
@@ -145,19 +127,5 @@ export class StoryClient {
     }
 
     return this._dispute;
-  }
-
-  /**
-   * Getter for the platform client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the PlatformClient instance
-   */
-  public get platform(): PlatformClient {
-    if (this._platform === null) {
-      this._platform = new PlatformClient(this.httpClient);
-    }
-
-    return this._platform;
   }
 }

@@ -1,28 +1,29 @@
 import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
-import { AxiosInstance } from "axios";
 
 import { handleError } from "../utils/errors";
-import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { parseToBigInt, waitTxAndFilterLog, encodeRoyaltyContext } from "../utils/utils";
 import { IPAccountABI, LicensingModuleConfig, LicenseRegistryConfig } from "../abi/config";
+import { StoryAPIClient } from "../clients/storyAPI";
 import {
   LinkIpToParentRequest,
   LinkIpToParentResponse,
   MintLicenseRequest,
   MintLicenseResponse,
 } from "../types/resources/license";
+import { RoyaltyContext } from "../types/resources/royalty";
 
 export class LicenseClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  private readonly httpClient: AxiosInstance;
+  private readonly storyClient: StoryAPIClient;
   public ipAccountABI = IPAccountABI;
   public licenseRegistryConfig = LicenseRegistryConfig;
   public licensingModuleConfig = LicensingModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, httpClient: AxiosInstance) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, storyClient: StoryAPIClient) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
-    this.httpClient = httpClient;
+    this.storyClient = storyClient;
   }
 
   /**
@@ -39,47 +40,36 @@ export class LicenseClient {
    */
   public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
     try {
-      // 1. Call royalty policy API to get royalty policy for ipId
-      //console.log(`ipId: ${request.licensorIpId}`);
-      /*
-      const royaltyPoliciesResp = await this.httpClient.get(
-        `/api/v1/royaltypolicies/${request.licensorIpId}`,
-      );
-      
-      const data = royaltyPoliciesResp.data as {
-        targetAncestors: string[];
-        targetRoyaltyAmount: string[];
+      const royaltyContext: RoyaltyContext = {
+        targetAncestors: [],
+        targetRoyaltyAmount: [],
+        parentAncestors1: [],
+        parentAncestors2: [],
+        parentAncestorsRoyalties1: [],
+        parentAncestorsRoyalties2: [],
       };
-      */
-      //console.log(data);
-      // 1.1. If data: null, it's a root. Pass empty
-      // 1.2. If not null, call royalty policy API for its parents and compose the 6 arrays
-      // 1.2.1. encode the 6 arrays into royalty context
-      const IPAccountConfig = {
-        abi: this.ipAccountABI,
-        address: getAddress(request.licensorIpId),
-      };
+
+      const royaltyPolicy = await this.storyClient.getRoyaltyPolicy(request.licensorIpId);
+      if (royaltyPolicy) {
+        royaltyContext.targetAncestors.push(...royaltyPolicy.targetAncestors);
+        const targetRoyaltyAmount = royaltyPolicy.targetRoyaltyAmount.map((e) => parseInt(e));
+        royaltyContext.targetRoyaltyAmount.push(...targetRoyaltyAmount);
+      }
+
       const { request: call } = await this.rpcClient.simulateContract({
-        ...IPAccountConfig,
-        functionName: "execute",
+        ...this.licensingModuleConfig,
+        functionName: "mintLicense",
         args: [
-          this.licensingModuleConfig.address,
-          parseToBigInt(0),
-          encodeFunctionData({
-            abi: this.licensingModuleConfig.abi,
-            functionName: "mintLicense",
-            args: [
-              parseToBigInt(request.policyId),
-              request.licensorIpId,
-              parseToBigInt(request.mintAmount),
-              getAddress(request.receiverAddress),
-              "0x",
-            ],
-          }),
+          parseToBigInt(request.policyId),
+          request.licensorIpId,
+          parseToBigInt(request.mintAmount),
+          getAddress(request.receiverAddress),
+          encodeRoyaltyContext(royaltyContext),
         ],
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
+
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licenseRegistryConfig,
@@ -96,6 +86,40 @@ export class LicenseClient {
 
   public async linkIpToParent(request: LinkIpToParentRequest): Promise<LinkIpToParentResponse> {
     try {
+      const royaltyContext: RoyaltyContext = {
+        targetAncestors: [],
+        targetRoyaltyAmount: [],
+        parentAncestors1: [],
+        parentAncestors2: [],
+        parentAncestorsRoyalties1: [],
+        parentAncestorsRoyalties2: [],
+      };
+
+      for (let i = 0; i < request.licenseIds.length; i++) {
+        const licenseData = await this.storyClient.getLicense(request.licenseIds[i]);
+        const royaltyPolicy = await this.storyClient.getRoyaltyPolicy(licenseData.licensorIpId);
+        const policy = await this.storyClient.getPolicy(licenseData.policyId);
+
+        const targetRoyaltyAmount = royaltyPolicy.targetRoyaltyAmount.map((e) => parseInt(e));
+        if (i === 0) {
+          royaltyContext.parentAncestors1 = royaltyPolicy.targetAncestors;
+          royaltyContext.parentAncestorsRoyalties1 = targetRoyaltyAmount;
+        } else {
+          royaltyContext.parentAncestors2 = royaltyPolicy.targetAncestors;
+          royaltyContext.parentAncestorsRoyalties2 = targetRoyaltyAmount;
+        }
+        this._updateRoyaltyContext(
+          royaltyContext,
+          [licenseData.licensorIpId],
+          [parseInt(policy.pil.commercialRevShare)],
+        );
+        this._updateRoyaltyContext(
+          royaltyContext,
+          royaltyPolicy.targetAncestors,
+          targetRoyaltyAmount,
+        );
+      }
+
       const IPAccountConfig = {
         abi: this.ipAccountABI,
         address: getAddress(request.childIpId),
@@ -115,12 +139,13 @@ export class LicenseClient {
           encodeFunctionData({
             abi: this.licensingModuleConfig.abi,
             functionName: "linkIpToParents",
-            args: [licenseIds, getAddress(request.childIpId), "0x"],
+            args: [licenseIds, getAddress(request.childIpId), encodeRoyaltyContext(royaltyContext)],
           }),
         ],
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
+
       if (request.txOptions?.waitForTransaction) {
         await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...LicenseRegistryConfig,
@@ -131,7 +156,23 @@ export class LicenseClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to mint license");
+      handleError(error, "Failed to link IP to parents");
+    }
+  }
+
+  private _updateRoyaltyContext(
+    royaltyContext: RoyaltyContext,
+    targetAncestors: string[],
+    targetRoyaltyAccounts: number[],
+  ) {
+    for (let i = 0; i < targetAncestors.length; i++) {
+      const index = royaltyContext.targetAncestors.indexOf(targetAncestors[i]);
+      if (index === -1) {
+        royaltyContext.targetAncestors.push(targetAncestors[i]);
+        royaltyContext.targetRoyaltyAmount.push(targetRoyaltyAccounts[i]);
+      } else {
+        royaltyContext.targetRoyaltyAmount[index] += targetRoyaltyAccounts[i];
+      }
     }
   }
 }

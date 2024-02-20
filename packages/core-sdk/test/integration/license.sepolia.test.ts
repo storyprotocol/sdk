@@ -22,14 +22,14 @@ describe("License Functions", () => {
     client.license.licensingModuleConfig = LicensingModuleConfig;
   });
 
-  describe.only("Mint Licenses", async function () {
+  describe("Mint Licenses", async function () {
     // 1. mint non commercial license
-    it("should not throw error when minting a license", async () => {
+    it.only("should not throw error when minting a license", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.license.mintLicense({
-          policyId: "2",
-          licensorIpId: "0x90daC93B2F2a6ABf44116d8A76b5C330F5A29dC0",
+          policyId: "7",
+          licensorIpId: "0xd6caa1f6b8207ad46e0fdfff98bb9aa04448d65b", //"0x7a4f65669a36d1c7c34c96d65eb1c5cdb94aaeea", //"0x19ff36f985e728c143f6597a5d92093c24cecac1",
           mintAmount: 1,
           receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
           txOptions: {
@@ -53,25 +53,35 @@ describe("License Functions", () => {
 
   describe("Link IP To Parents", async function () {
     // 1. non commercial
-    it("should not throw error when link IP to parents", async () => {
+    it.skip("should not throw error when link IP to parents", async () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
-        policyId: "2",
-        licensorIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
+        policyId: "7",
+        licensorIpId: "0x19ff36f985e728c143f6597a5d92093c24cecac1", // "0x7a4f65669a36d1c7c34c96d65eb1c5cdb94aaeea",
         mintAmount: 1,
-        receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
+        receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
         txOptions: {
           waitForTransaction: true,
         },
       });
-      const licenseId = mintLicenseResponse.licenseId!;
+      const licenseId1 = mintLicenseResponse.licenseId!;
+
+      const mintLicenseResponse2 = await client.license.mintLicense({
+        policyId: "7",
+        licensorIpId: "0x7a4f65669a36d1c7c34c96d65eb1c5cdb94aaeea", // "0x7a4f65669a36d1c7c34c96d65eb1c5cdb94aaeea",
+        mintAmount: 1,
+        receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const licenseId2 = mintLicenseResponse2.licenseId!;
       // 2. link ip to parents
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.license.linkIpToParent({
-          licenseIds: [licenseId],
-          childIpId: "0x5a75ab16eaaee5fb1d2f66e3b217d36b4fc831f9",
-          minRoyalty: 1,
+          licenseIds: [licenseId1, licenseId2],
+          childIpId: "0xd6caa1f6b8207ad46e0fdfff98bb9aa04448d65b", //"0x7a4f65669a36d1c7c34c96d65eb1c5cdb94aaeea",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

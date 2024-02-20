@@ -1,5 +1,4 @@
 export { StoryClient } from "./client";
-export { PlatformClient } from "./utils/platform";
 export { AddressZero, HashZero } from "./constants/common";
 
 export { IPAssetClient } from "./resources/ipAsset";

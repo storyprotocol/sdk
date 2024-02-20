@@ -1,9 +1,9 @@
 import { PublicClient, WalletClient, getAddress } from "viem";
-import { AxiosInstance } from "axios";
 
 import { handleError } from "../utils/errors";
 import { HashZero } from "../constants/common";
 import { IPAssetRegistryConfig, RegistrationModuleConfig } from "../abi/config";
+import { StoryAPIClient } from "../clients/storyAPI";
 import {
   RegisterDerivativeIpRequest,
   RegisterDerivativeIpResponse,
@@ -15,14 +15,14 @@ import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 export class IPAssetClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  private readonly httpClient: AxiosInstance;
+  private readonly storyClient: StoryAPIClient;
   public ipAssetRegistryConfig = IPAssetRegistryConfig;
   public registrationModuleConfig = RegistrationModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, httpClient: AxiosInstance) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, storyClient: StoryAPIClient) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
-    this.httpClient = httpClient;
+    this.storyClient = storyClient;
   }
 
   /**

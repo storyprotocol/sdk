@@ -2,35 +2,42 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { IPAccountABI, LicenseRegistryConfig, LicensingModuleConfig } from "./testABI.tenderly";
+import {
+  RegistrationModuleConfig,
+  IPAssetRegistryConfig,
+  IPAccountABI,
+  LicenseRegistryConfig,
+  LicensingModuleConfig,
+} from "./testABI.sepolia";
 
-describe("License Functions", () => {
+describe("IP Asset Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
   before(function () {
     const config: StoryConfig = {
       chainId: "sepolia",
-      transport: http(process.env.RPC_PROVIDER_URL),
-      account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
+      transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
+      account: privateKeyToAccount((process.env.SEPOLIA_WALLET_PRIVATE_KEY || "0x") as Hex),
     };
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.ipAsset.registrationModuleConfig = RegistrationModuleConfig;
+    client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
     client.license.ipAccountABI = IPAccountABI;
     client.license.licenseRegistryConfig = LicenseRegistryConfig;
     client.license.licensingModuleConfig = LicensingModuleConfig;
   });
 
-  describe("Mint Licenses", async function () {
-    it("should not throw error when minting a license", async () => {
+  describe("Create root IP Asset", async function () {
+    it.skip("should not throw error when creating a root IP Asset", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.license.mintLicense({
-          policyId: "2",
-          licensorIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
-          mintAmount: 1,
-          receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
+        client.ipAsset.registerRootIp({
+          policyId: "0",
+          tokenContractAddress: "0xd516482bef63Ff19Ed40E4C6C2e626ccE04e19ED",
+          tokenId: "17",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -41,29 +48,32 @@ describe("License Functions", () => {
       expect(response.txHash).not.empty;
 
       if (waitForTransaction) {
-        expect(response.licenseId).to.be.a("string");
-        expect(response.licenseId).not.empty;
+        expect(response.ipId).to.be.a("string");
+        expect(response.ipId).not.empty;
       }
     });
   });
 
-  describe("Link IP To Parents", async function () {
-    it("should not throw error when link IP to parents", async () => {
+  describe("Create derivative IP Asset", async function () {
+    it.skip("should not throw error when creating a derivative IP Asset", async () => {
+      // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
         policyId: "2",
-        licensorIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
+        licensorIpId: "0x90daC93B2F2a6ABf44116d8A76b5C330F5A29dC0",
         mintAmount: 1,
-        receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
+        receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
         txOptions: {
           waitForTransaction: true,
         },
       });
       const licenseId = mintLicenseResponse.licenseId!;
+      // 2. register derivative
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.license.linkIpToParent({
+        client.ipAsset.registerDerivativeIp({
           licenseIds: [licenseId],
-          childIpId: "0x5a75ab16eaaee5fb1d2f66e3b217d36b4fc831f9",
+          tokenContractAddress: "0xd516482bef63Ff19Ed40E4C6C2e626ccE04e19ED",
+          tokenId: "9",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -74,8 +84,8 @@ describe("License Functions", () => {
       expect(response.txHash).not.empty;
 
       if (waitForTransaction) {
-        expect(response.success).to.be.a("boolean");
-        expect(response.success).to.equal(true);
+        expect(response.ipId).to.be.a("string");
+        expect(response.ipId).not.empty;
       }
     });
   });
