@@ -100,24 +100,26 @@ export class LicenseClient {
         const royaltyPolicy = await this.storyClient.getRoyaltyPolicy(licenseData.licensorIpId);
         const policy = await this.storyClient.getPolicy(licenseData.policyId);
 
-        const targetRoyaltyAmount = royaltyPolicy.targetRoyaltyAmount.map((e) => parseInt(e));
-        if (i === 0) {
-          royaltyContext.parentAncestors1 = royaltyPolicy.targetAncestors;
-          royaltyContext.parentAncestorsRoyalties1 = targetRoyaltyAmount;
-        } else {
-          royaltyContext.parentAncestors2 = royaltyPolicy.targetAncestors;
-          royaltyContext.parentAncestorsRoyalties2 = targetRoyaltyAmount;
+        if (royaltyPolicy) {
+          const targetRoyaltyAmount = royaltyPolicy.targetRoyaltyAmount.map((e) => parseInt(e));
+          if (i === 0) {
+            royaltyContext.parentAncestors1 = royaltyPolicy.targetAncestors;
+            royaltyContext.parentAncestorsRoyalties1 = targetRoyaltyAmount;
+          } else {
+            royaltyContext.parentAncestors2 = royaltyPolicy.targetAncestors;
+            royaltyContext.parentAncestorsRoyalties2 = targetRoyaltyAmount;
+          }
+          this._updateRoyaltyContext(
+            royaltyContext,
+            [licenseData.licensorIpId],
+            [parseInt(policy.pil.commercialRevShare)],
+          );
+          this._updateRoyaltyContext(
+            royaltyContext,
+            royaltyPolicy.targetAncestors,
+            targetRoyaltyAmount,
+          );
         }
-        this._updateRoyaltyContext(
-          royaltyContext,
-          [licenseData.licensorIpId],
-          [parseInt(policy.pil.commercialRevShare)],
-        );
-        this._updateRoyaltyContext(
-          royaltyContext,
-          royaltyPolicy.targetAncestors,
-          targetRoyaltyAmount,
-        );
       }
 
       const IPAccountConfig = {

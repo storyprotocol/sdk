@@ -39,7 +39,8 @@ describe("Test Policy Functions", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILPolicy({
-          transferable: false,
+          transferable: true,
+          territories: ["US"],
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -64,6 +65,8 @@ describe("Test Policy Functions", () => {
           derivativesAllowed: true,
           derivativesAttribution: true,
           derivativesReciprocal: true,
+          territories: ["US"],
+          distributionChannels: ["Book"],
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -84,14 +87,14 @@ describe("Test Policy Functions", () => {
       const response = await expect(
         client.policy.registerPILPolicy({
           transferable: true,
-          mintingFeeToken: "0xd53c2a80d24f6b3ff009e48cf88d3b482e8e1457",
-          mintingFee: "1000000000000000000",
           royaltyPolicy: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
-          commercialRevShare: 200,
+          commercialRevShare: 300,
           attribution: true,
           commercialUse: true,
           commercialAttribution: true,
           derivativesAllowed: true,
+          derivativesReciprocal: true,
+          territories: ["US"],
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -161,7 +164,7 @@ describe("Test Policy Functions", () => {
       const response = await expect(
         client.policy.addPolicyToIp({
           ipId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
-          policyId: "3",
+          policyId: "5",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

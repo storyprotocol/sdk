@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig } from "../../src";
+import { StoryClient, StoryConfig } from "../../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
@@ -25,7 +25,7 @@ describe("Test Policy Functions", () => {
     client.policy.licensingModuleConfig = LicensingModuleConfig;
     client.policy.pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
   });
-  // 0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431
+
   describe("Register PIL Policy", async function () {
     it.skip("should not throw error when registering PIL Policy with everything turned off", async () => {
       const waitForTransaction: boolean = true;

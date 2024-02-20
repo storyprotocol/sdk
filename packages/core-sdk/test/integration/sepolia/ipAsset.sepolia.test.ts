@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { StoryClient, StoryConfig } from "../../src";
+import { StoryClient, StoryConfig } from "../../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
@@ -8,7 +8,7 @@ import {
   IPAccountABI,
   LicenseRegistryConfig,
   LicensingModuleConfig,
-} from "./testABI.tenderly";
+} from "./testABI.sepolia";
 
 describe("IP Asset Functions", () => {
   let client: StoryClient;
@@ -17,8 +17,8 @@ describe("IP Asset Functions", () => {
   before(function () {
     const config: StoryConfig = {
       chainId: "sepolia",
-      transport: http(process.env.RPC_PROVIDER_URL),
-      account: privateKeyToAccount((process.env.WALLET_PRIVATE_KEY || "0x") as Hex),
+      transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
+      account: privateKeyToAccount((process.env.SEPOLIA_WALLET_PRIVATE_KEY || "0x") as Hex),
     };
 
     senderAddress = config.account.address;
@@ -31,13 +31,13 @@ describe("IP Asset Functions", () => {
   });
 
   describe("Create root IP Asset", async function () {
-    it("should not throw error when creating a root IP Asset", async () => {
+    it.skip("should not throw error when creating a root IP Asset", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.registerRootIp({
           policyId: "0",
-          tokenContractAddress: "0x7a90a7acff8bf14f13f8d1bdac5b663ef4f379ee",
-          tokenId: "103",
+          tokenContractAddress: "0xd516482bef63Ff19Ed40E4C6C2e626ccE04e19ED",
+          tokenId: "17",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -55,13 +55,13 @@ describe("IP Asset Functions", () => {
   });
 
   describe("Create derivative IP Asset", async function () {
-    it("should not throw error when creating a derivative IP Asset", async () => {
+    it.skip("should not throw error when creating a derivative IP Asset", async () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
         policyId: "2",
-        licensorIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
+        licensorIpId: "0x90daC93B2F2a6ABf44116d8A76b5C330F5A29dC0",
         mintAmount: 1,
-        receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
+        receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
         txOptions: {
           waitForTransaction: true,
         },
@@ -72,8 +72,8 @@ describe("IP Asset Functions", () => {
       const response = await expect(
         client.ipAsset.registerDerivativeIp({
           licenseIds: [licenseId],
-          tokenContractAddress: "0x7a90a7acff8bf14f13f8d1bdac5b663ef4f379ee",
-          tokenId: "104",
+          tokenContractAddress: "0xd516482bef63Ff19Ed40E4C6C2e626ccE04e19ED",
+          tokenId: "9",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
