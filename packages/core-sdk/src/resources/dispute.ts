@@ -49,6 +49,7 @@ export class DisputeClient {
           stringToHex(request.targetTag, { size: 32 }),
           request.calldata || "0x",
         ],
+        account: this.wallet.account,
       });
 
       const txHash = await this.wallet.writeContract(call);
@@ -87,6 +88,7 @@ export class DisputeClient {
         ...this.disputeModuleConfig,
         functionName: "cancelDispute",
         args: [BigInt(request.disputeId), request.calldata ? request.calldata : "0x"],
+        account: this.wallet.account,
       });
 
       const txHash = await this.wallet.writeContract(call);
@@ -116,6 +118,7 @@ export class DisputeClient {
         ...this.disputeModuleConfig,
         functionName: "resolveDispute",
         args: [BigInt(request.disputeId)],
+        account: this.wallet.account,
       });
 
       const txHash = await this.wallet.writeContract(call);
