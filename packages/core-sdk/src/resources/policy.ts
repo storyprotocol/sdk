@@ -1,11 +1,15 @@
-import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
+import { PublicClient, WalletClient, encodeFunctionData, getAddress, zeroAddress } from "viem";
 
 import { handleError } from "../utils/errors";
-import { IPAccountABI, LicensingModuleConfig } from "../abi/config";
+import {
+  IPAccountABI,
+  LicensingModuleConfig,
+  PILPolicyFrameworkManagerConfig,
+} from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import {
-  RegisterPolicyRequest,
-  RegisterPolicyResponse,
+  RegisterPILPolicyRequest,
+  RegisterPILPolicyResponse,
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
 } from "../types/resources/policy";
@@ -13,6 +17,9 @@ import {
 export class PolicyClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  public ipAccountABI = IPAccountABI;
+  public licensingModuleConfig = LicensingModuleConfig;
+  public pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
@@ -20,24 +27,62 @@ export class PolicyClient {
   }
 
   /**
-   * Create a policy on Story Protocol based on the specified params.
-   *
-   * @param request - the request object that contains all data needed to register a policy.
-   * @returns the response object that contains results from the policy creation.
+   * Registers a PIL policy to the registry
+   * Internally, this function must generate a Licensing.Policy struct and call registerPolicy.
+   * @param request - the licensing parameters for the Programmable IP License v1 (PIL) standard.
+   *   @param request.transferable Whether or not the license is transferable
+   *   @param request.attribution Whether or not attribution is required when reproducing the work
+   *   @param request.commercialUse Whether or not the work can be used commercially
+   *   @param request.commercialAttribution Whether or not attribution is required when reproducing the work commercially
+   *   @param request.commercializerChecker commericializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
+   *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor
+   *   @param request.derivativesAllowed Whether or not the licensee can create derivatives of his work
+   *   @param request.derivativesAttribution Whether or not attribution is required for derivatives of the work
+   *   @param request.derivativesApproval Whether or not the licensor must approve derivatives of the work before they can be linked to the licensor IP ID
+   *   @param request.derivativesReciprocal Whether or not the licensee must license derivatives of the work under the same terms.
+   *   @param request.territories List of territories where the license is valid. If empty, global.
+   *   @param request.distributionChannels List of distribution channels where the license is valid. Empty if no restrictions.
+   *   @param request.royaltyPolicy Address of a royalty policy contract (e.g. RoyaltyPolicyLS) that will handle royalty payments
+   * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
    */
-  public async createPolicy(request: RegisterPolicyRequest): Promise<RegisterPolicyResponse> {
+  public async registerPILPolicy(
+    request: RegisterPILPolicyRequest,
+  ): Promise<RegisterPILPolicyResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...LicensingModuleConfig,
+        ...this.pilPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
-        args: [request.transferable, request.data],
+        args: [
+          {
+            transferable: request.transferable,
+            royaltyPolicy: request.royaltyPolicy || zeroAddress,
+            mintingFee: parseToBigInt(request.mintingFee || 0),
+            mintingFeeToken: request.mintingFeeToken || zeroAddress,
+            policy: {
+              attribution: request.attribution || false,
+              commercialUse: request.commercialUse || false,
+              commercialAttribution: request.commercialAttribution || false,
+              commercialRevShare: request.commercialRevShare || 0,
+              derivativesAllowed: request.derivativesAllowed || false,
+              derivativesAttribution: request.commercialAttribution || false,
+              derivativesApproval: request.derivativesApproval || false,
+              derivativesReciprocal: request.derivativesReciprocal || false,
+              commercializerChecker: request.commercializerChecker || zeroAddress,
+              commercializerCheckerData: (request.commercializerCheckerData ||
+                "0x") as `0x${string}`,
+              territories: request.territories || [],
+              distributionChannels: request.distributionChannels || [],
+              contentRestrictions: request.contentRestrictions || [],
+            },
+          },
+        ],
+        account: this.wallet.account,
       });
-
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
         const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicensingModuleConfig,
+          ...this.licensingModuleConfig,
           eventName: "PolicyRegistered",
         });
         return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
@@ -45,14 +90,21 @@ export class PolicyClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register derivative IP");
+      handleError(error, "Failed to register policy");
     }
   }
 
+  /**
+   * Adds a policy to the set of policies of an IP
+   * @param request The request object containing details to add a policy to an IP
+   *   @param request.ipId The id of the IP
+   *   @param request.polId The id of the policy
+   * @return the transaction hash and the index of the policy in the IP's policy set if the txOptions.waitForTransaction is set to true
+   */
   public async addPolicyToIp(request: AddPolicyToIpRequest): Promise<AddPolicyToIpResponse> {
     try {
       const IPAccountConfig = {
-        abi: IPAccountABI,
+        abi: this.ipAccountABI,
         address: getAddress(request.ipId),
       };
 
@@ -60,25 +112,24 @@ export class PolicyClient {
         ...IPAccountConfig,
         functionName: "execute",
         args: [
-          LicensingModuleConfig.address,
+          this.licensingModuleConfig.address,
           parseToBigInt(0),
           encodeFunctionData({
-            abi: LicensingModuleConfig.abi,
+            abi: this.licensingModuleConfig.abi,
             functionName: "addPolicyToIp",
             args: [getAddress(request.ipId), parseToBigInt(request.policyId)],
           }),
         ],
         account: this.wallet.account,
       });
-
       const txHash = await this.wallet.writeContract(call);
       // TODO: the emit event doesn't return anything
       if (request.txOptions?.waitForTransaction) {
-        await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicensingModuleConfig,
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licensingModuleConfig,
           eventName: "PolicyAddedToIpId",
         });
-        return { txHash: txHash };
+        return { txHash: txHash, index: targetLog.args.index.toString() };
       } else {
         return { txHash: txHash };
       }

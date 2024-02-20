@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { IPAccountABI, AccessControllerConfig } from "./testABI";
 
 describe("Permission Functions", () => {
   let client: StoryClient;
@@ -16,18 +17,18 @@ describe("Permission Functions", () => {
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.permission.ipAccountABI = IPAccountABI;
+    client.permission.accessControllerConfig = AccessControllerConfig;
   });
 
   describe("Set Permission", async function () {
-    it.skip("should not throw error when setting permission", async () => {
-      const waitForTransaction: boolean = false;
-
-      // TODO: this test is failing because only the IPAccount/IPAsset owner can set permission for the IPAccount. (wrong wallet)
+    it("should not throw error when setting permission", async () => {
+      const waitForTransaction: boolean = true;
       const response = await expect(
         client.permission.setPermission({
-          ipAsset: "0x0F710802c59255110874c58d9051e545f6e75D96",
-          signer: "0x9A3A5EdDDFEe1E3A1BBef6Fdf0850B10D4979405",
-          to: "0x32f0471E404096B978248d0ECE3A8998D87a4b67",
+          ipId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
+          signer: process.env.TEST_WALLET_ADDRESS as `0x${string}`,
+          to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
           func: "0x00000000",
           permission: 1,
           txOptions: {
@@ -38,6 +39,11 @@ describe("Permission Functions", () => {
 
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
+
+      if (waitForTransaction) {
+        expect(response.success).to.be.a("boolean");
+        expect(response.success).to.equal(true);
+      }
     });
   });
 });

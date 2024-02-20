@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, http, PublicClient, WalletClient } from "viem";
+import { createPublicClient, createWalletClient, PublicClient, WalletClient } from "viem";
 import axios, { AxiosInstance } from "axios";
 import * as dotenv from "dotenv";
 
@@ -37,6 +37,11 @@ export class StoryClient {
    */
   private constructor(config: StoryConfig) {
     this.config = config;
+    if (!this.config.transport) {
+      throw new Error(
+        "transport is null, please pass in a valid RPC Provider URL as the transport.",
+      );
+    }
 
     this.httpClient = axios.create({
       baseURL: "https://stag.api.storyprotocol.net",
@@ -48,7 +53,7 @@ export class StoryClient {
 
     const clientConfig = {
       chain: chainStringToViemChain(this.config.chainId || "sepolia"),
-      transport: this.config.transport || http(process.env.RPC_PROVIDER_URL),
+      transport: this.config.transport,
     };
 
     this.rpcClient = createPublicClient(clientConfig);

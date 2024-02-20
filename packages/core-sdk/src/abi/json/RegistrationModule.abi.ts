@@ -32,9 +32,9 @@ export default [
         type: "string",
       },
       {
-        internalType: "uint32",
-        name: "minRoyalty",
-        type: "uint32",
+        internalType: "bytes",
+        name: "royaltyContext",
+        type: "bytes",
       },
     ],
     name: "registerDerivativeIp",

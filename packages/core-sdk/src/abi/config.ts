@@ -1,63 +1,58 @@
 import { getAddress } from "viem";
-import * as dotenv from "dotenv";
 
+import IERC1155ABI from "./json/IERC1155.abi";
 import AccessControllerABI from "./json/AccessController.abi";
 import DisputeModuleABI from "./json/DisputeModule.abi";
 import IPAccountImplABI from "./json/IPAccountImpl.abi";
 import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
-import LicenseRegistryABI from "./json/LicenseRegistry.abi";
 import LicensingModuleABI from "./json/LicensingModule.abi";
+import PILPolicyFrameworkManagerABI from "./json/PILPolicyFrameworkManager.abi";
 import RegistrationModuleABI from "./json/RegistrationModule.abi";
 import TaggingModuleABI from "./json/TaggingModule.abi";
 import ErrorsABI from "./json/Errors.abi";
-
-if (typeof process !== "undefined") {
-  dotenv.config();
-}
+import { sepolia } from "../utils/env";
 
 export const IPAccountABI = [...IPAccountImplABI, ...ErrorsABI];
 
 export const IPAssetRegistryConfig = {
   abi: IPAssetRegistryABI,
-  address: getAddress(
-    process.env.IP_ASSET_REGISTRY || process.env.NEXT_PUBLIC_IP_ASSET_REGISTRY || "",
-  ),
+  address: getAddress(sepolia.IPAssetRegistry),
 };
 
 export const AccessControllerConfig = {
-  abi: AccessControllerABI,
-  address: getAddress(
-    process.env.ACCESS_CONTROLLER || process.env.NEXT_PUBLIC_ACCESS_CONTROLLER || "",
-  ),
+  abi: [...AccessControllerABI, ...ErrorsABI],
+  address: getAddress(sepolia.AccessController),
 };
 
 export const DisputeModuleConfig = {
-  abi: DisputeModuleABI,
-  address: getAddress(process.env.DISPUTE_MODULE || process.env.NEXT_PUBLIC_DISPUTE_MODULE || ""),
+  abi: [...DisputeModuleABI, ...ErrorsABI],
+  address: getAddress(sepolia.DisputeModule),
 };
 
 export const LicenseRegistryConfig = {
-  abi: LicenseRegistryABI,
-  address: getAddress(
-    process.env.LICENSE_REGISTRY || process.env.NEXT_PUBLIC_LICENSE_REGISTRY || "",
-  ),
+  abi: IERC1155ABI,
+  address: getAddress(sepolia.LicenseRegistry),
 };
 
 export const LicensingModuleConfig = {
   abi: LicensingModuleABI,
-  address: getAddress(
-    process.env.LICENSING_MODULE || process.env.NEXT_PUBLIC_LICENSING_MODULE || "",
-  ),
+  //abi: [...LicensingModuleABI, ...ErrorsABI],
+  address: getAddress(sepolia.LicensingModule),
 };
 
 export const RegistrationModuleConfig = {
   abi: RegistrationModuleABI,
-  address: getAddress(
-    process.env.REGISTRATION_MODULE || process.env.NEXT_PUBLIC_REGISTRATION_MODULE || "",
-  ),
+  //abi: [...RegistrationModuleABI, ...ErrorsABI],
+  address: getAddress(sepolia.RegistrationModule),
 };
 
 export const TaggingModuleConfig = {
-  abi: TaggingModuleABI,
-  address: getAddress(process.env.TAGGING_MODULE || process.env.NEXT_PUBLIC_TAGGING_MODULE || ""),
+  abi: [...TaggingModuleABI, ...ErrorsABI],
+  address: getAddress(sepolia.TaggingModule),
+};
+
+export const PILPolicyFrameworkManagerConfig = {
+  abi: PILPolicyFrameworkManagerABI,
+  //abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
+  address: getAddress(sepolia.PILPolicyFrameworkManager),
 };

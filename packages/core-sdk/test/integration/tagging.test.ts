@@ -2,8 +2,9 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { TaggingModuleConfig } from "./testABI";
 
-describe("Tagging Functions", () => {
+describe("Tagging Functions (integration tests)", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -16,10 +17,11 @@ describe("Tagging Functions", () => {
 
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
+    client.tagging.taggingModuleConfig = TaggingModuleConfig;
   });
 
-  describe("Set Tag", async function () {
-    it("should be able to set tag and wait for transaction", async () => {
+  describe("Should be able to", async function () {
+    it("set tag and wait for transaction", async () => {
       const response = await expect(
         client.tagging.setTag({
           tag: "testTag",
@@ -34,7 +36,7 @@ describe("Tagging Functions", () => {
       expect(response.txHash).not.empty;
     });
 
-    it("should be able to call set tag without waiting for transaction", async () => {
+    it("set tag without waiting for transaction and still receive transaction hash", async () => {
       const response = await expect(
         client.tagging.setTag({
           tag: "testTag",
@@ -63,7 +65,7 @@ describe("Tagging Functions", () => {
       ).to.be.rejected;
     });
 
-    it("should be able to remove tag", async () => {
+    it("remove tag", async () => {
       // Set tag first, then remove it
       const tagString = "bad-tag69";
       const ipId = "0xabCc2421F927c128B9F5a94B612F4541C8E624B6";
