@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RegistrationModule
@@ -11,93 +11,116 @@ import {
 
 export const registrationModuleAbi = [
   {
-    stateMutability: "nonpayable",
-    type: "constructor",
+    type: 'constructor',
     inputs: [
-      { name: "assetRegistry", internalType: "address", type: "address" },
-      { name: "licensingModule", internalType: "address", type: "address" },
-      { name: "resolverAddr", internalType: "address", type: "address" },
+      { name: 'assetRegistry', internalType: 'address', type: 'address' },
+      { name: 'licensingModule', internalType: 'address', type: 'address' },
+      { name: 'resolverAddr', internalType: 'address', type: 'address' },
     ],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "ipResolver",
-    outputs: [{ name: "", internalType: "contract IPResolver", type: "address" }],
+    name: 'ipResolver',
+    outputs: [
+      { name: '', internalType: 'contract IPResolver', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "name",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
+    name: 'name',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "tokenContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "ipName", internalType: "string", type: "string" },
-      { name: "contentHash", internalType: "bytes32", type: "bytes32" },
-      { name: "externalURL", internalType: "string", type: "string" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: 'licenseIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'tokenContract', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: 'ipName', internalType: 'string', type: 'string' },
+      { name: 'contentHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'externalURL', internalType: 'string', type: 'string' },
+      { name: 'royaltyContext', internalType: 'bytes', type: 'bytes' },
     ],
-    name: "registerDerivativeIp",
+    name: 'registerDerivativeIp',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-      { name: "tokenContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "ipName", internalType: "string", type: "string" },
-      { name: "contentHash", internalType: "bytes32", type: "bytes32" },
-      { name: "externalURL", internalType: "string", type: "string" },
+      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+      { name: 'tokenContract', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: 'ipName', internalType: 'string', type: 'string' },
+      { name: 'contentHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'externalURL', internalType: 'string', type: 'string' },
     ],
-    name: "registerRootIp",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    name: 'registerRootIp',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "caller", internalType: "address", type: "address", indexed: true },
-      { name: "ipId", internalType: "address", type: "address", indexed: true },
-      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]", indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'licenseIds',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
     ],
-    name: "DerivativeIPRegistered",
+    name: 'DerivativeIPRegistered',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "caller", internalType: "address", type: "address", indexed: true },
-      { name: "ipId", internalType: "address", type: "address", indexed: true },
-      { name: "policyId", internalType: "uint256", type: "uint256", indexed: true },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'policyId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
     ],
-    name: "RootIPRegistered",
+    name: 'RootIPRegistered',
   },
-  { type: "error", inputs: [], name: "RegistrationModule__InvalidOwner" },
-] as const;
+  { type: 'error', inputs: [], name: 'RegistrationModule__InvalidOwner' },
+] as const
 
-export const registrationModuleAddress = "0x248c8CbF469ec7CB22Dc9914E569920b93d717a3" as const;
+export const registrationModuleAddress =
+  '0x0CECCD03bc3a4E76e44703D5c805B4Dcb97E9F1A' as const
 
 export const registrationModuleConfig = {
   address: registrationModuleAddress,
   abi: registrationModuleAbi,
-} as const;
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -109,7 +132,7 @@ export const registrationModuleConfig = {
 export const useReadRegistrationModule = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"ipResolver"`
@@ -117,26 +140,28 @@ export const useReadRegistrationModule = /*#__PURE__*/ createUseReadContract({
 export const useReadIpResolver = /*#__PURE__*/ createUseReadContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-  functionName: "ipResolver",
-});
+  functionName: 'ipResolver',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"name"`
  */
-export const useReadRegistrationModuleName = /*#__PURE__*/ createUseReadContract({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-  functionName: "name",
-});
+export const useReadRegistrationModuleName =
+  /*#__PURE__*/ createUseReadContract({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+    functionName: 'name',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"supportsInterface"`
  */
-export const useReadRegistrationModuleSupportsInterface = /*#__PURE__*/ createUseReadContract({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-  functionName: "supportsInterface",
-});
+export const useReadRegistrationModuleSupportsInterface =
+  /*#__PURE__*/ createUseReadContract({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+    functionName: 'supportsInterface',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__
@@ -144,7 +169,7 @@ export const useReadRegistrationModuleSupportsInterface = /*#__PURE__*/ createUs
 export const useWriteRegistrationModule = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerDerivativeIp"`
@@ -152,8 +177,8 @@ export const useWriteRegistrationModule = /*#__PURE__*/ createUseWriteContract({
 export const useRegisterDerivativeIp = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-  functionName: "registerDerivativeIp",
-});
+  functionName: 'registerDerivativeIp',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerRootIp"`
@@ -161,57 +186,63 @@ export const useRegisterDerivativeIp = /*#__PURE__*/ createUseWriteContract({
 export const useRegisterRootIp = /*#__PURE__*/ createUseWriteContract({
   abi: registrationModuleAbi,
   address: registrationModuleAddress,
-  functionName: "registerRootIp",
-});
+  functionName: 'registerRootIp',
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__
  */
-export const useSimulateRegistrationModule = /*#__PURE__*/ createUseSimulateContract({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-});
+export const useSimulateRegistrationModule =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerDerivativeIp"`
  */
-export const useSimulateRegisterDerivativeIp = /*#__PURE__*/ createUseSimulateContract({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-  functionName: "registerDerivativeIp",
-});
+export const useSimulateRegisterDerivativeIp =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+    functionName: 'registerDerivativeIp',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registrationModuleAbi}__ and `functionName` set to `"registerRootIp"`
  */
-export const useSimulateRegisterRootIp = /*#__PURE__*/ createUseSimulateContract({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-  functionName: "registerRootIp",
-});
+export const useSimulateRegisterRootIp =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+    functionName: 'registerRootIp',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__
  */
-export const useWatchRegistrationModule = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-});
+export const useWatchRegistrationModule =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__ and `eventName` set to `"DerivativeIPRegistered"`
  */
-export const useWatchDerivativeIpRegistered = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-  eventName: "DerivativeIPRegistered",
-});
+export const useWatchDerivativeIpRegistered =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+    eventName: 'DerivativeIPRegistered',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registrationModuleAbi}__ and `eventName` set to `"RootIPRegistered"`
  */
-export const useWatchRootIpRegistered = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: registrationModuleAbi,
-  address: registrationModuleAddress,
-  eventName: "RootIPRegistered",
-});
+export const useWatchRootIpRegistered =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: registrationModuleAbi,
+    address: registrationModuleAddress,
+    eventName: 'RootIPRegistered',
+  })

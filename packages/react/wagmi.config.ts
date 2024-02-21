@@ -66,6 +66,9 @@ const ipAssetRegistryConfig = generateConfig(
   "IpAssetRegistry",
   ipAssetRegistryAbi as Abi,
   contracts.IPAssetRegistry as `0x${string}`,
+  ({ contractName, itemName, type }: GetHookNameProps) => {
+    return defaultWagmiGetHookName({ contractName, itemName, type });
+  },
 );
 
 const licenseRegistryConfig = generateConfig(
@@ -79,7 +82,7 @@ const licensingModuleConfig = generateConfig(
   "licensingModule",
   "LicensingModule",
   licensingModuleAbi as Abi,
-  contracts.LicenseRegistry as `0x${string}`,
+  contracts.LicensingModule as `0x${string}`,
   ({ contractName, itemName, type }: GetHookNameProps) => {
     if (itemName === "LicenseRegistry" || itemName === "DisputeModule") {
       counter = counter + 1;
@@ -130,7 +133,9 @@ const disputeModuleConfig = generateConfig(
   ({ contractName, itemName, type }: GetHookNameProps) => {
     if (
       itemName?.toLowerCase() === "accesscontroller" ||
-      itemName?.toLowerCase() === "ipaccountregistry"
+      itemName?.toLowerCase() === "ipaccountregistry" ||
+      itemName?.toLowerCase() === "ipassetregistry" ||
+      itemName?.toLowerCase() === "setgovernance"
     ) {
       counter = counter + 1;
       return (`use${pascalCase(type)}${contractName}${itemName ? itemName : ""}` +

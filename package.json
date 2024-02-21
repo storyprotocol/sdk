@@ -1,6 +1,6 @@
 {
   "name": "sdk",
-  "version": "0.0.3",
+  "version": "0.0.1-beta.1",
   "private": true,
   "repository": "https://github.com/storyprotocol/sdk",
   "author": "storyprotocol engineering <eng@storyprotocol.xyz>",

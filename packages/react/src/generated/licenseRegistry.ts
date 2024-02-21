@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicenseRegistry
@@ -11,364 +11,441 @@ import {
 
 export const licenseRegistryAbi = [
   {
-    stateMutability: "nonpayable",
-    type: "constructor",
-    inputs: [{ name: "governance", internalType: "address", type: "address" }],
+    type: 'constructor',
+    inputs: [{ name: 'governance', internalType: 'address', type: 'address' }],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "DISPUTE_MODULE",
-    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    name: 'DISPUTE_MODULE',
+    outputs: [
+      { name: '', internalType: 'contract IDisputeModule', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "LICENSING_MODULE",
-    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    name: 'LICENSING_MODULE',
+    outputs: [
+      { name: '', internalType: 'contract ILicensingModule', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "id", internalType: "uint256", type: "uint256" },
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'id', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "balanceOf",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: 'balanceOf',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "accounts", internalType: "address[]", type: "address[]" },
-      { name: "ids", internalType: "uint256[]", type: "uint256[]" },
+      { name: 'accounts', internalType: 'address[]', type: 'address[]' },
+      { name: 'ids', internalType: 'uint256[]', type: 'uint256[]' },
     ],
-    name: "balanceOfBatch",
-    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
+    name: 'balanceOfBatch',
+    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "holder", internalType: "address", type: "address" },
-      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: 'holder', internalType: 'address', type: 'address' },
+      { name: 'licenseIds', internalType: 'uint256[]', type: 'uint256[]' },
     ],
-    name: "burnLicenses",
+    name: 'burnLicenses',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "getGovernance",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    name: 'getGovernance',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "governance",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    name: 'governance',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "operator", internalType: "address", type: "address" },
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'operator', internalType: 'address', type: 'address' },
     ],
-    name: "isApprovedForAll",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    name: 'isApprovedForAll',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "isLicenseRevoked",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    type: 'function',
+    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
+    name: 'isLicenseRevoked',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "licenseId", internalType: "uint256", type: "uint256" },
-      { name: "holder", internalType: "address", type: "address" },
+      { name: 'licenseId', internalType: 'uint256', type: 'uint256' },
+      { name: 'holder', internalType: 'address', type: 'address' },
     ],
-    name: "isLicensee",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    name: 'isLicensee',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "license",
+    type: 'function',
+    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
+    name: 'license',
     outputs: [
       {
-        name: "",
-        internalType: "struct Licensing.License",
-        type: "tuple",
+        name: '',
+        internalType: 'struct Licensing.License',
+        type: 'tuple',
         components: [
-          { name: "policyId", internalType: "uint256", type: "uint256" },
-          { name: "licensorIpId", internalType: "address", type: "address" },
-          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+          { name: 'licensorIpId', internalType: 'address', type: 'address' },
+          { name: 'transferable', internalType: 'bool', type: 'bool' },
         ],
       },
     ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "licensorIpId",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    type: 'function',
+    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
+    name: 'licensorIpId',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-      { name: "licensorIpId_", internalType: "address", type: "address" },
-      { name: "transferable", internalType: "bool", type: "bool" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-      { name: "receiver", internalType: "address", type: "address" },
+      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+      { name: 'licensorIpId_', internalType: 'address', type: 'address' },
+      { name: 'transferable', internalType: 'bool', type: 'bool' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
     ],
-    name: "mintLicense",
-    outputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: 'mintLicense',
+    outputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "mintedLicenses",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: 'mintedLicenses',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "policyIdForLicense",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    type: 'function',
+    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
+    name: 'policyIdForLicense',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "from", internalType: "address", type: "address" },
-      { name: "to", internalType: "address", type: "address" },
-      { name: "ids", internalType: "uint256[]", type: "uint256[]" },
-      { name: "values", internalType: "uint256[]", type: "uint256[]" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'ids', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'values', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
     ],
-    name: "safeBatchTransferFrom",
+    name: 'safeBatchTransferFrom',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "from", internalType: "address", type: "address" },
-      { name: "to", internalType: "address", type: "address" },
-      { name: "id", internalType: "uint256", type: "uint256" },
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'id', internalType: 'uint256', type: 'uint256' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
     ],
-    name: "safeTransferFrom",
+    name: 'safeTransferFrom',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "operator", internalType: "address", type: "address" },
-      { name: "approved", internalType: "bool", type: "bool" },
+      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: 'approved', internalType: 'bool', type: 'bool' },
     ],
-    name: "setApprovalForAll",
+    name: 'setApprovalForAll',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
-    inputs: [{ name: "newDisputeModule", internalType: "address", type: "address" }],
-    name: "setDisputeModule",
+    type: 'function',
+    inputs: [
+      { name: 'newDisputeModule', internalType: 'address', type: 'address' },
+    ],
+    name: 'setDisputeModule',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
-    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
-    name: "setGovernance",
+    type: 'function',
+    inputs: [
+      { name: 'newGovernance', internalType: 'address', type: 'address' },
+    ],
+    name: 'setGovernance',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
-    inputs: [{ name: "newLicensingModule", internalType: "address", type: "address" }],
-    name: "setLicensingModule",
+    type: 'function',
+    inputs: [
+      { name: 'newLicensingModule', internalType: 'address', type: 'address' },
+    ],
+    name: 'setLicensingModule',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "id", internalType: "uint256", type: "uint256" }],
-    name: "uri",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
+    type: 'function',
+    inputs: [{ name: 'id', internalType: 'uint256', type: 'uint256' }],
+    name: 'uri',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "account", internalType: "address", type: "address", indexed: true },
-      { name: "operator", internalType: "address", type: "address", indexed: true },
-      { name: "approved", internalType: "bool", type: "bool", indexed: false },
-    ],
-    name: "ApprovalForAll",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [{ name: "newGovernance", internalType: "address", type: "address", indexed: true }],
-    name: "GovernanceUpdated",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "creator", internalType: "address", type: "address", indexed: true },
-      { name: "receiver", internalType: "address", type: "address", indexed: true },
-      { name: "licenseId", internalType: "uint256", type: "uint256", indexed: true },
-      { name: "amount", internalType: "uint256", type: "uint256", indexed: false },
       {
-        name: "licenseData",
-        internalType: "struct Licensing.License",
-        type: "tuple",
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'operator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'approved', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'ApprovalForAll',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newGovernance',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'GovernanceUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'creator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'licenseId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'licenseData',
+        internalType: 'struct Licensing.License',
+        type: 'tuple',
         components: [
-          { name: "policyId", internalType: "uint256", type: "uint256" },
-          { name: "licensorIpId", internalType: "address", type: "address" },
-          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+          { name: 'licensorIpId', internalType: 'address', type: 'address' },
+          { name: 'transferable', internalType: 'bool', type: 'bool' },
         ],
         indexed: false,
       },
     ],
-    name: "LicenseMinted",
+    name: 'LicenseMinted',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "operator", internalType: "address", type: "address", indexed: true },
-      { name: "from", internalType: "address", type: "address", indexed: true },
-      { name: "to", internalType: "address", type: "address", indexed: true },
-      { name: "ids", internalType: "uint256[]", type: "uint256[]", indexed: false },
-      { name: "values", internalType: "uint256[]", type: "uint256[]", indexed: false },
+      {
+        name: 'operator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'ids',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
+      {
+        name: 'values',
+        internalType: 'uint256[]',
+        type: 'uint256[]',
+        indexed: false,
+      },
     ],
-    name: "TransferBatch",
+    name: 'TransferBatch',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "operator", internalType: "address", type: "address", indexed: true },
-      { name: "from", internalType: "address", type: "address", indexed: true },
-      { name: "to", internalType: "address", type: "address", indexed: true },
-      { name: "id", internalType: "uint256", type: "uint256", indexed: false },
-      { name: "value", internalType: "uint256", type: "uint256", indexed: false },
+      {
+        name: 'operator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: false },
+      {
+        name: 'value',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
     ],
-    name: "TransferSingle",
+    name: 'TransferSingle',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "value", internalType: "string", type: "string", indexed: false },
-      { name: "id", internalType: "uint256", type: "uint256", indexed: true },
+      { name: 'value', internalType: 'string', type: 'string', indexed: false },
+      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
     ],
-    name: "URI",
+    name: 'URI',
   },
   {
-    type: "error",
+    type: 'error',
     inputs: [
-      { name: "sender", internalType: "address", type: "address" },
-      { name: "balance", internalType: "uint256", type: "uint256" },
-      { name: "needed", internalType: "uint256", type: "uint256" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'balance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "ERC1155InsufficientBalance",
+    name: 'ERC1155InsufficientBalance',
   },
   {
-    type: "error",
-    inputs: [{ name: "approver", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidApprover",
+    type: 'error',
+    inputs: [{ name: 'approver', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidApprover',
   },
   {
-    type: "error",
+    type: 'error',
     inputs: [
-      { name: "idsLength", internalType: "uint256", type: "uint256" },
-      { name: "valuesLength", internalType: "uint256", type: "uint256" },
+      { name: 'idsLength', internalType: 'uint256', type: 'uint256' },
+      { name: 'valuesLength', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "ERC1155InvalidArrayLength",
+    name: 'ERC1155InvalidArrayLength',
   },
   {
-    type: "error",
-    inputs: [{ name: "operator", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidOperator",
+    type: 'error',
+    inputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidOperator',
   },
   {
-    type: "error",
-    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidReceiver",
+    type: 'error',
+    inputs: [{ name: 'receiver', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidReceiver',
   },
   {
-    type: "error",
-    inputs: [{ name: "sender", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidSender",
+    type: 'error',
+    inputs: [{ name: 'sender', internalType: 'address', type: 'address' }],
+    name: 'ERC1155InvalidSender',
   },
   {
-    type: "error",
+    type: 'error',
     inputs: [
-      { name: "operator", internalType: "address", type: "address" },
-      { name: "owner", internalType: "address", type: "address" },
+      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: 'owner', internalType: 'address', type: 'address' },
     ],
-    name: "ERC1155MissingApprovalForAll",
+    name: 'ERC1155MissingApprovalForAll',
   },
-  { type: "error", inputs: [], name: "Governance__InconsistentState" },
-  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
+  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
+  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
   {
-    type: "error",
-    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
-    name: "Governance__UnsupportedInterface",
+    type: 'error',
+    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
+    name: 'Governance__UnsupportedInterface',
   },
-  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
-  { type: "error", inputs: [], name: "LicenseRegistry__CallerNotLicensingModule" },
-  { type: "error", inputs: [], name: "LicenseRegistry__NotTransferable" },
-  { type: "error", inputs: [], name: "LicenseRegistry__RevokedLicense" },
-  { type: "error", inputs: [], name: "LicenseRegistry__ZeroDisputeModule" },
-  { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
+  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
   {
-    type: "error",
+    type: 'error',
+    inputs: [],
+    name: 'LicenseRegistry__CallerNotLicensingModule',
+  },
+  { type: 'error', inputs: [], name: 'LicenseRegistry__NotTransferable' },
+  { type: 'error', inputs: [], name: 'LicenseRegistry__RevokedLicense' },
+  { type: 'error', inputs: [], name: 'LicenseRegistry__ZeroDisputeModule' },
+  { type: 'error', inputs: [], name: 'LicenseRegistry__ZeroLicensingModule' },
+  {
+    type: 'error',
     inputs: [
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "length", internalType: "uint256", type: "uint256" },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+      { name: 'length', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "StringsInsufficientHexLength",
+    name: 'StringsInsufficientHexLength',
   },
-] as const;
+] as const
 
-export const licenseRegistryAddress = "0x4D6a54B467332dF675cFa689cb294A4cB9122866" as const;
+export const licenseRegistryAddress =
+  '0x185345750e402b60125792cbE6d82534C8575cF4' as const
 
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
   abi: licenseRegistryAbi,
-} as const;
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -380,7 +457,7 @@ export const licenseRegistryConfig = {
 export const useReadLicenseRegistry = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"DISPUTE_MODULE"`
@@ -388,8 +465,8 @@ export const useReadLicenseRegistry = /*#__PURE__*/ createUseReadContract({
 export const useReadDisputeModule = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "DISPUTE_MODULE",
-});
+  functionName: 'DISPUTE_MODULE',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"LICENSING_MODULE"`
@@ -397,8 +474,8 @@ export const useReadDisputeModule = /*#__PURE__*/ createUseReadContract({
 export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "LICENSING_MODULE",
-});
+  functionName: 'LICENSING_MODULE',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOf"`
@@ -406,8 +483,8 @@ export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
 export const useReadBalanceOf = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "balanceOf",
-});
+  functionName: 'balanceOf',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"balanceOfBatch"`
@@ -415,8 +492,8 @@ export const useReadBalanceOf = /*#__PURE__*/ createUseReadContract({
 export const useReadBalanceOfBatch = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "balanceOfBatch",
-});
+  functionName: 'balanceOfBatch',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"getGovernance"`
@@ -424,8 +501,8 @@ export const useReadBalanceOfBatch = /*#__PURE__*/ createUseReadContract({
 export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "getGovernance",
-});
+  functionName: 'getGovernance',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"governance"`
@@ -433,8 +510,8 @@ export const useReadGetGovernance = /*#__PURE__*/ createUseReadContract({
 export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "governance",
-});
+  functionName: 'governance',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isApprovedForAll"`
@@ -442,8 +519,8 @@ export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
 export const useReadIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "isApprovedForAll",
-});
+  functionName: 'isApprovedForAll',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isLicenseRevoked"`
@@ -451,8 +528,8 @@ export const useReadIsApprovedForAll = /*#__PURE__*/ createUseReadContract({
 export const useReadIsLicenseRevoked = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "isLicenseRevoked",
-});
+  functionName: 'isLicenseRevoked',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"isLicensee"`
@@ -460,8 +537,8 @@ export const useReadIsLicenseRevoked = /*#__PURE__*/ createUseReadContract({
 export const useReadIsLicensee = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "isLicensee",
-});
+  functionName: 'isLicensee',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"license"`
@@ -469,8 +546,8 @@ export const useReadIsLicensee = /*#__PURE__*/ createUseReadContract({
 export const useReadLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "license",
-});
+  functionName: 'license',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"licensorIpId"`
@@ -478,8 +555,8 @@ export const useReadLicense = /*#__PURE__*/ createUseReadContract({
 export const useReadLicensorIpId = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "licensorIpId",
-});
+  functionName: 'licensorIpId',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintedLicenses"`
@@ -487,8 +564,8 @@ export const useReadLicensorIpId = /*#__PURE__*/ createUseReadContract({
 export const useReadMintedLicenses = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "mintedLicenses",
-});
+  functionName: 'mintedLicenses',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"policyIdForLicense"`
@@ -496,17 +573,18 @@ export const useReadMintedLicenses = /*#__PURE__*/ createUseReadContract({
 export const useReadPolicyIdForLicense = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "policyIdForLicense",
-});
+  functionName: 'policyIdForLicense',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"supportsInterface"`
  */
-export const useReadLicenseRegistrySupportsInterface = /*#__PURE__*/ createUseReadContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "supportsInterface",
-});
+export const useReadLicenseRegistrySupportsInterface =
+  /*#__PURE__*/ createUseReadContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'supportsInterface',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"uri"`
@@ -514,8 +592,8 @@ export const useReadLicenseRegistrySupportsInterface = /*#__PURE__*/ createUseRe
 export const useReadUri = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "uri",
-});
+  functionName: 'uri',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__
@@ -523,7 +601,7 @@ export const useReadUri = /*#__PURE__*/ createUseReadContract({
 export const useWriteLicenseRegistry = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
@@ -531,8 +609,8 @@ export const useWriteLicenseRegistry = /*#__PURE__*/ createUseWriteContract({
 export const useBurnLicenses = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "burnLicenses",
-});
+  functionName: 'burnLicenses',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
@@ -540,8 +618,8 @@ export const useBurnLicenses = /*#__PURE__*/ createUseWriteContract({
 export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "mintLicense",
-});
+  functionName: 'mintLicense',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
@@ -549,8 +627,8 @@ export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
 export const useSafeBatchTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "safeBatchTransferFrom",
-});
+  functionName: 'safeBatchTransferFrom',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
@@ -558,8 +636,8 @@ export const useSafeBatchTransferFrom = /*#__PURE__*/ createUseWriteContract({
 export const useSafeTransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "safeTransferFrom",
-});
+  functionName: 'safeTransferFrom',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
@@ -567,8 +645,8 @@ export const useSafeTransferFrom = /*#__PURE__*/ createUseWriteContract({
 export const useSetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "setApprovalForAll",
-});
+  functionName: 'setApprovalForAll',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setDisputeModule"`
@@ -576,8 +654,8 @@ export const useSetApprovalForAll = /*#__PURE__*/ createUseWriteContract({
 export const useSetDisputeModule = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "setDisputeModule",
-});
+  functionName: 'setDisputeModule',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setGovernance"`
@@ -585,8 +663,8 @@ export const useSetDisputeModule = /*#__PURE__*/ createUseWriteContract({
 export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "setGovernance",
-});
+  functionName: 'setGovernance',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
@@ -594,16 +672,17 @@ export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
 export const useSetLicensingModule = /*#__PURE__*/ createUseWriteContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "setLicensingModule",
-});
+  functionName: 'setLicensingModule',
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__
  */
-export const useSimulateLicenseRegistry = /*#__PURE__*/ createUseSimulateContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-});
+export const useSimulateLicenseRegistry =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"burnLicenses"`
@@ -611,8 +690,8 @@ export const useSimulateLicenseRegistry = /*#__PURE__*/ createUseSimulateContrac
 export const useSimulateBurnLicenses = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "burnLicenses",
-});
+  functionName: 'burnLicenses',
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"mintLicense"`
@@ -620,88 +699,99 @@ export const useSimulateBurnLicenses = /*#__PURE__*/ createUseSimulateContract({
 export const useSimulateMintLicense = /*#__PURE__*/ createUseSimulateContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  functionName: "mintLicense",
-});
+  functionName: 'mintLicense',
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeBatchTransferFrom"`
  */
-export const useSimulateSafeBatchTransferFrom = /*#__PURE__*/ createUseSimulateContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "safeBatchTransferFrom",
-});
+export const useSimulateSafeBatchTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'safeBatchTransferFrom',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"safeTransferFrom"`
  */
-export const useSimulateSafeTransferFrom = /*#__PURE__*/ createUseSimulateContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "safeTransferFrom",
-});
+export const useSimulateSafeTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'safeTransferFrom',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setApprovalForAll"`
  */
-export const useSimulateSetApprovalForAll = /*#__PURE__*/ createUseSimulateContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "setApprovalForAll",
-});
+export const useSimulateSetApprovalForAll =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'setApprovalForAll',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setDisputeModule"`
  */
-export const useSimulateSetDisputeModule = /*#__PURE__*/ createUseSimulateContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "setDisputeModule",
-});
+export const useSimulateSetDisputeModule =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'setDisputeModule',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setGovernance"`
  */
-export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "setGovernance",
-});
+export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract(
+  {
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'setGovernance',
+  },
+)
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
  */
-export const useSimulateSetLicensingModule = /*#__PURE__*/ createUseSimulateContract({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  functionName: "setLicensingModule",
-});
+export const useSimulateSetLicensingModule =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'setLicensingModule',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__
  */
-export const useWatchLicenseRegistry = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-});
+export const useWatchLicenseRegistry =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"ApprovalForAll"`
  */
-export const useWatchApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  eventName: "ApprovalForAll",
-});
+export const useWatchApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent(
+  {
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    eventName: 'ApprovalForAll',
+  },
+)
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"GovernanceUpdated"`
  */
-export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  eventName: "GovernanceUpdated",
-});
+export const useWatchGovernanceUpdated =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    eventName: 'GovernanceUpdated',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"LicenseMinted"`
@@ -709,8 +799,8 @@ export const useWatchGovernanceUpdated = /*#__PURE__*/ createUseWatchContractEve
 export const useWatchLicenseMinted = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  eventName: "LicenseMinted",
-});
+  eventName: 'LicenseMinted',
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferBatch"`
@@ -718,17 +808,19 @@ export const useWatchLicenseMinted = /*#__PURE__*/ createUseWatchContractEvent({
 export const useWatchTransferBatch = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  eventName: "TransferBatch",
-});
+  eventName: 'TransferBatch',
+})
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"TransferSingle"`
  */
-export const useWatchTransferSingle = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licenseRegistryAbi,
-  address: licenseRegistryAddress,
-  eventName: "TransferSingle",
-});
+export const useWatchTransferSingle = /*#__PURE__*/ createUseWatchContractEvent(
+  {
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    eventName: 'TransferSingle',
+  },
+)
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"URI"`
@@ -736,5 +828,5 @@ export const useWatchTransferSingle = /*#__PURE__*/ createUseWatchContractEvent(
 export const useWatchUri = /*#__PURE__*/ createUseWatchContractEvent({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
-  eventName: "URI",
-});
+  eventName: 'URI',
+})

@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from "wagmi/codegen";
+} from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicensingModule
@@ -11,398 +11,534 @@ import {
 
 export const licensingModuleAbi = [
   {
-    stateMutability: "nonpayable",
-    type: "constructor",
+    type: 'constructor',
     inputs: [
-      { name: "accessController", internalType: "address", type: "address" },
-      { name: "ipAccountRegistry", internalType: "address", type: "address" },
-      { name: "royaltyModule", internalType: "address", type: "address" },
-      { name: "registry", internalType: "address", type: "address" },
-      { name: "disputeModule", internalType: "address", type: "address" },
+      { name: 'accessController', internalType: 'address', type: 'address' },
+      { name: 'ipAccountRegistry', internalType: 'address', type: 'address' },
+      { name: 'royaltyModule', internalType: 'address', type: 'address' },
+      { name: 'registry', internalType: 'address', type: 'address' },
+      { name: 'disputeModule', internalType: 'address', type: 'address' },
     ],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "ACCESS_CONTROLLER",
-    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    name: 'ACCESS_CONTROLLER',
+    outputs: [
+      { name: '', internalType: 'contract IAccessController', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "DISPUTE_MODULE",
-    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    name: 'DISPUTE_MODULE',
+    outputs: [
+      { name: '', internalType: 'contract IDisputeModule', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [{ name: "", internalType: "contract IIPAccountRegistry", type: "address" }],
+    name: 'IP_ACCOUNT_REGISTRY',
+    outputs: [
+      {
+        name: '',
+        internalType: 'contract IIPAccountRegistry',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "LICENSE_REGISTRY",
-    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    name: 'LICENSE_REGISTRY',
+    outputs: [
+      { name: '', internalType: 'contract ILicenseRegistry', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "ROYALTY_MODULE",
-    outputs: [{ name: "", internalType: "contract RoyaltyModule", type: "address" }],
+    name: 'ROYALTY_MODULE',
+    outputs: [
+      { name: '', internalType: 'contract RoyaltyModule', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "polId", internalType: "uint256", type: "uint256" },
+      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: 'polId', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "addPolicyToIp",
-    outputs: [{ name: "indexOnIpId", internalType: "uint256", type: "uint256" }],
+    name: 'addPolicyToIp',
+    outputs: [
+      { name: 'indexOnIpId', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
       {
-        name: "pol",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
+        name: 'pol',
+        internalType: 'struct Licensing.Policy',
+        type: 'tuple',
         components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
+          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
+          { name: 'policyFramework', internalType: 'address', type: 'address' },
+          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
+          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
+          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
+          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
+          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
         ],
       },
     ],
-    name: "getPolicyId",
-    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    name: 'getPolicyId',
+    outputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "policyFramework", internalType: "address", type: "address" }],
-    name: "isFrameworkRegistered",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "parentIpId", internalType: "address", type: "address" },
-      { name: "childIpId", internalType: "address", type: "address" },
+      { name: 'policyFramework', internalType: 'address', type: 'address' },
     ],
-    name: "isParent",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    name: 'isFrameworkRegistered',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
-    name: "isPolicyDefined",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "policyId", internalType: "uint256", type: "uint256" },
+      { name: 'parentIpId', internalType: 'address', type: 'address' },
+      { name: 'childIpId', internalType: 'address', type: 'address' },
     ],
-    name: "isPolicyIdSetForIp",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    name: 'isParent',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "isPolicyInherited",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    type: 'function',
+    inputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
+    name: 'isPolicyDefined',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "childIpId", internalType: "address", type: "address" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: 'isInherited', internalType: 'bool', type: 'bool' },
+      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "linkIpToParents",
+    name: 'isPolicyIdSetForIp',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'isPolicyInherited',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'licenseIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'childIpId', internalType: 'address', type: 'address' },
+      { name: 'royaltyContext', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'linkIpToParents',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-      { name: "licensorIpId", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-      { name: "receiver", internalType: "address", type: "address" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+      { name: 'licensorIpId', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'royaltyContext', internalType: 'bytes', type: 'bytes' },
     ],
-    name: "mintLicense",
-    outputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: 'mintLicense',
+    outputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "name",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
+    name: 'name',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "parentIpIds",
-    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    type: 'function',
+    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
+    name: 'parentIpIds',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
-    name: "policy",
+    type: 'function',
+    inputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
+    name: 'policy',
     outputs: [
       {
-        name: "pol",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
+        name: 'pol',
+        internalType: 'struct Licensing.Policy',
+        type: 'tuple',
         components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
+          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
+          { name: 'policyFramework', internalType: 'address', type: 'address' },
+          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
+          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
+          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
+          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
+          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
         ],
       },
     ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "framework", internalType: "address", type: "address" },
-      { name: "ipId", internalType: "address", type: "address" },
+      { name: 'framework', internalType: 'address', type: 'address' },
+      { name: 'ipId', internalType: 'address', type: 'address' },
     ],
-    name: "policyAggregatorData",
-    outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    name: 'policyAggregatorData',
+    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "index", internalType: "uint256", type: "uint256" },
+      { name: 'isInherited', internalType: 'bool', type: 'bool' },
+      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: 'index', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "policyForIpAtIndex",
+    name: 'policyForIpAtIndex',
     outputs: [
       {
-        name: "",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
+        name: '',
+        internalType: 'struct Licensing.Policy',
+        type: 'tuple',
         components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
+          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
+          { name: 'policyFramework', internalType: 'address', type: 'address' },
+          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
+          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
+          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
+          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
+          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
         ],
       },
     ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "index", internalType: "uint256", type: "uint256" },
+      { name: 'isInherited', internalType: 'bool', type: 'bool' },
+      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: 'index', internalType: 'uint256', type: 'uint256' },
     ],
-    name: "policyIdForIpAtIndex",
-    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    name: 'policyIdForIpAtIndex',
+    outputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
+      { name: 'isInherited', internalType: 'bool', type: 'bool' },
+      { name: 'ipId', internalType: 'address', type: 'address' },
     ],
-    name: "policyIdsForIp",
-    outputs: [{ name: "policyIds", internalType: "uint256[]", type: "uint256[]" }],
-  },
-  {
-    stateMutability: "view",
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "policyStatus",
+    name: 'policyIdsForIp',
     outputs: [
-      { name: "index", internalType: "uint256", type: "uint256" },
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "active", internalType: "bool", type: "bool" },
+      { name: 'policyIds', internalType: 'uint256[]', type: 'uint256[]' },
     ],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
+    type: 'function',
+    inputs: [
+      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'policyStatus',
+    outputs: [
+      { name: 'index', internalType: 'uint256', type: 'uint256' },
+      { name: 'isInherited', internalType: 'bool', type: 'bool' },
+      { name: 'active', internalType: 'bool', type: 'bool' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       {
-        name: "pol",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
+        name: 'pol',
+        internalType: 'struct Licensing.Policy',
+        type: 'tuple',
         components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
+          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
+          { name: 'policyFramework', internalType: 'address', type: 'address' },
+          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
+          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
+          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
+          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
+          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
         ],
       },
     ],
-    name: "registerPolicy",
-    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    name: 'registerPolicy',
+    outputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "nonpayable",
-    type: "function",
-    inputs: [{ name: "manager", internalType: "address", type: "address" }],
-    name: "registerPolicyFrameworkManager",
+    type: 'function',
+    inputs: [{ name: 'manager', internalType: 'address', type: 'address' }],
+    name: 'registerPolicyFrameworkManager',
     outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "totalParentsForIpId",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    type: 'function',
+    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
+    name: 'totalParentsForIpId',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [],
-    name: "totalPolicies",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: 'totalPolicies',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    stateMutability: "view",
-    type: "function",
+    type: 'function',
     inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
+      { name: 'isInherited', internalType: 'bool', type: 'bool' },
+      { name: 'ipId', internalType: 'address', type: 'address' },
     ],
-    name: "totalPoliciesForIp",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: 'totalPoliciesForIp',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "caller", internalType: "address", type: "address", indexed: true },
-      { name: "ipId", internalType: "address", type: "address", indexed: true },
-      { name: "parentIpIds", internalType: "address[]", type: "address[]", indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'parentIpIds',
+        internalType: 'address[]',
+        type: 'address[]',
+        indexed: false,
+      },
     ],
-    name: "IpIdLinkedToParents",
+    name: 'IpIdLinkedToParents',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "caller", internalType: "address", type: "address", indexed: true },
-      { name: "ipId", internalType: "address", type: "address", indexed: true },
-      { name: "policyId", internalType: "uint256", type: "uint256", indexed: true },
-      { name: "index", internalType: "uint256", type: "uint256", indexed: false },
-      { name: "isInherited", internalType: "bool", type: "bool", indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'policyId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'index',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'isInherited',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
     ],
-    name: "PolicyAddedToIpId",
+    name: 'PolicyAddedToIpId',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "framework", internalType: "address", type: "address", indexed: true },
-      { name: "name", internalType: "string", type: "string", indexed: false },
-      { name: "licenseTextUrl", internalType: "string", type: "string", indexed: false },
+      {
+        name: 'framework',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'name', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'licenseTextUrl',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
     ],
-    name: "PolicyFrameworkRegistered",
+    name: 'PolicyFrameworkRegistered',
   },
   {
-    type: "event",
+    type: 'event',
     anonymous: false,
     inputs: [
-      { name: "policyId", internalType: "uint256", type: "uint256", indexed: true },
-      { name: "policyFrameworkManager", internalType: "address", type: "address", indexed: true },
-      { name: "frameworkData", internalType: "bytes", type: "bytes", indexed: false },
-      { name: "royaltyPolicy", internalType: "address", type: "address", indexed: false },
-      { name: "royaltyData", internalType: "bytes", type: "bytes", indexed: false },
-      { name: "mintingFee", internalType: "uint256", type: "uint256", indexed: false },
-      { name: "mintingFeeToken", internalType: "address", type: "address", indexed: false },
+      {
+        name: 'policyId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'policyFrameworkManager',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'frameworkData',
+        internalType: 'bytes',
+        type: 'bytes',
+        indexed: false,
+      },
+      {
+        name: 'royaltyPolicy',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'royaltyData',
+        internalType: 'bytes',
+        type: 'bytes',
+        indexed: false,
+      },
+      {
+        name: 'mintingFee',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'mintingFeeToken',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
     ],
-    name: "PolicyRegistered",
+    name: 'PolicyRegistered',
   },
   {
-    type: "error",
-    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
-    name: "AccessControlled__NotIpAccount",
+    type: 'error',
+    inputs: [{ name: 'ipAccount', internalType: 'address', type: 'address' }],
+    name: 'AccessControlled__NotIpAccount',
   },
-  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
-  { type: "error", inputs: [], name: "LicensingModule__CallerNotLicensorAndPolicyNotSet" },
-  { type: "error", inputs: [], name: "LicensingModule__DerivativesCannotAddPolicy" },
-  { type: "error", inputs: [], name: "LicensingModule__DisputedIpId" },
-  { type: "error", inputs: [], name: "LicensingModule__EmptyLicenseUrl" },
-  { type: "error", inputs: [], name: "LicensingModule__FrameworkNotFound" },
-  { type: "error", inputs: [], name: "LicensingModule__IncompatibleLicensorCommercialPolicy" },
-  { type: "error", inputs: [], name: "LicensingModule__InvalidPolicyFramework" },
-  { type: "error", inputs: [], name: "LicensingModule__LicensorNotRegistered" },
-  { type: "error", inputs: [], name: "LicensingModule__LinkParentParamFailed" },
-  { type: "error", inputs: [], name: "LicensingModule__LinkingRevokedLicense" },
-  { type: "error", inputs: [], name: "LicensingModule__MintLicenseParamFailed" },
-  { type: "error", inputs: [], name: "LicensingModule__MintingFeeTokenNotWhitelisted" },
-  { type: "error", inputs: [], name: "LicensingModule__NotLicensee" },
-  { type: "error", inputs: [], name: "LicensingModule__ParentIdEqualThanChild" },
-  { type: "error", inputs: [], name: "LicensingModule__PolicyAlreadySetForIpId" },
-  { type: "error", inputs: [], name: "LicensingModule__PolicyNotFound" },
-  { type: "error", inputs: [], name: "LicensingModule__RegisterPolicyFrameworkMismatch" },
-  { type: "error", inputs: [], name: "LicensingModule__RoyaltyPolicyNotWhitelisted" },
-  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-] as const;
+  { type: 'error', inputs: [], name: 'AccessControlled__ZeroAddress' },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__CallerNotLicensorAndPolicyNotSet',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__DerivativesCannotAddPolicy',
+  },
+  { type: 'error', inputs: [], name: 'LicensingModule__DisputedIpId' },
+  { type: 'error', inputs: [], name: 'LicensingModule__EmptyLicenseUrl' },
+  { type: 'error', inputs: [], name: 'LicensingModule__FrameworkNotFound' },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__IncompatibleLicensorCommercialPolicy',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__InvalidPolicyFramework',
+  },
+  { type: 'error', inputs: [], name: 'LicensingModule__LicensorNotRegistered' },
+  { type: 'error', inputs: [], name: 'LicensingModule__LinkParentParamFailed' },
+  { type: 'error', inputs: [], name: 'LicensingModule__LinkingRevokedLicense' },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__MintLicenseParamFailed',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__MintingFeeTokenNotWhitelisted',
+  },
+  { type: 'error', inputs: [], name: 'LicensingModule__NotLicensee' },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__ParentIdEqualThanChild',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__PolicyAlreadySetForIpId',
+  },
+  { type: 'error', inputs: [], name: 'LicensingModule__PolicyNotFound' },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__RegisterPolicyFrameworkMismatch',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'LicensingModule__RoyaltyPolicyNotWhitelisted',
+  },
+  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+] as const
 
-export const licensingModuleAddress = "0x4D6a54B467332dF675cFa689cb294A4cB9122866" as const;
+export const licensingModuleAddress =
+  '0x46d7d7f2450066344B291e182371E8885558568a' as const
 
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
   abi: licensingModuleAbi,
-} as const;
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -414,7 +550,7 @@ export const licensingModuleConfig = {
 export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"ACCESS_CONTROLLER"`
@@ -422,17 +558,18 @@ export const useReadLicensingModule = /*#__PURE__*/ createUseReadContract({
 export const useReadAccessController = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "ACCESS_CONTROLLER",
-});
+  functionName: 'ACCESS_CONTROLLER',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"DISPUTE_MODULE"`
  */
-export const useReadLicensingModuleDisputeModule1 = /*#__PURE__*/ createUseReadContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "DISPUTE_MODULE",
-});
+export const useReadLicensingModuleDisputeModule1 =
+  /*#__PURE__*/ createUseReadContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'DISPUTE_MODULE',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"IP_ACCOUNT_REGISTRY"`
@@ -440,17 +577,18 @@ export const useReadLicensingModuleDisputeModule1 = /*#__PURE__*/ createUseReadC
 export const useReadIpAccountRegistry = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "IP_ACCOUNT_REGISTRY",
-});
+  functionName: 'IP_ACCOUNT_REGISTRY',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"LICENSE_REGISTRY"`
  */
-export const useReadLicensingModuleLicenseRegistry2 = /*#__PURE__*/ createUseReadContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "LICENSE_REGISTRY",
-});
+export const useReadLicensingModuleLicenseRegistry2 =
+  /*#__PURE__*/ createUseReadContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'LICENSE_REGISTRY',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"ROYALTY_MODULE"`
@@ -458,8 +596,8 @@ export const useReadLicensingModuleLicenseRegistry2 = /*#__PURE__*/ createUseRea
 export const useReadRoyaltyModule = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "ROYALTY_MODULE",
-});
+  functionName: 'ROYALTY_MODULE',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"getPolicyId"`
@@ -467,17 +605,19 @@ export const useReadRoyaltyModule = /*#__PURE__*/ createUseReadContract({
 export const useReadGetPolicyId = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "getPolicyId",
-});
+  functionName: 'getPolicyId',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isFrameworkRegistered"`
  */
-export const useReadIsFrameworkRegistered = /*#__PURE__*/ createUseReadContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "isFrameworkRegistered",
-});
+export const useReadIsFrameworkRegistered = /*#__PURE__*/ createUseReadContract(
+  {
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'isFrameworkRegistered',
+  },
+)
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isParent"`
@@ -485,8 +625,8 @@ export const useReadIsFrameworkRegistered = /*#__PURE__*/ createUseReadContract(
 export const useReadIsParent = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "isParent",
-});
+  functionName: 'isParent',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyDefined"`
@@ -494,8 +634,8 @@ export const useReadIsParent = /*#__PURE__*/ createUseReadContract({
 export const useReadIsPolicyDefined = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "isPolicyDefined",
-});
+  functionName: 'isPolicyDefined',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyIdSetForIp"`
@@ -503,8 +643,8 @@ export const useReadIsPolicyDefined = /*#__PURE__*/ createUseReadContract({
 export const useReadIsPolicyIdSetForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "isPolicyIdSetForIp",
-});
+  functionName: 'isPolicyIdSetForIp',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"isPolicyInherited"`
@@ -512,8 +652,8 @@ export const useReadIsPolicyIdSetForIp = /*#__PURE__*/ createUseReadContract({
 export const useReadIsPolicyInherited = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "isPolicyInherited",
-});
+  functionName: 'isPolicyInherited',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"name"`
@@ -521,8 +661,8 @@ export const useReadIsPolicyInherited = /*#__PURE__*/ createUseReadContract({
 export const useReadLicensingModuleName = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "name",
-});
+  functionName: 'name',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"parentIpIds"`
@@ -530,8 +670,8 @@ export const useReadLicensingModuleName = /*#__PURE__*/ createUseReadContract({
 export const useReadParentIpIds = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "parentIpIds",
-});
+  functionName: 'parentIpIds',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policy"`
@@ -539,8 +679,8 @@ export const useReadParentIpIds = /*#__PURE__*/ createUseReadContract({
 export const useReadPolicy = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "policy",
-});
+  functionName: 'policy',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyAggregatorData"`
@@ -548,8 +688,8 @@ export const useReadPolicy = /*#__PURE__*/ createUseReadContract({
 export const useReadPolicyAggregatorData = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "policyAggregatorData",
-});
+  functionName: 'policyAggregatorData',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyForIpAtIndex"`
@@ -557,8 +697,8 @@ export const useReadPolicyAggregatorData = /*#__PURE__*/ createUseReadContract({
 export const useReadPolicyForIpAtIndex = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "policyForIpAtIndex",
-});
+  functionName: 'policyForIpAtIndex',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyIdForIpAtIndex"`
@@ -566,8 +706,8 @@ export const useReadPolicyForIpAtIndex = /*#__PURE__*/ createUseReadContract({
 export const useReadPolicyIdForIpAtIndex = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "policyIdForIpAtIndex",
-});
+  functionName: 'policyIdForIpAtIndex',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyIdsForIp"`
@@ -575,8 +715,8 @@ export const useReadPolicyIdForIpAtIndex = /*#__PURE__*/ createUseReadContract({
 export const useReadPolicyIdsForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "policyIdsForIp",
-});
+  functionName: 'policyIdsForIp',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"policyStatus"`
@@ -584,17 +724,18 @@ export const useReadPolicyIdsForIp = /*#__PURE__*/ createUseReadContract({
 export const useReadPolicyStatus = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "policyStatus",
-});
+  functionName: 'policyStatus',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"supportsInterface"`
  */
-export const useReadLicensingModuleSupportsInterface = /*#__PURE__*/ createUseReadContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "supportsInterface",
-});
+export const useReadLicensingModuleSupportsInterface =
+  /*#__PURE__*/ createUseReadContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'supportsInterface',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalParentsForIpId"`
@@ -602,8 +743,8 @@ export const useReadLicensingModuleSupportsInterface = /*#__PURE__*/ createUseRe
 export const useReadTotalParentsForIpId = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "totalParentsForIpId",
-});
+  functionName: 'totalParentsForIpId',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalPolicies"`
@@ -611,8 +752,8 @@ export const useReadTotalParentsForIpId = /*#__PURE__*/ createUseReadContract({
 export const useReadTotalPolicies = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "totalPolicies",
-});
+  functionName: 'totalPolicies',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"totalPoliciesForIp"`
@@ -620,8 +761,8 @@ export const useReadTotalPolicies = /*#__PURE__*/ createUseReadContract({
 export const useReadTotalPoliciesForIp = /*#__PURE__*/ createUseReadContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "totalPoliciesForIp",
-});
+  functionName: 'totalPoliciesForIp',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__
@@ -629,7 +770,7 @@ export const useReadTotalPoliciesForIp = /*#__PURE__*/ createUseReadContract({
 export const useWriteLicensingModule = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-});
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"addPolicyToIp"`
@@ -637,8 +778,8 @@ export const useWriteLicensingModule = /*#__PURE__*/ createUseWriteContract({
 export const useAddPolicyToIp = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "addPolicyToIp",
-});
+  functionName: 'addPolicyToIp',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"linkIpToParents"`
@@ -646,8 +787,8 @@ export const useAddPolicyToIp = /*#__PURE__*/ createUseWriteContract({
 export const useLinkIpToParents = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "linkIpToParents",
-});
+  functionName: 'linkIpToParents',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"mintLicense"`
@@ -655,8 +796,8 @@ export const useLinkIpToParents = /*#__PURE__*/ createUseWriteContract({
 export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "mintLicense",
-});
+  functionName: 'mintLicense',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicy"`
@@ -664,43 +805,48 @@ export const useMintLicense = /*#__PURE__*/ createUseWriteContract({
 export const useRegisterPolicy = /*#__PURE__*/ createUseWriteContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "registerPolicy",
-});
+  functionName: 'registerPolicy',
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicyFrameworkManager"`
  */
-export const useRegisterPolicyFrameworkManager = /*#__PURE__*/ createUseWriteContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "registerPolicyFrameworkManager",
-});
+export const useRegisterPolicyFrameworkManager =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'registerPolicyFrameworkManager',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__
  */
-export const useSimulateLicensingModule = /*#__PURE__*/ createUseSimulateContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-});
+export const useSimulateLicensingModule =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"addPolicyToIp"`
  */
-export const useSimulateAddPolicyToIp = /*#__PURE__*/ createUseSimulateContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "addPolicyToIp",
-});
+export const useSimulateAddPolicyToIp = /*#__PURE__*/ createUseSimulateContract(
+  {
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'addPolicyToIp',
+  },
+)
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"linkIpToParents"`
  */
-export const useSimulateLinkIpToParents = /*#__PURE__*/ createUseSimulateContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "linkIpToParents",
-});
+export const useSimulateLinkIpToParents =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'linkIpToParents',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"mintLicense"`
@@ -708,67 +854,74 @@ export const useSimulateLinkIpToParents = /*#__PURE__*/ createUseSimulateContrac
 export const useSimulateMintLicense = /*#__PURE__*/ createUseSimulateContract({
   abi: licensingModuleAbi,
   address: licensingModuleAddress,
-  functionName: "mintLicense",
-});
+  functionName: 'mintLicense',
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicy"`
  */
-export const useSimulateRegisterPolicy = /*#__PURE__*/ createUseSimulateContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "registerPolicy",
-});
+export const useSimulateRegisterPolicy =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'registerPolicy',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licensingModuleAbi}__ and `functionName` set to `"registerPolicyFrameworkManager"`
  */
-export const useSimulateRegisterPolicyFrameworkManager = /*#__PURE__*/ createUseSimulateContract({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  functionName: "registerPolicyFrameworkManager",
-});
+export const useSimulateRegisterPolicyFrameworkManager =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    functionName: 'registerPolicyFrameworkManager',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__
  */
-export const useWatchLicensingModule = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-});
+export const useWatchLicensingModule =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"IpIdLinkedToParents"`
  */
-export const useWatchIpIdLinkedToParents = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  eventName: "IpIdLinkedToParents",
-});
+export const useWatchIpIdLinkedToParents =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    eventName: 'IpIdLinkedToParents',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyAddedToIpId"`
  */
-export const useWatchPolicyAddedToIpId = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  eventName: "PolicyAddedToIpId",
-});
+export const useWatchPolicyAddedToIpId =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    eventName: 'PolicyAddedToIpId',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyFrameworkRegistered"`
  */
-export const useWatchPolicyFrameworkRegistered = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  eventName: "PolicyFrameworkRegistered",
-});
+export const useWatchPolicyFrameworkRegistered =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    eventName: 'PolicyFrameworkRegistered',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licensingModuleAbi}__ and `eventName` set to `"PolicyRegistered"`
  */
-export const useWatchPolicyRegistered = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: licensingModuleAbi,
-  address: licensingModuleAddress,
-  eventName: "PolicyRegistered",
-});
+export const useWatchPolicyRegistered =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licensingModuleAbi,
+    address: licensingModuleAddress,
+    eventName: 'PolicyRegistered',
+  })
