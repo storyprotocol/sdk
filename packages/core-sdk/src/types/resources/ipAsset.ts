@@ -1,9 +1,9 @@
 import { TxOptions } from "../options";
 
 export type RegisterRootIpRequest = {
-  policyId: string;
   tokenContractAddress: string;
   tokenId: string;
+  policyId?: string;
   ipName?: string;
   contentHash?: `0x${string}`;
   uri?: string;
