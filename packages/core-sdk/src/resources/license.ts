@@ -1,7 +1,8 @@
 import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
-import { parseToBigInt, waitTxAndFilterLog, encodeRoyaltyContext } from "../utils/utils";
+import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
 import { IPAccountABI, LicensingModuleConfig, LicenseRegistryConfig } from "../abi/config";
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
@@ -86,42 +87,6 @@ export class LicenseClient {
 
   public async linkIpToParent(request: LinkIpToParentRequest): Promise<LinkIpToParentResponse> {
     try {
-      const royaltyContext: RoyaltyContext = {
-        targetAncestors: [],
-        targetRoyaltyAmount: [],
-        parentAncestors1: [],
-        parentAncestors2: [],
-        parentAncestorsRoyalties1: [],
-        parentAncestorsRoyalties2: [],
-      };
-
-      for (let i = 0; i < request.licenseIds.length; i++) {
-        const licenseData = await this.storyClient.getLicense(request.licenseIds[i]);
-        const royaltyPolicy = await this.storyClient.getRoyaltyPolicy(licenseData.licensorIpId);
-        const policy = await this.storyClient.getPolicy(licenseData.policyId);
-
-        if (royaltyPolicy) {
-          const targetRoyaltyAmount = royaltyPolicy.targetRoyaltyAmount.map((e) => parseInt(e));
-          if (i === 0) {
-            royaltyContext.parentAncestors1 = royaltyPolicy.targetAncestors;
-            royaltyContext.parentAncestorsRoyalties1 = targetRoyaltyAmount;
-          } else {
-            royaltyContext.parentAncestors2 = royaltyPolicy.targetAncestors;
-            royaltyContext.parentAncestorsRoyalties2 = targetRoyaltyAmount;
-          }
-          this._updateRoyaltyContext(
-            royaltyContext,
-            [licenseData.licensorIpId],
-            [parseInt(policy.pil.commercialRevShare)],
-          );
-          this._updateRoyaltyContext(
-            royaltyContext,
-            royaltyPolicy.targetAncestors,
-            targetRoyaltyAmount,
-          );
-        }
-      }
-
       const IPAccountConfig = {
         abi: this.ipAccountABI,
         address: getAddress(request.childIpId),
@@ -131,6 +96,11 @@ export class LicenseClient {
       request.licenseIds.forEach(function (licenseId) {
         licenseIds.push(parseToBigInt(licenseId));
       });
+
+      const royaltyContext: RoyaltyContext = await computeRoyaltyContext(
+        request.licenseIds,
+        this.storyClient,
+      );
 
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
@@ -159,22 +129,6 @@ export class LicenseClient {
       }
     } catch (error) {
       handleError(error, "Failed to link IP to parents");
-    }
-  }
-
-  private _updateRoyaltyContext(
-    royaltyContext: RoyaltyContext,
-    targetAncestors: string[],
-    targetRoyaltyAccounts: number[],
-  ) {
-    for (let i = 0; i < targetAncestors.length; i++) {
-      const index = royaltyContext.targetAncestors.indexOf(targetAncestors[i]);
-      if (index === -1) {
-        royaltyContext.targetAncestors.push(targetAncestors[i]);
-        royaltyContext.targetRoyaltyAmount.push(targetRoyaltyAccounts[i]);
-      } else {
-        royaltyContext.targetRoyaltyAmount[index] += targetRoyaltyAccounts[i];
-      }
     }
   }
 }

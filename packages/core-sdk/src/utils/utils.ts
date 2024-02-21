@@ -13,7 +13,6 @@ import { mainnet, polygonMumbai, sepolia } from "viem/chains";
 
 import { Hex, TypedData } from "../types/common";
 import { SupportedChainIds } from "../types/config";
-import { RoyaltyContext } from "../types/resources/royalty";
 
 export function isIntegerString(s: string): boolean {
   const num = Number(s);
@@ -152,20 +151,4 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }
-}
-
-export function encodeRoyaltyContext(royaltyContext: RoyaltyContext): Hex {
-  return typedDataToBytes({
-    interface: "(address[], uint32[], address[], address[], uint32[], uint32[])",
-    data: [
-      [
-        royaltyContext.targetAncestors,
-        royaltyContext.targetRoyaltyAmount,
-        royaltyContext.parentAncestors1,
-        royaltyContext.parentAncestors2,
-        royaltyContext.parentAncestorsRoyalties1,
-        royaltyContext.parentAncestorsRoyalties2,
-      ],
-    ],
-  });
 }

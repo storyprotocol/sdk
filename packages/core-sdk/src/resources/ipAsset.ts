@@ -10,7 +10,9 @@ import {
   RegisterRootIpRequest,
   RegisterRootIpResponse,
 } from "../types/resources/ipAsset";
+import { RoyaltyContext } from "../types/resources/royalty";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
 
 export class IPAssetClient {
   private readonly wallet: WalletClient;
@@ -90,13 +92,15 @@ export class IPAssetClient {
     request: RegisterDerivativeIpRequest,
   ): Promise<RegisterDerivativeIpResponse> {
     try {
-      // 1. get parent ipId from the license id, by calling license API
-      // 2. use ipId to get royalPolicy
-      // 3. compose the royaltyContext
       const licenseIds: bigint[] = [];
       request.licenseIds.forEach(function (licenseId) {
         licenseIds.push(parseToBigInt(licenseId));
       });
+      const royaltyContext: RoyaltyContext = await computeRoyaltyContext(
+        request.licenseIds,
+        this.storyClient,
+      );
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.registrationModuleConfig,
         functionName: "registerDerivativeIp",
@@ -107,7 +111,7 @@ export class IPAssetClient {
           request.ipName || "",
           request.contentHash || HashZero,
           request.uri || "",
-          "0x",
+          encodeRoyaltyContext(royaltyContext),
         ],
         account: this.wallet.account,
       });

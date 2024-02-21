@@ -77,7 +77,7 @@ describe("License Functions", () => {
       const response = await expect(
         client.license.linkIpToParent({
           licenseIds: [licenseId1, licenseId2],
-          childIpId: "0xd6caa1f6b8207ad46e0fdfff98bb9aa04448d65b",
+          childIpId: "0x9cd42f5a49ec516ce44e72401dcf2bafab6f24b8",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

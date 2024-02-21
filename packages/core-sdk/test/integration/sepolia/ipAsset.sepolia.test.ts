@@ -37,7 +37,7 @@ describe("IP Asset Functions", () => {
         client.ipAsset.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0xd516482bef63Ff19Ed40E4C6C2e626ccE04e19ED",
-          tokenId: "17",
+          tokenId: "19",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -58,22 +58,33 @@ describe("IP Asset Functions", () => {
     it.skip("should not throw error when creating a derivative IP Asset", async () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
-        policyId: "2",
-        licensorIpId: "0x90daC93B2F2a6ABf44116d8A76b5C330F5A29dC0",
+        policyId: "7",
+        licensorIpId: "0x19ff36f985e728c143f6597a5d92093c24cecac1",
         mintAmount: 1,
         receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
         txOptions: {
           waitForTransaction: true,
         },
       });
-      const licenseId = mintLicenseResponse.licenseId!;
+      const licenseId1 = mintLicenseResponse.licenseId!;
+
+      const mintLicenseResponse2 = await client.license.mintLicense({
+        policyId: "7",
+        licensorIpId: "0x7a4f65669a36d1c7c34c96d65eb1c5cdb94aaeea",
+        mintAmount: 1,
+        receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const licenseId2 = mintLicenseResponse2.licenseId!;
       // 2. register derivative
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.registerDerivativeIp({
-          licenseIds: [licenseId],
+          licenseIds: [licenseId1, licenseId2],
           tokenContractAddress: "0xd516482bef63Ff19Ed40E4C6C2e626ccE04e19ED",
-          tokenId: "9",
+          tokenId: "20",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
