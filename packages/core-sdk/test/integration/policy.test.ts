@@ -40,7 +40,7 @@ describe("Test Policy Functions", () => {
       const response = await expect(
         client.policy.registerPILPolicy({
           transferable: true,
-          territories: ["US"],
+          territories: ["US", "EU"],
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -65,7 +65,7 @@ describe("Test Policy Functions", () => {
           derivativesAllowed: true,
           derivativesAttribution: true,
           derivativesReciprocal: true,
-          territories: ["US"],
+          territories: ["US", "EU"],
           distributionChannels: ["Book"],
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -94,7 +94,7 @@ describe("Test Policy Functions", () => {
           commercialAttribution: true,
           derivativesAllowed: true,
           derivativesReciprocal: true,
-          territories: ["US"],
+          territories: ["US", "EU"],
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -164,7 +164,7 @@ describe("Test Policy Functions", () => {
       const response = await expect(
         client.policy.addPolicyToIp({
           ipId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
-          policyId: "5",
+          policyId: "6",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

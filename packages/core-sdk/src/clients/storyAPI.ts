@@ -10,7 +10,7 @@ export class StoryAPIClient {
   constructor() {
     this.httpClient = axios.create({
       baseURL: "https://api.storyprotocol.net",
-      timeout: 5000,
+      timeout: 60000,
       headers: {
         "x-api-key": "U3RvcnlQcm90b2NvbFRlc3RBUElLRVk=",
       },
