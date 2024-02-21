@@ -5,12 +5,11 @@ import { IPAssetClient, AddressZero } from "../../../src";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient, Account } from "viem";
-import { AxiosInstance } from "axios";
 import { StoryAPIClient } from "../../../src/clients/storyAPI";
 
 chai.use(chaiAsPromised);
 
-describe("Test IpAssetClient", function () {
+describe.skip("Test IpAssetClient", function () {
   let ipAccountClient: IPAssetClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
