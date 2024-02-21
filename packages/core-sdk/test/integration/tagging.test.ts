@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { TaggingModuleConfig } from "./testABI";
+import { TaggingModuleConfig } from "./testABI.tenderly";
 
 describe("Tagging Functions (integration tests)", () => {
   let client: StoryClient;
