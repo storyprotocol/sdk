@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/core-sdk",
-  "version": "0.0.1-beta-rc.3",
+  "version": "0.0.1-beta-rc.4",
   "description": "Story Protocol Core SDK",
   "main": "dist/story-protocol-core-sdk.cjs.js",
   "module": "dist/story-protocol-core-sdk.esm.js",
