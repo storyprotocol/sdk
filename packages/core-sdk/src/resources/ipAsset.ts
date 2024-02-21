@@ -3,23 +3,28 @@ import { PublicClient, WalletClient, getAddress } from "viem";
 import { handleError } from "../utils/errors";
 import { HashZero } from "../constants/common";
 import { IPAssetRegistryConfig, RegistrationModuleConfig } from "../abi/config";
+import { StoryAPIClient } from "../clients/storyAPI";
 import {
   RegisterDerivativeIpRequest,
   RegisterDerivativeIpResponse,
   RegisterRootIpRequest,
   RegisterRootIpResponse,
 } from "../types/resources/ipAsset";
+import { RoyaltyContext } from "../types/resources/royalty";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
 
 export class IPAssetClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
+  private readonly storyClient: StoryAPIClient;
   public ipAssetRegistryConfig = IPAssetRegistryConfig;
   public registrationModuleConfig = RegistrationModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, storyClient: StoryAPIClient) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
+    this.storyClient = storyClient;
   }
 
   /**
@@ -91,6 +96,11 @@ export class IPAssetClient {
       request.licenseIds.forEach(function (licenseId) {
         licenseIds.push(parseToBigInt(licenseId));
       });
+      const royaltyContext: RoyaltyContext = await computeRoyaltyContext(
+        request.licenseIds,
+        this.storyClient,
+      );
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.registrationModuleConfig,
         functionName: "registerDerivativeIp",
@@ -101,7 +111,7 @@ export class IPAssetClient {
           request.ipName || "",
           request.contentHash || HashZero,
           request.uri || "",
-          "0x",
+          encodeRoyaltyContext(royaltyContext),
         ],
         account: this.wallet.account,
       });

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { IPAccountABI, AccessControllerConfig } from "./testABI";
+import { IPAccountABI, AccessControllerConfig } from "./testABI.tenderly";
 
 describe("Permission Functions", () => {
   let client: StoryClient;
