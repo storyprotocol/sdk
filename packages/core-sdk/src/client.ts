@@ -8,6 +8,7 @@ import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
 import { PolicyClient } from "./resources/policy";
 import { DisputeClient } from "./resources/dispute";
+import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
 import { StoryAPIClient } from "./clients/storyAPI";
 
@@ -23,12 +24,13 @@ export class StoryClient {
   private readonly wallet: WalletClient;
   private readonly storyClient: StoryAPIClient;
 
-  private _ipAccount: IPAssetClient | null = null;
+  private _ipAsset: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;
   private _policy: PolicyClient | null = null;
   private _tagging: TaggingClient | null = null;
   private _dispute: DisputeClient | null = null;
+  private _ipAccount: IPAccountClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -69,14 +71,26 @@ export class StoryClient {
     return new StoryClient(config);
   }
 
+  /**
+   * Getter for the ip asset client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the IPAssetClient instance
+   */
   public get ipAsset(): IPAssetClient {
-    if (this._ipAccount === null) {
-      this._ipAccount = new IPAssetClient(this.rpcClient, this.wallet, this.storyClient);
+    if (this._ipAsset === null) {
+      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.storyClient);
     }
 
-    return this._ipAccount;
+    return this._ipAsset;
   }
 
+  /**
+   * Getter for the permission client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the PermissionClient instance
+   */
   public get permission(): PermissionClient {
     if (this._permission === null) {
       this._permission = new PermissionClient(this.rpcClient, this.wallet);
@@ -85,6 +99,12 @@ export class StoryClient {
     return this._permission;
   }
 
+  /**
+   * Getter for the license client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the LicenseClient instance
+   */
   public get license(): LicenseClient {
     if (this._license === null) {
       this._license = new LicenseClient(this.rpcClient, this.wallet, this.storyClient);
@@ -93,6 +113,12 @@ export class StoryClient {
     return this._license;
   }
 
+  /**
+   * Getter for the policy client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the PolicyClient instance
+   */
   public get policy(): PolicyClient {
     if (this._policy === null) {
       this._policy = new PolicyClient(this.rpcClient, this.wallet);
@@ -127,5 +153,19 @@ export class StoryClient {
     }
 
     return this._dispute;
+  }
+
+  /**
+   * Getter for the ip account client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the IPAccountClient instance
+   */
+  public get ipAccount(): IPAccountClient {
+    if (this._ipAccount === null) {
+      this._ipAccount = new IPAccountClient(this.rpcClient, this.wallet);
+    }
+
+    return this._ipAccount;
   }
 }

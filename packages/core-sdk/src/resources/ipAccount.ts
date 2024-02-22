@@ -10,7 +10,7 @@ import { handleError } from "../utils/errors";
 import { IPAccountABI } from "../abi/config";
 import { parseToBigInt, waitTx } from "../utils/utils";
 
-export class IPAssetClient {
+export class IPAccountClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   public ipAccountABI = IPAccountABI;
@@ -56,6 +56,9 @@ export class IPAssetClient {
    *   @param request.to The recipient of the transaction.
    *   @param request.value The amount of Ether to send.
    *   @param request.data The data to send along with the transaction.
+   *   @param request.signer The signer of the transaction.
+   *   @param request.deadline The deadline of the transaction signature.
+   *   @param request.signature The signature of the transaction, EIP-712 encoded.
    * @returns Tx hash for the transaction.
    */
   public async executeWithSig(
