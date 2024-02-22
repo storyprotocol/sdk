@@ -70,7 +70,14 @@ export class IPAssetClient {
       const { request: call } = await this.rpcClient.simulateContract({
         ...IPAccountConfig,
         functionName: "executeWithSig",
-        args: [request.to, parseToBigInt(0), request.data],
+        args: [
+          request.to,
+          parseToBigInt(0),
+          request.data,
+          request.signer,
+          parseToBigInt(request.deadline),
+          request.signature,
+        ],
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
