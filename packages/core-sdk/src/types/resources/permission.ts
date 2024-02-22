@@ -1,6 +1,6 @@
 import { TxOptions } from "../options";
 
-export type setPermissionsRequest = {
+export type SetPermissionsRequest = {
   ipId: `0x${string}`;
   signer: `0x${string}`;
   to: `0x${string}`;
@@ -9,7 +9,7 @@ export type setPermissionsRequest = {
   txOptions?: TxOptions;
 };
 
-export type setPermissionsResponse = {
+export type SetPermissionsResponse = {
   txHash: string;
   success?: boolean;
 };

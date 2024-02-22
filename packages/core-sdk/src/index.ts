@@ -32,7 +32,7 @@ export type {
   AddPolicyToIpResponse,
 } from "./types/resources/policy";
 
-export type { setPermissionsRequest, setPermissionsResponse } from "./types/resources/permission";
+export type { SetPermissionsRequest, SetPermissionsResponse } from "./types/resources/permission";
 
 export type {
   SetTagRequest,
@@ -52,3 +52,10 @@ export type {
   ResolveDisputeRequest,
   ResolveDisputeResponse,
 } from "./types/resources/dispute";
+
+export type {
+  IPAccountExecuteRequest,
+  IPAccountExecuteResponse,
+  IPAccountExecuteWithSigRequest,
+  IPAccountExecuteWithSigResponse,
+} from "./types/resources/ipAccount";
