@@ -2,7 +2,6 @@ import { createPublicClient, createWalletClient, PublicClient, WalletClient } fr
 import * as dotenv from "dotenv";
 
 import { StoryConfig } from "./types/config";
-import { TaggingClient } from "./resources/tagging";
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
@@ -28,7 +27,6 @@ export class StoryClient {
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;
   private _policy: PolicyClient | null = null;
-  private _tagging: TaggingClient | null = null;
   private _dispute: DisputeClient | null = null;
   private _ipAccount: IPAccountClient | null = null;
 
@@ -125,20 +123,6 @@ export class StoryClient {
     }
 
     return this._policy;
-  }
-
-  /**
-   * Getter for the tagging client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the TaggingClient instance
-   */
-  public get tagging(): TaggingClient {
-    if (this._tagging === null) {
-      this._tagging = new TaggingClient(this.rpcClient, this.wallet);
-    }
-
-    return this._tagging;
   }
 
   /**
