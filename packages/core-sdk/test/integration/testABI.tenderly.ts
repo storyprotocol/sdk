@@ -8,7 +8,6 @@ import IPAssetRegistryABI from "../../src/abi/json/IIPAssetRegistry.abi";
 import LicensingModuleABI from "../../src/abi/json/LicensingModule.abi";
 import PILPolicyFrameworkManagerABI from "../../src/abi/json/PILPolicyFrameworkManager.abi";
 import RegistrationModuleABI from "../../src/abi/json/RegistrationModule.abi";
-import TaggingModuleABI from "../../src/abi/json/TaggingModule.abi";
 import ErrorsABI from "../../src/abi/json/Errors.abi";
 
 const tenderly = {
@@ -22,7 +21,6 @@ const tenderly = {
   LicensingModule: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
   PILPolicyFrameworkManager: "0x3C30b98f56b469c0d292EFF5878e9Fb302CB13dD",
   RegistrationModule: "0x193f0Cc84d51Fc38a30658d7eFffEB2C5Cc25840",
-  TaggingModule: "0x92787d8e2E5fE563A91Ee37B6e953BD0A4bAC1eD",
 };
 
 export const IPAccountABI = [...IPAccountImplABI, ...ErrorsABI];
@@ -55,11 +53,6 @@ export const LicensingModuleConfig = {
 export const RegistrationModuleConfig = {
   abi: [...RegistrationModuleABI, ...ErrorsABI],
   address: getAddress(tenderly.RegistrationModule),
-};
-
-export const TaggingModuleConfig = {
-  abi: [...TaggingModuleABI, ...ErrorsABI],
-  address: getAddress(tenderly.TaggingModule),
 };
 
 export const PILPolicyFrameworkManagerConfig = {

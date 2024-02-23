@@ -1,7 +1,7 @@
 import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
-import { setPermissionsRequest, setPermissionsResponse } from "../types/resources/permission";
+import { SetPermissionsRequest, SetPermissionsResponse } from "../types/resources/permission";
 import { IPAccountABI, AccessControllerConfig } from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 
@@ -35,7 +35,7 @@ export class PermissionClient {
    * @returns A Promise that resolves to an object containing the transaction hash
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
-  public async setPermission(request: setPermissionsRequest): Promise<setPermissionsResponse> {
+  public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
       const IPAccountConfig = {
         abi: this.ipAccountABI,
