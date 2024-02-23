@@ -8,7 +8,6 @@ import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
 import LicensingModuleABI from "./json/LicensingModule.abi";
 import PILPolicyFrameworkManagerABI from "./json/PILPolicyFrameworkManager.abi";
 import RegistrationModuleABI from "./json/RegistrationModule.abi";
-import TaggingModuleABI from "./json/TaggingModule.abi";
 import ErrorsABI from "./json/Errors.abi";
 import { sepolia } from "../utils/env";
 
@@ -42,11 +41,6 @@ export const LicensingModuleConfig = {
 export const RegistrationModuleConfig = {
   abi: [...RegistrationModuleABI, ...ErrorsABI],
   address: getAddress(sepolia.RegistrationModule),
-};
-
-export const TaggingModuleConfig = {
-  abi: [...TaggingModuleABI, ...ErrorsABI],
-  address: getAddress(sepolia.TaggingModule),
 };
 
 export const PILPolicyFrameworkManagerConfig = {

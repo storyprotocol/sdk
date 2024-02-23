@@ -18,7 +18,7 @@ export class StoryAPIClient {
   }
 
   public async getRoyaltyPolicy(ipId: string): Promise<RoyaltyPolicy> {
-    const royaltyPolicyResp = await this.httpClient.get(`/api/v1/royaltypolicies/${ipId}`);
+    const royaltyPolicyResp = await this.httpClient.get(`/api/v1/royalties/policies/${ipId}`);
     return (royaltyPolicyResp.data as RoyaltyPolicyApiResponse).data;
   }
 

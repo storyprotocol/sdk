@@ -48,7 +48,7 @@ export class IPAssetClient {
         ...this.registrationModuleConfig,
         functionName: "registerRootIp",
         args: [
-          parseToBigInt(request.policyId),
+          parseToBigInt(request.policyId || "0"),
           getAddress(request.tokenContractAddress), // 0x Address
           parseToBigInt(request.tokenId),
           request.ipName || "",

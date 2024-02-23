@@ -37,7 +37,7 @@ export class LicenseClient {
    *   @param request.licensorIpId_ The ID of the IP granting the license (ie. licensor)
    *   @param request.mintAmount Number of licenses to mint. License NFT is fungible for same policy and same licensors
    *   @param request.receiver Receiver address of the minted license NFT(s).
-   * @return licenseId The ID of the minted license NFT(s).
+   * @returns licenseId The ID of the minted license NFT(s).
    */
   public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
     try {
