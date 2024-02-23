@@ -22,7 +22,7 @@ describe("Permission Functions", () => {
   });
 
   describe("Set Permission", async function () {
-    it.only("should not throw error when setting permission", async () => {
+    it("should not throw error when setting permission", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.permission.setPermission({

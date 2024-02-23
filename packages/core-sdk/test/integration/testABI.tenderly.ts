@@ -21,6 +21,7 @@ const tenderly = {
   LicensingModule: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
   PILPolicyFrameworkManager: "0x3C30b98f56b469c0d292EFF5878e9Fb302CB13dD",
   RegistrationModule: "0x193f0Cc84d51Fc38a30658d7eFffEB2C5Cc25840",
+  RoyaltyPolicyLAP: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
 };
 
 export const IPAccountABI = [...IPAccountImplABI, ...ErrorsABI];
@@ -58,4 +59,8 @@ export const RegistrationModuleConfig = {
 export const PILPolicyFrameworkManagerConfig = {
   abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
   address: getAddress(tenderly.PILPolicyFrameworkManager),
+};
+
+export const RoyaltyPolicyLAPConfig = {
+  address: getAddress(tenderly.RoyaltyPolicyLAP),
 };

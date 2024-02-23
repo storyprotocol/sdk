@@ -9,6 +9,7 @@ import {
   IPAccountABI,
   LicensingModuleConfig,
   PILPolicyFrameworkManagerConfig,
+  RoyaltyPolicyLAPConfig,
 } from "./testABI.tenderly";
 
 // Disable since it's flaky
@@ -28,6 +29,7 @@ describe.skip("Test Policy Functions", () => {
     client.policy.ipAccountABI = IPAccountABI;
     client.policy.licensingModuleConfig = LicensingModuleConfig;
     client.policy.pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
+    client.policy.royaltyPolicyLAPConfig = RoyaltyPolicyLAPConfig;
     client.ipAsset.registrationModuleConfig = RegistrationModuleConfig;
     client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
     client.license.ipAccountABI = IPAccountABI;
@@ -96,6 +98,48 @@ describe.skip("Test Policy Functions", () => {
           derivativesAllowed: true,
           derivativesReciprocal: true,
           territories: ["US", "EU"],
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+
+      if (waitForTransaction) {
+        expect(response.policyId).to.be.a("string");
+        expect(response.policyId).not.empty;
+      }
+    });
+
+    it("should not throw error when RegisterPILCommercialUsePolicy", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.RegisterPILCommercialUsePolicy({
+          mintingFeeToken: "0x65F7eE2eEF8C127f3c5D9dE3e95Add44c8cB286b",
+          mintingFee: "1000000000000000000",
+          commercialRevShare: 150,
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+
+      if (waitForTransaction) {
+        expect(response.policyId).to.be.a("string");
+        expect(response.policyId).not.empty;
+      }
+    });
+
+    it("should not throw error when RegisterPILSocialRemixPolicy", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.RegisterPILSocialRemixPolicy({
+          distributionChannels: ["TV"],
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

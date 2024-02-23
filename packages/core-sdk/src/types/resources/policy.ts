@@ -26,6 +26,33 @@ export type RegisterPILPolicyResponse = {
   policyId?: string;
 };
 
+export type RegisterPILSocialRemixPolicyRequest = {
+  territories?: string[];
+  distributionChannels?: string[];
+  contentRestrictions?: string[];
+  txOptions?: TxOptions;
+};
+
+export type RegisterPILSocialRemixPolicyResponse = {
+  txHash: string;
+  policyId?: string;
+};
+
+export type RegisterPILCommercialUsePolicyRequest = {
+  commercialRevShare: number;
+  mintingFee?: string;
+  mintingFeeToken?: `0x${string}`;
+  territories?: string[];
+  distributionChannels?: string[];
+  contentRestrictions?: string[];
+  txOptions?: TxOptions;
+};
+
+export type RegisterPILCommercialUsePolicyResponse = {
+  txHash: string;
+  policyId?: string;
+};
+
 export type AddPolicyToIpRequest = {
   ipId: `0x${string}`;
   policyId: string;

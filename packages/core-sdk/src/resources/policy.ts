@@ -5,11 +5,16 @@ import {
   IPAccountABI,
   LicensingModuleConfig,
   PILPolicyFrameworkManagerConfig,
+  RoyaltyPolicyLAPConfig,
 } from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import {
   RegisterPILPolicyRequest,
   RegisterPILPolicyResponse,
+  RegisterPILSocialRemixPolicyRequest,
+  RegisterPILSocialRemixPolicyResponse,
+  RegisterPILCommercialUsePolicyRequest,
+  RegisterPILCommercialUsePolicyResponse,
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
 } from "../types/resources/policy";
@@ -20,6 +25,7 @@ export class PolicyClient {
   public ipAccountABI = IPAccountABI;
   public licensingModuleConfig = LicensingModuleConfig;
   public pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
+  public royaltyPolicyLAPConfig = RoyaltyPolicyLAPConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
@@ -91,6 +97,123 @@ export class PolicyClient {
       }
     } catch (error) {
       handleError(error, "Failed to register policy");
+    }
+  }
+
+  /**
+   * Convenient function to register a PIL social remix policy to the registry
+   * Internally, this function must generate a Licensing.Policy struct and call registerPolicy.
+   * @param request - the licensing parameters for the Programmable IP License v1 (PIL) standard.
+   *   @param request.territories List of territories where the license is valid. If empty, global.
+   *   @param request.distributionChannels List of distribution channels where the license is valid. Empty if no restrictions.
+   *   @param request.contentRestrictions List of content restrictions where the license is valid. Empty if no restrictions.
+   * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
+   */
+  public async RegisterPILSocialRemixPolicy(
+    request: RegisterPILSocialRemixPolicyRequest,
+  ): Promise<RegisterPILSocialRemixPolicyResponse> {
+    try {
+      const { request: call } = await this.rpcClient.simulateContract({
+        ...this.pilPolicyFrameworkManagerConfig,
+        functionName: "registerPolicy",
+        args: [
+          {
+            transferable: true,
+            royaltyPolicy: zeroAddress,
+            mintingFee: parseToBigInt(0),
+            mintingFeeToken: zeroAddress,
+            policy: {
+              attribution: true,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercialRevShare: 0,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: "0x" as `0x${string}`,
+              territories: request.territories || [],
+              distributionChannels: request.distributionChannels || [],
+              contentRestrictions: request.contentRestrictions || [],
+            },
+          },
+        ],
+        account: this.wallet.account,
+      });
+      const txHash = await this.wallet.writeContract(call);
+
+      if (request.txOptions?.waitForTransaction) {
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licensingModuleConfig,
+          eventName: "PolicyRegistered",
+        });
+        return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to register social remix policy");
+    }
+  }
+
+  /**
+   * Convenient function to register a PIL social remix policy to the registry
+   * Internally, this function must generate a Licensing.Policy struct and call registerPolicy.
+   * @param request - the licensing parameters for the Programmable IP License v1 (PIL) standard.
+   *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor
+   *   @param mintingFee Fee to be paid when minting a license
+   *   @param mintingFeeToken Token to be used to pay the minting fee
+   *   @param request.territories List of territories where the license is valid. If empty, global.
+   *   @param request.distributionChannels List of distribution channels where the license is valid. Empty if no restrictions.
+   *   @param request.contentRestrictions List of content restrictions where the license is valid. Empty if no restrictions.
+   * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
+   */
+  public async RegisterPILCommercialUsePolicy(
+    request: RegisterPILCommercialUsePolicyRequest,
+  ): Promise<RegisterPILCommercialUsePolicyResponse> {
+    try {
+      const { request: call } = await this.rpcClient.simulateContract({
+        ...this.pilPolicyFrameworkManagerConfig,
+        functionName: "registerPolicy",
+        args: [
+          {
+            transferable: true,
+            royaltyPolicy: this.royaltyPolicyLAPConfig.address,
+            mintingFee: parseToBigInt(request.mintingFee || 0),
+            mintingFeeToken: request.mintingFeeToken || zeroAddress,
+            policy: {
+              attribution: true,
+              commercialUse: true,
+              commercialAttribution: true,
+              commercialRevShare: request.commercialRevShare,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: "0x" as `0x${string}`,
+              territories: request.territories || [],
+              distributionChannels: request.distributionChannels || [],
+              contentRestrictions: request.contentRestrictions || [],
+            },
+          },
+        ],
+        account: this.wallet.account,
+      });
+      const txHash = await this.wallet.writeContract(call);
+
+      if (request.txOptions?.waitForTransaction) {
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licensingModuleConfig,
+          eventName: "PolicyRegistered",
+        });
+        return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to register commercial use policy");
     }
   }
 
