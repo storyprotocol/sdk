@@ -7,7 +7,7 @@ import {
   PILPolicyFrameworkManagerConfig,
   RoyaltyPolicyLAPConfig,
 } from "../abi/config";
-import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { parseToBigInt, waitTxAndFilterLog, typedDataToBytes } from "../utils/utils";
 import {
   RegisterPILPolicyRequest,
   RegisterPILPolicyResponse,
@@ -17,6 +17,7 @@ import {
   RegisterPILCommercialUsePolicyResponse,
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
+  FrameworkData,
 } from "../types/resources/policy";
 
 export class PolicyClient {
@@ -55,6 +56,38 @@ export class PolicyClient {
     request: RegisterPILPolicyRequest,
   ): Promise<RegisterPILPolicyResponse> {
     try {
+      // First check if the policy exists
+      const policyId = await this.getPolicyId(
+        request.transferable,
+        this.encodeFrameworkData({
+          attribution: request.attribution || false,
+          commercialUse: request.commercialUse || false,
+          commercialAttribution: request.commercialAttribution || false,
+          commercializerChecker: request.commercializerChecker || zeroAddress,
+          commercializerCheckerData: (request.commercializerCheckerData || "0x") as `0x${string}`,
+          commercialRevShare: request.commercialRevShare || 0,
+          derivativesAllowed: request.derivativesAllowed || false,
+          derivativesAttribution: request.derivativesAttribution || false,
+          derivativesApproval: request.derivativesApproval || false,
+          derivativesReciprocal: request.derivativesReciprocal || false,
+          territories: request.territories || [],
+          distributionChannels: request.distributionChannels || [],
+          contentRestrictions: request.contentRestrictions || [],
+        }),
+        request.commercialRevShare
+          ? typedDataToBytes({
+              interface: "uint32",
+              data: [request.commercialRevShare],
+            })
+          : "0x",
+        request.mintingFee || "0",
+        request.mintingFeeToken || zeroAddress,
+        request.royaltyPolicy || zeroAddress,
+      );
+      if (policyId !== 0) {
+        return { policyId: policyId.toString() };
+      }
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.pilPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
@@ -215,6 +248,57 @@ export class PolicyClient {
     } catch (error) {
       handleError(error, "Failed to register commercial use policy");
     }
+  }
+
+  private async getPolicyId(
+    transferable: boolean,
+    frameworkData: `0x${string}`,
+    royaltyData?: `0x${string}`,
+    mintingFee?: string,
+    mintingFeeToken?: `0x${string}`,
+    royaltyPolicy?: `0x${string}`,
+    policyFramework?: `0x${string}`,
+  ): Promise<number> {
+    const data = await this.rpcClient.readContract({
+      ...this.licensingModuleConfig,
+      functionName: "getPolicyId",
+      args: [
+        {
+          isLicenseTransferable: transferable,
+          policyFramework: policyFramework || this.pilPolicyFrameworkManagerConfig.address,
+          frameworkData: frameworkData,
+          royaltyPolicy: royaltyPolicy || zeroAddress,
+          royaltyData: royaltyData || "0x",
+          mintingFee: parseToBigInt(mintingFee || 0),
+          mintingFeeToken: mintingFeeToken || zeroAddress,
+        },
+      ],
+    });
+    return Number(data);
+  }
+
+  private encodeFrameworkData(data: FrameworkData): `0x${string}` {
+    return typedDataToBytes({
+      interface:
+        "(bool, bool, bool, address, bytes, uint32, bool, bool, bool, bool, string[], string[], string[])",
+      data: [
+        [
+          data.attribution,
+          data.commercialUse,
+          data.commercialAttribution,
+          data.commercializerChecker,
+          data.commercializerCheckerData,
+          data.commercialRevShare,
+          data.derivativesAllowed,
+          data.derivativesAttribution,
+          data.derivativesApproval,
+          data.derivativesReciprocal,
+          data.territories,
+          data.distributionChannels,
+          data.contentRestrictions,
+        ],
+      ],
+    });
   }
 
   /**

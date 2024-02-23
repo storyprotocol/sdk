@@ -13,7 +13,7 @@ import {
 } from "./testABI.tenderly";
 
 // Disable since it's flaky
-describe.skip("Test Policy Functions", () => {
+describe("Test Policy Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -38,7 +38,7 @@ describe.skip("Test Policy Functions", () => {
   });
   // 0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431
   describe("Register PIL Policy", async function () {
-    it("should not throw error when registering PIL Policy with everything turned off", async () => {
+    it.only("should not throw error when registering PIL Policy with everything turned off", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILPolicy({
@@ -56,7 +56,25 @@ describe.skip("Test Policy Functions", () => {
       if (waitForTransaction) {
         expect(response.policyId).to.be.a("string");
         expect(response.policyId).not.empty;
+        console.log("test policy id", response.policyId);
       }
+    });
+
+    it.only("should not throw error when registering a registered policy", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.registerPILPolicy({
+          transferable: true,
+          territories: ["US", "EU"],
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.empty;
+      expect(response.policyId).to.be.a("string");
+      expect(response.policyId).not.empty;
     });
 
     it("should not throw error when registering PIL Policy with social remixing", async () => {

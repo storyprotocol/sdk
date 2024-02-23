@@ -34,7 +34,8 @@ export const LicenseRegistryConfig = {
 };
 
 export const LicensingModuleConfig = {
-  abi: [...LicensingModuleABI, ...ErrorsABI],
+  abi: LicensingModuleABI,
+  //abi: [...LicensingModuleABI, ...ErrorsABI],
   address: getAddress(sepolia.LicensingModule),
 };
 
