@@ -25,7 +25,13 @@
     "format:fix": "prettier --write .",
     "lint:fix": "pnpm run lint --fix",
     "lint": "eslint ./src",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "tsdoc": "pnpm run tsdoc:ipAsset && pnpm run tsdoc:dispute && pnpm run tsdoc:license && pnpm run tsdoc:policy && pnpm run tsdoc:permission",
+    "tsdoc:ipAsset": "tsdoc --src=src/resources/ipAsset.ts --dest=docs/reference-ipAsset.md",
+    "tsdoc:dispute": "tsdoc --src=src/resources/dispute.ts --dest=docs/reference-dispute.md",
+    "tsdoc:license": "tsdoc --src=src/resources/license.ts --dest=docs/reference-license.md",
+    "tsdoc:policy": "tsdoc --src=src/resources/policy.ts --dest=docs/reference-policy.md",
+    "tsdoc:permission": "tsdoc --src=src/resources/permission.ts --dest=docs/reference-permission.md"
   },
   "license": "MIT",
   "dependencies": {
@@ -55,6 +61,7 @@
     "prettier": "^2.8.8",
     "sinon": "^16.0.0",
     "ts-node": "^10.9.1",
+    "tsdoc-markdown": "^0.3.0",
     "typechain": "^8.3.1",
     "typescript": "^5.2.2"
   },
