@@ -36,9 +36,9 @@ describe("Test Policy Functions", () => {
     client.license.licenseRegistryConfig = LicenseRegistryConfig;
     client.license.licensingModuleConfig = LicensingModuleConfig;
   });
-  // 0x3b4bdf523f5b85a466b3501efaee87f2e2ad6431
+
   describe("Register PIL Policy", async function () {
-    it.only("should not throw error when registering PIL Policy with everything turned off", async () => {
+    it("should not throw error when registering PIL Policy with everything turned off", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILPolicy({
@@ -58,6 +58,23 @@ describe("Test Policy Functions", () => {
         expect(response.policyId).not.empty;
         console.log("test policy id", response.policyId);
       }
+    });
+
+    it("should not throw error when registering existing PIL Policy with everything turned off", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.registerPILPolicy({
+          transferable: false,
+          territories: ["US", "EU"],
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.not.exist;
+      expect(response.policyId).to.be.a("string");
+      expect(response.policyId).not.empty;
     });
 
     it("should not throw error when registering a registered policy", async () => {
@@ -131,10 +148,10 @@ describe("Test Policy Functions", () => {
       }
     });
 
-    it("should not throw error when RegisterPILCommercialUsePolicy", async () => {
+    it.only("should not throw error when RegisterPILCommercialUsePolicy", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.RegisterPILCommercialUsePolicy({
+        client.policy.registerPILCommercialUsePolicy({
           mintingFeeToken: "0x65F7eE2eEF8C127f3c5D9dE3e95Add44c8cB286b",
           mintingFee: "1000000000000000000",
           commercialRevShare: 150,
@@ -153,10 +170,28 @@ describe("Test Policy Functions", () => {
       }
     });
 
+    it.only("should not throw error when RegisterPILCommercialUsePolicy existing policy", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.registerPILCommercialUsePolicy({
+          mintingFeeToken: "0x65F7eE2eEF8C127f3c5D9dE3e95Add44c8cB286b",
+          mintingFee: "1000000000000000000",
+          commercialRevShare: 150,
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.not.exist;
+      expect(response.policyId).to.be.a("string");
+      expect(response.policyId).not.empty;
+    });
+
     it("should not throw error when RegisterPILSocialRemixPolicy", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
-        client.policy.RegisterPILSocialRemixPolicy({
+        client.policy.registerPILSocialRemixPolicy({
           distributionChannels: ["TV"],
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -171,6 +206,22 @@ describe("Test Policy Functions", () => {
         expect(response.policyId).to.be.a("string");
         expect(response.policyId).not.empty;
       }
+    });
+
+    it("should not throw error when RegisterPILSocialRemixPolicy existing policy", async () => {
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.policy.registerPILSocialRemixPolicy({
+          distributionChannels: ["TV"],
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.not.exist;
+      expect(response.policyId).to.be.a("string");
+      expect(response.policyId).not.empty;
     });
 
     it.skip("Test license minting with Commercial policy", async () => {

@@ -75,12 +75,10 @@ export class PolicyClient {
       const policyId = await this.getPolicyId(
         request.transferable,
         this.encodeFrameworkData(frameworkData),
-        request.commercialRevShare
-          ? typedDataToBytes({
-              interface: "uint32",
-              data: [request.commercialRevShare],
-            })
-          : "0x",
+        typedDataToBytes({
+          interface: "uint32",
+          data: [request.commercialRevShare || 0],
+        }),
         request.mintingFee || "0",
         request.mintingFeeToken || zeroAddress,
         request.royaltyPolicy || zeroAddress,
@@ -96,7 +94,7 @@ export class PolicyClient {
           {
             transferable: request.transferable,
             royaltyPolicy: request.royaltyPolicy || zeroAddress,
-            mintingFee: parseToBigInt(request.mintingFee || 0),
+            mintingFee: parseToBigInt(request.mintingFee || "0"),
             mintingFeeToken: request.mintingFeeToken || zeroAddress,
             policy: {
               attribution: request.attribution || false,
@@ -143,10 +141,41 @@ export class PolicyClient {
    *   @param request.contentRestrictions List of content restrictions where the license is valid. Empty if no restrictions.
    * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
    */
-  public async RegisterPILSocialRemixPolicy(
+  public async registerPILSocialRemixPolicy(
     request: RegisterPILSocialRemixPolicyRequest,
   ): Promise<RegisterPILSocialRemixPolicyResponse> {
     try {
+      // First check if the policy exists
+      const frameworkData = {
+        attribution: true,
+        commercialUse: false,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x" as `0x${string}`,
+        commercialRevShare: 0,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        territories: request.territories || [],
+        distributionChannels: request.distributionChannels || [],
+        contentRestrictions: request.contentRestrictions || [],
+      };
+      const policyId = await this.getPolicyId(
+        true,
+        this.encodeFrameworkData(frameworkData),
+        typedDataToBytes({
+          interface: "uint32",
+          data: [0],
+        }),
+        "0",
+        zeroAddress,
+        zeroAddress,
+      );
+      if (policyId !== 0) {
+        return { policyId: policyId.toString() };
+      }
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.pilPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
@@ -203,10 +232,41 @@ export class PolicyClient {
    *   @param request.contentRestrictions List of content restrictions where the license is valid. Empty if no restrictions.
    * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
    */
-  public async RegisterPILCommercialUsePolicy(
+  public async registerPILCommercialUsePolicy(
     request: RegisterPILCommercialUsePolicyRequest,
   ): Promise<RegisterPILCommercialUsePolicyResponse> {
     try {
+      // First check if the policy exists
+      const frameworkData = {
+        attribution: true,
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x" as `0x${string}`,
+        commercialRevShare: request.commercialRevShare,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        territories: request.territories || [],
+        distributionChannels: request.distributionChannels || [],
+        contentRestrictions: request.contentRestrictions || [],
+      };
+      const policyId = await this.getPolicyId(
+        true,
+        this.encodeFrameworkData(frameworkData),
+        typedDataToBytes({
+          interface: "uint32",
+          data: [request.commercialRevShare],
+        }),
+        request.mintingFee || "0",
+        request.mintingFeeToken || zeroAddress,
+        zeroAddress,
+      );
+      if (policyId !== 0) {
+        return { policyId: policyId.toString() };
+      }
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.pilPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
@@ -214,7 +274,7 @@ export class PolicyClient {
           {
             transferable: true,
             royaltyPolicy: this.royaltyPolicyLAPConfig.address,
-            mintingFee: parseToBigInt(request.mintingFee || 0),
+            mintingFee: parseToBigInt(request.mintingFee || "0"),
             mintingFeeToken: request.mintingFeeToken || zeroAddress,
             policy: {
               attribution: true,
@@ -260,43 +320,20 @@ export class PolicyClient {
     royaltyPolicy: `0x${string}`,
     policyFramework?: `0x${string}`,
   ): Promise<number> {
-    /*
-    console.log("get policy id request:", {
-      transferable: transferable,
-      frameworkData: frameworkData,
-      royaltyData: royaltyData,
-      mintingFee: mintingFee,
-      mintingFeeToken: mintingFeeToken,
-      royaltyPolicy: royaltyPolicy,
-      policyFramework: policyFramework,
-    });
-    */
-    const request = {
-      isLicenseTransferable: transferable,
-      policyFramework: policyFramework || "0x20944e90830d9c4E8471589460B38A0961B7E061", //this.pilPolicyFrameworkManagerConfig.address,
-      frameworkData: frameworkData,
-      royaltyPolicy: royaltyPolicy,
-      royaltyData: royaltyData,
-      mintingFee: parseToBigInt(mintingFee),
-      mintingFeeToken: mintingFeeToken,
-    };
-    /*
-    const encodedRequest = this.encodePolicy(
-      transferable,
-      policyFramework || "0x20944e90830d9c4E8471589460B38A0961B7E061", //this.pilPolicyFrameworkManagerConfig.address,
-      frameworkData,
-      royaltyPolicy,
-      royaltyData,
-      parseToBigInt(mintingFee),
-      mintingFeeToken,
-    );
-    */
-    //console.log("get policy id request: ", request);
-    //console.log("encoded: ", encodedRequest);
     const data = await this.rpcClient.readContract({
       ...this.licensingModuleConfig,
       functionName: "getPolicyId",
-      args: [request],
+      args: [
+        {
+          isLicenseTransferable: transferable,
+          policyFramework: policyFramework || this.pilPolicyFrameworkManagerConfig.address,
+          frameworkData: frameworkData,
+          royaltyPolicy: royaltyPolicy,
+          royaltyData: royaltyData,
+          mintingFee: parseToBigInt(mintingFee),
+          mintingFeeToken: mintingFeeToken,
+        },
+      ],
     });
     return Number(data);
   }
@@ -320,31 +357,6 @@ export class PolicyClient {
           data.territories,
           data.distributionChannels,
           data.contentRestrictions,
-        ],
-      ],
-    });
-  }
-
-  private encodePolicy(
-    transferable: boolean,
-    policyFramework: `0x${string}`,
-    frameworkData: `0x${string}`,
-    royaltyPolicy: `0x${string}`,
-    royaltyData: `0x${string}`,
-    mintingFee: bigint,
-    mintingFeeToken: `0x${string}`,
-  ): `0x${string}` {
-    return typedDataToBytes({
-      interface: "(bool, address, bytes, address, bytes, uint256, address)",
-      data: [
-        [
-          transferable,
-          policyFramework,
-          frameworkData,
-          royaltyPolicy,
-          royaltyData,
-          mintingFee,
-          mintingFeeToken,
         ],
       ],
     });
