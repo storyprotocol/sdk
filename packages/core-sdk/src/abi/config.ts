@@ -47,3 +47,7 @@ export const PILPolicyFrameworkManagerConfig = {
   abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
   address: getAddress(sepolia.PILPolicyFrameworkManager),
 };
+
+export const RoyaltyPolicyLAPConfig = {
+  address: getAddress(sepolia.RoyaltyPolicyLAP),
+};
