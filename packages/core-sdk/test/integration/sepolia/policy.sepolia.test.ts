@@ -76,10 +76,10 @@ describe("Test Policy Functions", () => {
       const response = await expect(
         client.policy.registerPILPolicy({
           transferable: true,
-          mintingFeeToken: "0xd53c2a80d24f6b3ff009e48cf88d3b482e8e1457",
+          mintingFeeToken: "0x1219A0E87e617E6560104fA11cfd4f01FeB47362",
           mintingFee: "1000000000000000000",
-          royaltyPolicy: "0x8404061350ba0ca85c4e733b0be78c5519679003",
-          commercialRevShare: 100,
+          royaltyPolicy: "0xda483fd6e6ecA1C2D913802F9a6B57a83b73029f",
+          commercialRevShare: 300,
           attribution: true,
           commercialUse: true,
           commercialAttribution: true,

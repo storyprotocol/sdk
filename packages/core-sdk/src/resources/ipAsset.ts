@@ -69,11 +69,11 @@ export class IPAssetClient {
 
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.ipAssetRegistryConfig,
           eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipId: targetLog.args.ipId };
+        return { txHash: txHash, ipId: targetLogs[0].args.ipId };
       } else {
         return { txHash: txHash };
       }
@@ -135,11 +135,11 @@ export class IPAssetClient {
 
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.ipAssetRegistryConfig,
           eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipId: targetLog.args.ipId };
+        return { txHash: txHash, ipId: targetLogs[0].args.ipId };
       } else {
         return { txHash: txHash };
       }
