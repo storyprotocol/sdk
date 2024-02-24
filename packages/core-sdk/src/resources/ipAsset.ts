@@ -12,6 +12,7 @@ import {
 } from "../types/resources/ipAsset";
 import { RoyaltyContext } from "../types/resources/royalty";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { SepoliaChainId } from "../constants/common";
 import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
 
 export class IPAssetClient {
@@ -44,6 +45,14 @@ export class IPAssetClient {
    */
   public async registerRootIp(request: RegisterRootIpRequest): Promise<RegisterRootIpResponse> {
     try {
+      const ipId = await this.isNFTRegistered(
+        SepoliaChainId,
+        request.tokenContractAddress,
+        request.tokenId,
+      );
+      if (ipId !== "0x") {
+        return { ipId: ipId };
+      }
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.registrationModuleConfig,
         functionName: "registerRootIp",
@@ -60,11 +69,11 @@ export class IPAssetClient {
 
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.ipAssetRegistryConfig,
           eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipId: targetLog.args.ipId };
+        return { txHash: txHash, ipId: targetLogs[0].args.ipId };
       } else {
         return { txHash: txHash };
       }
@@ -92,6 +101,14 @@ export class IPAssetClient {
     request: RegisterDerivativeIpRequest,
   ): Promise<RegisterDerivativeIpResponse> {
     try {
+      const ipId = await this.isNFTRegistered(
+        SepoliaChainId,
+        request.tokenContractAddress,
+        request.tokenId,
+      );
+      if (ipId !== "0x") {
+        return { ipId: ipId };
+      }
       const licenseIds: bigint[] = [];
       request.licenseIds.forEach(function (licenseId) {
         licenseIds.push(parseToBigInt(licenseId));
@@ -118,16 +135,35 @@ export class IPAssetClient {
 
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.ipAssetRegistryConfig,
           eventName: "IPRegistered",
         });
-        return { txHash: txHash, ipId: targetLog.args.ipId };
+        return { txHash: txHash, ipId: targetLogs[0].args.ipId };
       } else {
         return { txHash: txHash };
       }
     } catch (error) {
       handleError(error, "Failed to register derivative IP");
     }
+  }
+
+  private async isNFTRegistered(
+    chainId: string,
+    tokenAddress: `0x${string}`,
+    tokenId: string,
+  ): Promise<`0x${string}`> {
+    const ipId = await this.rpcClient.readContract({
+      ...this.ipAssetRegistryConfig,
+      functionName: "ipId",
+      args: [parseToBigInt(chainId), tokenAddress, parseToBigInt(tokenId)],
+    });
+    const isRegistered = await this.rpcClient.readContract({
+      ...this.ipAssetRegistryConfig,
+      functionName: "isRegistered",
+      args: [ipId],
+    });
+
+    return isRegistered ? ipId : "0x";
   }
 }

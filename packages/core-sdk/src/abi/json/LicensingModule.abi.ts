@@ -137,6 +137,62 @@ export default [
   {
     inputs: [
       {
+        components: [
+          {
+            internalType: "bool",
+            name: "isLicenseTransferable",
+            type: "bool",
+          },
+          {
+            internalType: "address",
+            name: "policyFramework",
+            type: "address",
+          },
+          {
+            internalType: "bytes",
+            name: "frameworkData",
+            type: "bytes",
+          },
+          {
+            internalType: "address",
+            name: "royaltyPolicy",
+            type: "address",
+          },
+          {
+            internalType: "bytes",
+            name: "royaltyData",
+            type: "bytes",
+          },
+          {
+            internalType: "uint256",
+            name: "mintingFee",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "mintingFeeToken",
+            type: "address",
+          },
+        ],
+        internalType: "struct Licensing.Policy",
+        name: "pol",
+        type: "tuple",
+      },
+    ],
+    name: "getPolicyId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "policyId",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256[]",
         name: "licenseIds",
         type: "uint256[]",

@@ -27,8 +27,8 @@ describe("License Functions", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.license.mintLicense({
-          policyId: "7",
-          licensorIpId: "0xd6caa1f6b8207ad46e0fdfff98bb9aa04448d65b",
+          policyId: "5",
+          licensorIpId: "0x32d062fffb59ec552ab7cf05f5966a0990c768df",
           mintAmount: 1,
           receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
           txOptions: {
@@ -48,12 +48,11 @@ describe("License Functions", () => {
   });
 
   describe("Link IP To Parents", async function () {
-    // 1. non commercial
     it.skip("should not throw error when link IP to parents", async () => {
       // 1. mint a license
       const mintLicenseResponse = await client.license.mintLicense({
-        policyId: "7",
-        licensorIpId: "0x19ff36f985e728c143f6597a5d92093c24cecac1",
+        policyId: "5",
+        licensorIpId: "0xb69d3277be50b0b851695bc010131a83933132db",
         mintAmount: 1,
         receiverAddress: process.env.SEPOLIA_TEST_WALLET_ADDRESS! as `0x${string}`,
         txOptions: {
@@ -72,12 +71,13 @@ describe("License Functions", () => {
         },
       });
       const licenseId2 = mintLicenseResponse2.licenseId!;
+
       // 2. link ip to parents
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.license.linkIpToParent({
           licenseIds: [licenseId1, licenseId2],
-          childIpId: "0x9cd42f5a49ec516ce44e72401dcf2bafab6f24b8",
+          childIpId: "0x3a94abcc7c7dd46f82326c3333bbd55168eb8dde",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },

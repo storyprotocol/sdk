@@ -86,12 +86,14 @@ describe("Test PolicyClient", () => {
 
     it("should return licenseId if request.txOptions is present", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      sinon.stub(utils, "waitTxAndFilterLog").resolves({
-        eventName: "PolicyRegistered",
-        args: {
-          policyId: "7",
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "PolicyRegistered",
+          args: {
+            policyId: "7",
+          },
         },
-      });
+      ]);
       rpcMock.simulateContract = sinon.stub().resolves({
         request: {
           abi: "event",
@@ -198,12 +200,14 @@ describe("Test PolicyClient", () => {
 
     it("should return index if request.txOptions is present", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      sinon.stub(utils, "waitTxAndFilterLog").resolves({
-        eventName: "PolicyAddedToIpId",
-        args: {
-          index: "10",
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "PolicyAddedToIpId",
+          args: {
+            index: "10",
+          },
         },
-      });
+      ]);
       rpcMock.simulateContract = sinon.stub().resolves({
         request: {
           abi: "event",

@@ -107,12 +107,14 @@ describe("Test LicenseClient", () => {
     it("should return licenseId if request.txOptions is present", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       storyMock.getRoyaltyPolicy = sinon.stub().resolves();
-      sinon.stub(utils, "waitTxAndFilterLog").resolves({
-        eventName: "TransferSingle",
-        args: {
-          id: "7",
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "TransferSingle",
+          args: {
+            id: "7",
+          },
         },
-      });
+      ]);
       rpcMock.simulateContract = sinon.stub().resolves({
         request: {
           abi: "event",
@@ -217,15 +219,16 @@ describe("Test LicenseClient", () => {
       expect(Object.keys(result)[0]).to.equal("txHash");
       expect(result.txHash).to.equal(txHash);
     });
-
     it("should return licenseId if request.txOptions is present", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      sinon.stub(utils, "waitTxAndFilterLog").resolves({
-        eventName: "TransferBatch",
-        args: {
-          ids: [7],
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "TransferBatch",
+          args: {
+            ids: [7],
+          },
         },
-      });
+      ]);
       rpcMock.simulateContract = sinon.stub().resolves({
         request: {
           abi: "event",

@@ -35,32 +35,39 @@ export async function waitTxAndFilterLog<
   params: {
     abi: TAbi;
     eventName: InferEventName<TAbi, TEventName>;
+    from?: Hex;
     confirmations?: number;
     pollingInterval?: number;
     timeout?: number;
   },
-): Promise<DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>> {
+): Promise<DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[]> {
   const txReceipt = await client.waitForTransactionReceipt({
     hash: txHash,
     confirmations: params.confirmations,
     pollingInterval: params.pollingInterval,
     timeout: params.timeout,
   });
-
+  const targetLogs: DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[] = [];
   for (const log of txReceipt.logs) {
     try {
-      return decodeEventLog<TAbi, TEventName, TTopics, TData, TStrict>({
+      if (params.from && log.address !== params.from.toLowerCase()) {
+        continue;
+      }
+      const currentLog = decodeEventLog<TAbi, TEventName, TTopics, TData, TStrict>({
         abi: params.abi,
         eventName: params.eventName,
         data: log.data as TData,
         topics: log.topics as [signature: Hex, ...args: TTopics],
       });
+      targetLogs.push(currentLog);
     } catch (e) {
       continue;
     }
   }
-
-  throw new Error(`not found event ${params.eventName} in target transaction`);
+  if (targetLogs.length === 0) {
+    throw new Error(`not found event ${params.eventName} in target transaction`);
+  }
+  return targetLogs;
 }
 
 export async function waitTx(

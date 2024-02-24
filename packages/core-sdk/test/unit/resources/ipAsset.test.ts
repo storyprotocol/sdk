@@ -150,7 +150,7 @@ describe("Test IpAssetClient", function () {
       sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
       const request = {
         licenseIds: ["2"],
-        tokenContractAddress: "0xkkkkkkkkk", // invlaid address
+        tokenContractAddress: "0xkkkkkkkkk" as `0x${string}`, // invlaid address
         tokenId: "3",
         ipName: "Test IP",
         uri: "This is a test IP description",
@@ -166,7 +166,6 @@ describe("Test IpAssetClient", function () {
         expect((err as Error).message).includes('Address "0xkkkkkkkkk" is invalid');
       }
     });
-
     it("should not throw error when registering a derivative IP", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
@@ -303,12 +302,14 @@ describe("Test IpAssetClient", function () {
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
       sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
-      sinon.stub(utils, "waitTxAndFilterLog").resolves({
-        eventName: "TransferBatch",
-        args: {
-          ipId: "9",
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "TransferBatch",
+          args: {
+            ipId: "9",
+          },
         },
-      });
+      ]);
       const result = await ipAccountClient.registerDerivativeIp({
         licenseIds: ["2"],
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
