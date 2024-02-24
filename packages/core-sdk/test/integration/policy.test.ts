@@ -42,7 +42,7 @@ describe("Test Policy Functions", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILPolicy({
-          transferable: true,
+          transferable: false,
           territories: ["US", "EU"],
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -60,7 +60,7 @@ describe("Test Policy Functions", () => {
       }
     });
 
-    it.only("should not throw error when registering a registered policy", async () => {
+    it("should not throw error when registering a registered policy", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILPolicy({
