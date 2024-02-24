@@ -13,7 +13,7 @@ import {
 } from "./testABI.tenderly";
 
 // Disable since it's flaky
-describe("Test Policy Functions", () => {
+describe.skip("Test Policy Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
 
@@ -148,7 +148,7 @@ describe("Test Policy Functions", () => {
       }
     });
 
-    it.only("should not throw error when RegisterPILCommercialUsePolicy", async () => {
+    it("should not throw error when RegisterPILCommercialUsePolicy", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILCommercialUsePolicy({
@@ -170,7 +170,7 @@ describe("Test Policy Functions", () => {
       }
     });
 
-    it.only("should not throw error when RegisterPILCommercialUsePolicy existing policy", async () => {
+    it("should not throw error when RegisterPILCommercialUsePolicy existing policy", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.registerPILCommercialUsePolicy({

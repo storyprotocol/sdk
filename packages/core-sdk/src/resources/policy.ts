@@ -261,7 +261,7 @@ export class PolicyClient {
         }),
         request.mintingFee || "0",
         request.mintingFeeToken || zeroAddress,
-        zeroAddress,
+        this.royaltyPolicyLAPConfig.address,
       );
       if (policyId !== 0) {
         return { policyId: policyId.toString() };
