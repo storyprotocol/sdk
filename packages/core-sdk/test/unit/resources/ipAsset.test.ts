@@ -2,12 +2,10 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient, AddressZero } from "../../../src";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient, Account } from "viem";
 import { StoryAPIClient } from "../../../src/clients/storyAPI";
-
-chai.use(chaiAsPromised);
+import * as utils from "../../../src/utils/utils";
+import * as royaltyContextUtils from "../../../src/utils/royaltyContext";
 
 describe.skip("Test IpAssetClient", function () {
   let ipAccountClient: IPAssetClient;
@@ -101,6 +99,16 @@ describe.skip("Test IpAssetClient", function () {
       });
       expect(response.txHash).equal(txHash);
       expect(response.ipId).equals("0x8C61b7fc58E5d4d6b43Ef31F69c3AB8Db8fD6D9E");
+
+      const response2 = await ipAccountClient.registerRootIp({
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(response2.txHash).equal(txHash);
+      expect(response2.ipId).equals("0x8C61b7fc58E5d4d6b43Ef31F69c3AB8Db8fD6D9E");
     });
 
     it("should throw error when request fails", async function () {
@@ -138,11 +146,35 @@ describe.skip("Test IpAssetClient", function () {
   });
 
   describe("Test ipAccountClient.registerDerivativeIp", async function () {
+    /*
+    it("should throw invalid address error, if tokenContractAddress is invlid", async () => {
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      const request = {
+        licenseIds: ["2"],
+        tokenContractAddress: "0xkkkkkkkkk", // invlaid address
+        tokenId: "3",
+        ipName: "Test IP",
+        uri: "This is a test IP description",
+        contentHash: AddressZero as `0x${string}`,
+        txOptions: {
+          waitForTransaction: false,
+        },
+      };
+
+      try {
+        await ipAccountClient.registerDerivativeIp(request);
+      } catch (err) {
+        expect((err as Error).message).includes('Address "0xkkkkkkkkk" is invalid');
+      }
+    });
+    */
     it("should not throw error when registering a derivative IP", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
 
       const res = await ipAccountClient.registerDerivativeIp({
         licenseIds: ["2"],
@@ -184,14 +216,13 @@ describe.skip("Test IpAssetClient", function () {
           },
         ],
       });
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
 
       const response = await ipAccountClient.registerDerivativeIp({
         licenseIds: ["2"],
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
-        ipName: "Test IP",
-        uri: "This is a test IP description",
-        contentHash: AddressZero,
         txOptions: {
           waitForTransaction: true,
         },
@@ -203,6 +234,9 @@ describe.skip("Test IpAssetClient", function () {
     it("should throw error when request fails", async function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
+
       await expect(
         ipAccountClient.registerDerivativeIp({
           licenseIds: ["2"],
@@ -220,9 +254,10 @@ describe.skip("Test IpAssetClient", function () {
 
     it("should throw error when invalid licenseId is provided", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
-      rpcMock.simulateContract = sinon.stub().rejects();
+      rpcMock.simulateContract = sinon.stub().rejects("Error");
       walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
 
       await expect(
         ipAccountClient.registerDerivativeIp({
@@ -236,7 +271,55 @@ describe.skip("Test IpAssetClient", function () {
             waitForTransaction: false,
           },
         }),
-      ).to.be.rejectedWith("Failed to register derivative IP: Error");
+      ).to.be.rejectedWith("Failed to register derivative IP:");
+    });
+
+    it("should return txHash only if txOptions.waitForTransaction is false", async function () {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
+
+      const result = await ipAccountClient.registerDerivativeIp({
+        licenseIds: ["2"],
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        ipName: "Test IP",
+        uri: "This is a test IP description",
+        contentHash: AddressZero,
+        txOptions: {
+          waitForTransaction: false,
+        },
+      });
+      expect(Object.keys(result).length).to.equal(1);
+      expect(Object.keys(result)[0]).to.equal("txHash");
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should return txHash and ipId if txOptions.waitForTransaction is true", async function () {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
+      sinon.stub(utils, "waitTxAndFilterLog").resolves({
+        eventName: "TransferBatch",
+        args: {
+          ipId: "9",
+        },
+      });
+      const result = await ipAccountClient.registerDerivativeIp({
+        licenseIds: ["2"],
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.ipId).to.equal("9");
     });
   });
 });

@@ -816,29 +816,4 @@ export default [
     name: "RoyaltyPolicyLAP__ZeroRoyaltyModule",
     type: "error",
   },
-  {
-    inputs: [],
-    name: "TaggingModule__DstIpIdDoesNotHaveDstTag",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "TaggingModule__InvalidRelationTypeName",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "TaggingModule__RelationTypeAlreadyExists",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "TaggingModule__RelationTypeDoesNotExist",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "TaggingModule__SrcIpIdDoesNotHaveSrcTag",
-    type: "error",
-  },
 ] as const;

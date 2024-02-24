@@ -40,7 +40,6 @@ describe("Dispute Functions", () => {
 
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
-      console.log(`disputeId:${response.disputeId}`);
 
       if (waitForTransaction) {
         expect(response.disputeId).to.be.a("string");

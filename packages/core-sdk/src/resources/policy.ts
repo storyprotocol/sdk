@@ -5,13 +5,19 @@ import {
   IPAccountABI,
   LicensingModuleConfig,
   PILPolicyFrameworkManagerConfig,
+  RoyaltyPolicyLAPConfig,
 } from "../abi/config";
-import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { parseToBigInt, waitTxAndFilterLog, typedDataToBytes } from "../utils/utils";
 import {
   RegisterPILPolicyRequest,
   RegisterPILPolicyResponse,
+  RegisterPILSocialRemixPolicyRequest,
+  RegisterPILSocialRemixPolicyResponse,
+  RegisterPILCommercialUsePolicyRequest,
+  RegisterPILCommercialUsePolicyResponse,
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
+  FrameworkData,
 } from "../types/resources/policy";
 
 export class PolicyClient {
@@ -20,6 +26,7 @@ export class PolicyClient {
   public ipAccountABI = IPAccountABI;
   public licensingModuleConfig = LicensingModuleConfig;
   public pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
+  public royaltyPolicyLAPConfig = RoyaltyPolicyLAPConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;
@@ -49,6 +56,37 @@ export class PolicyClient {
     request: RegisterPILPolicyRequest,
   ): Promise<RegisterPILPolicyResponse> {
     try {
+      // First check if the policy exists
+      const frameworkData = {
+        attribution: request.attribution || false,
+        commercialUse: request.commercialUse || false,
+        commercialAttribution: request.commercialAttribution || false,
+        commercializerChecker: request.commercializerChecker || zeroAddress,
+        commercializerCheckerData: (request.commercializerCheckerData || "0x") as `0x${string}`,
+        commercialRevShare: request.commercialRevShare || 0,
+        derivativesAllowed: request.derivativesAllowed || false,
+        derivativesAttribution: request.derivativesAttribution || false,
+        derivativesApproval: request.derivativesApproval || false,
+        derivativesReciprocal: request.derivativesReciprocal || false,
+        territories: request.territories || [],
+        distributionChannels: request.distributionChannels || [],
+        contentRestrictions: request.contentRestrictions || [],
+      };
+      const policyId = await this.getPolicyId(
+        request.transferable,
+        this.encodeFrameworkData(frameworkData),
+        typedDataToBytes({
+          interface: "uint32",
+          data: [request.commercialRevShare || 0],
+        }),
+        request.mintingFee || "0",
+        request.mintingFeeToken || zeroAddress,
+        request.royaltyPolicy || zeroAddress,
+      );
+      if (policyId !== 0) {
+        return { policyId: policyId.toString() };
+      }
+
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.pilPolicyFrameworkManagerConfig,
         functionName: "registerPolicy",
@@ -56,7 +94,7 @@ export class PolicyClient {
           {
             transferable: request.transferable,
             royaltyPolicy: request.royaltyPolicy || zeroAddress,
-            mintingFee: parseToBigInt(request.mintingFee || 0),
+            mintingFee: parseToBigInt(request.mintingFee || "0"),
             mintingFeeToken: request.mintingFeeToken || zeroAddress,
             policy: {
               attribution: request.attribution || false,
@@ -64,7 +102,7 @@ export class PolicyClient {
               commercialAttribution: request.commercialAttribution || false,
               commercialRevShare: request.commercialRevShare || 0,
               derivativesAllowed: request.derivativesAllowed || false,
-              derivativesAttribution: request.commercialAttribution || false,
+              derivativesAttribution: request.derivativesAttribution || false,
               derivativesApproval: request.derivativesApproval || false,
               derivativesReciprocal: request.derivativesReciprocal || false,
               commercializerChecker: request.commercializerChecker || zeroAddress,
@@ -92,6 +130,236 @@ export class PolicyClient {
     } catch (error) {
       handleError(error, "Failed to register policy");
     }
+  }
+
+  /**
+   * Convenient function to register a PIL social remix policy to the registry
+   * Internally, this function must generate a Licensing.Policy struct and call registerPolicy.
+   * @param request - the licensing parameters for the Programmable IP License v1 (PIL) standard.
+   *   @param request.territories List of territories where the license is valid. If empty, global.
+   *   @param request.distributionChannels List of distribution channels where the license is valid. Empty if no restrictions.
+   *   @param request.contentRestrictions List of content restrictions where the license is valid. Empty if no restrictions.
+   * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
+   */
+  public async registerPILSocialRemixPolicy(
+    request: RegisterPILSocialRemixPolicyRequest,
+  ): Promise<RegisterPILSocialRemixPolicyResponse> {
+    try {
+      // First check if the policy exists
+      const frameworkData = {
+        attribution: true,
+        commercialUse: false,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x" as `0x${string}`,
+        commercialRevShare: 0,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        territories: request.territories || [],
+        distributionChannels: request.distributionChannels || [],
+        contentRestrictions: request.contentRestrictions || [],
+      };
+      const policyId = await this.getPolicyId(
+        true,
+        this.encodeFrameworkData(frameworkData),
+        typedDataToBytes({
+          interface: "uint32",
+          data: [0],
+        }),
+        "0",
+        zeroAddress,
+        zeroAddress,
+      );
+      if (policyId !== 0) {
+        return { policyId: policyId.toString() };
+      }
+
+      const { request: call } = await this.rpcClient.simulateContract({
+        ...this.pilPolicyFrameworkManagerConfig,
+        functionName: "registerPolicy",
+        args: [
+          {
+            transferable: true,
+            royaltyPolicy: zeroAddress,
+            mintingFee: parseToBigInt(0),
+            mintingFeeToken: zeroAddress,
+            policy: {
+              attribution: true,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercialRevShare: 0,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: "0x" as `0x${string}`,
+              territories: request.territories || [],
+              distributionChannels: request.distributionChannels || [],
+              contentRestrictions: request.contentRestrictions || [],
+            },
+          },
+        ],
+        account: this.wallet.account,
+      });
+      const txHash = await this.wallet.writeContract(call);
+
+      if (request.txOptions?.waitForTransaction) {
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licensingModuleConfig,
+          eventName: "PolicyRegistered",
+        });
+        return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to register social remix policy");
+    }
+  }
+
+  /**
+   * Convenient function to register a PIL social remix policy to the registry
+   * Internally, this function must generate a Licensing.Policy struct and call registerPolicy.
+   * @param request - the licensing parameters for the Programmable IP License v1 (PIL) standard.
+   *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor
+   *   @param mintingFee Fee to be paid when minting a license
+   *   @param mintingFeeToken Token to be used to pay the minting fee
+   *   @param request.territories List of territories where the license is valid. If empty, global.
+   *   @param request.distributionChannels List of distribution channels where the license is valid. Empty if no restrictions.
+   *   @param request.contentRestrictions List of content restrictions where the license is valid. Empty if no restrictions.
+   * @returns the transaction hash and the policy ID if the txOptions.waitForTransaction is set to true
+   */
+  public async registerPILCommercialUsePolicy(
+    request: RegisterPILCommercialUsePolicyRequest,
+  ): Promise<RegisterPILCommercialUsePolicyResponse> {
+    try {
+      // First check if the policy exists
+      const frameworkData = {
+        attribution: true,
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x" as `0x${string}`,
+        commercialRevShare: request.commercialRevShare,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        territories: request.territories || [],
+        distributionChannels: request.distributionChannels || [],
+        contentRestrictions: request.contentRestrictions || [],
+      };
+      const policyId = await this.getPolicyId(
+        true,
+        this.encodeFrameworkData(frameworkData),
+        typedDataToBytes({
+          interface: "uint32",
+          data: [request.commercialRevShare],
+        }),
+        request.mintingFee || "0",
+        request.mintingFeeToken || zeroAddress,
+        this.royaltyPolicyLAPConfig.address,
+      );
+      if (policyId !== 0) {
+        return { policyId: policyId.toString() };
+      }
+
+      const { request: call } = await this.rpcClient.simulateContract({
+        ...this.pilPolicyFrameworkManagerConfig,
+        functionName: "registerPolicy",
+        args: [
+          {
+            transferable: true,
+            royaltyPolicy: this.royaltyPolicyLAPConfig.address,
+            mintingFee: parseToBigInt(request.mintingFee || "0"),
+            mintingFeeToken: request.mintingFeeToken || zeroAddress,
+            policy: {
+              attribution: true,
+              commercialUse: true,
+              commercialAttribution: true,
+              commercialRevShare: request.commercialRevShare,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: "0x" as `0x${string}`,
+              territories: request.territories || [],
+              distributionChannels: request.distributionChannels || [],
+              contentRestrictions: request.contentRestrictions || [],
+            },
+          },
+        ],
+        account: this.wallet.account,
+      });
+      const txHash = await this.wallet.writeContract(call);
+
+      if (request.txOptions?.waitForTransaction) {
+        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licensingModuleConfig,
+          eventName: "PolicyRegistered",
+        });
+        return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to register commercial use policy");
+    }
+  }
+
+  private async getPolicyId(
+    transferable: boolean,
+    frameworkData: `0x${string}`,
+    royaltyData: `0x${string}`,
+    mintingFee: string,
+    mintingFeeToken: `0x${string}`,
+    royaltyPolicy: `0x${string}`,
+    policyFramework?: `0x${string}`,
+  ): Promise<number> {
+    const data = await this.rpcClient.readContract({
+      ...this.licensingModuleConfig,
+      functionName: "getPolicyId",
+      args: [
+        {
+          isLicenseTransferable: transferable,
+          policyFramework: policyFramework || this.pilPolicyFrameworkManagerConfig.address,
+          frameworkData: frameworkData,
+          royaltyPolicy: royaltyPolicy,
+          royaltyData: royaltyData,
+          mintingFee: parseToBigInt(mintingFee),
+          mintingFeeToken: mintingFeeToken,
+        },
+      ],
+    });
+    return Number(data);
+  }
+
+  private encodeFrameworkData(data: FrameworkData): `0x${string}` {
+    return typedDataToBytes({
+      interface:
+        "(bool, bool, bool, address, bytes, uint32, bool, bool, bool, bool, string[], string[], string[])",
+      data: [
+        [
+          data.attribution,
+          data.commercialUse,
+          data.commercialAttribution,
+          data.commercializerChecker,
+          data.commercializerCheckerData,
+          data.commercialRevShare,
+          data.derivativesAllowed,
+          data.derivativesAttribution,
+          data.derivativesApproval,
+          data.derivativesReciprocal,
+          data.territories,
+          data.distributionChannels,
+          data.contentRestrictions,
+        ],
+      ],
+    });
   }
 
   /**
