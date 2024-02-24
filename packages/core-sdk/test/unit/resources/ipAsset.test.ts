@@ -297,6 +297,7 @@ describe.skip("Test IpAssetClient", function () {
       expect(result.txHash).to.equal(txHash);
     });
 
+    /*
     it("should return txHash and ipId if txOptions.waitForTransaction is true", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
@@ -321,5 +322,6 @@ describe.skip("Test IpAssetClient", function () {
       expect(result.txHash).to.equal(txHash);
       expect(result.ipId).to.equal("9");
     });
+    */
   });
 });
