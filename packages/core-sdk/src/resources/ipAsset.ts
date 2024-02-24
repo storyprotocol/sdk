@@ -50,7 +50,7 @@ export class IPAssetClient {
         request.tokenContractAddress,
         request.tokenId,
       );
-      if (ipId) {
+      if (ipId !== "0x") {
         return { ipId: ipId };
       }
       const { request: call } = await this.rpcClient.simulateContract({
