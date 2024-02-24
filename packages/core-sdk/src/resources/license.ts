@@ -75,6 +75,7 @@ export class LicenseClient {
         const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licenseRegistryConfig,
           eventName: "TransferSingle",
+          from: this.licenseRegistryConfig.address,
         });
         return { txHash: txHash, licenseId: targetLogs[0].args.id.toString() };
       } else {

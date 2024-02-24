@@ -35,6 +35,7 @@ export async function waitTxAndFilterLog<
   params: {
     abi: TAbi;
     eventName: InferEventName<TAbi, TEventName>;
+    from?: Hex;
     confirmations?: number;
     pollingInterval?: number;
     timeout?: number;
@@ -50,6 +51,9 @@ export async function waitTxAndFilterLog<
   const targetLogs: DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[] = [];
   for (const log of txReceipt.logs) {
     try {
+      if (params.from && log.address !== params.from) {
+        continue;
+      }
       const currentLog = decodeEventLog<TAbi, TEventName, TTopics, TData, TStrict>({
         abi: params.abi,
         eventName: params.eventName,
