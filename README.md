@@ -11,97 +11,59 @@ Suppose you already have a node project or created a new node project. First, yo
 Use `npm`:
 
 ```
-npm install --save @story-protocol/core-sdk viem
+npm install --save @story-protocol/core-sdk viem@1.21.4
 ```
 
 Use `pnpm`:
 
 ```
-pnpm install @story-protocol/core-sdk viem
+pnpm install @story-protocol/core-sdk viem@1.21.4
 ```
 
 Use `yarn`:
 
 ```
-yarn add @story-protocol/core-sdk viem
+yarn add @story-protocol/core-sdk viem@1.21.4
 ```
 
 Besides the Story Protocol SDK package `@story-protocol/core-sdk`, we also require the package `viem` (https://www.npmjs.com/package/viem) to access the DeFi wallet accounts.
 
-### Setup the `.env` file for your project
+# Initiate SDK Client
 
-The second steps is to create a file named `.env` in the root directory of the project with the following environment variables:
+Next we can initiate the SDK Client by first setting up our wallet and then the client itself.
 
-```
-NEXT_PUBLIC_API_BASE_URL=
+## Set up your wallet
 
-NEXT_PUBLIC_STORY_PROTOCOL_CONTRACT=
-NEXT_PUBLIC_IP_ASSET_REGISTRY_CONTRACT=
-NEXT_PUBLIC_IP_ORG_CONTROLLER_CONTRACT=
-NEXT_PUBLIC_RELATIONSHIP_MODULE_CONTRACT=
-NEXT_PUBLIC_REGISTRATION_MODULE_CONTRACT=
-NEXT_PUBLIC_LICENSE_REGISTRY_CONTRACT=
-NEXT_PUBLIC_MODULE_REGISTRY_CONTRACT=
+The SDK supports using `viem` for initiating SDK client. Create a typescript file and write the following code to initiate the client with a private key:
 
-# RPC Endpoint for Sepolia Testnet
-RPC_URL=https://rpc.ankr.com/eth_sepolia
+> :information-source: Make sure to have WALLET_PRIVATE_KEY set up in your .env file.
 
-# Private key of the wallet to interact with Story Protocol SDK
-PRIVATE_KEY="<KEEP_ME_SECRET>"
-```
-
-The above `.env` defines several variables with prefix `NEXT_PUBLIC_`that will be used by Story Protocol SDK. Because the alpha version of Story Protocol SDK works with the smart contracts deployed on Sepolia testnet, we need to provide the RPC URL for the end point.
-
-For the latest values of the smart contract addresses, please reach out the Story Protocol team or refer to [SDK Setup Guide Document](https://docs.storyprotocol.xyz/docs/setup)
-
-### Create Story Protocol Client
-
-Next, we need create a client to access Story Protocol by using private key or from the wallet app of browser.
-
-Here is the way to create a Story Protocol client with the private key:
-
-```typescript
+```typescript index.ts
 import { privateKeyToAccount } from 'viem/accounts';
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY || '0x';
-const account = privateKeyToAccount(PRIVATE_KEY as `0x${string}`);
-
-// Instantiate the Story Client for readonly operations, using default
-export const realonlyClient = StoryClient.newReadOnlyClient({});
-
-// Instantiate the Story Client, test environment required for alpha release.
-// The private key is also required for written operations.
-export const client = StoryClient.newClient({ account });
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || '0x';
+const account = privateKeyToAccount(WALLET_PRIVATE_KEY as `0x${string}`);
 ```
 
-Here is the way to create a Story Protocol with wallet app:
+The preceding code created the `account` object for creating the SDK client.
 
-```typescript
-import { createWalletClient, custom } from 'viem';
+## Set up SDK client
 
-const walletClient = createWalletClient({
-  chainId: 'sepolia',
-  transport: custom(window.ethereum),
-});
+To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, utilizing the `account` we created previously.
 
-// Retrieve the first account for eth_requestAccounts method
-const account = await walletClient.requestAddresses()[0];
+> :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Sepolia network with `RPC_PROVIDER_URL=https://rpc.ankr.com/eth_sepolia`.
 
-// Instantiate the Story Client for readonly operations, using default
-export const realonlyClient = StoryClient.newReadOnlyClient({});
+```typescript index.ts
+import { StoryClient, StoryConfig } from '@story-protocol/core-sdk';
 
-// Instantiate the Story Client, test environment required for alpha release.
-// The private key is also required for written operations.
-export const client = StoryClient.newClient({ account });
+const config: StoryConfig = {
+  transport: http(process.env.RPC_PROVIDER_URL),
+  account: account,
+};
+const client = StoryClient.newClient(config);
 ```
 
-### Use `Client` or `ReadOnlyClient` to access Story Protocol
-
-Now you can use the `ReadOnlyClient` instance to perform read-only operations with Story Protocol resources, and `Client` instance to perform both read-only and write operations. `ReadOnlyClient` and `Client` are the aggregators for accessing the resources. You can refer to [SDK document](https://docs.storyprotocol.xyz/docs/overview-1) to learn how to use these clients interact with Story Protocol.
-
-You can also refer to the [Story Protocol Example Repostory](https://github.com/storyprotocol/my-story-protocol-example/) to learn with the SDK example.
-
-## How To Build and Test Story Protocol SDK
+## How To Build and Test Story Protocol SDK for local testing
 
 This section provides the instructions on how to build Story Protocol SDK from source code.
 
