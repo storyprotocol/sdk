@@ -37,7 +37,7 @@ describe("IP Asset Functions", () => {
         client.ipAsset.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0xd516482bef63Ff19Ed40E4C6C2e626ccE04e19ED",
-          tokenId: "19",
+          tokenId: "10",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
