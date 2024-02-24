@@ -292,7 +292,7 @@ export const pilPolicyFrameworkManagerAbi = [
     type: 'function',
     inputs: [
       { name: 'licenseId', internalType: 'uint256', type: 'uint256' },
-      { name: 'caller', internalType: 'address', type: 'address' },
+      { name: 'licensee', internalType: 'address', type: 'address' },
       { name: 'ipId', internalType: 'address', type: 'address' },
       { name: 'parentIpId', internalType: 'address', type: 'address' },
       { name: 'policyData', internalType: 'bytes', type: 'bytes' },
@@ -304,7 +304,7 @@ export const pilPolicyFrameworkManagerAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'caller', internalType: 'address', type: 'address' },
+      { name: 'licensee', internalType: 'address', type: 'address' },
       { name: 'mintingFromADerivative', internalType: 'bool', type: 'bool' },
       { name: 'licensorIpId', internalType: 'address', type: 'address' },
       { name: 'receiver', internalType: 'address', type: 'address' },

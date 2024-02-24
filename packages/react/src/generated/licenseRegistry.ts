@@ -151,6 +151,13 @@ export const licenseRegistryAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
     name: 'policyIdForLicense',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -224,6 +231,13 @@ export const licenseRegistryAbi = [
     inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
     name: 'supportsInterface',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
     stateMutability: 'view',
   },
   {
@@ -568,6 +582,15 @@ export const useReadMintedLicenses = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"name"`
+ */
+export const useReadLicenseRegistryName = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: 'name',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"policyIdForLicense"`
  */
 export const useReadPolicyIdForLicense = /*#__PURE__*/ createUseReadContract({
@@ -585,6 +608,15 @@ export const useReadLicenseRegistrySupportsInterface =
     address: licenseRegistryAddress,
     functionName: 'supportsInterface',
   })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"symbol"`
+ */
+export const useReadSymbol = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: 'symbol',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"uri"`
