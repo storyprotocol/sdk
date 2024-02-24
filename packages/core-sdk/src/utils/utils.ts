@@ -47,11 +47,10 @@ export async function waitTxAndFilterLog<
     pollingInterval: params.pollingInterval,
     timeout: params.timeout,
   });
-
   const targetLogs: DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[] = [];
   for (const log of txReceipt.logs) {
     try {
-      if (params.from && log.address !== params.from) {
+      if (params.from && log.address !== params.from.toLowerCase()) {
         continue;
       }
       const currentLog = decodeEventLog<TAbi, TEventName, TTopics, TData, TStrict>({
