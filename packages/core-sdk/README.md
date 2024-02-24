@@ -1,70 +1,124 @@
-core-sdk is the base level sdk to interact with story protocol. It provides functions to both read and write data to the protocol.
+# Story Protocol SDK
 
-## Installation
+Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for developers to build applications with Story Protocol. By using the SDK, developers can create the resources like IP assets and perform actions to interact with the resource.
 
-Install the SDK and ethers.js
+## How to use Story Protocol SDK in Your Project
 
-npm
+### Install Story Protocol core SDK
 
-```shell
-npm i @story-protocol/core-sdk ethers@^5.7.2
-```
+Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following command to install the package:
 
-pnpm
-
-```shell
-pnpm i @story-protocol/core-sdk ethers@^5.7.2
-```
-
-yarn
-
-```shell
-yarn add @story-protocol/core-sdk ethers@^5.7.2
-```
-
-## Set up `.env` file
-
-(Ask the team to provide the values)
+Use `npm`:
 
 ```
-NEXT_PUBLIC_API_BASE_URL =
-NEXT_PUBLIC_FRANCHISE_REGISTRY_CONTRACT =
-NEXT_PUBLIC_RELATIONSHIP_MODULE_CONTRACT =
-NEXT_PUBLIC_COLLECT_MODULE_CONTRACT =
-NEXT_PUBLIC_LICENSING_MODULE_CONTRACT =
+npm install --save @story-protocol/core-sdk viem@1.21.4
 ```
+
+Use `pnpm`:
+
+```
+pnpm install @story-protocol/core-sdk viem@1.21.4
+```
+
+Use `yarn`:
+
+```
+yarn add @story-protocol/core-sdk viem@1.21.4
+```
+
+Besides the Story Protocol SDK package `@story-protocol/core-sdk`, we also require the package `viem` (https://www.npmjs.com/package/viem) to access the DeFi wallet accounts.
+
+# Initiate SDK Client
+
+Next we can initiate the SDK Client by first setting up our wallet and then the client itself.
+
+## Set up your wallet
+
+The SDK supports using `viem` for initiating SDK client. Create a typescript file and write the following code to initiate the client with a private key:
+
+> :information-source: Make sure to have WALLET_PRIVATE_KEY set up in your .env file.
+
+```typescript index.ts
+import { privateKeyToAccount } from "viem/accounts";
+
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
+const account = privateKeyToAccount(WALLET_PRIVATE_KEY as `0x${string}`);
+```
+
+The preceding code created the `account` object for creating the SDK client.
 
 ## Set up SDK client
 
-Using browser wallet
+To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, utilizing the `account` we created previously.
 
-```typescript
-import { StoryClient } from "@story-protocol/core-sdk";
-import ethers from "ethers";
+> :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Sepolia network with `RPC_PROVIDER_URL=https://rpc.ankr.com/eth_sepolia`.
 
-// Provider/Signer from browser wallet (i.e Metamask)
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-await provider.send("eth_requestAccounts", []);
-const signer = await provider.getSigner();
+```typescript index.ts
+import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
 
-// Instantiate a read-only Story Client with an optional provider
-const client = StoryClient.newReadOnlyClient({ provider });
-
-// Instatiate a read/write Story Client with a signer
-const client = StoryClient.newClient({ signer });
+const config: StoryConfig = {
+  transport: http(process.env.RPC_PROVIDER_URL),
+  account: account,
+};
+const client = StoryClient.newClient(config);
 ```
 
-Using private key
+## How To Build and Test Story Protocol SDK for local testing
 
-```typescript
-import { StoryClient } from "@story-protocol/core-sdk"
-import ethers from "ethers"
+This section provides the instructions on how to build Story Protocol SDK from source code.
 
-// Signer from private key
-const provider = new ethers.providers.JsonRpcProvider(<YOUR RPC URL>)
-const signer = new ethers.Wallet(<YOUR PRIVATE KEY>, provider)
+### Prerequisite
 
-// Instantiate the Story Client
-const client = StoryClient.newClient({ signer })
+- Install PNPM: Execute `npm install -g pnpm`
+- Install TypeScript: Run `pnpm add typescript -D`
+- Install Yalc: Use `npm install -g yalc`
 
-```
+### Steps for Using Yalc for Local Testing of Core-SDK
+
+For manual testing of the core-sdk, set up a separate web project. The guide below uses `yalc` to link the `core-sdk` locally, enabling its installation and import for testing.
+
+Under the `typescript-sdk/packages/core-sdk` directory:
+
+- Navigate to the `core-sdk` directory.
+- Execute `npm run build` to build your latest code.
+- Run `yalc publish`. You should see a message like `@story-protocol/core-sdk@<version> published in store.` (Note: The version number may vary).
+
+To set up your testing environment (e.g., a new Next.js project), use `yalc add @story-protocol/core-sdk@<version>` (ensure the version number is updated accordingly).
+
+- Run `pnpm install`. This installs `@story-protocol/core-sdk@<version>` with your local changes.
+
+### Steps to Refresh the Changes
+
+Under the `typescript-sdk/packages/core-sdk` directory:
+
+- Execute `npm run build` to build your latest code.
+- Run `yalc push`.
+
+In your testing environment:
+
+- Run `yalc update` to pull the latest changes.
+
+## Steps to pull and compile latest smart contract ABIs (Currently pulls from the protocol-contracts `dev` branch)
+
+Must have `solc` installed (https://docs.soliditylang.org/en/v0.8.9/installing-solidity.html)
+
+- run `make compile_contracts`
+
+## Release
+
+| Package                         | Description                                    |
+| :------------------------------ | :--------------------------------------------- |
+| [core-sdk](./packages/core-sdk) | The core sdk for interacting with the protocol |
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change. Details see: [CONTRIBUTING](/CONTRIBUTING.md)
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[MIT License](/LICENSE.md)
+
+## Contact Us
