@@ -72,11 +72,11 @@ export class LicenseClient {
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licenseRegistryConfig,
           eventName: "TransferSingle",
         });
-        return { txHash: txHash, licenseId: targetLog.args.id.toString() };
+        return { txHash: txHash, licenseId: targetLogs[0].args.id.toString() };
       } else {
         return { txHash: txHash };
       }

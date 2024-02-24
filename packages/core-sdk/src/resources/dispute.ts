@@ -55,13 +55,13 @@ export class DisputeClient {
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        const logs = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.disputeModuleConfig,
           eventName: "DisputeRaised",
         });
         return {
           txHash: txHash,
-          disputeId: BigInt(logs.args.disputeId).toString() as `0x${string}`,
+          disputeId: BigInt(targetLogs[0].args.disputeId).toString() as `0x${string}`,
         };
       }
       return { txHash: txHash };

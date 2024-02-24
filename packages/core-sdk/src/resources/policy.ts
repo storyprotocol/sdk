@@ -119,11 +119,11 @@ export class PolicyClient {
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licensingModuleConfig,
           eventName: "PolicyRegistered",
         });
-        return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
+        return { txHash: txHash, policyId: targetLogs[0].args.policyId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -211,7 +211,7 @@ export class PolicyClient {
           ...this.licensingModuleConfig,
           eventName: "PolicyRegistered",
         });
-        return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
+        return { txHash: txHash, policyId: targetLog[0].args.policyId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -298,11 +298,11 @@ export class PolicyClient {
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licensingModuleConfig,
           eventName: "PolicyRegistered",
         });
-        return { txHash: txHash, policyId: targetLog?.args.policyId.toString() };
+        return { txHash: txHash, policyId: targetLogs[0].args.policyId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -391,13 +391,13 @@ export class PolicyClient {
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
-      // TODO: the emit event doesn't return anything
+
       if (request.txOptions?.waitForTransaction) {
-        const targetLog = await waitTxAndFilterLog(this.rpcClient, txHash, {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licensingModuleConfig,
           eventName: "PolicyAddedToIpId",
         });
-        return { txHash: txHash, index: targetLog.args.index.toString() };
+        return { txHash: txHash, index: targetLogs[0].args.index.toString() };
       } else {
         return { txHash: txHash };
       }

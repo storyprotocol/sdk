@@ -84,6 +84,7 @@ describe.skip("Test PolicyClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
+    /*
     it("should return licenseId if request.txOptions is present", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(utils, "waitTxAndFilterLog").resolves({
@@ -109,6 +110,7 @@ describe.skip("Test PolicyClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.policyId).to.equal("7");
     });
+    */
   });
 
   describe("test for addPolicyToIp", () => {
@@ -196,6 +198,7 @@ describe.skip("Test PolicyClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
+    /*
     it("should return index if request.txOptions is present", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(utils, "waitTxAndFilterLog").resolves({
@@ -222,5 +225,6 @@ describe.skip("Test PolicyClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.index).to.equal("10");
     });
+    */
   });
 });
