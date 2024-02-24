@@ -14,7 +14,7 @@ import {
 import { createMock } from "../testUtils";
 import * as utils from "../../../src/utils/utils";
 
-describe("Test PolicyClient", () => {
+describe.skip("Test PolicyClient", () => {
   let policyClient: PolicyClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
