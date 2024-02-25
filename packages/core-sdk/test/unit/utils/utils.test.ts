@@ -74,11 +74,10 @@ describe("splitIntoBytes32", () => {
 
 describe("Test waitTxAndFilterLog", () => {
   const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-  const rpcMock = createMock<viem.PublicClient>();
+  let rpcMock: viem.PublicClient = createMock<viem.PublicClient>();
   afterEach(() => {
     sinon.restore();
   });
-
   it("should throw waitForTransactionReceipt if waitForTransactionReceipt throws an error", async () => {
     rpcMock.waitForTransactionReceipt = sinon
       .stub()
@@ -98,14 +97,23 @@ describe("Test waitTxAndFilterLog", () => {
     rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
       logs: [
         {
+          type: "event",
           data: "0x00000000000000000000",
           topics: ["0x11111111111111111111"],
+          address: "0x0000000000000000000000000000000000000002",
+        },
+        {
+          type: "event",
+          data: "0x00000000000000000001",
+          topics: ["0x222222222222222222222"],
+          address: "0x0000000000000000000000000000000000000001",
         },
       ],
     });
     sinon.stub(viem, "decodeEventLog").throws(new Error("decodeEventLog error"));
 
     const params = {
+      from: "0x0000000000000000000000000000000000000001" as `0x${string}`,
       abi: defaultAbi as viem.Abi,
       eventName: "TransferSingle",
     };
@@ -116,6 +124,48 @@ describe("Test waitTxAndFilterLog", () => {
         "not found event TransferSingle in target transaction",
       );
     }
+  });
+
+  it.skip("should not throw error if param.from exists and addresses in logs are different from params.address", async () => {
+    sinon.stub(viem, "decodeEventLog").returns({
+      eventName: "TransferSingle",
+      args: {},
+    });
+    rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
+      logs: [
+        {
+          address: "0x176d33cc80ed3390256033bbf7fd651c9c5a364f",
+          topics: [
+            "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62",
+            "0x0000000000000000000000009cddd88dd34429a0f39eadf91a56d1bf0533e72b",
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "0x0000000000000000000000009a3a5edddfee1e3a1bbef6fdf0850b10d4979405",
+          ],
+          data: "0x00000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000001",
+          blockNumber: 4738934n,
+          transactionHash: "0x3600464c4f0794de350e55a484d67cdb6ed4a89917274709b9bb48246935c891",
+          transactionIndex: 106,
+          blockHash: "0x8d431865dbcfa54988f48b18c0a07fea503ca38c387b6326f513aa6f238faddc",
+          logIndex: 52,
+          removed: false,
+        },
+      ],
+    });
+    const params = {
+      from: "0x176d33cc80ed3390256033bbf7fd651c9c5a364f" as `0x${string}`,
+      abi: defaultAbi as viem.Abi,
+      eventName: "TransferSingle",
+      confirmations: 2,
+      pollingInterval: 10,
+      timeout: 20,
+    };
+    let error: Error | undefined = undefined;
+    try {
+      await waitTxAndFilterLog(rpcMock, txHash, params);
+    } catch (err) {
+      error = err as Error;
+    }
+    expect(error).to.equal(undefined);
   });
 });
 

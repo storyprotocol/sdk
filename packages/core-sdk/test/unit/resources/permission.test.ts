@@ -96,7 +96,6 @@ describe("Test Permission", function () {
         ipId: AddressZero,
         signer: AddressZero,
         to: AddressZero,
-        func: "0x00000000",
         permission: 0,
         txOptions: {
           waitForTransaction: true,
