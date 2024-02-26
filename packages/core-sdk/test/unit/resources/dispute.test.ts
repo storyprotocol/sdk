@@ -72,16 +72,17 @@ describe("Test DisputeClient", function () {
       }
     });
 
-    /*
     it("should return txHash only if request.txOptions is missing", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      sinon.stub(utils, "waitTxAndFilterLog").resolves({
-        eventName: "DisputeRaised",
-        args: {
-          disputeId: "7",
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "DisputeRaised",
+          args: {
+            disputeId: "7",
+          },
         },
-      });
+      ]);
       const raiseDisputeRequest = {
         targetIpId,
         arbitrationPolicy,
@@ -94,18 +95,17 @@ describe("Test DisputeClient", function () {
       expect(Object.keys(result)[0]).to.equal("txHash");
       expect(result.txHash).to.equal(mock.txHash);
     });
-    */
-
-    /*
     it("should return txHash and disputeId if request.txOptions is present", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      sinon.stub(utils, "waitTxAndFilterLog").resolves({
-        eventName: "DisputeRaised",
-        args: {
-          disputeId: "7",
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "DisputeRaised",
+          args: {
+            disputeId: "7",
+          },
         },
-      });
+      ]);
       const raiseDisputeRequest = {
         targetIpId,
         arbitrationPolicy,
@@ -120,7 +120,6 @@ describe("Test DisputeClient", function () {
       expect(result.txHash).to.equal(mock.txHash);
       expect(result.disputeId).to.equal(BigInt(7).toString());
     });
-    */
   });
 
   describe("test for cancelDispute", () => {
