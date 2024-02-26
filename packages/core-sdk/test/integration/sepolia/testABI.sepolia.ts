@@ -1,15 +1,15 @@
 import { getAddress } from "viem";
 
-import IERC1155ABI from "./json/IERC1155.abi";
-import AccessControllerABI from "./json/AccessController.abi";
-import DisputeModuleABI from "./json/DisputeModule.abi";
-import IPAccountImplABI from "./json/IPAccountImpl.abi";
-import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
-import LicensingModuleABI from "./json/LicensingModule.abi";
-import PILPolicyFrameworkManagerABI from "./json/PILPolicyFrameworkManager.abi";
-import RegistrationModuleABI from "./json/RegistrationModule.abi";
-import ErrorsABI from "./json/Errors.abi";
-import { sepolia } from "../utils/env";
+import IERC1155ABI from "../../../src/abi/json/IERC1155.abi";
+import AccessControllerABI from "../../../src/abi/json/AccessController.abi";
+import DisputeModuleABI from "../../../src/abi/json/DisputeModule.abi";
+import IPAccountImplABI from "../../../src/abi/json/IPAccountImpl.abi";
+import IPAssetRegistryABI from "../../../src/abi/json/IIPAssetRegistry.abi";
+import LicensingModuleABI from "../../../src/abi/json/LicensingModule.abi";
+import PILPolicyFrameworkManagerABI from "../../../src/abi/json/PILPolicyFrameworkManager.abi";
+import RegistrationModuleABI from "../../../src/abi/json/RegistrationModule.abi";
+import ErrorsABI from "../../../src/abi/json/Errors.abi";
+import { sepolia } from "../../../src/utils/env";
 
 export const IPAccountABI = [...IPAccountImplABI, ...ErrorsABI];
 
@@ -46,8 +46,4 @@ export const RegistrationModuleConfig = {
 export const PILPolicyFrameworkManagerConfig = {
   abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
   address: getAddress(sepolia.PILPolicyFrameworkManager),
-};
-
-export const RoyaltyPolicyLAPConfig = {
-  address: getAddress(sepolia.RoyaltyPolicyLAP),
 };

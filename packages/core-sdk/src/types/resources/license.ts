@@ -16,11 +16,20 @@ export type MintLicenseResponse = {
 export type LinkIpToParentRequest = {
   licenseIds: string[];
   childIpId: `0x${string}`;
-  minRoyalty: number;
   txOptions?: TxOptions;
 };
 
 export type LinkIpToParentResponse = {
   txHash: string;
   success?: boolean;
+};
+
+export type LicenseApiResponse = {
+  data: License;
+};
+
+export type License = {
+  id: string;
+  policyId: string;
+  licensorIpId: `0x${string}`;
 };

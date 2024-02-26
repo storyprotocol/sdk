@@ -1,9 +1,9 @@
 import { TxOptions } from "../options";
 
 export type RegisterRootIpRequest = {
-  policyId: string;
-  tokenContractAddress: string;
+  tokenContractAddress: `0x${string}`;
   tokenId: string;
+  policyId?: string;
   ipName?: string;
   contentHash?: `0x${string}`;
   uri?: string;
@@ -11,13 +11,13 @@ export type RegisterRootIpRequest = {
 };
 
 export type RegisterRootIpResponse = {
-  txHash: string;
+  txHash?: string;
   ipId?: string;
 };
 
 export type RegisterDerivativeIpRequest = {
   licenseIds: string[];
-  tokenContractAddress: string;
+  tokenContractAddress: `0x${string}`;
   tokenId: string;
   ipName?: string;
   contentHash?: `0x${string}`;
@@ -27,6 +27,6 @@ export type RegisterDerivativeIpRequest = {
 };
 
 export type RegisterDerivativeIpResponse = {
-  txHash: string;
+  txHash?: string;
   ipId?: string;
 };

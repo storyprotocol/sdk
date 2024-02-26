@@ -1,16 +1,15 @@
 import { createPublicClient, createWalletClient, PublicClient, WalletClient } from "viem";
-import axios, { AxiosInstance } from "axios";
 import * as dotenv from "dotenv";
 
 import { StoryConfig } from "./types/config";
-import { TaggingClient } from "./resources/tagging";
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
 import { PolicyClient } from "./resources/policy";
 import { DisputeClient } from "./resources/dispute";
+import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
-import { PlatformClient } from "./utils/platform";
+import { StoryAPIClient } from "./clients/storyAPI";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -22,15 +21,14 @@ export class StoryClient {
   private readonly config: StoryConfig;
   private readonly rpcClient: PublicClient;
   private readonly wallet: WalletClient;
-  private readonly httpClient: AxiosInstance;
+  private readonly storyClient: StoryAPIClient;
 
-  private _ipAccount: IPAssetClient | null = null;
+  private _ipAsset: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;
   private _policy: PolicyClient | null = null;
-  private _platform: PlatformClient | null = null;
-  private _tagging: TaggingClient | null = null;
   private _dispute: DisputeClient | null = null;
+  private _ipAccount: IPAccountClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -43,20 +41,13 @@ export class StoryClient {
       );
     }
 
-    this.httpClient = axios.create({
-      baseURL: "https://stag.api.storyprotocol.net",
-      timeout: 5000,
-      headers: {
-        version: "v0-alpha",
-      },
-    });
-
     const clientConfig = {
       chain: chainStringToViemChain(this.config.chainId || "sepolia"),
       transport: this.config.transport,
     };
 
     this.rpcClient = createPublicClient(clientConfig);
+    this.storyClient = new StoryAPIClient();
 
     const account = this.config.account;
     if (!account) {
@@ -78,14 +69,26 @@ export class StoryClient {
     return new StoryClient(config);
   }
 
+  /**
+   * Getter for the ip asset client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the IPAssetClient instance
+   */
   public get ipAsset(): IPAssetClient {
-    if (this._ipAccount === null) {
-      this._ipAccount = new IPAssetClient(this.rpcClient, this.wallet);
+    if (this._ipAsset === null) {
+      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.storyClient);
     }
 
-    return this._ipAccount;
+    return this._ipAsset;
   }
 
+  /**
+   * Getter for the permission client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the PermissionClient instance
+   */
   public get permission(): PermissionClient {
     if (this._permission === null) {
       this._permission = new PermissionClient(this.rpcClient, this.wallet);
@@ -94,34 +97,32 @@ export class StoryClient {
     return this._permission;
   }
 
+  /**
+   * Getter for the license client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the LicenseClient instance
+   */
   public get license(): LicenseClient {
     if (this._license === null) {
-      this._license = new LicenseClient(this.rpcClient, this.wallet);
+      this._license = new LicenseClient(this.rpcClient, this.wallet, this.storyClient);
     }
 
     return this._license;
   }
 
+  /**
+   * Getter for the policy client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the PolicyClient instance
+   */
   public get policy(): PolicyClient {
     if (this._policy === null) {
       this._policy = new PolicyClient(this.rpcClient, this.wallet);
     }
 
     return this._policy;
-  }
-
-  /**
-   * Getter for the tagging client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the TaggingClient instance
-   */
-  public get tagging(): TaggingClient {
-    if (this._tagging === null) {
-      this._tagging = new TaggingClient(this.rpcClient, this.wallet);
-    }
-
-    return this._tagging;
   }
 
   /**
@@ -139,16 +140,16 @@ export class StoryClient {
   }
 
   /**
-   * Getter for the platform client. The client is lazily created when
+   * Getter for the ip account client. The client is lazily created when
    * this method is called.
    *
-   * @returns the PlatformClient instance
+   * @returns the IPAccountClient instance
    */
-  public get platform(): PlatformClient {
-    if (this._platform === null) {
-      this._platform = new PlatformClient(this.httpClient);
+  public get ipAccount(): IPAccountClient {
+    if (this._ipAccount === null) {
+      this._ipAccount = new IPAccountClient(this.rpcClient, this.wallet);
     }
 
-    return this._platform;
+    return this._ipAccount;
   }
 }

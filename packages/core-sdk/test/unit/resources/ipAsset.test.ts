@@ -2,38 +2,54 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient, AddressZero } from "../../../src";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient, Account } from "viem";
-
-chai.use(chaiAsPromised);
+import { StoryAPIClient } from "../../../src/clients/storyAPI";
+import * as utils from "../../../src/utils/utils";
+import * as royaltyContextUtils from "../../../src/utils/royaltyContext";
 
 describe("Test IpAssetClient", function () {
-  let ipAccountClient: IPAssetClient;
+  let ipAssetClient: IPAssetClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
+  let storyClientMock: StoryAPIClient;
 
   beforeEach(function () {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
+    storyClientMock = createMock<StoryAPIClient>();
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    ipAccountClient = new IPAssetClient(rpcMock, walletMock);
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, storyClientMock);
   });
 
   afterEach(function () {
     sinon.restore();
   });
 
-  describe("Test ipAccountClient.registerRootIp", async function () {
+  describe("Test ipAssetClient.registerRootIp", async function () {
+    it("should throw readContract error if readContract throws an error", async () => {
+      rpcMock.readContract = sinon.stub().rejects(new Error("readContract error"));
+      try {
+        await ipAssetClient.registerRootIp({
+          policyId: "0",
+          tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: "3",
+          txOptions: {
+            waitForTransaction: false,
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message).includes("readContract error");
+      }
+    });
     it("should not throw error when registering a root IP", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.readContract = sinon.stub().resolves();
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
-      const res = await ipAccountClient.registerRootIp({
+      const res = await ipAssetClient.registerRootIp({
         policyId: "0",
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
@@ -45,13 +61,31 @@ describe("Test IpAssetClient", function () {
       expect(res.txHash).equal(txHash);
     });
 
-    it("should not throw error when registering a root IP without policy ID", async function () {
+    it("should return ipId if contract is successfuly read", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.readContract = sinon.stub().resolves(txHash);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
-      const res = await ipAccountClient.registerRootIp({
+      const res = await ipAssetClient.registerRootIp({
+        policyId: "0",
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: false,
+        },
+      });
+
+      expect(res.ipId).equal(txHash);
+    });
+
+    it("should not throw error when registering a root IP without policy ID", async function () {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      rpcMock.readContract = sinon.stub().resolves();
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+
+      const res = await ipAssetClient.registerRootIp({
         policyId: "0",
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
@@ -64,7 +98,7 @@ describe("Test IpAssetClient", function () {
 
     it("should not throw error when creating a root IP and wait for transaction confirmed", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.readContract = sinon.stub().resolves();
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
@@ -88,7 +122,7 @@ describe("Test IpAssetClient", function () {
         ],
       });
 
-      const response = await ipAccountClient.registerRootIp({
+      const response = await ipAssetClient.registerRootIp({
         policyId: "0",
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
@@ -98,13 +132,24 @@ describe("Test IpAssetClient", function () {
       });
       expect(response.txHash).equal(txHash);
       expect(response.ipId).equals("0x8C61b7fc58E5d4d6b43Ef31F69c3AB8Db8fD6D9E");
+
+      const response2 = await ipAssetClient.registerRootIp({
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(response2.txHash).equal(txHash);
+      expect(response2.ipId).equals("0x8C61b7fc58E5d4d6b43Ef31F69c3AB8Db8fD6D9E");
     });
 
     it("should throw error when request fails", async function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.readContract = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
       await expect(
-        ipAccountClient.registerRootIp({
+        ipAssetClient.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",
@@ -117,12 +162,12 @@ describe("Test IpAssetClient", function () {
 
     it("should throw error when invalid policy ID is provided", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.readContract = sinon.stub().resolves();
       rpcMock.simulateContract = sinon.stub().rejects();
       walletMock.writeContract = sinon.stub().resolves(txHash);
 
       await expect(
-        ipAccountClient.registerRootIp({
+        ipAssetClient.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",
@@ -134,14 +179,81 @@ describe("Test IpAssetClient", function () {
     });
   });
 
-  describe("Test ipAccountClient.registerDerivativeIp", async function () {
-    it("should not throw error when registering a derivative IP", async function () {
+  describe("Test ipAssetClient.registerDerivativeIp", async function () {
+    it("should throw readContract error, if readContract throws an error", async () => {
+      rpcMock.readContract = sinon.stub().rejects(new Error("readContract error"));
+
+      const request = {
+        licenseIds: ["2"],
+        tokenContractAddress: "0xkkkkkkkkk" as `0x${string}`, // invlaid address
+        tokenId: "3",
+        ipName: "Test IP",
+        uri: "This is a test IP description",
+        contentHash: AddressZero as `0x${string}`,
+        txOptions: {
+          waitForTransaction: false,
+        },
+      };
+      try {
+        await ipAssetClient.registerDerivativeIp(request);
+      } catch (err) {
+        expect((err as Error).message).includes("readContract error");
+      }
+    });
+
+    it("should throw invalid address error, if tokenContractAddress is invlid", async () => {
+      rpcMock.readContract = sinon.stub().resolves();
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      const request = {
+        licenseIds: ["2"],
+        tokenContractAddress: "0xkkkkkkkkk" as `0x${string}`, // invlaid address
+        tokenId: "3",
+        ipName: "Test IP",
+        uri: "This is a test IP description",
+        contentHash: AddressZero as `0x${string}`,
+        txOptions: {
+          waitForTransaction: false,
+        },
+      };
+
+      try {
+        await ipAssetClient.registerDerivativeIp(request);
+      } catch (err) {
+        expect((err as Error).message).includes('Address "0xkkkkkkkkk" is invalid');
+      }
+    });
+    it("should return ipId only if contract is successfully read", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.readContract = sinon.stub().resolves(txHash);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
 
-      const res = await ipAccountClient.registerDerivativeIp({
+      const res = await ipAssetClient.registerDerivativeIp({
+        licenseIds: ["2"],
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        ipName: "Test IP",
+        uri: "This is a test IP description",
+        contentHash: AddressZero,
+        txOptions: {
+          waitForTransaction: false,
+        },
+      });
+      expect(Object.keys(res)).to.include.all.members(["ipId"]);
+      expect(res.ipId).equal(txHash);
+    });
+
+    it("should not throw error when registering a derivative IP", async function () {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      rpcMock.readContract = sinon.stub().resolves();
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
+
+      const res = await ipAssetClient.registerDerivativeIp({
         licenseIds: ["2"],
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
@@ -158,7 +270,7 @@ describe("Test IpAssetClient", function () {
 
     it("should not throw error when creating a derivative IP and wait for transaction confirmed", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.readContract = sinon.stub().resolves();
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
@@ -181,14 +293,13 @@ describe("Test IpAssetClient", function () {
           },
         ],
       });
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
 
-      const response = await ipAccountClient.registerDerivativeIp({
+      const response = await ipAssetClient.registerDerivativeIp({
         licenseIds: ["2"],
         tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
-        ipName: "Test IP",
-        uri: "This is a test IP description",
-        contentHash: AddressZero,
         txOptions: {
           waitForTransaction: true,
         },
@@ -199,9 +310,13 @@ describe("Test IpAssetClient", function () {
 
     it("should throw error when request fails", async function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.readContract = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
+
       await expect(
-        ipAccountClient.registerDerivativeIp({
+        ipAssetClient.registerDerivativeIp({
           licenseIds: ["2"],
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",
@@ -217,12 +332,14 @@ describe("Test IpAssetClient", function () {
 
     it("should throw error when invalid licenseId is provided", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
-      rpcMock.simulateContract = sinon.stub().rejects();
+      rpcMock.simulateContract = sinon.stub().rejects("Error");
+      rpcMock.readContract = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
 
       await expect(
-        ipAccountClient.registerDerivativeIp({
+        ipAssetClient.registerDerivativeIp({
           licenseIds: ["2"],
           tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "3",
@@ -233,7 +350,58 @@ describe("Test IpAssetClient", function () {
             waitForTransaction: false,
           },
         }),
-      ).to.be.rejectedWith("Failed to register derivative IP: Error");
+      ).to.be.rejectedWith("Failed to register derivative IP:");
+    });
+
+    it("should return txHash only if txOptions.waitForTransaction is false", async function () {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.readContract = sinon.stub().resolves();
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
+
+      const result = await ipAssetClient.registerDerivativeIp({
+        licenseIds: ["2"],
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        ipName: "Test IP",
+        uri: "This is a test IP description",
+        contentHash: AddressZero,
+        txOptions: {
+          waitForTransaction: false,
+        },
+      });
+      expect(Object.keys(result).length).to.equal(1);
+      expect(Object.keys(result)[0]).to.equal("txHash");
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should return txHash and ipId if txOptions.waitForTransaction is true", async function () {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      rpcMock.readContract = sinon.stub().resolves();
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
+      sinon.stub(royaltyContextUtils, "encodeRoyaltyContext").resolves();
+      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+        {
+          eventName: "TransferBatch",
+          args: {
+            ipId: "9",
+          },
+        },
+      ]);
+      const result = await ipAssetClient.registerDerivativeIp({
+        licenseIds: ["2"],
+        tokenContractAddress: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.ipId).to.equal("9");
     });
   });
 });

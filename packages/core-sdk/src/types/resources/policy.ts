@@ -1,109 +1,9 @@
 import { TxOptions } from "../options";
-/*
-"components": [
-          {
-            "internalType": "bool",
-            "name": "transferable",
-            "type": "bool"
-          },
-          {
-            "internalType": "address",
-            "name": "royaltyPolicy",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "mintingFee",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "mintingFeeToken",
-            "type": "address"
-          },
-          {
-            "components": [
-              {
-                "internalType": "bool",
-                "name": "attribution",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "commercialUse",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "commercialAttribution",
-                "type": "bool"
-              },
-              {
-                "internalType": "address",
-                "name": "commercializerChecker",
-                "type": "address"
-              },
-              {
-                "internalType": "bytes",
-                "name": "commercializerCheckerData",
-                "type": "bytes"
-              },
-              {
-                "internalType": "uint32",
-                "name": "commercialRevShare",
-                "type": "uint32"
-              },
-              {
-                "internalType": "bool",
-                "name": "derivativesAllowed",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "derivativesAttribution",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "derivativesApproval",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "derivativesReciprocal",
-                "type": "bool"
-              },
-              {
-                "internalType": "string[]",
-                "name": "territories",
-                "type": "string[]"
-              },
-              {
-                "internalType": "string[]",
-                "name": "distributionChannels",
-                "type": "string[]"
-              },
-              {
-                "internalType": "string[]",
-                "name": "contentRestrictions",
-                "type": "string[]"
-              }
-            ],
-            "internalType": "struct PILPolicy",
-            "name": "policy",
-            "type": "tuple"
-          }
-        ],
-        "internalType": "struct RegisterPILPolicyParams",
-        "name": "params",
-        "type": "tuple"
-      }
-*/
 
 export type RegisterPILPolicyRequest = {
   transferable: boolean;
   royaltyPolicy?: `0x${string}`;
-  mintingFee?: number;
+  mintingFee?: string;
   mintingFeeToken?: `0x${string}`;
   attribution?: boolean;
   commercialUse?: boolean;
@@ -122,7 +22,34 @@ export type RegisterPILPolicyRequest = {
 };
 
 export type RegisterPILPolicyResponse = {
-  txHash: string;
+  txHash?: string;
+  policyId?: string;
+};
+
+export type RegisterPILSocialRemixPolicyRequest = {
+  territories?: string[];
+  distributionChannels?: string[];
+  contentRestrictions?: string[];
+  txOptions?: TxOptions;
+};
+
+export type RegisterPILSocialRemixPolicyResponse = {
+  txHash?: string;
+  policyId?: string;
+};
+
+export type RegisterPILCommercialUsePolicyRequest = {
+  commercialRevShare: number;
+  mintingFee?: string;
+  mintingFeeToken?: `0x${string}`;
+  territories?: string[];
+  distributionChannels?: string[];
+  contentRestrictions?: string[];
+  txOptions?: TxOptions;
+};
+
+export type RegisterPILCommercialUsePolicyResponse = {
+  txHash?: string;
   policyId?: string;
 };
 
@@ -135,4 +62,33 @@ export type AddPolicyToIpRequest = {
 export type AddPolicyToIpResponse = {
   txHash: string;
   index?: string;
+};
+
+export type PolicyApiResponse = {
+  data: Policy;
+};
+
+export type Policy = {
+  id: string;
+  pil: PILData;
+};
+
+export type PILData = {
+  commercialRevShare: string;
+};
+
+export type FrameworkData = {
+  attribution: boolean;
+  commercialUse: boolean;
+  commercialAttribution: boolean;
+  commercialRevShare: number;
+  derivativesAllowed: boolean;
+  derivativesAttribution: boolean;
+  derivativesApproval: boolean;
+  derivativesReciprocal: boolean;
+  territories: string[];
+  distributionChannels: string[];
+  contentRestrictions: string[];
+  commercializerChecker: `0x${string}`;
+  commercializerCheckerData: `0x${string}`;
 };

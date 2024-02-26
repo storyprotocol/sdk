@@ -2,11 +2,8 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { PermissionClient, AddressZero } from "../../../src";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
+import * as utils from "../../../src/utils/utils";
 import { PublicClient, WalletClient, Account } from "viem";
-
-chai.use(chaiAsPromised);
 
 describe("Test Permission", function () {
   let permissionClient: PermissionClient;
@@ -66,46 +63,47 @@ describe("Test Permission", function () {
       expect(res.txHash).equal(txHash);
     });
 
-    it.skip("should not throw error when setting permission and wait for transaction confirmed", async function () {
+    it("should throw waitTxAndFilterLog error if waitTxAndFilterLog throws an error", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
-        // logs: [
-        //   {
-        //     address: "0x12054FC0F26F979b271dE691358FeDCF5a1DAe65",
-        //     topics: [
-        //       "0x5be70b68c8361762980ec7d425d79fd33f6d49cac8a498e6ddf514f995b987f7",
-        //       "0x0000000000000000000000005ef1ac0e6b9f3b99bb9c3040cc5bd3eeec0e909a",
-        //       "0x00000000000000000000000097527bb0435b28836489ac3e1577ca1e2a099371",
-        //       "0x0000000000000000000000000000000000000000000000000000000000aa36a7",
-        //     ],
-        //     data: "0x000000000000000000000000e2a7213762caddb7438f21f82cefbb49311674630000000000000000000000000000000000000000000000000000000000000002",
-        //     blockNumber: 4738934n,
-        //     transactionHash: "0x3600464c4f0794de350e55a484d67cdb6ed4a89917274709b9bb48246935c891",
-        //     transactionIndex: 106,
-        //     blockHash: "0x8d431865dbcfa54988f48b18c0a07fea503ca38c387b6326f513aa6f238faddc",
-        //     logIndex: 52,
-        //     removed: false,
-        //   },
-        // ],
-      });
-
-      // const res = await PermissionClient.setPermission({
-      //   ipAsset: AddressZero,
-      //   signer: AddressZero,
-      //   to: AddressZero,
-      //   func: AddressZero,
-      //   permission: 0,
-      //   txOptions: {
-      //     waitForTransaction: false,
-      //   },
-      // });
-      // expect(response.txHash).equal(txHash);
-      // expect(response.ipAccountId).equals("0x5Ef1Ac0e6b9f3b99BB9c3040Cc5BD3EEeC0E909A");
+      sinon.stub(utils, "waitTxAndFilterLog").rejects(new Error("waitTxAndFilterLog error"));
+      try {
+        const res = await permissionClient.setPermission({
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          func: "0x00000000",
+          permission: 0,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message.includes("waitTxAndFilterLog error"));
+      }
     });
 
+    it("should return txHash and success when txOptions.waitForTransaction is true", async () => {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      rpcMock.readContract = sinon.stub().resolves(AddressZero);
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(utils, "waitTxAndFilterLog").resolves();
+
+      const res = await permissionClient.setPermission({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        permission: 0,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(res.txHash).to.equal(txHash);
+      expect(res.success).to.equal(true);
+    });
     it("should throw error when request fails", async function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));

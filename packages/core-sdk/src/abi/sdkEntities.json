@@ -2,12 +2,16 @@
   "execute",
   "executeWithSig",
 
+  "ipId",
+  "isRegistered",
+
   "registerRootIp",
   "registerDerivativeIp",
   "IPRegistered",
 
   "registerPolicy",
   "addPolicyToIp",
+  "getPolicyId",
   "PolicyRegistered",
   "PolicyAddedToIpId",
 
@@ -25,8 +29,5 @@
   "resolveDispute",
   "DisputeCancelled",
   "DisputeResolved",
-  "DisputeRaised",
-
-  "setTag",
-  "removeTag"
+  "DisputeRaised"
 ]

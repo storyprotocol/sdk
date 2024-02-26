@@ -8,10 +8,9 @@ import IPAssetRegistryABI from "../../src/abi/json/IIPAssetRegistry.abi";
 import LicensingModuleABI from "../../src/abi/json/LicensingModule.abi";
 import PILPolicyFrameworkManagerABI from "../../src/abi/json/PILPolicyFrameworkManager.abi";
 import RegistrationModuleABI from "../../src/abi/json/RegistrationModule.abi";
-import TaggingModuleABI from "../../src/abi/json/TaggingModule.abi";
 import ErrorsABI from "../../src/abi/json/Errors.abi";
 
-export const tenderly = {
+const tenderly = {
   AccessController: "0x674d6E1f7b5e2d714DBa588e9d046965225517c8",
   ArbitrationPolicySP: "0xb41BC78478878B338336C5E7a34292213779cd6F",
   DisputeModule: "0x3A96cad7b2aC783a6811c7c3e8DEF30E8a4cfcDb",
@@ -22,7 +21,7 @@ export const tenderly = {
   LicensingModule: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
   PILPolicyFrameworkManager: "0x3C30b98f56b469c0d292EFF5878e9Fb302CB13dD",
   RegistrationModule: "0x193f0Cc84d51Fc38a30658d7eFffEB2C5Cc25840",
-  TaggingModule: "0x92787d8e2E5fE563A91Ee37B6e953BD0A4bAC1eD",
+  RoyaltyPolicyLAP: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
 };
 
 export const IPAccountABI = [...IPAccountImplABI, ...ErrorsABI];
@@ -48,24 +47,20 @@ export const LicenseRegistryConfig = {
 };
 
 export const LicensingModuleConfig = {
-  abi: LicensingModuleABI,
-  //abi: [...LicensingModuleABI, ...ErrorsABI],
+  abi: [...LicensingModuleABI, ...ErrorsABI],
   address: getAddress(tenderly.LicensingModule),
 };
 
 export const RegistrationModuleConfig = {
-  abi: RegistrationModuleABI,
-  //abi: [...RegistrationModuleABI, ...ErrorsABI],
+  abi: [...RegistrationModuleABI, ...ErrorsABI],
   address: getAddress(tenderly.RegistrationModule),
 };
 
-export const TaggingModuleConfig = {
-  abi: [...TaggingModuleABI, ...ErrorsABI],
-  address: getAddress(tenderly.TaggingModule),
+export const PILPolicyFrameworkManagerConfig = {
+  abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
+  address: getAddress(tenderly.PILPolicyFrameworkManager),
 };
 
-export const PILPolicyFrameworkManagerConfig = {
-  abi: PILPolicyFrameworkManagerABI,
-  //abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
-  address: getAddress(tenderly.PILPolicyFrameworkManager),
+export const RoyaltyPolicyLAPConfig = {
+  address: getAddress(tenderly.RoyaltyPolicyLAP),
 };
