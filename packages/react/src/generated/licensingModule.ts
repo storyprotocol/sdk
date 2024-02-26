@@ -533,7 +533,7 @@ export const licensingModuleAbi = [
 ] as const
 
 export const licensingModuleAddress =
-  '0x46d7d7f2450066344B291e182371E8885558568a' as const
+  '0x9CDDD88Dd34429a0F39eaDf91a56D1bf0533E72B' as const
 
 export const licensingModuleConfig = {
   address: licensingModuleAddress,

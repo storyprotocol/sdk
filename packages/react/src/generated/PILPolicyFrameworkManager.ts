@@ -441,7 +441,7 @@ export const pilPolicyFrameworkManagerAbi = [
 ] as const
 
 export const pilPolicyFrameworkManagerAddress =
-  '0x3E881bEB7DeD9610CBCD0049972Ab12c2859170f' as const
+  '0x50c3bCAA67D4eC3f285E4328451315Ab0D9e539f' as const
 
 export const pilPolicyFrameworkManagerConfig = {
   address: pilPolicyFrameworkManagerAddress,

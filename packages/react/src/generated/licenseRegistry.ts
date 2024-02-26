@@ -454,7 +454,7 @@ export const licenseRegistryAbi = [
 ] as const
 
 export const licenseRegistryAddress =
-  '0x185345750e402b60125792cbE6d82534C8575cF4' as const
+  '0x176d33Cc80ed3390256033bbf7Fd651c9C5A364F' as const
 
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,

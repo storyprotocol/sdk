@@ -217,7 +217,7 @@ export const accessControllerAbi = [
 ] as const
 
 export const accessControllerAddress =
-  '0xaFfE6DE30Dfa2b35b63789b9aBF45b0A5Da201Eb' as const
+  '0x8eB53745795E2107E3568c647A77a7294C89Ef31' as const
 
 export const accessControllerConfig = {
   address: accessControllerAddress,

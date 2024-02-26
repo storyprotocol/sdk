@@ -438,7 +438,7 @@ export const ipAssetRegistryAbi = [
 ] as const
 
 export const ipAssetRegistryAddress =
-  '0x980d2c331E8fD31D7397d83AA9Bba44EaA4daeBC' as const
+  '0xA3a77482C64e91d4C89114D83Bd51457132ea947' as const
 
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
