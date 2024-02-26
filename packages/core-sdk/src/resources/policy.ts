@@ -81,7 +81,8 @@ export class PolicyClient {
         }),
         request.mintingFee || "0",
         request.mintingFeeToken || zeroAddress,
-        request.royaltyPolicy || RoyaltyPolicyLAPConfig.address,
+        request.royaltyPolicy ||
+          (request.commercialUse === true ? RoyaltyPolicyLAPConfig.address : zeroAddress),
       );
       if (policyId !== 0) {
         return { policyId: policyId.toString() };
