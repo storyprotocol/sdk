@@ -126,11 +126,7 @@ describe("Test waitTxAndFilterLog", () => {
     }
   });
 
-  it.skip("should not throw error if param.from exists and addresses in logs are different from params.address", async () => {
-    sinon.stub(viem, "decodeEventLog").returns({
-      eventName: "TransferSingle",
-      args: {},
-    });
+  it("should not throw error if param.from exists and addresses in logs are same with params.address", async () => {
     rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
       logs: [
         {
@@ -153,7 +149,45 @@ describe("Test waitTxAndFilterLog", () => {
     });
     const params = {
       from: "0x176d33cc80ed3390256033bbf7fd651c9c5a364f" as `0x${string}`,
-      abi: defaultAbi as viem.Abi,
+      abi: [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "value",
+              type: "uint256",
+            },
+          ],
+          name: "TransferSingle",
+          type: "event",
+        },
+      ],
       eventName: "TransferSingle",
       confirmations: 2,
       pollingInterval: 10,
