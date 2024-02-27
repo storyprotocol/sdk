@@ -76,9 +76,9 @@ describe("Test Policy Functions", () => {
       const response = await expect(
         client.policy.registerPILPolicy({
           transferable: true,
-          mintingFeeToken: "0x1219A0E87e617E6560104fA11cfd4f01FeB47362",
+          mintingFeeToken: "0x857308523a01B430cB112400976B9FC4A6429D55",
           mintingFee: "1000000000000000000",
-          royaltyPolicy: "0xda483fd6e6ecA1C2D913802F9a6B57a83b73029f",
+          royaltyPolicy: "0x16eF58e959522727588921A92e9084d36E5d3855",
           commercialRevShare: 300,
           attribution: true,
           commercialUse: true,
@@ -106,8 +106,8 @@ describe("Test Policy Functions", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.policy.addPolicyToIp({
-          ipId: "0x90daC93B2F2a6ABf44116d8A76b5C330F5A29dC0",
-          policyId: "3",
+          ipId: "0x5da03B1d4Ce89d67ceD8dC5F74e52D367D311E32",
+          policyId: "2",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
