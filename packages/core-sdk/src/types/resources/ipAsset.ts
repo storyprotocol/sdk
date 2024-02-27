@@ -22,7 +22,6 @@ export type RegisterDerivativeIpRequest = {
   ipName?: string;
   contentHash?: `0x${string}`;
   uri?: string;
-  minRoyalty?: number;
   txOptions?: TxOptions;
 };
 

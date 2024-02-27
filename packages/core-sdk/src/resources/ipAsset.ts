@@ -92,7 +92,6 @@ export class IPAssetClient {
    *   @param request.ipName [Optional] The name assigned to the new IP.
    *   @param request.contentHash [Optional] The content hash of the IP being registered.
    *   @param request.uri [Optional] An external URI to link to the IP.
-   *   @param request.minRoyalty [Optional] The minimum royalty percentage that the IP owner will receive.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits RootIPRegistered (msg.sender, ipId, policyId)
