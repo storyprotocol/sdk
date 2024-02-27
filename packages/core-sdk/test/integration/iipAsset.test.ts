@@ -31,7 +31,7 @@ describe("IP Asset Functions", () => {
   });
 
   describe("Create root IP Asset", async function () {
-    it.skip("should not throw error when creating a root IP Asset", async () => {
+    it("should not throw error when creating a root IP Asset", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.registerRootIp({
@@ -52,13 +52,13 @@ describe("IP Asset Functions", () => {
         expect(response.ipId).not.empty;
       }
     });
-    it.skip("should not throw error when creating an existing root IP Asset", async () => {
+    it("should not throw error when creating an existing root IP Asset", async () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.registerRootIp({
           policyId: "0",
           tokenContractAddress: "0x7a90a7acff8bf14f13f8d1bdac5b663ef4f379ee",
-          tokenId: "100",
+          tokenId: "105",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
@@ -90,7 +90,7 @@ describe("IP Asset Functions", () => {
         client.ipAsset.registerDerivativeIp({
           licenseIds: [licenseId],
           tokenContractAddress: "0x7a90a7acff8bf14f13f8d1bdac5b663ef4f379ee",
-          tokenId: "104",
+          tokenId: "100",
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
