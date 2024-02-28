@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, getAddress } from "viem";
+import { PublicClient, WalletClient, Hex, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import { HashZero } from "../constants/common";
@@ -147,11 +147,14 @@ export class IPAssetClient {
     }
   }
 
-  private async isNFTRegistered(
-    chainId: string,
-    tokenAddress: `0x${string}`,
-    tokenId: string,
-  ): Promise<`0x${string}`> {
+  /**
+   *  Checks if an NFT is already registered in the protocol.
+   * @param chainId The chain ID of the NFT.
+   * @param tokenAddress The address of the NFT.
+   * @param tokenId The token ID of the NFT.
+   * @returns A Promise that resolves to the IP ID if the NFT is already registered, otherwise it resolves to 0x.
+   */
+  public async isNFTRegistered(chainId: string, tokenAddress: Hex, tokenId: string): Promise<Hex> {
     const ipId = await this.rpcClient.readContract({
       ...this.ipAssetRegistryConfig,
       functionName: "ipId",
