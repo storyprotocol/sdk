@@ -177,6 +177,14 @@ export const accessControllerAbi = [
     ],
     name: 'PermissionSet',
   },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'signer', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+    ],
+    name: 'AccessController__BothCallerAndRecipientAreNotRegisteredModule',
+  },
   { type: 'error', inputs: [], name: 'AccessController__CallerIsNotIPAccount' },
   {
     type: 'error',
@@ -199,11 +207,6 @@ export const accessControllerAbi = [
     name: 'AccessController__PermissionDenied',
   },
   { type: 'error', inputs: [], name: 'AccessController__PermissionIsNotValid' },
-  {
-    type: 'error',
-    inputs: [{ name: 'to', internalType: 'address', type: 'address' }],
-    name: 'AccessController__RecipientIsNotRegisteredModule',
-  },
   { type: 'error', inputs: [], name: 'AccessController__SignerIsZeroAddress' },
   { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
   { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
@@ -217,7 +220,7 @@ export const accessControllerAbi = [
 ] as const
 
 export const accessControllerAddress =
-  '0x8eB53745795E2107E3568c647A77a7294C89Ef31' as const
+  '0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735' as const
 
 export const accessControllerConfig = {
   address: accessControllerAddress,

@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/react",
-  "version": "0.0.1-beta.7",
+  "version": "0.0.1-beta.9",
   "description": "Story Protocol React SDK",
   "main": "dist/story-protocol-react.cjs.js",
   "module": "dist/story-protocol-react.esm.js",
@@ -26,7 +26,7 @@
     "lint": "",
     "tsc": "tsc --noEmit",
     "update": "cd ../protocol-core && git submodule update --init --recursive && git pull origin main && yarn && forge build && cd ../react",
-    "update:build": "pnpm run update && pnpm wagmi generate && preconstruct build",
+    "update:build": "pnpm run update && pnpm wagmi generate && pnpm reconstruct build",
     "yalc:push": "preconstruct build && yalc publish"
   },
   "keywords": [],

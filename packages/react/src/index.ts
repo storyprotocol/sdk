@@ -5,6 +5,7 @@ export * from "./generated/PILPolicyFrameworkManager";
 export * from "./generated/disputeModule";
 export * from "./generated/ipAccountImpl";
 export * from "./generated/ipAssetRegistry";
+export * from "./generated/spg";
 
 // Rename hooks for better DX
 export { useWritePilPolicyFrameworkManagerRegisterPolicy as useRegisterPILPolicy } from "./generated/PILPolicyFrameworkManager";

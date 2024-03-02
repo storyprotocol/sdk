@@ -497,6 +497,7 @@ export const licensingModuleAbi = [
   { type: 'error', inputs: [], name: 'LicensingModule__LicensorNotRegistered' },
   { type: 'error', inputs: [], name: 'LicensingModule__LinkParentParamFailed' },
   { type: 'error', inputs: [], name: 'LicensingModule__LinkingRevokedLicense' },
+  { type: 'error', inputs: [], name: 'LicensingModule__MintAmountZero' },
   {
     type: 'error',
     inputs: [],
@@ -519,6 +520,7 @@ export const licensingModuleAbi = [
     name: 'LicensingModule__PolicyAlreadySetForIpId',
   },
   { type: 'error', inputs: [], name: 'LicensingModule__PolicyNotFound' },
+  { type: 'error', inputs: [], name: 'LicensingModule__ReceiverZeroAddress' },
   {
     type: 'error',
     inputs: [],
@@ -533,7 +535,7 @@ export const licensingModuleAbi = [
 ] as const
 
 export const licensingModuleAddress =
-  '0x9CDDD88Dd34429a0F39eaDf91a56D1bf0533E72B' as const
+  '0x950d766A1a0afDc33c3e653C861A8765cb42DbdC' as const
 
 export const licensingModuleConfig = {
   address: licensingModuleAddress,

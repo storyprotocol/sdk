@@ -482,7 +482,7 @@ export const disputeModuleAbi = [
 ] as const
 
 export const disputeModuleAddress =
-  '0xe94d7198EF5657C15be755aC3D9cb386F2Db50Bd' as const
+  '0x6157B19CBc151af2b36e0a2581001d32a22b2661' as const
 
 export const disputeModuleConfig = {
   address: disputeModuleAddress,

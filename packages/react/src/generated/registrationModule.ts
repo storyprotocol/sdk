@@ -115,7 +115,7 @@ export const registrationModuleAbi = [
 ] as const
 
 export const registrationModuleAddress =
-  '0x8b3f6b736b520F69c37a575293D3c1ff6383D495' as const
+  '0x613128e88b568768764824f898C8135efED97fA6' as const
 
 export const registrationModuleConfig = {
   address: registrationModuleAddress,

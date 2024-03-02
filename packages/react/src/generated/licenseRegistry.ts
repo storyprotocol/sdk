@@ -12,7 +12,10 @@ import {
 export const licenseRegistryAbi = [
   {
     type: 'constructor',
-    inputs: [{ name: 'governance', internalType: 'address', type: 'address' }],
+    inputs: [
+      { name: 'governance', internalType: 'address', type: 'address' },
+      { name: 'url', internalType: 'string', type: 'string' },
+    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -75,6 +78,13 @@ export const licenseRegistryAbi = [
     inputs: [],
     name: 'governance',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'imageUrl',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
     stateMutability: 'view',
   },
   {
@@ -219,6 +229,13 @@ export const licenseRegistryAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'url', internalType: 'string', type: 'string' }],
+    name: 'setLicensingImageUrl',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: 'newLicensingModule', internalType: 'address', type: 'address' },
     ],
@@ -266,6 +283,25 @@ export const licenseRegistryAbi = [
       { name: 'approved', internalType: 'bool', type: 'bool', indexed: false },
     ],
     name: 'ApprovalForAll',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: '_fromTokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: '_toTokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'BatchMetadataUpdate',
   },
   {
     type: 'event',
@@ -454,7 +490,7 @@ export const licenseRegistryAbi = [
 ] as const
 
 export const licenseRegistryAddress =
-  '0x176d33Cc80ed3390256033bbf7Fd651c9C5A364F' as const
+  '0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4' as const
 
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
@@ -525,6 +561,15 @@ export const useReadGovernance = /*#__PURE__*/ createUseReadContract({
   abi: licenseRegistryAbi,
   address: licenseRegistryAddress,
   functionName: 'governance',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"imageUrl"`
+ */
+export const useReadImageUrl = /*#__PURE__*/ createUseReadContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: 'imageUrl',
 })
 
 /**
@@ -699,6 +744,15 @@ export const useSetGovernance = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingImageUrl"`
+ */
+export const useSetLicensingImageUrl = /*#__PURE__*/ createUseWriteContract({
+  abi: licenseRegistryAbi,
+  address: licenseRegistryAddress,
+  functionName: 'setLicensingImageUrl',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
  */
 export const useSetLicensingModule = /*#__PURE__*/ createUseWriteContract({
@@ -786,6 +840,16 @@ export const useSimulateSetGovernance = /*#__PURE__*/ createUseSimulateContract(
 )
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingImageUrl"`
+ */
+export const useSimulateSetLicensingImageUrl =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    functionName: 'setLicensingImageUrl',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link licenseRegistryAbi}__ and `functionName` set to `"setLicensingModule"`
  */
 export const useSimulateSetLicensingModule =
@@ -814,6 +878,16 @@ export const useWatchApprovalForAll = /*#__PURE__*/ createUseWatchContractEvent(
     eventName: 'ApprovalForAll',
   },
 )
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"BatchMetadataUpdate"`
+ */
+export const useWatchBatchMetadataUpdate =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: licenseRegistryAbi,
+    address: licenseRegistryAddress,
+    eventName: 'BatchMetadataUpdate',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link licenseRegistryAbi}__ and `eventName` set to `"GovernanceUpdated"`

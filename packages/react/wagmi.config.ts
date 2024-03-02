@@ -1,5 +1,5 @@
 import { defineConfig } from "@wagmi/cli";
-import { react } from "@wagmi/cli/plugins";
+import { etherscan, react } from "@wagmi/cli/plugins";
 import * as dotenv from "dotenv";
 import { Abi } from "abitype";
 import { pascalCase } from "change-case";
@@ -56,6 +56,30 @@ function generateConfig(
             ? getHookName({ contractName, itemName, type })
             : defaultGetHookName({ contractName, itemName, type });
         },
+      }),
+    ],
+  };
+}
+
+function generateConfigEtherscan(
+  generatedName: string,
+  contractName: string,
+  address?: `0x${string}`,
+) {
+  return {
+    out: `src/generated/${generatedName}.ts`,
+    plugins: [
+      etherscan({
+        apiKey: process.env.ETHERSCAN_API_KEY!,
+        chainId: 11155111,
+        cacheDuration: 300_000,
+
+        contracts: [
+          {
+            name: contractName,
+            address: address,
+          },
+        ],
       }),
     ],
   };
@@ -145,7 +169,7 @@ const disputeModuleConfig = generateConfig(
   },
 );
 
-const PILPolicyFrameworkManager = generateConfig(
+const PILPolicyFrameworkManagerConfig = generateConfig(
   "PILPolicyFrameworkManager",
   "PILPolicyFrameworkManager",
   PILPolicyFrameworkManagerAbi as Abi,
@@ -162,6 +186,8 @@ const PILPolicyFrameworkManager = generateConfig(
   },
 );
 
+const spgConfig = generateConfigEtherscan("spg", "SPG", contracts.SPG as Address);
+
 export default defineConfig([
   ipAssetRegistryConfig,
   licenseRegistryConfig,
@@ -170,5 +196,6 @@ export default defineConfig([
   licensingModuleConfig,
   ipAccountImplConfig,
   disputeModuleConfig,
-  PILPolicyFrameworkManager,
+  PILPolicyFrameworkManagerConfig,
+  spgConfig,
 ]);
