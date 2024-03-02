@@ -1,0 +1,75 @@
+{
+  "name": "@story-protocol/react",
+  "version": "0.0.1-beta.9",
+  "description": "Story Protocol React SDK",
+  "main": "dist/story-protocol-react.cjs.js",
+  "module": "dist/story-protocol-react.esm.js",
+  "types": "dist/story-protocol-react.cjs.d.ts",
+  "typings": "dist/story-protocol-react.cjs.d.ts",
+  "exports": {
+    ".": {
+      "module": "./dist/story-protocol-react.esm.js",
+      "default": "./dist/story-protocol-react.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "pnpm run fix && preconstruct build",
+    "test": "",
+    "fix": "",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint": "",
+    "tsc": "tsc --noEmit",
+    "update": "cd ../protocol-core && git submodule update --init --recursive && git pull origin main && yarn && forge build && cd ../react",
+    "update:build": "pnpm run update && pnpm wagmi generate && pnpm reconstruct build",
+    "yalc:push": "preconstruct build && yalc publish"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "@babel/preset-typescript": "^7.23.3",
+    "@preconstruct/cli": "^2.8.3",
+    "@story-protocol/eslint-config": "workspace:*",
+    "@story-protocol/prettier-config": "workspace:*",
+    "@story-protocol/tsconfig": "workspace:*",
+    "@types/react": "^18.2.57",
+    "@wagmi/cli": "^2.1.1",
+    "change-case": "^5.4.3",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "^2.8.8",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "abitype": "^0.10.3",
+    "tsc": "^2.0.4",
+    "viem": "^2.7.13",
+    "wagmi": "^2.5.7"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "viem": ">=2.0.0"
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts"
+    ],
+    "exports": true
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript"
+    ]
+  },
+  "prettier": "@story-protocol/prettier-config"
+}
