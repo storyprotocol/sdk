@@ -7,8 +7,8 @@ import {
   encodeAbiParameters,
   parseAbiParameters,
   Chain,
+  ContractEventName,
 } from "viem";
-import { InferEventName } from "viem/types/contract";
 import { mainnet, polygonMumbai, sepolia } from "viem/chains";
 
 import { Hex, TypedData } from "../types/common";
@@ -25,7 +25,7 @@ export function parseToBigInt(num: string | number): bigint {
 
 export async function waitTxAndFilterLog<
   const TAbi extends Abi | readonly unknown[],
-  TEventName extends string | undefined = undefined,
+  TEventName extends ContractEventName<TAbi> | undefined = ContractEventName<TAbi>,
   TTopics extends Hex[] = Hex[],
   TData extends Hex | undefined = undefined,
   TStrict extends boolean = true,
@@ -34,7 +34,7 @@ export async function waitTxAndFilterLog<
   txHash: Hash,
   params: {
     abi: TAbi;
-    eventName: InferEventName<TAbi, TEventName>;
+    eventName: TEventName;
     from?: Hex;
     confirmations?: number;
     pollingInterval?: number;
