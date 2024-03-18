@@ -12,6 +12,7 @@
   "registerPolicy",
   "addPolicyToIp",
   "getPolicyId",
+  "policyIdsForIp",
   "PolicyRegistered",
   "PolicyAddedToIpId",
 

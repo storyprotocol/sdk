@@ -92,3 +92,9 @@ export type FrameworkData = {
   commercializerChecker: `0x${string}`;
   commercializerCheckerData: `0x${string}`;
 };
+
+export type GetPolicyIdsForIpIdRequest = {
+  ipId: `0x${string}`;
+  isInherited?: boolean;
+  txOptions?: TxOptions;
+};

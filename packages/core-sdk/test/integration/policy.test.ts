@@ -294,4 +294,23 @@ describe.skip("Test Policy Functions", () => {
       }
     });
   });
+
+  describe("Get policyIds from IP ID", async function () {
+    it("should not throw error when adding Policy to IP", async () => {
+      const ipId = "0x004e38104adc39cbf4cea9bd8876440a969e3d0b";
+
+      await client.policy.addPolicyToIp({
+        ipId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
+        policyId: "1",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      const result = await client.policy.getPolicyIdsForIpId({ ipId: ipId });
+      expect(result).to.be.a("array");
+      expect(result).to.include("1");
+      expect(result).to.include("2");
+    });
+  });
 });

@@ -255,6 +255,30 @@ export default [
   {
     inputs: [
       {
+        internalType: "bool",
+        name: "isInherited",
+        type: "bool",
+      },
+      {
+        internalType: "address",
+        name: "ipId",
+        type: "address",
+      },
+    ],
+    name: "policyIdsForIp",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "policyIds",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         components: [
           {
             internalType: "bool",
