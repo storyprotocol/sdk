@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../../src";
-import { Hex, http } from "viem";
+import { Hex, http, Account } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { IPAccountABI, LicenseRegistryConfig, LicensingModuleConfig } from "./testABI.sepolia";
 
@@ -15,7 +15,8 @@ describe("License Functions", () => {
       account: privateKeyToAccount((process.env.SEPOLIA_WALLET_PRIVATE_KEY || "0x") as Hex),
     };
 
-    senderAddress = config.account.address;
+    const configAccount: Account = config.account as Account;
+    senderAddress = configAccount.address;
     client = StoryClient.newClient(config);
     client.license.ipAccountABI = IPAccountABI;
     client.license.licenseRegistryConfig = LicenseRegistryConfig;
