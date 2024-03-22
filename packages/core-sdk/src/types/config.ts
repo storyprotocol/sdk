@@ -1,4 +1,4 @@
-import { Account, Transport } from "viem";
+import { Account, Transport, Address } from "viem";
 
 /**
  * Supported chains. For convenience, both name or chain ID are supported.
@@ -20,7 +20,7 @@ export type SupportedChainIds =
  * @public
  */
 export interface StoryConfig {
-  readonly account: Account;
+  readonly account: Account | Address;
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
 }
