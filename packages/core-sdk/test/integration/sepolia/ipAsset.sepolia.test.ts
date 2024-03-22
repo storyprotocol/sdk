@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../../src";
-import { Hex, http } from "viem";
+import { Hex, http, Account, Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
   RegistrationModuleConfig,
@@ -21,7 +21,8 @@ describe("IP Asset Functions", () => {
       account: privateKeyToAccount((process.env.SEPOLIA_WALLET_PRIVATE_KEY || "0x") as Hex),
     };
 
-    senderAddress = config.account.address;
+    const configAccount: Account = config.account as Account;
+    senderAddress = configAccount.address;
     client = StoryClient.newClient(config);
     client.ipAsset.registrationModuleConfig = RegistrationModuleConfig;
     client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
