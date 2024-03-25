@@ -12,7 +12,9 @@ export type SupportedChainIds =
   | "mainnet"
   | "80001"
   | "mumbai"
-  | "polygonMumbai";
+  | "polygonMumbai"
+  | "1513"
+  | "renaissance";
 
 /**
  * Configuration for the SDK Client.

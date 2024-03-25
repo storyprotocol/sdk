@@ -8,6 +8,7 @@ import {
   parseAbiParameters,
   Chain,
   ContractEventName,
+  defineChain,
 } from "viem";
 import { mainnet, polygonMumbai, sepolia } from "viem/chains";
 
@@ -155,7 +156,33 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     case "mumbai":
     case "polygonMumbai":
       return polygonMumbai;
+    case "1513":
+    case "renaissance":
+      return renaissance;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }
 }
+
+const renaissance = defineChain({
+  id: 15_13,
+  name: "renaissance",
+  nativeCurrency: { name: "Ether", symbol: "SEP", decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ["https://renaissance-testnet.rpc.caldera.xyz/http"],
+      webSocket: ["wss://renaissance-testnet.rpc.caldera.xyz/ws"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "Explorer", url: "https://renaissance-testnet.explorer.caldera.xyz" },
+  },
+  //TODO: Confirm with Ze
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 5882,
+    },
+  },
+  testnet: true,
+});
