@@ -1,20 +1,19 @@
 import { expect } from "chai";
-import { AddressZero, HashZero, StoryClient, StoryConfig } from "../../../src";
+import { StoryClient, StoryConfig } from "../../../src";
 import { Hex, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import {
-  IPAssetRegistryConfig,
-  IPAccountABI,
-  LicenseRegistryConfig,
-  LicensingModuleConfig,
-} from "./config/testABI.renaissance";
-import renaissance from "./config/renaissance.env";
 import { chainStringToViemChain } from "../../../src/utils/utils";
+import {
+  IPAccountABI,
+  getIPAssetRegistryConfig,
+  getLicenseRegistryConfig,
+  getLicensingModuleConfig,
+} from "../../config";
+import { renaissance } from "../../env";
 
-describe("IP Asset Functions", () => {
+describe("IP Asset Functions in renaissance", () => {
   let client: StoryClient;
   let senderAddress: string;
-
   before(function () {
     const config: StoryConfig = {
       chainId: "renaissance",
@@ -23,10 +22,10 @@ describe("IP Asset Functions", () => {
     };
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
-    client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
+    client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
     client.license.ipAccountABI = IPAccountABI;
-    client.license.licenseRegistryConfig = LicenseRegistryConfig;
-    client.license.licensingModuleConfig = LicensingModuleConfig;
+    client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
+    client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
   });
 
   describe("Create root IP Asset", async function () {
@@ -55,7 +54,7 @@ describe("IP Asset Functions", () => {
         ],
         address: renaissance.MockERC721 as Hex,
         functionName: "mintId",
-        args: [process.env.RENAISSANCE_TEST_WALLET_ADDRESS as Hex, BigInt(88)],
+        args: [process.env.RENAISSANCE_TEST_WALLET_ADDRESS as Hex, BigInt(121)],
       });
       const tokenId = await walletClient.writeContract(request);
       expect(tokenId).to.be.a("string");

@@ -164,7 +164,7 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   }
 }
 
-const renaissance = defineChain({
+export const renaissance = defineChain({
   id: 15_13,
   name: "renaissance",
   nativeCurrency: { name: "Ether", symbol: "SEP", decimals: 18 },

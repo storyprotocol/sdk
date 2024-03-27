@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { IPAccountABI, LicenseRegistryConfig, LicensingModuleConfig } from "./testABI.sepolia";
+import { IPAccountABI, getLicenseRegistryConfig, getLicensingModuleConfig } from "../../config";
 
 describe("License Functions", () => {
   let client: StoryClient;
@@ -18,8 +18,8 @@ describe("License Functions", () => {
     senderAddress = config.account.address;
     client = StoryClient.newClient(config);
     client.license.ipAccountABI = IPAccountABI;
-    client.license.licenseRegistryConfig = LicenseRegistryConfig;
-    client.license.licensingModuleConfig = LicensingModuleConfig;
+    client.license.licenseRegistryConfig = getLicenseRegistryConfig("sepolia");
+    client.license.licensingModuleConfig = getLicensingModuleConfig("sepolia");
   });
 
   describe("Mint Licenses", async function () {
