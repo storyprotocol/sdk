@@ -27,6 +27,22 @@ export default [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "signer",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+    ],
+    name: "AccessController__BothCallerAndRecipientAreNotRegisteredModule",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "AccessController__CallerIsNotIPAccount",
     type: "error",
@@ -76,17 +92,6 @@ export default [
   {
     inputs: [],
     name: "AccessController__PermissionIsNotValid",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-    ],
-    name: "AccessController__RecipientIsNotRegisteredModule",
     type: "error",
   },
   {
@@ -452,6 +457,11 @@ export default [
   },
   {
     inputs: [],
+    name: "LicensingModule__MintAmountZero",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "LicensingModule__MintLicenseParamFailed",
     type: "error",
   },
@@ -493,6 +503,11 @@ export default [
   {
     inputs: [],
     name: "LicensingModule__PolicyNotFound",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicensingModule__ReceiverZeroAddress",
     type: "error",
   },
   {

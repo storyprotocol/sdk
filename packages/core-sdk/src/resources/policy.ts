@@ -18,6 +18,7 @@ import {
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
   FrameworkData,
+  GetPolicyIdsForIpIdRequest,
 } from "../types/resources/policy";
 
 export class PolicyClient {
@@ -401,6 +402,28 @@ export class PolicyClient {
       } else {
         return { txHash: txHash };
       }
+    } catch (error) {
+      handleError(error, "Failed to add policy to IP");
+    }
+  }
+
+  /**
+   * Gets an array of policies that are associated with an IP ID
+   * @param request The request object containing details to add a policy to an IP
+   *   @param request.ipId The id of the IP
+   * @return the transaction hash and the index of the policy in the IP's policy set if the txOptions.waitForTransaction is set to true
+   */
+  public async getPolicyIdsForIpId(request: GetPolicyIdsForIpIdRequest): Promise<string[]> {
+    try {
+      const policyIds = (await this.rpcClient.readContract({
+        ...this.licensingModuleConfig,
+        functionName: "policyIdsForIp",
+        args: [request.isInherited || false, request.ipId],
+        account: this.wallet.account,
+      })) as bigint[];
+
+      const policyIdsString = policyIds.map((policyId: bigint) => policyId.toString());
+      return policyIdsString;
     } catch (error) {
       handleError(error, "Failed to add policy to IP");
     }

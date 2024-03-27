@@ -503,4 +503,29 @@ describe("Test PolicyClient", () => {
       });
     });
   });
+
+  describe("Test getPolicyIdsForIpId", () => {
+    let policyClient: PolicyClient;
+    let rpcMock: PublicClient;
+    let walletMock: WalletClient;
+
+    beforeEach(function () {
+      rpcMock = createMock<PublicClient>();
+      walletMock = createMock<WalletClient>();
+      const accountMock = createMock<Account>();
+      accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
+      walletMock.account = accountMock;
+      policyClient = new PolicyClient(rpcMock, walletMock);
+    });
+
+    afterEach(function () {
+      sinon.restore();
+    });
+    it("should return licenseId if request.txOptions is present", async () => {
+      rpcMock.readContract = sinon.stub().resolves(["1", "2", "3"]);
+      const ipId = "0x1234567890123456789012345678901234567890";
+      const result = await policyClient.getPolicyIdsForIpId({ ipId: ipId });
+      expect(result).to.deep.equal(["1", "2", "3"]);
+    });
+  });
 });
