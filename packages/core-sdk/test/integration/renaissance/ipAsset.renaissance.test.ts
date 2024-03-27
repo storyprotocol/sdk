@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../../src";
-import { Hex, createPublicClient, createWalletClient, http } from "viem";
+import { Account, Hex, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 import {
@@ -20,7 +20,8 @@ describe("IP Asset Functions in renaissance", () => {
       transport: http(process.env.RENAISSANCE_RPC_PROVIDER_URL),
       account: privateKeyToAccount(process.env.RENAISSANCE_WALLET_PRIVATE_KEY as Hex),
     };
-    senderAddress = config.account.address;
+    const configAccount: Account = config.account as Account;
+    senderAddress = configAccount.address;
     client = StoryClient.newClient(config);
     client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
     client.license.ipAccountABI = IPAccountABI;
@@ -54,7 +55,7 @@ describe("IP Asset Functions in renaissance", () => {
         ],
         address: renaissanceAddress.MockERC721 as Hex,
         functionName: "mintId",
-        args: [process.env.RENAISSANCE_TEST_WALLET_ADDRESS as Hex, BigInt(121)],
+        args: [process.env.RENAISSANCE_TEST_WALLET_ADDRESS as Hex, BigInt(122)],
       });
       const tokenId = await walletClient.writeContract(request);
       expect(tokenId).to.be.a("string");
