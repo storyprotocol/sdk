@@ -261,39 +261,39 @@ describe("Test chainStringToViemChain", () => {
   });
 
   it("should return mainnet if id is 1", () => {
-    const chain = chainStringToViemChain("1" as SupportedChainIds);
+    const chain = chainStringToViemChain("1");
     expect(chain).to.equal(mainnet);
   });
   it("should return mainnet if id is mainnet", () => {
-    const chain = chainStringToViemChain("mainnet" as SupportedChainIds);
+    const chain = chainStringToViemChain("mainnet");
     expect(chain).to.equal(mainnet);
   });
   it("should return sepolia if id is 11155111", () => {
-    const chain = chainStringToViemChain("11155111" as SupportedChainIds);
+    const chain = chainStringToViemChain("11155111");
     expect(chain).to.equal(sepolia);
   });
   it("should return sepolia if id is sepolia", () => {
-    const chain = chainStringToViemChain("sepolia" as SupportedChainIds);
+    const chain = chainStringToViemChain("sepolia");
     expect(chain).to.equal(sepolia);
   });
   it("should return polygonMumbai if id is 80001", () => {
-    const chain = chainStringToViemChain("80001" as SupportedChainIds);
+    const chain = chainStringToViemChain("80001");
     expect(chain).to.equal(polygonMumbai);
   });
   it("should return polygonMumbai if id is mumbai", () => {
-    const chain = chainStringToViemChain("mumbai" as SupportedChainIds);
+    const chain = chainStringToViemChain("mumbai");
     expect(chain).to.equal(polygonMumbai);
   });
   it("should return polygonMumbai if id is polygonMumbai", () => {
-    const chain = chainStringToViemChain("polygonMumbai" as SupportedChainIds);
+    const chain = chainStringToViemChain("polygonMumbai");
     expect(chain).to.equal(polygonMumbai);
   });
   it("should return renaissance if id is 1513", () => {
-    const chain = chainStringToViemChain("1513" as SupportedChainIds);
+    const chain = chainStringToViemChain("1513");
     expect(chain).to.equal(renaissance);
   });
   it("should return renaissance if id is renaissance", () => {
-    const chain = chainStringToViemChain("renaissance" as SupportedChainIds);
+    const chain = chainStringToViemChain("renaissance");
     expect(chain).to.equal(renaissance);
   });
 });
