@@ -2,7 +2,6 @@ import { PublicClient, WalletClient, Hex, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import { HashZero } from "../constants/common";
-import { IPAssetRegistryConfig, RegistrationModuleConfig } from "../abi/config";
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
   RegisterDerivativeIpRequest,
@@ -11,21 +10,31 @@ import {
   RegisterRootIpResponse,
 } from "../types/resources/ipAsset";
 import { RoyaltyContext } from "../types/resources/royalty";
-import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
-import { SepoliaChainId } from "../constants/common";
+import { chain, parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
+import { getIPAssetRegistryConfig, getRegistrationModuleConfig } from "../abi/config";
+import { SupportedChainIds } from "../types/config";
 
 export class IPAssetClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   private readonly storyClient: StoryAPIClient;
-  public ipAssetRegistryConfig = IPAssetRegistryConfig;
-  public registrationModuleConfig = RegistrationModuleConfig;
+  private readonly chainId: SupportedChainIds;
+  public ipAssetRegistryConfig;
+  public registrationModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, storyClient: StoryAPIClient) {
+  constructor(
+    rpcClient: PublicClient,
+    wallet: WalletClient,
+    storyClient: StoryAPIClient,
+    chainId: SupportedChainIds,
+  ) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.storyClient = storyClient;
+    this.chainId = chainId;
+    this.ipAssetRegistryConfig = getIPAssetRegistryConfig(chainId);
+    this.registrationModuleConfig = getRegistrationModuleConfig(chainId);
   }
 
   /**
@@ -46,7 +55,7 @@ export class IPAssetClient {
   public async registerRootIp(request: RegisterRootIpRequest): Promise<RegisterRootIpResponse> {
     try {
       const ipId = await this.isNFTRegistered(
-        SepoliaChainId,
+        chain[this.chainId],
         request.tokenContractAddress,
         request.tokenId,
       );
@@ -101,7 +110,7 @@ export class IPAssetClient {
   ): Promise<RegisterDerivativeIpResponse> {
     try {
       const ipId = await this.isNFTRegistered(
-        SepoliaChainId,
+        chain[this.chainId],
         request.tokenContractAddress,
         request.tokenId,
       );
