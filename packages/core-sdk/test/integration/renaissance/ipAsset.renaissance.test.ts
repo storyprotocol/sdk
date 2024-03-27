@@ -9,7 +9,7 @@ import {
   getLicenseRegistryConfig,
   getLicensingModuleConfig,
 } from "../../config";
-import { renaissance } from "../../env";
+import { renaissanceAddress } from "../../env";
 
 describe("IP Asset Functions in renaissance", () => {
   let client: StoryClient;
@@ -52,7 +52,7 @@ describe("IP Asset Functions in renaissance", () => {
             type: "function",
           },
         ],
-        address: renaissance.MockERC721 as Hex,
+        address: renaissanceAddress.MockERC721 as Hex,
         functionName: "mintId",
         args: [process.env.RENAISSANCE_TEST_WALLET_ADDRESS as Hex, BigInt(121)],
       });
