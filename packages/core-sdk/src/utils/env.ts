@@ -1,4 +1,6 @@
-export const sepolia = {
+import { ContractAddress } from "../types/config";
+
+const sepolia = {
   AccessController: "0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735",
   AncestorsVaultLAP: "0x1db575D163685F4b825aA2b0972B62CB6E7Ac2Db",
   ArbitrationPolicySP: "0x532BC697eFFd12Eb16C913b0df04ebEA87dea309",
@@ -21,4 +23,49 @@ export const sepolia = {
   RoyaltyModule: "0xA6bEf9CC650A16939566c1da5d5088f3F028a865",
   RoyaltyPolicyLAP: "0x16eF58e959522727588921A92e9084d36E5d3855",
   TokenWithdrawalModule: "0x66738a5722e9Cd91B694bA39146CFEcE95457F04",
+};
+
+const renaissance = {
+  AccessController: "0x92c87ae0a0a4b8629ad028e55183CC2b7eC057D3",
+  AncestorsVaultLAP: "0x280f8921E36d6Af2E03AD84EC8194ad1b6B4799c",
+  ArbitrationPolicySP: "0xCc3dDa466A18C4F20Bc0750756B92E2f23741Fd3",
+  DisputeModule: "0x0Ac6fdA124b05D2daA5E9De7059c866EE1CE7Bcb",
+  Governance: "0x6D8070F7726769bEd136bc7007B3deA695f7047A",
+  IPAccountImpl: "0xddcBD4309f0545fa8cC99137bC621620e017bdBe",
+  IPAccountRegistry: "0x16129393444e5BEb435501Dea41D5ECfB10b76F0",
+  IPAssetRegistry: "0xAAe9e83F8cE8832270AF033c609e233686f0E0eB",
+  IPAssetRenderer: "0x39cCE13916e7bfdeFa462D360d551aEcc6D82311",
+  IPMetadataProvider: "0x0A97aD19FEF318F0ACA888574b64A35402C8aDDB",
+  IPResolver: "0xeAEd88BEbF00acac8EFE9ED426cDDD2Dc9f8CB78",
+  LicensingModule: "0x2A88056985814dcBb72aFA50B95893359B6262f5",
+  MockERC20: "0x3271778AdE44EfeC9e11b7160827921b6d614AF1",
+  MockERC721: "0xCdBa568f1f4e16a6c6CBC8F509eCc87972Fef09f",
+  MockTokenGatedHook: "0x008B5D8Db85100E143729453784e9F077B2279fA",
+  ModuleRegistry: "0xB8617E2FC9dbFd51781B8D281b725976E3B43f9d",
+  PILPolicyFrameworkManager: "0xAc2C50Af31501370366D243FaeC56F89128f6d96",
+  RegistrationModule: "0xa6249720b3BD1179d84b7E74029Ed2F78E5eC694",
+  RoyaltyModule: "0xE1a667ccc38540b38d8579c499bE22e51390a308",
+  RoyaltyPolicyLAP: "0x265C21b34e0E92d63C678425478C42aa8D727B79",
+  TokenWithdrawalModule: "0x5f62d238B3022bA5881e5e443B014cac6999a4f2",
+  SplitMain: "0x700f20dA87274a3b90D432B77F393544aeE351eC",
+  SplitWallet: "0x7D9a009A09f52307FD26F2380A1952097629408b",
+  LiquidSplitFactory: "0x0efCDB5D06266654F5e6485d466F56d70Cb5B6c0",
+  LS1155CloneImpl: "0xA75c519c7b7fB5acc8C02C06d3a2DF3519E479FC",
+  LicenseRegistry: "0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba",
+};
+
+const mainnet = {};
+const mumbai = {};
+const polygonMumbai = {};
+
+export const contractAddress: ContractAddress = {
+  sepolia,
+  11155111: sepolia,
+  renaissance,
+  1513: renaissance,
+  mainnet,
+  1: mainnet,
+  80001: mumbai,
+  mumbai,
+  polygonMumbai,
 };

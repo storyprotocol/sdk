@@ -177,7 +177,7 @@ const renaissance = defineChain({
   blockExplorers: {
     default: { name: "Explorer", url: "https://renaissance-testnet.explorer.caldera.xyz" },
   },
-  //TODO: Confirm with Ze
+  //TODO: wait for Ze confirm with config information
   contracts: {
     multicall3: {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",
@@ -186,3 +186,15 @@ const renaissance = defineChain({
   },
   testnet: true,
 });
+
+export const chain: { [key in SupportedChainIds]: string } = {
+  sepolia: "11155111",
+  mainnet: "1",
+  polygonMumbai: "80001",
+  renaissance: "1513",
+  11155111: "11155111",
+  1: "1",
+  80001: "80001",
+  mumbai: "80001",
+  1513: "1513",
+};

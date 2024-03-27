@@ -26,3 +26,5 @@ export interface StoryConfig {
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
 }
+
+export type ContractAddress = { [key in SupportedChainIds]: Record<string, string> };
