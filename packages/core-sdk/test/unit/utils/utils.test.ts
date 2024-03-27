@@ -13,6 +13,7 @@ import {
   dictToQueryParams,
   typedDataArrayToBytesArray,
   chainStringToViemChain,
+  renaissance,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import defaultAbi from "../../../src/abi/json/LicensingModule.abi";
@@ -286,5 +287,13 @@ describe("Test chainStringToViemChain", () => {
   it("should return polygonMumbai if id is polygonMumbai", () => {
     const chain = chainStringToViemChain("polygonMumbai" as SupportedChainIds);
     expect(chain).to.equal(polygonMumbai);
+  });
+  it("should return renaissance if id is 1513", () => {
+    const chain = chainStringToViemChain("1513" as SupportedChainIds);
+    expect(chain).to.equal(renaissance);
+  });
+  it("should return renaissance if id is renaissance", () => {
+    const chain = chainStringToViemChain("renaissance" as SupportedChainIds);
+    expect(chain).to.equal(renaissance);
   });
 });

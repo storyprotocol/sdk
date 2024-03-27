@@ -1,4 +1,5 @@
 import { Hex } from "viem";
+
 import { TxOptions } from "../options";
 
 export type RegisterRootIpRequest = {
