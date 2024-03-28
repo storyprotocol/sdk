@@ -3,8 +3,9 @@ name: Publish to npm, Tag and GH Release
 on:
   push:
     branches:
-      - master
       - main
+    paths:
+      - 'packages/core-sdk/package.json'
 
 jobs:
   # Add  timestamp
