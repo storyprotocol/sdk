@@ -10,7 +10,7 @@ import {
   ContractEventName,
   defineChain,
 } from "viem";
-import { mainnet, polygonMumbai, sepolia } from "viem/chains";
+import { sepolia } from "viem/chains";
 
 import { Hex, TypedData } from "../types/common";
 import { SupportedChainIds } from "../types/config";
@@ -146,16 +146,9 @@ export function splitIntoBytes32(hexString: string): Hex[] {
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
-    case "1":
-    case "mainnet":
-      return mainnet;
     case "11155111":
     case "sepolia":
       return sepolia;
-    case "80001":
-    case "mumbai":
-    case "polygonMumbai":
-      return polygonMumbai;
     case "1513":
     case "storyTestnet":
       return storyTestnet;
@@ -189,12 +182,7 @@ export const storyTestnet = defineChain({
 
 export const chain: { [key in SupportedChainIds]: string } = {
   sepolia: "11155111",
-  mainnet: "1",
-  polygonMumbai: "80001",
   storyTestnet: "1513",
   11155111: "11155111",
-  1: "1",
-  80001: "80001",
-  mumbai: "80001",
   1513: "1513",
 };

@@ -5,16 +5,7 @@ import { Account, Transport, Address } from "viem";
  *
  * @public
  */
-export type SupportedChainIds =
-  | "11155111"
-  | "sepolia"
-  | "1"
-  | "mainnet"
-  | "80001"
-  | "mumbai"
-  | "polygonMumbai"
-  | "1513"
-  | "storyTestnet";
+export type SupportedChainIds = "11155111" | "sepolia" | "1513" | "storyTestnet";
 
 /**
  * Configuration for the SDK Client.

@@ -43,18 +43,9 @@ export const storyTestnetAddress = {
   LicenseRegistry: "0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba",
 };
 
-const mainnet = {};
-const mumbai = {};
-const polygonMumbai = {};
-
 export const contractAddress: ContractAddress = {
   sepolia,
   11155111: sepolia,
   storyTestnet: storyTestnetAddress,
   1513: storyTestnetAddress,
-  mainnet,
-  1: mainnet,
-  80001: mumbai,
-  mumbai,
-  polygonMumbai,
 };
