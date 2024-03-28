@@ -6,6 +6,7 @@ import { PublicClient, WalletClient, Account } from "viem";
 import { StoryAPIClient } from "../../../src/clients/storyAPI";
 import * as utils from "../../../src/utils/utils";
 import * as royaltyContextUtils from "../../../src/utils/royaltyContext";
+import { getIPAssetRegistryConfig } from "../../config";
 
 describe("Test IpAssetClient", function () {
   let ipAssetClient: IPAssetClient;
@@ -20,7 +21,8 @@ describe("Test IpAssetClient", function () {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    ipAssetClient = new IPAssetClient(rpcMock, walletMock, storyClientMock);
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, storyClientMock, "sepolia");
+    ipAssetClient.ipAssetRegistryConfig = getIPAssetRegistryConfig("sepolia");
   });
 
   afterEach(function () {

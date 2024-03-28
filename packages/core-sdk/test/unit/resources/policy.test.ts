@@ -3,12 +3,6 @@ import sinon from "sinon";
 import { PublicClient, WalletClient, Account, zeroAddress } from "viem";
 import { PolicyClient } from "../../../src/resources/policy";
 import {
-  IPAccountABI,
-  LicensingModuleConfig,
-  PILPolicyFrameworkManagerConfig,
-  RoyaltyPolicyLAPConfig,
-} from "../../../src/abi/config";
-import {
   RegisterPILPolicyRequest,
   AddPolicyToIpRequest,
   RegisterPILSocialRemixPolicyRequest,
@@ -16,6 +10,12 @@ import {
 } from "../../../src/types/resources/policy";
 import { createMock } from "../testUtils";
 import * as utils from "../../../src/utils/utils";
+import {
+  IPAccountABI,
+  getLicensingModuleConfig,
+  getPILPolicyFrameworkManagerConfig,
+  getRoyaltyPolicyLAPConfig,
+} from "../../config";
 
 describe("Test PolicyClient", () => {
   let policyClient: PolicyClient;
@@ -28,7 +28,11 @@ describe("Test PolicyClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    policyClient = new PolicyClient(rpcMock, walletMock);
+    policyClient = new PolicyClient(rpcMock, walletMock, "sepolia");
+    policyClient.ipAccountABI = IPAccountABI;
+    policyClient.pilPolicyFrameworkManagerConfig = getPILPolicyFrameworkManagerConfig("sepolia");
+    policyClient.licensingModuleConfig = getLicensingModuleConfig("sepolia");
+    policyClient.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig("sepolia");
   });
 
   afterEach(function () {
@@ -37,12 +41,12 @@ describe("Test PolicyClient", () => {
 
   describe("test for constructor", () => {
     it("test constructor", () => {
-      expect(policyClient.ipAccountABI).to.equal(IPAccountABI);
-      expect(policyClient.licensingModuleConfig).to.equal(LicensingModuleConfig);
-      expect(policyClient.pilPolicyFrameworkManagerConfig).to.equal(
-        PILPolicyFrameworkManagerConfig,
+      expect(policyClient.ipAccountABI).to.eql(IPAccountABI);
+      expect(policyClient.licensingModuleConfig).to.eql(getLicensingModuleConfig("sepolia"));
+      expect(policyClient.pilPolicyFrameworkManagerConfig).to.eql(
+        getPILPolicyFrameworkManagerConfig("sepolia"),
       );
-      expect(policyClient.royaltyPolicyLAPConfig).to.equal(RoyaltyPolicyLAPConfig);
+      expect(policyClient.royaltyPolicyLAPConfig).to.eql(getRoyaltyPolicyLAPConfig("sepolia"));
     });
   });
   describe("test for registerPILPolicy", () => {
@@ -145,7 +149,7 @@ describe("Test PolicyClient", () => {
       const accountMock = createMock<Account>();
       accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
       walletMock.account = accountMock;
-      policyClient = new PolicyClient(rpcMock, walletMock);
+      policyClient = new PolicyClient(rpcMock, walletMock, "sepolia");
     });
 
     afterEach(function () {
@@ -259,7 +263,7 @@ describe("Test PolicyClient", () => {
       const accountMock = createMock<Account>();
       accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
       walletMock.account = accountMock;
-      policyClient = new PolicyClient(rpcMock, walletMock);
+      policyClient = new PolicyClient(rpcMock, walletMock, "sepolia");
     });
 
     afterEach(function () {
@@ -385,7 +389,7 @@ describe("Test PolicyClient", () => {
         const accountMock = createMock<Account>();
         accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
         walletMock.account = accountMock;
-        policyClient = new PolicyClient(rpcMock, walletMock);
+        policyClient = new PolicyClient(rpcMock, walletMock, "sepolia");
       });
 
       afterEach(function () {

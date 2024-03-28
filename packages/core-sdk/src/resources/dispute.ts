@@ -1,7 +1,6 @@
 import { PublicClient, WalletClient, stringToHex } from "viem";
 
 import { handleError } from "../utils/errors";
-import { DisputeModuleConfig } from "../abi/config";
 import {
   CancelDisputeRequest,
   CancelDisputeResponse,
@@ -11,15 +10,18 @@ import {
   ResolveDisputeResponse,
 } from "../types/resources/dispute";
 import { waitTx, waitTxAndFilterLog } from "../utils/utils";
+import { getDisputeModuleConfig } from "../abi/config";
+import { SupportedChainIds } from "../types/config";
 
 export class DisputeClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  public disputeModuleConfig = DisputeModuleConfig;
+  public disputeModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
+    this.disputeModuleConfig = getDisputeModuleConfig(chainId);
   }
 
   /**

@@ -3,12 +3,12 @@ import { StoryClient, StoryConfig } from "../../../src";
 import { Hex, http, Account, Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
-  RegistrationModuleConfig,
-  IPAssetRegistryConfig,
   IPAccountABI,
-  LicenseRegistryConfig,
-  LicensingModuleConfig,
-} from "./testABI.sepolia";
+  getIPAssetRegistryConfig,
+  getLicenseRegistryConfig,
+  getLicensingModuleConfig,
+  getRegistrationModuleConfig,
+} from "../../config";
 
 describe("IP Asset Functions", () => {
   let client: StoryClient;
@@ -24,11 +24,11 @@ describe("IP Asset Functions", () => {
     const configAccount: Account = config.account as Account;
     senderAddress = configAccount.address;
     client = StoryClient.newClient(config);
-    client.ipAsset.registrationModuleConfig = RegistrationModuleConfig;
-    client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
+    client.ipAsset.registrationModuleConfig = getRegistrationModuleConfig("sepolia");
+    client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("sepolia");
     client.license.ipAccountABI = IPAccountABI;
-    client.license.licenseRegistryConfig = LicenseRegistryConfig;
-    client.license.licensingModuleConfig = LicensingModuleConfig;
+    client.license.licenseRegistryConfig = getLicenseRegistryConfig("sepolia");
+    client.license.licensingModuleConfig = getLicensingModuleConfig("sepolia");
   });
 
   describe("Create root IP Asset", async function () {

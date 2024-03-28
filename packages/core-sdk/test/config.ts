@@ -1,19 +1,18 @@
 import { getAddress } from "viem";
 
-import IERC1155ABI from "./json/IERC1155.abi";
-import AccessControllerABI from "./json/AccessController.abi";
-import DisputeModuleABI from "./json/DisputeModule.abi";
-import IPAccountImplABI from "./json/IPAccountImpl.abi";
-import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
-import LicensingModuleABI from "./json/LicensingModule.abi";
-import PILPolicyFrameworkManagerABI from "./json/PILPolicyFrameworkManager.abi";
-import RegistrationModuleABI from "./json/RegistrationModule.abi";
-import ErrorsABI from "./json/Errors.abi";
-import { contractAddress } from "../utils/env";
-import { SupportedChainIds } from "../types/config";
+import IERC1155ABI from "../src/abi/json/IERC1155.abi";
+import AccessControllerABI from "../src/abi/json/AccessController.abi";
+import DisputeModuleABI from "../src/abi/json/DisputeModule.abi";
+import IPAccountImplABI from "../src/abi/json/IPAccountImpl.abi";
+import IPAssetRegistryABI from "../src/abi/json/IIPAssetRegistry.abi";
+import LicensingModuleABI from "../src/abi/json/LicensingModule.abi";
+import PILPolicyFrameworkManagerABI from "../src/abi/json/PILPolicyFrameworkManager.abi";
+import RegistrationModuleABI from "../src/abi/json/RegistrationModule.abi";
+import ErrorsABI from "../src/abi/json/Errors.abi";
+import { contractAddress } from "./env";
+import { SupportedChainIds } from "../src/types/config";
 
 export const IPAccountABI = [...IPAccountImplABI, ...ErrorsABI];
-
 export const getIPAssetRegistryConfig = (chain: SupportedChainIds) => ({
   abi: IPAssetRegistryABI,
   address: getAddress(contractAddress[chain].IPAssetRegistry),

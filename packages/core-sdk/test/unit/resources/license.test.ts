@@ -25,7 +25,7 @@ describe("Test LicenseClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    licenseClient = new LicenseClient(rpcMock, walletMock, storyMock);
+    licenseClient = new LicenseClient(rpcMock, walletMock, storyMock, "sepolia");
   });
 
   afterEach(function () {
@@ -150,7 +150,7 @@ describe("Test LicenseClient", () => {
       const accountMock = createMock<Account>();
       accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
       walletMock.account = accountMock;
-      licenseClient = new LicenseClient(rpcMock, walletMock, storyMock);
+      licenseClient = new LicenseClient(rpcMock, walletMock, storyMock, "sepolia");
       sinon.stub(royaltyContextUtils, "computeRoyaltyContext").resolves();
       sinon
         .stub(royaltyContextUtils, "encodeRoyaltyContext")

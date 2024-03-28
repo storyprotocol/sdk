@@ -5,14 +5,7 @@ import { Account, Transport, Address } from "viem";
  *
  * @public
  */
-export type SupportedChainIds =
-  | "11155111"
-  | "sepolia"
-  | "1"
-  | "mainnet"
-  | "80001"
-  | "mumbai"
-  | "polygonMumbai";
+export type SupportedChainIds = "11155111" | "sepolia" | "1513" | "storyTestnet";
 
 /**
  * Configuration for the SDK Client.
@@ -24,3 +17,5 @@ export interface StoryConfig {
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
 }
+
+export type ContractAddress = { [key in SupportedChainIds]: Record<string, string> };

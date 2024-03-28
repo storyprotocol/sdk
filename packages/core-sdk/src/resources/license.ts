@@ -3,7 +3,7 @@ import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem
 import { handleError } from "../utils/errors";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
-import { IPAccountABI, LicensingModuleConfig, LicenseRegistryConfig } from "../abi/config";
+import { IPAccountABI, getLicenseRegistryConfig, getLicensingModuleConfig } from "../abi/config";
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
   LinkIpToParentRequest,
@@ -12,19 +12,27 @@ import {
   MintLicenseResponse,
 } from "../types/resources/license";
 import { RoyaltyContext } from "../types/resources/royalty";
+import { SupportedChainIds } from "../types/config";
 
 export class LicenseClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   private readonly storyClient: StoryAPIClient;
+  public licenseRegistryConfig;
+  public licensingModuleConfig;
   public ipAccountABI = IPAccountABI;
-  public licenseRegistryConfig = LicenseRegistryConfig;
-  public licensingModuleConfig = LicensingModuleConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, storyClient: StoryAPIClient) {
+  constructor(
+    rpcClient: PublicClient,
+    wallet: WalletClient,
+    storyClient: StoryAPIClient,
+    chainId: SupportedChainIds,
+  ) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.storyClient = storyClient;
+    this.licenseRegistryConfig = getLicenseRegistryConfig(chainId);
+    this.licensingModuleConfig = getLicensingModuleConfig(chainId);
   }
 
   /**
@@ -121,7 +129,7 @@ export class LicenseClient {
 
       if (request.txOptions?.waitForTransaction) {
         await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...LicenseRegistryConfig,
+          ...this.licenseRegistryConfig,
           eventName: "TransferBatch",
         });
         return { txHash: txHash, success: true };

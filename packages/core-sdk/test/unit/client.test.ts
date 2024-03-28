@@ -65,29 +65,29 @@ describe("Test StoryClient", function () {
     });
 
     it("should return client permission", () => {
-      const permission = new PermissionClient(rpcClient, wallet);
+      const permission = new PermissionClient(rpcClient, wallet, "sepolia");
       expect(client.permission).to.not.equal(null);
       expect(client.permission).to.not.equal(undefined);
-      expect(client.permission.ipAccountABI).to.equal(permission.ipAccountABI);
-      expect(client.permission.accessControllerConfig).to.equal(permission.accessControllerConfig);
+      expect(client.permission.ipAccountABI).to.eql(permission.ipAccountABI);
+      expect(client.permission.accessControllerConfig).to.eql(permission.accessControllerConfig);
     });
 
     it("should return client license", () => {
-      const license = new LicenseClient(rpcClient, wallet, storyAPIClient);
+      const license = new LicenseClient(rpcClient, wallet, storyAPIClient, "sepolia");
       expect(client.license).to.not.equal(null);
       expect(client.license).to.not.equal(undefined);
-      expect(client.license.ipAccountABI).to.equal(license.ipAccountABI);
-      expect(client.license.licenseRegistryConfig).to.equal(license.licenseRegistryConfig);
-      expect(client.license.licensingModuleConfig).to.equal(license.licensingModuleConfig);
+      expect(client.license.ipAccountABI).to.eql(license.ipAccountABI);
+      expect(client.license.licenseRegistryConfig).to.eql(license.licenseRegistryConfig);
+      expect(client.license.licensingModuleConfig).to.eql(license.licensingModuleConfig);
     });
 
     it("should return client policy", () => {
-      const policy = new PolicyClient(rpcClient, wallet);
+      const policy = new PolicyClient(rpcClient, wallet, "sepolia");
       expect(client.policy).to.not.equal(null);
       expect(client.policy).to.not.equal(undefined);
-      expect(client.policy.ipAccountABI).to.equal(policy.ipAccountABI);
-      expect(client.policy.licensingModuleConfig).to.equal(policy.licensingModuleConfig);
-      expect(client.policy.pilPolicyFrameworkManagerConfig).to.equal(
+      expect(client.policy.ipAccountABI).to.eql(policy.ipAccountABI);
+      expect(client.policy.licensingModuleConfig).to.eql(policy.licensingModuleConfig);
+      expect(client.policy.pilPolicyFrameworkManagerConfig).to.eql(
         policy.pilPolicyFrameworkManagerConfig,
       );
     });
@@ -95,14 +95,14 @@ describe("Test StoryClient", function () {
     it("should return client account", () => {
       expect(client.ipAccount).to.not.equal(null);
       expect(client.ipAccount).to.not.equal(undefined);
-      expect(client.ipAccount.ipAccountABI).to.equal(IPAccountABI);
+      expect(client.ipAccount.ipAccountABI).to.eql(IPAccountABI);
     });
 
     it("should return client dispute", () => {
-      const dispute = new DisputeClient(rpcClient, wallet);
+      const dispute = new DisputeClient(rpcClient, wallet, "sepolia");
       expect(client.dispute).to.not.equal(null);
       expect(client.dispute).to.not.equal(undefined);
-      expect(client.dispute.disputeModuleConfig).to.equal(dispute.disputeModuleConfig);
+      expect(client.dispute.disputeModuleConfig).to.eql(dispute.disputeModuleConfig);
     });
   });
 });
