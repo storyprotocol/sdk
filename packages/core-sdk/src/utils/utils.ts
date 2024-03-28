@@ -8,8 +8,9 @@ import {
   parseAbiParameters,
   Chain,
   ContractEventName,
+  defineChain,
 } from "viem";
-import { mainnet, polygonMumbai, sepolia } from "viem/chains";
+import { sepolia } from "viem/chains";
 
 import { Hex, TypedData } from "../types/common";
 import { SupportedChainIds } from "../types/config";
@@ -145,17 +146,43 @@ export function splitIntoBytes32(hexString: string): Hex[] {
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
-    case "1":
-    case "mainnet":
-      return mainnet;
     case "11155111":
     case "sepolia":
       return sepolia;
-    case "80001":
-    case "mumbai":
-    case "polygonMumbai":
-      return polygonMumbai;
+    case "1513":
+    case "storyTestnet":
+      return storyTestnet;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }
 }
+
+export const storyTestnet = defineChain({
+  id: 15_13,
+  name: "story-network",
+  nativeCurrency: { name: "Ether", symbol: "SEP", decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ["https://story-network.rpc.caldera.xyz/http"],
+      webSocket: ["wss://story-network.rpc.caldera.xyz/ws"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "Explorer", url: "https://story-network.explorer.caldera.xyz" },
+  },
+  //TODO: wait for Ze confirm with config information
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 5882,
+    },
+  },
+  testnet: true,
+});
+
+export const chain: { [key in SupportedChainIds]: string } = {
+  sepolia: "11155111",
+  storyTestnet: "1513",
+  11155111: "11155111",
+  1513: "1513",
+};

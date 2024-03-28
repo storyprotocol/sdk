@@ -1,11 +1,13 @@
+import { Hex } from "viem";
+
 import { TxOptions } from "../options";
 
 export type RegisterRootIpRequest = {
-  tokenContractAddress: `0x${string}`;
+  tokenContractAddress: Hex;
   tokenId: string;
   policyId?: string;
   ipName?: string;
-  contentHash?: `0x${string}`;
+  contentHash?: Hex;
   uri?: string;
   txOptions?: TxOptions;
 };
@@ -17,10 +19,10 @@ export type RegisterRootIpResponse = {
 
 export type RegisterDerivativeIpRequest = {
   licenseIds: string[];
-  tokenContractAddress: `0x${string}`;
+  tokenContractAddress: Hex;
   tokenId: string;
   ipName?: string;
-  contentHash?: `0x${string}`;
+  contentHash?: Hex;
   uri?: string;
   txOptions?: TxOptions;
 };

@@ -22,7 +22,7 @@ describe("Test DisputeClient", function () {
   beforeEach(function () {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
-    disputeClient = new DisputeClient(rpcMock, walletMock);
+    disputeClient = new DisputeClient(rpcMock, walletMock, "sepolia");
   });
 
   afterEach(function () {

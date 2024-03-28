@@ -4,10 +4,9 @@ import { Hex, http, Account } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
   IPAccountABI,
-  LicensingModuleConfig,
-  PILPolicyFrameworkManagerConfig,
-} from "./testABI.sepolia";
-
+  getLicensingModuleConfig,
+  getPILPolicyFrameworkManagerConfig,
+} from "../../config";
 describe("Test Policy Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
@@ -23,8 +22,8 @@ describe("Test Policy Functions", () => {
     senderAddress = configAccount.address;
     client = StoryClient.newClient(config);
     client.policy.ipAccountABI = IPAccountABI;
-    client.policy.licensingModuleConfig = LicensingModuleConfig;
-    client.policy.pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
+    client.policy.licensingModuleConfig = getLicensingModuleConfig("sepolia");
+    client.policy.pilPolicyFrameworkManagerConfig = getPILPolicyFrameworkManagerConfig("sepolia");
   });
 
   describe("Register PIL Policy", async function () {

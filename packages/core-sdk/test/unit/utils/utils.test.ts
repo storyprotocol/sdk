@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import * as viem from "viem";
-import { mainnet, polygonMumbai, sepolia } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { TypedData } from "../../../src/types/common";
 import { SupportedChainIds } from "../../../src/types/config";
 import {
@@ -13,6 +13,7 @@ import {
   dictToQueryParams,
   typedDataArrayToBytesArray,
   chainStringToViemChain,
+  storyTestnet,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import defaultAbi from "../../../src/abi/json/LicensingModule.abi";
@@ -259,32 +260,20 @@ describe("Test chainStringToViemChain", () => {
     });
   });
 
-  it("should return mainnet if id is 1", () => {
-    const chain = chainStringToViemChain("1" as SupportedChainIds);
-    expect(chain).to.equal(mainnet);
-  });
-  it("should return mainnet if id is mainnet", () => {
-    const chain = chainStringToViemChain("mainnet" as SupportedChainIds);
-    expect(chain).to.equal(mainnet);
-  });
   it("should return sepolia if id is 11155111", () => {
-    const chain = chainStringToViemChain("11155111" as SupportedChainIds);
+    const chain = chainStringToViemChain("11155111");
     expect(chain).to.equal(sepolia);
   });
   it("should return sepolia if id is sepolia", () => {
-    const chain = chainStringToViemChain("sepolia" as SupportedChainIds);
+    const chain = chainStringToViemChain("sepolia");
     expect(chain).to.equal(sepolia);
   });
-  it("should return polygonMumbai if id is 80001", () => {
-    const chain = chainStringToViemChain("80001" as SupportedChainIds);
-    expect(chain).to.equal(polygonMumbai);
+  it("should return story testnet if id is 1513", () => {
+    const chain = chainStringToViemChain("1513");
+    expect(chain).to.equal(storyTestnet);
   });
-  it("should return polygonMumbai if id is mumbai", () => {
-    const chain = chainStringToViemChain("mumbai" as SupportedChainIds);
-    expect(chain).to.equal(polygonMumbai);
-  });
-  it("should return polygonMumbai if id is polygonMumbai", () => {
-    const chain = chainStringToViemChain("polygonMumbai" as SupportedChainIds);
-    expect(chain).to.equal(polygonMumbai);
+  it("should return story test network if id is storyTestnet", () => {
+    const chain = chainStringToViemChain("storyTestnet");
+    expect(chain).to.equal(storyTestnet);
   });
 });

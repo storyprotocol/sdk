@@ -1,31 +1,20 @@
-import { ContractAddress } from "../types/config";
+import { ContractAddress } from "../src/types/config";
 
 const sepolia = {
-  AccessController: "0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735",
-  AncestorsVaultLAP: "0x1db575D163685F4b825aA2b0972B62CB6E7Ac2Db",
-  ArbitrationPolicySP: "0x532BC697eFFd12Eb16C913b0df04ebEA87dea309",
-  DisputeModule: "0x6157B19CBc151af2b36e0a2581001d32a22b2661",
-  Governance: "0xc5Cdbb3359143C2449D03342D2F13F2F0e58c1b8",
-  IPAccountImpl: "0x79792DccC6C58C303510fc1F7649e481C431aFb1",
-  IPAccountRegistry: "0xBD2780F291588C8bDDf7F5874988fA9d3179d560",
-  IPAssetRegistry: "0x292639452A975630802C17c9267169D93BD5a793",
-  IPAssetRenderer: "0x1Ce95B7b333d71C00C3334a96713440d5A5A26dD",
-  IPMetadataProvider: "0x31c65C12A6A3889cd08A055914931E2Fbe773dD6",
-  IPResolver: "0x3809f4128B0B33AFb17576edafD7D4F4E2ABE933",
-  LicenseRegistry: "0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4",
-  LicensingModule: "0x950d766A1a0afDc33c3e653C861A8765cb42DbdC",
-  MockERC20: "0x857308523a01B430cB112400976B9FC4A6429D55",
-  MockERC721: "0x16d50f333B264b153B7BF1DD9fe65A2707B3281b",
-  MockTokenGatedHook: "0x28C32a4B5B3E186d7f658C051d3Bb4a95243209a",
-  ModuleRegistry: "0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27",
-  PILPolicyFrameworkManager: "0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2",
-  RegistrationModule: "0x613128e88b568768764824f898C8135efED97fA6",
-  RoyaltyModule: "0xA6bEf9CC650A16939566c1da5d5088f3F028a865",
-  RoyaltyPolicyLAP: "0x16eF58e959522727588921A92e9084d36E5d3855",
-  TokenWithdrawalModule: "0x66738a5722e9Cd91B694bA39146CFEcE95457F04",
+  AccessController: "0x674d6E1f7b5e2d714DBa588e9d046965225517c8",
+  ArbitrationPolicySP: "0xb41BC78478878B338336C5E7a34292213779cd6F",
+  DisputeModule: "0x3A96cad7b2aC783a6811c7c3e8DEF30E8a4cfcDb",
+  IPAccountImpl: "0x7481a227A11860E80f69AB39d0165258f4c139f6",
+  IPAccountRegistry: "0x74Cbd8CCc22290FeaaE8421D4FFc6760210B5B0C",
+  IPAssetRegistry: "0xb1534826Bc9D77d818CbC596435f530778C73865",
+  LicenseRegistry: "0x66f6865668F2B9213Ed05b97eE97beb97A75e243",
+  LicensingModule: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
+  PILPolicyFrameworkManager: "0x3C30b98f56b469c0d292EFF5878e9Fb302CB13dD",
+  RegistrationModule: "0x193f0Cc84d51Fc38a30658d7eFffEB2C5Cc25840",
+  RoyaltyPolicyLAP: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
 };
 
-const storyTestnet = {
+export const storyTestnetAddress = {
   AccessController: "0x92c87ae0a0a4b8629ad028e55183CC2b7eC057D3",
   AncestorsVaultLAP: "0x280f8921E36d6Af2E03AD84EC8194ad1b6B4799c",
   ArbitrationPolicySP: "0xCc3dDa466A18C4F20Bc0750756B92E2f23741Fd3",
@@ -57,6 +46,6 @@ const storyTestnet = {
 export const contractAddress: ContractAddress = {
   sepolia,
   11155111: sepolia,
-  storyTestnet,
-  1513: storyTestnet,
+  storyTestnet: storyTestnetAddress,
+  1513: storyTestnetAddress,
 };
