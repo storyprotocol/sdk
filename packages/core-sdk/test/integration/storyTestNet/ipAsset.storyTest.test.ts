@@ -9,16 +9,16 @@ import {
   getLicenseRegistryConfig,
   getLicensingModuleConfig,
 } from "../../config";
-import { storyNetworkAddress } from "../../env";
+import { storyTestnetAddress } from "../../env";
 
-describe("IP Asset Functions in storyNetwork", () => {
+describe("IP Asset Functions in storyTestnet", () => {
   let client: StoryClient;
   let senderAddress: string;
   before(function () {
     const config: StoryConfig = {
-      chainId: "storyNetwork",
-      transport: http(process.env.STORY_NETWORK_RPC_PROVIDER_URL),
-      account: privateKeyToAccount(process.env.STORY_NETWORK_WALLET_PRIVATE_KEY as Hex),
+      chainId: "storyTestnet",
+      transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
+      account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
     };
     const configAccount: Account = config.account as Account;
     senderAddress = configAccount.address;
@@ -32,13 +32,13 @@ describe("IP Asset Functions in storyNetwork", () => {
   describe("Create root IP Asset", async function () {
     it("should mint NFT successfully", async () => {
       const baseConfig = {
-        chain: chainStringToViemChain("storyNetwork"),
-        transport: http(process.env.STORY_NETWORK_RPC_PROVIDER_URL),
+        chain: chainStringToViemChain("storyTestnet"),
+        transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
       } as const;
       const publicClient = createPublicClient(baseConfig);
       const walletClient = createWalletClient({
         ...baseConfig,
-        account: privateKeyToAccount(process.env.STORY_NETWORK_WALLET_PRIVATE_KEY as Hex),
+        account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
       });
       const { request } = await publicClient.simulateContract({
         abi: [
@@ -50,9 +50,9 @@ describe("IP Asset Functions in storyNetwork", () => {
             type: "function",
           },
         ],
-        address: storyNetworkAddress.MockERC721 as Hex,
+        address: storyTestnetAddress.MockERC721 as Hex,
         functionName: "mint",
-        args: [process.env.STORY_NETWORK_TEST_WALLET_ADDRESS as Hex],
+        args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex],
       });
       const tokenId = await walletClient.writeContract(request);
       expect(tokenId).to.be.a("string");

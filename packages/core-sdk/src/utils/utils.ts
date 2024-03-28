@@ -157,14 +157,14 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     case "polygonMumbai":
       return polygonMumbai;
     case "1513":
-    case "storyNetwork":
-      return storyNetwork;
+    case "storyTestnet":
+      return storyTestnet;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }
 }
 
-export const storyNetwork = defineChain({
+export const storyTestnet = defineChain({
   id: 15_13,
   name: "story-network",
   nativeCurrency: { name: "Ether", symbol: "SEP", decimals: 18 },
@@ -191,7 +191,7 @@ export const chain: { [key in SupportedChainIds]: string } = {
   sepolia: "11155111",
   mainnet: "1",
   polygonMumbai: "80001",
-  storyNetwork: "1513",
+  storyTestnet: "1513",
   11155111: "11155111",
   1: "1",
   80001: "80001",

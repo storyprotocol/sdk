@@ -14,7 +14,7 @@ export type SupportedChainIds =
   | "mumbai"
   | "polygonMumbai"
   | "1513"
-  | "storyNetwork";
+  | "storyTestnet";
 
 /**
  * Configuration for the SDK Client.

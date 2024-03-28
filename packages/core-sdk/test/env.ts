@@ -14,7 +14,7 @@ const sepolia = {
   RoyaltyPolicyLAP: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
 };
 
-export const storyNetworkAddress = {
+export const storyTestnetAddress = {
   AccessController: "0x92c87ae0a0a4b8629ad028e55183CC2b7eC057D3",
   AncestorsVaultLAP: "0x280f8921E36d6Af2E03AD84EC8194ad1b6B4799c",
   ArbitrationPolicySP: "0xCc3dDa466A18C4F20Bc0750756B92E2f23741Fd3",
@@ -50,8 +50,8 @@ const polygonMumbai = {};
 export const contractAddress: ContractAddress = {
   sepolia,
   11155111: sepolia,
-  storyNetwork: storyNetworkAddress,
-  1513: storyNetworkAddress,
+  storyTestnet: storyTestnetAddress,
+  1513: storyTestnetAddress,
   mainnet,
   1: mainnet,
   80001: mumbai,
