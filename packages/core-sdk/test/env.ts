@@ -14,7 +14,7 @@ const sepolia = {
   RoyaltyPolicyLAP: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
 };
 
-export const renaissanceAddress = {
+export const storyNetworkAddress = {
   AccessController: "0x92c87ae0a0a4b8629ad028e55183CC2b7eC057D3",
   AncestorsVaultLAP: "0x280f8921E36d6Af2E03AD84EC8194ad1b6B4799c",
   ArbitrationPolicySP: "0xCc3dDa466A18C4F20Bc0750756B92E2f23741Fd3",
@@ -28,7 +28,7 @@ export const renaissanceAddress = {
   IPResolver: "0xeAEd88BEbF00acac8EFE9ED426cDDD2Dc9f8CB78",
   LicensingModule: "0x2A88056985814dcBb72aFA50B95893359B6262f5",
   MockERC20: "0x3271778AdE44EfeC9e11b7160827921b6d614AF1",
-  MockERC721: "0x9B3c8947250cec49a49de939031Ea547521Df247",
+  MockERC721: "0xCdBa568f1f4e16a6c6CBC8F509eCc87972Fef09f",
   MockTokenGatedHook: "0x008B5D8Db85100E143729453784e9F077B2279fA",
   ModuleRegistry: "0xB8617E2FC9dbFd51781B8D281b725976E3B43f9d",
   PILPolicyFrameworkManager: "0xAc2C50Af31501370366D243FaeC56F89128f6d96",
@@ -50,8 +50,8 @@ const polygonMumbai = {};
 export const contractAddress: ContractAddress = {
   sepolia,
   11155111: sepolia,
-  renaissance: renaissanceAddress,
-  1513: renaissanceAddress,
+  storyNetwork: storyNetworkAddress,
+  1513: storyNetworkAddress,
   mainnet,
   1: mainnet,
   80001: mumbai,

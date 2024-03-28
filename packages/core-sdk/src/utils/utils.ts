@@ -157,25 +157,25 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     case "polygonMumbai":
       return polygonMumbai;
     case "1513":
-    case "renaissance":
-      return renaissance;
+    case "storyNetwork":
+      return storyNetwork;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }
 }
 
-export const renaissance = defineChain({
+export const storyNetwork = defineChain({
   id: 15_13,
-  name: "renaissance",
+  name: "story-network",
   nativeCurrency: { name: "Ether", symbol: "SEP", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ["https://renaissance-testnet.rpc.caldera.xyz/http"],
-      webSocket: ["wss://renaissance-testnet.rpc.caldera.xyz/ws"],
+      http: ["https://story-network.rpc.caldera.xyz/http"],
+      webSocket: ["wss://story-network.rpc.caldera.xyz/ws"],
     },
   },
   blockExplorers: {
-    default: { name: "Explorer", url: "https://renaissance-testnet.explorer.caldera.xyz" },
+    default: { name: "Explorer", url: "https://story-network.explorer.caldera.xyz" },
   },
   //TODO: wait for Ze confirm with config information
   contracts: {
@@ -191,7 +191,7 @@ export const chain: { [key in SupportedChainIds]: string } = {
   sepolia: "11155111",
   mainnet: "1",
   polygonMumbai: "80001",
-  renaissance: "1513",
+  storyNetwork: "1513",
   11155111: "11155111",
   1: "1",
   80001: "80001",

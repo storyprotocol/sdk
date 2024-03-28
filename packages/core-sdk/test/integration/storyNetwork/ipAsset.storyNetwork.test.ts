@@ -9,16 +9,16 @@ import {
   getLicenseRegistryConfig,
   getLicensingModuleConfig,
 } from "../../config";
-import { renaissanceAddress } from "../../env";
+import { storyNetworkAddress } from "../../env";
 
-describe("IP Asset Functions in renaissance", () => {
+describe("IP Asset Functions in storyNetwork", () => {
   let client: StoryClient;
   let senderAddress: string;
   before(function () {
     const config: StoryConfig = {
-      chainId: "renaissance",
-      transport: http(process.env.RENAISSANCE_RPC_PROVIDER_URL),
-      account: privateKeyToAccount(process.env.RENAISSANCE_WALLET_PRIVATE_KEY as Hex),
+      chainId: "storyNetwork",
+      transport: http(process.env.STORY_NETWORK_RPC_PROVIDER_URL),
+      account: privateKeyToAccount(process.env.STORY_NETWORK_WALLET_PRIVATE_KEY as Hex),
     };
     const configAccount: Account = config.account as Account;
     senderAddress = configAccount.address;
@@ -32,30 +32,27 @@ describe("IP Asset Functions in renaissance", () => {
   describe("Create root IP Asset", async function () {
     it("should mint NFT successfully", async () => {
       const baseConfig = {
-        chain: chainStringToViemChain("renaissance"),
-        transport: http(process.env.RENAISSANCE_RPC_PROVIDER_URL),
+        chain: chainStringToViemChain("storyNetwork"),
+        transport: http(process.env.STORY_NETWORK_RPC_PROVIDER_URL),
       } as const;
       const publicClient = createPublicClient(baseConfig);
       const walletClient = createWalletClient({
         ...baseConfig,
-        account: privateKeyToAccount(process.env.RENAISSANCE_WALLET_PRIVATE_KEY as Hex),
+        account: privateKeyToAccount(process.env.STORY_NETWORK_WALLET_PRIVATE_KEY as Hex),
       });
       const { request } = await publicClient.simulateContract({
         abi: [
           {
-            inputs: [
-              { internalType: "address", name: "to", type: "address" },
-              { internalType: "uint256", name: "tokenId", type: "uint256" },
-            ],
-            name: "mintId",
+            inputs: [{ internalType: "address", name: "to", type: "address" }],
+            name: "mint",
             outputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
             stateMutability: "nonpayable",
             type: "function",
           },
         ],
-        address: renaissanceAddress.MockERC721 as Hex,
-        functionName: "mintId",
-        args: [process.env.RENAISSANCE_TEST_WALLET_ADDRESS as Hex, BigInt(122)],
+        address: storyNetworkAddress.MockERC721 as Hex,
+        functionName: "mint",
+        args: [process.env.STORY_NETWORK_TEST_WALLET_ADDRESS as Hex],
       });
       const tokenId = await walletClient.writeContract(request);
       expect(tokenId).to.be.a("string");

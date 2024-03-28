@@ -13,7 +13,7 @@ import {
   dictToQueryParams,
   typedDataArrayToBytesArray,
   chainStringToViemChain,
-  renaissance,
+  storyNetwork,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import defaultAbi from "../../../src/abi/json/LicensingModule.abi";
@@ -288,12 +288,12 @@ describe("Test chainStringToViemChain", () => {
     const chain = chainStringToViemChain("polygonMumbai");
     expect(chain).to.equal(polygonMumbai);
   });
-  it("should return renaissance if id is 1513", () => {
+  it("should return story network if id is 1513", () => {
     const chain = chainStringToViemChain("1513");
-    expect(chain).to.equal(renaissance);
+    expect(chain).to.equal(storyNetwork);
   });
-  it("should return renaissance if id is renaissance", () => {
-    const chain = chainStringToViemChain("renaissance");
-    expect(chain).to.equal(renaissance);
+  it("should return story network if id is storyNetwork", () => {
+    const chain = chainStringToViemChain("storyNetwork");
+    expect(chain).to.equal(storyNetwork);
   });
 });
