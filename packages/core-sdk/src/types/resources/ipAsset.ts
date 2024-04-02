@@ -1,6 +1,7 @@
 import { Hex } from "viem";
 
 import { TxOptions } from "../options";
+import { SupportedChainIds } from "../config";
 
 export type RegisterRootIpRequest = {
   tokenContractAddress: Hex;
@@ -30,4 +31,12 @@ export type RegisterDerivativeIpRequest = {
 export type RegisterDerivativeIpResponse = {
   txHash?: string;
   ipId?: string;
+};
+
+export type RegisterRequest = {
+  chainId: SupportedChainIds;
+  tokenContract: Hex;
+  tokenId: string;
+  createAccount: boolean;
+  txOptions?: TxOptions;
 };

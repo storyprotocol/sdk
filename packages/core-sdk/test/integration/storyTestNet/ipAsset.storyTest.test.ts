@@ -30,7 +30,8 @@ describe("IP Asset Functions in storyTestnet", () => {
   });
 
   describe("Create root IP Asset", async function () {
-    it("should mint NFT successfully", async () => {
+    let tokenId: string;
+    before(async () => {
       const baseConfig = {
         chain: chainStringToViemChain("storyTestnet"),
         transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
@@ -54,9 +55,33 @@ describe("IP Asset Functions in storyTestnet", () => {
         functionName: "mint",
         args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex],
       });
-      const tokenId = await walletClient.writeContract(request);
+      tokenId = await walletClient.writeContract(request);
+    });
+    it("should mint NFT successfully", async () => {});
+
+    it("should not throw error when registering a IP Asset", async () => {
       expect(tokenId).to.be.a("string");
       expect(tokenId).not.empty;
+
+      const waitForTransaction: boolean = true;
+      const response = await expect(
+        client.ipAsset.register({
+          chainId: "1513",
+          tokenContract: storyTestnetAddress.MockERC721,
+          tokenId: "11",
+          createAccount: true,
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+          },
+        }),
+      ).to.not.be.rejected;
+
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
+      if (waitForTransaction) {
+        expect(response.ipId).to.be.a("string");
+        expect(response.ipId).not.empty;
+      }
     });
   });
 });
