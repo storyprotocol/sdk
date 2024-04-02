@@ -3,7 +3,6 @@ import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http, Account } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
-  RegistrationModuleConfig,
   IPAssetRegistryConfig,
   LicenseRegistryConfig,
   IPAccountABI,
@@ -31,7 +30,6 @@ describe.skip("Test Policy Functions", () => {
     client.policy.licensingModuleConfig = LicensingModuleConfig;
     client.policy.pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
     client.policy.royaltyPolicyLAPConfig = RoyaltyPolicyLAPConfig;
-    client.ipAsset.registrationModuleConfig = RegistrationModuleConfig;
     client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
     client.license.ipAccountABI = IPAccountABI;
     client.license.licenseRegistryConfig = LicenseRegistryConfig;
@@ -223,53 +221,6 @@ describe.skip("Test Policy Functions", () => {
       expect(response.txHash).to.not.exist;
       expect(response.policyId).to.be.a("string");
       expect(response.policyId).not.empty;
-    });
-
-    it.skip("Test license minting with Commercial policy", async () => {
-      const waitForTransaction: boolean = true;
-      const policyResponse = await expect(
-        client.policy.registerPILPolicy({
-          transferable: true,
-          mintingFeeToken: "0x65F7eE2eEF8C127f3c5D9dE3e95Add44c8cB286b",
-          mintingFee: "1000000000000000000",
-          royaltyPolicy: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
-          commercialRevShare: 100,
-          attribution: true,
-          commercialUse: true,
-          commercialAttribution: true,
-          derivativesAllowed: true,
-          txOptions: {
-            waitForTransaction: waitForTransaction,
-          },
-        }),
-      ).to.not.be.rejected;
-
-      console.log("policyId:", policyResponse.policyId);
-
-      const ipaResponse = await expect(
-        client.ipAsset.registerRootIp({
-          policyId: policyResponse.policyId,
-          tokenContractAddress: "0x7a90a7acff8bf14f13f8d1bdac5b663ef4f379ee",
-          tokenId: "102",
-          txOptions: {
-            waitForTransaction: waitForTransaction,
-          },
-        }),
-      ).to.not.be.rejected;
-
-      console.log("ipId:", ipaResponse.ipId);
-
-      const licenseResponse = await expect(
-        client.license.mintLicense({
-          policyId: policyResponse.policyId,
-          licensorIpId: ipaResponse.ipId,
-          mintAmount: 1,
-          receiverAddress: process.env.TEST_WALLET_ADDRESS! as `0x${string}`,
-          txOptions: {
-            waitForTransaction: waitForTransaction,
-          },
-        }),
-      ).to.not.be.rejected;
     });
   });
 

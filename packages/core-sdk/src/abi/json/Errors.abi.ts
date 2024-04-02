@@ -27,6 +27,22 @@ export default [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "signer",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+    ],
+    name: "AccessController__BothCallerAndRecipientAreNotRegisteredModule",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "AccessController__CallerIsNotIPAccount",
     type: "error",
@@ -79,59 +95,8 @@ export default [
     type: "error",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-    ],
-    name: "AccessController__RecipientIsNotRegisteredModule",
-    type: "error",
-  },
-  {
     inputs: [],
     name: "AccessController__SignerIsZeroAddress",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__AlreadyClaimed",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__ClaimerNotAnAncestor",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__ERC20BalanceNotZero",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__ETHBalanceNotZero",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__InvalidAncestorsHash",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__InvalidClaimer",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__TransferFailed",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "AncestorsVaultLAP__ZeroRoyaltyPolicyLAP",
     type: "error",
   },
   {
@@ -147,6 +112,16 @@ export default [
   {
     inputs: [],
     name: "ArbitrationPolicySP__ZeroPaymentToken",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "BasePolicyFrameworkManager__CallerNotLicensingModule",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "CoreMetadataModule__MetadataAlreadyFrozen",
     type: "error",
   },
   {
@@ -182,11 +157,6 @@ export default [
   {
     inputs: [],
     name: "DisputeModule__NotWhitelistedDisputeTag",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DisputeModule__UnauthorizedAccess",
     type: "error",
   },
   {
@@ -296,6 +266,22 @@ export default [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "contractAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "IPAssetRegistry__InvalidToken",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "IPAssetRegistry__NotYetRegistered",
     type: "error",
@@ -316,6 +302,28 @@ export default [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "contractAddress",
+        type: "address",
+      },
+    ],
+    name: "IPAssetRegistry__UnsupportedIERC721",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "contractAddress",
+        type: "address",
+      },
+    ],
+    name: "IPAssetRegistry__UnsupportedIERC721Metadata",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "IPResolver_InvalidIP",
     type: "error",
@@ -323,6 +331,36 @@ export default [
   {
     inputs: [],
     name: "IPResolver_Unauthorized",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IpRoyaltyVault__AlreadyClaimed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IpRoyaltyVault__ClaimerNotAnAncestor",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IpRoyaltyVault__NotRoyaltyPolicyLAP",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IpRoyaltyVault__SnapshotIntervalTooShort",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IpRoyaltyVault__ZeroIpId",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IpRoyaltyVault__ZeroRoyaltyPolicyLAP",
     type: "error",
   },
   {
@@ -348,11 +386,6 @@ export default [
   {
     inputs: [],
     name: "LicenseRegistry__ZeroLicensingModule",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LicensingModuleAware__CallerNotLicensingModule",
     type: "error",
   },
   {
@@ -432,6 +465,11 @@ export default [
   },
   {
     inputs: [],
+    name: "LicensingModule__IpAlreadyLinked",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "LicensingModule__LicensorDoesntHaveThisPolicy",
     type: "error",
   },
@@ -448,6 +486,11 @@ export default [
   {
     inputs: [],
     name: "LicensingModule__LinkingRevokedLicense",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicensingModule__MintAmountZero",
     type: "error",
   },
   {
@@ -493,6 +536,11 @@ export default [
   {
     inputs: [],
     name: "LicensingModule__PolicyNotFound",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LicensingModule__ReceiverZeroAddress",
     type: "error",
   },
   {
@@ -658,11 +706,6 @@ export default [
   },
   {
     inputs: [],
-    name: "RegistrationModule__InvalidOwner",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "RoyaltyModule__CanOnlyMintSelectedPolicy",
     type: "error",
   },
@@ -684,11 +727,6 @@ export default [
   {
     inputs: [],
     name: "RoyaltyModule__NotAllowedCaller",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "RoyaltyModule__NotRegisteredIpId",
     type: "error",
   },
   {
@@ -738,32 +776,7 @@ export default [
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidAncestors",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidAncestorsHash",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidAncestorsLength",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidAncestorsRoyalty",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "RoyaltyPolicyLAP__InvalidParentRoyaltiesLength",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidRoyaltyAmountLength",
     type: "error",
   },
   {
@@ -783,17 +796,17 @@ export default [
   },
   {
     inputs: [],
-    name: "RoyaltyPolicyLAP__TransferFailed",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "RoyaltyPolicyLAP__UnlinkableToParents",
     type: "error",
   },
   {
     inputs: [],
     name: "RoyaltyPolicyLAP__ZeroAncestorsVaultImpl",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RoyaltyPolicyLAP__ZeroIpRoyaltyVaultBeacon",
     type: "error",
   },
   {
