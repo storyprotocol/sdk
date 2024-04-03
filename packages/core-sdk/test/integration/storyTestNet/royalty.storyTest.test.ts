@@ -8,6 +8,7 @@ import {
   getIPAssetRegistryConfig,
   getLicenseRegistryConfig,
   getLicensingModuleConfig,
+  getRoyaltyModuleConfig,
 } from "../../config";
 import chaiAsPromised from "chai-as-promised";
 import { storyTestnetAddress } from "../../env";
@@ -33,6 +34,7 @@ describe("Test royalty Functions", () => {
     client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
     client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
     client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
+    client.royalty.royaltyModuleConfig = getRoyaltyModuleConfig("1513");
   });
   describe("Royalty in storyTestNet", async function () {
     let ipId1: Hex = "0x4b6af545E7C0A1783F771964aee349bed29dE6F5";
@@ -138,12 +140,21 @@ describe("Test royalty Functions", () => {
       //   commercialPolicyId = await getCommercialPolicyId();
       //   console.log("commercialPolicyId", commercialPolicyId);
       //   addPolicyToIp(ipId1, commercialPolicyId);
-      const licenseForIpId1 = await mintLicense(ipId1, commercialPolicyId);
-      console.log("licenseForIpId1", licenseForIpId1);
-      const response = await linkIpToParents([licenseForIpId1!], ipId2);
-      console.log("response", response);
+      //   const licenseForIpId1 = await mintLicense(ipId1, commercialPolicyId);
+      //   console.log("licenseForIpId1", licenseForIpId1);
+      //   const response = await linkIpToParents([licenseForIpId1!], ipId2);
+      //   console.log("response", response);
     });
 
-    it("should not throw error when registering royalty", async () => {});
+    it("should not throw error when collect royalty tokens", async () => {
+      const response = await client.royalty.collectRoyaltyTokens({
+        ancestorIpId: ipId1,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      console.log("collectRoyaltyTokens", response);
+      expect(response.txHash).to.be.a("string").not.empty;
+    });
   });
 });

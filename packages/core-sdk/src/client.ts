@@ -10,6 +10,7 @@ import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
 import { StoryAPIClient } from "./clients/storyAPI";
+import { RoyaltyClient } from "./resources/royalty";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -28,7 +29,7 @@ export class StoryClient {
   private _policy: PolicyClient | null = null;
   private _dispute: DisputeClient | null = null;
   private _ipAccount: IPAccountClient | null = null;
-
+  private _royalty: RoyaltyClient | null = null;
   /**
    * @param config - the configuration for the SDK client
    */
@@ -158,5 +159,18 @@ export class StoryClient {
     }
 
     return this._ipAccount;
+  }
+  /**
+   * Getter for the royalty client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the RoyaltyClient instance
+   */
+  public get royalty(): RoyaltyClient {
+    if (this._royalty === null) {
+      this._royalty = new RoyaltyClient(this.rpcClient, this.wallet, this.config.chainId);
+    }
+
+    return this._royalty;
   }
 }

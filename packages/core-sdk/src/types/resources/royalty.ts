@@ -1,3 +1,7 @@
+import { Hex } from "viem";
+
+import { TxOptions } from "../options";
+
 export type RoyaltyPolicyApiResponse = {
   data: RoyaltyPolicy;
 };
@@ -15,4 +19,13 @@ export type RoyaltyContext = {
   parentAncestors2: string[];
   parentAncestorsRoyalties1: number[];
   parentAncestorsRoyalties2: number[];
+};
+
+export type CollectRoyaltyTokensRequest = {
+  ancestorIpId: Hex;
+  txOptions?: TxOptions;
+};
+
+export type CollectRoyaltyTokensResponse = {
+  txHash: string;
 };

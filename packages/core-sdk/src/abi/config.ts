@@ -7,6 +7,7 @@ import IPAccountImplABI from "./json/IPAccountImpl.abi";
 import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
 import LicensingModuleABI from "./json/LicensingModule.abi";
 import PILPolicyFrameworkManagerABI from "./json/PILPolicyFrameworkManager.abi";
+import IpRoyaltyModuleABI from "./json/RoyaltyModule.abi";
 import ErrorsABI from "./json/Errors.abi";
 import { contractAddress } from "../utils/env";
 import { SupportedChainIds } from "../types/config";
@@ -40,4 +41,9 @@ export const getPILPolicyFrameworkManagerConfig = (chain: SupportedChainIds) => 
 });
 export const getRoyaltyPolicyLAPConfig = (chain: SupportedChainIds) => ({
   address: getAddress(contractAddress[chain].RoyaltyPolicyLAP),
+});
+
+export const getRoyaltyModuleConfig = (chain: SupportedChainIds) => ({
+  abi: [...IpRoyaltyModuleABI, ...ErrorsABI],
+  address: getAddress(contractAddress[chain].RoyaltyModule),
 });
