@@ -4,7 +4,7 @@ import { chain, parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
 import { getIPAssetRegistryConfig } from "../abi/config";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
-import { RegisterRequest } from "../types/resources/ipAsset";
+import { RegisterIpResponse, RegisterRequest } from "../types/resources/ipAsset";
 
 export class IPAssetClient {
   private readonly wallet: WalletClient;
@@ -41,7 +41,7 @@ export class IPAssetClient {
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
-  public async register(request: RegisterRequest) {
+  public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
     const tokenId = parseToBigInt(request.tokenId);
     try {
       const ipId = await this.isNFTRegistered(request.tokenContract, tokenId);
