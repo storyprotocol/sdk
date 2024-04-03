@@ -12,7 +12,6 @@ import { RegisterRequest } from "../types/resources/ipAsset";
 export class IPAssetClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  private readonly storyClient: StoryAPIClient;
   private readonly chainId: SupportedChainIds;
   public ipAssetRegistryConfig;
 
@@ -24,7 +23,6 @@ export class IPAssetClient {
   ) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
-    this.storyClient = storyClient;
     this.chainId = chainId;
     this.ipAssetRegistryConfig = getIPAssetRegistryConfig(chainId);
   }
@@ -38,12 +36,13 @@ export class IPAssetClient {
       functionName: "ipId",
       args: [parseToBigInt(chainId), tokenAddress, parseToBigInt(tokenId)],
     });
+    console.log("ipId", ipId);
     const isRegistered = await this.rpcClient.readContract({
       ...this.ipAssetRegistryConfig,
       functionName: "isRegistered",
       args: [ipId],
     });
-
+    console.log("isRegistered", isRegistered);
     return isRegistered ? ipId : "0x";
   }
 
@@ -64,6 +63,7 @@ export class IPAssetClient {
         request.tokenContract,
         request.tokenId,
       );
+      console.log("ipId", ipId);
       if (ipId !== "0x") {
         return { ipId: ipId };
       }
@@ -80,6 +80,7 @@ export class IPAssetClient {
         ],
         account: this.wallet.account,
       });
+      console.log("call", call);
       const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
         const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {

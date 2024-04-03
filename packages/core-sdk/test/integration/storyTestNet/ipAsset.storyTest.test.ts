@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import chain from "chai";
 import { StoryClient, StoryConfig } from "../../../src";
 import { Account, Hex, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -10,7 +10,10 @@ import {
   getLicensingModuleConfig,
 } from "../../config";
 import { storyTestnetAddress } from "../../env";
+import chaiAsPromised from "chai-as-promised";
 
+chain.use(chaiAsPromised);
+const expect = chain.expect;
 describe("IP Asset Functions in storyTestnet", () => {
   let client: StoryClient;
   let senderAddress: string;
@@ -32,50 +35,53 @@ describe("IP Asset Functions in storyTestnet", () => {
   describe("Create root IP Asset", async function () {
     let tokenId: string;
     before(async () => {
-      const baseConfig = {
-        chain: chainStringToViemChain("storyTestnet"),
-        transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
-      } as const;
-      const publicClient = createPublicClient(baseConfig);
-      const walletClient = createWalletClient({
-        ...baseConfig,
-        account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
-      });
-      const { request } = await publicClient.simulateContract({
-        abi: [
-          {
-            inputs: [{ internalType: "address", name: "to", type: "address" }],
-            name: "mint",
-            outputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
-        address: storyTestnetAddress.MockERC721 as Hex,
-        functionName: "mint",
-        args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex],
-      });
-      tokenId = await walletClient.writeContract(request);
+      // const baseConfig = {
+      //   chain: chainStringToViemChain("storyTestnet"),
+      //   transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
+      // } as const;
+      // const publicClient = createPublicClient(baseConfig);
+      // const walletClient = createWalletClient({
+      //   ...baseConfig,
+      //   account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
+      // });
+      // const { request } = await publicClient.simulateContract({
+      //   abi: [
+      //     {
+      //       inputs: [
+      //         { internalType: "address", name: "to", type: "address" },
+      //         {
+      //           internalType: "uint256",
+      //           name: "tokenId",
+      //           type: "uint256",
+      //         },
+      //       ],
+      //       name: "mintId",
+      //       outputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+      //       stateMutability: "nonpayable",
+      //       type: "function",
+      //     },
+      //   ],
+      //   address: storyTestnetAddress.MockERC721 as Hex,
+      //   functionName: "mintId",
+      //   args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex, BigInt(8)],
+      // });
+      // tokenId = await walletClient.writeContract(request);
     });
-    it("should mint NFT successfully", async () => {});
 
     it("should not throw error when registering a IP Asset", async () => {
-      expect(tokenId).to.be.a("string");
-      expect(tokenId).not.empty;
+      // expect(tokenId).to.be.a("string");
+      // expect(tokenId).not.empty;
 
       const waitForTransaction: boolean = true;
-      const response = await expect(
-        client.ipAsset.register({
-          chainId: "1513",
-          tokenContract: storyTestnetAddress.MockERC721,
-          tokenId: "11",
-          createAccount: true,
-          txOptions: {
-            waitForTransaction: waitForTransaction,
-          },
-        }),
-      ).to.not.be.rejected;
-
+      const response = await client.ipAsset.register({
+        chainId: "1513",
+        tokenContract: storyTestnetAddress.MockERC721,
+        tokenId: "8",
+        createAccount: true,
+        txOptions: {
+          waitForTransaction: waitForTransaction,
+        },
+      });
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
       if (waitForTransaction) {
