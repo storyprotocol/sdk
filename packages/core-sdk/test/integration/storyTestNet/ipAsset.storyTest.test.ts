@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient, StoryConfig } from "../../../src";
-import { Account, Hex, createPublicClient, createWalletClient, http } from "viem";
+import { Hex, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 import {
@@ -16,15 +16,12 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 describe("IP Asset Functions in storyTestnet", () => {
   let client: StoryClient;
-  let senderAddress: string;
   before(function () {
     const config: StoryConfig = {
       chainId: "storyTestnet",
       transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
       account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
     };
-    const configAccount: Account = config.account as Account;
-    senderAddress = configAccount.address;
     client = StoryClient.newClient(config);
     client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
     client.license.ipAccountABI = IPAccountABI;
@@ -32,7 +29,7 @@ describe("IP Asset Functions in storyTestnet", () => {
     client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
   });
 
-  describe("Create root IP Asset", async function () {
+  describe("Create IP Asset", async function () {
     let tokenId: string;
     before(async () => {
       const baseConfig = {
