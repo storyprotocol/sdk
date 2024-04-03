@@ -121,7 +121,7 @@ export class PolicyClient {
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
-
+      console.log("txHash", txHash);
       if (request.txOptions?.waitForTransaction) {
         const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licensingModuleConfig,

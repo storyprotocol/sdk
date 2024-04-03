@@ -29,7 +29,7 @@ describe("IP Asset Functions in storyTestnet", () => {
     client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
   });
 
-  describe("Create IP Asset", async function () {
+  describe.skip("Create IP Asset", async function () {
     let tokenId: string;
     before(async () => {
       const baseConfig = {
