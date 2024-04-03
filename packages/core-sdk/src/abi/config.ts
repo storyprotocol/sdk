@@ -7,7 +7,6 @@ import IPAccountImplABI from "./json/IPAccountImpl.abi";
 import IPAssetRegistryABI from "./json/IIPAssetRegistry.abi";
 import LicensingModuleABI from "./json/LicensingModule.abi";
 import PILPolicyFrameworkManagerABI from "./json/PILPolicyFrameworkManager.abi";
-import RegistrationModuleABI from "./json/RegistrationModule.abi";
 import ErrorsABI from "./json/Errors.abi";
 import { contractAddress } from "../utils/env";
 import { SupportedChainIds } from "../types/config";
@@ -34,10 +33,7 @@ export const getLicensingModuleConfig = (chain: SupportedChainIds) => ({
   abi: [...LicensingModuleABI, ...ErrorsABI],
   address: getAddress(contractAddress[chain].LicensingModule),
 });
-export const getRegistrationModuleConfig = (chain: SupportedChainIds) => ({
-  abi: [...RegistrationModuleABI, ...ErrorsABI],
-  address: getAddress(contractAddress[chain].RegistrationModule),
-});
+
 export const getPILPolicyFrameworkManagerConfig = (chain: SupportedChainIds) => ({
   abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
   address: getAddress(contractAddress[chain].PILPolicyFrameworkManager),

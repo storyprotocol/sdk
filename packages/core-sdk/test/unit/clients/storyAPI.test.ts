@@ -1,8 +1,10 @@
 import sinon from "sinon";
-import { expect } from "chai";
+import chai from "chai";
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { StoryAPIClient } from "../../../src/clients/storyAPI";
-
+import chaiAsPromised from "chai-as-promised";
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 describe("Test StoryAPIClient", () => {
   afterEach(() => {
     sinon.restore();

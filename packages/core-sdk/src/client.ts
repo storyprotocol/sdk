@@ -79,12 +79,7 @@ export class StoryClient {
    */
   public get ipAsset(): IPAssetClient {
     if (this._ipAsset === null) {
-      this._ipAsset = new IPAssetClient(
-        this.rpcClient,
-        this.wallet,
-        this.storyClient,
-        this.config.chainId,
-      );
+      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._ipAsset;
