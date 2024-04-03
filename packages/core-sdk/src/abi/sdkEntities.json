@@ -30,5 +30,10 @@
   "resolveDispute",
   "DisputeCancelled",
   "DisputeResolved",
-  "DisputeRaised"
+  "DisputeRaised",
+
+  "collectRoyaltyTokens",
+  "claimRevenueBySnapshotBatch",
+  "claimRevenueByTokenBatch",
+  "claimableRevenue"
 ]
