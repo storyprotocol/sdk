@@ -18,7 +18,7 @@ export class IPAssetClient {
     this.chainId = chainId;
     this.ipAssetRegistryConfig = getIPAssetRegistryConfig(chainId);
   }
-  private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<`0x${string}`> {
+  private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
     const ipId = await this.rpcClient.readContract({
       ...this.ipAssetRegistryConfig,
       functionName: "ipId",
