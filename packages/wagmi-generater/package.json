@@ -4,7 +4,7 @@
   "scripts": {
     "generate": "wagmi generate"
   },
-  "dependencies": {
+  "devDependencies": {
     "@wagmi/cli": "0.0.0-canary-20240313013119",
     "@wagmi/connectors": "^4.1.14",
     "@wagmi/core": "^2.6.5",
