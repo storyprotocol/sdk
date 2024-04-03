@@ -61,27 +61,43 @@ function parameterToType(type: AbiParameter, optional: boolean = false): string 
 function generateContractTypes(name: string, params: readonly AbiParameter[], optional: boolean = false) {
     if (!params.length) return {valid: false}
 
+    let comment: Array<string> = ['\n/**'];
     const typePrefix = name !== "" ? `export type ${name} =` : ""
     const allHasName = params.filter(it => !it.name).length == 0
+    if (name != "") {
+        comment.push(`* ${name}`)
+        comment.push(`*`)
+    }
+
     if (allHasName) {
         let type: Array<string> = [];
         let args: Array<string> = [];
         type.push(`${typePrefix} {`)
         for (let i = 0; i < params.length; i++) {
             if (optional) {
+                comment.push(`* @param ${params[i].name} ${params[i].type} (optional)`)
                 type.push(`  ${params[i].name}?: ${parameterToType(params[i])};`)
             } else {
+                comment.push(`* @param ${params[i].name} ${params[i].type}`)
                 type.push(`  ${params[i].name}: ${parameterToType(params[i])};`)
             }
             args.push(`  request.${params[i].name},`)
         }
         type.push(`}`)
+        comment.push(`*/`)
 
-        return {valid: true, type: type.join("\n"), args: args.join("\n"), kind: "object"};
+        return {
+            valid: true,
+            comment: comment.join("\n"),
+            type: type.join("\n"),
+            args: args.join("\n"),
+            kind: "object",
+        };
     } else {
         if (params.length == 1) {
             return {
                 valid: true,
+                comment: "",
                 type: `${typePrefix} ${parameterToType(params[0], optional)}`,
                 args: "request",
                 kind: "alone"
@@ -92,12 +108,20 @@ function generateContractTypes(name: string, params: readonly AbiParameter[], op
         let args: Array<string> = [];
         type.push(`${typePrefix} readonly [`)
         for (let i = 0; i < params.length; i++) {
+            comment.push(`* @param ${i} ${params[i].type}`)
             type.push(`${parameterToType(params[i], optional)},`)
             args.push(`request[${i}]`)
         }
         type.push(`]`)
+        comment.push(`*/`)
 
-        return {valid: true, type: type.join(""), args: args.join(","), kind: "array"};
+        return {
+            valid: true,
+            comment: comment.join("\n"),
+            type: type.join(""),
+            args: args.join(","),
+            kind: "array",
+        };
     }
 }
 
@@ -114,16 +138,22 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
     let funcLine: Array<string> = [];
     let types: Array<string> = [];
 
-    if (inType.valid) types.push(inType.type)
+    if (inType.valid) types.push(`${inType.comment}\n${inType.type}`)
 
     if (!isAbiFuncOnlyRead(func)) {
         method = 'simulateContract';
         outType.valid = true
         outName = "WriteContractReturnType"
-    } else if (outType.valid) types.push(outType.type)
+    } else if (outType.valid) types.push(`${outType.comment}\n${outType.type}`)
 
     funcLine.push(``)
     if (outType.valid) {
+        funcLine.push(`/**`)
+        funcLine.push(` * method ${func.name} for contract ${contractName}`)
+        funcLine.push(` *`)
+        funcLine.push(` * @param request ${inName}`)
+        funcLine.push(` * @return Promise<${outName}>`)
+        funcLine.push(`*/`)
         funcLine.push(`  public async ${camelCase(indexFuncName)}(${inParams}): Promise<${outName}> {`)
         if (method == "simulateContract") {
             funcLine.push(`      const { request: call } = await this.rpcClient.${method}({`)
@@ -133,6 +163,12 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
             funcLine.push(`      return await this.rpcClient.${method}({`)
         }
     } else {
+        funcLine.push(`/**`)
+        funcLine.push(` * method ${func.name} for contract ${contractName}`)
+        funcLine.push(` *`)
+        funcLine.push(` * @param request ${inName}`)
+        funcLine.push(` * @return Promise<void>`)
+        funcLine.push(`*/`)
         funcLine.push(`  public async ${camelCase(indexFuncName)}(${inParams}): Promise<void> {`)
         funcLine.push(`      await this.rpcClient.${method}({`)
     }
@@ -177,8 +213,11 @@ function generateEventFunction(contractName: any, event: AbiEvent) {
     let types: Array<string> = [];
 
     if (type.valid) {
-        types.push(type.type)
+        types.push(`${type.comment}\n${type.type}`)
         funcLine.push(``)
+        funcLine.push(`/**`)
+        funcLine.push(` * event ${event.name} for contract ${contractName}`)
+        funcLine.push(`*/`)
         funcLine.push(`  public watch${pascalCase(event.name)}Event(onLogs: (txHash: Hex, ev: ${typeName}) => void): WatchContractEventReturnType {`)
         funcLine.push(`    return this.rpcClient.watchContractEvent({`)
         funcLine.push(`      abi: ${abiName},`)
@@ -234,6 +273,10 @@ function generateContract(contract: Contract): string {
     let types: Array<string> = [];
 
     if (abiViewFunctions.length) {
+        file.push(``)
+        file.push(`/**`)
+        file.push(` * contract ${contract.name} readonly method`)
+        file.push(`*/`)
         file.push(`export class ${pascalCase(contract.name)}ReadOnlyClient {`)
         file.push(`  protected readonly rpcClient: PublicClient;`)
         file.push(`  protected readonly address: Address;`)
@@ -252,6 +295,10 @@ function generateContract(contract: Contract): string {
 
     if (abiWriteFunctions.length) {
         const extend = abiViewFunctions.length ? ` extends ${pascalCase(contract.name)}ReadOnlyClient` : ``
+        file.push(``)
+        file.push(`/**`)
+        file.push(` * contract ${contract.name} write method`)
+        file.push(`*/`)
         file.push(`export class ${pascalCase(contract.name)}Client ${extend} {`)
         file.push(`  protected readonly wallet: WalletClient;`)
         file.push(``)
@@ -268,6 +315,10 @@ function generateContract(contract: Contract): string {
     }
 
     if (abiEvents.length) {
+        file.push(``)
+        file.push(`/**`)
+        file.push(` * contract ${contract.name} event`)
+        file.push(`*/`)
         file.push(`export class ${pascalCase(contract.name)}EventClient {`)
         file.push(`  protected readonly rpcClient: PublicClient;`)
         file.push(`  protected readonly address: Address;`)
