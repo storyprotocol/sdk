@@ -34,7 +34,7 @@ describe("Test royalty Functions", () => {
     client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
     client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
     client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
-    client.royalty.royaltyModuleConfig = getRoyaltyModuleConfig("1513");
+    client.royalty.royaltyVaultImplConfig = getRoyaltyModuleConfig("1513");
   });
   describe("Royalty in storyTestNet", async function () {
     let ipId1: Hex = "0x4b6af545E7C0A1783F771964aee349bed29dE6F5";

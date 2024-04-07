@@ -6,7 +6,8 @@ import DisputeModuleABI from "../src/abi/json/DisputeModule.abi";
 import IPAccountImplABI from "../src/abi/json/IPAccountImpl.abi";
 import IPAssetRegistryABI from "../src/abi/json/IIPAssetRegistry.abi";
 import LicensingModuleABI from "../src/abi/json/LicensingModule.abi";
-import IpRoyaltyModuleABI from "../src/abi/json/RoyaltyModule.abi";
+import IRoyaltyPolicyLAPABI from "../src/abi/json/IRoyaltyPolicyLAP.abi";
+import IpRoyaltyVaultABI from "../src/abi/json/IpRoyaltyVault.abi";
 import PILPolicyFrameworkManagerABI from "../src/abi/json/PILPolicyFrameworkManager.abi";
 import ErrorsABI from "../src/abi/json/Errors.abi";
 import { contractAddress } from "./env";
@@ -38,9 +39,11 @@ export const getPILPolicyFrameworkManagerConfig = (chain: SupportedChainIds) => 
   address: getAddress(contractAddress[chain].PILPolicyFrameworkManager),
 });
 export const getRoyaltyPolicyLAPConfig = (chain: SupportedChainIds) => ({
+  abi: [...IRoyaltyPolicyLAPABI, ...ErrorsABI],
   address: getAddress(contractAddress[chain].RoyaltyPolicyLAP),
 });
-export const getRoyaltyModuleConfig = (chain: SupportedChainIds) => ({
-  abi: [...IpRoyaltyModuleABI, ...ErrorsABI],
-  address: getAddress(contractAddress[chain].RoyaltyModule),
+
+export const getRoyaltyVaultImplConfig = (chain: SupportedChainIds) => ({
+  abi: [...IpRoyaltyVaultABI, ...ErrorsABI],
+  address: getAddress(contractAddress[chain].IpRoyaltyVaultImpl),
 });

@@ -1,22 +1,22 @@
 import { PublicClient, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
-import { getRoyaltyModuleConfig } from "../abi/config";
 import { SupportedChainIds } from "../types/config";
 import {
   CollectRoyaltyTokensRequest,
   CollectRoyaltyTokensResponse,
 } from "../types/resources/royalty";
+import { getRoyaltyVaultImplConfig } from "../abi/config";
 
 export class RoyaltyClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  public royaltyModuleConfig;
+  public royaltyVaultImplConfig;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-    this.royaltyModuleConfig = getRoyaltyModuleConfig(chainId);
+    this.royaltyVaultImplConfig = getRoyaltyVaultImplConfig(chainId);
   }
   /**
    * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
@@ -31,7 +31,7 @@ export class RoyaltyClient {
   ): Promise<CollectRoyaltyTokensResponse> {
     try {
       const { request: call } = await this.rpcClient.simulateContract({
-        ...this.royaltyModuleConfig,
+        ...this.royaltyVaultImplConfig,
         functionName: "collectRoyaltyTokens",
         args: [request.ancestorIpId],
         account: this.wallet.account,

@@ -35,5 +35,7 @@
   "collectRoyaltyTokens",
   "claimRevenueBySnapshotBatch",
   "claimRevenueByTokenBatch",
-  "claimableRevenue"
+  "claimableRevenue",
+
+  "getRoyaltyData"
 ]
