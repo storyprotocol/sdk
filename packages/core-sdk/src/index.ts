@@ -26,6 +26,13 @@ export type {
   AddPolicyToIpResponse,
 } from "./types/resources/policy";
 
+export type {
+  CollectRoyaltyTokensRequest,
+  CollectRoyaltyTokensResponse,
+  PayRoyaltyOnBehalfRequest,
+  PayRoyaltyOnBehalfResponse,
+} from "./types/resources/royalty";
+
 export type { SetPermissionsRequest, SetPermissionsResponse } from "./types/resources/permission";
 
 export type {
