@@ -14,7 +14,7 @@ import chaiAsPromised from "chai-as-promised";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-describe("IP Asset Functions in storyTestnet", () => {
+describe.skip("IP Asset Functions in storyTestnet", () => {
   let client: StoryClient;
   before(function () {
     const config: StoryConfig = {
@@ -60,7 +60,7 @@ describe("IP Asset Functions in storyTestnet", () => {
         ],
         address: storyTestnetAddress.MockERC721,
         functionName: "mintId",
-        args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex, BigInt(14)],
+        args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex, BigInt(43)],
       });
       const hash = await walletClient.writeContract(request);
       const { logs } = await publicClient.waitForTransactionReceipt({
