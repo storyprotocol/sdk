@@ -23,9 +23,9 @@ import {
 import chaiAsPromised from "chai-as-promised";
 import { storyTestnetAddress } from "../../env";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { maxValueForApproval } from "../../../src/constants/common";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+
 describe.skip("Test royalty Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
@@ -186,10 +186,7 @@ describe.skip("Test royalty Functions", () => {
         abi: abi,
         address: storyTestnetAddress.MockERC20,
         functionName: "approve",
-        args: [
-          client.royalty.royaltyPolicyLAPConfig.address,
-          maxValueForApproval as unknown as bigint,
-        ],
+        args: [client.royalty.royaltyPolicyLAPConfig.address, BigInt(100)],
         account: walletClient.account,
       });
       const approveHash = await walletClient.writeContract(call);
