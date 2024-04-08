@@ -10,12 +10,7 @@ export { DisputeClient } from "./resources/dispute";
 export type { StoryConfig } from "./types/config";
 export type { Hex, TypedData } from "./types/common";
 
-export type {
-  RegisterRootIpRequest,
-  RegisterRootIpResponse,
-  RegisterDerivativeIpRequest,
-  RegisterDerivativeIpResponse,
-} from "./types/resources/ipAsset";
+export type { RegisterIpResponse, RegisterRequest } from "./types/resources/ipAsset";
 
 export type {
   MintLicenseRequest,
@@ -30,6 +25,13 @@ export type {
   AddPolicyToIpRequest,
   AddPolicyToIpResponse,
 } from "./types/resources/policy";
+
+export type {
+  CollectRoyaltyTokensRequest,
+  CollectRoyaltyTokensResponse,
+  PayRoyaltyOnBehalfRequest,
+  PayRoyaltyOnBehalfResponse,
+} from "./types/resources/royalty";
 
 export type { SetPermissionsRequest, SetPermissionsResponse } from "./types/resources/permission";
 

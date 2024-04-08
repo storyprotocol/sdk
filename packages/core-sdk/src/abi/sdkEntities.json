@@ -4,6 +4,7 @@
 
   "ipId",
   "isRegistered",
+  "register",
 
   "registerRootIp",
   "registerDerivativeIp",
@@ -29,5 +30,15 @@
   "resolveDispute",
   "DisputeCancelled",
   "DisputeResolved",
-  "DisputeRaised"
+  "DisputeRaised",
+
+  "collectRoyaltyTokens",
+  "claimRevenueBySnapshotBatch",
+  "claimRevenueByTokenBatch",
+  "claimableRevenue",
+
+  "getRoyaltyData",
+  "onRoyaltyPayment",
+  "claimableRevenue",
+  "payRoyaltyOnBehalf"
 ]

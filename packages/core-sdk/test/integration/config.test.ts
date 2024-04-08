@@ -1,7 +1,6 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { createPublicClient, http } from "viem";
-import { mainnet } from "viem/chains";
 import * as dotenv from "dotenv";
 
 dotenv.config();

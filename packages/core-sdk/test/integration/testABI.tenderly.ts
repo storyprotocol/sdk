@@ -7,7 +7,6 @@ import IPAccountImplABI from "../../src/abi/json/IPAccountImpl.abi";
 import IPAssetRegistryABI from "../../src/abi/json/IIPAssetRegistry.abi";
 import LicensingModuleABI from "../../src/abi/json/LicensingModule.abi";
 import PILPolicyFrameworkManagerABI from "../../src/abi/json/PILPolicyFrameworkManager.abi";
-import RegistrationModuleABI from "../../src/abi/json/RegistrationModule.abi";
 import ErrorsABI from "../../src/abi/json/Errors.abi";
 
 const tenderly = {
@@ -49,11 +48,6 @@ export const LicenseRegistryConfig = {
 export const LicensingModuleConfig = {
   abi: [...LicensingModuleABI, ...ErrorsABI],
   address: getAddress(tenderly.LicensingModule),
-};
-
-export const RegistrationModuleConfig = {
-  abi: [...RegistrationModuleABI, ...ErrorsABI],
-  address: getAddress(tenderly.RegistrationModule),
 };
 
 export const PILPolicyFrameworkManagerConfig = {

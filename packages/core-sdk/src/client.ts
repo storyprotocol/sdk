@@ -1,7 +1,7 @@
 import { createPublicClient, createWalletClient, PublicClient, WalletClient } from "viem";
 import * as dotenv from "dotenv";
 
-import { StoryConfig } from "./types/config";
+import { StoryConfig, SupportedChainIds } from "./types/config";
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
@@ -10,6 +10,7 @@ import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
 import { StoryAPIClient } from "./clients/storyAPI";
+import { RoyaltyClient } from "./resources/royalty";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -18,23 +19,25 @@ if (typeof process !== "undefined") {
  * The StoryClient is the main entry point for the SDK.
  */
 export class StoryClient {
-  private readonly config: StoryConfig;
+  private readonly config: StoryConfig & { chainId: SupportedChainIds };
   private readonly rpcClient: PublicClient;
   private readonly wallet: WalletClient;
   private readonly storyClient: StoryAPIClient;
-
   private _ipAsset: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;
   private _policy: PolicyClient | null = null;
   private _dispute: DisputeClient | null = null;
   private _ipAccount: IPAccountClient | null = null;
-
+  private _royalty: RoyaltyClient | null = null;
   /**
    * @param config - the configuration for the SDK client
    */
   private constructor(config: StoryConfig) {
-    this.config = config;
+    this.config = {
+      ...config,
+      chainId: config.chainId || "sepolia",
+    };
     if (!this.config.transport) {
       throw new Error(
         "transport is null, please pass in a valid RPC Provider URL as the transport.",
@@ -42,7 +45,7 @@ export class StoryClient {
     }
 
     const clientConfig = {
-      chain: chainStringToViemChain(this.config.chainId || "sepolia"),
+      chain: chainStringToViemChain(this.config.chainId),
       transport: this.config.transport,
     };
 
@@ -77,7 +80,7 @@ export class StoryClient {
    */
   public get ipAsset(): IPAssetClient {
     if (this._ipAsset === null) {
-      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.storyClient);
+      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._ipAsset;
@@ -91,7 +94,7 @@ export class StoryClient {
    */
   public get permission(): PermissionClient {
     if (this._permission === null) {
-      this._permission = new PermissionClient(this.rpcClient, this.wallet);
+      this._permission = new PermissionClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._permission;
@@ -105,7 +108,12 @@ export class StoryClient {
    */
   public get license(): LicenseClient {
     if (this._license === null) {
-      this._license = new LicenseClient(this.rpcClient, this.wallet, this.storyClient);
+      this._license = new LicenseClient(
+        this.rpcClient,
+        this.wallet,
+        this.storyClient,
+        this.config.chainId,
+      );
     }
 
     return this._license;
@@ -119,7 +127,7 @@ export class StoryClient {
    */
   public get policy(): PolicyClient {
     if (this._policy === null) {
-      this._policy = new PolicyClient(this.rpcClient, this.wallet);
+      this._policy = new PolicyClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._policy;
@@ -133,7 +141,7 @@ export class StoryClient {
    */
   public get dispute(): DisputeClient {
     if (this._dispute === null) {
-      this._dispute = new DisputeClient(this.rpcClient, this.wallet);
+      this._dispute = new DisputeClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._dispute;
@@ -151,5 +159,18 @@ export class StoryClient {
     }
 
     return this._ipAccount;
+  }
+  /**
+   * Getter for the royalty client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the RoyaltyClient instance
+   */
+  public get royalty(): RoyaltyClient {
+    if (this._royalty === null) {
+      this._royalty = new RoyaltyClient(this.rpcClient, this.wallet, this.config.chainId);
+    }
+
+    return this._royalty;
   }
 }

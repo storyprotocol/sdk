@@ -2,18 +2,20 @@ import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from 
 
 import { handleError } from "../utils/errors";
 import { SetPermissionsRequest, SetPermissionsResponse } from "../types/resources/permission";
-import { IPAccountABI, AccessControllerConfig } from "../abi/config";
+import { IPAccountABI, getAccessControllerConfig } from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
+import { SupportedChainIds } from "../types/config";
 
 export class PermissionClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   public ipAccountABI = IPAccountABI;
-  public accessControllerConfig = AccessControllerConfig;
+  public accessControllerConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
+    this.accessControllerConfig = getAccessControllerConfig(chainId);
   }
 
   /**

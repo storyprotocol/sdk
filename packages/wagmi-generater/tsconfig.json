@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": false,
+    "noEmitHelpers": true,
+    "pretty": true,
+    "sourceMap": true,
+    "strictNullChecks": false,
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "sourceRoot": ".",
+    "lib": [
+      "es5",
+      "es6",
+      "dom"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
+  },
+  "exclude": [
+    "./node_modules",
+  ]
+}

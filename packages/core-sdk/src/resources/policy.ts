@@ -3,9 +3,9 @@ import { PublicClient, WalletClient, encodeFunctionData, getAddress, zeroAddress
 import { handleError } from "../utils/errors";
 import {
   IPAccountABI,
-  LicensingModuleConfig,
-  PILPolicyFrameworkManagerConfig,
-  RoyaltyPolicyLAPConfig,
+  getLicensingModuleConfig,
+  getPILPolicyFrameworkManagerConfig,
+  getRoyaltyPolicyLAPConfig,
 } from "../abi/config";
 import { parseToBigInt, waitTxAndFilterLog, typedDataToBytes } from "../utils/utils";
 import {
@@ -19,18 +19,22 @@ import {
   AddPolicyToIpResponse,
   FrameworkData,
 } from "../types/resources/policy";
+import { SupportedChainIds } from "../types/config";
 
 export class PolicyClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   public ipAccountABI = IPAccountABI;
-  public licensingModuleConfig = LicensingModuleConfig;
-  public pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
-  public royaltyPolicyLAPConfig = RoyaltyPolicyLAPConfig;
+  public licensingModuleConfig;
+  public pilPolicyFrameworkManagerConfig;
+  public royaltyPolicyLAPConfig;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
+    this.licensingModuleConfig = getLicensingModuleConfig(chainId);
+    this.pilPolicyFrameworkManagerConfig = getPILPolicyFrameworkManagerConfig(chainId);
+    this.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig(chainId);
   }
 
   /**
@@ -117,7 +121,6 @@ export class PolicyClient {
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
-
       if (request.txOptions?.waitForTransaction) {
         const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
           ...this.licensingModuleConfig,
