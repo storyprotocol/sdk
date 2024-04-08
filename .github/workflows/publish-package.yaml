@@ -3,8 +3,9 @@ name: Publish to npm, Tag and GH Release
 on:
   push:
     branches:
-      - master
       - main
+    paths:
+      - 'packages/core-sdk/package.json'
 
 jobs:
   # Add  timestamp
@@ -14,7 +15,6 @@ jobs:
       - name: Generate timestamp
         run: |
           echo "TIMESTAMP=$(TZ='America/Los_Angeles' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-          echo ${{ github.head_ref }}
 
       - name: Print timestamp
         run: |
