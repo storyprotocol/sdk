@@ -37,5 +37,8 @@
   "claimRevenueByTokenBatch",
   "claimableRevenue",
 
-  "getRoyaltyData"
+  "getRoyaltyData",
+  "onRoyaltyPayment",
+  "claimableRevenue",
+  "payRoyaltyOnBehalf"
 ]
