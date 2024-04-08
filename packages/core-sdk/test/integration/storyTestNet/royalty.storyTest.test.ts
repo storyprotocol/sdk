@@ -61,7 +61,7 @@ describe("Test royalty Functions", () => {
   describe("Royalty in storyTestNet", async function () {
     let ipId1: Hex;
     let ipId2: Hex;
-    let tokenId = 30;
+    let tokenId = 44;
     const getIpId = async (): Promise<Hex> => {
       tokenId++;
 

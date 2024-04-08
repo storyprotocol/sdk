@@ -29,7 +29,6 @@ describe.skip("Test Policy Functions", () => {
     client.policy.ipAccountABI = IPAccountABI;
     client.policy.licensingModuleConfig = LicensingModuleConfig;
     client.policy.pilPolicyFrameworkManagerConfig = PILPolicyFrameworkManagerConfig;
-    client.policy.royaltyPolicyLAPConfig = RoyaltyPolicyLAPConfig;
     client.ipAsset.ipAssetRegistryConfig = IPAssetRegistryConfig;
     client.license.ipAccountABI = IPAccountABI;
     client.license.licenseRegistryConfig = LicenseRegistryConfig;
