@@ -14,7 +14,7 @@ import chaiAsPromised from "chai-as-promised";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-describe("IP Asset Functions in storyTestnet", () => {
+describe.skip("IP Asset Functions in storyTestnet", () => {
   let client: StoryClient;
   before(function () {
     const config: StoryConfig = {

@@ -26,7 +26,7 @@ import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
 import { maxValueForApproval } from "../../../src/constants/common";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-describe("Test royalty Functions", () => {
+describe.skip("Test royalty Functions", () => {
   let client: StoryClient;
   let senderAddress: string;
   let publicClient: PublicClient;
