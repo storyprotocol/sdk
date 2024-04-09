@@ -5,9 +5,12 @@ import {Contract} from "@wagmi/cli/src/config";
 import {pascalCase, camelCase} from 'change-case'
 import {AbiFunction, AbiEvent, AbiParameter} from "abitype";
 
-export type SDKConfig = {}
+export type SDKConfig = {
+    permissionLessSDK?: boolean
+    whiteList?: Record<string, Array<string>>
+}
 
-type ReactResult = Evaluate<RequiredBy<Plugin, 'run'>>
+type SDKResult = Evaluate<RequiredBy<Plugin, 'run'>>
 type RunConfig = {
     contracts: Array<Contract>
     isTypeScript: boolean,
@@ -204,10 +207,54 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
     return {func: funcLine.join("\n"), types: types.join("\n")}
 }
 
+function generatePermissionLessFunction(contractName: string, func: AbiFunction) {
+    const abiName = `${camelCase(contractName)}Abi`
+    const indexFuncName = ('index' in func) ? `${func.name}${func.index}` : func.name
+    const inName = `${pascalCase(contractName)}${pascalCase(indexFuncName)}Request`
+    const inType = generateContractTypes(inName, func.inputs)
+    const inParams = inType.valid ? `request: ${inName}` : ``
+
+    let funcLine: Array<string> = [];
+    let types: Array<string> = [];
+
+    if (inType.valid) types.push(`${inType.comment}\n${inType.type}`)
+
+    funcLine.push(``)
+    funcLine.push(`/**`)
+    funcLine.push(` * permission less method ${func.name} for contract ${contractName}`)
+    funcLine.push(` *`)
+    funcLine.push(` * @param request ${inName}`)
+    funcLine.push(` * @return Promise<WriteContractReturnType>`)
+    funcLine.push(`*/`)
+    funcLine.push(`  public async ${camelCase(indexFuncName)}(${inParams}): Promise<WriteContractReturnType> {`)
+    funcLine.push(`      const userOperationRequest = await this.wallet.prepareUserOperationRequest({`)
+    funcLine.push(`        userOperation: {`)
+    funcLine.push(`          callData: await this.wallet.account.encodeCallData({`)
+    funcLine.push(`            to: this.address,`)
+    funcLine.push(`            data: encodeFunctionData({`)
+    funcLine.push(`              abi: ${abiName},`)
+    funcLine.push(`              functionName: "${func.name}",`)
+    if (inType.valid) {
+        funcLine.push(`              args: [`)
+        funcLine.push(inType.args)
+        funcLine.push(`              ],`)
+    }
+    funcLine.push(`            }),`)
+    funcLine.push(`            value: 0n,`)
+    funcLine.push(`          }),`)
+    funcLine.push(`        },`)
+    funcLine.push(`        account: this.wallet.account,`)
+    funcLine.push(`      });`)
+    funcLine.push(`    return await this.wallet.sendUserOperation({userOperation: userOperationRequest, account: this.wallet.account});`)
+    funcLine.push(`  }`)
+
+    return {func: funcLine.join("\n"), types: ""}
+}
+
 function generateEventFunction(contractName: any, event: AbiEvent) {
     const abiName = `${camelCase(contractName)}Abi`
     const typeName = `${pascalCase(contractName)}${pascalCase(event.name)}Event`
-    const type = generateContractTypes(typeName, event.inputs, true)
+    const type = generateContractTypes(typeName, event.inputs, false)
 
     let funcLine: Array<string> = [];
     let types: Array<string> = [];
@@ -218,7 +265,7 @@ function generateEventFunction(contractName: any, event: AbiEvent) {
         funcLine.push(`/**`)
         funcLine.push(` * event ${event.name} for contract ${contractName}`)
         funcLine.push(`*/`)
-        funcLine.push(`  public watch${pascalCase(event.name)}Event(onLogs: (txHash: Hex, ev: ${typeName}) => void): WatchContractEventReturnType {`)
+        funcLine.push(`  public watch${pascalCase(event.name)}Event(onLogs: (txHash: Hex, ev: Partial<${typeName}>) => void): WatchContractEventReturnType {`)
         funcLine.push(`    return this.rpcClient.watchContractEvent({`)
         funcLine.push(`      abi: ${abiName},`)
         funcLine.push(`      address: this.address,`)
@@ -226,12 +273,30 @@ function generateEventFunction(contractName: any, event: AbiEvent) {
         funcLine.push(`      onLogs: (evs) => {evs.forEach(it=> onLogs(it.transactionHash, it.args))},`)
         funcLine.push(`    })`)
         funcLine.push(`  }`)
+        funcLine.push(``)
+        funcLine.push(`/**`)
+        funcLine.push(` * parse tx receipt event ${event.name} for contract ${contractName}`)
+        funcLine.push(` */`)
+        funcLine.push(`public async parseTx${pascalCase(event.name)}Event(txReceipt: TransactionReceipt): Promise<Array<${typeName}>> {`)
+        funcLine.push(`    const targetLogs: Array<${typeName}> = [];`)
+        funcLine.push(`    for (const log of txReceipt.logs) {`)
+        funcLine.push(`        try {`)
+        funcLine.push(`            targetLogs.push(decodeEventLog({`)
+        funcLine.push(`                abi: ${abiName},`)
+        funcLine.push(`                eventName: '${event.name}',`)
+        funcLine.push(`                data: log.data,`)
+        funcLine.push(`                topics: log.topics,`)
+        funcLine.push(`            }).args);`)
+        funcLine.push(`        } catch (e) {}`)
+        funcLine.push(`    }`)
+        funcLine.push(`    return targetLogs`)
+        funcLine.push(`}`)
     }
 
     return {func: funcLine.join("\n"), types: types.join("\n")}
 }
 
-function generateContract(contract: Contract): string {
+function generateContract(config: SDKConfig, contract: Contract): string {
     let contractAddress = ""
     if (typeof contract.address == "string") {
         contractAddress = `= '${contract.address}'`
@@ -248,6 +313,12 @@ function generateContract(contract: Contract): string {
     for (let abiElement of contract.abi) {
         switch (abiElement.type) {
             case "function":
+                if (config.whiteList && config.whiteList[contract.name]) {
+                    if (config.whiteList[contract.name].indexOf(abiElement.name) == -1) {
+                        continue
+                    }
+                }
+
                 const indexAbiElement: AbiFunction & { index?: number } = abiElement
 
                 if (!functionMap[indexAbiElement.name]) {
@@ -264,6 +335,12 @@ function generateContract(contract: Contract): string {
                 }
                 break;
             case "event":
+                if (config.whiteList && config.whiteList[contract.name]) {
+                    if (config.whiteList[contract.name].indexOf(abiElement.name) == -1) {
+                        continue
+                    }
+                }
+
                 abiEvents.push(abiElement)
                 break;
         }
@@ -271,48 +348,6 @@ function generateContract(contract: Contract): string {
 
     let file: Array<string> = [];
     let types: Array<string> = [];
-
-    if (abiViewFunctions.length) {
-        file.push(``)
-        file.push(`/**`)
-        file.push(` * contract ${contract.name} readonly method`)
-        file.push(`*/`)
-        file.push(`export class ${pascalCase(contract.name)}ReadOnlyClient {`)
-        file.push(`  protected readonly rpcClient: PublicClient;`)
-        file.push(`  protected readonly address: Address;`)
-        file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, address: Address ${contractAddress}) {`)
-        file.push(`      this.address = address;`)
-        file.push(`      this.rpcClient = rpcClient;`)
-        file.push(`  }`)
-        abiViewFunctions.forEach(it => {
-            const data = generateContractFunction(contract.name, it)
-            file.push(data.func)
-            types.push(data.types)
-        })
-        file.push(`}`)
-    }
-
-    if (abiWriteFunctions.length) {
-        const extend = abiViewFunctions.length ? ` extends ${pascalCase(contract.name)}ReadOnlyClient` : ``
-        file.push(``)
-        file.push(`/**`)
-        file.push(` * contract ${contract.name} write method`)
-        file.push(`*/`)
-        file.push(`export class ${pascalCase(contract.name)}Client ${extend} {`)
-        file.push(`  protected readonly wallet: WalletClient;`)
-        file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address: Address ${contractAddress}) {`)
-        file.push(`      super(rpcClient, address);`)
-        file.push(`      this.wallet = wallet;`)
-        file.push(`  }`)
-        abiWriteFunctions.forEach(it => {
-            const data = generateContractFunction(contract.name, it)
-            file.push(data.func)
-            types.push(data.types)
-        })
-        file.push(`}`)
-    }
 
     if (abiEvents.length) {
         file.push(``)
@@ -335,24 +370,114 @@ function generateContract(contract: Contract): string {
         file.push(`}`)
     }
 
+    if (abiViewFunctions.length) {
+        const extend = abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
+        file.push(``)
+        file.push(`/**`)
+        file.push(` * contract ${contract.name} readonly method`)
+        file.push(`*/`)
+        file.push(`export class ${pascalCase(contract.name)}ReadOnlyClient ${extend} {`)
+        if (!abiEvents.length) {
+            file.push(`  protected readonly rpcClient: PublicClient;`)
+            file.push(`  protected readonly address: Address;`)
+        }
+        file.push(``)
+        file.push(`  constructor (rpcClient: PublicClient, address: Address ${contractAddress}) {`)
+        if (abiEvents.length) {
+            file.push(`      super(rpcClient, address);`)
+        } else {
+            file.push(`      this.address = address;`)
+            file.push(`      this.rpcClient = rpcClient;`)
+        }
+        file.push(`  }`)
+        abiViewFunctions.forEach(it => {
+            const data = generateContractFunction(contract.name, it)
+            file.push(data.func)
+            types.push(data.types)
+        })
+        file.push(`}`)
+    }
+
+    if (abiWriteFunctions.length) {
+        const extend = abiViewFunctions.length ?
+            ` extends ${pascalCase(contract.name)}ReadOnlyClient`
+            : abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
+        file.push(``)
+        file.push(`/**`)
+        file.push(` * contract ${contract.name} write method`)
+        file.push(`*/`)
+        file.push(`export class ${pascalCase(contract.name)}Client ${extend} {`)
+        file.push(`  protected readonly wallet: WalletClient;`)
+        if (!extend) {
+            file.push(`  protected readonly rpcClient: PublicClient;`)
+            file.push(`  protected readonly address: Address;`)
+        }
+        file.push(``)
+        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address: Address ${contractAddress}) {`)
+        if (!extend) {
+            file.push(`      this.address = address;`)
+            file.push(`      this.rpcClient = rpcClient;`)
+        } else {
+            file.push(`      super(rpcClient, address);`)
+        }
+        file.push(`      this.wallet = wallet;`)
+        file.push(`  }`)
+        abiWriteFunctions.forEach(it => {
+            const data = generateContractFunction(contract.name, it)
+            file.push(data.func)
+            types.push(data.types)
+        })
+        file.push(`}`)
+    }
+
+    if (config.permissionLessSDK && abiWriteFunctions.length){
+        const extend = abiViewFunctions.length ?
+            ` extends ${pascalCase(contract.name)}ReadOnlyClient`
+            : abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
+        file.push(``)
+        file.push(`/**`)
+        file.push(` * contract ${contract.name} permission less write method`)
+        file.push(`*/`)
+        file.push(`export class ${pascalCase(contract.name)}PermissionLessClient ${extend} {`)
+        file.push(`  protected readonly wallet: WalletClient;`)
+        if (!extend) {
+            file.push(`  protected readonly address: Address;`)
+        }
+        file.push(``)
+        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address: Address ${contractAddress}) {`)
+        if (!extend) {
+            file.push(`      this.address = address;`)
+        } else {
+            file.push(`      super(rpcClient, address);`)
+        }
+        file.push(`      this.wallet = wallet;`)
+        file.push(`  }`)
+        abiWriteFunctions.forEach(it => {
+            const data = generatePermissionLessFunction(contract.name, it)
+            file.push(data.func)
+            types.push(data.types)
+        })
+        file.push(`}`)
+    }
+
     return `// Contract ${contract.name} =============================================================\n` +
         types.join("\n\n") +
         "\n\n" +
         file.join("\n");
 }
 
-export function sdk(config: SDKConfig = {}): ReactResult {
+export function sdk(config: SDKConfig = {}): SDKResult {
     return {
         name: 'SDK',
-        async run(config: RunConfig): Promise<{ imports?: string, prepend?: string, content: string }> {
+        async run(runConfig: RunConfig): Promise<{ imports?: string, prepend?: string, content: string }> {
             let classFile: Array<string> = []
 
-            for (const contract of config.contracts) {
-                classFile.push(generateContract(contract))
+            for (const contract of runConfig.contracts) {
+                classFile.push(generateContract(config, contract))
             }
 
             return {
-                imports: `import {Address, PublicClient, WalletClient, WatchContractEventReturnType, WriteContractReturnType, Hex} from "viem";import {AbiTypeToPrimitiveType, AbiParameterToPrimitiveType} from "abitype";`,
+                imports: `import {encodeFunctionData, decodeEventLog, Address, PublicClient, WalletClient, WatchContractEventReturnType, WriteContractReturnType, TransactionReceipt, Hex} from "viem";import {AbiTypeToPrimitiveType, AbiParameterToPrimitiveType} from "abitype";`,
                 content: classFile.join("\n\n"),
             }
         },

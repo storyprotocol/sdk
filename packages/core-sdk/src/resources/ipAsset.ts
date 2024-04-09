@@ -1,34 +1,32 @@
 import { Hex, PublicClient, WalletClient, getAddress } from "viem";
 
-import { chain, parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
-import { getIPAssetRegistryConfig } from "../abi/config";
+import { chain, parseToBigInt } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import { RegisterIpResponse, RegisterRequest } from "../types/resources/ipAsset";
+import {IpAssetRegistryClient} from "../abi/generated";
+import {contractAddress} from "../utils/env";
 
 export class IPAssetClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   private readonly chainId: SupportedChainIds;
-  public ipAssetRegistryConfig;
+  public ipAssetRegistryClient: IpAssetRegistryClient;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.chainId = chainId;
-    this.ipAssetRegistryConfig = getIPAssetRegistryConfig(chainId);
+    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet, getAddress(contractAddress[chainId].IPAssetRegistry));
   }
+
   private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
-    const ipId = await this.rpcClient.readContract({
-      ...this.ipAssetRegistryConfig,
-      functionName: "ipId",
-      args: [parseToBigInt(chain[this.chainId]), tokenAddress, tokenId],
-    });
-    const isRegistered = await this.rpcClient.readContract({
-      ...this.ipAssetRegistryConfig,
-      functionName: "isRegistered",
-      args: [ipId],
-    });
+    const ipId = await this.ipAssetRegistryClient.ipId({
+      chainId: parseToBigInt(chain[this.chainId]),
+      tokenContract: tokenAddress,
+      tokenId: tokenId
+    })
+    const isRegistered = await this.ipAssetRegistryClient.isRegistered({id: ipId})
     return isRegistered ? ipId : "0x";
   }
 
@@ -48,19 +46,14 @@ export class IPAssetClient {
       if (ipId !== "0x") {
         return { ipId: ipId };
       }
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.ipAssetRegistryConfig,
-        functionName: "register",
-        args: [getAddress(request.tokenContract), tokenId],
-        account: this.wallet.account,
+      const txHash = await this.ipAssetRegistryClient.register({
+        tokenContract: getAddress(request.tokenContract),
+        tokenId: tokenId,
       });
-      const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.ipAssetRegistryConfig,
-          eventName: "IPRegistered",
-        });
-        return { txHash: txHash, ipId: targetLogs[0].args.ipId };
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({hash: txHash})
+        const targetLogs = await this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)
+        return { txHash: txHash, ipId: targetLogs[0].ipId };
       } else {
         return { txHash: txHash };
       }

@@ -16,14 +16,6 @@ import { SupportedChainIds } from "../types/config";
 
 export const IPAccountABI = [...IPAccountImplABI, ...ErrorsABI];
 
-export const getIPAssetRegistryConfig = (chain: SupportedChainIds) => ({
-  abi: IPAssetRegistryABI,
-  address: getAddress(contractAddress[chain].IPAssetRegistry),
-});
-export const getAccessControllerConfig = (chain: SupportedChainIds) => ({
-  abi: [...AccessControllerABI, ...ErrorsABI],
-  address: getAddress(contractAddress[chain].AccessController),
-});
 export const getDisputeModuleConfig = (chain: SupportedChainIds) => ({
   abi: [...DisputeModuleABI, ...ErrorsABI],
   address: getAddress(contractAddress[chain].DisputeModule),
