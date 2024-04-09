@@ -1,4340 +1,4376 @@
 import {
-  encodeFunctionData,
-  decodeEventLog,
   Address,
   PublicClient,
-  WalletClient,
-  WatchContractEventReturnType,
-  WriteContractReturnType,
-  TransactionReceipt,
   Hex,
-} from 'viem'
-import { AbiTypeToPrimitiveType, AbiParameterToPrimitiveType } from 'abitype'
+  decodeEventLog,
+  WatchContractEventReturnType,
+  TransactionReceipt,
+  WalletClient,
+  WriteContractReturnType,
+} from "viem";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AccessController
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735)
+ */
 export const accessControllerAbi = [
-  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
-    type: 'error',
+    type: "error",
     inputs: [
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
     ],
-    name: 'AccessController__BothCallerAndRecipientAreNotRegisteredModule',
+    name: "AccessController__BothCallerAndRecipientAreNotRegisteredModule",
   },
-  { type: 'error', inputs: [], name: 'AccessController__CallerIsNotIPAccount' },
+  { type: "error", inputs: [], name: "AccessController__CallerIsNotIPAccount" },
   {
-    type: 'error',
-    inputs: [{ name: 'ipAccount', internalType: 'address', type: 'address' }],
-    name: 'AccessController__IPAccountIsNotValid',
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessController__IPAccountIsNotValid",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'AccessController__IPAccountIsZeroAddress',
+    name: "AccessController__IPAccountIsZeroAddress",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [
-      { name: 'ipAccount', internalType: 'address', type: 'address' },
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'func', internalType: 'bytes4', type: 'bytes4' },
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
     ],
-    name: 'AccessController__PermissionDenied',
+    name: "AccessController__PermissionDenied",
   },
-  { type: 'error', inputs: [], name: 'AccessController__PermissionIsNotValid' },
-  { type: 'error', inputs: [], name: 'AccessController__SignerIsZeroAddress' },
+  { type: "error", inputs: [], name: "AccessController__PermissionIsNotValid" },
+  { type: "error", inputs: [], name: "AccessController__SignerIsZeroAddress" },
   {
-    type: 'error',
-    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
-    name: 'AddressEmptyCode',
-  },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'implementation', internalType: 'address', type: 'address' },
-    ],
-    name: 'ERC1967InvalidImplementation',
-  },
-  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
-  { type: 'error', inputs: [], name: 'FailedInnerCall' },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
-  { type: 'error', inputs: [], name: 'Governance__ProtocolPaused' },
-  {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
-  },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
-  { type: 'error', inputs: [], name: 'InvalidInitialization' },
-  { type: 'error', inputs: [], name: 'NotInitializing' },
-  { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
-  {
-    type: 'error',
-    inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'UUPSUnsupportedProxiableUUID',
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
   },
   {
-    type: 'event',
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
+  { type: "error", inputs: [], name: "Governance__ProtocolPaused" },
+  {
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
+  },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'GovernanceUpdated',
+    name: "GovernanceUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'version',
-        internalType: 'uint64',
-        type: 'uint64',
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
         indexed: false,
       },
     ],
-    name: 'Initialized',
+    name: "Initialized",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'ipAccountOwner',
-        internalType: 'address',
-        type: 'address',
+        name: "ipAccountOwner",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'ipAccount',
-        internalType: 'address',
-        type: 'address',
+        name: "ipAccount",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'signer',
-        internalType: 'address',
-        type: 'address',
+        name: "signer",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'to', internalType: 'address', type: 'address', indexed: true },
-      { name: 'func', internalType: 'bytes4', type: 'bytes4', indexed: false },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      { name: "func", internalType: "bytes4", type: "bytes4", indexed: false },
       {
-        name: 'permission',
-        internalType: 'uint8',
-        type: 'uint8',
+        name: "permission",
+        internalType: "uint8",
+        type: "uint8",
         indexed: false,
       },
     ],
-    name: 'PermissionSet',
+    name: "PermissionSet",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
+        name: "implementation",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'Upgraded',
+    name: "Upgraded",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'UPGRADE_INTERFACE_VERSION',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipAccount', internalType: 'address', type: 'address' },
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'func', internalType: 'bytes4', type: 'bytes4' },
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
     ],
-    name: 'checkPermission',
+    name: "checkPermission",
     outputs: [],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipAccount', internalType: 'address', type: 'address' },
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'func', internalType: 'bytes4', type: 'bytes4' },
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
     ],
-    name: 'getPermission',
-    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
-    stateMutability: 'view',
+    name: "getPermission",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'governance', internalType: 'address', type: 'address' }],
-    name: 'initialize',
+    type: "function",
+    inputs: [{ name: "governance", internalType: "address", type: "address" }],
+    name: "initialize",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'proxiableUUID',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipAccountRegistry', internalType: 'address', type: 'address' },
-      { name: 'moduleRegistry', internalType: 'address', type: 'address' },
+      { name: "ipAccountRegistry", internalType: "address", type: "address" },
+      { name: "moduleRegistry", internalType: "address", type: "address" },
     ],
-    name: 'setAddresses',
+    name: "setAddresses",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
       {
-        name: 'permissions',
-        internalType: 'struct AccessPermission.Permission[]',
-        type: 'tuple[]',
+        name: "permissions",
+        internalType: "struct AccessPermission.Permission[]",
+        type: "tuple[]",
         components: [
-          { name: 'ipAccount', internalType: 'address', type: 'address' },
-          { name: 'signer', internalType: 'address', type: 'address' },
-          { name: 'to', internalType: 'address', type: 'address' },
-          { name: 'func', internalType: 'bytes4', type: 'bytes4' },
-          { name: 'permission', internalType: 'uint8', type: 'uint8' },
+          { name: "ipAccount", internalType: "address", type: "address" },
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "to", internalType: "address", type: "address" },
+          { name: "func", internalType: "bytes4", type: "bytes4" },
+          { name: "permission", internalType: "uint8", type: "uint8" },
         ],
       },
     ],
-    name: 'setBatchPermissions',
+    name: "setBatchPermissions",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'func', internalType: 'bytes4', type: 'bytes4' },
-      { name: 'permission', internalType: 'uint8', type: 'uint8' },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
+      { name: "permission", internalType: "uint8", type: "uint8" },
     ],
-    name: 'setGlobalPermission',
+    name: "setGlobalPermission",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
-    ],
-    name: 'setGovernance',
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipAccount', internalType: 'address', type: 'address' },
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'func', internalType: 'bytes4', type: 'bytes4' },
-      { name: 'permission', internalType: 'uint8', type: 'uint8' },
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
+      { name: "permission", internalType: "uint8", type: "uint8" },
     ],
-    name: 'setPermission',
+    name: "setPermission",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'newImplementation', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'upgradeToAndCall',
+    name: "upgradeToAndCall",
     outputs: [],
-    stateMutability: 'payable',
+    stateMutability: "payable",
   },
-] as const
+] as const;
 
-export const accessControllerAddress =
-  '0x6fB5BA9A8747E897109044a1cd1192898AA384a9' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735)
+ */
+export const accessControllerAddress = {
+  1513: "0x6fB5BA9A8747E897109044a1cd1192898AA384a9",
+  11155111: "0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735)
+ */
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DisputeModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6157B19CBc151af2b36e0a2581001d32a22b2661)
+ */
 export const disputeModuleAbi = [
   {
-    type: 'constructor',
+    type: "constructor",
     inputs: [
-      { name: '_controller', internalType: 'address', type: 'address' },
-      { name: '_assetRegistry', internalType: 'address', type: 'address' },
+      { name: "_controller", internalType: "address", type: "address" },
+      { name: "_assetRegistry", internalType: "address", type: "address" },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'ipAccount', internalType: 'address', type: 'address' }],
-    name: 'AccessControlled__NotIpAccount',
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
   },
-  { type: 'error', inputs: [], name: 'AccessControlled__ZeroAddress' },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   {
-    type: 'error',
-    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
-    name: 'AddressEmptyCode',
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
   },
-  { type: 'error', inputs: [], name: 'DisputeModule__NotAbleToResolve' },
-  { type: 'error', inputs: [], name: 'DisputeModule__NotDisputeInitiator' },
-  { type: 'error', inputs: [], name: 'DisputeModule__NotInDisputeState' },
-  { type: 'error', inputs: [], name: 'DisputeModule__NotRegisteredIpId' },
+  { type: "error", inputs: [], name: "DisputeModule__NotAbleToResolve" },
+  { type: "error", inputs: [], name: "DisputeModule__NotDisputeInitiator" },
+  { type: "error", inputs: [], name: "DisputeModule__NotInDisputeState" },
+  { type: "error", inputs: [], name: "DisputeModule__NotRegisteredIpId" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'DisputeModule__NotWhitelistedArbitrationPolicy',
+    name: "DisputeModule__NotWhitelistedArbitrationPolicy",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'DisputeModule__NotWhitelistedArbitrationRelayer',
+    name: "DisputeModule__NotWhitelistedArbitrationRelayer",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'DisputeModule__NotWhitelistedDisputeTag',
+    name: "DisputeModule__NotWhitelistedDisputeTag",
   },
-  { type: 'error', inputs: [], name: 'DisputeModule__ZeroArbitrationPolicy' },
-  { type: 'error', inputs: [], name: 'DisputeModule__ZeroArbitrationRelayer' },
-  { type: 'error', inputs: [], name: 'DisputeModule__ZeroDisputeTag' },
+  { type: "error", inputs: [], name: "DisputeModule__ZeroArbitrationPolicy" },
+  { type: "error", inputs: [], name: "DisputeModule__ZeroArbitrationRelayer" },
+  { type: "error", inputs: [], name: "DisputeModule__ZeroDisputeTag" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'DisputeModule__ZeroLinkToDisputeEvidence',
+    name: "DisputeModule__ZeroLinkToDisputeEvidence",
   },
   {
-    type: 'error',
-    inputs: [
-      { name: 'implementation', internalType: 'address', type: 'address' },
-    ],
-    name: 'ERC1967InvalidImplementation',
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
   },
-  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
-  { type: 'error', inputs: [], name: 'FailedInnerCall' },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
   },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
-  { type: 'error', inputs: [], name: 'InvalidInitialization' },
-  { type: 'error', inputs: [], name: 'NotInitializing' },
-  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
   {
-    type: 'error',
-    inputs: [{ name: 'str', internalType: 'string', type: 'string' }],
-    name: 'StringTooLong',
+    type: "error",
+    inputs: [{ name: "str", internalType: "string", type: "string" }],
+    name: "StringTooLong",
   },
-  { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
-    type: 'error',
-    inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'UUPSUnsupportedProxiableUUID',
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'ipId',
-        internalType: 'address',
-        type: 'address',
+        name: "ipId",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'arbitrationPolicy',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'ArbitrationPolicySet',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'arbitrationPolicy',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      { name: 'allowed', internalType: 'bool', type: 'bool', indexed: false },
-    ],
-    name: 'ArbitrationPolicyWhitelistUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'arbitrationPolicy',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'arbitrationRelayer',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      { name: 'allowed', internalType: 'bool', type: 'bool', indexed: false },
-    ],
-    name: 'ArbitrationRelayerWhitelistUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'arbitrationPolicy',
-        internalType: 'address',
-        type: 'address',
+        name: "arbitrationPolicy",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
     ],
-    name: 'DefaultArbitrationPolicyUpdated',
+    name: "ArbitrationPolicySet",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'disputeId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "arbitrationPolicy",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
-      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'DisputeCancelled',
+    name: "ArbitrationPolicyWhitelistUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'disputeId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "arbitrationPolicy",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
-      { name: 'decision', internalType: 'bool', type: 'bool', indexed: false },
-      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+      {
+        name: "arbitrationRelayer",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'DisputeJudgementSet',
+    name: "ArbitrationRelayerWhitelistUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'disputeId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'targetIpId',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'disputeInitiator',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'arbitrationPolicy',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'linkToDisputeEvidence',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: false,
-      },
-      {
-        name: 'targetTag',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: false,
-      },
-      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
-    ],
-    name: 'DisputeRaised',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'disputeId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "arbitrationPolicy",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
     ],
-    name: 'DisputeResolved',
+    name: "DefaultArbitrationPolicyUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
+        name: "disputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      { name: "data", internalType: "bytes", type: "bytes", indexed: false },
+    ],
+    name: "DisputeCancelled",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "disputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      { name: "decision", internalType: "bool", type: "bool", indexed: false },
+      { name: "data", internalType: "bytes", type: "bytes", indexed: false },
+    ],
+    name: "DisputeJudgementSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "disputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "targetIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "disputeInitiator",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "arbitrationPolicy",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "linkToDisputeEvidence",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+      {
+        name: "targetTag",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+      { name: "data", internalType: "bytes", type: "bytes", indexed: false },
+    ],
+    name: "DisputeRaised",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "disputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "DisputeResolved",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'GovernanceUpdated',
+    name: "GovernanceUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'version',
-        internalType: 'uint64',
-        type: 'uint64',
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
         indexed: false,
       },
     ],
-    name: 'Initialized',
+    name: "Initialized",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      { name: 'tag', internalType: 'bytes32', type: 'bytes32', indexed: false },
-      { name: 'allowed', internalType: 'bool', type: 'bool', indexed: false },
+      { name: "tag", internalType: "bytes32", type: "bytes32", indexed: false },
+      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'TagWhitelistUpdated',
+    name: "TagWhitelistUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
+        name: "implementation",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'Upgraded',
+    name: "Upgraded",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ACCESS_CONTROLLER',
-    outputs: [
-      { name: '', internalType: 'contract IAccessController', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'IN_DISPUTE',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "IN_DISPUTE",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'IP_ACCOUNT_REGISTRY',
+    name: "IP_ACCOUNT_REGISTRY",
     outputs: [
       {
-        name: '',
-        internalType: 'contract IIPAccountRegistry',
-        type: 'address',
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'IP_ASSET_REGISTRY',
-    outputs: [
-      { name: '', internalType: 'contract IIPAssetRegistry', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'UPGRADE_INTERFACE_VERSION',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
-    name: 'arbitrationPolicies',
-    outputs: [{ name: 'policy', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "arbitrationPolicies",
+    outputs: [{ name: "policy", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'baseArbitrationPolicy',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "baseArbitrationPolicy",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'disputeId', internalType: 'uint256', type: 'uint256' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'cancelDispute',
+    name: "cancelDispute",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'disputeCounter',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "disputeCounter",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'disputeId', internalType: 'uint256', type: 'uint256' }],
-    name: 'disputes',
+    type: "function",
+    inputs: [{ name: "disputeId", internalType: "uint256", type: "uint256" }],
+    name: "disputes",
     outputs: [
-      { name: 'targetIpId', internalType: 'address', type: 'address' },
-      { name: 'disputeInitiator', internalType: 'address', type: 'address' },
-      { name: 'arbitrationPolicy', internalType: 'address', type: 'address' },
+      { name: "targetIpId", internalType: "address", type: "address" },
+      { name: "disputeInitiator", internalType: "address", type: "address" },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
       {
-        name: 'linkToDisputeEvidence',
-        internalType: 'bytes32',
-        type: 'bytes32',
+        name: "linkToDisputeEvidence",
+        internalType: "bytes32",
+        type: "bytes32",
       },
-      { name: 'targetTag', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'currentTag', internalType: 'bytes32', type: 'bytes32' },
+      { name: "targetTag", internalType: "bytes32", type: "bytes32" },
+      { name: "currentTag", internalType: "bytes32", type: "bytes32" },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: '_governance', internalType: 'address', type: 'address' }],
-    name: 'initialize',
+    type: "function",
+    inputs: [{ name: "_governance", internalType: "address", type: "address" }],
+    name: "initialize",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
-    name: 'isIpTagged',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "isIpTagged",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
+    name: "isWhitelistedArbitrationPolicy",
+    outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'arbitrationPolicy', internalType: 'address', type: 'address' },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
+      { name: "arbitrationRelayer", internalType: "address", type: "address" },
     ],
-    name: 'isWhitelistedArbitrationPolicy',
-    outputs: [{ name: 'allowed', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isWhitelistedArbitrationRelayer",
+    outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'arbitrationPolicy', internalType: 'address', type: 'address' },
-      { name: 'arbitrationRelayer', internalType: 'address', type: 'address' },
-    ],
-    name: 'isWhitelistedArbitrationRelayer',
-    outputs: [{ name: 'allowed', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "tag", internalType: "bytes32", type: "bytes32" }],
+    name: "isWhitelistedDisputeTag",
+    outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'tag', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'isWhitelistedDisputeTag',
-    outputs: [{ name: 'allowed', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'proxiableUUID',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'targetIpId', internalType: 'address', type: 'address' },
-      { name: 'linkToDisputeEvidence', internalType: 'string', type: 'string' },
-      { name: 'targetTag', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "targetIpId", internalType: "address", type: "address" },
+      { name: "linkToDisputeEvidence", internalType: "string", type: "string" },
+      { name: "targetTag", internalType: "bytes32", type: "bytes32" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'raiseDispute',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
+    name: "raiseDispute",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'disputeId', internalType: 'uint256', type: 'uint256' }],
-    name: 'resolveDispute',
+    type: "function",
+    inputs: [{ name: "disputeId", internalType: "uint256", type: "uint256" }],
+    name: "resolveDispute",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'arbitrationPolicy', internalType: 'address', type: 'address' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
     ],
-    name: 'setArbitrationPolicy',
+    name: "setArbitrationPolicy",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
+    name: "setBaseArbitrationPolicy",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'arbitrationPolicy', internalType: 'address', type: 'address' },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "decision", internalType: "bool", type: "bool" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'setBaseArbitrationPolicy',
+    name: "setDisputeJudgement",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'disputeId', internalType: 'uint256', type: 'uint256' },
-      { name: 'decision', internalType: 'bool', type: 'bool' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'setDisputeJudgement',
+    name: "upgradeToAndCall",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "payable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
-    name: 'setGovernance',
+    name: "whitelistArbitrationPolicy",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'newImplementation', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
+      { name: "arbPolicyRelayer", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
-    name: 'upgradeToAndCall',
+    name: "whitelistArbitrationRelayer",
     outputs: [],
-    stateMutability: 'payable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'arbitrationPolicy', internalType: 'address', type: 'address' },
-      { name: 'allowed', internalType: 'bool', type: 'bool' },
+      { name: "tag", internalType: "bytes32", type: "bytes32" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
-    name: 'whitelistArbitrationPolicy',
+    name: "whitelistDisputeTag",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'arbitrationPolicy', internalType: 'address', type: 'address' },
-      { name: 'arbPolicyRelayer', internalType: 'address', type: 'address' },
-      { name: 'allowed', internalType: 'bool', type: 'bool' },
-    ],
-    name: 'whitelistArbitrationRelayer',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'tag', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'allowed', internalType: 'bool', type: 'bool' },
-    ],
-    name: 'whitelistDisputeTag',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-] as const
+] as const;
 
-export const disputeModuleAddress =
-  '0x837d095F9A11178545DF4114C44fb526dcf74168' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6157B19CBc151af2b36e0a2581001d32a22b2661)
+ */
+export const disputeModuleAddress = {
+  1513: "0x837d095F9A11178545DF4114C44fb526dcf74168",
+  11155111: "0x6157B19CBc151af2b36e0a2581001d32a22b2661",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6157B19CBc151af2b36e0a2581001d32a22b2661)
+ */
 export const disputeModuleConfig = {
   address: disputeModuleAddress,
   abi: disputeModuleAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IPAccountImpl
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x79792DccC6C58C303510fc1F7649e481C431aFb1)
+ */
 export const ipAccountImplAbi = [
   {
-    type: 'constructor',
-    inputs: [
-      { name: 'accessController_', internalType: 'address', type: 'address' },
-    ],
-    stateMutability: 'nonpayable',
+    type: "constructor",
+    inputs: [{ name: "accessController_", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
-  { type: 'error', inputs: [], name: 'IPAccount__ExpiredSignature' },
-  { type: 'error', inputs: [], name: 'IPAccount__InvalidAccessController' },
-  { type: 'error', inputs: [], name: 'IPAccount__InvalidCalldata' },
-  { type: 'error', inputs: [], name: 'IPAccount__InvalidSignature' },
-  { type: 'error', inputs: [], name: 'IPAccount__InvalidSigner' },
+  { type: "error", inputs: [], name: "IPAccount__ExpiredSignature" },
+  { type: "error", inputs: [], name: "IPAccount__InvalidAccessController" },
+  { type: "error", inputs: [], name: "IPAccount__InvalidCalldata" },
+  { type: "error", inputs: [], name: "IPAccount__InvalidSignature" },
+  { type: "error", inputs: [], name: "IPAccount__InvalidSigner" },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
       {
-        name: 'value',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
-      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+      { name: "data", internalType: "bytes", type: "bytes", indexed: false },
       {
-        name: 'nonce',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "nonce",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'Executed',
+    name: "Executed",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
       {
-        name: 'value',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
-      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
+      { name: "data", internalType: "bytes", type: "bytes", indexed: false },
       {
-        name: 'nonce',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'deadline',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "nonce",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
       {
-        name: 'signer',
-        internalType: 'address',
-        type: 'address',
+        name: "deadline",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "signer",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'signature',
-        internalType: 'bytes',
-        type: 'bytes',
+        name: "signature",
+        internalType: "bytes",
+        type: "bytes",
         indexed: false,
       },
     ],
-    name: 'ExecutedWithSig',
+    name: "ExecutedWithSig",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'accessController',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "accessController",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: "", internalType: "bytes32", type: "bytes32" },
+      { name: "", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'addressData',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "addressData",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: "", internalType: "bytes32", type: "bytes32" },
+      { name: "", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'boolData',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "boolData",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: "", internalType: "bytes32", type: "bytes32" },
+      { name: "", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'bytes32Data',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "bytes32Data",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: "", internalType: "bytes32", type: "bytes32" },
+      { name: "", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'bytesData',
-    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'view',
+    name: "bytesData",
+    outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'execute',
-    outputs: [{ name: 'result', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'payable',
+    name: "execute",
+    outputs: [{ name: "result", internalType: "bytes", type: "bytes" }],
+    stateMutability: "payable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'deadline', internalType: 'uint256', type: 'uint256' },
-      { name: 'signature', internalType: 'bytes', type: 'bytes' },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "deadline", internalType: "uint256", type: "uint256" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
     ],
-    name: 'executeWithSig',
-    outputs: [{ name: 'result', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'payable',
+    name: "executeWithSig",
+    outputs: [{ name: "result", internalType: "bytes", type: "bytes" }],
+    stateMutability: "payable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'key', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'getBytes',
-    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "key", internalType: "bytes32", type: "bytes32" }],
+    name: "getBytes",
+    outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'namespace', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'key', internalType: 'bytes32', type: 'bytes32' },
+      { name: "namespace", internalType: "bytes32", type: "bytes32" },
+      { name: "key", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'getBytes',
-    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'view',
+    name: "getBytes",
+    outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'namespace', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'key', internalType: 'bytes32', type: 'bytes32' },
+      { name: "namespace", internalType: "bytes32", type: "bytes32" },
+      { name: "key", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'getBytes32',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "getBytes32",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'key', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'getBytes32',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "key", internalType: "bytes32", type: "bytes32" }],
+    name: "getBytes32",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'signer', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'isValidSigner',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'view',
+    name: "isValidSigner",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: '', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256[]", type: "uint256[]" },
+      { name: "", internalType: "uint256[]", type: "uint256[]" },
+      { name: "", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onERC1155BatchReceived',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'pure',
+    name: "onERC1155BatchReceived",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "pure",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onERC1155Received',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'pure',
+    name: "onERC1155Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "pure",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onERC721Received',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'pure',
+    name: "onERC721Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "pure",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'owner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "owner",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'key', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'value', internalType: 'bytes', type: 'bytes' },
+      { name: "key", internalType: "bytes32", type: "bytes32" },
+      { name: "value", internalType: "bytes", type: "bytes" },
     ],
-    name: 'setBytes',
+    name: "setBytes",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'key', internalType: 'bytes32', type: 'bytes32' },
-      { name: 'value', internalType: 'bytes32', type: 'bytes32' },
+      { name: "key", internalType: "bytes32", type: "bytes32" },
+      { name: "value", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'setBytes32',
+    name: "setBytes32",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'state',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "state",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: "", internalType: "bytes32", type: "bytes32" },
+      { name: "", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'stringData',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "stringData",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'token',
+    name: "token",
     outputs: [
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: "", internalType: "bytes32", type: "bytes32" },
+      { name: "", internalType: "bytes32", type: "bytes32" },
     ],
-    name: 'uint256Data',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "uint256Data",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
-  { type: 'receive', stateMutability: 'payable' },
-] as const
+  { type: "receive", stateMutability: "payable" },
+] as const;
 
-export const ipAccountImplAddress =
-  '0x6d1398e1ceE174a3e41d6eB50F00Fe43132f9C8A' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x79792DccC6C58C303510fc1F7649e481C431aFb1)
+ */
+export const ipAccountImplAddress = {
+  1513: "0x6d1398e1ceE174a3e41d6eB50F00Fe43132f9C8A",
+  11155111: "0x79792DccC6C58C303510fc1F7649e481C431aFb1",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x79792DccC6C58C303510fc1F7649e481C431aFb1)
+ */
 export const ipAccountImplConfig = {
   address: ipAccountImplAddress,
   abi: ipAccountImplAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IPAssetRegistry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x292639452A975630802C17c9267169D93BD5a793)
+ */
 export const ipAssetRegistryAbi = [
   {
-    type: 'constructor',
+    type: "constructor",
     inputs: [
-      { name: 'erc6551Registry', internalType: 'address', type: 'address' },
-      { name: 'ipAccountImpl', internalType: 'address', type: 'address' },
-      { name: 'governance', internalType: 'address', type: 'address' },
+      { name: "erc6551Registry", internalType: "address", type: "address" },
+      { name: "ipAccountImpl", internalType: "address", type: "address" },
+      { name: "governance", internalType: "address", type: "address" },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
   },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
-  { type: 'error', inputs: [], name: 'IPAccountRegistry_InvalidIpAccountImpl' },
-  { type: 'error', inputs: [], name: 'IPAssetRegistry__AlreadyRegistered' },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "IPAccountRegistry_InvalidIpAccountImpl" },
+  { type: "error", inputs: [], name: "IPAssetRegistry__AlreadyRegistered" },
   {
-    type: 'error',
+    type: "error",
     inputs: [
-      { name: 'contractAddress', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: "contractAddress", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'IPAssetRegistry__InvalidToken',
+    name: "IPAssetRegistry__InvalidToken",
   },
   {
-    type: 'error',
-    inputs: [
-      { name: 'contractAddress', internalType: 'address', type: 'address' },
-    ],
-    name: 'IPAssetRegistry__UnsupportedIERC721',
+    type: "error",
+    inputs: [{ name: "contractAddress", internalType: "address", type: "address" }],
+    name: "IPAssetRegistry__UnsupportedIERC721",
   },
   {
-    type: 'error',
-    inputs: [
-      { name: 'contractAddress', internalType: 'address', type: 'address' },
-    ],
-    name: 'IPAssetRegistry__UnsupportedIERC721Metadata',
+    type: "error",
+    inputs: [{ name: "contractAddress", internalType: "address", type: "address" }],
+    name: "IPAssetRegistry__UnsupportedIERC721Metadata",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'GovernanceUpdated',
+    name: "GovernanceUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
+        name: "account",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
+        name: "implementation",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'chainId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "chainId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: true,
       },
       {
-        name: 'tokenContract',
-        internalType: 'address',
-        type: 'address',
+        name: "tokenContract",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "tokenId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'IPAccountRegistered',
+    name: "IPAccountRegistered",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'ipId',
-        internalType: 'address',
-        type: 'address',
+        name: "ipId",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'chainId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "chainId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: true,
       },
       {
-        name: 'tokenContract',
-        internalType: 'address',
-        type: 'address',
+        name: "tokenContract",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "tokenId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: true,
       },
-      { name: 'name', internalType: 'string', type: 'string', indexed: false },
-      { name: 'uri', internalType: 'string', type: 'string', indexed: false },
+      { name: "name", internalType: "string", type: "string", indexed: false },
+      { name: "uri", internalType: "string", type: "string", indexed: false },
       {
-        name: 'registrationDate',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "registrationDate",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'IPRegistered',
+    name: "IPRegistered",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ERC6551_PUBLIC_REGISTRY',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "ERC6551_PUBLIC_REGISTRY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'IP_ACCOUNT_IMPL',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "IP_ACCOUNT_IMPL",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'IP_ACCOUNT_SALT',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "IP_ACCOUNT_SALT",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getIPAccountImpl',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getIPAccountImpl",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'governance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "governance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'chainId', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'ipAccount',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "ipAccount",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'chainId', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'ipId',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "ipId",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'id', internalType: 'address', type: 'address' }],
-    name: 'isRegistered',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "id", internalType: "address", type: "address" }],
+    name: "isRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'tokenContract', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: "tokenContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'register',
-    outputs: [{ name: 'id', internalType: 'address', type: 'address' }],
-    stateMutability: 'nonpayable',
+    name: "register",
+    outputs: [{ name: "id", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'chainId', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenContract', internalType: 'address', type: 'address' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "tokenContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'registerIpAccount',
-    outputs: [
-      { name: 'ipAccountAddress', internalType: 'address', type: 'address' },
-    ],
-    stateMutability: 'nonpayable',
+    name: "registerIpAccount",
+    outputs: [{ name: "ipAccountAddress", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
-    ],
-    name: 'setGovernance',
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'totalSupply',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "totalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
-] as const
+] as const;
 
-export const ipAssetRegistryAddress =
-  '0x30C89bCB41277f09b18DF0375b9438909e193bf0' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x292639452A975630802C17c9267169D93BD5a793)
+ */
+export const ipAssetRegistryAddress = {
+  1513: "0x30C89bCB41277f09b18DF0375b9438909e193bf0",
+  11155111: "0x292639452A975630802C17c9267169D93BD5a793",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x292639452A975630802C17c9267169D93BD5a793)
+ */
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
   abi: ipAssetRegistryAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IpRoyaltyVaultImpl
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ *
+ */
 export const ipRoyaltyVaultImplAbi = [
   {
-    type: 'constructor',
-    inputs: [
-      { name: 'royaltyPolicyLAP', internalType: 'address', type: 'address' },
-    ],
-    stateMutability: 'nonpayable',
+    type: "constructor",
+    inputs: [{ name: "royaltyPolicyLAP", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
-  { type: 'error', inputs: [], name: 'IpRoyaltyVault__AlreadyClaimed' },
-  { type: 'error', inputs: [], name: 'IpRoyaltyVault__ClaimerNotAnAncestor' },
-  { type: 'error', inputs: [], name: 'IpRoyaltyVault__NotRoyaltyPolicyLAP' },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__AlreadyClaimed" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ClaimerNotAnAncestor" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__NotRoyaltyPolicyLAP" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'IpRoyaltyVault__SnapshotIntervalTooShort',
+    name: "IpRoyaltyVault__SnapshotIntervalTooShort",
   },
-  { type: 'error', inputs: [], name: 'IpRoyaltyVault__ZeroIpId' },
-  { type: 'error', inputs: [], name: 'IpRoyaltyVault__ZeroRoyaltyPolicyLAP' },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroIpId" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroRoyaltyPolicyLAP" },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'owner',
-        internalType: 'address',
-        type: 'address',
+        name: "owner",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'spender',
-        internalType: 'address',
-        type: 'address',
+        name: "spender",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'value',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'Approval',
+    name: "Approval",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
-    inputs: [
-      { name: 'version', internalType: 'uint8', type: 'uint8', indexed: false },
-    ],
-    name: 'Initialized',
+    inputs: [{ name: "version", internalType: "uint8", type: "uint8", indexed: false }],
+    name: "Initialized",
   },
   {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'ancestorIpId',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'royaltyTokensCollected',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'RoyaltyTokensCollected',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: false },
-    ],
-    name: 'Snapshot',
-  },
-  {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'snapshotId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "ancestorIpId",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'snapshotTimestamp',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'unclaimedTokens',
-        internalType: 'uint32',
-        type: 'uint32',
+        name: "royaltyTokensCollected",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'SnapshotCompleted',
+    name: "RoyaltyTokensCollected",
   },
   {
-    type: 'event',
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "id", internalType: "uint256", type: "uint256", indexed: false }],
+    name: "Snapshot",
+  },
+  {
+    type: "event",
     anonymous: false,
     inputs: [
-      { name: 'from', internalType: 'address', type: 'address', indexed: true },
-      { name: 'to', internalType: 'address', type: 'address', indexed: true },
       {
-        name: 'value',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "snapshotId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "snapshotTimestamp",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "unclaimedTokens",
+        internalType: "uint32",
+        type: "uint32",
         indexed: false,
       },
     ],
-    name: 'Transfer',
+    name: "SnapshotCompleted",
   },
   {
-    type: 'function',
-    inputs: [],
-    name: 'ROYALTY_POLICY_LAP',
-    outputs: [
-      { name: '', internalType: 'contract IRoyaltyPolicyLAP', type: 'address' },
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
     ],
-    stateMutability: 'view',
+    name: "Transfer",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
-    name: 'addIpRoyaltyVaultTokens',
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_POLICY_LAP",
+    outputs: [{ name: "", internalType: "contract IRoyaltyPolicyLAP", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "addIpRoyaltyVaultTokens",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'owner', internalType: 'address', type: 'address' },
-      { name: 'spender', internalType: 'address', type: 'address' },
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
     ],
-    name: 'allowance',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "allowance",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
-    name: 'ancestorsVaultAmount',
-    outputs: [{ name: 'amount', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "ancestorsVaultAmount",
+    outputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'spender', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
-    name: 'approve',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
+    name: "approve",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'balanceOf',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'snapshotId', internalType: 'uint256', type: 'uint256' },
+      { name: "account", internalType: "address", type: "address" },
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'balanceOfAt',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "balanceOfAt",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'snapshotIds', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: 'token', internalType: 'address', type: 'address' },
+      { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "token", internalType: "address", type: "address" },
     ],
-    name: 'claimRevenueBySnapshotBatch',
+    name: "claimRevenueBySnapshotBatch",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'snapshotId', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokens', internalType: 'address[]', type: 'address[]' },
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "tokens", internalType: "address[]", type: "address[]" },
     ],
-    name: 'claimRevenueByTokenBatch',
+    name: "claimRevenueByTokenBatch",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
-    name: 'claimVaultAmount',
-    outputs: [{ name: 'amount', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "claimVaultAmount",
+    outputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'snapshotId', internalType: 'uint256', type: 'uint256' },
-      { name: 'token', internalType: 'address', type: 'address' },
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "token", internalType: "address", type: "address" },
     ],
-    name: 'claimableAtSnapshot',
-    outputs: [{ name: 'amount', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "claimableAtSnapshot",
+    outputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'snapshotId', internalType: 'uint256', type: 'uint256' },
-      { name: 'token', internalType: 'address', type: 'address' },
+      { name: "account", internalType: "address", type: "address" },
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "token", internalType: "address", type: "address" },
     ],
-    name: 'claimableRevenue',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "claimableRevenue",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'ancestorIpId', internalType: 'address', type: 'address' },
-    ],
-    name: 'collectRoyaltyTokens',
+    type: "function",
+    inputs: [{ name: "ancestorIpId", internalType: "address", type: "address" }],
+    name: "collectRoyaltyTokens",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'decimals',
-    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
-    stateMutability: 'view',
+    name: "decimals",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'spender', internalType: 'address', type: 'address' },
-      { name: 'subtractedValue', internalType: 'uint256', type: 'uint256' },
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "subtractedValue", internalType: "uint256", type: "uint256" },
     ],
-    name: 'decreaseAllowance',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
+    name: "decreaseAllowance",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getVaultTokens',
-    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
-    stateMutability: 'view',
+    name: "getVaultTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'spender', internalType: 'address', type: 'address' },
-      { name: 'addedValue', internalType: 'uint256', type: 'uint256' },
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "addedValue", internalType: "uint256", type: "uint256" },
     ],
-    name: 'increaseAllowance',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
+    name: "increaseAllowance",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'name', internalType: 'string', type: 'string' },
-      { name: 'symbol', internalType: 'string', type: 'string' },
-      { name: 'supply', internalType: 'uint32', type: 'uint32' },
-      { name: 'unclaimedTokens', internalType: 'uint32', type: 'uint32' },
-      { name: 'ipIdAddress', internalType: 'address', type: 'address' },
+      { name: "name", internalType: "string", type: "string" },
+      { name: "symbol", internalType: "string", type: "string" },
+      { name: "supply", internalType: "uint32", type: "uint32" },
+      { name: "unclaimedTokens", internalType: "uint32", type: "uint32" },
+      { name: "ipIdAddress", internalType: "address", type: "address" },
     ],
-    name: 'initialize',
+    name: "initialize",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ipId',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "ipId",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'snapshotId', internalType: 'uint256', type: 'uint256' },
-      { name: 'claimer', internalType: 'address', type: 'address' },
-      { name: 'token', internalType: 'address', type: 'address' },
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "claimer", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
     ],
-    name: 'isClaimedAtSnapshot',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isClaimedAtSnapshot",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "ancestorIpId", internalType: "address", type: "address" }],
+    name: "isClaimedByAncestor",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "lastSnapshotTimestamp",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "snapshot",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "snapshotId", internalType: "uint256", type: "uint256" }],
+    name: "totalSupplyAt",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'ancestorIpId', internalType: 'address', type: 'address' },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
-    name: 'isClaimedByAncestor',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "transfer",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [],
-    name: 'lastSnapshotTimestamp',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'snapshot',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'symbol',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'totalSupply',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'snapshotId', internalType: 'uint256', type: 'uint256' }],
-    name: 'totalSupplyAt',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
-    name: 'transfer',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
+    name: "transferFrom",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'from', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'transferFrom',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
+    type: "function",
+    inputs: [{ name: "snapshotId", internalType: "uint256", type: "uint256" }],
+    name: "unclaimedAtSnapshot",
+    outputs: [{ name: "tokenAmount", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'snapshotId', internalType: 'uint256', type: 'uint256' }],
-    name: 'unclaimedAtSnapshot',
-    outputs: [{ name: 'tokenAmount', internalType: 'uint32', type: 'uint32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'unclaimedRoyaltyTokens',
-    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
-    stateMutability: 'view',
+    name: "unclaimedRoyaltyTokens",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
   },
-] as const
+] as const;
 
-export const ipRoyaltyVaultImplAddress =
-  '0x0dB6AAb7525F03Bf94A1fC08A9aACCc2Ad25eD12' as const
+/**
+ *
+ */
+export const ipRoyaltyVaultImplAddress = {
+  1513: "0x0dB6AAb7525F03Bf94A1fC08A9aACCc2Ad25eD12",
+} as const;
 
+/**
+ *
+ */
 export const ipRoyaltyVaultImplConfig = {
   address: ipRoyaltyVaultImplAddress,
   abi: ipRoyaltyVaultImplAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicenseRegistry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4)
+ */
 export const licenseRegistryAbi = [
   {
-    type: 'constructor',
+    type: "constructor",
     inputs: [
-      { name: 'governance', internalType: 'address', type: 'address' },
-      { name: 'url', internalType: 'string', type: 'string' },
+      { name: "governance", internalType: "address", type: "address" },
+      { name: "url", internalType: "string", type: "string" },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [
-      { name: 'sender', internalType: 'address', type: 'address' },
-      { name: 'balance', internalType: 'uint256', type: 'uint256' },
-      { name: 'needed', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: "sender", internalType: "address", type: "address" },
+      { name: "balance", internalType: "uint256", type: "uint256" },
+      { name: "needed", internalType: "uint256", type: "uint256" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'ERC1155InsufficientBalance',
+    name: "ERC1155InsufficientBalance",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'approver', internalType: 'address', type: 'address' }],
-    name: 'ERC1155InvalidApprover',
+    type: "error",
+    inputs: [{ name: "approver", internalType: "address", type: "address" }],
+    name: "ERC1155InvalidApprover",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [
-      { name: 'idsLength', internalType: 'uint256', type: 'uint256' },
-      { name: 'valuesLength', internalType: 'uint256', type: 'uint256' },
+      { name: "idsLength", internalType: "uint256", type: "uint256" },
+      { name: "valuesLength", internalType: "uint256", type: "uint256" },
     ],
-    name: 'ERC1155InvalidArrayLength',
+    name: "ERC1155InvalidArrayLength",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
-    name: 'ERC1155InvalidOperator',
+    type: "error",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "ERC1155InvalidOperator",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'receiver', internalType: 'address', type: 'address' }],
-    name: 'ERC1155InvalidReceiver',
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC1155InvalidReceiver",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'sender', internalType: 'address', type: 'address' }],
-    name: 'ERC1155InvalidSender',
+    type: "error",
+    inputs: [{ name: "sender", internalType: "address", type: "address" }],
+    name: "ERC1155InvalidSender",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [
-      { name: 'operator', internalType: 'address', type: 'address' },
-      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "owner", internalType: "address", type: "address" },
     ],
-    name: 'ERC1155MissingApprovalForAll',
+    name: "ERC1155MissingApprovalForAll",
   },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
   },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicenseRegistry__CallerNotLicensingModule',
+    name: "LicenseRegistry__CallerNotLicensingModule",
   },
-  { type: 'error', inputs: [], name: 'LicenseRegistry__NotTransferable' },
-  { type: 'error', inputs: [], name: 'LicenseRegistry__RevokedLicense' },
-  { type: 'error', inputs: [], name: 'LicenseRegistry__ZeroDisputeModule' },
-  { type: 'error', inputs: [], name: 'LicenseRegistry__ZeroLicensingModule' },
+  { type: "error", inputs: [], name: "LicenseRegistry__NotTransferable" },
+  { type: "error", inputs: [], name: "LicenseRegistry__RevokedLicense" },
+  { type: "error", inputs: [], name: "LicenseRegistry__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
   {
-    type: 'error',
+    type: "error",
     inputs: [
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-      { name: 'length', internalType: 'uint256', type: 'uint256' },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
     ],
-    name: 'StringsInsufficientHexLength',
+    name: "StringsInsufficientHexLength",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
+        name: "account",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'operator',
-        internalType: 'address',
-        type: 'address',
+        name: "operator",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'approved', internalType: 'bool', type: 'bool', indexed: false },
+      { name: "approved", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'ApprovalForAll',
+    name: "ApprovalForAll",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: '_fromTokenId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "_fromTokenId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
       {
-        name: '_toTokenId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "_toTokenId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'BatchMetadataUpdate',
+    name: "BatchMetadataUpdate",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'GovernanceUpdated',
+    name: "GovernanceUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'creator',
-        internalType: 'address',
-        type: 'address',
+        name: "creator",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'receiver',
-        internalType: 'address',
-        type: 'address',
+        name: "receiver",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'licenseId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "licenseId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: true,
       },
       {
-        name: 'amount',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
       {
-        name: 'licenseData',
-        internalType: 'struct Licensing.License',
-        type: 'tuple',
+        name: "licenseData",
+        internalType: "struct Licensing.License",
+        type: "tuple",
         components: [
-          { name: 'policyId', internalType: 'uint256', type: 'uint256' },
-          { name: 'licensorIpId', internalType: 'address', type: 'address' },
-          { name: 'transferable', internalType: 'bool', type: 'bool' },
+          { name: "policyId", internalType: "uint256", type: "uint256" },
+          { name: "licensorIpId", internalType: "address", type: "address" },
+          { name: "transferable", internalType: "bool", type: "bool" },
         ],
         indexed: false,
       },
     ],
-    name: 'LicenseMinted',
+    name: "LicenseMinted",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'operator',
-        internalType: 'address',
-        type: 'address',
+        name: "operator",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'from', internalType: 'address', type: 'address', indexed: true },
-      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
       {
-        name: 'ids',
-        internalType: 'uint256[]',
-        type: 'uint256[]',
+        name: "ids",
+        internalType: "uint256[]",
+        type: "uint256[]",
         indexed: false,
       },
       {
-        name: 'values',
-        internalType: 'uint256[]',
-        type: 'uint256[]',
+        name: "values",
+        internalType: "uint256[]",
+        type: "uint256[]",
         indexed: false,
       },
     ],
-    name: 'TransferBatch',
+    name: "TransferBatch",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'operator',
-        internalType: 'address',
-        type: 'address',
+        name: "operator",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'from', internalType: 'address', type: 'address', indexed: true },
-      { name: 'to', internalType: 'address', type: 'address', indexed: true },
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: false },
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      { name: "id", internalType: "uint256", type: "uint256", indexed: false },
       {
-        name: 'value',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'TransferSingle',
+    name: "TransferSingle",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      { name: 'value', internalType: 'string', type: 'string', indexed: false },
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
+      { name: "value", internalType: "string", type: "string", indexed: false },
+      { name: "id", internalType: "uint256", type: "uint256", indexed: true },
     ],
-    name: 'URI',
+    name: "URI",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'DISPUTE_MODULE',
-    outputs: [
-      { name: '', internalType: 'contract IDisputeModule', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'LICENSING_MODULE',
-    outputs: [
-      { name: '', internalType: 'contract ILicensingModule', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'id', internalType: 'uint256', type: 'uint256' },
+      { name: "account", internalType: "address", type: "address" },
+      { name: "id", internalType: "uint256", type: "uint256" },
     ],
-    name: 'balanceOf',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "balanceOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'accounts', internalType: 'address[]', type: 'address[]' },
-      { name: 'ids', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: "accounts", internalType: "address[]", type: "address[]" },
+      { name: "ids", internalType: "uint256[]", type: "uint256[]" },
     ],
-    name: 'balanceOfBatch',
-    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
-    stateMutability: 'view',
+    name: "balanceOfBatch",
+    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'holder', internalType: 'address', type: 'address' },
-      { name: 'licenseIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: "holder", internalType: "address", type: "address" },
+      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
     ],
-    name: 'burnLicenses',
+    name: "burnLicenses",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'governance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "governance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'imageUrl',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "imageUrl",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: "account", internalType: "address", type: "address" },
+      { name: "operator", internalType: "address", type: "address" },
     ],
-    name: 'isApprovedForAll',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isApprovedForAll",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
-    name: 'isLicenseRevoked',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: "isLicenseRevoked",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'licenseId', internalType: 'uint256', type: 'uint256' },
-      { name: 'holder', internalType: 'address', type: 'address' },
+      { name: "licenseId", internalType: "uint256", type: "uint256" },
+      { name: "holder", internalType: "address", type: "address" },
     ],
-    name: 'isLicensee',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isLicensee",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
-    name: 'license',
+    type: "function",
+    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: "license",
     outputs: [
       {
-        name: '',
-        internalType: 'struct Licensing.License',
-        type: 'tuple',
+        name: "",
+        internalType: "struct Licensing.License",
+        type: "tuple",
         components: [
-          { name: 'policyId', internalType: 'uint256', type: 'uint256' },
-          { name: 'licensorIpId', internalType: 'address', type: 'address' },
-          { name: 'transferable', internalType: 'bool', type: 'bool' },
+          { name: "policyId", internalType: "uint256", type: "uint256" },
+          { name: "licensorIpId", internalType: "address", type: "address" },
+          { name: "transferable", internalType: "bool", type: "bool" },
         ],
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
-    name: 'licensorIpId',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: "licensorIpId",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
-      { name: 'licensorIpId_', internalType: 'address', type: 'address' },
-      { name: 'transferable', internalType: 'bool', type: 'bool' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: "policyId", internalType: "uint256", type: "uint256" },
+      { name: "licensorIpId_", internalType: "address", type: "address" },
+      { name: "transferable", internalType: "bool", type: "bool" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
     ],
-    name: 'mintLicense',
-    outputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
+    name: "mintLicense",
+    outputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'mintedLicenses',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "mintedLicenses",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
-    name: 'policyIdForLicense',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: "policyIdForLicense",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'from', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'ids', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: 'values', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "ids", internalType: "uint256[]", type: "uint256[]" },
+      { name: "values", internalType: "uint256[]", type: "uint256[]" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'safeBatchTransferFrom',
+    name: "safeBatchTransferFrom",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'from', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'id', internalType: 'uint256', type: 'uint256' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "id", internalType: "uint256", type: "uint256" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'safeTransferFrom',
+    name: "safeTransferFrom",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'operator', internalType: 'address', type: 'address' },
-      { name: 'approved', internalType: 'bool', type: 'bool' },
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "approved", internalType: "bool", type: "bool" },
     ],
-    name: 'setApprovalForAll',
+    name: "setApprovalForAll",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'newDisputeModule', internalType: 'address', type: 'address' },
-    ],
-    name: 'setDisputeModule',
+    type: "function",
+    inputs: [{ name: "newDisputeModule", internalType: "address", type: "address" }],
+    name: "setDisputeModule",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
-    ],
-    name: 'setGovernance',
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'url', internalType: 'string', type: 'string' }],
-    name: 'setLicensingImageUrl',
+    type: "function",
+    inputs: [{ name: "url", internalType: "string", type: "string" }],
+    name: "setLicensingImageUrl",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'newLicensingModule', internalType: 'address', type: 'address' },
-    ],
-    name: 'setLicensingModule',
+    type: "function",
+    inputs: [{ name: "newLicensingModule", internalType: "address", type: "address" }],
+    name: "setLicensingModule",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'symbol',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'id', internalType: 'uint256', type: 'uint256' }],
-    name: 'uri',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "id", internalType: "uint256", type: "uint256" }],
+    name: "uri",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
-] as const
+] as const;
 
-export const licenseRegistryAddress =
-  '0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4)
+ */
+export const licenseRegistryAddress = {
+  1513: "0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba",
+  11155111: "0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4)
+ */
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
   abi: licenseRegistryAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicensingModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x950d766A1a0afDc33c3e653C861A8765cb42DbdC)
+ */
 export const licensingModuleAbi = [
   {
-    type: 'constructor',
+    type: "constructor",
     inputs: [
-      { name: 'accessController', internalType: 'address', type: 'address' },
-      { name: 'ipAccountRegistry', internalType: 'address', type: 'address' },
-      { name: 'royaltyModule', internalType: 'address', type: 'address' },
-      { name: 'registry', internalType: 'address', type: 'address' },
-      { name: 'disputeModule', internalType: 'address', type: 'address' },
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAccountRegistry", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "registry", internalType: "address", type: "address" },
+      { name: "disputeModule", internalType: "address", type: "address" },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'ipAccount', internalType: 'address', type: 'address' }],
-    name: 'AccessControlled__NotIpAccount',
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
   },
-  { type: 'error', inputs: [], name: 'AccessControlled__ZeroAddress' },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__CallerNotLicensorAndPolicyNotSet',
+    name: "LicensingModule__CallerNotLicensorAndPolicyNotSet",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__DerivativesCannotAddPolicy',
+    name: "LicensingModule__DerivativesCannotAddPolicy",
   },
-  { type: 'error', inputs: [], name: 'LicensingModule__DisputedIpId' },
-  { type: 'error', inputs: [], name: 'LicensingModule__EmptyLicenseUrl' },
-  { type: 'error', inputs: [], name: 'LicensingModule__FrameworkNotFound' },
+  { type: "error", inputs: [], name: "LicensingModule__DisputedIpId" },
+  { type: "error", inputs: [], name: "LicensingModule__EmptyLicenseUrl" },
+  { type: "error", inputs: [], name: "LicensingModule__FrameworkNotFound" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__IncompatibleLicensorCommercialPolicy',
+    name: "LicensingModule__IncompatibleLicensorCommercialPolicy",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__InvalidPolicyFramework',
+    name: "LicensingModule__InvalidPolicyFramework",
   },
-  { type: 'error', inputs: [], name: 'LicensingModule__LicensorNotRegistered' },
-  { type: 'error', inputs: [], name: 'LicensingModule__LinkParentParamFailed' },
-  { type: 'error', inputs: [], name: 'LicensingModule__LinkingRevokedLicense' },
-  { type: 'error', inputs: [], name: 'LicensingModule__MintAmountZero' },
+  { type: "error", inputs: [], name: "LicensingModule__LicensorNotRegistered" },
+  { type: "error", inputs: [], name: "LicensingModule__LinkParentParamFailed" },
+  { type: "error", inputs: [], name: "LicensingModule__LinkingRevokedLicense" },
+  { type: "error", inputs: [], name: "LicensingModule__MintAmountZero" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__MintLicenseParamFailed',
+    name: "LicensingModule__MintLicenseParamFailed",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__MintingFeeTokenNotWhitelisted',
+    name: "LicensingModule__MintingFeeTokenNotWhitelisted",
   },
-  { type: 'error', inputs: [], name: 'LicensingModule__NotLicensee' },
+  { type: "error", inputs: [], name: "LicensingModule__NotLicensee" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__ParentIdEqualThanChild',
+    name: "LicensingModule__ParentIdEqualThanChild",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__PolicyAlreadySetForIpId',
+    name: "LicensingModule__PolicyAlreadySetForIpId",
   },
-  { type: 'error', inputs: [], name: 'LicensingModule__PolicyNotFound' },
-  { type: 'error', inputs: [], name: 'LicensingModule__ReceiverZeroAddress' },
+  { type: "error", inputs: [], name: "LicensingModule__PolicyNotFound" },
+  { type: "error", inputs: [], name: "LicensingModule__ReceiverZeroAddress" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__RegisterPolicyFrameworkMismatch',
+    name: "LicensingModule__RegisterPolicyFrameworkMismatch",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModule__RoyaltyPolicyNotWhitelisted',
+    name: "LicensingModule__RoyaltyPolicyNotWhitelisted",
   },
-  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'caller',
-        internalType: 'address',
-        type: 'address',
+        name: "caller",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
       {
-        name: 'parentIpIds',
-        internalType: 'address[]',
-        type: 'address[]',
+        name: "parentIpIds",
+        internalType: "address[]",
+        type: "address[]",
         indexed: false,
       },
     ],
-    name: 'IpIdLinkedToParents',
+    name: "IpIdLinkedToParents",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'caller',
-        internalType: 'address',
-        type: 'address',
+        name: "caller",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
       {
-        name: 'policyId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "policyId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: true,
       },
       {
-        name: 'index',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "index",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
       {
-        name: 'isInherited',
-        internalType: 'bool',
-        type: 'bool',
+        name: "isInherited",
+        internalType: "bool",
+        type: "bool",
         indexed: false,
       },
     ],
-    name: 'PolicyAddedToIpId',
+    name: "PolicyAddedToIpId",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'framework',
-        internalType: 'address',
-        type: 'address',
+        name: "framework",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'name', internalType: 'string', type: 'string', indexed: false },
+      { name: "name", internalType: "string", type: "string", indexed: false },
       {
-        name: 'licenseTextUrl',
-        internalType: 'string',
-        type: 'string',
+        name: "licenseTextUrl",
+        internalType: "string",
+        type: "string",
         indexed: false,
       },
     ],
-    name: 'PolicyFrameworkRegistered',
+    name: "PolicyFrameworkRegistered",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'policyId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "policyId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: true,
       },
       {
-        name: 'policyFrameworkManager',
-        internalType: 'address',
-        type: 'address',
+        name: "policyFrameworkManager",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'frameworkData',
-        internalType: 'bytes',
-        type: 'bytes',
+        name: "frameworkData",
+        internalType: "bytes",
+        type: "bytes",
         indexed: false,
       },
       {
-        name: 'royaltyPolicy',
-        internalType: 'address',
-        type: 'address',
+        name: "royaltyPolicy",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'royaltyData',
-        internalType: 'bytes',
-        type: 'bytes',
+        name: "royaltyData",
+        internalType: "bytes",
+        type: "bytes",
         indexed: false,
       },
       {
-        name: 'mintingFee',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "mintingFee",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
       {
-        name: 'mintingFeeToken',
-        internalType: 'address',
-        type: 'address',
+        name: "mintingFeeToken",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
     ],
-    name: 'PolicyRegistered',
+    name: "PolicyRegistered",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ACCESS_CONTROLLER',
-    outputs: [
-      { name: '', internalType: 'contract IAccessController', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'DISPUTE_MODULE',
-    outputs: [
-      { name: '', internalType: 'contract IDisputeModule', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'IP_ACCOUNT_REGISTRY',
+    name: "IP_ACCOUNT_REGISTRY",
     outputs: [
       {
-        name: '',
-        internalType: 'contract IIPAccountRegistry',
-        type: 'address',
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'LICENSE_REGISTRY',
-    outputs: [
-      { name: '', internalType: 'contract ILicenseRegistry', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ROYALTY_MODULE',
-    outputs: [
-      { name: '', internalType: 'contract RoyaltyModule', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract RoyaltyModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'polId', internalType: 'uint256', type: 'uint256' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "polId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'addPolicyToIp',
-    outputs: [
-      { name: 'indexOnIpId', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'nonpayable',
+    name: "addPolicyToIp",
+    outputs: [{ name: "indexOnIpId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
       {
-        name: 'pol',
-        internalType: 'struct Licensing.Policy',
-        type: 'tuple',
+        name: "pol",
+        internalType: "struct Licensing.Policy",
+        type: "tuple",
         components: [
-          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
-          { name: 'policyFramework', internalType: 'address', type: 'address' },
-          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
-          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
-          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
-          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
+          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
         ],
       },
     ],
-    name: 'getPolicyId',
-    outputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "getPolicyId",
+    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "policyFramework", internalType: "address", type: "address" }],
+    name: "isFrameworkRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'policyFramework', internalType: 'address', type: 'address' },
+      { name: "parentIpId", internalType: "address", type: "address" },
+      { name: "childIpId", internalType: "address", type: "address" },
     ],
-    name: 'isFrameworkRegistered',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isParent",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    name: "isPolicyDefined",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'parentIpId', internalType: 'address', type: 'address' },
-      { name: 'childIpId', internalType: 'address', type: 'address' },
+      { name: "isInherited", internalType: "bool", type: "bool" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "policyId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'isParent',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isPolicyIdSetForIp",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
-    name: 'isPolicyDefined',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'isInherited', internalType: 'bool', type: 'bool' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "policyId", internalType: "uint256", type: "uint256" },
     ],
-    name: 'isPolicyIdSetForIp',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isPolicyInherited",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
+      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
     ],
-    name: 'isPolicyInherited',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'licenseIds', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: 'childIpId', internalType: 'address', type: 'address' },
-      { name: 'royaltyContext', internalType: 'bytes', type: 'bytes' },
-    ],
-    name: 'linkIpToParents',
+    name: "linkIpToParents",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
-      { name: 'licensorIpId', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-      { name: 'receiver', internalType: 'address', type: 'address' },
-      { name: 'royaltyContext', internalType: 'bytes', type: 'bytes' },
+      { name: "policyId", internalType: "uint256", type: "uint256" },
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
     ],
-    name: 'mintLicense',
-    outputs: [{ name: 'licenseId', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
+    name: "mintLicense",
+    outputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
-    name: 'parentIpIds',
-    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "parentIpIds",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
-    name: 'policy',
+    type: "function",
+    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    name: "policy",
     outputs: [
       {
-        name: 'pol',
-        internalType: 'struct Licensing.Policy',
-        type: 'tuple',
+        name: "pol",
+        internalType: "struct Licensing.Policy",
+        type: "tuple",
         components: [
-          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
-          { name: 'policyFramework', internalType: 'address', type: 'address' },
-          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
-          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
-          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
-          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
+          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
         ],
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'framework', internalType: 'address', type: 'address' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: "framework", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
     ],
-    name: 'policyAggregatorData',
-    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'view',
+    name: "policyAggregatorData",
+    outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'isInherited', internalType: 'bool', type: 'bool' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'index', internalType: 'uint256', type: 'uint256' },
+      { name: "isInherited", internalType: "bool", type: "bool" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
     ],
-    name: 'policyForIpAtIndex',
+    name: "policyForIpAtIndex",
     outputs: [
       {
-        name: '',
-        internalType: 'struct Licensing.Policy',
-        type: 'tuple',
+        name: "",
+        internalType: "struct Licensing.Policy",
+        type: "tuple",
         components: [
-          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
-          { name: 'policyFramework', internalType: 'address', type: 'address' },
-          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
-          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
-          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
-          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
+          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
         ],
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'isInherited', internalType: 'bool', type: 'bool' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'index', internalType: 'uint256', type: 'uint256' },
+      { name: "isInherited", internalType: "bool", type: "bool" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
     ],
-    name: 'policyIdForIpAtIndex',
-    outputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "policyIdForIpAtIndex",
+    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'isInherited', internalType: 'bool', type: 'bool' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: "isInherited", internalType: "bool", type: "bool" },
+      { name: "ipId", internalType: "address", type: "address" },
     ],
-    name: 'policyIdsForIp',
+    name: "policyIdsForIp",
+    outputs: [{ name: "policyIds", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "policyId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "policyStatus",
     outputs: [
-      { name: 'policyIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: "index", internalType: "uint256", type: "uint256" },
+      { name: "isInherited", internalType: "bool", type: "bool" },
+      { name: "active", internalType: "bool", type: "bool" },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'policyStatus',
-    outputs: [
-      { name: 'index', internalType: 'uint256', type: 'uint256' },
-      { name: 'isInherited', internalType: 'bool', type: 'bool' },
-      { name: 'active', internalType: 'bool', type: 'bool' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
+    type: "function",
     inputs: [
       {
-        name: 'pol',
-        internalType: 'struct Licensing.Policy',
-        type: 'tuple',
+        name: "pol",
+        internalType: "struct Licensing.Policy",
+        type: "tuple",
         components: [
-          { name: 'isLicenseTransferable', internalType: 'bool', type: 'bool' },
-          { name: 'policyFramework', internalType: 'address', type: 'address' },
-          { name: 'frameworkData', internalType: 'bytes', type: 'bytes' },
-          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-          { name: 'royaltyData', internalType: 'bytes', type: 'bytes' },
-          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
-          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
+          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
+          { name: "policyFramework", internalType: "address", type: "address" },
+          { name: "frameworkData", internalType: "bytes", type: "bytes" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "royaltyData", internalType: "bytes", type: "bytes" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
         ],
       },
     ],
-    name: 'registerPolicy',
-    outputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
+    name: "registerPolicy",
+    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'manager', internalType: 'address', type: 'address' }],
-    name: 'registerPolicyFrameworkManager',
+    type: "function",
+    inputs: [{ name: "manager", internalType: "address", type: "address" }],
+    name: "registerPolicyFrameworkManager",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
-    name: 'totalParentsForIpId',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "totalParentsForIpId",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'totalPolicies',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "totalPolicies",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'isInherited', internalType: 'bool', type: 'bool' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
+      { name: "isInherited", internalType: "bool", type: "bool" },
+      { name: "ipId", internalType: "address", type: "address" },
     ],
-    name: 'totalPoliciesForIp',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "totalPoliciesForIp",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
-] as const
+] as const;
 
-export const licensingModuleAddress =
-  '0x2A88056985814dcBb72aFA50B95893359B6262f5' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x950d766A1a0afDc33c3e653C861A8765cb42DbdC)
+ */
+export const licensingModuleAddress = {
+  1513: "0x2A88056985814dcBb72aFA50B95893359B6262f5",
+  11155111: "0x950d766A1a0afDc33c3e653C861A8765cb42DbdC",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x950d766A1a0afDc33c3e653C861A8765cb42DbdC)
+ */
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
   abi: licensingModuleAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ModuleRegistry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27)
+ */
 export const moduleRegistryAbi = [
-  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
-    type: 'error',
-    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
-    name: 'AddressEmptyCode',
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
   },
   {
-    type: 'error',
-    inputs: [
-      { name: 'implementation', internalType: 'address', type: 'address' },
-    ],
-    name: 'ERC1967InvalidImplementation',
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
   },
-  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
-  { type: 'error', inputs: [], name: 'FailedInnerCall' },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
   },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
-  { type: 'error', inputs: [], name: 'InvalidInitialization' },
-  { type: 'error', inputs: [], name: 'ModuleRegistry__InterfaceIdZero' },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "ModuleRegistry__InterfaceIdZero" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'ModuleRegistry__ModuleAddressNotContract',
+    name: "ModuleRegistry__ModuleAddressNotContract",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'ModuleRegistry__ModuleAddressZeroAddress',
+    name: "ModuleRegistry__ModuleAddressZeroAddress",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'ModuleRegistry__ModuleAlreadyRegistered',
+    name: "ModuleRegistry__ModuleAlreadyRegistered",
   },
-  { type: 'error', inputs: [], name: 'ModuleRegistry__ModuleNotRegistered' },
+  { type: "error", inputs: [], name: "ModuleRegistry__ModuleNotRegistered" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'ModuleRegistry__ModuleNotSupportExpectedModuleTypeInterfaceId',
+    name: "ModuleRegistry__ModuleNotSupportExpectedModuleTypeInterfaceId",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'ModuleRegistry__ModuleTypeAlreadyRegistered',
+    name: "ModuleRegistry__ModuleTypeAlreadyRegistered",
   },
-  { type: 'error', inputs: [], name: 'ModuleRegistry__ModuleTypeEmptyString' },
+  { type: "error", inputs: [], name: "ModuleRegistry__ModuleTypeEmptyString" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'ModuleRegistry__ModuleTypeNotRegistered',
+    name: "ModuleRegistry__ModuleTypeNotRegistered",
   },
-  { type: 'error', inputs: [], name: 'ModuleRegistry__NameAlreadyRegistered' },
-  { type: 'error', inputs: [], name: 'ModuleRegistry__NameDoesNotMatch' },
-  { type: 'error', inputs: [], name: 'ModuleRegistry__NameEmptyString' },
-  { type: 'error', inputs: [], name: 'NotInitializing' },
-  { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
+  { type: "error", inputs: [], name: "ModuleRegistry__NameAlreadyRegistered" },
+  { type: "error", inputs: [], name: "ModuleRegistry__NameDoesNotMatch" },
+  { type: "error", inputs: [], name: "ModuleRegistry__NameEmptyString" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
-    type: 'error',
-    inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'UUPSUnsupportedProxiableUUID',
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'GovernanceUpdated',
+    name: "GovernanceUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'version',
-        internalType: 'uint64',
-        type: 'uint64',
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
         indexed: false,
       },
     ],
-    name: 'Initialized',
+    name: "Initialized",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      { name: 'name', internalType: 'string', type: 'string', indexed: false },
+      { name: "name", internalType: "string", type: "string", indexed: false },
       {
-        name: 'module',
-        internalType: 'address',
-        type: 'address',
+        name: "module",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
       {
-        name: 'moduleTypeInterfaceId',
-        internalType: 'bytes4',
-        type: 'bytes4',
+        name: "moduleTypeInterfaceId",
+        internalType: "bytes4",
+        type: "bytes4",
         indexed: true,
       },
       {
-        name: 'moduleType',
-        internalType: 'string',
-        type: 'string',
+        name: "moduleType",
+        internalType: "string",
+        type: "string",
         indexed: false,
       },
     ],
-    name: 'ModuleAdded',
+    name: "ModuleAdded",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
-      { name: 'name', internalType: 'string', type: 'string', indexed: false },
+      { name: "name", internalType: "string", type: "string", indexed: false },
       {
-        name: 'module',
-        internalType: 'address',
-        type: 'address',
+        name: "module",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'ModuleRemoved',
+    name: "ModuleRemoved",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
+        name: "implementation",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'Upgraded',
+    name: "Upgraded",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'UPGRADE_INTERFACE_VERSION',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'name', internalType: 'string', type: 'string' }],
-    name: 'getModule',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "name", internalType: "string", type: "string" }],
+    name: "getModule",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'moduleAddress', internalType: 'address', type: 'address' },
-    ],
-    name: 'getModuleType',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "moduleAddress", internalType: "address", type: "address" }],
+    name: "getModuleType",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'moduleType', internalType: 'string', type: 'string' }],
-    name: 'getModuleTypeInterfaceId',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "moduleType", internalType: "string", type: "string" }],
+    name: "getModuleTypeInterfaceId",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'governance_', internalType: 'address', type: 'address' }],
-    name: 'initialize',
+    type: "function",
+    inputs: [{ name: "governance_", internalType: "address", type: "address" }],
+    name: "initialize",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'moduleAddress', internalType: 'address', type: 'address' },
-    ],
-    name: 'isRegistered',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "moduleAddress", internalType: "address", type: "address" }],
+    name: "isRegistered",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'proxiableUUID',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'name', internalType: 'string', type: 'string' },
-      { name: 'moduleAddress', internalType: 'address', type: 'address' },
+      { name: "name", internalType: "string", type: "string" },
+      { name: "moduleAddress", internalType: "address", type: "address" },
     ],
-    name: 'registerModule',
+    name: "registerModule",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'name', internalType: 'string', type: 'string' },
-      { name: 'moduleAddress', internalType: 'address', type: 'address' },
-      { name: 'moduleType', internalType: 'string', type: 'string' },
+      { name: "name", internalType: "string", type: "string" },
+      { name: "moduleAddress", internalType: "address", type: "address" },
+      { name: "moduleType", internalType: "string", type: "string" },
     ],
-    name: 'registerModule',
+    name: "registerModule",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'name', internalType: 'string', type: 'string' },
-      { name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' },
+      { name: "name", internalType: "string", type: "string" },
+      { name: "interfaceId", internalType: "bytes4", type: "bytes4" },
     ],
-    name: 'registerModuleType',
+    name: "registerModuleType",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'name', internalType: 'string', type: 'string' }],
-    name: 'removeModule',
+    type: "function",
+    inputs: [{ name: "name", internalType: "string", type: "string" }],
+    name: "removeModule",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'name', internalType: 'string', type: 'string' }],
-    name: 'removeModuleType',
+    type: "function",
+    inputs: [{ name: "name", internalType: "string", type: "string" }],
+    name: "removeModuleType",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'setGovernance',
+    name: "upgradeToAndCall",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "payable",
   },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'newImplementation', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
-    ],
-    name: 'upgradeToAndCall',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-] as const
+] as const;
 
-export const moduleRegistryAddress =
-  '0xab0bf9846eCE1299AaA1cB3FF5EfbBA328968771' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27)
+ */
+export const moduleRegistryAddress = {
+  1513: "0xab0bf9846eCE1299AaA1cB3FF5EfbBA328968771",
+  11155111: "0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27)
+ */
 export const moduleRegistryConfig = {
   address: moduleRegistryAddress,
   abi: moduleRegistryAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PILPolicyFrameworkManager
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2)
+ */
 export const pilPolicyFrameworkManagerAbi = [
   {
-    type: 'constructor',
+    type: "constructor",
     inputs: [
-      { name: 'accessController', internalType: 'address', type: 'address' },
-      { name: 'ipAccountRegistry', internalType: 'address', type: 'address' },
-      { name: 'licensing', internalType: 'address', type: 'address' },
-      { name: 'name_', internalType: 'string', type: 'string' },
-      { name: 'licenseUrl_', internalType: 'string', type: 'string' },
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAccountRegistry", internalType: "address", type: "address" },
+      { name: "licensing", internalType: "address", type: "address" },
+      { name: "name_", internalType: "string", type: "string" },
+      { name: "licenseUrl_", internalType: "string", type: "string" },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'ipAccount', internalType: 'address', type: 'address' }],
-    name: 'AccessControlled__NotIpAccount',
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
   },
-  { type: 'error', inputs: [], name: 'AccessControlled__ZeroAddress' },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'LicensingModuleAware__CallerNotLicensingModule',
+    name: "LicensingModuleAware__CallerNotLicensingModule",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialDisabled_CantAddAttribution',
+    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddAttribution",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialDisabled_CantAddCommercializers',
+    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddCommercializers",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialDisabled_CantAddMintingFee',
+    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddMintingFee",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialDisabled_CantAddMintingFeeToken',
+    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddMintingFeeToken",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialDisabled_CantAddRevShare',
+    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddRevShare",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialDisabled_CantAddRoyaltyPolicy',
+    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddRoyaltyPolicy",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialEnabled_RoyaltyPolicyRequired',
+    name: "PILPolicyFrameworkManager__CommercialEnabled_RoyaltyPolicyRequired",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__CommercialValueMismatch',
+    name: "PILPolicyFrameworkManager__CommercialValueMismatch",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__DerivativesDisabled_CantAddApproval',
+    name: "PILPolicyFrameworkManager__DerivativesDisabled_CantAddApproval",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__DerivativesDisabled_CantAddAttribution',
+    name: "PILPolicyFrameworkManager__DerivativesDisabled_CantAddAttribution",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__DerivativesDisabled_CantAddReciprocal',
+    name: "PILPolicyFrameworkManager__DerivativesDisabled_CantAddReciprocal",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__ReciprocalButDifferentPolicyIds',
+    name: "PILPolicyFrameworkManager__ReciprocalButDifferentPolicyIds",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__ReciprocalValueMismatch',
+    name: "PILPolicyFrameworkManager__ReciprocalValueMismatch",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__RightsNotFound',
+    name: "PILPolicyFrameworkManager__RightsNotFound",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'PILPolicyFrameworkManager__StringArrayMismatch',
+    name: "PILPolicyFrameworkManager__StringArrayMismatch",
   },
   {
-    type: 'error',
+    type: "error",
+    inputs: [{ name: "commercializer", internalType: "address", type: "address" }],
+    name: "PolicyFrameworkManager__CommercializerCheckerDoesNotSupportHook",
+  },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  {
+    type: "error",
     inputs: [
-      { name: 'commercializer', internalType: 'address', type: 'address' },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
     ],
-    name: 'PolicyFrameworkManager__CommercializerCheckerDoesNotSupportHook',
-  },
-  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-      { name: 'length', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'StringsInsufficientHexLength',
+    name: "StringsInsufficientHexLength",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'licenseId',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "licenseId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: true,
       },
-      { name: 'ipId', internalType: 'address', type: 'address', indexed: true },
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
       {
-        name: 'caller',
-        internalType: 'address',
-        type: 'address',
+        name: "caller",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
-      { name: 'approved', internalType: 'bool', type: 'bool', indexed: false },
+      { name: "approved", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'DerivativeApproved',
+    name: "DerivativeApproved",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ACCESS_CONTROLLER',
-    outputs: [
-      { name: '', internalType: 'contract IAccessController', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'IP_ACCOUNT_REGISTRY',
+    name: "IP_ACCOUNT_REGISTRY",
     outputs: [
       {
-        name: '',
-        internalType: 'contract IIPAccountRegistry',
-        type: 'address',
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'LICENSE_REGISTRY',
-    outputs: [
-      { name: '', internalType: 'contract ILicenseRegistry', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'LICENSING_MODULE',
-    outputs: [
-      { name: '', internalType: 'contract ILicensingModule', type: 'address' },
-    ],
-    stateMutability: 'view',
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
-    name: 'getAggregator',
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getAggregator",
     outputs: [
       {
-        name: 'rights',
-        internalType: 'struct PILAggregator',
-        type: 'tuple',
+        name: "rights",
+        internalType: "struct PILAggregator",
+        type: "tuple",
         components: [
-          { name: 'commercial', internalType: 'bool', type: 'bool' },
-          { name: 'derivativesReciprocal', internalType: 'bool', type: 'bool' },
-          { name: 'lastPolicyId', internalType: 'uint256', type: 'uint256' },
-          { name: 'territoriesAcc', internalType: 'bytes32', type: 'bytes32' },
+          { name: "commercial", internalType: "bool", type: "bool" },
+          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
+          { name: "lastPolicyId", internalType: "uint256", type: "uint256" },
+          { name: "territoriesAcc", internalType: "bytes32", type: "bytes32" },
           {
-            name: 'distributionChannelsAcc',
-            internalType: 'bytes32',
-            type: 'bytes32',
+            name: "distributionChannelsAcc",
+            internalType: "bytes32",
+            type: "bytes32",
           },
           {
-            name: 'contentRestrictionsAcc',
-            internalType: 'bytes32',
-            type: 'bytes32',
+            name: "contentRestrictionsAcc",
+            internalType: "bytes32",
+            type: "bytes32",
           },
         ],
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getPILPolicy',
+    type: "function",
+    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    name: "getPILPolicy",
     outputs: [
       {
-        name: 'policy',
-        internalType: 'struct PILPolicy',
-        type: 'tuple',
+        name: "policy",
+        internalType: "struct PILPolicy",
+        type: "tuple",
         components: [
-          { name: 'attribution', internalType: 'bool', type: 'bool' },
-          { name: 'commercialUse', internalType: 'bool', type: 'bool' },
-          { name: 'commercialAttribution', internalType: 'bool', type: 'bool' },
+          { name: "attribution", internalType: "bool", type: "bool" },
+          { name: "commercialUse", internalType: "bool", type: "bool" },
+          { name: "commercialAttribution", internalType: "bool", type: "bool" },
           {
-            name: 'commercializerChecker',
-            internalType: 'address',
-            type: 'address',
+            name: "commercializerChecker",
+            internalType: "address",
+            type: "address",
           },
           {
-            name: 'commercializerCheckerData',
-            internalType: 'bytes',
-            type: 'bytes',
+            name: "commercializerCheckerData",
+            internalType: "bytes",
+            type: "bytes",
           },
           {
-            name: 'commercialRevShare',
-            internalType: 'uint32',
-            type: 'uint32',
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
           },
-          { name: 'derivativesAllowed', internalType: 'bool', type: 'bool' },
+          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
           {
-            name: 'derivativesAttribution',
-            internalType: 'bool',
-            type: 'bool',
+            name: "derivativesAttribution",
+            internalType: "bool",
+            type: "bool",
           },
-          { name: 'derivativesApproval', internalType: 'bool', type: 'bool' },
-          { name: 'derivativesReciprocal', internalType: 'bool', type: 'bool' },
-          { name: 'territories', internalType: 'string[]', type: 'string[]' },
+          { name: "derivativesApproval", internalType: "bool", type: "bool" },
+          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
+          { name: "territories", internalType: "string[]", type: "string[]" },
           {
-            name: 'distributionChannels',
-            internalType: 'string[]',
-            type: 'string[]',
+            name: "distributionChannels",
+            internalType: "string[]",
+            type: "string[]",
           },
           {
-            name: 'contentRestrictions',
-            internalType: 'string[]',
-            type: 'string[]',
+            name: "contentRestrictions",
+            internalType: "string[]",
+            type: "string[]",
           },
         ],
       },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'licenseId', internalType: 'uint256', type: 'uint256' },
-      { name: 'childIpId', internalType: 'address', type: 'address' },
+      { name: "licenseId", internalType: "uint256", type: "uint256" },
+      { name: "childIpId", internalType: "address", type: "address" },
     ],
-    name: 'isDerivativeApproved',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    name: "isDerivativeApproved",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'licenseTextUrl',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "licenseTextUrl",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'policyData', internalType: 'bytes', type: 'bytes' }],
-    name: 'policyToJson',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'pure',
+    type: "function",
+    inputs: [{ name: "policyData", internalType: "bytes", type: "bytes" }],
+    name: "policyToJson",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "pure",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'aggregator', internalType: 'bytes', type: 'bytes' },
-      { name: 'policyId', internalType: 'uint256', type: 'uint256' },
-      { name: 'policy', internalType: 'bytes', type: 'bytes' },
+      { name: "aggregator", internalType: "bytes", type: "bytes" },
+      { name: "policyId", internalType: "uint256", type: "uint256" },
+      { name: "policy", internalType: "bytes", type: "bytes" },
     ],
-    name: 'processInheritedPolicies',
+    name: "processInheritedPolicies",
     outputs: [
-      { name: 'changedAgg', internalType: 'bool', type: 'bool' },
-      { name: 'newAggregator', internalType: 'bytes', type: 'bytes' },
+      { name: "changedAgg", internalType: "bool", type: "bool" },
+      { name: "newAggregator", internalType: "bytes", type: "bytes" },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
       {
-        name: 'params',
-        internalType: 'struct RegisterPILPolicyParams',
-        type: 'tuple',
+        name: "params",
+        internalType: "struct RegisterPILPolicyParams",
+        type: "tuple",
         components: [
-          { name: 'transferable', internalType: 'bool', type: 'bool' },
-          { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-          { name: 'mintingFee', internalType: 'uint256', type: 'uint256' },
-          { name: 'mintingFeeToken', internalType: 'address', type: 'address' },
+          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "mintingFeeToken", internalType: "address", type: "address" },
           {
-            name: 'policy',
-            internalType: 'struct PILPolicy',
-            type: 'tuple',
+            name: "policy",
+            internalType: "struct PILPolicy",
+            type: "tuple",
             components: [
-              { name: 'attribution', internalType: 'bool', type: 'bool' },
-              { name: 'commercialUse', internalType: 'bool', type: 'bool' },
+              { name: "attribution", internalType: "bool", type: "bool" },
+              { name: "commercialUse", internalType: "bool", type: "bool" },
               {
-                name: 'commercialAttribution',
-                internalType: 'bool',
-                type: 'bool',
+                name: "commercialAttribution",
+                internalType: "bool",
+                type: "bool",
               },
               {
-                name: 'commercializerChecker',
-                internalType: 'address',
-                type: 'address',
+                name: "commercializerChecker",
+                internalType: "address",
+                type: "address",
               },
               {
-                name: 'commercializerCheckerData',
-                internalType: 'bytes',
-                type: 'bytes',
+                name: "commercializerCheckerData",
+                internalType: "bytes",
+                type: "bytes",
               },
               {
-                name: 'commercialRevShare',
-                internalType: 'uint32',
-                type: 'uint32',
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
               },
               {
-                name: 'derivativesAllowed',
-                internalType: 'bool',
-                type: 'bool',
+                name: "derivativesAllowed",
+                internalType: "bool",
+                type: "bool",
               },
               {
-                name: 'derivativesAttribution',
-                internalType: 'bool',
-                type: 'bool',
+                name: "derivativesAttribution",
+                internalType: "bool",
+                type: "bool",
               },
               {
-                name: 'derivativesApproval',
-                internalType: 'bool',
-                type: 'bool',
+                name: "derivativesApproval",
+                internalType: "bool",
+                type: "bool",
               },
               {
-                name: 'derivativesReciprocal',
-                internalType: 'bool',
-                type: 'bool',
+                name: "derivativesReciprocal",
+                internalType: "bool",
+                type: "bool",
               },
               {
-                name: 'territories',
-                internalType: 'string[]',
-                type: 'string[]',
+                name: "territories",
+                internalType: "string[]",
+                type: "string[]",
               },
               {
-                name: 'distributionChannels',
-                internalType: 'string[]',
-                type: 'string[]',
+                name: "distributionChannels",
+                internalType: "string[]",
+                type: "string[]",
               },
               {
-                name: 'contentRestrictions',
-                internalType: 'string[]',
-                type: 'string[]',
+                name: "contentRestrictions",
+                internalType: "string[]",
+                type: "string[]",
               },
             ],
           },
         ],
       },
     ],
-    name: 'registerPolicy',
-    outputs: [{ name: 'policyId', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'nonpayable',
+    name: "registerPolicy",
+    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'licenseId', internalType: 'uint256', type: 'uint256' },
-      { name: 'childIpId', internalType: 'address', type: 'address' },
-      { name: 'approved', internalType: 'bool', type: 'bool' },
+      { name: "licenseId", internalType: "uint256", type: "uint256" },
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "approved", internalType: "bool", type: "bool" },
     ],
-    name: 'setApproval',
+    name: "setApproval",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'licenseId', internalType: 'uint256', type: 'uint256' },
-      { name: 'licensee', internalType: 'address', type: 'address' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'parentIpId', internalType: 'address', type: 'address' },
-      { name: 'policyData', internalType: 'bytes', type: 'bytes' },
+      { name: "licenseId", internalType: "uint256", type: "uint256" },
+      { name: "licensee", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parentIpId", internalType: "address", type: "address" },
+      { name: "policyData", internalType: "bytes", type: "bytes" },
     ],
-    name: 'verifyLink',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
+    name: "verifyLink",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'licensee', internalType: 'address', type: 'address' },
-      { name: 'mintingFromADerivative', internalType: 'bool', type: 'bool' },
-      { name: 'licensorIpId', internalType: 'address', type: 'address' },
-      { name: 'receiver', internalType: 'address', type: 'address' },
-      { name: 'mintAmount', internalType: 'uint256', type: 'uint256' },
-      { name: 'policyData', internalType: 'bytes', type: 'bytes' },
+      { name: "licensee", internalType: "address", type: "address" },
+      { name: "mintingFromADerivative", internalType: "bool", type: "bool" },
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "mintAmount", internalType: "uint256", type: "uint256" },
+      { name: "policyData", internalType: "bytes", type: "bytes" },
     ],
-    name: 'verifyMint',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
+    name: "verifyMint",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
-] as const
+] as const;
 
-export const pilPolicyFrameworkManagerAddress =
-  '0xAc2C50Af31501370366D243FaeC56F89128f6d96' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2)
+ */
+export const pilPolicyFrameworkManagerAddress = {
+  1513: "0xAc2C50Af31501370366D243FaeC56F89128f6d96",
+  11155111: "0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2)
+ */
 export const pilPolicyFrameworkManagerConfig = {
   address: pilPolicyFrameworkManagerAddress,
   abi: pilPolicyFrameworkManagerAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RoyaltyModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xA6bEf9CC650A16939566c1da5d5088f3F028a865)
+ */
 export const royaltyModuleAbi = [
-  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
-    type: 'error',
-    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
-    name: 'AddressEmptyCode',
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
   },
   {
-    type: 'error',
-    inputs: [
-      { name: 'implementation', internalType: 'address', type: 'address' },
-    ],
-    name: 'ERC1967InvalidImplementation',
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
   },
-  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
-  { type: 'error', inputs: [], name: 'FailedInnerCall' },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
   },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
-  { type: 'error', inputs: [], name: 'InvalidInitialization' },
-  { type: 'error', inputs: [], name: 'NotInitializing' },
-  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyModule__CanOnlyMintSelectedPolicy',
+    name: "RoyaltyModule__CanOnlyMintSelectedPolicy",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyModule__IncompatibleRoyaltyPolicy',
+    name: "RoyaltyModule__IncompatibleRoyaltyPolicy",
   },
-  { type: 'error', inputs: [], name: 'RoyaltyModule__NoParentsOnLinking' },
-  { type: 'error', inputs: [], name: 'RoyaltyModule__NoRoyaltyPolicySet' },
-  { type: 'error', inputs: [], name: 'RoyaltyModule__NotAllowedCaller' },
+  { type: "error", inputs: [], name: "RoyaltyModule__NoParentsOnLinking" },
+  { type: "error", inputs: [], name: "RoyaltyModule__NoRoyaltyPolicySet" },
+  { type: "error", inputs: [], name: "RoyaltyModule__NotAllowedCaller" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyModule__NotWhitelistedRoyaltyPolicy',
+    name: "RoyaltyModule__NotWhitelistedRoyaltyPolicy",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyModule__NotWhitelistedRoyaltyToken',
+    name: "RoyaltyModule__NotWhitelistedRoyaltyToken",
   },
-  { type: 'error', inputs: [], name: 'RoyaltyModule__ZeroLicensingModule' },
-  { type: 'error', inputs: [], name: 'RoyaltyModule__ZeroRoyaltyPolicy' },
-  { type: 'error', inputs: [], name: 'RoyaltyModule__ZeroRoyaltyToken' },
-  { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicensingModule" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyPolicy" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyToken" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
-    type: 'error',
-    inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'UUPSUnsupportedProxiableUUID',
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'GovernanceUpdated',
+    name: "GovernanceUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'version',
-        internalType: 'uint64',
-        type: 'uint64',
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
         indexed: false,
       },
     ],
-    name: 'Initialized',
+    name: "Initialized",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'receiverIpId',
-        internalType: 'address',
-        type: 'address',
+        name: "receiverIpId",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'payerAddress',
-        internalType: 'address',
-        type: 'address',
+        name: "payerAddress",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'token',
-        internalType: 'address',
-        type: 'address',
+        name: "token",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'amount',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'LicenseMintingFeePaid',
+    name: "LicenseMintingFeePaid",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'receiverIpId',
-        internalType: 'address',
-        type: 'address',
+        name: "receiverIpId",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'payerIpId',
-        internalType: 'address',
-        type: 'address',
+        name: "payerIpId",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'sender',
-        internalType: 'address',
-        type: 'address',
+        name: "sender",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'token',
-        internalType: 'address',
-        type: 'address',
+        name: "token",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'amount',
-        internalType: 'uint256',
-        type: 'uint256',
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: 'RoyaltyPaid',
+    name: "RoyaltyPaid",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'royaltyPolicy',
-        internalType: 'address',
-        type: 'address',
+        name: "royaltyPolicy",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
-      { name: 'allowed', internalType: 'bool', type: 'bool', indexed: false },
+      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'RoyaltyPolicyWhitelistUpdated',
+    name: "RoyaltyPolicyWhitelistUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'token',
-        internalType: 'address',
-        type: 'address',
+        name: "token",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
-      { name: 'allowed', internalType: 'bool', type: 'bool', indexed: false },
+      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: 'RoyaltyTokenWhitelistUpdated',
+    name: "RoyaltyTokenWhitelistUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
+        name: "implementation",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'Upgraded',
+    name: "Upgraded",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'UPGRADE_INTERFACE_VERSION',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: '_governance', internalType: 'address', type: 'address' }],
-    name: 'initialize',
+    type: "function",
+    inputs: [{ name: "_governance", internalType: "address", type: "address" }],
+    name: "initialize",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-    ],
-    name: 'isWhitelistedRoyaltyPolicy',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "royaltyPolicy", internalType: "address", type: "address" }],
+    name: "isWhitelistedRoyaltyPolicy",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
-    name: 'isWhitelistedRoyaltyToken',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isWhitelistedRoyaltyToken",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'licensingModule',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "licensingModule",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'name',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
-    stateMutability: 'view',
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-      { name: 'licenseData', internalType: 'bytes', type: 'bytes' },
-      { name: 'externalData', internalType: 'bytes', type: 'bytes' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      { name: "licenseData", internalType: "bytes", type: "bytes" },
+      { name: "externalData", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onLicenseMinting',
+    name: "onLicenseMinting",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-      { name: 'parentIpIds', internalType: 'address[]', type: 'address[]' },
-      { name: 'licenseData', internalType: 'bytes[]', type: 'bytes[]' },
-      { name: 'externalData', internalType: 'bytes', type: 'bytes' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      { name: "licenseData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "externalData", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onLinkToParents',
+    name: "onLinkToParents",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'receiverIpId', internalType: 'address', type: 'address' },
-      { name: 'payerAddress', internalType: 'address', type: 'address' },
+      { name: "receiverIpId", internalType: "address", type: "address" },
+      { name: "payerAddress", internalType: "address", type: "address" },
       {
-        name: 'licenseRoyaltyPolicy',
-        internalType: 'address',
-        type: 'address',
+        name: "licenseRoyaltyPolicy",
+        internalType: "address",
+        type: "address",
       },
-      { name: 'token', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
-    name: 'payLicenseMintingFee',
+    name: "payLicenseMintingFee",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'receiverIpId', internalType: 'address', type: 'address' },
-      { name: 'payerIpId', internalType: 'address', type: 'address' },
-      { name: 'token', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: "receiverIpId", internalType: "address", type: "address" },
+      { name: "payerIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
-    name: 'payRoyaltyOnBehalf',
+    name: "payRoyaltyOnBehalf",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'proxiableUUID',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
-    name: 'royaltyPolicies',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "royaltyPolicies",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licensing", internalType: "address", type: "address" }],
+    name: "setLicensingModule",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: 'setGovernance',
+    name: "upgradeToAndCall",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "payable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'licensing', internalType: 'address', type: 'address' }],
-    name: 'setLicensingModule',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'newImplementation', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
-    name: 'upgradeToAndCall',
+    name: "whitelistRoyaltyPolicy",
     outputs: [],
-    stateMutability: 'payable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'royaltyPolicy', internalType: 'address', type: 'address' },
-      { name: 'allowed', internalType: 'bool', type: 'bool' },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
     ],
-    name: 'whitelistRoyaltyPolicy',
+    name: "whitelistRoyaltyToken",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'token', internalType: 'address', type: 'address' },
-      { name: 'allowed', internalType: 'bool', type: 'bool' },
-    ],
-    name: 'whitelistRoyaltyToken',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-] as const
+] as const;
 
-export const royaltyModuleAddress =
-  '0xF77b0933F6aaC2dCE2eAa0d79f6Bfd6b9347a5E7' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xA6bEf9CC650A16939566c1da5d5088f3F028a865)
+ */
+export const royaltyModuleAddress = {
+  1513: "0xF77b0933F6aaC2dCE2eAa0d79f6Bfd6b9347a5E7",
+  11155111: "0xA6bEf9CC650A16939566c1da5d5088f3F028a865",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xA6bEf9CC650A16939566c1da5d5088f3F028a865)
+ */
 export const royaltyModuleConfig = {
   address: royaltyModuleAddress,
   abi: royaltyModuleAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RoyaltyPolicyLAP
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x16eF58e959522727588921A92e9084d36E5d3855)
+ */
 export const royaltyPolicyLapAbi = [
   {
-    type: 'constructor',
+    type: "constructor",
     inputs: [
-      { name: 'royaltyModule', internalType: 'address', type: 'address' },
-      { name: 'licensingModule', internalType: 'address', type: 'address' },
-      { name: 'liquidSplitFactory', internalType: 'address', type: 'address' },
-      { name: 'liquidSplitMain', internalType: 'address', type: 'address' },
-      { name: 'governance', internalType: 'address', type: 'address' },
+      { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "liquidSplitFactory", internalType: "address", type: "address" },
+      { name: "liquidSplitMain", internalType: "address", type: "address" },
+      { name: "governance", internalType: "address", type: "address" },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
-    name: 'AddressEmptyCode',
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
   },
   {
-    type: 'error',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'AddressInsufficientBalance',
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
   },
-  { type: 'error', inputs: [], name: 'ERC1167FailedCreateClone' },
-  { type: 'error', inputs: [], name: 'FailedInnerCall' },
-  { type: 'error', inputs: [], name: 'Governance__InconsistentState' },
-  { type: 'error', inputs: [], name: 'Governance__OnlyProtocolAdmin' },
+  { type: "error", inputs: [], name: "ERC1167FailedCreateClone" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
-    type: 'error',
-    inputs: [{ name: 'interfaceName', internalType: 'string', type: 'string' }],
-    name: 'Governance__UnsupportedInterface',
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
   },
-  { type: 'error', inputs: [], name: 'Governance__ZeroAddress' },
-  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__AboveAncestorsLimit' },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__AboveParentLimit' },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveAncestorsLimit" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveParentLimit" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__AboveRoyaltyStackLimit',
+    name: "RoyaltyPolicyLAP__AboveRoyaltyStackLimit",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__ImplementationAlreadySet',
+    name: "RoyaltyPolicyLAP__ImplementationAlreadySet",
   },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__InvalidAncestors' },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__InvalidAncestorsHash' },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__InvalidAncestors" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__InvalidAncestorsHash" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__InvalidAncestorsLength',
+    name: "RoyaltyPolicyLAP__InvalidAncestorsLength",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__InvalidAncestorsRoyalty',
+    name: "RoyaltyPolicyLAP__InvalidAncestorsRoyalty",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__InvalidParentRoyaltiesLength',
+    name: "RoyaltyPolicyLAP__InvalidParentRoyaltiesLength",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__InvalidRoyaltyAmountLength',
+    name: "RoyaltyPolicyLAP__InvalidRoyaltyAmountLength",
   },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__LastPositionNotAbleToMintLicense',
+    name: "RoyaltyPolicyLAP__LastPositionNotAbleToMintLicense",
   },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__NotFullOwnership' },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__NotRoyaltyModule' },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__TransferFailed' },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__UnlinkableToParents' },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotFullOwnership" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__TransferFailed" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__UnlinkableToParents" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__ZeroAncestorsVaultImpl',
+    name: "RoyaltyPolicyLAP__ZeroAncestorsVaultImpl",
   },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__ZeroLicensingModule' },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroLicensingModule" },
   {
-    type: 'error',
+    type: "error",
     inputs: [],
-    name: 'RoyaltyPolicyLAP__ZeroLiquidSplitFactory',
+    name: "RoyaltyPolicyLAP__ZeroLiquidSplitFactory",
   },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__ZeroLiquidSplitMain' },
-  { type: 'error', inputs: [], name: 'RoyaltyPolicyLAP__ZeroRoyaltyModule' },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroLiquidSplitMain" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroRoyaltyModule" },
   {
-    type: 'error',
-    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
-    name: 'SafeERC20FailedOperation',
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'newGovernance',
-        internalType: 'address',
-        type: 'address',
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
         indexed: true,
       },
     ],
-    name: 'GovernanceUpdated',
+    name: "GovernanceUpdated",
   },
   {
-    type: 'event',
+    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: 'ipId',
-        internalType: 'address',
-        type: 'address',
+        name: "ipId",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'splitClone',
-        internalType: 'address',
-        type: 'address',
+        name: "splitClone",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'ancestorsVault',
-        internalType: 'address',
-        type: 'address',
+        name: "ancestorsVault",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: 'royaltyStack',
-        internalType: 'uint32',
-        type: 'uint32',
+        name: "royaltyStack",
+        internalType: "uint32",
+        type: "uint32",
         indexed: false,
       },
       {
-        name: 'targetAncestors',
-        internalType: 'address[]',
-        type: 'address[]',
+        name: "targetAncestors",
+        internalType: "address[]",
+        type: "address[]",
         indexed: false,
       },
       {
-        name: 'targetRoyaltyAmount',
-        internalType: 'uint32[]',
-        type: 'uint32[]',
+        name: "targetRoyaltyAmount",
+        internalType: "uint32[]",
+        type: "uint32[]",
         indexed: false,
       },
     ],
-    name: 'PolicyInitialized',
+    name: "PolicyInitialized",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ANCESTORS_VAULT_IMPL',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "ANCESTORS_VAULT_IMPL",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'LICENSING_MODULE',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'LIQUID_SPLIT_FACTORY',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "LIQUID_SPLIT_FACTORY",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'LIQUID_SPLIT_MAIN',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "LIQUID_SPLIT_MAIN",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'MAX_ANCESTORS',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "MAX_ANCESTORS",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'MAX_PARENTS',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    name: "MAX_PARENTS",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'ROYALTY_MODULE',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'TOTAL_RNFT_SUPPLY',
-    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
-    stateMutability: 'view',
+    name: "TOTAL_RNFT_SUPPLY",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'claimerIpId', internalType: 'address', type: 'address' },
-      { name: 'ancestors', internalType: 'address[]', type: 'address[]' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "claimerIpId", internalType: "address", type: "address" },
+      { name: "ancestors", internalType: "address[]", type: "address[]" },
       {
-        name: 'ancestorsRoyalties',
-        internalType: 'uint32[]',
-        type: 'uint32[]',
+        name: "ancestorsRoyalties",
+        internalType: "uint32[]",
+        type: "uint32[]",
       },
-      { name: 'withdrawETH', internalType: 'bool', type: 'bool' },
-      { name: 'tokens', internalType: 'contract ERC20[]', type: 'address[]' },
+      { name: "withdrawETH", internalType: "bool", type: "bool" },
+      { name: "tokens", internalType: "contract ERC20[]", type: "address[]" },
     ],
-    name: 'claimFromAncestorsVault',
+    name: "claimFromAncestorsVault",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'withdrawETH', internalType: 'uint256', type: 'uint256' },
-      { name: 'tokens', internalType: 'contract ERC20[]', type: 'address[]' },
+      { name: "account", internalType: "address", type: "address" },
+      { name: "withdrawETH", internalType: "uint256", type: "uint256" },
+      { name: "tokens", internalType: "contract ERC20[]", type: "address[]" },
     ],
-    name: 'claimFromIpPool',
+    name: "claimFromIpPool",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'withdrawETH', internalType: 'uint256', type: 'uint256' },
-      { name: 'token', internalType: 'address', type: 'address' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "withdrawETH", internalType: "uint256", type: "uint256" },
+      { name: "token", internalType: "address", type: "address" },
     ],
-    name: 'claimFromIpPoolAsTotalRnftOwner',
+    name: "claimFromIpPoolAsTotalRnftOwner",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'token', internalType: 'address', type: 'address' },
-      { name: 'accounts', internalType: 'address[]', type: 'address[]' },
-      { name: 'distributorAddress', internalType: 'address', type: 'address' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "accounts", internalType: "address[]", type: "address[]" },
+      { name: "distributorAddress", internalType: "address", type: "address" },
     ],
-    name: 'distributeIpPoolFunds',
+    name: "distributeIpPoolFunds",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'getGovernance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [],
-    name: 'governance',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    name: "governance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: '', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256[]", type: "uint256[]" },
+      { name: "", internalType: "uint256[]", type: "uint256[]" },
+      { name: "", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onERC1155BatchReceived',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'nonpayable',
+    name: "onERC1155BatchReceived",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onERC1155Received',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'nonpayable',
+    name: "onERC1155Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'licenseData', internalType: 'bytes', type: 'bytes' },
-      { name: 'externalData', internalType: 'bytes', type: 'bytes' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseData", internalType: "bytes", type: "bytes" },
+      { name: "externalData", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onLicenseMinting',
+    name: "onLicenseMinting",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'parentIpIds', internalType: 'address[]', type: 'address[]' },
-      { name: 'licenseData', internalType: 'bytes[]', type: 'bytes[]' },
-      { name: 'externalData', internalType: 'bytes', type: 'bytes' },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      { name: "licenseData", internalType: "bytes[]", type: "bytes[]" },
+      { name: "externalData", internalType: "bytes", type: "bytes" },
     ],
-    name: 'onLinkToParents',
+    name: "onLinkToParents",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
+    type: "function",
     inputs: [
-      { name: 'caller', internalType: 'address', type: 'address' },
-      { name: 'ipId', internalType: 'address', type: 'address' },
-      { name: 'token', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
-    name: 'onRoyaltyPayment',
+    name: "onRoyaltyPayment",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'ipId', internalType: 'address', type: 'address' }],
-    name: 'royaltyData',
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "royaltyData",
     outputs: [
-      { name: 'isUnlinkableToParents', internalType: 'bool', type: 'bool' },
-      { name: 'splitClone', internalType: 'address', type: 'address' },
-      { name: 'ancestorsVault', internalType: 'address', type: 'address' },
-      { name: 'royaltyStack', internalType: 'uint32', type: 'uint32' },
-      { name: 'ancestorsHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: "isUnlinkableToParents", internalType: "bool", type: "bool" },
+      { name: "splitClone", internalType: "address", type: "address" },
+      { name: "ancestorsVault", internalType: "address", type: "address" },
+      { name: "royaltyStack", internalType: "uint32", type: "uint32" },
+      { name: "ancestorsHash", internalType: "bytes32", type: "bytes32" },
     ],
-    stateMutability: 'view',
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'ancestorsVaultImpl', internalType: 'address', type: 'address' },
-    ],
-    name: 'setAncestorsVaultImplementation',
+    type: "function",
+    inputs: [{ name: "ancestorsVaultImpl", internalType: "address", type: "address" }],
+    name: "setAncestorsVaultImplementation",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [
-      { name: 'newGovernance', internalType: 'address', type: 'address' },
-    ],
-    name: 'setGovernance',
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
   {
-    type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'supportsInterface',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
-  { type: 'receive', stateMutability: 'payable' },
-] as const
+  { type: "receive", stateMutability: "payable" },
+] as const;
 
-export const royaltyPolicyLapAddress =
-  '0x265C21b34e0E92d63C678425478C42aa8D727B79' as const
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x16eF58e959522727588921A92e9084d36E5d3855)
+ */
+export const royaltyPolicyLapAddress = {
+  1513: "0x265C21b34e0E92d63C678425478C42aa8D727B79",
+  11155111: "0x16eF58e959522727588921A92e9084d36E5d3855",
+} as const;
 
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x16eF58e959522727588921A92e9084d36E5d3855)
+ */
 export const royaltyPolicyLapConfig = {
   address: royaltyPolicyLapAddress,
   abi: royaltyPolicyLapAbi,
-} as const
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SDK
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// COMMON =============================================================
+
+function getAddress(address: Record<number, Address>, chainId?: number): Address {
+  return address[chainId || 0] || "0x";
+}
 
 // Contract AccessController =============================================================
 
@@ -4349,13 +4385,13 @@ export const royaltyPolicyLapConfig = {
  * @param permission uint8
  */
 export type AccessControllerPermissionSetEvent = {
-  ipAccountOwner: Address
-  ipAccount: Address
-  signer: Address
-  to: Address
-  func: Hex
-  permission: number
-}
+  ipAccountOwner: Address;
+  ipAccount: Address;
+  signer: Address;
+  to: Address;
+  func: Hex;
+  permission: number;
+};
 
 /**
  * AccessControllerSetPermissionRequest
@@ -4367,67 +4403,63 @@ export type AccessControllerPermissionSetEvent = {
  * @param permission uint8
  */
 export type AccessControllerSetPermissionRequest = {
-  ipAccount: Address
-  signer: Address
-  to: Address
-  func: Hex
-  permission: number
-}
+  ipAccount: Address;
+  signer: Address;
+  to: Address;
+  func: Hex;
+  permission: number;
+};
 
 /**
  * contract AccessController event
  */
 export class AccessControllerEventClient {
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x6fB5BA9A8747E897109044a1cd1192898AA384a9',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(accessControllerAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
   }
 
   /**
    * event PermissionSet for contract AccessController
    */
   public watchPermissionSetEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<AccessControllerPermissionSetEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<AccessControllerPermissionSetEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: accessControllerAbi,
       address: this.address,
-      eventName: 'PermissionSet',
+      eventName: "PermissionSet",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event PermissionSet for contract AccessController
    */
-  public async parseTxPermissionSetEvent(
+  public parseTxPermissionSetEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<AccessControllerPermissionSetEvent>> {
-    const targetLogs: Array<AccessControllerPermissionSetEvent> = []
+  ): Array<AccessControllerPermissionSetEvent> {
+    const targetLogs: Array<AccessControllerPermissionSetEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: accessControllerAbi,
-            eventName: 'PermissionSet',
+            eventName: "PermissionSet",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 }
 
@@ -4435,15 +4467,11 @@ export class AccessControllerEventClient {
  * contract AccessController write method
  */
 export class AccessControllerClient extends AccessControllerEventClient {
-  protected readonly wallet: WalletClient
+  protected readonly wallet: WalletClient;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x6fB5BA9A8747E897109044a1cd1192898AA384a9',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
   }
 
   /**
@@ -4458,68 +4486,11 @@ export class AccessControllerClient extends AccessControllerEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: accessControllerAbi,
       address: this.address,
-      functionName: 'setPermission',
+      functionName: "setPermission",
       account: this.wallet.account,
-      args: [
-        request.ipAccount,
-        request.signer,
-        request.to,
-        request.func,
-        request.permission,
-      ],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract AccessController permission less write method
- */
-export class AccessControllerPermissionLessClient extends AccessControllerEventClient {
-  protected readonly wallet: WalletClient
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x6fB5BA9A8747E897109044a1cd1192898AA384a9',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method setPermission for contract AccessController
-   *
-   * @param request AccessControllerSetPermissionRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async setPermission(
-    request: AccessControllerSetPermissionRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: accessControllerAbi,
-            functionName: 'setPermission',
-            args: [
-              request.ipAccount,
-              request.signer,
-              request.to,
-              request.func,
-              request.permission,
-            ],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+      args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -4532,9 +4503,9 @@ export class AccessControllerPermissionLessClient extends AccessControllerEventC
  * @param data bytes
  */
 export type DisputeModuleDisputeCancelledEvent = {
-  disputeId: bigint
-  data: Hex
-}
+  disputeId: bigint;
+  data: Hex;
+};
 
 /**
  * DisputeModuleDisputeRaisedEvent
@@ -4548,14 +4519,14 @@ export type DisputeModuleDisputeCancelledEvent = {
  * @param data bytes
  */
 export type DisputeModuleDisputeRaisedEvent = {
-  disputeId: bigint
-  targetIpId: Address
-  disputeInitiator: Address
-  arbitrationPolicy: Address
-  linkToDisputeEvidence: Hex
-  targetTag: Hex
-  data: Hex
-}
+  disputeId: bigint;
+  targetIpId: Address;
+  disputeInitiator: Address;
+  arbitrationPolicy: Address;
+  linkToDisputeEvidence: Hex;
+  targetTag: Hex;
+  data: Hex;
+};
 
 /**
  * DisputeModuleDisputeResolvedEvent
@@ -4563,8 +4534,8 @@ export type DisputeModuleDisputeRaisedEvent = {
  * @param disputeId uint256
  */
 export type DisputeModuleDisputeResolvedEvent = {
-  disputeId: bigint
-}
+  disputeId: bigint;
+};
 
 /**
  * DisputeModuleCancelDisputeRequest
@@ -4573,9 +4544,9 @@ export type DisputeModuleDisputeResolvedEvent = {
  * @param data bytes
  */
 export type DisputeModuleCancelDisputeRequest = {
-  disputeId: bigint
-  data: Hex
-}
+  disputeId: bigint;
+  data: Hex;
+};
 
 /**
  * DisputeModuleRaiseDisputeRequest
@@ -4586,11 +4557,11 @@ export type DisputeModuleCancelDisputeRequest = {
  * @param data bytes
  */
 export type DisputeModuleRaiseDisputeRequest = {
-  targetIpId: Address
-  linkToDisputeEvidence: string
-  targetTag: Hex
-  data: Hex
-}
+  targetIpId: Address;
+  linkToDisputeEvidence: string;
+  targetTag: Hex;
+  data: Hex;
+};
 
 /**
  * DisputeModuleResolveDisputeRequest
@@ -4598,63 +4569,59 @@ export type DisputeModuleRaiseDisputeRequest = {
  * @param disputeId uint256
  */
 export type DisputeModuleResolveDisputeRequest = {
-  disputeId: bigint
-}
+  disputeId: bigint;
+};
 
 /**
  * contract DisputeModule event
  */
 export class DisputeModuleEventClient {
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x837d095F9A11178545DF4114C44fb526dcf74168',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(disputeModuleAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
   }
 
   /**
    * event DisputeCancelled for contract DisputeModule
    */
   public watchDisputeCancelledEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<DisputeModuleDisputeCancelledEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<DisputeModuleDisputeCancelledEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: disputeModuleAbi,
       address: this.address,
-      eventName: 'DisputeCancelled',
+      eventName: "DisputeCancelled",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event DisputeCancelled for contract DisputeModule
    */
-  public async parseTxDisputeCancelledEvent(
+  public parseTxDisputeCancelledEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<DisputeModuleDisputeCancelledEvent>> {
-    const targetLogs: Array<DisputeModuleDisputeCancelledEvent> = []
+  ): Array<DisputeModuleDisputeCancelledEvent> {
+    const targetLogs: Array<DisputeModuleDisputeCancelledEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: disputeModuleAbi,
-            eventName: 'DisputeCancelled',
+            eventName: "DisputeCancelled",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 
   /**
@@ -4666,74 +4633,75 @@ export class DisputeModuleEventClient {
     return this.rpcClient.watchContractEvent({
       abi: disputeModuleAbi,
       address: this.address,
-      eventName: 'DisputeRaised',
+      eventName: "DisputeRaised",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event DisputeRaised for contract DisputeModule
    */
-  public async parseTxDisputeRaisedEvent(
+  public parseTxDisputeRaisedEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<DisputeModuleDisputeRaisedEvent>> {
-    const targetLogs: Array<DisputeModuleDisputeRaisedEvent> = []
+  ): Array<DisputeModuleDisputeRaisedEvent> {
+    const targetLogs: Array<DisputeModuleDisputeRaisedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: disputeModuleAbi,
-            eventName: 'DisputeRaised',
+            eventName: "DisputeRaised",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 
   /**
    * event DisputeResolved for contract DisputeModule
    */
   public watchDisputeResolvedEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<DisputeModuleDisputeResolvedEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<DisputeModuleDisputeResolvedEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: disputeModuleAbi,
       address: this.address,
-      eventName: 'DisputeResolved',
+      eventName: "DisputeResolved",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event DisputeResolved for contract DisputeModule
    */
-  public async parseTxDisputeResolvedEvent(
+  public parseTxDisputeResolvedEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<DisputeModuleDisputeResolvedEvent>> {
-    const targetLogs: Array<DisputeModuleDisputeResolvedEvent> = []
+  ): Array<DisputeModuleDisputeResolvedEvent> {
+    const targetLogs: Array<DisputeModuleDisputeResolvedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: disputeModuleAbi,
-            eventName: 'DisputeResolved',
+            eventName: "DisputeResolved",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 }
 
@@ -4741,15 +4709,11 @@ export class DisputeModuleEventClient {
  * contract DisputeModule write method
  */
 export class DisputeModuleClient extends DisputeModuleEventClient {
-  protected readonly wallet: WalletClient
+  protected readonly wallet: WalletClient;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x837d095F9A11178545DF4114C44fb526dcf74168',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
   }
 
   /**
@@ -4764,11 +4728,11 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: disputeModuleAbi,
       address: this.address,
-      functionName: 'cancelDispute',
+      functionName: "cancelDispute",
       account: this.wallet.account,
       args: [request.disputeId, request.data],
-    })
-    return await this.wallet.writeContract(call)
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -4783,16 +4747,11 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: disputeModuleAbi,
       address: this.address,
-      functionName: 'raiseDispute',
+      functionName: "raiseDispute",
       account: this.wallet.account,
-      args: [
-        request.targetIpId,
-        request.linkToDisputeEvidence,
-        request.targetTag,
-        request.data,
-      ],
-    })
-    return await this.wallet.writeContract(call)
+      args: [request.targetIpId, request.linkToDisputeEvidence, request.targetTag, request.data],
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -4807,119 +4766,11 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: disputeModuleAbi,
       address: this.address,
-      functionName: 'resolveDispute',
+      functionName: "resolveDispute",
       account: this.wallet.account,
       args: [request.disputeId],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract DisputeModule permission less write method
- */
-export class DisputeModulePermissionLessClient extends DisputeModuleEventClient {
-  protected readonly wallet: WalletClient
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x837d095F9A11178545DF4114C44fb526dcf74168',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method cancelDispute for contract DisputeModule
-   *
-   * @param request DisputeModuleCancelDisputeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async cancelDispute(
-    request: DisputeModuleCancelDisputeRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: disputeModuleAbi,
-            functionName: 'cancelDispute',
-            args: [request.disputeId, request.data],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method raiseDispute for contract DisputeModule
-   *
-   * @param request DisputeModuleRaiseDisputeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async raiseDispute(
-    request: DisputeModuleRaiseDisputeRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: disputeModuleAbi,
-            functionName: 'raiseDispute',
-            args: [
-              request.targetIpId,
-              request.linkToDisputeEvidence,
-              request.targetTag,
-              request.data,
-            ],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method resolveDispute for contract DisputeModule
-   *
-   * @param request DisputeModuleResolveDisputeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async resolveDispute(
-    request: DisputeModuleResolveDisputeRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: disputeModuleAbi,
-            functionName: 'resolveDispute',
-            args: [request.disputeId],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -4933,10 +4784,10 @@ export class DisputeModulePermissionLessClient extends DisputeModuleEventClient 
  * @param data bytes
  */
 export type IpAccountImplExecuteRequest = {
-  to: Address
-  value: bigint
-  data: Hex
-}
+  to: Address;
+  value: bigint;
+  data: Hex;
+};
 
 /**
  * IpAccountImplExecuteWithSigRequest
@@ -4949,30 +4800,26 @@ export type IpAccountImplExecuteRequest = {
  * @param signature bytes
  */
 export type IpAccountImplExecuteWithSigRequest = {
-  to: Address
-  value: bigint
-  data: Hex
-  signer: Address
-  deadline: bigint
-  signature: Hex
-}
+  to: Address;
+  value: bigint;
+  data: Hex;
+  signer: Address;
+  deadline: bigint;
+  signature: Hex;
+};
 
 /**
  * contract IPAccountImpl write method
  */
 export class IpAccountImplClient {
-  protected readonly wallet: WalletClient
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly wallet: WalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x6d1398e1ceE174a3e41d6eB50F00Fe43132f9C8A',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    this.address = address || getAddress(ipAccountImplAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
   }
 
   /**
@@ -4981,17 +4828,15 @@ export class IpAccountImplClient {
    * @param request IpAccountImplExecuteRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async execute(
-    request: IpAccountImplExecuteRequest,
-  ): Promise<WriteContractReturnType> {
+  public async execute(request: IpAccountImplExecuteRequest): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: ipAccountImplAbi,
       address: this.address,
-      functionName: 'execute',
+      functionName: "execute",
       account: this.wallet.account,
       args: [request.to, request.value, request.data],
-    })
-    return await this.wallet.writeContract(call)
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -5006,7 +4851,7 @@ export class IpAccountImplClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: ipAccountImplAbi,
       address: this.address,
-      functionName: 'executeWithSig',
+      functionName: "executeWithSig",
       account: this.wallet.account,
       args: [
         request.to,
@@ -5016,90 +4861,8 @@ export class IpAccountImplClient {
         request.deadline,
         request.signature,
       ],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract IPAccountImpl permission less write method
- */
-export class IpAccountImplPermissionLessClient {
-  protected readonly wallet: WalletClient
-  protected readonly address: Address
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x6d1398e1ceE174a3e41d6eB50F00Fe43132f9C8A',
-  ) {
-    this.address = address
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method execute for contract IPAccountImpl
-   *
-   * @param request IpAccountImplExecuteRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async execute(
-    request: IpAccountImplExecuteRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: ipAccountImplAbi,
-            functionName: 'execute',
-            args: [request.to, request.value, request.data],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method executeWithSig for contract IPAccountImpl
-   *
-   * @param request IpAccountImplExecuteWithSigRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async executeWithSig(
-    request: IpAccountImplExecuteWithSigRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: ipAccountImplAbi,
-            functionName: 'executeWithSig',
-            args: [
-              request.to,
-              request.value,
-              request.data,
-              request.signer,
-              request.deadline,
-              request.signature,
-            ],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -5117,14 +4880,14 @@ export class IpAccountImplPermissionLessClient {
  * @param registrationDate uint256
  */
 export type IpAssetRegistryIpRegisteredEvent = {
-  ipId: Address
-  chainId: bigint
-  tokenContract: Address
-  tokenId: bigint
-  name: string
-  uri: string
-  registrationDate: bigint
-}
+  ipId: Address;
+  chainId: bigint;
+  tokenContract: Address;
+  tokenId: bigint;
+  name: string;
+  uri: string;
+  registrationDate: bigint;
+};
 
 /**
  * IpAssetRegistryIpIdRequest
@@ -5134,12 +4897,12 @@ export type IpAssetRegistryIpRegisteredEvent = {
  * @param tokenId uint256
  */
 export type IpAssetRegistryIpIdRequest = {
-  chainId: bigint
-  tokenContract: Address
-  tokenId: bigint
-}
+  chainId: bigint;
+  tokenContract: Address;
+  tokenId: bigint;
+};
 
-export type IpAssetRegistryIpIdResponse = Address
+export type IpAssetRegistryIpIdResponse = Address;
 
 /**
  * IpAssetRegistryIsRegisteredRequest
@@ -5147,10 +4910,10 @@ export type IpAssetRegistryIpIdResponse = Address
  * @param id address
  */
 export type IpAssetRegistryIsRegisteredRequest = {
-  id: Address
-}
+  id: Address;
+};
 
-export type IpAssetRegistryIsRegisteredResponse = boolean
+export type IpAssetRegistryIsRegisteredResponse = boolean;
 
 /**
  * IpAssetRegistryRegisterRequest
@@ -5159,64 +4922,60 @@ export type IpAssetRegistryIsRegisteredResponse = boolean
  * @param tokenId uint256
  */
 export type IpAssetRegistryRegisterRequest = {
-  tokenContract: Address
-  tokenId: bigint
-}
+  tokenContract: Address;
+  tokenId: bigint;
+};
 
 /**
  * contract IPAssetRegistry event
  */
 export class IpAssetRegistryEventClient {
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x30C89bCB41277f09b18DF0375b9438909e193bf0',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(ipAssetRegistryAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
   }
 
   /**
    * event IPRegistered for contract IPAssetRegistry
    */
   public watchIpRegisteredEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<IpAssetRegistryIpRegisteredEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<IpAssetRegistryIpRegisteredEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: ipAssetRegistryAbi,
       address: this.address,
-      eventName: 'IPRegistered',
+      eventName: "IPRegistered",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event IPRegistered for contract IPAssetRegistry
    */
-  public async parseTxIpRegisteredEvent(
+  public parseTxIpRegisteredEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<IpAssetRegistryIpRegisteredEvent>> {
-    const targetLogs: Array<IpAssetRegistryIpRegisteredEvent> = []
+  ): Array<IpAssetRegistryIpRegisteredEvent> {
+    const targetLogs: Array<IpAssetRegistryIpRegisteredEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: ipAssetRegistryAbi,
-            eventName: 'IPRegistered',
+            eventName: "IPRegistered",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 }
 
@@ -5224,11 +4983,8 @@ export class IpAssetRegistryEventClient {
  * contract IPAssetRegistry readonly method
  */
 export class IpAssetRegistryReadOnlyClient extends IpAssetRegistryEventClient {
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x30C89bCB41277f09b18DF0375b9438909e193bf0',
-  ) {
-    super(rpcClient, address)
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
   }
 
   /**
@@ -5237,15 +4993,13 @@ export class IpAssetRegistryReadOnlyClient extends IpAssetRegistryEventClient {
    * @param request IpAssetRegistryIpIdRequest
    * @return Promise<IpAssetRegistryIpIdResponse>
    */
-  public async ipId(
-    request: IpAssetRegistryIpIdRequest,
-  ): Promise<IpAssetRegistryIpIdResponse> {
+  public async ipId(request: IpAssetRegistryIpIdRequest): Promise<IpAssetRegistryIpIdResponse> {
     return await this.rpcClient.readContract({
       abi: ipAssetRegistryAbi,
       address: this.address,
-      functionName: 'ipId',
+      functionName: "ipId",
       args: [request.chainId, request.tokenContract, request.tokenId],
-    })
+    });
   }
 
   /**
@@ -5260,9 +5014,9 @@ export class IpAssetRegistryReadOnlyClient extends IpAssetRegistryEventClient {
     return await this.rpcClient.readContract({
       abi: ipAssetRegistryAbi,
       address: this.address,
-      functionName: 'isRegistered',
+      functionName: "isRegistered",
       args: [request.id],
-    })
+    });
   }
 }
 
@@ -5270,15 +5024,11 @@ export class IpAssetRegistryReadOnlyClient extends IpAssetRegistryEventClient {
  * contract IPAssetRegistry write method
  */
 export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
-  protected readonly wallet: WalletClient
+  protected readonly wallet: WalletClient;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x30C89bCB41277f09b18DF0375b9438909e193bf0',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
   }
 
   /**
@@ -5287,62 +5037,15 @@ export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
    * @param request IpAssetRegistryRegisterRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async register(
-    request: IpAssetRegistryRegisterRequest,
-  ): Promise<WriteContractReturnType> {
+  public async register(request: IpAssetRegistryRegisterRequest): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: ipAssetRegistryAbi,
       address: this.address,
-      functionName: 'register',
+      functionName: "register",
       account: this.wallet.account,
       args: [request.tokenContract, request.tokenId],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract IPAssetRegistry permission less write method
- */
-export class IpAssetRegistryPermissionLessClient extends IpAssetRegistryReadOnlyClient {
-  protected readonly wallet: WalletClient
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x30C89bCB41277f09b18DF0375b9438909e193bf0',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method register for contract IPAssetRegistry
-   *
-   * @param request IpAssetRegistryRegisterRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async register(
-    request: IpAssetRegistryRegisterRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: ipAssetRegistryAbi,
-            functionName: 'register',
-            args: [request.tokenContract, request.tokenId],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -5356,14 +5059,14 @@ export class IpAssetRegistryPermissionLessClient extends IpAssetRegistryReadOnly
  * @param token address
  */
 export type IpRoyaltyVaultImplClaimableRevenueRequest = {
-  account: Address
-  snapshotId: bigint
-  token: Address
-}
+  account: Address;
+  snapshotId: bigint;
+  token: Address;
+};
 
-export type IpRoyaltyVaultImplClaimableRevenueResponse = bigint
+export type IpRoyaltyVaultImplClaimableRevenueResponse = bigint;
 
-export type IpRoyaltyVaultImplIpIdResponse = Address
+export type IpRoyaltyVaultImplIpIdResponse = Address;
 
 /**
  * IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
@@ -5372,9 +5075,9 @@ export type IpRoyaltyVaultImplIpIdResponse = Address
  * @param token address
  */
 export type IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest = {
-  snapshotIds: readonly bigint[]
-  token: Address
-}
+  snapshotIds: readonly bigint[];
+  token: Address;
+};
 
 /**
  * IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
@@ -5383,9 +5086,9 @@ export type IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest = {
  * @param tokens address[]
  */
 export type IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest = {
-  snapshotId: bigint
-  tokens: readonly Address[]
-}
+  snapshotId: bigint;
+  tokens: readonly Address[];
+};
 
 /**
  * IpRoyaltyVaultImplCollectRoyaltyTokensRequest
@@ -5393,22 +5096,19 @@ export type IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest = {
  * @param ancestorIpId address
  */
 export type IpRoyaltyVaultImplCollectRoyaltyTokensRequest = {
-  ancestorIpId: Address
-}
+  ancestorIpId: Address;
+};
 
 /**
  * contract IpRoyaltyVaultImpl readonly method
  */
 export class IpRoyaltyVaultImplReadOnlyClient {
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x0dB6AAb7525F03Bf94A1fC08A9aACCc2Ad25eD12',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(ipRoyaltyVaultImplAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
   }
 
   /**
@@ -5423,9 +5123,9 @@ export class IpRoyaltyVaultImplReadOnlyClient {
     return await this.rpcClient.readContract({
       abi: ipRoyaltyVaultImplAbi,
       address: this.address,
-      functionName: 'claimableRevenue',
+      functionName: "claimableRevenue",
       args: [request.account, request.snapshotId, request.token],
-    })
+    });
   }
 
   /**
@@ -5438,8 +5138,8 @@ export class IpRoyaltyVaultImplReadOnlyClient {
     return await this.rpcClient.readContract({
       abi: ipRoyaltyVaultImplAbi,
       address: this.address,
-      functionName: 'ipId',
-    })
+      functionName: "ipId",
+    });
   }
 }
 
@@ -5447,15 +5147,11 @@ export class IpRoyaltyVaultImplReadOnlyClient {
  * contract IpRoyaltyVaultImpl write method
  */
 export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
-  protected readonly wallet: WalletClient
+  protected readonly wallet: WalletClient;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x0dB6AAb7525F03Bf94A1fC08A9aACCc2Ad25eD12',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
   }
 
   /**
@@ -5470,11 +5166,11 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: ipRoyaltyVaultImplAbi,
       address: this.address,
-      functionName: 'claimRevenueBySnapshotBatch',
+      functionName: "claimRevenueBySnapshotBatch",
       account: this.wallet.account,
       args: [request.snapshotIds, request.token],
-    })
-    return await this.wallet.writeContract(call)
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -5489,11 +5185,11 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: ipRoyaltyVaultImplAbi,
       address: this.address,
-      functionName: 'claimRevenueByTokenBatch',
+      functionName: "claimRevenueByTokenBatch",
       account: this.wallet.account,
       args: [request.snapshotId, request.tokens],
-    })
-    return await this.wallet.writeContract(call)
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -5508,114 +5204,11 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: ipRoyaltyVaultImplAbi,
       address: this.address,
-      functionName: 'collectRoyaltyTokens',
+      functionName: "collectRoyaltyTokens",
       account: this.wallet.account,
       args: [request.ancestorIpId],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract IpRoyaltyVaultImpl permission less write method
- */
-export class IpRoyaltyVaultImplPermissionLessClient extends IpRoyaltyVaultImplReadOnlyClient {
-  protected readonly wallet: WalletClient
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x0dB6AAb7525F03Bf94A1fC08A9aACCc2Ad25eD12',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method claimRevenueBySnapshotBatch for contract IpRoyaltyVaultImpl
-   *
-   * @param request IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async claimRevenueBySnapshotBatch(
-    request: IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: ipRoyaltyVaultImplAbi,
-            functionName: 'claimRevenueBySnapshotBatch',
-            args: [request.snapshotIds, request.token],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method claimRevenueByTokenBatch for contract IpRoyaltyVaultImpl
-   *
-   * @param request IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async claimRevenueByTokenBatch(
-    request: IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: ipRoyaltyVaultImplAbi,
-            functionName: 'claimRevenueByTokenBatch',
-            args: [request.snapshotId, request.tokens],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method collectRoyaltyTokens for contract IpRoyaltyVaultImpl
-   *
-   * @param request IpRoyaltyVaultImplCollectRoyaltyTokensRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async collectRoyaltyTokens(
-    request: IpRoyaltyVaultImplCollectRoyaltyTokensRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: ipRoyaltyVaultImplAbi,
-            functionName: 'collectRoyaltyTokens',
-            args: [request.ancestorIpId],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -5631,12 +5224,12 @@ export class IpRoyaltyVaultImplPermissionLessClient extends IpRoyaltyVaultImplRe
  * @param values uint256[]
  */
 export type LicenseRegistryTransferBatchEvent = {
-  operator: Address
-  from: Address
-  to: Address
-  ids: readonly bigint[]
-  values: readonly bigint[]
-}
+  operator: Address;
+  from: Address;
+  to: Address;
+  ids: readonly bigint[];
+  values: readonly bigint[];
+};
 
 /**
  * LicenseRegistryTransferSingleEvent
@@ -5648,12 +5241,12 @@ export type LicenseRegistryTransferBatchEvent = {
  * @param value uint256
  */
 export type LicenseRegistryTransferSingleEvent = {
-  operator: Address
-  from: Address
-  to: Address
-  id: bigint
-  value: bigint
-}
+  operator: Address;
+  from: Address;
+  to: Address;
+  id: bigint;
+  value: bigint;
+};
 
 /**
  * LicenseRegistryMintLicenseRequest
@@ -5665,108 +5258,103 @@ export type LicenseRegistryTransferSingleEvent = {
  * @param receiver address
  */
 export type LicenseRegistryMintLicenseRequest = {
-  policyId: bigint
-  licensorIpId_: Address
-  transferable: boolean
-  amount: bigint
-  receiver: Address
-}
+  policyId: bigint;
+  licensorIpId_: Address;
+  transferable: boolean;
+  amount: bigint;
+  receiver: Address;
+};
 
 /**
  * contract LicenseRegistry event
  */
 export class LicenseRegistryEventClient {
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(licenseRegistryAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
   }
 
   /**
    * event TransferBatch for contract LicenseRegistry
    */
   public watchTransferBatchEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<LicenseRegistryTransferBatchEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryTransferBatchEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licenseRegistryAbi,
       address: this.address,
-      eventName: 'TransferBatch',
+      eventName: "TransferBatch",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event TransferBatch for contract LicenseRegistry
    */
-  public async parseTxTransferBatchEvent(
+  public parseTxTransferBatchEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<LicenseRegistryTransferBatchEvent>> {
-    const targetLogs: Array<LicenseRegistryTransferBatchEvent> = []
+  ): Array<LicenseRegistryTransferBatchEvent> {
+    const targetLogs: Array<LicenseRegistryTransferBatchEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licenseRegistryAbi,
-            eventName: 'TransferBatch',
+            eventName: "TransferBatch",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 
   /**
    * event TransferSingle for contract LicenseRegistry
    */
   public watchTransferSingleEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<LicenseRegistryTransferSingleEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryTransferSingleEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licenseRegistryAbi,
       address: this.address,
-      eventName: 'TransferSingle',
+      eventName: "TransferSingle",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event TransferSingle for contract LicenseRegistry
    */
-  public async parseTxTransferSingleEvent(
+  public parseTxTransferSingleEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<LicenseRegistryTransferSingleEvent>> {
-    const targetLogs: Array<LicenseRegistryTransferSingleEvent> = []
+  ): Array<LicenseRegistryTransferSingleEvent> {
+    const targetLogs: Array<LicenseRegistryTransferSingleEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licenseRegistryAbi,
-            eventName: 'TransferSingle',
+            eventName: "TransferSingle",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 }
 
@@ -5774,15 +5362,11 @@ export class LicenseRegistryEventClient {
  * contract LicenseRegistry write method
  */
 export class LicenseRegistryClient extends LicenseRegistryEventClient {
-  protected readonly wallet: WalletClient
+  protected readonly wallet: WalletClient;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
   }
 
   /**
@@ -5797,7 +5381,7 @@ export class LicenseRegistryClient extends LicenseRegistryEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licenseRegistryAbi,
       address: this.address,
-      functionName: 'mintLicense',
+      functionName: "mintLicense",
       account: this.wallet.account,
       args: [
         request.policyId,
@@ -5806,59 +5390,8 @@ export class LicenseRegistryClient extends LicenseRegistryEventClient {
         request.amount,
         request.receiver,
       ],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract LicenseRegistry permission less write method
- */
-export class LicenseRegistryPermissionLessClient extends LicenseRegistryEventClient {
-  protected readonly wallet: WalletClient
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method mintLicense for contract LicenseRegistry
-   *
-   * @param request LicenseRegistryMintLicenseRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async mintLicense(
-    request: LicenseRegistryMintLicenseRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: licenseRegistryAbi,
-            functionName: 'mintLicense',
-            args: [
-              request.policyId,
-              request.licensorIpId_,
-              request.transferable,
-              request.amount,
-              request.receiver,
-            ],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -5872,10 +5405,10 @@ export class LicenseRegistryPermissionLessClient extends LicenseRegistryEventCli
  * @param parentIpIds address[]
  */
 export type LicensingModuleIpIdLinkedToParentsEvent = {
-  caller: Address
-  ipId: Address
-  parentIpIds: readonly Address[]
-}
+  caller: Address;
+  ipId: Address;
+  parentIpIds: readonly Address[];
+};
 
 /**
  * LicensingModulePolicyAddedToIpIdEvent
@@ -5887,12 +5420,12 @@ export type LicensingModuleIpIdLinkedToParentsEvent = {
  * @param isInherited bool
  */
 export type LicensingModulePolicyAddedToIpIdEvent = {
-  caller: Address
-  ipId: Address
-  policyId: bigint
-  index: bigint
-  isInherited: boolean
-}
+  caller: Address;
+  ipId: Address;
+  policyId: bigint;
+  index: bigint;
+  isInherited: boolean;
+};
 
 /**
  * LicensingModulePolicyRegisteredEvent
@@ -5906,14 +5439,14 @@ export type LicensingModulePolicyAddedToIpIdEvent = {
  * @param mintingFeeToken address
  */
 export type LicensingModulePolicyRegisteredEvent = {
-  policyId: bigint
-  policyFrameworkManager: Address
-  frameworkData: Hex
-  royaltyPolicy: Address
-  royaltyData: Hex
-  mintingFee: bigint
-  mintingFeeToken: Address
-}
+  policyId: bigint;
+  policyFrameworkManager: Address;
+  frameworkData: Hex;
+  royaltyPolicy: Address;
+  royaltyData: Hex;
+  mintingFee: bigint;
+  mintingFeeToken: Address;
+};
 
 /**
  * LicensingModuleGetPolicyIdRequest
@@ -5922,15 +5455,15 @@ export type LicensingModulePolicyRegisteredEvent = {
  */
 export type LicensingModuleGetPolicyIdRequest = {
   pol: {
-    isLicenseTransferable: boolean
-    policyFramework: Address
-    frameworkData: Hex
-    royaltyPolicy: Address
-    royaltyData: Hex
-    mintingFee: bigint
-    mintingFeeToken: Address
-  }
-}
+    isLicenseTransferable: boolean;
+    policyFramework: Address;
+    frameworkData: Hex;
+    royaltyPolicy: Address;
+    royaltyData: Hex;
+    mintingFee: bigint;
+    mintingFeeToken: Address;
+  };
+};
 
 /**
  * LicensingModuleGetPolicyIdResponse
@@ -5938,8 +5471,8 @@ export type LicensingModuleGetPolicyIdRequest = {
  * @param policyId uint256
  */
 export type LicensingModuleGetPolicyIdResponse = {
-  policyId: bigint
-}
+  policyId: bigint;
+};
 
 /**
  * LicensingModuleAddPolicyToIpRequest
@@ -5948,9 +5481,9 @@ export type LicensingModuleGetPolicyIdResponse = {
  * @param polId uint256
  */
 export type LicensingModuleAddPolicyToIpRequest = {
-  ipId: Address
-  polId: bigint
-}
+  ipId: Address;
+  polId: bigint;
+};
 
 /**
  * LicensingModuleLinkIpToParentsRequest
@@ -5960,10 +5493,10 @@ export type LicensingModuleAddPolicyToIpRequest = {
  * @param royaltyContext bytes
  */
 export type LicensingModuleLinkIpToParentsRequest = {
-  licenseIds: readonly bigint[]
-  childIpId: Address
-  royaltyContext: Hex
-}
+  licenseIds: readonly bigint[];
+  childIpId: Address;
+  royaltyContext: Hex;
+};
 
 /**
  * LicensingModuleMintLicenseRequest
@@ -5975,12 +5508,12 @@ export type LicensingModuleLinkIpToParentsRequest = {
  * @param royaltyContext bytes
  */
 export type LicensingModuleMintLicenseRequest = {
-  policyId: bigint
-  licensorIpId: Address
-  amount: bigint
-  receiver: Address
-  royaltyContext: Hex
-}
+  policyId: bigint;
+  licensorIpId: Address;
+  amount: bigint;
+  receiver: Address;
+  royaltyContext: Hex;
+};
 
 /**
  * LicensingModuleRegisterPolicyRequest
@@ -5989,152 +5522,146 @@ export type LicensingModuleMintLicenseRequest = {
  */
 export type LicensingModuleRegisterPolicyRequest = {
   pol: {
-    isLicenseTransferable: boolean
-    policyFramework: Address
-    frameworkData: Hex
-    royaltyPolicy: Address
-    royaltyData: Hex
-    mintingFee: bigint
-    mintingFeeToken: Address
-  }
-}
+    isLicenseTransferable: boolean;
+    policyFramework: Address;
+    frameworkData: Hex;
+    royaltyPolicy: Address;
+    royaltyData: Hex;
+    mintingFee: bigint;
+    mintingFeeToken: Address;
+  };
+};
 
 /**
  * contract LicensingModule event
  */
 export class LicensingModuleEventClient {
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x2A88056985814dcBb72aFA50B95893359B6262f5',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(licensingModuleAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
   }
 
   /**
    * event IpIdLinkedToParents for contract LicensingModule
    */
   public watchIpIdLinkedToParentsEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<LicensingModuleIpIdLinkedToParentsEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleIpIdLinkedToParentsEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licensingModuleAbi,
       address: this.address,
-      eventName: 'IpIdLinkedToParents',
+      eventName: "IpIdLinkedToParents",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event IpIdLinkedToParents for contract LicensingModule
    */
-  public async parseTxIpIdLinkedToParentsEvent(
+  public parseTxIpIdLinkedToParentsEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<LicensingModuleIpIdLinkedToParentsEvent>> {
-    const targetLogs: Array<LicensingModuleIpIdLinkedToParentsEvent> = []
+  ): Array<LicensingModuleIpIdLinkedToParentsEvent> {
+    const targetLogs: Array<LicensingModuleIpIdLinkedToParentsEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licensingModuleAbi,
-            eventName: 'IpIdLinkedToParents',
+            eventName: "IpIdLinkedToParents",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 
   /**
    * event PolicyAddedToIpId for contract LicensingModule
    */
   public watchPolicyAddedToIpIdEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<LicensingModulePolicyAddedToIpIdEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<LicensingModulePolicyAddedToIpIdEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licensingModuleAbi,
       address: this.address,
-      eventName: 'PolicyAddedToIpId',
+      eventName: "PolicyAddedToIpId",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event PolicyAddedToIpId for contract LicensingModule
    */
-  public async parseTxPolicyAddedToIpIdEvent(
+  public parseTxPolicyAddedToIpIdEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<LicensingModulePolicyAddedToIpIdEvent>> {
-    const targetLogs: Array<LicensingModulePolicyAddedToIpIdEvent> = []
+  ): Array<LicensingModulePolicyAddedToIpIdEvent> {
+    const targetLogs: Array<LicensingModulePolicyAddedToIpIdEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licensingModuleAbi,
-            eventName: 'PolicyAddedToIpId',
+            eventName: "PolicyAddedToIpId",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 
   /**
    * event PolicyRegistered for contract LicensingModule
    */
   public watchPolicyRegisteredEvent(
-    onLogs: (
-      txHash: Hex,
-      ev: Partial<LicensingModulePolicyRegisteredEvent>,
-    ) => void,
+    onLogs: (txHash: Hex, ev: Partial<LicensingModulePolicyRegisteredEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licensingModuleAbi,
       address: this.address,
-      eventName: 'PolicyRegistered',
+      eventName: "PolicyRegistered",
       onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
-    })
+    });
   }
 
   /**
    * parse tx receipt event PolicyRegistered for contract LicensingModule
    */
-  public async parseTxPolicyRegisteredEvent(
+  public parseTxPolicyRegisteredEvent(
     txReceipt: TransactionReceipt,
-  ): Promise<Array<LicensingModulePolicyRegisteredEvent>> {
-    const targetLogs: Array<LicensingModulePolicyRegisteredEvent> = []
+  ): Array<LicensingModulePolicyRegisteredEvent> {
+    const targetLogs: Array<LicensingModulePolicyRegisteredEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licensingModuleAbi,
-            eventName: 'PolicyRegistered',
+            eventName: "PolicyRegistered",
             data: log.data,
             topics: log.topics,
           }).args,
-        )
-      } catch (e) {}
+        );
+      } catch (e) {
+        /* empty */
+      }
     }
-    return targetLogs
+    return targetLogs;
   }
 }
 
@@ -6142,11 +5669,8 @@ export class LicensingModuleEventClient {
  * contract LicensingModule readonly method
  */
 export class LicensingModuleReadOnlyClient extends LicensingModuleEventClient {
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0x2A88056985814dcBb72aFA50B95893359B6262f5',
-  ) {
-    super(rpcClient, address)
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
   }
 
   /**
@@ -6161,12 +5685,12 @@ export class LicensingModuleReadOnlyClient extends LicensingModuleEventClient {
     const result = await this.rpcClient.readContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: 'getPolicyId',
+      functionName: "getPolicyId",
       args: [request.pol],
-    })
+    });
     return {
       policyId: result,
-    }
+    };
   }
 }
 
@@ -6174,15 +5698,11 @@ export class LicensingModuleReadOnlyClient extends LicensingModuleEventClient {
  * contract LicensingModule write method
  */
 export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
-  protected readonly wallet: WalletClient
+  protected readonly wallet: WalletClient;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x2A88056985814dcBb72aFA50B95893359B6262f5',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
   }
 
   /**
@@ -6197,11 +5717,11 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: 'addPolicyToIp',
+      functionName: "addPolicyToIp",
       account: this.wallet.account,
       args: [request.ipId, request.polId],
-    })
-    return await this.wallet.writeContract(call)
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -6216,11 +5736,11 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: 'linkIpToParents',
+      functionName: "linkIpToParents",
       account: this.wallet.account,
       args: [request.licenseIds, request.childIpId, request.royaltyContext],
-    })
-    return await this.wallet.writeContract(call)
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -6235,7 +5755,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: 'mintLicense',
+      functionName: "mintLicense",
       account: this.wallet.account,
       args: [
         request.policyId,
@@ -6244,8 +5764,8 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
         request.receiver,
         request.royaltyContext,
       ],
-    })
-    return await this.wallet.writeContract(call)
+    });
+    return await this.wallet.writeContract(call);
   }
 
   /**
@@ -6260,153 +5780,11 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: 'registerPolicy',
+      functionName: "registerPolicy",
       account: this.wallet.account,
       args: [request.pol],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract LicensingModule permission less write method
- */
-export class LicensingModulePermissionLessClient extends LicensingModuleReadOnlyClient {
-  protected readonly wallet: WalletClient
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x2A88056985814dcBb72aFA50B95893359B6262f5',
-  ) {
-    super(rpcClient, address)
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method addPolicyToIp for contract LicensingModule
-   *
-   * @param request LicensingModuleAddPolicyToIpRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async addPolicyToIp(
-    request: LicensingModuleAddPolicyToIpRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: licensingModuleAbi,
-            functionName: 'addPolicyToIp',
-            args: [request.ipId, request.polId],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method linkIpToParents for contract LicensingModule
-   *
-   * @param request LicensingModuleLinkIpToParentsRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async linkIpToParents(
-    request: LicensingModuleLinkIpToParentsRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: licensingModuleAbi,
-            functionName: 'linkIpToParents',
-            args: [
-              request.licenseIds,
-              request.childIpId,
-              request.royaltyContext,
-            ],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method mintLicense for contract LicensingModule
-   *
-   * @param request LicensingModuleMintLicenseRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async mintLicense(
-    request: LicensingModuleMintLicenseRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: licensingModuleAbi,
-            functionName: 'mintLicense',
-            args: [
-              request.policyId,
-              request.licensorIpId,
-              request.amount,
-              request.receiver,
-              request.royaltyContext,
-            ],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
-  }
-
-  /**
-   * permission less method registerPolicy for contract LicensingModule
-   *
-   * @param request LicensingModuleRegisterPolicyRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerPolicy(
-    request: LicensingModuleRegisterPolicyRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: licensingModuleAbi,
-            functionName: 'registerPolicy',
-            args: [request.pol],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -6418,24 +5796,21 @@ export class LicensingModulePermissionLessClient extends LicensingModuleReadOnly
  * @param moduleAddress address
  */
 export type ModuleRegistryIsRegisteredRequest = {
-  moduleAddress: Address
-}
+  moduleAddress: Address;
+};
 
-export type ModuleRegistryIsRegisteredResponse = boolean
+export type ModuleRegistryIsRegisteredResponse = boolean;
 
 /**
  * contract ModuleRegistry readonly method
  */
 export class ModuleRegistryReadOnlyClient {
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    address: Address = '0xab0bf9846eCE1299AaA1cB3FF5EfbBA328968771',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(moduleRegistryAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
   }
 
   /**
@@ -6450,9 +5825,9 @@ export class ModuleRegistryReadOnlyClient {
     return await this.rpcClient.readContract({
       abi: moduleRegistryAbi,
       address: this.address,
-      functionName: 'isRegistered',
+      functionName: "isRegistered",
       args: [request.moduleAddress],
-    })
+    });
   }
 }
 
@@ -6465,44 +5840,40 @@ export class ModuleRegistryReadOnlyClient {
  */
 export type PilPolicyFrameworkManagerRegisterPolicyRequest = {
   params: {
-    transferable: boolean
-    royaltyPolicy: Address
-    mintingFee: bigint
-    mintingFeeToken: Address
+    transferable: boolean;
+    royaltyPolicy: Address;
+    mintingFee: bigint;
+    mintingFeeToken: Address;
     policy: {
-      attribution: boolean
-      commercialUse: boolean
-      commercialAttribution: boolean
-      commercializerChecker: Address
-      commercializerCheckerData: Hex
-      commercialRevShare: number
-      derivativesAllowed: boolean
-      derivativesAttribution: boolean
-      derivativesApproval: boolean
-      derivativesReciprocal: boolean
-      territories: readonly string[]
-      distributionChannels: readonly string[]
-      contentRestrictions: readonly string[]
-    }
-  }
-}
+      attribution: boolean;
+      commercialUse: boolean;
+      commercialAttribution: boolean;
+      commercializerChecker: Address;
+      commercializerCheckerData: Hex;
+      commercialRevShare: number;
+      derivativesAllowed: boolean;
+      derivativesAttribution: boolean;
+      derivativesApproval: boolean;
+      derivativesReciprocal: boolean;
+      territories: readonly string[];
+      distributionChannels: readonly string[];
+      contentRestrictions: readonly string[];
+    };
+  };
+};
 
 /**
  * contract PILPolicyFrameworkManager write method
  */
 export class PilPolicyFrameworkManagerClient {
-  protected readonly wallet: WalletClient
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly wallet: WalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0xAc2C50Af31501370366D243FaeC56F89128f6d96',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    this.address = address || getAddress(pilPolicyFrameworkManagerAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
   }
 
   /**
@@ -6517,57 +5888,11 @@ export class PilPolicyFrameworkManagerClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: pilPolicyFrameworkManagerAbi,
       address: this.address,
-      functionName: 'registerPolicy',
+      functionName: "registerPolicy",
       account: this.wallet.account,
       args: [request.params],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract PILPolicyFrameworkManager permission less write method
- */
-export class PilPolicyFrameworkManagerPermissionLessClient {
-  protected readonly wallet: WalletClient
-  protected readonly address: Address
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0xAc2C50Af31501370366D243FaeC56F89128f6d96',
-  ) {
-    this.address = address
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method registerPolicy for contract PILPolicyFrameworkManager
-   *
-   * @param request PilPolicyFrameworkManagerRegisterPolicyRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerPolicy(
-    request: PilPolicyFrameworkManagerRegisterPolicyRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: pilPolicyFrameworkManagerAbi,
-            functionName: 'registerPolicy',
-            args: [request.params],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -6582,28 +5907,24 @@ export class PilPolicyFrameworkManagerPermissionLessClient {
  * @param amount uint256
  */
 export type RoyaltyModulePayRoyaltyOnBehalfRequest = {
-  receiverIpId: Address
-  payerIpId: Address
-  token: Address
-  amount: bigint
-}
+  receiverIpId: Address;
+  payerIpId: Address;
+  token: Address;
+  amount: bigint;
+};
 
 /**
  * contract RoyaltyModule write method
  */
 export class RoyaltyModuleClient {
-  protected readonly wallet: WalletClient
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly wallet: WalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0xF77b0933F6aaC2dCE2eAa0d79f6Bfd6b9347a5E7',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    this.address = address || getAddress(royaltyModuleAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
   }
 
   /**
@@ -6618,67 +5939,11 @@ export class RoyaltyModuleClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: royaltyModuleAbi,
       address: this.address,
-      functionName: 'payRoyaltyOnBehalf',
+      functionName: "payRoyaltyOnBehalf",
       account: this.wallet.account,
-      args: [
-        request.receiverIpId,
-        request.payerIpId,
-        request.token,
-        request.amount,
-      ],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract RoyaltyModule permission less write method
- */
-export class RoyaltyModulePermissionLessClient {
-  protected readonly wallet: WalletClient
-  protected readonly address: Address
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0xF77b0933F6aaC2dCE2eAa0d79f6Bfd6b9347a5E7',
-  ) {
-    this.address = address
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method payRoyaltyOnBehalf for contract RoyaltyModule
-   *
-   * @param request RoyaltyModulePayRoyaltyOnBehalfRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async payRoyaltyOnBehalf(
-    request: RoyaltyModulePayRoyaltyOnBehalfRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: royaltyModuleAbi,
-            functionName: 'payRoyaltyOnBehalf',
-            args: [
-              request.receiverIpId,
-              request.payerIpId,
-              request.token,
-              request.amount,
-            ],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+      args: [request.receiverIpId, request.payerIpId, request.token, request.amount],
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 
@@ -6693,28 +5958,24 @@ export class RoyaltyModulePermissionLessClient {
  * @param amount uint256
  */
 export type RoyaltyPolicyLapOnRoyaltyPaymentRequest = {
-  caller: Address
-  ipId: Address
-  token: Address
-  amount: bigint
-}
+  caller: Address;
+  ipId: Address;
+  token: Address;
+  amount: bigint;
+};
 
 /**
  * contract RoyaltyPolicyLAP write method
  */
 export class RoyaltyPolicyLapClient {
-  protected readonly wallet: WalletClient
-  protected readonly rpcClient: PublicClient
-  protected readonly address: Address
+  protected readonly wallet: WalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x265C21b34e0E92d63C678425478C42aa8D727B79',
-  ) {
-    this.address = address
-    this.rpcClient = rpcClient
-    this.wallet = wallet
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    this.address = address || getAddress(royaltyPolicyLapAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
   }
 
   /**
@@ -6729,56 +5990,10 @@ export class RoyaltyPolicyLapClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: royaltyPolicyLapAbi,
       address: this.address,
-      functionName: 'onRoyaltyPayment',
+      functionName: "onRoyaltyPayment",
       account: this.wallet.account,
       args: [request.caller, request.ipId, request.token, request.amount],
-    })
-    return await this.wallet.writeContract(call)
-  }
-}
-
-/**
- * contract RoyaltyPolicyLAP permission less write method
- */
-export class RoyaltyPolicyLapPermissionLessClient {
-  protected readonly wallet: WalletClient
-  protected readonly address: Address
-
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    address: Address = '0x265C21b34e0E92d63C678425478C42aa8D727B79',
-  ) {
-    this.address = address
-    this.wallet = wallet
-  }
-
-  /**
-   * permission less method onRoyaltyPayment for contract RoyaltyPolicyLAP
-   *
-   * @param request RoyaltyPolicyLapOnRoyaltyPaymentRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async onRoyaltyPayment(
-    request: RoyaltyPolicyLapOnRoyaltyPaymentRequest,
-  ): Promise<WriteContractReturnType> {
-    const userOperationRequest = await this.wallet.prepareUserOperationRequest({
-      userOperation: {
-        callData: await this.wallet.account.encodeCallData({
-          to: this.address,
-          data: encodeFunctionData({
-            abi: royaltyPolicyLapAbi,
-            functionName: 'onRoyaltyPayment',
-            args: [request.caller, request.ipId, request.token, request.amount],
-          }),
-          value: 0n,
-        }),
-      },
-      account: this.wallet.account,
-    })
-    return await this.wallet.sendUserOperation({
-      userOperation: userOperationRequest,
-      account: this.wallet.account,
-    })
+    });
+    return await this.wallet.writeContract(call);
   }
 }

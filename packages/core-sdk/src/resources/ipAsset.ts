@@ -4,8 +4,7 @@ import { chain, parseToBigInt } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import { RegisterIpResponse, RegisterRequest } from "../types/resources/ipAsset";
-import {IpAssetRegistryClient} from "../abi/generated";
-import {contractAddress} from "../utils/env";
+import { IpAssetRegistryClient } from "../abi/generated";
 
 export class IPAssetClient {
   private readonly wallet: WalletClient;
@@ -17,16 +16,16 @@ export class IPAssetClient {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.chainId = chainId;
-    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet, getAddress(contractAddress[chainId].IPAssetRegistry));
+    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
   }
 
   private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
     const ipId = await this.ipAssetRegistryClient.ipId({
       chainId: parseToBigInt(chain[this.chainId]),
       tokenContract: tokenAddress,
-      tokenId: tokenId
-    })
-    const isRegistered = await this.ipAssetRegistryClient.isRegistered({id: ipId})
+      tokenId: tokenId,
+    });
+    const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: ipId });
     return isRegistered ? ipId : "0x";
   }
 
@@ -51,8 +50,8 @@ export class IPAssetClient {
         tokenId: tokenId,
       });
       if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({hash: txHash})
-        const targetLogs = await this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
         return { txHash: txHash, ipId: targetLogs[0].ipId };
       } else {
         return { txHash: txHash };

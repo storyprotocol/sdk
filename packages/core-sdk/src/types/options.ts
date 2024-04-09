@@ -6,4 +6,4 @@ export type TxOptions = {
 
 export type WithTxOptions<T> = T & {
   txOptions?: TxOptions;
-}
+};

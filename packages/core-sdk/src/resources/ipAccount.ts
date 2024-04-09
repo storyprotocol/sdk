@@ -8,7 +8,8 @@ import {
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
 import { IPAccountABI } from "../abi/config";
-import { parseToBigInt, waitTx } from "../utils/utils";
+import { parseToBigInt } from "../utils/utils";
+import { IpAccountImplClient } from "../abi/generated";
 
 export class IPAccountClient {
   private readonly wallet: WalletClient;
@@ -29,21 +30,20 @@ export class IPAccountClient {
    */
   public async execute(request: IPAccountExecuteRequest): Promise<IPAccountExecuteResponse> {
     try {
-      const IPAccountConfig = {
-        abi: this.ipAccountABI,
-        address: getAddress(request.accountAddress),
-      };
+      const ipAccountClient = new IpAccountImplClient(
+        this.rpcClient,
+        this.wallet,
+        getAddress(request.accountAddress),
+      );
 
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...IPAccountConfig,
-        functionName: "execute",
-        args: [request.to, parseToBigInt(0), request.data],
-        account: this.wallet.account,
+      const txHash = await ipAccountClient.execute({
+        to: request.to,
+        value: parseToBigInt(0),
+        data: request.data,
       });
-      const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       }
       return { txHash: txHash };
     } catch (error) {
@@ -65,28 +65,23 @@ export class IPAccountClient {
     request: IPAccountExecuteWithSigRequest,
   ): Promise<IPAccountExecuteWithSigResponse> {
     try {
-      const IPAccountConfig = {
-        abi: this.ipAccountABI,
-        address: getAddress(request.accountAddress),
-      };
+      const ipAccountClient = new IpAccountImplClient(
+        this.rpcClient,
+        this.wallet,
+        getAddress(request.accountAddress),
+      );
 
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...IPAccountConfig,
-        functionName: "executeWithSig",
-        args: [
-          request.to,
-          parseToBigInt(0),
-          request.data,
-          request.signer,
-          parseToBigInt(request.deadline),
-          request.signature,
-        ],
-        account: this.wallet.account,
+      const txHash = await ipAccountClient.executeWithSig({
+        to: request.to,
+        value: parseToBigInt(0),
+        data: request.data,
+        signer: request.signer,
+        deadline: parseToBigInt(request.deadline),
+        signature: request.signature,
       });
-      const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       }
       return { txHash: txHash };
     } catch (error) {

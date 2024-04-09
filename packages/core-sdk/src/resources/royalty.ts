@@ -8,26 +8,22 @@ import {
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
 } from "../types/resources/royalty";
-import {
-  getRoyaltyModuleConfig,
-  getRoyaltyPolicyLAPConfig,
-  getRoyaltyVaultImplConfig,
-} from "../abi/config";
-import { waitTx } from "../utils/utils";
+import { getRoyaltyPolicyLAPConfig } from "../abi/config";
+import { IpRoyaltyVaultImplClient, RoyaltyModuleClient } from "../abi/generated";
 
 export class RoyaltyClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  public royaltyVaultImplConfig;
+  public royaltyVaultImplClient: IpRoyaltyVaultImplClient;
   public royaltyPolicyLAPConfig;
-  public royaltyModuleConfig;
+  public royaltyModuleClient: RoyaltyModuleClient;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-    this.royaltyVaultImplConfig = getRoyaltyVaultImplConfig(chainId);
+    this.royaltyVaultImplClient = new IpRoyaltyVaultImplClient(this.rpcClient, this.wallet);
     this.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig(chainId);
-    this.royaltyModuleConfig = getRoyaltyModuleConfig(chainId);
+    this.royaltyModuleClient = new RoyaltyModuleClient(this.rpcClient, this.wallet);
   }
   /**
    * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
@@ -45,14 +41,9 @@ export class RoyaltyClient {
       if (!proxyAddress) {
         throw new Error("Proxy address not found");
       }
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.royaltyVaultImplConfig,
-        address: proxyAddress,
-        functionName: "collectRoyaltyTokens",
-        args: [request.ancestorIpId],
-        account: this.wallet.account,
+      const txHash = await this.royaltyVaultImplClient.collectRoyaltyTokens({
+        ancestorIpId: request.ancestorIpId,
       });
-      const txHash = await this.wallet.writeContract(call);
       return { txHash };
     } catch (error) {
       handleError(error, "Failed to collect royalty tokens");
@@ -85,15 +76,14 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.royaltyModuleConfig,
-        functionName: "payRoyaltyOnBehalf",
-        args: [request.receiverIpId, request.payerIpId, request.token, request.amount],
-        account: this.wallet.account,
+      const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf({
+        receiverIpId: request.receiverIpId,
+        payerIpId: request.payerIpId,
+        token: request.token,
+        amount: request.amount,
       });
-      const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       }
       return { txHash };
     } catch (error) {

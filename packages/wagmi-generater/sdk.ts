@@ -16,6 +16,11 @@ type RunConfig = {
     isTypeScript: boolean,
 }
 
+const primitiveNeedImportMap: Record<string, boolean> = {
+    Address: true,
+    Hex: true,
+}
+
 const primitiveTypeMap = {
     uint8: 'number',
     uint32: 'number',
@@ -29,6 +34,24 @@ const primitiveTypeMap = {
     string: 'string',
 }
 
+let importUsedMap: Record<string, Record<string, boolean>> = {}
+
+function addImport(from: string, ...names: Array<string>) {
+    if (!(from in importUsedMap)) {
+        importUsedMap[from] = {}
+    }
+
+    names.forEach(it => importUsedMap[from][it] = true)
+}
+
+function buildImport(): string {
+    let imports: Array<string> = []
+    for (let from in importUsedMap) {
+        imports.push(`import {${Object.keys(importUsedMap[from]).join(', ')}} from "${from}";`)
+    }
+    return imports.join('\n')
+}
+
 function isAbiFuncOnlyRead(func: AbiFunction): boolean {
     return func.stateMutability == "view" || func.stateMutability == "pure"
 }
@@ -37,8 +60,13 @@ function parameterToPrimitiveType(type: string): string {
     if (type.endsWith("[]")) {
         return `readonly ${parameterToPrimitiveType(type.substring(0, type.length - 2))}[]`
     } else if (type in primitiveTypeMap) {
+        if (primitiveNeedImportMap[primitiveTypeMap[type]]) {
+            addImport("viem", primitiveTypeMap[type])
+        }
+
         return primitiveTypeMap[type]
     } else {
+        addImport("abitype", 'AbiTypeToPrimitiveType')
         return `AbiTypeToPrimitiveType<'${type}'>`
     }
 }
@@ -55,6 +83,7 @@ function parameterToType(type: AbiParameter, optional: boolean = false): string 
             }
         }
 
+        addImport("abitype", 'AbiParameterToPrimitiveType')
         return `AbiParameterToPrimitiveType<${JSON.stringify(type)}>` + optionalAppend
     } else {
         return parameterToPrimitiveType(type.type) + optionalAppend
@@ -144,6 +173,8 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
     if (inType.valid) types.push(`${inType.comment}\n${inType.type}`)
 
     if (!isAbiFuncOnlyRead(func)) {
+        addImport('viem', 'WriteContractReturnType')
+
         method = 'simulateContract';
         outType.valid = true
         outName = "WriteContractReturnType"
@@ -248,6 +279,8 @@ function generatePermissionLessFunction(contractName: string, func: AbiFunction)
     funcLine.push(`    return await this.wallet.sendUserOperation({userOperation: userOperationRequest, account: this.wallet.account});`)
     funcLine.push(`  }`)
 
+    addImport('viem', 'encodeFunctionData', 'WriteContractReturnType')
+
     return {func: funcLine.join("\n"), types: ""}
 }
 
@@ -277,7 +310,7 @@ function generateEventFunction(contractName: any, event: AbiEvent) {
         funcLine.push(`/**`)
         funcLine.push(` * parse tx receipt event ${event.name} for contract ${contractName}`)
         funcLine.push(` */`)
-        funcLine.push(`public async parseTx${pascalCase(event.name)}Event(txReceipt: TransactionReceipt): Promise<Array<${typeName}>> {`)
+        funcLine.push(`public parseTx${pascalCase(event.name)}Event(txReceipt: TransactionReceipt): Array<${typeName}> {`)
         funcLine.push(`    const targetLogs: Array<${typeName}> = [];`)
         funcLine.push(`    for (const log of txReceipt.logs) {`)
         funcLine.push(`        try {`)
@@ -287,25 +320,19 @@ function generateEventFunction(contractName: any, event: AbiEvent) {
         funcLine.push(`                data: log.data,`)
         funcLine.push(`                topics: log.topics,`)
         funcLine.push(`            }).args);`)
-        funcLine.push(`        } catch (e) {}`)
+        funcLine.push(`        } catch (e) { /* empty */ }`)
         funcLine.push(`    }`)
         funcLine.push(`    return targetLogs`)
         funcLine.push(`}`)
+
+        addImport('viem', 'decodeEventLog', 'WatchContractEventReturnType', 'TransactionReceipt')
     }
 
     return {func: funcLine.join("\n"), types: types.join("\n")}
 }
 
 function generateContract(config: SDKConfig, contract: Contract): string {
-    let contractAddress = ""
-    if (typeof contract.address == "string") {
-        contractAddress = `= '${contract.address}'`
-    } else {
-        for (let addressKey in contract.address) {
-            contractAddress = `= '${contract.address[addressKey]}'`
-        }
-    }
-
+    const addressName = `${camelCase(contract.name)}Address`
     let functionMap: Record<string, number> = {}
     let abiViewFunctions: Array<AbiFunction> = [];
     let abiWriteFunctions: Array<AbiFunction> = [];
@@ -350,16 +377,18 @@ function generateContract(config: SDKConfig, contract: Contract): string {
     let types: Array<string> = [];
 
     if (abiEvents.length) {
+        addImport('viem', 'PublicClient', 'Address')
+
         file.push(``)
         file.push(`/**`)
         file.push(` * contract ${contract.name} event`)
         file.push(`*/`)
         file.push(`export class ${pascalCase(contract.name)}EventClient {`)
         file.push(`  protected readonly rpcClient: PublicClient;`)
-        file.push(`  protected readonly address: Address;`)
+        file.push(`  public readonly address: Address;`)
         file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, address: Address ${contractAddress}) {`)
-        file.push(`      this.address = address;`)
+        file.push(`  constructor (rpcClient: PublicClient, address?: Address) {`)
+        file.push(`      this.address = address || getAddress(${addressName}, rpcClient.chain?.id);`)
         file.push(`      this.rpcClient = rpcClient;`)
         file.push(`  }`)
         abiEvents.forEach(it => {
@@ -371,6 +400,7 @@ function generateContract(config: SDKConfig, contract: Contract): string {
     }
 
     if (abiViewFunctions.length) {
+
         const extend = abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
         file.push(``)
         file.push(`/**`)
@@ -378,15 +408,16 @@ function generateContract(config: SDKConfig, contract: Contract): string {
         file.push(`*/`)
         file.push(`export class ${pascalCase(contract.name)}ReadOnlyClient ${extend} {`)
         if (!abiEvents.length) {
+            addImport('viem', 'PublicClient', 'Address')
             file.push(`  protected readonly rpcClient: PublicClient;`)
-            file.push(`  protected readonly address: Address;`)
+            file.push(`  public readonly address: Address;`)
         }
         file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, address: Address ${contractAddress}) {`)
+        file.push(`  constructor (rpcClient: PublicClient, address?: Address) {`)
         if (abiEvents.length) {
             file.push(`      super(rpcClient, address);`)
         } else {
-            file.push(`      this.address = address;`)
+            file.push(`      this.address = address || getAddress(${addressName}, rpcClient.chain?.id);`)
             file.push(`      this.rpcClient = rpcClient;`)
         }
         file.push(`  }`)
@@ -399,6 +430,8 @@ function generateContract(config: SDKConfig, contract: Contract): string {
     }
 
     if (abiWriteFunctions.length) {
+        addImport('viem', 'WalletClient', 'PublicClient', 'Address')
+
         const extend = abiViewFunctions.length ?
             ` extends ${pascalCase(contract.name)}ReadOnlyClient`
             : abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
@@ -410,12 +443,12 @@ function generateContract(config: SDKConfig, contract: Contract): string {
         file.push(`  protected readonly wallet: WalletClient;`)
         if (!extend) {
             file.push(`  protected readonly rpcClient: PublicClient;`)
-            file.push(`  protected readonly address: Address;`)
+            file.push(`  public readonly address: Address;`)
         }
         file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address: Address ${contractAddress}) {`)
+        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address?: Address) {`)
         if (!extend) {
-            file.push(`      this.address = address;`)
+            file.push(`      this.address = address || getAddress(${addressName}, rpcClient.chain?.id);`)
             file.push(`      this.rpcClient = rpcClient;`)
         } else {
             file.push(`      super(rpcClient, address);`)
@@ -430,7 +463,8 @@ function generateContract(config: SDKConfig, contract: Contract): string {
         file.push(`}`)
     }
 
-    if (config.permissionLessSDK && abiWriteFunctions.length){
+    if (config.permissionLessSDK && abiWriteFunctions.length) {
+        addImport('viem', 'WalletClient', 'PublicClient', 'Address')
         const extend = abiViewFunctions.length ?
             ` extends ${pascalCase(contract.name)}ReadOnlyClient`
             : abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
@@ -441,12 +475,12 @@ function generateContract(config: SDKConfig, contract: Contract): string {
         file.push(`export class ${pascalCase(contract.name)}PermissionLessClient ${extend} {`)
         file.push(`  protected readonly wallet: WalletClient;`)
         if (!extend) {
-            file.push(`  protected readonly address: Address;`)
+            file.push(`  public readonly address: Address;`)
         }
         file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address: Address ${contractAddress}) {`)
+        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address?: Address) {`)
         if (!extend) {
-            file.push(`      this.address = address;`)
+            file.push(`      this.address = address || getAddress(${addressName}, rpcClient.chain?.id);`)
         } else {
             file.push(`      super(rpcClient, address);`)
         }
@@ -466,18 +500,33 @@ function generateContract(config: SDKConfig, contract: Contract): string {
         file.join("\n");
 }
 
+function generateCommon() {
+    let file: Array<string> = [];
+    file.push(`// COMMON =============================================================`)
+    file.push(``)
+    file.push(`function getAddress(address: Record<number, Address>, chainId?: number): Address {`)
+    file.push(`   return address[chainId || 0] || '0x'`)
+    file.push(`}`)
+    file.push(``)
+
+    addImport('viem', 'Address')
+    return file.join("\n");
+}
+
 export function sdk(config: SDKConfig = {}): SDKResult {
     return {
         name: 'SDK',
         async run(runConfig: RunConfig): Promise<{ imports?: string, prepend?: string, content: string }> {
             let classFile: Array<string> = []
 
+            classFile.push(generateCommon())
+
             for (const contract of runConfig.contracts) {
                 classFile.push(generateContract(config, contract))
             }
 
             return {
-                imports: `import {encodeFunctionData, decodeEventLog, Address, PublicClient, WalletClient, WatchContractEventReturnType, WriteContractReturnType, TransactionReceipt, Hex} from "viem";import {AbiTypeToPrimitiveType, AbiParameterToPrimitiveType} from "abitype";`,
+                imports: buildImport(),
                 content: classFile.join("\n\n"),
             }
         },

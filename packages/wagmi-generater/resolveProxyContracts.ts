@@ -4,7 +4,8 @@ import {Address} from "viem";
 
 export type Config = {
     baseUrl: string,
-    contracts: Evaluate<Omit<ContractConfig, 'abi'>>[]
+    contracts: Evaluate<Omit<ContractConfig, 'abi'>>[],
+    chainId: number,
 }
 export type ProxyMap = (config: { address: NonNullable<ContractConfig['address']> }) => Address
 
@@ -12,16 +13,17 @@ interface RpcResponse {
     result: Address
 }
 
-function makeProxyMap(proxyContractsMap: Record<Address, Address>): ProxyMap {
+function getAddress(chainId: number, address: string | (Record<undefined, Address> & Partial<Record<number, Address>>)): Address {
+    if (typeof address == "string") {
+        return address as Address
+    } else {
+        return address[chainId]
+    }
+}
+
+function makeProxyMap(chainId: number, proxyContractsMap: Record<Address, Address>): ProxyMap {
     return function (config): Address {
-        let address: Address = '0x'
-        if (typeof config.address == "string") {
-            address = config.address
-        } else {
-            for (let chainId in config.address) {
-                address = config.address[chainId]
-            }
-        }
+        let address: Address = getAddress(chainId, config.address)
 
         if (address in proxyContractsMap) {
             return proxyContractsMap[address]
@@ -34,6 +36,7 @@ function makeProxyMap(proxyContractsMap: Record<Address, Address>): ProxyMap {
 export async function resolveProxyContracts(config: Config): Promise<ProxyMap> {
     const proxyContractsMap: Record<Address, Address> = {}
     for (let contract of config.contracts) {
+        const address: Address = getAddress(config.chainId, contract.address)
         const resp = await fetch(config.baseUrl, {
             method: 'POST',
             headers: {
@@ -44,7 +47,7 @@ export async function resolveProxyContracts(config: Config): Promise<ProxyMap> {
                 jsonrpc: "2.0",
                 method: "eth_getStorageAt",
                 params: [
-                    contract.address,
+                    address,
                     "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
                     "latest"
                 ],
@@ -53,9 +56,9 @@ export async function resolveProxyContracts(config: Config): Promise<ProxyMap> {
 
         const rpcResponse: RpcResponse = await resp.json()
         if (!/^0x0+$/[Symbol.match](rpcResponse.result)) {
-            proxyContractsMap[`${contract.address}`] = `0x${rpcResponse.result.substring(rpcResponse.result.length - 40)}`
+            proxyContractsMap[address] = `0x${rpcResponse.result.substring(rpcResponse.result.length - 40)}`
         }
     }
 
-    return makeProxyMap(proxyContractsMap)
+    return makeProxyMap(config.chainId, proxyContractsMap)
 }

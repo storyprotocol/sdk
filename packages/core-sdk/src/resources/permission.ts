@@ -4,20 +4,18 @@ import { handleError } from "../utils/errors";
 import { SetPermissionsRequest, SetPermissionsResponse } from "../types/resources/permission";
 import { IPAccountABI } from "../abi/config";
 import { parseToBigInt } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
-import {accessControllerAbi, IpAccountImplClient} from "../abi/generated";
-import {contractAddress} from "../utils/env";
+import { accessControllerAbi, AccessControllerClient, IpAccountImplClient } from "../abi/generated";
 
 export class PermissionClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   public ipAccountABI = IPAccountABI;
-  private readonly chainId: SupportedChainIds;
+  private accessControllerClient: AccessControllerClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-    this.chainId = chainId;
+    this.accessControllerClient = new AccessControllerClient(this.rpcClient, this.wallet);
   }
 
   /**
@@ -41,10 +39,14 @@ export class PermissionClient {
    */
   public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
-      const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, getAddress(request.ipId))
+      const ipAccountClient = new IpAccountImplClient(
+        this.rpcClient,
+        this.wallet,
+        getAddress(request.ipId),
+      );
 
       const txHash = await ipAccountClient.execute({
-        to: getAddress(contractAddress[this.chainId].AccessController),
+        to: this.accessControllerClient.address,
         value: parseToBigInt(0),
         data: encodeFunctionData({
           abi: accessControllerAbi,
@@ -60,7 +62,7 @@ export class PermissionClient {
       });
 
       if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({hash: txHash})
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         return { txHash: txHash, success: true };
       } else {
         return { txHash: txHash };

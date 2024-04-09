@@ -94,7 +94,7 @@ export class StoryClient {
    */
   public get permission(): PermissionClient {
     if (this._permission === null) {
-      this._permission = new PermissionClient(this.rpcClient, this.wallet, this.config.chainId);
+      this._permission = new PermissionClient(this.rpcClient, this.wallet);
     }
 
     return this._permission;
@@ -108,12 +108,7 @@ export class StoryClient {
    */
   public get license(): LicenseClient {
     if (this._license === null) {
-      this._license = new LicenseClient(
-        this.rpcClient,
-        this.wallet,
-        this.storyClient,
-        this.config.chainId,
-      );
+      this._license = new LicenseClient(this.rpcClient, this.wallet, this.storyClient);
     }
 
     return this._license;
@@ -127,7 +122,7 @@ export class StoryClient {
    */
   public get dispute(): DisputeClient {
     if (this._dispute === null) {
-      this._dispute = new DisputeClient(this.rpcClient, this.wallet, this.config.chainId);
+      this._dispute = new DisputeClient(this.rpcClient, this.wallet);
     }
 
     return this._dispute;
