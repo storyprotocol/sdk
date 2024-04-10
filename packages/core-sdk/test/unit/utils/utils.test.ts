@@ -16,7 +16,7 @@ import {
   storyTestnet,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
-import defaultAbi from "../../../src/abi/json/LicensingModule.abi";
+import {licensingModuleAbi} from "../../../src/abi/generated";
 
 describe("Test isIntegerString", function () {
   it("should return true when passing in an integer string", function () {
@@ -84,7 +84,7 @@ describe("Test waitTxAndFilterLog", () => {
       .stub()
       .throws(new Error("waitForTransactionReceipt error"));
     const params = {
-      abi: defaultAbi as viem.Abi,
+      abi: licensingModuleAbi as viem.Abi,
       eventName: "TransferSingle",
     };
     try {
@@ -115,7 +115,7 @@ describe("Test waitTxAndFilterLog", () => {
 
     const params = {
       from: "0x0000000000000000000000000000000000000001" as `0x${string}`,
-      abi: defaultAbi as viem.Abi,
+      abi: licensingModuleAbi as viem.Abi,
       eventName: "TransferSingle",
     };
     try {
