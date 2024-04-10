@@ -7,14 +7,12 @@ import {
   IPAccountExecuteWithSigResponse,
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
-import { IPAccountABI } from "../abi/config";
 import { parseToBigInt } from "../utils/utils";
 import { IpAccountImplClient } from "../abi/generated";
 
 export class IPAccountClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  public ipAccountABI = IPAccountABI;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.wallet = wallet;

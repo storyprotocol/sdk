@@ -2,14 +2,12 @@ import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from 
 
 import { handleError } from "../utils/errors";
 import { SetPermissionsRequest, SetPermissionsResponse } from "../types/resources/permission";
-import { IPAccountABI } from "../abi/config";
 import { parseToBigInt } from "../utils/utils";
 import { accessControllerAbi, AccessControllerClient, IpAccountImplClient } from "../abi/generated";
 
 export class PermissionClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  public ipAccountABI = IPAccountABI;
   private accessControllerClient: AccessControllerClient;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient) {

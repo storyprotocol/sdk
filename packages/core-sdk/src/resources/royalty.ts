@@ -8,23 +8,27 @@ import {
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
 } from "../types/resources/royalty";
-import { getRoyaltyPolicyLAPConfig } from "../abi/config";
-import { IpRoyaltyVaultImplClient, RoyaltyModuleClient } from "../abi/generated";
+import {
+  IpRoyaltyVaultImplClient,
+  RoyaltyModuleClient,
+  RoyaltyPolicyLapClient,
+} from "../abi/generated";
 
 export class RoyaltyClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   public royaltyVaultImplClient: IpRoyaltyVaultImplClient;
-  public royaltyPolicyLAPConfig;
+  public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.royaltyVaultImplClient = new IpRoyaltyVaultImplClient(this.rpcClient, this.wallet);
-    this.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig(chainId);
+    this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(this.rpcClient, this.wallet);
     this.royaltyModuleClient = new RoyaltyModuleClient(this.rpcClient, this.wallet);
   }
+
   /**
    * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
    * @param request - the licensing parameters for the Programmable IP License v1 (PIL) standard.
@@ -51,10 +55,8 @@ export class RoyaltyClient {
   }
 
   private async getProxyAddress(derivativeID: Hex) {
-    const data = await this.rpcClient.readContract({
-      ...this.royaltyPolicyLAPConfig,
-      functionName: "getRoyaltyData",
-      args: [derivativeID],
+    const data = await this.royaltyPolicyLAPClient.getRoyaltyData({
+      ipId: derivativeID,
     });
     if (Array.isArray(data) && data[1]) {
       return data[1];

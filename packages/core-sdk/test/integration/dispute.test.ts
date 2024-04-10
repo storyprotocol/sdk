@@ -8,7 +8,6 @@ import {
   RaiseDisputeRequest,
   ResolveDisputeRequest,
 } from "../../src/types/resources/dispute";
-import { getDisputeModuleConfig } from "../config";
 
 describe("Dispute Functions", () => {
   let client: StoryClient;
@@ -20,7 +19,6 @@ describe("Dispute Functions", () => {
     };
 
     client = StoryClient.newClient(config);
-    client.dispute.disputeModuleConfig = getDisputeModuleConfig("sepolia");
   });
 
   describe("Should be able to", async function () {

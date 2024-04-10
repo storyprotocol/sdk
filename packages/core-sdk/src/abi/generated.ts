@@ -14,7 +14,7 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735)
+ *
  */
 export const accessControllerAbi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
@@ -277,15 +277,14 @@ export const accessControllerAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735)
+ *
  */
 export const accessControllerAddress = {
-  1513: "0x6fB5BA9A8747E897109044a1cd1192898AA384a9",
-  11155111: "0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735",
+  1513: "0x7e253Df9b0fC872746877Fa362b2cAf32712d770",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xad64a4b2e18FF7D2f97aF083E7b193d7Dd141735)
+ *
  */
 export const accessControllerConfig = {
   address: accessControllerAddress,
@@ -297,14 +296,14 @@ export const accessControllerConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6157B19CBc151af2b36e0a2581001d32a22b2661)
+ *
  */
 export const disputeModuleAbi = [
   {
     type: "constructor",
     inputs: [
-      { name: "_controller", internalType: "address", type: "address" },
-      { name: "_assetRegistry", internalType: "address", type: "address" },
+      { name: "controller", internalType: "address", type: "address" },
+      { name: "assetRegistry", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -829,15 +828,14 @@ export const disputeModuleAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6157B19CBc151af2b36e0a2581001d32a22b2661)
+ *
  */
 export const disputeModuleAddress = {
-  1513: "0x837d095F9A11178545DF4114C44fb526dcf74168",
-  11155111: "0x6157B19CBc151af2b36e0a2581001d32a22b2661",
+  1513: "0x6d54456Ae5DCbDC0C9E2713cC8E650fE4f445c7C",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6157B19CBc151af2b36e0a2581001d32a22b2661)
+ *
  */
 export const disputeModuleConfig = {
   address: disputeModuleAddress,
@@ -849,7 +847,7 @@ export const disputeModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x79792DccC6C58C303510fc1F7649e481C431aFb1)
+ *
  */
 export const ipAccountImplAbi = [
   {
@@ -1152,15 +1150,14 @@ export const ipAccountImplAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x79792DccC6C58C303510fc1F7649e481C431aFb1)
+ *
  */
 export const ipAccountImplAddress = {
-  1513: "0x6d1398e1ceE174a3e41d6eB50F00Fe43132f9C8A",
-  11155111: "0x79792DccC6C58C303510fc1F7649e481C431aFb1",
+  1513: "0x38cAfD16502B1d61c6399A18d6Fa1Ea8CEca3678",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x79792DccC6C58C303510fc1F7649e481C431aFb1)
+ *
  */
 export const ipAccountImplConfig = {
   address: ipAccountImplAddress,
@@ -1172,7 +1169,7 @@ export const ipAccountImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x292639452A975630802C17c9267169D93BD5a793)
+ *
  */
 export const ipAssetRegistryAbi = [
   {
@@ -1410,15 +1407,14 @@ export const ipAssetRegistryAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x292639452A975630802C17c9267169D93BD5a793)
+ *
  */
 export const ipAssetRegistryAddress = {
-  1513: "0x30C89bCB41277f09b18DF0375b9438909e193bf0",
-  11155111: "0x292639452A975630802C17c9267169D93BD5a793",
+  1513: "0x862de97662a1231FFc14038eC1BE93aB129D2169",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x292639452A975630802C17c9267169D93BD5a793)
+ *
  */
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
@@ -1435,17 +1431,22 @@ export const ipAssetRegistryConfig = {
 export const ipRoyaltyVaultImplAbi = [
   {
     type: "constructor",
-    inputs: [{ name: "royaltyPolicyLAP", internalType: "address", type: "address" }],
+    inputs: [
+      { name: "royaltyPolicyLAP", internalType: "address", type: "address" },
+      { name: "disputeModule", internalType: "address", type: "address" },
+    ],
     stateMutability: "nonpayable",
   },
   { type: "error", inputs: [], name: "IpRoyaltyVault__AlreadyClaimed" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ClaimerNotAnAncestor" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__IpTagged" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__NotRoyaltyPolicyLAP" },
   {
     type: "error",
     inputs: [],
     name: "IpRoyaltyVault__SnapshotIntervalTooShort",
   },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroDisputeModule" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroIpId" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroRoyaltyPolicyLAP" },
   {
@@ -1478,6 +1479,31 @@ export const ipRoyaltyVaultImplAbi = [
     anonymous: false,
     inputs: [{ name: "version", internalType: "uint8", type: "uint8", indexed: false }],
     name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "claimer",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RevenueTokenClaimed",
   },
   {
     type: "event",
@@ -1543,6 +1569,13 @@ export const ipRoyaltyVaultImplAbi = [
       },
     ],
     name: "Transfer",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -1812,7 +1845,7 @@ export const ipRoyaltyVaultImplAbi = [
  *
  */
 export const ipRoyaltyVaultImplAddress = {
-  1513: "0x0dB6AAb7525F03Bf94A1fC08A9aACCc2Ad25eD12",
+  1513: "0x8Be22cc2D13ADF496a417D9C616dA4a253c68Af8",
 } as const;
 
 /**
@@ -1828,63 +1861,22 @@ export const ipRoyaltyVaultImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4)
+ *
  */
 export const licenseRegistryAbi = [
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
-    type: "constructor",
-    inputs: [
-      { name: "governance", internalType: "address", type: "address" },
-      { name: "url", internalType: "string", type: "string" },
-    ],
-    stateMutability: "nonpayable",
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
   },
   {
     type: "error",
-    inputs: [
-      { name: "sender", internalType: "address", type: "address" },
-      { name: "balance", internalType: "uint256", type: "uint256" },
-      { name: "needed", internalType: "uint256", type: "uint256" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "ERC1155InsufficientBalance",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
   },
-  {
-    type: "error",
-    inputs: [{ name: "approver", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidApprover",
-  },
-  {
-    type: "error",
-    inputs: [
-      { name: "idsLength", internalType: "uint256", type: "uint256" },
-      { name: "valuesLength", internalType: "uint256", type: "uint256" },
-    ],
-    name: "ERC1155InvalidArrayLength",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "operator", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidOperator",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidReceiver",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "sender", internalType: "address", type: "address" }],
-    name: "ERC1155InvalidSender",
-  },
-  {
-    type: "error",
-    inputs: [
-      { name: "operator", internalType: "address", type: "address" },
-      { name: "owner", internalType: "address", type: "address" },
-    ],
-    name: "ERC1155MissingApprovalForAll",
-  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "Governance__InconsistentState" },
   { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
   {
@@ -1893,61 +1885,121 @@ export const licenseRegistryAbi = [
     name: "Governance__UnsupportedInterface",
   },
   { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
   {
     type: "error",
     inputs: [],
     name: "LicenseRegistry__CallerNotLicensingModule",
   },
-  { type: "error", inputs: [], name: "LicenseRegistry__NotTransferable" },
-  { type: "error", inputs: [], name: "LicenseRegistry__RevokedLicense" },
+  {
+    type: "error",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__DerivativeAlreadyRegistered",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__DerivativeIpAlreadyHasLicense",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__DerivativeIsParent",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__IndexOutOfBounds",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__IpExpired",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__LicenseTermsNotExists",
+  },
+  { type: "error", inputs: [], name: "LicenseRegistry__NoParentIp" },
+  {
+    type: "error",
+    inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__NotLicenseTemplate",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__ParentIpExpired",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__ParentIpHasNoLicenseTerms",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__ParentIpTagged",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+    ],
+    name: "LicenseRegistry__ParentIpUnmachedLicenseTemplate",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__UnregisteredLicenseTemplate",
+  },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroDisputeModule" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
   {
     type: "error",
+    inputs: [],
+    name: "LicensingModule__DerivativesCannotAddLicenseTerms",
+  },
+  {
+    type: "error",
     inputs: [
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "length", internalType: "uint256", type: "uint256" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
-    name: "StringsInsufficientHexLength",
+    name: "LicensingModule__LicenseTermsNotFound",
+  },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
   },
   {
     type: "event",
     anonymous: false,
     inputs: [
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
       {
-        name: "account",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "operator",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      { name: "approved", internalType: "bool", type: "bool", indexed: false },
-    ],
-    name: "ApprovalForAll",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "_fromTokenId",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "_toTokenId",
+        name: "expireTime",
         internalType: "uint256",
         type: "uint256",
         indexed: false,
       },
     ],
-    name: "BatchMetadataUpdate",
+    name: "ExpirationTimeSet",
   },
   {
     type: "event",
@@ -1967,144 +2019,184 @@ export const licenseRegistryAbi = [
     anonymous: false,
     inputs: [
       {
-        name: "creator",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "receiver",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "licenseId",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: true,
-      },
-      {
-        name: "amount",
-        internalType: "uint256",
-        type: "uint256",
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
         indexed: false,
       },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
       {
-        name: "licenseData",
-        internalType: "struct Licensing.License",
+        name: "licenseTemplate",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "LicenseTemplateRegistered",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      {
+        name: "mintingLicenseConfig",
+        internalType: "struct Licensing.MintingLicenseConfig",
         type: "tuple",
         components: [
-          { name: "policyId", internalType: "uint256", type: "uint256" },
-          { name: "licensorIpId", internalType: "address", type: "address" },
-          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "isSet", internalType: "bool", type: "bool" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "mintingFeeModule",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "receiverCheckModule",
+            internalType: "address",
+            type: "address",
+          },
+          { name: "receiverCheckData", internalType: "bytes", type: "bytes" },
         ],
         indexed: false,
       },
     ],
-    name: "LicenseMinted",
+    name: "MintingLicenseConfigSetForIP",
   },
   {
     type: "event",
     anonymous: false,
     inputs: [
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
       {
-        name: "operator",
+        name: "licenseTemplate",
         internalType: "address",
         type: "address",
         indexed: true,
       },
-      { name: "from", internalType: "address", type: "address", indexed: true },
-      { name: "to", internalType: "address", type: "address", indexed: true },
       {
-        name: "ids",
-        internalType: "uint256[]",
-        type: "uint256[]",
-        indexed: false,
-      },
-      {
-        name: "values",
-        internalType: "uint256[]",
-        type: "uint256[]",
-        indexed: false,
-      },
-    ],
-    name: "TransferBatch",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "operator",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      { name: "from", internalType: "address", type: "address", indexed: true },
-      { name: "to", internalType: "address", type: "address", indexed: true },
-      { name: "id", internalType: "uint256", type: "uint256", indexed: false },
-      {
-        name: "value",
+        name: "licenseTermsId",
         internalType: "uint256",
         type: "uint256",
-        indexed: false,
+        indexed: true,
       },
     ],
-    name: "TransferSingle",
+    name: "MintingLicenseConfigSetLicense",
   },
   {
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "value", internalType: "string", type: "string", indexed: false },
-      { name: "id", internalType: "uint256", type: "uint256", indexed: true },
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
     ],
-    name: "URI",
+    name: "Upgraded",
   },
   {
     type: "function",
     inputs: [],
-    name: "DISPUTE_MODULE",
+    name: "EXPIRATION_TIME",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "attachLicenseTermsToIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "disputeModule",
     outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [],
-    name: "LICENSING_MODULE",
-    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "exists",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "id", internalType: "uint256", type: "uint256" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
     ],
-    name: "balanceOf",
+    name: "getAttachedLicenseTerms",
+    outputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getAttachedLicenseTermsCount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [
-      { name: "accounts", internalType: "address[]", type: "address[]" },
-      { name: "ids", internalType: "uint256[]", type: "uint256[]" },
+    inputs: [],
+    name: "getDefaultLicenseTerms",
+    outputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
-    name: "balanceOfBatch",
-    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "holder", internalType: "address", type: "address" },
-      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "parentIpId", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
     ],
-    name: "burnLicenses",
-    outputs: [],
-    stateMutability: "nonpayable",
+    name: "getDerivativeIp",
+    outputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
+    name: "getDerivativeIpCount",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getExpireTime",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -2115,58 +2207,31 @@ export const licenseRegistryAbi = [
   },
   {
     type: "function",
-    inputs: [],
-    name: "governance",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "imageUrl",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "operator", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
-    name: "isApprovedForAll",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "isLicenseRevoked",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "licenseId", internalType: "uint256", type: "uint256" },
-      { name: "holder", internalType: "address", type: "address" },
-    ],
-    name: "isLicensee",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "license",
+    name: "getMintingLicenseConfig",
     outputs: [
       {
         name: "",
-        internalType: "struct Licensing.License",
+        internalType: "struct Licensing.MintingLicenseConfig",
         type: "tuple",
         components: [
-          { name: "policyId", internalType: "uint256", type: "uint256" },
-          { name: "licensorIpId", internalType: "address", type: "address" },
-          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "isSet", internalType: "bool", type: "bool" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "mintingFeeModule",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "receiverCheckModule",
+            internalType: "address",
+            type: "address",
+          },
+          { name: "receiverCheckData", internalType: "bytes", type: "bytes" },
         ],
       },
     ],
@@ -2174,78 +2239,100 @@ export const licenseRegistryAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "licensorIpId",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
+    ],
+    name: "getParentIp",
+    outputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "getParentIpCount",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
+    name: "hasDerivativeIps",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-      { name: "licensorIpId_", internalType: "address", type: "address" },
-      { name: "transferable", internalType: "bool", type: "bool" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-      { name: "receiver", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
-    name: "mintLicense",
-    outputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: "hasIpAttachedLicenseTerms",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "governance", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
-    inputs: [],
-    name: "mintedLicenses",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "isDerivativeIp",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
+    name: "isRegisteredLicenseTemplate",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [],
-    name: "name",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
+    name: "licensingModule",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
-    name: "policyIdForLicense",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "from", internalType: "address", type: "address" },
-      { name: "to", internalType: "address", type: "address" },
-      { name: "ids", internalType: "uint256[]", type: "uint256[]" },
-      { name: "values", internalType: "uint256[]", type: "uint256[]" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
     ],
-    name: "safeBatchTransferFrom",
+    name: "registerDerivativeIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
+    name: "registerLicenseTemplate",
     outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     inputs: [
-      { name: "from", internalType: "address", type: "address" },
-      { name: "to", internalType: "address", type: "address" },
-      { name: "id", internalType: "uint256", type: "uint256" },
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      { name: "newLicenseTemplate", internalType: "address", type: "address" },
+      { name: "newLicenseTermsId", internalType: "uint256", type: "uint256" },
     ],
-    name: "safeTransferFrom",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "operator", internalType: "address", type: "address" },
-      { name: "approved", internalType: "bool", type: "bool" },
-    ],
-    name: "setApprovalForAll",
+    name: "setDefaultLicenseTerms",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -2258,15 +2345,18 @@ export const licenseRegistryAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
-    name: "setGovernance",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "expireTime", internalType: "uint256", type: "uint256" },
+    ],
+    name: "setExpireTime",
     outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
-    inputs: [{ name: "url", internalType: "string", type: "string" }],
-    name: "setLicensingImageUrl",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -2279,37 +2369,118 @@ export const licenseRegistryAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "mintingLicenseConfig",
+        internalType: "struct Licensing.MintingLicenseConfig",
+        type: "tuple",
+        components: [
+          { name: "isSet", internalType: "bool", type: "bool" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "mintingFeeModule",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "receiverCheckModule",
+            internalType: "address",
+            type: "address",
+          },
+          { name: "receiverCheckData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "setMintingLicenseConfigForIp",
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
-    inputs: [],
-    name: "symbol",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      {
+        name: "mintingLicenseConfig",
+        internalType: "struct Licensing.MintingLicenseConfig",
+        type: "tuple",
+        components: [
+          { name: "isSet", internalType: "bool", type: "bool" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "mintingFeeModule",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "receiverCheckModule",
+            internalType: "address",
+            type: "address",
+          },
+          { name: "receiverCheckData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "setMintingLicenseConfigForLicense",
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
-    inputs: [{ name: "id", internalType: "uint256", type: "uint256" }],
-    name: "uri",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "isMintedByIpOwner", internalType: "bool", type: "bool" },
+    ],
+    name: "verifyMintLicenseToken",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct Licensing.MintingLicenseConfig",
+        type: "tuple",
+        components: [
+          { name: "isSet", internalType: "bool", type: "bool" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "mintingFeeModule",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "receiverCheckModule",
+            internalType: "address",
+            type: "address",
+          },
+          { name: "receiverCheckData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
     stateMutability: "view",
   },
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4)
+ *
  */
 export const licenseRegistryAddress = {
-  1513: "0x410d2332270cEb9Ca78b7E2c3720046b3ef2D8Ba",
-  11155111: "0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4",
+  1513: "0x0c3D467537FAd845a78728CEdc3D9447338c5422",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xc2BC7a2d5784768BDEd98436f2522A4931e2FBb4)
+ *
  */
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
@@ -2321,7 +2492,7 @@ export const licenseRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x950d766A1a0afDc33c3e653C861A8765cb42DbdC)
+ *
  */
 export const licensingModuleAbi = [
   {
@@ -2332,6 +2503,7 @@ export const licensingModuleAbi = [
       { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "registry", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
+      { name: "licenseToken", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -2343,65 +2515,76 @@ export const licensingModuleAbi = [
   { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   {
     type: "error",
-    inputs: [],
-    name: "LicensingModule__CallerNotLicensorAndPolicyNotSet",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
   },
   {
     type: "error",
-    inputs: [],
-    name: "LicensingModule__DerivativesCannotAddPolicy",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
   },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
+  {
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
+  },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "LicensingModule__DisputedIpId" },
-  { type: "error", inputs: [], name: "LicensingModule__EmptyLicenseUrl" },
-  { type: "error", inputs: [], name: "LicensingModule__FrameworkNotFound" },
   {
     type: "error",
-    inputs: [],
-    name: "LicensingModule__IncompatibleLicensorCommercialPolicy",
+    inputs: [
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      {
+        name: "anotherRoyaltyPolicy",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "LicensingModule__IncompatibleRoyaltyPolicy",
   },
   {
     type: "error",
-    inputs: [],
-    name: "LicensingModule__InvalidPolicyFramework",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicensingModule__LicenseNotCompatibleForDerivative",
   },
-  { type: "error", inputs: [], name: "LicensingModule__LicensorNotRegistered" },
-  { type: "error", inputs: [], name: "LicensingModule__LinkParentParamFailed" },
-  { type: "error", inputs: [], name: "LicensingModule__LinkingRevokedLicense" },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipLength", internalType: "uint256", type: "uint256" },
+      { name: "licenseTermsLength", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicensingModule__LicenseTermsLengthMismatch",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "LicensingModule__LicenseTokenNotCompatibleForDerivative",
+  },
   { type: "error", inputs: [], name: "LicensingModule__MintAmountZero" },
+  { type: "error", inputs: [], name: "LicensingModule__NoLicenseToken" },
+  { type: "error", inputs: [], name: "LicensingModule__NoParentIp" },
   {
     type: "error",
-    inputs: [],
-    name: "LicensingModule__MintLicenseParamFailed",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "LicensingModule__ReceiverCheckFailed",
   },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModule__MintingFeeTokenNotWhitelisted",
-  },
-  { type: "error", inputs: [], name: "LicensingModule__NotLicensee" },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModule__ParentIdEqualThanChild",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModule__PolicyAlreadySetForIpId",
-  },
-  { type: "error", inputs: [], name: "LicensingModule__PolicyNotFound" },
   { type: "error", inputs: [], name: "LicensingModule__ReceiverZeroAddress" },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModule__RegisterPolicyFrameworkMismatch",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModule__RoyaltyPolicyNotWhitelisted",
-  },
+  { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
   {
     type: "event",
     anonymous: false,
@@ -2412,15 +2595,64 @@ export const licensingModuleAbi = [
         type: "address",
         indexed: true,
       },
-      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      {
+        name: "childIpId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "licenseTokenIds",
+        internalType: "uint256[]",
+        type: "uint256[]",
+        indexed: false,
+      },
       {
         name: "parentIpIds",
         internalType: "address[]",
         type: "address[]",
         indexed: false,
       },
+      {
+        name: "licenseTermsIds",
+        internalType: "uint256[]",
+        type: "uint256[]",
+        indexed: false,
+      },
+      {
+        name: "licenseTemplate",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
     ],
-    name: "IpIdLinkedToParents",
+    name: "DerivativeRegistered",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "GovernanceUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
   },
   {
     type: "event",
@@ -2434,94 +2666,81 @@ export const licensingModuleAbi = [
       },
       { name: "ipId", internalType: "address", type: "address", indexed: true },
       {
-        name: "policyId",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: true,
-      },
-      {
-        name: "index",
-        internalType: "uint256",
-        type: "uint256",
+        name: "licenseTemplate",
+        internalType: "address",
+        type: "address",
         indexed: false,
       },
       {
-        name: "isInherited",
-        internalType: "bool",
-        type: "bool",
+        name: "licenseTermsId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: "PolicyAddedToIpId",
+    name: "LicenseTermsAttached",
   },
   {
     type: "event",
     anonymous: false,
     inputs: [
       {
-        name: "framework",
+        name: "caller",
         internalType: "address",
         type: "address",
         indexed: true,
       },
-      { name: "name", internalType: "string", type: "string", indexed: false },
       {
-        name: "licenseTextUrl",
-        internalType: "string",
-        type: "string",
+        name: "licensorIpId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "licenseTemplate",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "licenseTermsId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "receiver",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "startLicenseTokenId",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
-    name: "PolicyFrameworkRegistered",
+    name: "LicenseTokensMinted",
   },
   {
     type: "event",
     anonymous: false,
     inputs: [
       {
-        name: "policyId",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: true,
-      },
-      {
-        name: "policyFrameworkManager",
+        name: "implementation",
         internalType: "address",
         type: "address",
         indexed: true,
-      },
-      {
-        name: "frameworkData",
-        internalType: "bytes",
-        type: "bytes",
-        indexed: false,
-      },
-      {
-        name: "royaltyPolicy",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "royaltyData",
-        internalType: "bytes",
-        type: "bytes",
-        indexed: false,
-      },
-      {
-        name: "mintingFee",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "mintingFeeToken",
-        internalType: "address",
-        type: "address",
-        indexed: false,
       },
     ],
-    name: "PolicyRegistered",
+    name: "Upgraded",
   },
   {
     type: "function",
@@ -2553,6 +2772,13 @@ export const licensingModuleAbi = [
   {
     type: "function",
     inputs: [],
+    name: "LICENSE_NFT",
+    outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
     stateMutability: "view",
@@ -2566,103 +2792,48 @@ export const licensingModuleAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
-      { name: "polId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
-    name: "addPolicyToIp",
-    outputs: [{ name: "indexOnIpId", internalType: "uint256", type: "uint256" }],
+    name: "attachLicenseTerms",
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
-    inputs: [
-      {
-        name: "pol",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
-        components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
-        ],
-      },
-    ],
-    name: "getPolicyId",
-    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    inputs: [],
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [{ name: "policyFramework", internalType: "address", type: "address" }],
-    name: "isFrameworkRegistered",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "parentIpId", internalType: "address", type: "address" },
-      { name: "childIpId", internalType: "address", type: "address" },
-    ],
-    name: "isParent",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
-    name: "isPolicyDefined",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "isPolicyIdSetForIp",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "isPolicyInherited",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "licenseIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "childIpId", internalType: "address", type: "address" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-    ],
-    name: "linkIpToParents",
+    inputs: [{ name: "governance", internalType: "address", type: "address" }],
+    name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     inputs: [
-      { name: "policyId", internalType: "uint256", type: "uint256" },
       { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
       { name: "amount", internalType: "uint256", type: "uint256" },
       { name: "receiver", internalType: "address", type: "address" },
       { name: "royaltyContext", internalType: "bytes", type: "bytes" },
     ],
-    name: "mintLicense",
-    outputs: [{ name: "licenseId", internalType: "uint256", type: "uint256" }],
+    name: "mintLicenseTokens",
+    outputs: [{ name: "startLicenseTokenId", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
   {
@@ -2674,130 +2845,39 @@ export const licensingModuleAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "parentIpIds",
-    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
-    name: "policy",
-    outputs: [
-      {
-        name: "pol",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
-        components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
-        ],
-      },
-    ],
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "framework", internalType: "address", type: "address" },
-      { name: "ipId", internalType: "address", type: "address" },
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
     ],
-    name: "policyAggregatorData",
-    outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "index", internalType: "uint256", type: "uint256" },
-    ],
-    name: "policyForIpAtIndex",
-    outputs: [
-      {
-        name: "",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
-        components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "index", internalType: "uint256", type: "uint256" },
-    ],
-    name: "policyIdForIpAtIndex",
-    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
-    ],
-    name: "policyIdsForIp",
-    outputs: [{ name: "policyIds", internalType: "uint256[]", type: "uint256[]" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "policyStatus",
-    outputs: [
-      { name: "index", internalType: "uint256", type: "uint256" },
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "active", internalType: "bool", type: "bool" },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "pol",
-        internalType: "struct Licensing.Policy",
-        type: "tuple",
-        components: [
-          { name: "isLicenseTransferable", internalType: "bool", type: "bool" },
-          { name: "policyFramework", internalType: "address", type: "address" },
-          { name: "frameworkData", internalType: "bytes", type: "bytes" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "royaltyData", internalType: "bytes", type: "bytes" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
-        ],
-      },
-    ],
-    name: "registerPolicy",
-    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
+    name: "registerDerivative",
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
-    inputs: [{ name: "manager", internalType: "address", type: "address" }],
-    name: "registerPolicyFrameworkManager",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+    ],
+    name: "registerDerivativeWithLicenseTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -2810,40 +2890,25 @@ export const licensingModuleAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "totalParentsForIpId",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "totalPolicies",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [
-      { name: "isInherited", internalType: "bool", type: "bool" },
-      { name: "ipId", internalType: "address", type: "address" },
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: "totalPoliciesForIp",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
   },
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x950d766A1a0afDc33c3e653C861A8765cb42DbdC)
+ *
  */
 export const licensingModuleAddress = {
-  1513: "0x2A88056985814dcBb72aFA50B95893359B6262f5",
-  11155111: "0x950d766A1a0afDc33c3e653C861A8765cb42DbdC",
+  1513: "0xEeDDE5529122b621105798860F235c28FD3aBA40",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x950d766A1a0afDc33c3e653C861A8765cb42DbdC)
+ *
  */
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
@@ -2855,7 +2920,7 @@ export const licensingModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27)
+ *
  */
 export const moduleRegistryAbi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
@@ -3123,15 +3188,14 @@ export const moduleRegistryAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27)
+ *
  */
 export const moduleRegistryAddress = {
-  1513: "0xab0bf9846eCE1299AaA1cB3FF5EfbBA328968771",
-  11155111: "0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27",
+  1513: "0xf2965E3B6251905Dd1E8671077760D07b0408cf2",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27)
+ *
  */
 export const moduleRegistryConfig = {
   address: moduleRegistryAddress,
@@ -3139,457 +3203,11 @@ export const moduleRegistryConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PILPolicyFrameworkManager
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2)
- */
-export const pilPolicyFrameworkManagerAbi = [
-  {
-    type: "constructor",
-    inputs: [
-      { name: "accessController", internalType: "address", type: "address" },
-      { name: "ipAccountRegistry", internalType: "address", type: "address" },
-      { name: "licensing", internalType: "address", type: "address" },
-      { name: "name_", internalType: "string", type: "string" },
-      { name: "licenseUrl_", internalType: "string", type: "string" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
-    name: "AccessControlled__NotIpAccount",
-  },
-  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
-  {
-    type: "error",
-    inputs: [],
-    name: "LicensingModuleAware__CallerNotLicensingModule",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddAttribution",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddCommercializers",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddMintingFee",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddMintingFeeToken",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddRevShare",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialDisabled_CantAddRoyaltyPolicy",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialEnabled_RoyaltyPolicyRequired",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__CommercialValueMismatch",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__DerivativesDisabled_CantAddApproval",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__DerivativesDisabled_CantAddAttribution",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__DerivativesDisabled_CantAddReciprocal",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__ReciprocalButDifferentPolicyIds",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__ReciprocalValueMismatch",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__RightsNotFound",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "PILPolicyFrameworkManager__StringArrayMismatch",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "commercializer", internalType: "address", type: "address" }],
-    name: "PolicyFrameworkManager__CommercializerCheckerDoesNotSupportHook",
-  },
-  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-  {
-    type: "error",
-    inputs: [
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "length", internalType: "uint256", type: "uint256" },
-    ],
-    name: "StringsInsufficientHexLength",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "licenseId",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: true,
-      },
-      { name: "ipId", internalType: "address", type: "address", indexed: true },
-      {
-        name: "caller",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      { name: "approved", internalType: "bool", type: "bool", indexed: false },
-    ],
-    name: "DerivativeApproved",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "ACCESS_CONTROLLER",
-    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [
-      {
-        name: "",
-        internalType: "contract IIPAccountRegistry",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "LICENSE_REGISTRY",
-    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "LICENSING_MODULE",
-    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "getAggregator",
-    outputs: [
-      {
-        name: "rights",
-        internalType: "struct PILAggregator",
-        type: "tuple",
-        components: [
-          { name: "commercial", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          { name: "lastPolicyId", internalType: "uint256", type: "uint256" },
-          { name: "territoriesAcc", internalType: "bytes32", type: "bytes32" },
-          {
-            name: "distributionChannelsAcc",
-            internalType: "bytes32",
-            type: "bytes32",
-          },
-          {
-            name: "contentRestrictionsAcc",
-            internalType: "bytes32",
-            type: "bytes32",
-          },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
-    name: "getPILPolicy",
-    outputs: [
-      {
-        name: "policy",
-        internalType: "struct PILPolicy",
-        type: "tuple",
-        components: [
-          { name: "attribution", internalType: "bool", type: "bool" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          { name: "territories", internalType: "string[]", type: "string[]" },
-          {
-            name: "distributionChannels",
-            internalType: "string[]",
-            type: "string[]",
-          },
-          {
-            name: "contentRestrictions",
-            internalType: "string[]",
-            type: "string[]",
-          },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "licenseId", internalType: "uint256", type: "uint256" },
-      { name: "childIpId", internalType: "address", type: "address" },
-    ],
-    name: "isDerivativeApproved",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "licenseTextUrl",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "name",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "policyData", internalType: "bytes", type: "bytes" }],
-    name: "policyToJson",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "pure",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "aggregator", internalType: "bytes", type: "bytes" },
-      { name: "policyId", internalType: "uint256", type: "uint256" },
-      { name: "policy", internalType: "bytes", type: "bytes" },
-    ],
-    name: "processInheritedPolicies",
-    outputs: [
-      { name: "changedAgg", internalType: "bool", type: "bool" },
-      { name: "newAggregator", internalType: "bytes", type: "bytes" },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "params",
-        internalType: "struct RegisterPILPolicyParams",
-        type: "tuple",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "mintingFeeToken", internalType: "address", type: "address" },
-          {
-            name: "policy",
-            internalType: "struct PILPolicy",
-            type: "tuple",
-            components: [
-              { name: "attribution", internalType: "bool", type: "bool" },
-              { name: "commercialUse", internalType: "bool", type: "bool" },
-              {
-                name: "commercialAttribution",
-                internalType: "bool",
-                type: "bool",
-              },
-              {
-                name: "commercializerChecker",
-                internalType: "address",
-                type: "address",
-              },
-              {
-                name: "commercializerCheckerData",
-                internalType: "bytes",
-                type: "bytes",
-              },
-              {
-                name: "commercialRevShare",
-                internalType: "uint32",
-                type: "uint32",
-              },
-              {
-                name: "derivativesAllowed",
-                internalType: "bool",
-                type: "bool",
-              },
-              {
-                name: "derivativesAttribution",
-                internalType: "bool",
-                type: "bool",
-              },
-              {
-                name: "derivativesApproval",
-                internalType: "bool",
-                type: "bool",
-              },
-              {
-                name: "derivativesReciprocal",
-                internalType: "bool",
-                type: "bool",
-              },
-              {
-                name: "territories",
-                internalType: "string[]",
-                type: "string[]",
-              },
-              {
-                name: "distributionChannels",
-                internalType: "string[]",
-                type: "string[]",
-              },
-              {
-                name: "contentRestrictions",
-                internalType: "string[]",
-                type: "string[]",
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    name: "registerPolicy",
-    outputs: [{ name: "policyId", internalType: "uint256", type: "uint256" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "licenseId", internalType: "uint256", type: "uint256" },
-      { name: "childIpId", internalType: "address", type: "address" },
-      { name: "approved", internalType: "bool", type: "bool" },
-    ],
-    name: "setApproval",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "licenseId", internalType: "uint256", type: "uint256" },
-      { name: "licensee", internalType: "address", type: "address" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "parentIpId", internalType: "address", type: "address" },
-      { name: "policyData", internalType: "bytes", type: "bytes" },
-    ],
-    name: "verifyLink",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "licensee", internalType: "address", type: "address" },
-      { name: "mintingFromADerivative", internalType: "bool", type: "bool" },
-      { name: "licensorIpId", internalType: "address", type: "address" },
-      { name: "receiver", internalType: "address", type: "address" },
-      { name: "mintAmount", internalType: "uint256", type: "uint256" },
-      { name: "policyData", internalType: "bytes", type: "bytes" },
-    ],
-    name: "verifyMint",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-] as const;
-
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2)
- */
-export const pilPolicyFrameworkManagerAddress = {
-  1513: "0xAc2C50Af31501370366D243FaeC56F89128f6d96",
-  11155111: "0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2",
-} as const;
-
-/**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xeAABf2b80B7e069EE449B5629590A1cc0F9bC9C2)
- */
-export const pilPolicyFrameworkManagerConfig = {
-  address: pilPolicyFrameworkManagerAddress,
-  abi: pilPolicyFrameworkManagerAbi,
-} as const;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RoyaltyModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xA6bEf9CC650A16939566c1da5d5088f3F028a865)
+ *
  */
 export const royaltyModuleAbi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
@@ -3626,6 +3244,7 @@ export const royaltyModuleAbi = [
     inputs: [],
     name: "RoyaltyModule__IncompatibleRoyaltyPolicy",
   },
+  { type: "error", inputs: [], name: "RoyaltyModule__IpIsTagged" },
   { type: "error", inputs: [], name: "RoyaltyModule__NoParentsOnLinking" },
   { type: "error", inputs: [], name: "RoyaltyModule__NoRoyaltyPolicySet" },
   { type: "error", inputs: [], name: "RoyaltyModule__NotAllowedCaller" },
@@ -3639,6 +3258,7 @@ export const royaltyModuleAbi = [
     inputs: [],
     name: "RoyaltyModule__NotWhitelistedRoyaltyToken",
   },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroDisputeModule" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicensingModule" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyPolicy" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyToken" },
@@ -3793,6 +3413,13 @@ export const royaltyModuleAbi = [
   {
     type: "function",
     inputs: [],
+    name: "disputeModule",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "getGovernance",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
@@ -3902,6 +3529,13 @@ export const royaltyModuleAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "dispute", internalType: "address", type: "address" }],
+    name: "setDisputeModule",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
     name: "setGovernance",
     outputs: [],
@@ -3954,15 +3588,14 @@ export const royaltyModuleAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xA6bEf9CC650A16939566c1da5d5088f3F028a865)
+ *
  */
 export const royaltyModuleAddress = {
-  1513: "0xF77b0933F6aaC2dCE2eAa0d79f6Bfd6b9347a5E7",
-  11155111: "0xA6bEf9CC650A16939566c1da5d5088f3F028a865",
+  1513: "0x551AD8CD7893003cE00500aC2aCF1E327763D9f6",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xA6bEf9CC650A16939566c1da5d5088f3F028a865)
+ *
  */
 export const royaltyModuleConfig = {
   address: royaltyModuleAddress,
@@ -3974,7 +3607,7 @@ export const royaltyModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x16eF58e959522727588921A92e9084d36E5d3855)
+ *
  */
 export const royaltyPolicyLapAbi = [
   {
@@ -3982,9 +3615,6 @@ export const royaltyPolicyLapAbi = [
     inputs: [
       { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "licensingModule", internalType: "address", type: "address" },
-      { name: "liquidSplitFactory", internalType: "address", type: "address" },
-      { name: "liquidSplitMain", internalType: "address", type: "address" },
-      { name: "governance", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -3998,7 +3628,12 @@ export const royaltyPolicyLapAbi = [
     inputs: [{ name: "account", internalType: "address", type: "address" }],
     name: "AddressInsufficientBalance",
   },
-  { type: "error", inputs: [], name: "ERC1167FailedCreateClone" },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "Governance__InconsistentState" },
   { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
@@ -4008,6 +3643,8 @@ export const royaltyPolicyLapAbi = [
     name: "Governance__UnsupportedInterface",
   },
   { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveAncestorsLimit" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveParentLimit" },
@@ -4019,56 +3656,32 @@ export const royaltyPolicyLapAbi = [
   {
     type: "error",
     inputs: [],
-    name: "RoyaltyPolicyLAP__ImplementationAlreadySet",
-  },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__InvalidAncestors" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__InvalidAncestorsHash" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidAncestorsLength",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidAncestorsRoyalty",
-  },
-  {
-    type: "error",
-    inputs: [],
     name: "RoyaltyPolicyLAP__InvalidParentRoyaltiesLength",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidRoyaltyAmountLength",
   },
   {
     type: "error",
     inputs: [],
     name: "RoyaltyPolicyLAP__LastPositionNotAbleToMintLicense",
   },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotFullOwnership" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__TransferFailed" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__UnlinkableToParents" },
   {
     type: "error",
     inputs: [],
-    name: "RoyaltyPolicyLAP__ZeroAncestorsVaultImpl",
+    name: "RoyaltyPolicyLAP__ZeroIpRoyaltyVaultBeacon",
   },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroLicensingModule" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__ZeroLiquidSplitFactory",
-  },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroLiquidSplitMain" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroRoyaltyModule" },
   {
     type: "error",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
   },
   {
     type: "event",
@@ -4088,19 +3701,26 @@ export const royaltyPolicyLapAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "ipId",
         internalType: "address",
         type: "address",
         indexed: false,
       },
       {
-        name: "splitClone",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "ancestorsVault",
+        name: "ipRoyaltyVault",
         internalType: "address",
         type: "address",
         indexed: false,
@@ -4127,30 +3747,22 @@ export const royaltyPolicyLapAbi = [
     name: "PolicyInitialized",
   },
   {
-    type: "function",
-    inputs: [],
-    name: "ANCESTORS_VAULT_IMPL",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
   },
   {
     type: "function",
     inputs: [],
     name: "LICENSING_MODULE",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "LIQUID_SPLIT_FACTORY",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "LIQUID_SPLIT_MAIN",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
@@ -4178,61 +3790,16 @@ export const royaltyPolicyLapAbi = [
   {
     type: "function",
     inputs: [],
-    name: "TOTAL_RNFT_SUPPLY",
+    name: "TOTAL_RT_SUPPLY",
     outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "claimerIpId", internalType: "address", type: "address" },
-      { name: "ancestors", internalType: "address[]", type: "address[]" },
-      {
-        name: "ancestorsRoyalties",
-        internalType: "uint32[]",
-        type: "uint32[]",
-      },
-      { name: "withdrawETH", internalType: "bool", type: "bool" },
-      { name: "tokens", internalType: "contract ERC20[]", type: "address[]" },
-    ],
-    name: "claimFromAncestorsVault",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "withdrawETH", internalType: "uint256", type: "uint256" },
-      { name: "tokens", internalType: "contract ERC20[]", type: "address[]" },
-    ],
-    name: "claimFromIpPool",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "withdrawETH", internalType: "uint256", type: "uint256" },
-      { name: "token", internalType: "address", type: "address" },
-    ],
-    name: "claimFromIpPoolAsTotalRnftOwner",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "token", internalType: "address", type: "address" },
-      { name: "accounts", internalType: "address[]", type: "address[]" },
-      { name: "distributorAddress", internalType: "address", type: "address" },
-    ],
-    name: "distributeIpPoolFunds",
-    outputs: [],
-    stateMutability: "nonpayable",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -4244,34 +3811,35 @@ export const royaltyPolicyLapAbi = [
   {
     type: "function",
     inputs: [],
-    name: "governance",
+    name: "getIpRoyaltyVaultBeacon",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getRoyaltyData",
+    outputs: [
+      { name: "", internalType: "bool", type: "bool" },
       { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "uint256[]", type: "uint256[]" },
-      { name: "", internalType: "uint256[]", type: "uint256[]" },
-      { name: "", internalType: "bytes", type: "bytes" },
+      { name: "", internalType: "uint32", type: "uint32" },
+      { name: "", internalType: "address[]", type: "address[]" },
+      { name: "", internalType: "uint32[]", type: "uint32[]" },
     ],
-    name: "onERC1155BatchReceived",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "uint256", type: "uint256" },
-      { name: "", internalType: "uint256", type: "uint256" },
-      { name: "", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onERC1155Received",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    inputs: [],
+    name: "getSnapshotInterval",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "governance", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
@@ -4311,23 +3879,10 @@ export const royaltyPolicyLapAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "royaltyData",
-    outputs: [
-      { name: "isUnlinkableToParents", internalType: "bool", type: "bool" },
-      { name: "splitClone", internalType: "address", type: "address" },
-      { name: "ancestorsVault", internalType: "address", type: "address" },
-      { name: "royaltyStack", internalType: "uint32", type: "uint32" },
-      { name: "ancestorsHash", internalType: "bytes32", type: "bytes32" },
-    ],
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "ancestorsVaultImpl", internalType: "address", type: "address" }],
-    name: "setAncestorsVaultImplementation",
-    outputs: [],
-    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -4338,24 +3893,39 @@ export const royaltyPolicyLapAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
+    inputs: [{ name: "beacon", internalType: "address", type: "address" }],
+    name: "setIpRoyaltyVaultBeacon",
+    outputs: [],
+    stateMutability: "nonpayable",
   },
-  { type: "receive", stateMutability: "payable" },
+  {
+    type: "function",
+    inputs: [{ name: "timestampInterval", internalType: "uint256", type: "uint256" }],
+    name: "setSnapshotInterval",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x16eF58e959522727588921A92e9084d36E5d3855)
+ *
  */
 export const royaltyPolicyLapAddress = {
-  1513: "0x265C21b34e0E92d63C678425478C42aa8D727B79",
-  11155111: "0x16eF58e959522727588921A92e9084d36E5d3855",
+  1513: "0x2EcdB5bD12a037dCb9De0Ab7957f35FEeF758eA6",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x16eF58e959522727588921A92e9084d36E5d3855)
+ *
  */
 export const royaltyPolicyLapConfig = {
   address: royaltyPolicyLapAddress,
@@ -5215,54 +4785,458 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
 // Contract LicenseRegistry =============================================================
 
 /**
- * LicenseRegistryTransferBatchEvent
+ * LicenseRegistryExpirationTimeSetEvent
  *
- * @param operator address
- * @param from address
- * @param to address
- * @param ids uint256[]
- * @param values uint256[]
+ * @param ipId address
+ * @param expireTime uint256
  */
-export type LicenseRegistryTransferBatchEvent = {
-  operator: Address;
-  from: Address;
-  to: Address;
-  ids: readonly bigint[];
-  values: readonly bigint[];
+export type LicenseRegistryExpirationTimeSetEvent = {
+  ipId: Address;
+  expireTime: bigint;
 };
 
 /**
- * LicenseRegistryTransferSingleEvent
+ * LicenseRegistryGovernanceUpdatedEvent
  *
- * @param operator address
- * @param from address
- * @param to address
- * @param id uint256
- * @param value uint256
+ * @param newGovernance address
  */
-export type LicenseRegistryTransferSingleEvent = {
-  operator: Address;
-  from: Address;
-  to: Address;
-  id: bigint;
-  value: bigint;
+export type LicenseRegistryGovernanceUpdatedEvent = {
+  newGovernance: Address;
 };
 
 /**
- * LicenseRegistryMintLicenseRequest
+ * LicenseRegistryInitializedEvent
  *
- * @param policyId uint256
- * @param licensorIpId_ address
- * @param transferable bool
- * @param amount uint256
- * @param receiver address
+ * @param version uint64
  */
-export type LicenseRegistryMintLicenseRequest = {
-  policyId: bigint;
-  licensorIpId_: Address;
-  transferable: boolean;
-  amount: bigint;
-  receiver: Address;
+export type LicenseRegistryInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * LicenseRegistryLicenseTemplateRegisteredEvent
+ *
+ * @param licenseTemplate address
+ */
+export type LicenseRegistryLicenseTemplateRegisteredEvent = {
+  licenseTemplate: Address;
+};
+
+/**
+ * LicenseRegistryMintingLicenseConfigSetForIpEvent
+ *
+ * @param ipId address
+ * @param mintingLicenseConfig tuple
+ */
+export type LicenseRegistryMintingLicenseConfigSetForIpEvent = {
+  ipId: Address;
+  mintingLicenseConfig: {
+    isSet: boolean;
+    mintingFee: bigint;
+    mintingFeeModule: Address;
+    receiverCheckModule: Address;
+    receiverCheckData: Hex;
+  };
+};
+
+/**
+ * LicenseRegistryMintingLicenseConfigSetLicenseEvent
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryMintingLicenseConfigSetLicenseEvent = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type LicenseRegistryUpgradedEvent = {
+  implementation: Address;
+};
+
+export type LicenseRegistryExpirationTimeResponse = Hex;
+
+export type LicenseRegistryUpgradeInterfaceVersionResponse = string;
+
+export type LicenseRegistryDisputeModuleResponse = Address;
+
+/**
+ * LicenseRegistryExistsRequest
+ *
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryExistsRequest = {
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+export type LicenseRegistryExistsResponse = boolean;
+
+/**
+ * LicenseRegistryGetAttachedLicenseTermsRequest
+ *
+ * @param ipId address
+ * @param index uint256
+ */
+export type LicenseRegistryGetAttachedLicenseTermsRequest = {
+  ipId: Address;
+  index: bigint;
+};
+
+/**
+ * LicenseRegistryGetAttachedLicenseTermsResponse
+ *
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryGetAttachedLicenseTermsResponse = {
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryGetAttachedLicenseTermsCountRequest
+ *
+ * @param ipId address
+ */
+export type LicenseRegistryGetAttachedLicenseTermsCountRequest = {
+  ipId: Address;
+};
+
+export type LicenseRegistryGetAttachedLicenseTermsCountResponse = bigint;
+
+/**
+ * LicenseRegistryGetDefaultLicenseTermsResponse
+ *
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryGetDefaultLicenseTermsResponse = {
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryGetDerivativeIpRequest
+ *
+ * @param parentIpId address
+ * @param index uint256
+ */
+export type LicenseRegistryGetDerivativeIpRequest = {
+  parentIpId: Address;
+  index: bigint;
+};
+
+/**
+ * LicenseRegistryGetDerivativeIpResponse
+ *
+ * @param childIpId address
+ */
+export type LicenseRegistryGetDerivativeIpResponse = {
+  childIpId: Address;
+};
+
+/**
+ * LicenseRegistryGetDerivativeIpCountRequest
+ *
+ * @param parentIpId address
+ */
+export type LicenseRegistryGetDerivativeIpCountRequest = {
+  parentIpId: Address;
+};
+
+export type LicenseRegistryGetDerivativeIpCountResponse = bigint;
+
+/**
+ * LicenseRegistryGetExpireTimeRequest
+ *
+ * @param ipId address
+ */
+export type LicenseRegistryGetExpireTimeRequest = {
+  ipId: Address;
+};
+
+export type LicenseRegistryGetExpireTimeResponse = bigint;
+
+export type LicenseRegistryGetGovernanceResponse = Address;
+
+/**
+ * LicenseRegistryGetMintingLicenseConfigRequest
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryGetMintingLicenseConfigRequest = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+export type LicenseRegistryGetMintingLicenseConfigResponse = {
+  isSet: boolean;
+  mintingFee: bigint;
+  mintingFeeModule: Address;
+  receiverCheckModule: Address;
+  receiverCheckData: Hex;
+};
+
+/**
+ * LicenseRegistryGetParentIpRequest
+ *
+ * @param childIpId address
+ * @param index uint256
+ */
+export type LicenseRegistryGetParentIpRequest = {
+  childIpId: Address;
+  index: bigint;
+};
+
+/**
+ * LicenseRegistryGetParentIpResponse
+ *
+ * @param parentIpId address
+ */
+export type LicenseRegistryGetParentIpResponse = {
+  parentIpId: Address;
+};
+
+/**
+ * LicenseRegistryGetParentIpCountRequest
+ *
+ * @param childIpId address
+ */
+export type LicenseRegistryGetParentIpCountRequest = {
+  childIpId: Address;
+};
+
+export type LicenseRegistryGetParentIpCountResponse = bigint;
+
+/**
+ * LicenseRegistryHasDerivativeIpsRequest
+ *
+ * @param parentIpId address
+ */
+export type LicenseRegistryHasDerivativeIpsRequest = {
+  parentIpId: Address;
+};
+
+export type LicenseRegistryHasDerivativeIpsResponse = boolean;
+
+/**
+ * LicenseRegistryHasIpAttachedLicenseTermsRequest
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryHasIpAttachedLicenseTermsRequest = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+export type LicenseRegistryHasIpAttachedLicenseTermsResponse = boolean;
+
+/**
+ * LicenseRegistryIsDerivativeIpRequest
+ *
+ * @param childIpId address
+ */
+export type LicenseRegistryIsDerivativeIpRequest = {
+  childIpId: Address;
+};
+
+export type LicenseRegistryIsDerivativeIpResponse = boolean;
+
+/**
+ * LicenseRegistryIsRegisteredLicenseTemplateRequest
+ *
+ * @param licenseTemplate address
+ */
+export type LicenseRegistryIsRegisteredLicenseTemplateRequest = {
+  licenseTemplate: Address;
+};
+
+export type LicenseRegistryIsRegisteredLicenseTemplateResponse = boolean;
+
+export type LicenseRegistryLicensingModuleResponse = Address;
+
+export type LicenseRegistryProxiableUuidResponse = Hex;
+
+/**
+ * LicenseRegistryVerifyMintLicenseTokenRequest
+ *
+ * @param licensorIpId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param isMintedByIpOwner bool
+ */
+export type LicenseRegistryVerifyMintLicenseTokenRequest = {
+  licensorIpId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  isMintedByIpOwner: boolean;
+};
+
+export type LicenseRegistryVerifyMintLicenseTokenResponse = {
+  isSet: boolean;
+  mintingFee: bigint;
+  mintingFeeModule: Address;
+  receiverCheckModule: Address;
+  receiverCheckData: Hex;
+};
+
+/**
+ * LicenseRegistryAttachLicenseTermsToIpRequest
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryAttachLicenseTermsToIpRequest = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryInitializeRequest
+ *
+ * @param governance address
+ */
+export type LicenseRegistryInitializeRequest = {
+  governance: Address;
+};
+
+/**
+ * LicenseRegistryRegisterDerivativeIpRequest
+ *
+ * @param childIpId address
+ * @param parentIpIds address[]
+ * @param licenseTemplate address
+ * @param licenseTermsIds uint256[]
+ */
+export type LicenseRegistryRegisterDerivativeIpRequest = {
+  childIpId: Address;
+  parentIpIds: readonly Address[];
+  licenseTemplate: Address;
+  licenseTermsIds: readonly bigint[];
+};
+
+/**
+ * LicenseRegistryRegisterLicenseTemplateRequest
+ *
+ * @param licenseTemplate address
+ */
+export type LicenseRegistryRegisterLicenseTemplateRequest = {
+  licenseTemplate: Address;
+};
+
+/**
+ * LicenseRegistrySetDefaultLicenseTermsRequest
+ *
+ * @param newLicenseTemplate address
+ * @param newLicenseTermsId uint256
+ */
+export type LicenseRegistrySetDefaultLicenseTermsRequest = {
+  newLicenseTemplate: Address;
+  newLicenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistrySetDisputeModuleRequest
+ *
+ * @param newDisputeModule address
+ */
+export type LicenseRegistrySetDisputeModuleRequest = {
+  newDisputeModule: Address;
+};
+
+/**
+ * LicenseRegistrySetExpireTimeRequest
+ *
+ * @param ipId address
+ * @param expireTime uint256
+ */
+export type LicenseRegistrySetExpireTimeRequest = {
+  ipId: Address;
+  expireTime: bigint;
+};
+
+/**
+ * LicenseRegistrySetGovernanceRequest
+ *
+ * @param newGovernance address
+ */
+export type LicenseRegistrySetGovernanceRequest = {
+  newGovernance: Address;
+};
+
+/**
+ * LicenseRegistrySetLicensingModuleRequest
+ *
+ * @param newLicensingModule address
+ */
+export type LicenseRegistrySetLicensingModuleRequest = {
+  newLicensingModule: Address;
+};
+
+/**
+ * LicenseRegistrySetMintingLicenseConfigForIpRequest
+ *
+ * @param ipId address
+ * @param mintingLicenseConfig tuple
+ */
+export type LicenseRegistrySetMintingLicenseConfigForIpRequest = {
+  ipId: Address;
+  mintingLicenseConfig: {
+    isSet: boolean;
+    mintingFee: bigint;
+    mintingFeeModule: Address;
+    receiverCheckModule: Address;
+    receiverCheckData: Hex;
+  };
+};
+
+/**
+ * LicenseRegistrySetMintingLicenseConfigForLicenseRequest
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param mintingLicenseConfig tuple
+ */
+export type LicenseRegistrySetMintingLicenseConfigForLicenseRequest = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  mintingLicenseConfig: {
+    isSet: boolean;
+    mintingFee: bigint;
+    mintingFeeModule: Address;
+    receiverCheckModule: Address;
+    receiverCheckData: Hex;
+  };
+};
+
+/**
+ * LicenseRegistryUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type LicenseRegistryUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
 };
 
 /**
@@ -5278,15 +5252,15 @@ export class LicenseRegistryEventClient {
   }
 
   /**
-   * event TransferBatch for contract LicenseRegistry
+   * event ExpirationTimeSet for contract LicenseRegistry
    */
-  public watchTransferBatchEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryTransferBatchEvent>) => void,
+  public watchExpirationTimeSetEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryExpirationTimeSetEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licenseRegistryAbi,
       address: this.address,
-      eventName: "TransferBatch",
+      eventName: "ExpirationTimeSet",
       onLogs: (evs) => {
         evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
@@ -5294,18 +5268,18 @@ export class LicenseRegistryEventClient {
   }
 
   /**
-   * parse tx receipt event TransferBatch for contract LicenseRegistry
+   * parse tx receipt event ExpirationTimeSet for contract LicenseRegistry
    */
-  public parseTxTransferBatchEvent(
+  public parseTxExpirationTimeSetEvent(
     txReceipt: TransactionReceipt,
-  ): Array<LicenseRegistryTransferBatchEvent> {
-    const targetLogs: Array<LicenseRegistryTransferBatchEvent> = [];
+  ): Array<LicenseRegistryExpirationTimeSetEvent> {
+    const targetLogs: Array<LicenseRegistryExpirationTimeSetEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licenseRegistryAbi,
-            eventName: "TransferBatch",
+            eventName: "ExpirationTimeSet",
             data: log.data,
             topics: log.topics,
           }).args,
@@ -5318,15 +5292,15 @@ export class LicenseRegistryEventClient {
   }
 
   /**
-   * event TransferSingle for contract LicenseRegistry
+   * event GovernanceUpdated for contract LicenseRegistry
    */
-  public watchTransferSingleEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryTransferSingleEvent>) => void,
+  public watchGovernanceUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryGovernanceUpdatedEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licenseRegistryAbi,
       address: this.address,
-      eventName: "TransferSingle",
+      eventName: "GovernanceUpdated",
       onLogs: (evs) => {
         evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
@@ -5334,18 +5308,216 @@ export class LicenseRegistryEventClient {
   }
 
   /**
-   * parse tx receipt event TransferSingle for contract LicenseRegistry
+   * parse tx receipt event GovernanceUpdated for contract LicenseRegistry
    */
-  public parseTxTransferSingleEvent(
+  public parseTxGovernanceUpdatedEvent(
     txReceipt: TransactionReceipt,
-  ): Array<LicenseRegistryTransferSingleEvent> {
-    const targetLogs: Array<LicenseRegistryTransferSingleEvent> = [];
+  ): Array<LicenseRegistryGovernanceUpdatedEvent> {
+    const targetLogs: Array<LicenseRegistryGovernanceUpdatedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licenseRegistryAbi,
-            eventName: "TransferSingle",
+            eventName: "GovernanceUpdated",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract LicenseRegistry
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract LicenseRegistry
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicenseRegistryInitializedEvent> {
+    const targetLogs: Array<LicenseRegistryInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licenseRegistryAbi,
+            eventName: "Initialized",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event LicenseTemplateRegistered for contract LicenseRegistry
+   */
+  public watchLicenseTemplateRegisteredEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryLicenseTemplateRegisteredEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      eventName: "LicenseTemplateRegistered",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event LicenseTemplateRegistered for contract LicenseRegistry
+   */
+  public parseTxLicenseTemplateRegisteredEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicenseRegistryLicenseTemplateRegisteredEvent> {
+    const targetLogs: Array<LicenseRegistryLicenseTemplateRegisteredEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licenseRegistryAbi,
+            eventName: "LicenseTemplateRegistered",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event MintingLicenseConfigSetForIP for contract LicenseRegistry
+   */
+  public watchMintingLicenseConfigSetForIpEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryMintingLicenseConfigSetForIpEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      eventName: "MintingLicenseConfigSetForIP",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event MintingLicenseConfigSetForIP for contract LicenseRegistry
+   */
+  public parseTxMintingLicenseConfigSetForIpEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicenseRegistryMintingLicenseConfigSetForIpEvent> {
+    const targetLogs: Array<LicenseRegistryMintingLicenseConfigSetForIpEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licenseRegistryAbi,
+            eventName: "MintingLicenseConfigSetForIP",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event MintingLicenseConfigSetLicense for contract LicenseRegistry
+   */
+  public watchMintingLicenseConfigSetLicenseEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryMintingLicenseConfigSetLicenseEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      eventName: "MintingLicenseConfigSetLicense",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event MintingLicenseConfigSetLicense for contract LicenseRegistry
+   */
+  public parseTxMintingLicenseConfigSetLicenseEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicenseRegistryMintingLicenseConfigSetLicenseEvent> {
+    const targetLogs: Array<LicenseRegistryMintingLicenseConfigSetLicenseEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licenseRegistryAbi,
+            eventName: "MintingLicenseConfigSetLicense",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract LicenseRegistry
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract LicenseRegistry
+   */
+  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<LicenseRegistryUpgradedEvent> {
+    const targetLogs: Array<LicenseRegistryUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licenseRegistryAbi,
+            eventName: "Upgraded",
             data: log.data,
             topics: log.topics,
           }).args,
@@ -5359,9 +5531,373 @@ export class LicenseRegistryEventClient {
 }
 
 /**
+ * contract LicenseRegistry readonly method
+ */
+export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method EXPIRATION_TIME for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryExpirationTimeRequest
+   * @return Promise<LicenseRegistryExpirationTimeResponse>
+   */
+  public async expirationTime(): Promise<LicenseRegistryExpirationTimeResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "EXPIRATION_TIME",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryUpgradeInterfaceVersionRequest
+   * @return Promise<LicenseRegistryUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<LicenseRegistryUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method disputeModule for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryDisputeModuleRequest
+   * @return Promise<LicenseRegistryDisputeModuleResponse>
+   */
+  public async disputeModule(): Promise<LicenseRegistryDisputeModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "disputeModule",
+    });
+  }
+
+  /**
+   * method exists for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryExistsRequest
+   * @return Promise<LicenseRegistryExistsResponse>
+   */
+  public async exists(
+    request: LicenseRegistryExistsRequest,
+  ): Promise<LicenseRegistryExistsResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "exists",
+      args: [request.licenseTemplate, request.licenseTermsId],
+    });
+  }
+
+  /**
+   * method getAttachedLicenseTerms for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetAttachedLicenseTermsRequest
+   * @return Promise<LicenseRegistryGetAttachedLicenseTermsResponse>
+   */
+  public async getAttachedLicenseTerms(
+    request: LicenseRegistryGetAttachedLicenseTermsRequest,
+  ): Promise<LicenseRegistryGetAttachedLicenseTermsResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getAttachedLicenseTerms",
+      args: [request.ipId, request.index],
+    });
+    return {
+      licenseTemplate: result[0],
+      licenseTermsId: result[1],
+    };
+  }
+
+  /**
+   * method getAttachedLicenseTermsCount for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetAttachedLicenseTermsCountRequest
+   * @return Promise<LicenseRegistryGetAttachedLicenseTermsCountResponse>
+   */
+  public async getAttachedLicenseTermsCount(
+    request: LicenseRegistryGetAttachedLicenseTermsCountRequest,
+  ): Promise<LicenseRegistryGetAttachedLicenseTermsCountResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getAttachedLicenseTermsCount",
+      args: [request.ipId],
+    });
+  }
+
+  /**
+   * method getDefaultLicenseTerms for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetDefaultLicenseTermsRequest
+   * @return Promise<LicenseRegistryGetDefaultLicenseTermsResponse>
+   */
+  public async getDefaultLicenseTerms(): Promise<LicenseRegistryGetDefaultLicenseTermsResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getDefaultLicenseTerms",
+    });
+    return {
+      licenseTemplate: result[0],
+      licenseTermsId: result[1],
+    };
+  }
+
+  /**
+   * method getDerivativeIp for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetDerivativeIpRequest
+   * @return Promise<LicenseRegistryGetDerivativeIpResponse>
+   */
+  public async getDerivativeIp(
+    request: LicenseRegistryGetDerivativeIpRequest,
+  ): Promise<LicenseRegistryGetDerivativeIpResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getDerivativeIp",
+      args: [request.parentIpId, request.index],
+    });
+    return {
+      childIpId: result,
+    };
+  }
+
+  /**
+   * method getDerivativeIpCount for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetDerivativeIpCountRequest
+   * @return Promise<LicenseRegistryGetDerivativeIpCountResponse>
+   */
+  public async getDerivativeIpCount(
+    request: LicenseRegistryGetDerivativeIpCountRequest,
+  ): Promise<LicenseRegistryGetDerivativeIpCountResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getDerivativeIpCount",
+      args: [request.parentIpId],
+    });
+  }
+
+  /**
+   * method getExpireTime for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetExpireTimeRequest
+   * @return Promise<LicenseRegistryGetExpireTimeResponse>
+   */
+  public async getExpireTime(
+    request: LicenseRegistryGetExpireTimeRequest,
+  ): Promise<LicenseRegistryGetExpireTimeResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getExpireTime",
+      args: [request.ipId],
+    });
+  }
+
+  /**
+   * method getGovernance for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetGovernanceRequest
+   * @return Promise<LicenseRegistryGetGovernanceResponse>
+   */
+  public async getGovernance(): Promise<LicenseRegistryGetGovernanceResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getGovernance",
+    });
+  }
+
+  /**
+   * method getMintingLicenseConfig for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetMintingLicenseConfigRequest
+   * @return Promise<LicenseRegistryGetMintingLicenseConfigResponse>
+   */
+  public async getMintingLicenseConfig(
+    request: LicenseRegistryGetMintingLicenseConfigRequest,
+  ): Promise<LicenseRegistryGetMintingLicenseConfigResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getMintingLicenseConfig",
+      args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+    });
+  }
+
+  /**
+   * method getParentIp for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetParentIpRequest
+   * @return Promise<LicenseRegistryGetParentIpResponse>
+   */
+  public async getParentIp(
+    request: LicenseRegistryGetParentIpRequest,
+  ): Promise<LicenseRegistryGetParentIpResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getParentIp",
+      args: [request.childIpId, request.index],
+    });
+    return {
+      parentIpId: result,
+    };
+  }
+
+  /**
+   * method getParentIpCount for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetParentIpCountRequest
+   * @return Promise<LicenseRegistryGetParentIpCountResponse>
+   */
+  public async getParentIpCount(
+    request: LicenseRegistryGetParentIpCountRequest,
+  ): Promise<LicenseRegistryGetParentIpCountResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getParentIpCount",
+      args: [request.childIpId],
+    });
+  }
+
+  /**
+   * method hasDerivativeIps for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryHasDerivativeIpsRequest
+   * @return Promise<LicenseRegistryHasDerivativeIpsResponse>
+   */
+  public async hasDerivativeIps(
+    request: LicenseRegistryHasDerivativeIpsRequest,
+  ): Promise<LicenseRegistryHasDerivativeIpsResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "hasDerivativeIps",
+      args: [request.parentIpId],
+    });
+  }
+
+  /**
+   * method hasIpAttachedLicenseTerms for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryHasIpAttachedLicenseTermsRequest
+   * @return Promise<LicenseRegistryHasIpAttachedLicenseTermsResponse>
+   */
+  public async hasIpAttachedLicenseTerms(
+    request: LicenseRegistryHasIpAttachedLicenseTermsRequest,
+  ): Promise<LicenseRegistryHasIpAttachedLicenseTermsResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "hasIpAttachedLicenseTerms",
+      args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+    });
+  }
+
+  /**
+   * method isDerivativeIp for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryIsDerivativeIpRequest
+   * @return Promise<LicenseRegistryIsDerivativeIpResponse>
+   */
+  public async isDerivativeIp(
+    request: LicenseRegistryIsDerivativeIpRequest,
+  ): Promise<LicenseRegistryIsDerivativeIpResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "isDerivativeIp",
+      args: [request.childIpId],
+    });
+  }
+
+  /**
+   * method isRegisteredLicenseTemplate for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryIsRegisteredLicenseTemplateRequest
+   * @return Promise<LicenseRegistryIsRegisteredLicenseTemplateResponse>
+   */
+  public async isRegisteredLicenseTemplate(
+    request: LicenseRegistryIsRegisteredLicenseTemplateRequest,
+  ): Promise<LicenseRegistryIsRegisteredLicenseTemplateResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "isRegisteredLicenseTemplate",
+      args: [request.licenseTemplate],
+    });
+  }
+
+  /**
+   * method licensingModule for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryLicensingModuleRequest
+   * @return Promise<LicenseRegistryLicensingModuleResponse>
+   */
+  public async licensingModule(): Promise<LicenseRegistryLicensingModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "licensingModule",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryProxiableUuidRequest
+   * @return Promise<LicenseRegistryProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<LicenseRegistryProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+
+  /**
+   * method verifyMintLicenseToken for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryVerifyMintLicenseTokenRequest
+   * @return Promise<LicenseRegistryVerifyMintLicenseTokenResponse>
+   */
+  public async verifyMintLicenseToken(
+    request: LicenseRegistryVerifyMintLicenseTokenRequest,
+  ): Promise<LicenseRegistryVerifyMintLicenseTokenResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "verifyMintLicenseToken",
+      args: [
+        request.licensorIpId,
+        request.licenseTemplate,
+        request.licenseTermsId,
+        request.isMintedByIpOwner,
+      ],
+    });
+  }
+}
+
+/**
  * contract LicenseRegistry write method
  */
-export class LicenseRegistryClient extends LicenseRegistryEventClient {
+export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
   protected readonly wallet: WalletClient;
 
   constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
@@ -5370,26 +5906,239 @@ export class LicenseRegistryClient extends LicenseRegistryEventClient {
   }
 
   /**
-   * method mintLicense for contract LicenseRegistry
+   * method attachLicenseTermsToIp for contract LicenseRegistry
    *
-   * @param request LicenseRegistryMintLicenseRequest
+   * @param request LicenseRegistryAttachLicenseTermsToIpRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async mintLicense(
-    request: LicenseRegistryMintLicenseRequest,
+  public async attachLicenseTermsToIp(
+    request: LicenseRegistryAttachLicenseTermsToIpRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licenseRegistryAbi,
       address: this.address,
-      functionName: "mintLicense",
+      functionName: "attachLicenseTermsToIp",
+      account: this.wallet.account,
+      args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method initialize for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: LicenseRegistryInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.governance],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method registerDerivativeIp for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryRegisterDerivativeIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerDerivativeIp(
+    request: LicenseRegistryRegisterDerivativeIpRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "registerDerivativeIp",
       account: this.wallet.account,
       args: [
-        request.policyId,
-        request.licensorIpId_,
-        request.transferable,
-        request.amount,
-        request.receiver,
+        request.childIpId,
+        request.parentIpIds,
+        request.licenseTemplate,
+        request.licenseTermsIds,
       ],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method registerLicenseTemplate for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryRegisterLicenseTemplateRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerLicenseTemplate(
+    request: LicenseRegistryRegisterLicenseTemplateRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "registerLicenseTemplate",
+      account: this.wallet.account,
+      args: [request.licenseTemplate],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setDefaultLicenseTerms for contract LicenseRegistry
+   *
+   * @param request LicenseRegistrySetDefaultLicenseTermsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setDefaultLicenseTerms(
+    request: LicenseRegistrySetDefaultLicenseTermsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "setDefaultLicenseTerms",
+      account: this.wallet.account,
+      args: [request.newLicenseTemplate, request.newLicenseTermsId],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setDisputeModule for contract LicenseRegistry
+   *
+   * @param request LicenseRegistrySetDisputeModuleRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setDisputeModule(
+    request: LicenseRegistrySetDisputeModuleRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "setDisputeModule",
+      account: this.wallet.account,
+      args: [request.newDisputeModule],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setExpireTime for contract LicenseRegistry
+   *
+   * @param request LicenseRegistrySetExpireTimeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setExpireTime(
+    request: LicenseRegistrySetExpireTimeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "setExpireTime",
+      account: this.wallet.account,
+      args: [request.ipId, request.expireTime],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setGovernance for contract LicenseRegistry
+   *
+   * @param request LicenseRegistrySetGovernanceRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setGovernance(
+    request: LicenseRegistrySetGovernanceRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "setGovernance",
+      account: this.wallet.account,
+      args: [request.newGovernance],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setLicensingModule for contract LicenseRegistry
+   *
+   * @param request LicenseRegistrySetLicensingModuleRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setLicensingModule(
+    request: LicenseRegistrySetLicensingModuleRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "setLicensingModule",
+      account: this.wallet.account,
+      args: [request.newLicensingModule],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setMintingLicenseConfigForIp for contract LicenseRegistry
+   *
+   * @param request LicenseRegistrySetMintingLicenseConfigForIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setMintingLicenseConfigForIp(
+    request: LicenseRegistrySetMintingLicenseConfigForIpRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "setMintingLicenseConfigForIp",
+      account: this.wallet.account,
+      args: [request.ipId, request.mintingLicenseConfig],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setMintingLicenseConfigForLicense for contract LicenseRegistry
+   *
+   * @param request LicenseRegistrySetMintingLicenseConfigForLicenseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setMintingLicenseConfigForLicense(
+    request: LicenseRegistrySetMintingLicenseConfigForLicenseRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "setMintingLicenseConfigForLicense",
+      account: this.wallet.account,
+      args: [
+        request.ipId,
+        request.licenseTemplate,
+        request.licenseTermsId,
+        request.mintingLicenseConfig,
+      ],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method upgradeToAndCall for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: LicenseRegistryUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
     });
     return await this.wallet.writeContract(call);
   }
@@ -5398,138 +6147,207 @@ export class LicenseRegistryClient extends LicenseRegistryEventClient {
 // Contract LicensingModule =============================================================
 
 /**
- * LicensingModuleIpIdLinkedToParentsEvent
+ * LicensingModuleDerivativeRegisteredEvent
  *
  * @param caller address
- * @param ipId address
- * @param parentIpIds address[]
- */
-export type LicensingModuleIpIdLinkedToParentsEvent = {
-  caller: Address;
-  ipId: Address;
-  parentIpIds: readonly Address[];
-};
-
-/**
- * LicensingModulePolicyAddedToIpIdEvent
- *
- * @param caller address
- * @param ipId address
- * @param policyId uint256
- * @param index uint256
- * @param isInherited bool
- */
-export type LicensingModulePolicyAddedToIpIdEvent = {
-  caller: Address;
-  ipId: Address;
-  policyId: bigint;
-  index: bigint;
-  isInherited: boolean;
-};
-
-/**
- * LicensingModulePolicyRegisteredEvent
- *
- * @param policyId uint256
- * @param policyFrameworkManager address
- * @param frameworkData bytes
- * @param royaltyPolicy address
- * @param royaltyData bytes
- * @param mintingFee uint256
- * @param mintingFeeToken address
- */
-export type LicensingModulePolicyRegisteredEvent = {
-  policyId: bigint;
-  policyFrameworkManager: Address;
-  frameworkData: Hex;
-  royaltyPolicy: Address;
-  royaltyData: Hex;
-  mintingFee: bigint;
-  mintingFeeToken: Address;
-};
-
-/**
- * LicensingModuleGetPolicyIdRequest
- *
- * @param pol tuple
- */
-export type LicensingModuleGetPolicyIdRequest = {
-  pol: {
-    isLicenseTransferable: boolean;
-    policyFramework: Address;
-    frameworkData: Hex;
-    royaltyPolicy: Address;
-    royaltyData: Hex;
-    mintingFee: bigint;
-    mintingFeeToken: Address;
-  };
-};
-
-/**
- * LicensingModuleGetPolicyIdResponse
- *
- * @param policyId uint256
- */
-export type LicensingModuleGetPolicyIdResponse = {
-  policyId: bigint;
-};
-
-/**
- * LicensingModuleAddPolicyToIpRequest
- *
- * @param ipId address
- * @param polId uint256
- */
-export type LicensingModuleAddPolicyToIpRequest = {
-  ipId: Address;
-  polId: bigint;
-};
-
-/**
- * LicensingModuleLinkIpToParentsRequest
- *
- * @param licenseIds uint256[]
  * @param childIpId address
- * @param royaltyContext bytes
+ * @param licenseTokenIds uint256[]
+ * @param parentIpIds address[]
+ * @param licenseTermsIds uint256[]
+ * @param licenseTemplate address
  */
-export type LicensingModuleLinkIpToParentsRequest = {
-  licenseIds: readonly bigint[];
+export type LicensingModuleDerivativeRegisteredEvent = {
+  caller: Address;
   childIpId: Address;
-  royaltyContext: Hex;
+  licenseTokenIds: readonly bigint[];
+  parentIpIds: readonly Address[];
+  licenseTermsIds: readonly bigint[];
+  licenseTemplate: Address;
 };
 
 /**
- * LicensingModuleMintLicenseRequest
+ * LicensingModuleGovernanceUpdatedEvent
  *
- * @param policyId uint256
+ * @param newGovernance address
+ */
+export type LicensingModuleGovernanceUpdatedEvent = {
+  newGovernance: Address;
+};
+
+/**
+ * LicensingModuleInitializedEvent
+ *
+ * @param version uint64
+ */
+export type LicensingModuleInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * LicensingModuleLicenseTermsAttachedEvent
+ *
+ * @param caller address
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicensingModuleLicenseTermsAttachedEvent = {
+  caller: Address;
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * LicensingModuleLicenseTokensMintedEvent
+ *
+ * @param caller address
  * @param licensorIpId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param amount uint256
+ * @param receiver address
+ * @param startLicenseTokenId uint256
+ */
+export type LicensingModuleLicenseTokensMintedEvent = {
+  caller: Address;
+  licensorIpId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  amount: bigint;
+  receiver: Address;
+  startLicenseTokenId: bigint;
+};
+
+/**
+ * LicensingModuleUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type LicensingModuleUpgradedEvent = {
+  implementation: Address;
+};
+
+export type LicensingModuleAccessControllerResponse = Address;
+
+export type LicensingModuleDisputeModuleResponse = Address;
+
+export type LicensingModuleIpAccountRegistryResponse = Address;
+
+export type LicensingModuleLicenseNftResponse = Address;
+
+export type LicensingModuleLicenseRegistryResponse = Address;
+
+export type LicensingModuleRoyaltyModuleResponse = Address;
+
+export type LicensingModuleUpgradeInterfaceVersionResponse = string;
+
+export type LicensingModuleGetGovernanceResponse = Address;
+
+export type LicensingModuleNameResponse = string;
+
+export type LicensingModuleProxiableUuidResponse = Hex;
+
+/**
+ * LicensingModuleSupportsInterfaceRequest
+ *
+ * @param interfaceId bytes4
+ */
+export type LicensingModuleSupportsInterfaceRequest = {
+  interfaceId: Hex;
+};
+
+export type LicensingModuleSupportsInterfaceResponse = boolean;
+
+/**
+ * LicensingModuleAttachLicenseTermsRequest
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicensingModuleAttachLicenseTermsRequest = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * LicensingModuleInitializeRequest
+ *
+ * @param governance address
+ */
+export type LicensingModuleInitializeRequest = {
+  governance: Address;
+};
+
+/**
+ * LicensingModuleMintLicenseTokensRequest
+ *
+ * @param licensorIpId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
  * @param amount uint256
  * @param receiver address
  * @param royaltyContext bytes
  */
-export type LicensingModuleMintLicenseRequest = {
-  policyId: bigint;
+export type LicensingModuleMintLicenseTokensRequest = {
   licensorIpId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
   amount: bigint;
   receiver: Address;
   royaltyContext: Hex;
 };
 
 /**
- * LicensingModuleRegisterPolicyRequest
+ * LicensingModuleRegisterDerivativeRequest
  *
- * @param pol tuple
+ * @param childIpId address
+ * @param parentIpIds address[]
+ * @param licenseTermsIds uint256[]
+ * @param licenseTemplate address
+ * @param royaltyContext bytes
  */
-export type LicensingModuleRegisterPolicyRequest = {
-  pol: {
-    isLicenseTransferable: boolean;
-    policyFramework: Address;
-    frameworkData: Hex;
-    royaltyPolicy: Address;
-    royaltyData: Hex;
-    mintingFee: bigint;
-    mintingFeeToken: Address;
-  };
+export type LicensingModuleRegisterDerivativeRequest = {
+  childIpId: Address;
+  parentIpIds: readonly Address[];
+  licenseTermsIds: readonly bigint[];
+  licenseTemplate: Address;
+  royaltyContext: Hex;
+};
+
+/**
+ * LicensingModuleRegisterDerivativeWithLicenseTokensRequest
+ *
+ * @param childIpId address
+ * @param licenseTokenIds uint256[]
+ * @param royaltyContext bytes
+ */
+export type LicensingModuleRegisterDerivativeWithLicenseTokensRequest = {
+  childIpId: Address;
+  licenseTokenIds: readonly bigint[];
+  royaltyContext: Hex;
+};
+
+/**
+ * LicensingModuleSetGovernanceRequest
+ *
+ * @param newGovernance address
+ */
+export type LicensingModuleSetGovernanceRequest = {
+  newGovernance: Address;
+};
+
+/**
+ * LicensingModuleUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type LicensingModuleUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
 };
 
 /**
@@ -5545,15 +6363,15 @@ export class LicensingModuleEventClient {
   }
 
   /**
-   * event IpIdLinkedToParents for contract LicensingModule
+   * event DerivativeRegistered for contract LicensingModule
    */
-  public watchIpIdLinkedToParentsEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModuleIpIdLinkedToParentsEvent>) => void,
+  public watchDerivativeRegisteredEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleDerivativeRegisteredEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licensingModuleAbi,
       address: this.address,
-      eventName: "IpIdLinkedToParents",
+      eventName: "DerivativeRegistered",
       onLogs: (evs) => {
         evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
@@ -5561,18 +6379,18 @@ export class LicensingModuleEventClient {
   }
 
   /**
-   * parse tx receipt event IpIdLinkedToParents for contract LicensingModule
+   * parse tx receipt event DerivativeRegistered for contract LicensingModule
    */
-  public parseTxIpIdLinkedToParentsEvent(
+  public parseTxDerivativeRegisteredEvent(
     txReceipt: TransactionReceipt,
-  ): Array<LicensingModuleIpIdLinkedToParentsEvent> {
-    const targetLogs: Array<LicensingModuleIpIdLinkedToParentsEvent> = [];
+  ): Array<LicensingModuleDerivativeRegisteredEvent> {
+    const targetLogs: Array<LicensingModuleDerivativeRegisteredEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licensingModuleAbi,
-            eventName: "IpIdLinkedToParents",
+            eventName: "DerivativeRegistered",
             data: log.data,
             topics: log.topics,
           }).args,
@@ -5585,15 +6403,15 @@ export class LicensingModuleEventClient {
   }
 
   /**
-   * event PolicyAddedToIpId for contract LicensingModule
+   * event GovernanceUpdated for contract LicensingModule
    */
-  public watchPolicyAddedToIpIdEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModulePolicyAddedToIpIdEvent>) => void,
+  public watchGovernanceUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleGovernanceUpdatedEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licensingModuleAbi,
       address: this.address,
-      eventName: "PolicyAddedToIpId",
+      eventName: "GovernanceUpdated",
       onLogs: (evs) => {
         evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
@@ -5601,18 +6419,18 @@ export class LicensingModuleEventClient {
   }
 
   /**
-   * parse tx receipt event PolicyAddedToIpId for contract LicensingModule
+   * parse tx receipt event GovernanceUpdated for contract LicensingModule
    */
-  public parseTxPolicyAddedToIpIdEvent(
+  public parseTxGovernanceUpdatedEvent(
     txReceipt: TransactionReceipt,
-  ): Array<LicensingModulePolicyAddedToIpIdEvent> {
-    const targetLogs: Array<LicensingModulePolicyAddedToIpIdEvent> = [];
+  ): Array<LicensingModuleGovernanceUpdatedEvent> {
+    const targetLogs: Array<LicensingModuleGovernanceUpdatedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licensingModuleAbi,
-            eventName: "PolicyAddedToIpId",
+            eventName: "GovernanceUpdated",
             data: log.data,
             topics: log.topics,
           }).args,
@@ -5625,15 +6443,15 @@ export class LicensingModuleEventClient {
   }
 
   /**
-   * event PolicyRegistered for contract LicensingModule
+   * event Initialized for contract LicensingModule
    */
-  public watchPolicyRegisteredEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModulePolicyRegisteredEvent>) => void,
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleInitializedEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
       abi: licensingModuleAbi,
       address: this.address,
-      eventName: "PolicyRegistered",
+      eventName: "Initialized",
       onLogs: (evs) => {
         evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
@@ -5641,18 +6459,136 @@ export class LicensingModuleEventClient {
   }
 
   /**
-   * parse tx receipt event PolicyRegistered for contract LicensingModule
+   * parse tx receipt event Initialized for contract LicensingModule
    */
-  public parseTxPolicyRegisteredEvent(
+  public parseTxInitializedEvent(
     txReceipt: TransactionReceipt,
-  ): Array<LicensingModulePolicyRegisteredEvent> {
-    const targetLogs: Array<LicensingModulePolicyRegisteredEvent> = [];
+  ): Array<LicensingModuleInitializedEvent> {
+    const targetLogs: Array<LicensingModuleInitializedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         targetLogs.push(
           decodeEventLog({
             abi: licensingModuleAbi,
-            eventName: "PolicyRegistered",
+            eventName: "Initialized",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event LicenseTermsAttached for contract LicensingModule
+   */
+  public watchLicenseTermsAttachedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleLicenseTermsAttachedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licensingModuleAbi,
+      address: this.address,
+      eventName: "LicenseTermsAttached",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event LicenseTermsAttached for contract LicensingModule
+   */
+  public parseTxLicenseTermsAttachedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicensingModuleLicenseTermsAttachedEvent> {
+    const targetLogs: Array<LicensingModuleLicenseTermsAttachedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licensingModuleAbi,
+            eventName: "LicenseTermsAttached",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event LicenseTokensMinted for contract LicensingModule
+   */
+  public watchLicenseTokensMintedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleLicenseTokensMintedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licensingModuleAbi,
+      address: this.address,
+      eventName: "LicenseTokensMinted",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event LicenseTokensMinted for contract LicensingModule
+   */
+  public parseTxLicenseTokensMintedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicensingModuleLicenseTokensMintedEvent> {
+    const targetLogs: Array<LicensingModuleLicenseTokensMintedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licensingModuleAbi,
+            eventName: "LicenseTokensMinted",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract LicensingModule
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licensingModuleAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract LicensingModule
+   */
+  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<LicensingModuleUpgradedEvent> {
+    const targetLogs: Array<LicensingModuleUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: licensingModuleAbi,
+            eventName: "Upgraded",
             data: log.data,
             topics: log.topics,
           }).args,
@@ -5674,23 +6610,160 @@ export class LicensingModuleReadOnlyClient extends LicensingModuleEventClient {
   }
 
   /**
-   * method getPolicyId for contract LicensingModule
+   * method ACCESS_CONTROLLER for contract LicensingModule
    *
-   * @param request LicensingModuleGetPolicyIdRequest
-   * @return Promise<LicensingModuleGetPolicyIdResponse>
+   * @param request LicensingModuleAccessControllerRequest
+   * @return Promise<LicensingModuleAccessControllerResponse>
    */
-  public async getPolicyId(
-    request: LicensingModuleGetPolicyIdRequest,
-  ): Promise<LicensingModuleGetPolicyIdResponse> {
-    const result = await this.rpcClient.readContract({
+  public async accessController(): Promise<LicensingModuleAccessControllerResponse> {
+    return await this.rpcClient.readContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: "getPolicyId",
-      args: [request.pol],
+      functionName: "ACCESS_CONTROLLER",
     });
-    return {
-      policyId: result,
-    };
+  }
+
+  /**
+   * method DISPUTE_MODULE for contract LicensingModule
+   *
+   * @param request LicensingModuleDisputeModuleRequest
+   * @return Promise<LicensingModuleDisputeModuleResponse>
+   */
+  public async disputeModule(): Promise<LicensingModuleDisputeModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "DISPUTE_MODULE",
+    });
+  }
+
+  /**
+   * method IP_ACCOUNT_REGISTRY for contract LicensingModule
+   *
+   * @param request LicensingModuleIpAccountRegistryRequest
+   * @return Promise<LicensingModuleIpAccountRegistryResponse>
+   */
+  public async ipAccountRegistry(): Promise<LicensingModuleIpAccountRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "IP_ACCOUNT_REGISTRY",
+    });
+  }
+
+  /**
+   * method LICENSE_NFT for contract LicensingModule
+   *
+   * @param request LicensingModuleLicenseNftRequest
+   * @return Promise<LicensingModuleLicenseNftResponse>
+   */
+  public async licenseNft(): Promise<LicensingModuleLicenseNftResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "LICENSE_NFT",
+    });
+  }
+
+  /**
+   * method LICENSE_REGISTRY for contract LicensingModule
+   *
+   * @param request LicensingModuleLicenseRegistryRequest
+   * @return Promise<LicensingModuleLicenseRegistryResponse>
+   */
+  public async licenseRegistry(): Promise<LicensingModuleLicenseRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "LICENSE_REGISTRY",
+    });
+  }
+
+  /**
+   * method ROYALTY_MODULE for contract LicensingModule
+   *
+   * @param request LicensingModuleRoyaltyModuleRequest
+   * @return Promise<LicensingModuleRoyaltyModuleResponse>
+   */
+  public async royaltyModule(): Promise<LicensingModuleRoyaltyModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "ROYALTY_MODULE",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract LicensingModule
+   *
+   * @param request LicensingModuleUpgradeInterfaceVersionRequest
+   * @return Promise<LicensingModuleUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<LicensingModuleUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method getGovernance for contract LicensingModule
+   *
+   * @param request LicensingModuleGetGovernanceRequest
+   * @return Promise<LicensingModuleGetGovernanceResponse>
+   */
+  public async getGovernance(): Promise<LicensingModuleGetGovernanceResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "getGovernance",
+    });
+  }
+
+  /**
+   * method name for contract LicensingModule
+   *
+   * @param request LicensingModuleNameRequest
+   * @return Promise<LicensingModuleNameResponse>
+   */
+  public async name(): Promise<LicensingModuleNameResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract LicensingModule
+   *
+   * @param request LicensingModuleProxiableUuidRequest
+   * @return Promise<LicensingModuleProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<LicensingModuleProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+
+  /**
+   * method supportsInterface for contract LicensingModule
+   *
+   * @param request LicensingModuleSupportsInterfaceRequest
+   * @return Promise<LicensingModuleSupportsInterfaceResponse>
+   */
+  public async supportsInterface(
+    request: LicensingModuleSupportsInterfaceRequest,
+  ): Promise<LicensingModuleSupportsInterfaceResponse> {
+    return await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "supportsInterface",
+      args: [request.interfaceId],
+    });
   }
 }
 
@@ -5706,60 +6779,61 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
   }
 
   /**
-   * method addPolicyToIp for contract LicensingModule
+   * method attachLicenseTerms for contract LicensingModule
    *
-   * @param request LicensingModuleAddPolicyToIpRequest
+   * @param request LicensingModuleAttachLicenseTermsRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async addPolicyToIp(
-    request: LicensingModuleAddPolicyToIpRequest,
+  public async attachLicenseTerms(
+    request: LicensingModuleAttachLicenseTermsRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: "addPolicyToIp",
+      functionName: "attachLicenseTerms",
       account: this.wallet.account,
-      args: [request.ipId, request.polId],
+      args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
     });
     return await this.wallet.writeContract(call);
   }
 
   /**
-   * method linkIpToParents for contract LicensingModule
+   * method initialize for contract LicensingModule
    *
-   * @param request LicensingModuleLinkIpToParentsRequest
+   * @param request LicensingModuleInitializeRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async linkIpToParents(
-    request: LicensingModuleLinkIpToParentsRequest,
+  public async initialize(
+    request: LicensingModuleInitializeRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: "linkIpToParents",
+      functionName: "initialize",
       account: this.wallet.account,
-      args: [request.licenseIds, request.childIpId, request.royaltyContext],
+      args: [request.governance],
     });
     return await this.wallet.writeContract(call);
   }
 
   /**
-   * method mintLicense for contract LicensingModule
+   * method mintLicenseTokens for contract LicensingModule
    *
-   * @param request LicensingModuleMintLicenseRequest
+   * @param request LicensingModuleMintLicenseTokensRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async mintLicense(
-    request: LicensingModuleMintLicenseRequest,
+  public async mintLicenseTokens(
+    request: LicensingModuleMintLicenseTokensRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: "mintLicense",
+      functionName: "mintLicenseTokens",
       account: this.wallet.account,
       args: [
-        request.policyId,
         request.licensorIpId,
+        request.licenseTemplate,
+        request.licenseTermsId,
         request.amount,
         request.receiver,
         request.royaltyContext,
@@ -5769,20 +6843,83 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
   }
 
   /**
-   * method registerPolicy for contract LicensingModule
+   * method registerDerivative for contract LicensingModule
    *
-   * @param request LicensingModuleRegisterPolicyRequest
+   * @param request LicensingModuleRegisterDerivativeRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async registerPolicy(
-    request: LicensingModuleRegisterPolicyRequest,
+  public async registerDerivative(
+    request: LicensingModuleRegisterDerivativeRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: licensingModuleAbi,
       address: this.address,
-      functionName: "registerPolicy",
+      functionName: "registerDerivative",
       account: this.wallet.account,
-      args: [request.pol],
+      args: [
+        request.childIpId,
+        request.parentIpIds,
+        request.licenseTermsIds,
+        request.licenseTemplate,
+        request.royaltyContext,
+      ],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method registerDerivativeWithLicenseTokens for contract LicensingModule
+   *
+   * @param request LicensingModuleRegisterDerivativeWithLicenseTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerDerivativeWithLicenseTokens(
+    request: LicensingModuleRegisterDerivativeWithLicenseTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "registerDerivativeWithLicenseTokens",
+      account: this.wallet.account,
+      args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setGovernance for contract LicensingModule
+   *
+   * @param request LicensingModuleSetGovernanceRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setGovernance(
+    request: LicensingModuleSetGovernanceRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "setGovernance",
+      account: this.wallet.account,
+      args: [request.newGovernance],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method upgradeToAndCall for contract LicensingModule
+   *
+   * @param request LicensingModuleUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: LicensingModuleUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
     });
     return await this.wallet.writeContract(call);
   }
@@ -5828,71 +6965,6 @@ export class ModuleRegistryReadOnlyClient {
       functionName: "isRegistered",
       args: [request.moduleAddress],
     });
-  }
-}
-
-// Contract PILPolicyFrameworkManager =============================================================
-
-/**
- * PilPolicyFrameworkManagerRegisterPolicyRequest
- *
- * @param params tuple
- */
-export type PilPolicyFrameworkManagerRegisterPolicyRequest = {
-  params: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    mintingFee: bigint;
-    mintingFeeToken: Address;
-    policy: {
-      attribution: boolean;
-      commercialUse: boolean;
-      commercialAttribution: boolean;
-      commercializerChecker: Address;
-      commercializerCheckerData: Hex;
-      commercialRevShare: number;
-      derivativesAllowed: boolean;
-      derivativesAttribution: boolean;
-      derivativesApproval: boolean;
-      derivativesReciprocal: boolean;
-      territories: readonly string[];
-      distributionChannels: readonly string[];
-      contentRestrictions: readonly string[];
-    };
-  };
-};
-
-/**
- * contract PILPolicyFrameworkManager write method
- */
-export class PilPolicyFrameworkManagerClient {
-  protected readonly wallet: WalletClient;
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
-    this.address = address || getAddress(pilPolicyFrameworkManagerAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-    this.wallet = wallet;
-  }
-
-  /**
-   * method registerPolicy for contract PILPolicyFrameworkManager
-   *
-   * @param request PilPolicyFrameworkManagerRegisterPolicyRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerPolicy(
-    request: PilPolicyFrameworkManagerRegisterPolicyRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: pilPolicyFrameworkManagerAbi,
-      address: this.address,
-      functionName: "registerPolicy",
-      account: this.wallet.account,
-      args: [request.params],
-    });
-    return await this.wallet.writeContract(call);
   }
 }
 
@@ -5950,6 +7022,32 @@ export class RoyaltyModuleClient {
 // Contract RoyaltyPolicyLAP =============================================================
 
 /**
+ * RoyaltyPolicyLapGetRoyaltyDataRequest
+ *
+ * @param ipId address
+ */
+export type RoyaltyPolicyLapGetRoyaltyDataRequest = {
+  ipId: Address;
+};
+
+/**
+ * RoyaltyPolicyLapGetRoyaltyDataResponse
+ *
+ * @param 0 bool
+ * @param 1 address
+ * @param 2 uint32
+ * @param 3 address[]
+ * @param 4 uint32[]
+ */
+export type RoyaltyPolicyLapGetRoyaltyDataResponse = readonly [
+  boolean,
+  Address,
+  number,
+  readonly Address[],
+  readonly number[],
+];
+
+/**
  * RoyaltyPolicyLapOnRoyaltyPaymentRequest
  *
  * @param caller address
@@ -5965,16 +7063,43 @@ export type RoyaltyPolicyLapOnRoyaltyPaymentRequest = {
 };
 
 /**
- * contract RoyaltyPolicyLAP write method
+ * contract RoyaltyPolicyLAP readonly method
  */
-export class RoyaltyPolicyLapClient {
-  protected readonly wallet: WalletClient;
+export class RoyaltyPolicyLapReadOnlyClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(royaltyPolicyLapAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method getRoyaltyData for contract RoyaltyPolicyLAP
+   *
+   * @param request RoyaltyPolicyLapGetRoyaltyDataRequest
+   * @return Promise<RoyaltyPolicyLapGetRoyaltyDataResponse>
+   */
+  public async getRoyaltyData(
+    request: RoyaltyPolicyLapGetRoyaltyDataRequest,
+  ): Promise<RoyaltyPolicyLapGetRoyaltyDataResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLapAbi,
+      address: this.address,
+      functionName: "getRoyaltyData",
+      args: [request.ipId],
+    });
+  }
+}
+
+/**
+ * contract RoyaltyPolicyLAP write method
+ */
+export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
+  protected readonly wallet: WalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
     this.wallet = wallet;
   }
 
