@@ -1,143 +1,324 @@
-import { PublicClient, WalletClient, encodeFunctionData, getAddress } from "viem";
+import { PublicClient, WalletClient, zeroAddress } from "viem";
 
 import { handleError } from "../utils/errors";
-import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
-import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
-import { IPAccountABI, getLicenseRegistryConfig, getLicensingModuleConfig } from "../abi/config";
+import { waitTx, waitTxAndFilterLog } from "../utils/utils";
+import {
+  IPAccountABI,
+  getLicenseRegistryConfig,
+  getLicenseTemplateConfig,
+  getLicensingModuleConfig,
+} from "../abi/config";
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
-  LinkIpToParentRequest,
-  LinkIpToParentResponse,
-  MintLicenseRequest,
-  MintLicenseResponse,
+  LicenseTerms,
+  RegisterLicenseTermsRequest,
+  RegisterLicenseTermsResponse as RegisterPILResponse,
+  RegisterCommercialUsePILRequest,
+  RegisterCommercialRemixPILRequest,
+  AttachLicenseTermsRequest,
+  LicenseTermsIdResponse,
+  MintLicenseTokensRequest,
+  MintLicenseTokensResponse,
 } from "../types/resources/license";
-import { RoyaltyContext } from "../types/resources/royalty";
 import { SupportedChainIds } from "../types/config";
+import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
+import { IPAssetClient } from "./ipAsset";
 
 export class LicenseClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   private readonly storyClient: StoryAPIClient;
+  private readonly ipAssetClient: IPAssetClient;
   public licenseRegistryConfig;
   public licensingModuleConfig;
   public ipAccountABI = IPAccountABI;
+  public licenseTemplateConfig;
+  public royaltyPolicyLAPConfig;
 
   constructor(
     rpcClient: PublicClient,
     wallet: WalletClient,
     storyClient: StoryAPIClient,
+    ipAssetClient: IPAssetClient,
     chainId: SupportedChainIds,
   ) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.storyClient = storyClient;
+    this.ipAssetClient = ipAssetClient;
     this.licenseRegistryConfig = getLicenseRegistryConfig(chainId);
     this.licensingModuleConfig = getLicensingModuleConfig(chainId);
+    this.licenseTemplateConfig = getLicenseTemplateConfig(chainId);
+    this.royaltyPolicyLAPConfig = getLicenseRegistryConfig(chainId);
+  }
+
+  private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
+    const selectedLicenseTermsId = await this.rpcClient.readContract({
+      ...this.licenseTemplateConfig,
+      functionName: "getLicenseTermsId",
+      args: [request],
+    });
+    return Number(selectedLicenseTermsId);
   }
 
   /**
-   * Mints license NFTs representing a policy granted by a set of ipIds (licensors). This NFT needs to be
-   * burned in order to link a derivative IP with its parents. If this is the first combination of policy and
-   * licensors, a new licenseId will be created. If not, the license is fungible and an id will be reused.
-   * @dev Only callable by the licensing module.
-   * @param request The request object containing necessary data to mint a license.
-   *   @param request.policyId The ID of the policy to be minted
-   *   @param request.licensorIpId_ The ID of the IP granting the license (ie. licensor)
-   *   @param request.mintAmount Number of licenses to mint. License NFT is fungible for same policy and same licensors
-   *   @param request.receiver Receiver address of the minted license NFT(s).
-   * @returns licenseId The ID of the minted license NFT(s).
+   * Convenient function to register a PIL non commercial social remix license to the registry
+   * @param request The request object that contains all data needed to register a PIL non commercial social remix license.
+   *  @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
-  public async mintLicense(request: MintLicenseRequest): Promise<MintLicenseResponse> {
+  public async registerNonComSocialRemixingPIL(
+    request: RegisterLicenseTermsRequest,
+  ): Promise<RegisterPILResponse> {
     try {
-      const royaltyContext: RoyaltyContext = {
-        targetAncestors: [],
-        targetRoyaltyAmount: [],
-        parentAncestors1: [],
-        parentAncestors2: [],
-        parentAncestorsRoyalties1: [],
-        parentAncestorsRoyalties2: [],
+      const licenseTerms: LicenseTerms = {
+        transferable: true,
+        royaltyPolicy: zeroAddress,
+        mintingFee: BigInt(0),
+        expiration: BigInt(0),
+        commercialUse: false,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        commercialRevShare: 0,
+        commercialRevCelling: BigInt(0),
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        derivativeRevCelling: BigInt(0),
+        currency: zeroAddress,
       };
-
-      const royaltyPolicy = await this.storyClient.getRoyaltyPolicy(request.licensorIpId);
-      if (royaltyPolicy) {
-        royaltyContext.targetAncestors.push(...royaltyPolicy.targetAncestors);
-        const targetRoyaltyAmount = royaltyPolicy.targetRoyaltyAmount.map((e) => parseInt(e));
-        royaltyContext.targetRoyaltyAmount.push(...targetRoyaltyAmount);
+      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
+      if (licenseTermsId !== 0) {
+        return { licenseId: licenseTermsId.toString() };
       }
-
       const { request: call } = await this.rpcClient.simulateContract({
-        ...this.licensingModuleConfig,
-        functionName: "mintLicense",
-        args: [
-          parseToBigInt(request.policyId),
-          request.licensorIpId,
-          parseToBigInt(request.mintAmount),
-          getAddress(request.receiverAddress),
-          encodeRoyaltyContext(royaltyContext),
-        ],
+        ...this.licenseTemplateConfig,
+        functionName: "registerLicenseTerms",
+        args: [licenseTerms],
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
         const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.licenseRegistryConfig,
-          eventName: "TransferSingle",
-          from: this.licenseRegistryConfig.address,
+          ...this.licenseTemplateConfig,
+          eventName: "LicenseTermsRegistered",
         });
-        return { txHash: txHash, licenseId: targetLogs[0].args.id.toString() };
+        return { txHash: txHash, licenseId: targetLogs[0].args.licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to mint license");
+      handleError(error, "Failed to register non commercial social remixing PIL");
     }
   }
-
-  public async linkIpToParent(request: LinkIpToParentRequest): Promise<LinkIpToParentResponse> {
+  /**
+   * Convenient function to register a PIL commercial use license to the registry.
+   * @param request The request object that contains all data needed to register a PIL commercial use license.
+   *  @param request.mintingFee The fee to be paid when minting a license.
+   *  @param request.currency The ERC20 token to be used to pay the minting fee.
+   *  the token must be registered in story protocol.
+   *  @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
+   *  @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
+   */
+  public async registerCommercialUsePIL(
+    request: RegisterCommercialUsePILRequest,
+  ): Promise<RegisterPILResponse> {
     try {
-      const IPAccountConfig = {
-        abi: this.ipAccountABI,
-        address: getAddress(request.childIpId),
+      const licenseTerms: LicenseTerms = {
+        transferable: true,
+        royaltyPolicy: request.royaltyPolicy,
+        mintingFee: BigInt(request.mintingFee),
+        expiration: BigInt(0),
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        commercialRevShare: 0,
+        commercialRevCelling: BigInt(0),
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        derivativeRevCelling: BigInt(0),
+        currency: request.currency,
       };
-
-      const licenseIds: bigint[] = [];
-      request.licenseIds.forEach(function (licenseId) {
-        licenseIds.push(parseToBigInt(licenseId));
-      });
-
-      const royaltyContext: RoyaltyContext = await computeRoyaltyContext(
-        request.licenseIds,
-        this.storyClient,
-      );
+      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
+      if (licenseTermsId !== 0) {
+        return { licenseId: licenseTermsId.toString() };
+      }
 
       const { request: call } = await this.rpcClient.simulateContract({
-        ...IPAccountConfig,
-        functionName: "execute",
-        args: [
-          this.licensingModuleConfig.address,
-          parseToBigInt(0),
-          encodeFunctionData({
-            abi: this.licensingModuleConfig.abi,
-            functionName: "linkIpToParents",
-            args: [licenseIds, getAddress(request.childIpId), encodeRoyaltyContext(royaltyContext)],
-          }),
-        ],
+        ...this.licenseTemplateConfig,
+        functionName: "registerLicenseTerms",
+        args: [licenseTerms],
         account: this.wallet.account,
       });
       const txHash = await this.wallet.writeContract(call);
 
       if (request.txOptions?.waitForTransaction) {
-        await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.licenseRegistryConfig,
-          eventName: "TransferBatch",
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licenseTemplateConfig,
+          eventName: "LicenseTermsRegistered",
         });
-        return { txHash: txHash, success: true };
+        return { txHash: txHash, licenseId: targetLogs[0].args.licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to link IP to parents");
+      handleError(error, "Failed to register commercial use PIL");
+    }
+  }
+  /**
+   * Convenient function to register a PIL commercial Remix license to the registry.
+   * @param request The request object that contains all data needed to register license.
+   *  @param request.mintingFee The fee to be paid when minting a license.
+   *  @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
+   *  @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *  @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
+   *  @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
+   */
+  public async registerCommercialRemixPIL(
+    request: RegisterCommercialRemixPILRequest,
+  ): Promise<RegisterPILResponse> {
+    try {
+      const licenseTerms: LicenseTerms = {
+        transferable: true,
+        royaltyPolicy: request.royaltyPolicy,
+        mintingFee: BigInt(request.mintingFee),
+        expiration: BigInt(0),
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        commercialRevShare: request.commercialRevShare,
+        commercialRevCelling: BigInt(0),
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        derivativeRevCelling: BigInt(0),
+        currency: request.currency,
+      };
+      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
+      if (licenseTermsId !== 0) {
+        return { licenseId: licenseTermsId.toString() };
+      }
+      const { request: call } = await this.rpcClient.simulateContract({
+        ...this.licenseTemplateConfig,
+        functionName: "registerLicenseTerms",
+        args: [licenseTerms],
+        account: this.wallet.account,
+      });
+      const txHash = await this.wallet.writeContract(call);
+
+      if (request.txOptions?.waitForTransaction) {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licenseTemplateConfig,
+          eventName: "LicenseTermsRegistered",
+        });
+        return { txHash: txHash, licenseId: targetLogs[0].args.licenseTermsId.toString() };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to register commercial remix PIL");
+    }
+  }
+
+  /**
+   * Attaches license terms to an IP, and the function must be called by the IP owner or an authorized operator.
+   * @param request The request object that contains all data needed to attach license terms.
+      @param request.ipId The IP ID.
+      @param request.tokenAddress The address of the NFT.
+      @param request.licenseTemplate The address of the license template.
+      @param request.licenseTermsId The ID of the license terms.
+   *  @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash.
+   */
+  public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
+    const { request: call } = await this.rpcClient.simulateContract({
+      ...this.licensingModuleConfig,
+      functionName: "attachLicenseTerms",
+      args: [
+        request.ipId,
+        request.licenseTemplate || this.licenseTemplateConfig.address,
+        BigInt(request.licenseTermsId),
+      ],
+      account: this.wallet.account,
+    });
+    const txHash = await this.wallet.writeContract(call);
+    if (request.txOptions?.waitForTransaction) {
+      await waitTx(this.rpcClient, txHash);
+      return { txHash: txHash };
+    } else {
+      return { txHash: txHash };
+    }
+  }
+
+  /**
+   * Mints license tokens for the license terms attached to an IP.
+   * The license tokens are minted to the receiver.
+   * The license terms must be attached to the IP before calling this function.
+   * But it can mint license token of default license terms without attaching the default license terms,
+   * since it is attached to all IPs by default.
+   * IP owners can mint license tokens for their IPs for arbitrary license terms
+   * without attaching the license terms to IP.
+   * It might require the caller pay the minting fee, depending on the license terms or configured by the iP owner.
+   * The minting fee is paid in the minting fee token specified in the license terms or configured by the IP owner.
+   * IP owners can configure the minting fee of their IPs or
+   * configure the minting fee module to determine the minting fee.
+   * @param request The request object that contains all data needed to mint license tokens.
+   *  @param request.licensorIpId The licensor IP ID.
+   *  @param request.licenseTemplate The address of the license template.
+   *  @param request.licenseTermsId The ID of the license terms within the license template.
+   *  @param request.amount The amount of license tokens to mint.
+   *  @param request.receiver The address of the receiver.
+   *  @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional license token ID if waitForTxn is set to true.
+   * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
+   */
+  public async mintLicenseTokens(
+    request: MintLicenseTokensRequest,
+  ): Promise<MintLicenseTokensResponse> {
+    try {
+      const { request: call } = await this.rpcClient.simulateContract({
+        ...this.licensingModuleConfig,
+        functionName: "mintLicenseTokens",
+        args: [
+          request.licensorIpId,
+          request.licenseTemplate || this.licenseTemplateConfig.address,
+          BigInt(request.licenseTermsId),
+          BigInt(request.amount || 1),
+          request.receiver || this.wallet.account!.address,
+          encodeRoyaltyContext(
+            await computeRoyaltyContext([request.licenseTermsId], this.storyClient),
+          ),
+        ],
+        account: this.wallet.account,
+      });
+      const txHash = await this.wallet.writeContract(call);
+      if (request.txOptions?.waitForTransaction) {
+        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
+          ...this.licensingModuleConfig,
+          eventName: "LicenseTokensMinted",
+        });
+        return {
+          txHash: txHash,
+          licenseTokenId: targetLogs[0].args.startLicenseTokenId.toString(),
+        };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to mint license tokens");
     }
   }
 }
