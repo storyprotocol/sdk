@@ -5,7 +5,6 @@ import { StoryConfig, SupportedChainIds } from "./types/config";
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
-import { PolicyClient } from "./resources/policy";
 import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
@@ -26,7 +25,6 @@ export class StoryClient {
   private _ipAsset: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;
-  private _policy: PolicyClient | null = null;
   private _dispute: DisputeClient | null = null;
   private _ipAccount: IPAccountClient | null = null;
   private _royalty: RoyaltyClient | null = null;
@@ -112,25 +110,12 @@ export class StoryClient {
         this.rpcClient,
         this.wallet,
         this.storyClient,
+        this.ipAsset,
         this.config.chainId,
       );
     }
 
     return this._license;
-  }
-
-  /**
-   * Getter for the policy client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the PolicyClient instance
-   */
-  public get policy(): PolicyClient {
-    if (this._policy === null) {
-      this._policy = new PolicyClient(this.rpcClient, this.wallet, this.config.chainId);
-    }
-
-    return this._policy;
   }
 
   /**

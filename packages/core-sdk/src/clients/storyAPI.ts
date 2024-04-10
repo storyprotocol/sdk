@@ -1,8 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import { RoyaltyPolicy, RoyaltyPolicyApiResponse } from "../types/resources/royalty";
-import { License, LicenseApiResponse } from "../types/resources/license";
-import { Policy, PolicyApiResponse } from "../types/resources/policy";
+import { License, LicenseApiResponse, Policy, PolicyApiResponse } from "../types/resources/license";
 
 export class StoryAPIClient {
   private readonly httpClient: AxiosInstance;

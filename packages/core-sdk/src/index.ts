@@ -4,7 +4,6 @@ export { AddressZero, HashZero } from "./constants/common";
 export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
-export { PolicyClient } from "./resources/policy";
 export { DisputeClient } from "./resources/dispute";
 
 export type { StoryConfig } from "./types/config";
@@ -18,13 +17,6 @@ export type {
   LinkIpToParentRequest,
   LinkIpToParentResponse,
 } from "./types/resources/license";
-
-export type {
-  RegisterPILPolicyRequest,
-  RegisterPILPolicyResponse,
-  AddPolicyToIpRequest,
-  AddPolicyToIpResponse,
-} from "./types/resources/policy";
 
 export type {
   CollectRoyaltyTokensRequest,

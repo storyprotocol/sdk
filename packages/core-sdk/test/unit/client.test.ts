@@ -2,11 +2,10 @@ import { expect } from "chai";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import { Account, http, Transport, createWalletClient, createPublicClient } from "viem";
-import { StoryClient } from "../../src";
-import { SupportedChainIds } from "../../src/types/config";
+import { IPAssetClient, StoryClient } from "../../src";
+import { StoryConfig } from "../../src/types/config";
 import { PermissionClient } from "../../src/resources/permission";
 import { LicenseClient } from "../../src/resources/license";
-import { PolicyClient } from "../../src/resources/policy";
 import { IPAccountABI } from "../../src/abi/config";
 import { DisputeClient } from "../../src/resources/dispute";
 import { StoryAPIClient } from "../../src/clients/storyAPI";
@@ -42,8 +41,8 @@ describe("Test StoryClient", function () {
   describe("Test getters", function () {
     const account = privateKeyToAccount(generatePrivateKey());
     const transport = http(process.env.RPC_PROVIDER_URL);
-    const config = {
-      chainId: "sepolia" as SupportedChainIds,
+    const config: StoryConfig = {
+      chainId: "sepolia",
       transport,
       account,
     };
@@ -73,23 +72,20 @@ describe("Test StoryClient", function () {
     });
 
     it("should return client license", () => {
-      const license = new LicenseClient(rpcClient, wallet, storyAPIClient, "sepolia");
+      const license = new LicenseClient(
+        rpcClient,
+        wallet,
+        storyAPIClient,
+        new IPAssetClient(rpcClient, wallet, "sepolia"),
+        "sepolia",
+      );
       expect(client.license).to.not.equal(null);
       expect(client.license).to.not.equal(undefined);
       expect(client.license.ipAccountABI).to.eql(license.ipAccountABI);
       expect(client.license.licenseRegistryConfig).to.eql(license.licenseRegistryConfig);
       expect(client.license.licensingModuleConfig).to.eql(license.licensingModuleConfig);
-    });
-
-    it("should return client policy", () => {
-      const policy = new PolicyClient(rpcClient, wallet, "sepolia");
-      expect(client.policy).to.not.equal(null);
-      expect(client.policy).to.not.equal(undefined);
-      expect(client.policy.ipAccountABI).to.eql(policy.ipAccountABI);
-      expect(client.policy.licensingModuleConfig).to.eql(policy.licensingModuleConfig);
-      expect(client.policy.pilPolicyFrameworkManagerConfig).to.eql(
-        policy.pilPolicyFrameworkManagerConfig,
-      );
+      // expect(client.license.getLicenseTemplateConfig).to.eql(license.getLicenseTemplateConfig);
+      expect(client.license.royaltyPolicyLAPConfig).to.eql(license.royaltyPolicyLAPConfig);
     });
 
     it("should return client account", () => {

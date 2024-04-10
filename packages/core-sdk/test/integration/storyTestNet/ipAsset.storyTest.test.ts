@@ -60,7 +60,7 @@ describe.skip("IP Asset Functions in storyTestnet", () => {
         ],
         address: storyTestnetAddress.MockERC721,
         functionName: "mintId",
-        args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex, BigInt(43)],
+        args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex, BigInt(1051)],
       });
       const hash = await walletClient.writeContract(request);
       const { logs } = await publicClient.waitForTransactionReceipt({

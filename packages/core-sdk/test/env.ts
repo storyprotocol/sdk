@@ -10,7 +10,7 @@ const sepolia: Record<string, Hex> = {
   IPAssetRegistry: "0xb1534826Bc9D77d818CbC596435f530778C73865",
   LicenseRegistry: "0x66f6865668F2B9213Ed05b97eE97beb97A75e243",
   LicensingModule: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
-  PILicenseTemplate: "0x3C30b98f56b469c0d292EFF5878e9Fb302CB13dD",
+  PILicenseTemplate: "0xd0Be223ae9719bBD93447ecf5289319CCf8cA227",
   RegistrationModule: "0x193f0Cc84d51Fc38a30658d7eFffEB2C5Cc25840",
   RoyaltyPolicyLAP: "0xb811a9aD59375eDC449cb3A05eB4672042BB9Daf",
 };
