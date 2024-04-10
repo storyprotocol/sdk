@@ -22,13 +22,11 @@ import {
 } from "../types/resources/license";
 import { SupportedChainIds } from "../types/config";
 import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
-import { IPAssetClient } from "./ipAsset";
 
 export class LicenseClient {
   private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   private readonly storyClient: StoryAPIClient;
-  private readonly ipAssetClient: IPAssetClient;
   public licenseRegistryConfig;
   public licensingModuleConfig;
   public ipAccountABI = IPAccountABI;
@@ -39,13 +37,11 @@ export class LicenseClient {
     rpcClient: PublicClient,
     wallet: WalletClient,
     storyClient: StoryAPIClient,
-    ipAssetClient: IPAssetClient,
     chainId: SupportedChainIds,
   ) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.storyClient = storyClient;
-    this.ipAssetClient = ipAssetClient;
     this.licenseRegistryConfig = getLicenseRegistryConfig(chainId);
     this.licensingModuleConfig = getLicensingModuleConfig(chainId);
     this.licenseTemplateConfig = getLicenseTemplateConfig(chainId);

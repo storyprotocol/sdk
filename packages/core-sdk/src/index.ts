@@ -12,10 +12,13 @@ export type { Hex, TypedData } from "./types/common";
 export type { RegisterIpResponse, RegisterRequest } from "./types/resources/ipAsset";
 
 export type {
-  MintLicenseRequest,
-  MintLicenseResponse,
-  LinkIpToParentRequest,
-  LinkIpToParentResponse,
+  MintLicenseTokensResponse,
+  MintLicenseTokensRequest,
+  RegisterCommercialUsePILRequest,
+  RegisterLicenseTermsResponse,
+  RegisterCommercialRemixPILRequest,
+  AttachLicenseTermsRequest,
+  LicenseTermsIdResponse,
 } from "./types/resources/license";
 
 export type {

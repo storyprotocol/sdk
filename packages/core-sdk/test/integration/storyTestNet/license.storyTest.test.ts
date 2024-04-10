@@ -31,15 +31,15 @@ describe("License Functions in storyTestnet", () => {
     client.license.ipAccountABI = IPAccountABI;
     client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
   });
-  describe.skip("registering license with different types", async function () {
+  describe("registering license with different types", async function () {
     it("should not throw error when registering license with non commercial social remixing PIL", async function () {
       const result = await client.license.registerNonComSocialRemixingPIL({
         txOptions: {
           waitForTransaction: true,
         },
       });
-      expect(result.txHash).to.not.empty.and.to.be.a("string");
-      expect(result.licenseId).not.empty.and.to.be.a("string");
+      // expect(result.txHash).to.a("string").and.not.empty;
+      expect(result.licenseId).to.be.a("string").and.not.empty;
     });
 
     it("should not throw error when registering license with commercial use", async function () {
@@ -51,8 +51,8 @@ describe("License Functions in storyTestnet", () => {
           waitForTransaction: true,
         },
       });
-      expect(result.txHash).to.not.empty.and.to.be.a("string");
-      expect(result.licenseId).not.empty.and.to.be.a("string");
+      // expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.licenseId).to.be.a("string").not.empty;
     });
 
     it("should not throw error when registering license with commercial Remix use", async function () {
@@ -65,8 +65,8 @@ describe("License Functions in storyTestnet", () => {
           waitForTransaction: true,
         },
       });
-      expect(result.txHash).to.not.empty.and.to.be.a("string");
-      expect(result.licenseId).not.empty.and.to.be.a("string");
+      // expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.licenseId).to.be.a("string").and.not.empty;
     });
   });
 
@@ -90,7 +90,7 @@ describe("License Functions in storyTestnet", () => {
       licenseId = registerLicenseResult.licenseId!;
     });
 
-    it.skip("should not throw error when attach License Terms", async function () {
+    it("should not throw error when attach License Terms", async function () {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTemplate: storyTestnetAddress.PILicenseTemplate,

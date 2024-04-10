@@ -110,7 +110,6 @@ export class StoryClient {
         this.rpcClient,
         this.wallet,
         this.storyClient,
-        this.ipAsset,
         this.config.chainId,
       );
     }

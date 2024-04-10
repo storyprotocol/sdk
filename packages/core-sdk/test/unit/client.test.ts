@@ -72,13 +72,7 @@ describe("Test StoryClient", function () {
     });
 
     it("should return client license", () => {
-      const license = new LicenseClient(
-        rpcClient,
-        wallet,
-        storyAPIClient,
-        new IPAssetClient(rpcClient, wallet, "sepolia"),
-        "sepolia",
-      );
+      const license = new LicenseClient(rpcClient, wallet, storyAPIClient, "sepolia");
       expect(client.license).to.not.equal(null);
       expect(client.license).to.not.equal(undefined);
       expect(client.license.ipAccountABI).to.eql(license.ipAccountABI);

@@ -2,30 +2,6 @@ import { Hex } from "viem";
 
 import { TxOptions } from "../options";
 
-export type MintLicenseRequest = {
-  policyId: string;
-  licensorIpId: Hex;
-  mintAmount: number;
-  receiverAddress: Hex;
-  txOptions?: TxOptions;
-};
-
-export type MintLicenseResponse = {
-  txHash: string;
-  licenseId?: string;
-};
-
-export type LinkIpToParentRequest = {
-  licenseIds: string[];
-  childIpId: Hex;
-  txOptions?: TxOptions;
-};
-
-export type LinkIpToParentResponse = {
-  txHash: string;
-  success?: boolean;
-};
-
 export type LicenseApiResponse = {
   data: License;
 };
