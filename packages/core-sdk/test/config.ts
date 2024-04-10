@@ -9,7 +9,7 @@ import LicensingModuleABI from "../src/abi/json/LicensingModule.abi";
 import IRoyaltyPolicyLAPABI from "../src/abi/json/IRoyaltyPolicyLAP.abi";
 import IpRoyaltyVaultABI from "../src/abi/json/IpRoyaltyVault.abi";
 import IRoyaltyModuleABI from "../src/abi/json/IRoyaltyModule.abi";
-import PILPolicyFrameworkManagerABI from "../src/abi/json/PILPolicyFrameworkManager.abi";
+import PILicenseTemplateABI from "../src/abi/json/IPILicenseTemplate.abi";
 import ErrorsABI from "../src/abi/json/Errors.abi";
 import { contractAddress } from "./env";
 import { SupportedChainIds } from "../src/types/config";
@@ -35,9 +35,9 @@ export const getLicensingModuleConfig = (chain: SupportedChainIds) => ({
   abi: [...LicensingModuleABI, ...ErrorsABI],
   address: getAddress(contractAddress[chain].LicensingModule),
 });
-export const getPILPolicyFrameworkManagerConfig = (chain: SupportedChainIds) => ({
-  abi: [...PILPolicyFrameworkManagerABI, ...ErrorsABI],
-  address: getAddress(contractAddress[chain].PILPolicyFrameworkManager),
+export const getPILicenseTemplateConfig = (chain: SupportedChainIds) => ({
+  abi: [...PILicenseTemplateABI, ...ErrorsABI],
+  address: getAddress(contractAddress[chain].PILicenseTemplate),
 });
 export const getRoyaltyPolicyLAPConfig = (chain: SupportedChainIds) => ({
   abi: [...IRoyaltyPolicyLAPABI, ...ErrorsABI],
@@ -52,4 +52,9 @@ export const getRoyaltyVaultImplConfig = (chain: SupportedChainIds) => ({
 export const getRoyaltyModuleConfig = (chain: SupportedChainIds) => ({
   abi: [...IRoyaltyModuleABI, ...ErrorsABI],
   address: getAddress(contractAddress[chain].RoyaltyModule),
+});
+
+export const getLicenseTemplateConfig = (chain: SupportedChainIds) => ({
+  abi: [...PILicenseTemplateABI, ...ErrorsABI],
+  address: getAddress(contractAddress[chain].PILicenseTemplate),
 });
