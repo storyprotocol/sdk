@@ -1,13 +1,16 @@
 import { expect } from "chai";
-import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
-import { Account, http, Transport, createWalletClient, createPublicClient } from "viem";
-import { StoryClient } from "../../src";
-import { SupportedChainIds } from "../../src/types/config";
-import { PermissionClient } from "../../src/resources/permission";
-import { LicenseClient } from "../../src/resources/license";
-import { DisputeClient } from "../../src/resources/dispute";
+import { Account, createPublicClient, createWalletClient, http, Transport } from "viem";
+import {
+  DisputeClient,
+  LicenseClient,
+  PermissionClient,
+  StoryClient,
+  StoryConfig,
+} from "../../src";
 import { StoryAPIClient } from "../../src/clients/storyAPI";
+
 describe("Test StoryClient", function () {
   describe("Test constructor", function () {
     it("should succeed when passing in default params", function () {
