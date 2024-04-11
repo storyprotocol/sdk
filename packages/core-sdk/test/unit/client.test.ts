@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import { Account, http, Transport, createWalletClient, createPublicClient } from "viem";
-import { IPAssetClient, StoryClient } from "../../src";
+import { StoryClient } from "../../src";
 import { StoryConfig } from "../../src/types/config";
 import { PermissionClient } from "../../src/resources/permission";
 import { LicenseClient } from "../../src/resources/license";
@@ -78,7 +78,7 @@ describe("Test StoryClient", function () {
       expect(client.license.ipAccountABI).to.eql(license.ipAccountABI);
       expect(client.license.licenseRegistryConfig).to.eql(license.licenseRegistryConfig);
       expect(client.license.licensingModuleConfig).to.eql(license.licensingModuleConfig);
-      // expect(client.license.getLicenseTemplateConfig).to.eql(license.getLicenseTemplateConfig);
+      expect(client.license.licenseTemplateConfig).to.eql(license.licenseTemplateConfig);
       expect(client.license.royaltyPolicyLAPConfig).to.eql(license.royaltyPolicyLAPConfig);
     });
 

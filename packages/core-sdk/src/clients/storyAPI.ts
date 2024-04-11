@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 import { RoyaltyPolicy, RoyaltyPolicyApiResponse } from "../types/resources/royalty";
-import { License, LicenseApiResponse, Policy, PolicyApiResponse } from "../types/resources/license";
+import { License, LicenseApiResponse } from "../types/resources/license";
 
 export class StoryAPIClient {
   private readonly httpClient: AxiosInstance;
@@ -24,10 +24,5 @@ export class StoryAPIClient {
   public async getLicense(licenseId: string): Promise<License> {
     const licenseResp = await this.httpClient.get(`/api/v1/licenses/${licenseId}`);
     return (licenseResp.data as LicenseApiResponse).data;
-  }
-
-  public async getPolicy(policyId: string): Promise<Policy> {
-    const policyResp = await this.httpClient.get(`/api/v1/policies/${policyId}`);
-    return (policyResp.data as PolicyApiResponse).data;
   }
 }

@@ -22,7 +22,6 @@ import {
   MintLicenseTokensResponse,
 } from "../types/resources/license";
 import { SupportedChainIds } from "../types/config";
-import { computeRoyaltyContext, encodeRoyaltyContext } from "../utils/royaltyContext";
 
 export class LicenseClient {
   private readonly wallet: WalletClient;
@@ -295,9 +294,7 @@ export class LicenseClient {
           BigInt(request.licenseTermsId),
           BigInt(request.amount || 1),
           request.receiver || this.wallet.account!.address,
-          encodeRoyaltyContext(
-            await computeRoyaltyContext([request.licenseTermsId], this.storyClient),
-          ),
+          zeroAddress,
         ],
         account: this.wallet.account,
       });

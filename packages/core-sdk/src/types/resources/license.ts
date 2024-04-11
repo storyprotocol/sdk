@@ -74,16 +74,3 @@ export type MintLicenseTokensResponse = {
   licenseTokenId?: string;
   txHash?: string;
 };
-
-export type PolicyApiResponse = {
-  data: Policy;
-};
-
-export type Policy = {
-  id: string;
-  pil: PILData;
-};
-
-export type PILData = {
-  commercialRevShare: string;
-};
