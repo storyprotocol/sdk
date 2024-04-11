@@ -8,6 +8,7 @@ import {
   getLicenseRegistryConfig,
   getLicensingModuleConfig,
   getIPAssetRegistryConfig,
+  getRoyaltyPolicyLAPConfig,
 } from "../../config";
 import chaiAsPromised from "chai-as-promised";
 import { storyTestnetAddress } from "../../env";
@@ -26,7 +27,7 @@ describe("License Functions in storyTestnet", () => {
     client.license.ipAccountABI = IPAccountABI;
     client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
     client.license.licenseTemplateConfig = getLicenseTemplateConfig("1513");
-    client.license.royaltyPolicyLAPConfig = getLicenseRegistryConfig("1513");
+    client.license.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig("1513");
     client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
     client.license.ipAccountABI = IPAccountABI;
     client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
@@ -44,9 +45,8 @@ describe("License Functions in storyTestnet", () => {
 
     it("should not throw error when registering license with commercial use", async function () {
       const result = await client.license.registerCommercialUsePIL({
-        royaltyPolicy: "0x2EcdB5bD12a037dCb9De0Ab7957f35FEeF758eA6",
         mintingFee: "1",
-        currency: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
+        currency: storyTestnetAddress.MockERC20,
         txOptions: {
           waitForTransaction: true,
         },
@@ -57,10 +57,9 @@ describe("License Functions in storyTestnet", () => {
 
     it("should not throw error when registering license with commercial Remix use", async function () {
       const result = await client.license.registerCommercialRemixPIL({
-        royaltyPolicy: "0x2EcdB5bD12a037dCb9De0Ab7957f35FEeF758eA6",
         mintingFee: "1",
         commercialRevShare: 100,
-        currency: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
+        currency: storyTestnetAddress.MockERC20,
         txOptions: {
           waitForTransaction: true,
         },

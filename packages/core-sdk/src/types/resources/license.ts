@@ -44,7 +44,6 @@ export type RegisterLicenseTermsResponse = {
 export type RegisterCommercialUsePILRequest = {
   mintingFee: string;
   currency: Hex;
-  royaltyPolicy: Hex;
   txOptions?: TxOptions;
 };
 
@@ -52,7 +51,6 @@ export type RegisterCommercialRemixPILRequest = {
   mintingFee: string;
   commercialRevShare: number;
   currency: Hex;
-  royaltyPolicy: Hex;
   txOptions?: TxOptions;
 };
 

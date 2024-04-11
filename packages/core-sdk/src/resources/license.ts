@@ -7,6 +7,7 @@ import {
   getLicenseRegistryConfig,
   getLicenseTemplateConfig,
   getLicensingModuleConfig,
+  getRoyaltyPolicyLAPConfig,
 } from "../abi/config";
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
@@ -45,7 +46,7 @@ export class LicenseClient {
     this.licenseRegistryConfig = getLicenseRegistryConfig(chainId);
     this.licensingModuleConfig = getLicensingModuleConfig(chainId);
     this.licenseTemplateConfig = getLicenseTemplateConfig(chainId);
-    this.royaltyPolicyLAPConfig = getLicenseRegistryConfig(chainId);
+    this.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig(chainId);
   }
 
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
@@ -128,7 +129,7 @@ export class LicenseClient {
     try {
       const licenseTerms: LicenseTerms = {
         transferable: true,
-        royaltyPolicy: request.royaltyPolicy,
+        royaltyPolicy: this.royaltyPolicyLAPConfig.address,
         mintingFee: BigInt(request.mintingFee),
         expiration: BigInt(0),
         commercialUse: true,
@@ -187,7 +188,7 @@ export class LicenseClient {
     try {
       const licenseTerms: LicenseTerms = {
         transferable: true,
-        royaltyPolicy: request.royaltyPolicy,
+        royaltyPolicy: this.royaltyPolicyLAPConfig.address,
         mintingFee: BigInt(request.mintingFee),
         expiration: BigInt(0),
         commercialUse: true,
