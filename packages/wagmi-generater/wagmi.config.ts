@@ -92,7 +92,7 @@ export default defineConfig(async () => {
                 contracts: contracts,
             }),
             sdk({
-                permissionLessSDK: false,
+                permissionLessSDK: true,
                 whiteList: {
                     "AccessController": [
                         "PermissionSet",

@@ -1,19 +1,17 @@
-import { Hex, PublicClient, WalletClient, getAddress } from "viem";
+import { Hex, PublicClient, getAddress } from "viem";
 
 import { chain, parseToBigInt } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import { RegisterIpResponse, RegisterRequest } from "../types/resources/ipAsset";
-import { IpAssetRegistryClient } from "../abi/generated";
+import { IpAssetRegistryClient, SimpleWalletClient } from "../abi/generated";
 
 export class IPAssetClient {
-  private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   private readonly chainId: SupportedChainIds;
   public ipAssetRegistryClient: IpAssetRegistryClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
-    this.wallet = wallet;
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.chainId = chainId;
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);

@@ -219,7 +219,7 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
     }
     funcLine.push(`      });`)
     if (method == "simulateContract") {
-        funcLine.push(`  return await this.wallet.writeContract(call);`)
+        funcLine.push(`  return await this.wallet.writeContract(call as WriteContractParameters);`)
     } else if (outType.valid && outType.kind == "object") {
         funcLine.push(`  return {`)
         if (func.outputs.length == 1) {
@@ -234,54 +234,9 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
         funcLine.push(`  };`)
     }
     funcLine.push(`  }`)
+    addImport('viem', 'WriteContractParameters')
 
     return {func: funcLine.join("\n"), types: types.join("\n")}
-}
-
-function generatePermissionLessFunction(contractName: string, func: AbiFunction) {
-    const abiName = `${camelCase(contractName)}Abi`
-    const indexFuncName = ('index' in func) ? `${func.name}${func.index}` : func.name
-    const inName = `${pascalCase(contractName)}${pascalCase(indexFuncName)}Request`
-    const inType = generateContractTypes(inName, func.inputs)
-    const inParams = inType.valid ? `request: ${inName}` : ``
-
-    let funcLine: Array<string> = [];
-    let types: Array<string> = [];
-
-    if (inType.valid) types.push(`${inType.comment}\n${inType.type}`)
-
-    funcLine.push(``)
-    funcLine.push(`/**`)
-    funcLine.push(` * permission less method ${func.name} for contract ${contractName}`)
-    funcLine.push(` *`)
-    funcLine.push(` * @param request ${inName}`)
-    funcLine.push(` * @return Promise<WriteContractReturnType>`)
-    funcLine.push(`*/`)
-    funcLine.push(`  public async ${camelCase(indexFuncName)}(${inParams}): Promise<WriteContractReturnType> {`)
-    funcLine.push(`      const userOperationRequest = await this.wallet.prepareUserOperationRequest({`)
-    funcLine.push(`        userOperation: {`)
-    funcLine.push(`          callData: await this.wallet.account.encodeCallData({`)
-    funcLine.push(`            to: this.address,`)
-    funcLine.push(`            data: encodeFunctionData({`)
-    funcLine.push(`              abi: ${abiName},`)
-    funcLine.push(`              functionName: "${func.name}",`)
-    if (inType.valid) {
-        funcLine.push(`              args: [`)
-        funcLine.push(inType.args)
-        funcLine.push(`              ],`)
-    }
-    funcLine.push(`            }),`)
-    funcLine.push(`            value: 0n,`)
-    funcLine.push(`          }),`)
-    funcLine.push(`        },`)
-    funcLine.push(`        account: this.wallet.account,`)
-    funcLine.push(`      });`)
-    funcLine.push(`    return await this.wallet.sendUserOperation({userOperation: userOperationRequest, account: this.wallet.account});`)
-    funcLine.push(`  }`)
-
-    addImport('viem', 'encodeFunctionData', 'WriteContractReturnType')
-
-    return {func: funcLine.join("\n"), types: ""}
 }
 
 function generateEventFunction(contractName: any, event: AbiEvent) {
@@ -430,7 +385,7 @@ function generateContract(config: SDKConfig, contract: Contract): string {
     }
 
     if (abiWriteFunctions.length) {
-        addImport('viem', 'WalletClient', 'PublicClient', 'Address')
+        addImport('viem', 'PublicClient', 'Address')
 
         const extend = abiViewFunctions.length ?
             ` extends ${pascalCase(contract.name)}ReadOnlyClient`
@@ -440,13 +395,13 @@ function generateContract(config: SDKConfig, contract: Contract): string {
         file.push(` * contract ${contract.name} write method`)
         file.push(`*/`)
         file.push(`export class ${pascalCase(contract.name)}Client ${extend} {`)
-        file.push(`  protected readonly wallet: WalletClient;`)
+        file.push(`  protected readonly wallet: SimpleWalletClient;`)
         if (!extend) {
             file.push(`  protected readonly rpcClient: PublicClient;`)
             file.push(`  public readonly address: Address;`)
         }
         file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address?: Address) {`)
+        file.push(`  constructor (rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {`)
         if (!extend) {
             file.push(`      this.address = address || getAddress(${addressName}, rpcClient.chain?.id);`)
             file.push(`      this.rpcClient = rpcClient;`)
@@ -463,44 +418,13 @@ function generateContract(config: SDKConfig, contract: Contract): string {
         file.push(`}`)
     }
 
-    if (config.permissionLessSDK && abiWriteFunctions.length) {
-        addImport('viem', 'WalletClient', 'PublicClient', 'Address')
-        const extend = abiViewFunctions.length ?
-            ` extends ${pascalCase(contract.name)}ReadOnlyClient`
-            : abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
-        file.push(``)
-        file.push(`/**`)
-        file.push(` * contract ${contract.name} permission less write method`)
-        file.push(`*/`)
-        file.push(`export class ${pascalCase(contract.name)}PermissionLessClient ${extend} {`)
-        file.push(`  protected readonly wallet: WalletClient;`)
-        if (!extend) {
-            file.push(`  public readonly address: Address;`)
-        }
-        file.push(``)
-        file.push(`  constructor (rpcClient: PublicClient, wallet: WalletClient, address?: Address) {`)
-        if (!extend) {
-            file.push(`      this.address = address || getAddress(${addressName}, rpcClient.chain?.id);`)
-        } else {
-            file.push(`      super(rpcClient, address);`)
-        }
-        file.push(`      this.wallet = wallet;`)
-        file.push(`  }`)
-        abiWriteFunctions.forEach(it => {
-            const data = generatePermissionLessFunction(contract.name, it)
-            file.push(data.func)
-            types.push(data.types)
-        })
-        file.push(`}`)
-    }
-
     return `// Contract ${contract.name} =============================================================\n` +
         types.join("\n\n") +
         "\n\n" +
         file.join("\n");
 }
 
-function generateCommon() {
+function generateCommon(config: SDKConfig) {
     let file: Array<string> = [];
     file.push(`// COMMON =============================================================`)
     file.push(``)
@@ -508,8 +432,40 @@ function generateCommon() {
     file.push(`   return address[chainId || 0] || '0x'`)
     file.push(`}`)
     file.push(``)
-
     addImport('viem', 'Address')
+
+    if (config.permissionLessSDK) {
+        file.push(``)
+        file.push(`export type SimpleWalletClient<`)
+        file.push(`    TChain extends Chain | undefined = Chain | undefined,`)
+        file.push(`    TAccount extends Account | undefined = Account | undefined,`)
+        file.push(`> = {`)
+        file.push(`  account ?: TAccount;`)
+        file.push(`  writeContract: <`)
+        file.push(`      const abi extends Abi | readonly unknown[],`)
+        file.push(`      functionName extends ContractFunctionName<abi, 'payable' | 'nonpayable'>,`)
+        file.push(`      args extends ContractFunctionArgs<`)
+        file.push(`          abi,`)
+        file.push(`          'payable' | 'nonpayable',`)
+        file.push(`          functionName`)
+        file.push(`      >,`)
+        file.push(`      TChainOverride extends Chain | undefined = undefined,`)
+        file.push(`  >(`)
+        file.push(`      args: WriteContractParameters<`)
+        file.push(`          abi,`)
+        file.push(`          functionName,`)
+        file.push(`          args,`)
+        file.push(`          TChain,`)
+        file.push(`          TAccount,`)
+        file.push(`          TChainOverride`)
+        file.push(`      >,`)
+        file.push(`  ) => Promise<WriteContractReturnType>`)
+        file.push(`};`)
+        file.push(``)
+
+        addImport('viem', 'Abi', 'Account', 'Chain', 'ContractFunctionArgs', 'ContractFunctionName', 'WriteContractParameters', 'WriteContractReturnType')
+    }
+
     return file.join("\n");
 }
 
@@ -519,7 +475,7 @@ export function sdk(config: SDKConfig = {}): SDKResult {
         async run(runConfig: RunConfig): Promise<{ imports?: string, prepend?: string, content: string }> {
             let classFile: Array<string> = []
 
-            classFile.push(generateCommon())
+            classFile.push(generateCommon(config))
 
             for (const contract of runConfig.contracts) {
                 classFile.push(generateContract(config, contract))

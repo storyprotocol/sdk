@@ -1,16 +1,21 @@
-import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from "viem";
+import { PublicClient, getAddress, Hex, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import { SetPermissionsRequest, SetPermissionsResponse } from "../types/resources/permission";
 import { parseToBigInt } from "../utils/utils";
-import { accessControllerAbi, AccessControllerClient, IpAccountImplClient } from "../abi/generated";
+import {
+  accessControllerAbi,
+  AccessControllerClient,
+  IpAccountImplClient,
+  SimpleWalletClient,
+} from "../abi/generated";
 
 export class PermissionClient {
-  private readonly wallet: WalletClient;
+  private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
   private accessControllerClient: AccessControllerClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.accessControllerClient = new AccessControllerClient(this.rpcClient, this.wallet);

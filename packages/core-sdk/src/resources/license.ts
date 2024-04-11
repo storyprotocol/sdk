@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, zeroAddress } from "viem";
+import { PublicClient, zeroAddress } from "viem";
 
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
@@ -6,6 +6,7 @@ import {
   LicensingModuleClient,
   PiLicenseTemplateClient,
   RoyaltyPolicyLapClient,
+  SimpleWalletClient,
 } from "../abi/generated";
 import {
   LicenseTerms,
@@ -21,7 +22,7 @@ import {
 import { handleError } from "../utils/errors";
 
 export class LicenseClient {
-  private readonly wallet: WalletClient;
+  private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
   private readonly storyClient: StoryAPIClient;
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -29,7 +30,7 @@ export class LicenseClient {
   private licenseTemplateClient: PiLicenseTemplateClient;
   private royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, storyClient: StoryAPIClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, storyClient: StoryAPIClient) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.storyClient = storyClient;

@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, stringToHex } from "viem";
+import { PublicClient, stringToHex } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -9,16 +9,14 @@ import {
   ResolveDisputeRequest,
   ResolveDisputeResponse,
 } from "../types/resources/dispute";
-import { DisputeModuleClient } from "../abi/generated";
+import { DisputeModuleClient, SimpleWalletClient } from "../abi/generated";
 
 export class DisputeClient {
-  private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   public disputeModuleClient: DisputeModuleClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
-    this.wallet = wallet;
     this.disputeModuleClient = new DisputeModuleClient(rpcClient, wallet);
   }
 

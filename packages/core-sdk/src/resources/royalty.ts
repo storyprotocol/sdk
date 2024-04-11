@@ -1,4 +1,4 @@
-import { Hex, PublicClient, WalletClient } from "viem";
+import { Hex, PublicClient } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -11,16 +11,17 @@ import {
   IpRoyaltyVaultImplClient,
   RoyaltyModuleClient,
   RoyaltyPolicyLapClient,
+  SimpleWalletClient,
 } from "../abi/generated";
 
 export class RoyaltyClient {
-  private readonly wallet: WalletClient;
+  private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
   public royaltyVaultImplClient: IpRoyaltyVaultImplClient;
   public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.royaltyVaultImplClient = new IpRoyaltyVaultImplClient(this.rpcClient, this.wallet);

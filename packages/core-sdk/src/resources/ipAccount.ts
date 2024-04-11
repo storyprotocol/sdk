@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, getAddress } from "viem";
+import { PublicClient, getAddress } from "viem";
 
 import {
   IPAccountExecuteRequest,
@@ -8,13 +8,13 @@ import {
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
 import { parseToBigInt } from "../utils/utils";
-import { IpAccountImplClient } from "../abi/generated";
+import { IpAccountImplClient, SimpleWalletClient } from "../abi/generated";
 
 export class IPAccountClient {
-  private readonly wallet: WalletClient;
+  private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
   }

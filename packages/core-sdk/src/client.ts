@@ -1,7 +1,12 @@
-import { createPublicClient, createWalletClient, PublicClient, WalletClient } from "viem";
+import { createPublicClient, createWalletClient, PublicClient } from "viem";
 import * as dotenv from "dotenv";
 
-import { StoryConfig, SupportedChainIds } from "./types/config";
+import {
+  StoryConfig,
+  SupportedChainIds,
+  UseAccountStoryConfig,
+  UseWalletStoryConfig,
+} from "./types/config";
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
@@ -10,6 +15,7 @@ import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
 import { StoryAPIClient } from "./clients/storyAPI";
 import { RoyaltyClient } from "./resources/royalty";
+import { SimpleWalletClient } from "./abi/generated";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -20,7 +26,7 @@ if (typeof process !== "undefined") {
 export class StoryClient {
   private readonly config: StoryConfig & { chainId: SupportedChainIds };
   private readonly rpcClient: PublicClient;
-  private readonly wallet: WalletClient;
+  private readonly wallet: SimpleWalletClient;
   private readonly storyClient: StoryAPIClient;
   private _ipAsset: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
@@ -50,26 +56,53 @@ export class StoryClient {
     this.rpcClient = createPublicClient(clientConfig);
     this.storyClient = new StoryAPIClient();
 
-    const account = this.config.account;
-    if (!account) {
-      throw new Error("account is null");
-    }
+    if (this.config.wallet) {
+      this.wallet = this.config.wallet;
+    } else if (this.config.account) {
+      const account = this.config.account;
 
-    this.wallet =
-      config.wallet ||
-      createWalletClient({
+      this.wallet = createWalletClient({
         ...clientConfig,
         account: account,
       });
+    } else {
+      throw new Error("must specify a wallet or account");
+    }
   }
 
   /**
    * Factory method for creating a SDK client with a signer.
    *
-   * @param config - the configuration for a new SDK client
+   * @param config StoryClient - the configuration for a new SDK client
    */
   static newClient(config: StoryConfig): StoryClient {
     return new StoryClient(config);
+  }
+
+  /**
+   * Factory method for creating a SDK client with a signer.
+   *
+   * @param config WalletClientConfig - the configuration for a new SDK client
+   */
+  static newClientUseWallet(config: UseWalletStoryConfig): StoryClient {
+    return new StoryClient({
+      chainId: config.chainId,
+      transport: config.transport,
+      wallet: config.wallet,
+    });
+  }
+
+  /**
+   * Factory method for creating a SDK client with a signer.
+   *
+   * @param config UseAccountStoryConfig - the configuration for a new SDK client
+   */
+  static newClientUseAccount(config: UseAccountStoryConfig): StoryClient {
+    return new StoryClient({
+      account: config.account,
+      chainId: config.chainId,
+      transport: config.transport,
+    });
   }
 
   /**

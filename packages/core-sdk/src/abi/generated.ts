@@ -1,12 +1,17 @@
 import {
   Address,
+  Abi,
+  Account,
+  Chain,
+  ContractFunctionArgs,
+  ContractFunctionName,
+  WriteContractParameters,
+  WriteContractReturnType,
   PublicClient,
   Hex,
   decodeEventLog,
   WatchContractEventReturnType,
   TransactionReceipt,
-  WalletClient,
-  WriteContractReturnType,
 } from "viem";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4426,6 +4431,21 @@ function getAddress(address: Record<number, Address>, chainId?: number): Address
   return address[chainId || 0] || "0x";
 }
 
+export type SimpleWalletClient<
+  TChain extends Chain | undefined = Chain | undefined,
+  TAccount extends Account | undefined = Account | undefined,
+> = {
+  account?: TAccount;
+  writeContract: <
+    const abi extends Abi | readonly unknown[],
+    functionName extends ContractFunctionName<abi, "payable" | "nonpayable">,
+    args extends ContractFunctionArgs<abi, "payable" | "nonpayable", functionName>,
+    TChainOverride extends Chain | undefined = undefined,
+  >(
+    args: WriteContractParameters<abi, functionName, args, TChain, TAccount, TChainOverride>,
+  ) => Promise<WriteContractReturnType>;
+};
+
 // Contract AccessController =============================================================
 
 /**
@@ -4521,9 +4541,9 @@ export class AccessControllerEventClient {
  * contract AccessController write method
  */
 export class AccessControllerClient extends AccessControllerEventClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -4544,7 +4564,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
       account: this.wallet.account,
       args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -4763,9 +4783,9 @@ export class DisputeModuleEventClient {
  * contract DisputeModule write method
  */
 export class DisputeModuleClient extends DisputeModuleEventClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -4786,7 +4806,7 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
       account: this.wallet.account,
       args: [request.disputeId, request.data],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -4805,7 +4825,7 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
       account: this.wallet.account,
       args: [request.targetIpId, request.linkToDisputeEvidence, request.targetTag, request.data],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -4824,7 +4844,7 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
       account: this.wallet.account,
       args: [request.disputeId],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -4866,11 +4886,11 @@ export type IpAccountImplExecuteWithSigRequest = {
  * contract IPAccountImpl write method
  */
 export class IpAccountImplClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     this.address = address || getAddress(ipAccountImplAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
@@ -4890,7 +4910,7 @@ export class IpAccountImplClient {
       account: this.wallet.account,
       args: [request.to, request.value, request.data],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -4916,7 +4936,7 @@ export class IpAccountImplClient {
         request.signature,
       ],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -5078,9 +5098,9 @@ export class IpAssetRegistryReadOnlyClient extends IpAssetRegistryEventClient {
  * contract IPAssetRegistry write method
  */
 export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -5099,7 +5119,7 @@ export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.tokenContract, request.tokenId],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -5201,9 +5221,9 @@ export class IpRoyaltyVaultImplReadOnlyClient {
  * contract IpRoyaltyVaultImpl write method
  */
 export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -5224,7 +5244,7 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
       account: this.wallet.account,
       args: [request.snapshotIds, request.token],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -5243,7 +5263,7 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
       account: this.wallet.account,
       args: [request.snapshotId, request.tokens],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -5262,7 +5282,7 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
       account: this.wallet.account,
       args: [request.ancestorIpId],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -6382,9 +6402,9 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
  * contract LicenseRegistry write method
  */
 export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -6405,7 +6425,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6424,7 +6444,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.governance],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6448,7 +6468,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
         request.licenseTermsIds,
       ],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6467,7 +6487,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.licenseTemplate],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6486,7 +6506,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.newLicenseTemplate, request.newLicenseTermsId],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6505,7 +6525,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.newDisputeModule],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6524,7 +6544,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.ipId, request.expireTime],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6543,7 +6563,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.newGovernance],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6562,7 +6582,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.newLicensingModule],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6581,7 +6601,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.ipId, request.mintingLicenseConfig],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6605,7 +6625,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
         request.mintingLicenseConfig,
       ],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -6624,7 +6644,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       account: this.wallet.account,
       args: [request.newImplementation, request.data],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -7255,9 +7275,9 @@ export class LicensingModuleReadOnlyClient extends LicensingModuleEventClient {
  * contract LicensingModule write method
  */
 export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -7278,7 +7298,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
       account: this.wallet.account,
       args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -7297,7 +7317,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
       account: this.wallet.account,
       args: [request.governance],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -7323,7 +7343,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
         request.royaltyContext,
       ],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -7348,7 +7368,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
         request.royaltyContext,
       ],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -7367,7 +7387,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
       account: this.wallet.account,
       args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -7386,7 +7406,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
       account: this.wallet.account,
       args: [request.newGovernance],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -7405,7 +7425,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
       account: this.wallet.account,
       args: [request.newImplementation, request.data],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -8192,9 +8212,9 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
  * contract PILicenseTemplate write method
  */
 export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -8215,7 +8235,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       account: this.wallet.account,
       args: [request.name, request.metadataURI],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -8234,7 +8254,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       account: this.wallet.account,
       args: [request.terms],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -8253,7 +8273,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       account: this.wallet.account,
       args: [request.licenseTokenId, request.childIpId, request.approved],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -8272,7 +8292,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       account: this.wallet.account,
       args: [request[0], request[1], request[2], request[3]],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -8291,7 +8311,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       account: this.wallet.account,
       args: [request.childIpId, request.parentIpId, request.licenseTermsId, request.licensee],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -8310,7 +8330,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       account: this.wallet.account,
       args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.childIpOwner],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -8335,11 +8355,11 @@ export type RoyaltyModulePayRoyaltyOnBehalfRequest = {
  * contract RoyaltyModule write method
  */
 export class RoyaltyModuleClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     this.address = address || getAddress(royaltyModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
@@ -8361,7 +8381,7 @@ export class RoyaltyModuleClient {
       account: this.wallet.account,
       args: [request.receiverIpId, request.payerIpId, request.token, request.amount],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
 
@@ -8442,9 +8462,9 @@ export class RoyaltyPolicyLapReadOnlyClient {
  * contract RoyaltyPolicyLAP write method
  */
 export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
-  protected readonly wallet: WalletClient;
+  protected readonly wallet: SimpleWalletClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
   }
@@ -8465,6 +8485,6 @@ export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
       account: this.wallet.account,
       args: [request.caller, request.ipId, request.token, request.amount],
     });
-    return await this.wallet.writeContract(call);
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 }
