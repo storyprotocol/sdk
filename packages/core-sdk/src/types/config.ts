@@ -1,4 +1,4 @@
-import { Account, Transport, Address } from "viem";
+import { Account, Transport, Address, WalletClient } from "viem";
 
 /**
  * Supported chains. For convenience, both name or chain ID are supported.
@@ -16,6 +16,7 @@ export interface StoryConfig {
   readonly account: Account | Address;
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
+  readonly wallet?: WalletClient;
 }
 
 export type ContractAddress = { [key in SupportedChainIds]: Record<string, string> };

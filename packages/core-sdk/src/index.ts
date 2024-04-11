@@ -4,7 +4,6 @@ export { AddressZero, HashZero } from "./constants/common";
 export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
-export { PolicyClient } from "./resources/policy";
 export { DisputeClient } from "./resources/dispute";
 
 export type { StoryConfig } from "./types/config";
@@ -13,18 +12,14 @@ export type { Hex, TypedData } from "./types/common";
 export type { RegisterIpResponse, RegisterRequest } from "./types/resources/ipAsset";
 
 export type {
-  MintLicenseRequest,
-  MintLicenseResponse,
-  LinkIpToParentRequest,
-  LinkIpToParentResponse,
+  MintLicenseTokensResponse,
+  MintLicenseTokensRequest,
+  RegisterCommercialUsePILRequest,
+  RegisterLicenseTermsResponse,
+  RegisterCommercialRemixPILRequest,
+  AttachLicenseTermsRequest,
+  LicenseTermsIdResponse,
 } from "./types/resources/license";
-
-export type {
-  RegisterPILPolicyRequest,
-  RegisterPILPolicyResponse,
-  AddPolicyToIpRequest,
-  AddPolicyToIpResponse,
-} from "./types/resources/policy";
 
 export type {
   CollectRoyaltyTokensRequest,
