@@ -4,7 +4,7 @@ import { TxOptions } from "../options";
 
 export type RegisterIpResponse = {
   txHash?: string;
-  ipId?: string;
+  ipId?: Hex;
 };
 
 export type RegisterRequest = {

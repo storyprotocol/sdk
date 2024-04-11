@@ -345,12 +345,22 @@
   },
   {
     "inputs": [],
+    "name": "IpRoyaltyVault__IpTagged",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "IpRoyaltyVault__NotRoyaltyPolicyLAP",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "IpRoyaltyVault__SnapshotIntervalTooShort",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IpRoyaltyVault__ZeroDisputeModule",
     "type": "error"
   },
   {
@@ -369,13 +379,170 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "childIpId",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__DerivativeAlreadyRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "childIpId",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__DerivativeIpAlreadyHasLicense",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__DerivativeIsParent",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicenseRegistry__IndexOutOfBounds",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__IpExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "licenseTemplate",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "licenseTermsId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicenseRegistry__LicenseTermsNotExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicenseRegistry__NoParentIp",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "licenseTemplate",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__NotLicenseTemplate",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "LicenseRegistry__NotTransferable",
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "LicenseRegistry__RevokedLicense",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__ParentIpExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "licenseTermsId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicenseRegistry__ParentIpHasNoLicenseTerms",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__ParentIpTagged",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "licenseTemplate",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__ParentIpUnmachedLicenseTemplate",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "licenseTemplate",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseRegistry__UnregisteredLicenseTemplate",
     "type": "error"
   },
   {
@@ -389,8 +556,123 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "licenseTemplate",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "anotherLicenseTemplate",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseToken__AllLicenseTokensMustFromSameLicenseTemplate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicenseToken__CallerNotLicensingModule",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiredAt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentTimestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicenseToken__LicenseTokenExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "iPowner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenOwner",
+        "type": "address"
+      }
+    ],
+    "name": "LicenseToken__NotLicenseTokenOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicenseToken__NotTransferable",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicenseToken__RevokedLicense",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicenseToken__ZeroDisputeModule",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicenseToken__ZeroLicensingModule",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "LicensingModule__CallerNotLicenseRegistry",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "licensorIpId",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "licenseTemplate",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "licenseTermsId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicensingModule__CallerNotLicensorAndIpHasNotAttachedLicenseTerms",
     "type": "error"
   },
   {
@@ -404,8 +686,34 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      }
+    ],
+    "name": "LicensingModule__DerivativeAlreadyHasLicenseTerms",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicensingModule__DerivativeAlreadyRegistered",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicensingModule__DerivativeIsParent",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "LicensingModule__DerivativeRevShareSumExceedsMaxRNFTSupply",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicensingModule__DerivativesCannotAddLicenseTerms",
     "type": "error"
   },
   {
@@ -435,12 +743,23 @@
   },
   {
     "inputs": [],
-    "name": "LicensingModule__IncompatibleLicensorCommercialPolicy",
+    "name": "LicensingModule__IncompatibleLicensorRoyaltyDerivativeRevShare",
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "LicensingModule__IncompatibleLicensorRoyaltyDerivativeRevShare",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "royaltyPolicy",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "anotherRoyaltyPolicy",
+        "type": "address"
+      }
+    ],
+    "name": "LicensingModule__IncompatibleRoyaltyPolicy",
     "type": "error"
   },
   {
@@ -466,6 +785,65 @@
   {
     "inputs": [],
     "name": "LicensingModule__IpAlreadyLinked",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "childIpId",
+        "type": "address"
+      }
+    ],
+    "name": "LicensingModule__LicenseNotCompatibleForDerivative",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "ipLength",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "licenseTermsLength",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicensingModule__LicenseTermsLengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "licenseTemplate",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "licenseTermsId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LicensingModule__LicenseTermsNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "childIpId",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "licenseTokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "LicensingModule__LicenseTokenNotCompatibleForDerivative",
     "type": "error"
   },
   {
@@ -510,6 +888,16 @@
   },
   {
     "inputs": [],
+    "name": "LicensingModule__NoLicenseToken",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LicensingModule__NoParentIp",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "LicensingModule__NotLicensee",
     "type": "error"
   },
@@ -529,6 +917,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ipId",
+        "type": "address"
+      }
+    ],
+    "name": "LicensingModule__ParentIpHasNoLicenseTerms",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "LicensingModule__PolicyAlreadySetForIpId",
     "type": "error"
@@ -536,6 +935,17 @@
   {
     "inputs": [],
     "name": "LicensingModule__PolicyNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "receiver",
+        "type": "address"
+      }
+    ],
+    "name": "LicensingModule__ReceiverCheckFailed",
     "type": "error"
   },
   {
@@ -716,6 +1126,11 @@
   },
   {
     "inputs": [],
+    "name": "RoyaltyModule__IpIsTagged",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "RoyaltyModule__NoParentsOnLinking",
     "type": "error"
   },
@@ -737,6 +1152,11 @@
   {
     "inputs": [],
     "name": "RoyaltyModule__NotWhitelistedRoyaltyToken",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RoyaltyModule__ZeroDisputeModule",
     "type": "error"
   },
   {

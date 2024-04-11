@@ -79,39 +79,4 @@ describe("Test StoryAPIClient", () => {
       expect(licensorIpId).to.equal("1");
     });
   });
-
-  describe("test for getPolicy", () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-    it("should resolve error if network error occurs", async () => {
-      sinon.stub(axios, "create").returns({
-        get: (url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> =>
-          Promise.reject(new Error("http 500")),
-      } as AxiosInstance);
-      const storyClient: StoryAPIClient = new StoryAPIClient();
-      await expect(storyClient.getPolicy("1")).to.be.rejectedWith("http 500");
-    });
-
-    it("should resolve license when request succeeded", async () => {
-      sinon.stub(axios, "create").returns({
-        get: (url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> =>
-          Promise.resolve({
-            status: 200,
-            data: {
-              data: {
-                id: "3",
-                pil: {
-                  commercialRevShare: "commercial_rev_share",
-                },
-              },
-            },
-          } as AxiosResponse),
-      } as AxiosInstance);
-      const storyClient: StoryAPIClient = new StoryAPIClient();
-      const { id, pil } = await storyClient.getPolicy("1");
-      expect(id).to.equal("3");
-      expect(pil.commercialRevShare).to.equal("commercial_rev_share");
-    });
-  });
 });
