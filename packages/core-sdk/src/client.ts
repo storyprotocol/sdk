@@ -55,10 +55,12 @@ export class StoryClient {
       throw new Error("account is null");
     }
 
-    this.wallet = createWalletClient({
-      ...clientConfig,
-      account: account,
-    });
+    this.wallet =
+      config.wallet ||
+      createWalletClient({
+        ...clientConfig,
+        account: account,
+      });
   }
 
   /**
