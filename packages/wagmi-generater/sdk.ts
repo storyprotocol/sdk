@@ -269,12 +269,13 @@ function generateEventFunction(contractName: any, event: AbiEvent) {
         funcLine.push(`    const targetLogs: Array<${typeName}> = [];`)
         funcLine.push(`    for (const log of txReceipt.logs) {`)
         funcLine.push(`        try {`)
-        funcLine.push(`            targetLogs.push(decodeEventLog({`)
+        funcLine.push(`            const event = decodeEventLog({`)
         funcLine.push(`                abi: ${abiName},`)
         funcLine.push(`                eventName: '${event.name}',`)
         funcLine.push(`                data: log.data,`)
         funcLine.push(`                topics: log.topics,`)
-        funcLine.push(`            }).args);`)
+        funcLine.push(`            });`)
+        funcLine.push(`            if (event.eventName === '${event.name}') targetLogs.push(event.args)`)
         funcLine.push(`        } catch (e) { /* empty */ }`)
         funcLine.push(`    }`)
         funcLine.push(`    return targetLogs`)
@@ -355,7 +356,6 @@ function generateContract(config: SDKConfig, contract: Contract): string {
     }
 
     if (abiViewFunctions.length) {
-
         const extend = abiEvents.length ? ` extends ${pascalCase(contract.name)}EventClient` : ``
         file.push(``)
         file.push(`/**`)

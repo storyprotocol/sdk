@@ -4521,14 +4521,15 @@ export class AccessControllerEventClient {
     const targetLogs: Array<AccessControllerPermissionSetEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: accessControllerAbi,
-            eventName: "PermissionSet",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: accessControllerAbi,
+          eventName: "PermissionSet",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "PermissionSet") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -4683,14 +4684,15 @@ export class DisputeModuleEventClient {
     const targetLogs: Array<DisputeModuleDisputeCancelledEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: disputeModuleAbi,
-            eventName: "DisputeCancelled",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: disputeModuleAbi,
+          eventName: "DisputeCancelled",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "DisputeCancelled") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -4723,14 +4725,15 @@ export class DisputeModuleEventClient {
     const targetLogs: Array<DisputeModuleDisputeRaisedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: disputeModuleAbi,
-            eventName: "DisputeRaised",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: disputeModuleAbi,
+          eventName: "DisputeRaised",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "DisputeRaised") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -4763,14 +4766,15 @@ export class DisputeModuleEventClient {
     const targetLogs: Array<DisputeModuleDisputeResolvedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: disputeModuleAbi,
-            eventName: "DisputeResolved",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: disputeModuleAbi,
+          eventName: "DisputeResolved",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "DisputeResolved") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -5037,14 +5041,15 @@ export class IpAssetRegistryEventClient {
     const targetLogs: Array<IpAssetRegistryIpRegisteredEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: ipAssetRegistryAbi,
-            eventName: "IPRegistered",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: ipAssetRegistryAbi,
+          eventName: "IPRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "IPRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -5780,14 +5785,15 @@ export class LicenseRegistryEventClient {
     const targetLogs: Array<LicenseRegistryExpirationTimeSetEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licenseRegistryAbi,
-            eventName: "ExpirationTimeSet",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "ExpirationTimeSet",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "ExpirationTimeSet") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -5820,14 +5826,15 @@ export class LicenseRegistryEventClient {
     const targetLogs: Array<LicenseRegistryGovernanceUpdatedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licenseRegistryAbi,
-            eventName: "GovernanceUpdated",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "GovernanceUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "GovernanceUpdated") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -5860,14 +5867,15 @@ export class LicenseRegistryEventClient {
     const targetLogs: Array<LicenseRegistryInitializedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licenseRegistryAbi,
-            eventName: "Initialized",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -5900,14 +5908,15 @@ export class LicenseRegistryEventClient {
     const targetLogs: Array<LicenseRegistryLicenseTemplateRegisteredEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licenseRegistryAbi,
-            eventName: "LicenseTemplateRegistered",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "LicenseTemplateRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "LicenseTemplateRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -5940,14 +5949,15 @@ export class LicenseRegistryEventClient {
     const targetLogs: Array<LicenseRegistryMintingLicenseConfigSetForIpEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licenseRegistryAbi,
-            eventName: "MintingLicenseConfigSetForIP",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "MintingLicenseConfigSetForIP",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "MintingLicenseConfigSetForIP") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -5980,14 +5990,15 @@ export class LicenseRegistryEventClient {
     const targetLogs: Array<LicenseRegistryMintingLicenseConfigSetLicenseEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licenseRegistryAbi,
-            eventName: "MintingLicenseConfigSetLicense",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "MintingLicenseConfigSetLicense",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "MintingLicenseConfigSetLicense") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -6018,14 +6029,15 @@ export class LicenseRegistryEventClient {
     const targetLogs: Array<LicenseRegistryUpgradedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licenseRegistryAbi,
-            eventName: "Upgraded",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -6891,14 +6903,15 @@ export class LicensingModuleEventClient {
     const targetLogs: Array<LicensingModuleDerivativeRegisteredEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licensingModuleAbi,
-            eventName: "DerivativeRegistered",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "DerivativeRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "DerivativeRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -6931,14 +6944,15 @@ export class LicensingModuleEventClient {
     const targetLogs: Array<LicensingModuleGovernanceUpdatedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licensingModuleAbi,
-            eventName: "GovernanceUpdated",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "GovernanceUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "GovernanceUpdated") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -6971,14 +6985,15 @@ export class LicensingModuleEventClient {
     const targetLogs: Array<LicensingModuleInitializedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licensingModuleAbi,
-            eventName: "Initialized",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7011,14 +7026,15 @@ export class LicensingModuleEventClient {
     const targetLogs: Array<LicensingModuleLicenseTermsAttachedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licensingModuleAbi,
-            eventName: "LicenseTermsAttached",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "LicenseTermsAttached",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "LicenseTermsAttached") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7051,14 +7067,15 @@ export class LicensingModuleEventClient {
     const targetLogs: Array<LicensingModuleLicenseTokensMintedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licensingModuleAbi,
-            eventName: "LicenseTokensMinted",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "LicenseTokensMinted",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "LicenseTokensMinted") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7089,14 +7106,15 @@ export class LicensingModuleEventClient {
     const targetLogs: Array<LicensingModuleUpgradedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: licensingModuleAbi,
-            eventName: "Upgraded",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7812,14 +7830,15 @@ export class PiLicenseTemplateEventClient {
     const targetLogs: Array<PiLicenseTemplateDerivativeApprovedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: piLicenseTemplateAbi,
-            eventName: "DerivativeApproved",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: piLicenseTemplateAbi,
+          eventName: "DerivativeApproved",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "DerivativeApproved") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7852,14 +7871,15 @@ export class PiLicenseTemplateEventClient {
     const targetLogs: Array<PiLicenseTemplateInitializedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: piLicenseTemplateAbi,
-            eventName: "Initialized",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: piLicenseTemplateAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7892,14 +7912,15 @@ export class PiLicenseTemplateEventClient {
     const targetLogs: Array<PiLicenseTemplateLicenseTermsRegisteredEvent> = [];
     for (const log of txReceipt.logs) {
       try {
-        targetLogs.push(
-          decodeEventLog({
-            abi: piLicenseTemplateAbi,
-            eventName: "LicenseTermsRegistered",
-            data: log.data,
-            topics: log.topics,
-          }).args,
-        );
+        const event = decodeEventLog({
+          abi: piLicenseTemplateAbi,
+          eventName: "LicenseTermsRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "LicenseTermsRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
