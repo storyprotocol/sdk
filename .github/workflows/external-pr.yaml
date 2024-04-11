@@ -1,0 +1,29 @@
+name: External PR
+
+on: 
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  authorize:
+    if: github.event.pull_request.head.repo.full_name != github.repository
+    environment: 'external'
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+  build_and_test:
+    needs: authorize
+    uses: ./.github/workflows/build-and-test.yaml 
+    with: 
+      sha: ${{ github.event.pull_request.head.sha }}
+      ENVIRONMENT: 'beta-sepolia'
+    secrets:
+      RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+      SEPOLIA_RPC_PROVIDER_URL: ${{ secrets.SEPOLIA_RPC_PROVIDER_URL }}
+      SEPOLIA_WALLET_PRIVATE_KEY: ${{ secrets.SEPOLIA_WALLET_PRIVATE_KEY }}
+      SEPOLIA_TEST_WALLET_ADDRESS: ${{ secrets.SEPOLIA_TEST_WALLET_ADDRESS }}
+      STORY_TEST_NET_RPC_PROVIDER_URL: ${{ secrets.STORY_TEST_NET_RPC_PROVIDER_URL }}
+      STORY_TEST_NET_WALLET_PRIVATE_KEY: ${{ secrets.STORY_TEST_NET_WALLET_PRIVATE_KEY }}
+      STORY_TEST_NET_TEST_WALLET_ADDRESS: ${{ secrets.STORY_TEST_NET_TEST_WALLET_ADDRESS }}
