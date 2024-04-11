@@ -3203,6 +3203,490 @@ export const moduleRegistryConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PILicenseTemplate
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const piLicenseTemplateAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAccountRegistry", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "licenseToken", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
+  },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__CommercialDisabled_CantAddAttribution",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__CommercialDisabled_CantAddCommercializers",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__CommercialDisabled_CantAddRevShare",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__CommercialDisabled_CantAddRoyaltyPolicy",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__CommercialEnabled_RoyaltyPolicyRequired",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "checker", internalType: "address", type: "address" }],
+    name: "PILicenseTemplate__CommercializerCheckerDoesNotSupportHook",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__CurrencyTokenNotWhitelisted",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__DerivativesDisabled_CantAddApproval",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__DerivativesDisabled_CantAddAttribution",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__DerivativesDisabled_CantAddReciprocal",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__RoyaltyPolicyNotWhitelisted",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__RoyaltyPolicyRequiresCurrencyToken",
+  },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
+    ],
+    name: "StringsInsufficientHexLength",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "licenseTokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      {
+        name: "caller",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "approved", internalType: "bool", type: "bool", indexed: false },
+    ],
+    name: "DerivativeApproved",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "licenseTermsId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+      {
+        name: "licenseTemplate",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "licenseTerms",
+        internalType: "bytes",
+        type: "bytes",
+        indexed: false,
+      },
+    ],
+    name: "LicenseTermsRegistered",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ACCOUNT_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_NFT",
+    outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "exists",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "start", internalType: "uint256", type: "uint256" },
+    ],
+    name: "getEarlierExpireTime",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "start", internalType: "uint256", type: "uint256" },
+    ],
+    name: "getExpireTime",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "terms",
+        internalType: "struct PILTerms",
+        type: "tuple",
+        components: [
+          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "expiration", internalType: "uint256", type: "uint256" },
+          { name: "commercialUse", internalType: "bool", type: "bool" },
+          { name: "commercialAttribution", internalType: "bool", type: "bool" },
+          {
+            name: "commercializerChecker",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "commercializerCheckerData",
+            internalType: "bytes",
+            type: "bytes",
+          },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "commercialRevCelling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
+          {
+            name: "derivativesAttribution",
+            internalType: "bool",
+            type: "bool",
+          },
+          { name: "derivativesApproval", internalType: "bool", type: "bool" },
+          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
+          {
+            name: "derivativeRevCelling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "currency", internalType: "address", type: "address" },
+        ],
+      },
+    ],
+    name: "getLicenseTermsId",
+    outputs: [
+      {
+        name: "selectedLicenseTermsId",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getMetadataURI",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "getRoyaltyPolicy",
+    outputs: [
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      { name: "royaltyData", internalType: "bytes", type: "bytes" },
+      { name: "mintingFee", internalType: "uint256", type: "uint256" },
+      { name: "currency", internalType: "address", type: "address" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "name", internalType: "string", type: "string" },
+      { name: "metadataURI", internalType: "string", type: "string" },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTokenId", internalType: "uint256", type: "uint256" },
+      { name: "childIpId", internalType: "address", type: "address" },
+    ],
+    name: "isDerivativeApproved",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "isLicenseTransferable",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "terms",
+        internalType: "struct PILTerms",
+        type: "tuple",
+        components: [
+          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "expiration", internalType: "uint256", type: "uint256" },
+          { name: "commercialUse", internalType: "bool", type: "bool" },
+          { name: "commercialAttribution", internalType: "bool", type: "bool" },
+          {
+            name: "commercializerChecker",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "commercializerCheckerData",
+            internalType: "bytes",
+            type: "bytes",
+          },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "commercialRevCelling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
+          {
+            name: "derivativesAttribution",
+            internalType: "bool",
+            type: "bool",
+          },
+          { name: "derivativesApproval", internalType: "bool", type: "bool" },
+          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
+          {
+            name: "derivativeRevCelling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "currency", internalType: "address", type: "address" },
+        ],
+      },
+    ],
+    name: "registerLicenseTerms",
+    outputs: [{ name: "id", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTokenId", internalType: "uint256", type: "uint256" },
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "approved", internalType: "bool", type: "bool" },
+    ],
+    name: "setApproval",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "toJson",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalRegisteredLicenseTerms",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" }],
+    name: "verifyCompatibleLicenses",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "licensee", internalType: "address", type: "address" },
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+    ],
+    name: "verifyMintLicenseToken",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "parentIpId", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "licensee", internalType: "address", type: "address" },
+    ],
+    name: "verifyRegisterDerivative",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "childIpOwner", internalType: "address", type: "address" },
+    ],
+    name: "verifyRegisterDerivativeForAllParents",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const piLicenseTemplateAddress = {
+  1513: "0xd0Be223ae9719bBD93447ecf5289319CCf8cA227",
+} as const;
+
+/**
+ *
+ */
+export const piLicenseTemplateConfig = {
+  address: piLicenseTemplateAddress,
+  abi: piLicenseTemplateAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RoyaltyModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6965,6 +7449,868 @@ export class ModuleRegistryReadOnlyClient {
       functionName: "isRegistered",
       args: [request.moduleAddress],
     });
+  }
+}
+
+// Contract PILicenseTemplate =============================================================
+
+/**
+ * PiLicenseTemplateDerivativeApprovedEvent
+ *
+ * @param licenseTokenId uint256
+ * @param ipId address
+ * @param caller address
+ * @param approved bool
+ */
+export type PiLicenseTemplateDerivativeApprovedEvent = {
+  licenseTokenId: bigint;
+  ipId: Address;
+  caller: Address;
+  approved: boolean;
+};
+
+/**
+ * PiLicenseTemplateInitializedEvent
+ *
+ * @param version uint64
+ */
+export type PiLicenseTemplateInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * PiLicenseTemplateLicenseTermsRegisteredEvent
+ *
+ * @param licenseTermsId uint256
+ * @param licenseTemplate address
+ * @param licenseTerms bytes
+ */
+export type PiLicenseTemplateLicenseTermsRegisteredEvent = {
+  licenseTermsId: bigint;
+  licenseTemplate: Address;
+  licenseTerms: Hex;
+};
+
+export type PiLicenseTemplateAccessControllerResponse = Address;
+
+export type PiLicenseTemplateIpAccountRegistryResponse = Address;
+
+export type PiLicenseTemplateLicenseNftResponse = Address;
+
+export type PiLicenseTemplateLicenseRegistryResponse = Address;
+
+export type PiLicenseTemplateRoyaltyModuleResponse = Address;
+
+/**
+ * PiLicenseTemplateExistsRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateExistsRequest = {
+  licenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateExistsResponse = boolean;
+
+/**
+ * PiLicenseTemplateGetEarlierExpireTimeRequest
+ *
+ * @param licenseTermsIds uint256[]
+ * @param start uint256
+ */
+export type PiLicenseTemplateGetEarlierExpireTimeRequest = {
+  licenseTermsIds: readonly bigint[];
+  start: bigint;
+};
+
+export type PiLicenseTemplateGetEarlierExpireTimeResponse = bigint;
+
+/**
+ * PiLicenseTemplateGetExpireTimeRequest
+ *
+ * @param licenseTermsId uint256
+ * @param start uint256
+ */
+export type PiLicenseTemplateGetExpireTimeRequest = {
+  licenseTermsId: bigint;
+  start: bigint;
+};
+
+export type PiLicenseTemplateGetExpireTimeResponse = bigint;
+
+/**
+ * PiLicenseTemplateGetLicenseTermsIdRequest
+ *
+ * @param terms tuple
+ */
+export type PiLicenseTemplateGetLicenseTermsIdRequest = {
+  terms: {
+    transferable: boolean;
+    royaltyPolicy: Address;
+    mintingFee: bigint;
+    expiration: bigint;
+    commercialUse: boolean;
+    commercialAttribution: boolean;
+    commercializerChecker: Address;
+    commercializerCheckerData: Hex;
+    commercialRevShare: number;
+    commercialRevCelling: bigint;
+    derivativesAllowed: boolean;
+    derivativesAttribution: boolean;
+    derivativesApproval: boolean;
+    derivativesReciprocal: boolean;
+    derivativeRevCelling: bigint;
+    currency: Address;
+  };
+};
+
+/**
+ * PiLicenseTemplateGetLicenseTermsIdResponse
+ *
+ * @param selectedLicenseTermsId uint256
+ */
+export type PiLicenseTemplateGetLicenseTermsIdResponse = {
+  selectedLicenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateGetMetadataUriResponse = string;
+
+/**
+ * PiLicenseTemplateGetRoyaltyPolicyRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateGetRoyaltyPolicyRequest = {
+  licenseTermsId: bigint;
+};
+
+/**
+ * PiLicenseTemplateGetRoyaltyPolicyResponse
+ *
+ * @param royaltyPolicy address
+ * @param royaltyData bytes
+ * @param mintingFee uint256
+ * @param currency address
+ */
+export type PiLicenseTemplateGetRoyaltyPolicyResponse = {
+  royaltyPolicy: Address;
+  royaltyData: Hex;
+  mintingFee: bigint;
+  currency: Address;
+};
+
+/**
+ * PiLicenseTemplateIsDerivativeApprovedRequest
+ *
+ * @param licenseTokenId uint256
+ * @param childIpId address
+ */
+export type PiLicenseTemplateIsDerivativeApprovedRequest = {
+  licenseTokenId: bigint;
+  childIpId: Address;
+};
+
+export type PiLicenseTemplateIsDerivativeApprovedResponse = boolean;
+
+/**
+ * PiLicenseTemplateIsLicenseTransferableRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateIsLicenseTransferableRequest = {
+  licenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateIsLicenseTransferableResponse = boolean;
+
+export type PiLicenseTemplateNameResponse = string;
+
+/**
+ * PiLicenseTemplateSupportsInterfaceRequest
+ *
+ * @param interfaceId bytes4
+ */
+export type PiLicenseTemplateSupportsInterfaceRequest = {
+  interfaceId: Hex;
+};
+
+export type PiLicenseTemplateSupportsInterfaceResponse = boolean;
+
+/**
+ * PiLicenseTemplateToJsonRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateToJsonRequest = {
+  licenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateToJsonResponse = string;
+
+export type PiLicenseTemplateTotalRegisteredLicenseTermsResponse = bigint;
+
+/**
+ * PiLicenseTemplateVerifyCompatibleLicensesRequest
+ *
+ * @param licenseTermsIds uint256[]
+ */
+export type PiLicenseTemplateVerifyCompatibleLicensesRequest = {
+  licenseTermsIds: readonly bigint[];
+};
+
+export type PiLicenseTemplateVerifyCompatibleLicensesResponse = boolean;
+
+/**
+ * PiLicenseTemplateInitializeRequest
+ *
+ * @param name string
+ * @param metadataURI string
+ */
+export type PiLicenseTemplateInitializeRequest = {
+  name: string;
+  metadataURI: string;
+};
+
+/**
+ * PiLicenseTemplateRegisterLicenseTermsRequest
+ *
+ * @param terms tuple
+ */
+export type PiLicenseTemplateRegisterLicenseTermsRequest = {
+  terms: {
+    transferable: boolean;
+    royaltyPolicy: Address;
+    mintingFee: bigint;
+    expiration: bigint;
+    commercialUse: boolean;
+    commercialAttribution: boolean;
+    commercializerChecker: Address;
+    commercializerCheckerData: Hex;
+    commercialRevShare: number;
+    commercialRevCelling: bigint;
+    derivativesAllowed: boolean;
+    derivativesAttribution: boolean;
+    derivativesApproval: boolean;
+    derivativesReciprocal: boolean;
+    derivativeRevCelling: bigint;
+    currency: Address;
+  };
+};
+
+/**
+ * PiLicenseTemplateSetApprovalRequest
+ *
+ * @param licenseTokenId uint256
+ * @param childIpId address
+ * @param approved bool
+ */
+export type PiLicenseTemplateSetApprovalRequest = {
+  licenseTokenId: bigint;
+  childIpId: Address;
+  approved: boolean;
+};
+
+/**
+ * PiLicenseTemplateVerifyMintLicenseTokenRequest
+ *
+ * @param 0 uint256
+ * @param 1 address
+ * @param 2 address
+ * @param 3 uint256
+ */
+export type PiLicenseTemplateVerifyMintLicenseTokenRequest = readonly [
+  bigint,
+  Address,
+  Address,
+  bigint,
+];
+
+/**
+ * PiLicenseTemplateVerifyRegisterDerivativeRequest
+ *
+ * @param childIpId address
+ * @param parentIpId address
+ * @param licenseTermsId uint256
+ * @param licensee address
+ */
+export type PiLicenseTemplateVerifyRegisterDerivativeRequest = {
+  childIpId: Address;
+  parentIpId: Address;
+  licenseTermsId: bigint;
+  licensee: Address;
+};
+
+/**
+ * PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest
+ *
+ * @param childIpId address
+ * @param parentIpIds address[]
+ * @param licenseTermsIds uint256[]
+ * @param childIpOwner address
+ */
+export type PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest = {
+  childIpId: Address;
+  parentIpIds: readonly Address[];
+  licenseTermsIds: readonly bigint[];
+  childIpOwner: Address;
+};
+
+/**
+ * contract PILicenseTemplate event
+ */
+export class PiLicenseTemplateEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(piLicenseTemplateAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event DerivativeApproved for contract PILicenseTemplate
+   */
+  public watchDerivativeApprovedEvent(
+    onLogs: (txHash: Hex, ev: Partial<PiLicenseTemplateDerivativeApprovedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      eventName: "DerivativeApproved",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event DerivativeApproved for contract PILicenseTemplate
+   */
+  public parseTxDerivativeApprovedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<PiLicenseTemplateDerivativeApprovedEvent> {
+    const targetLogs: Array<PiLicenseTemplateDerivativeApprovedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: piLicenseTemplateAbi,
+            eventName: "DerivativeApproved",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract PILicenseTemplate
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<PiLicenseTemplateInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract PILicenseTemplate
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<PiLicenseTemplateInitializedEvent> {
+    const targetLogs: Array<PiLicenseTemplateInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: piLicenseTemplateAbi,
+            eventName: "Initialized",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event LicenseTermsRegistered for contract PILicenseTemplate
+   */
+  public watchLicenseTermsRegisteredEvent(
+    onLogs: (txHash: Hex, ev: Partial<PiLicenseTemplateLicenseTermsRegisteredEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      eventName: "LicenseTermsRegistered",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event LicenseTermsRegistered for contract PILicenseTemplate
+   */
+  public parseTxLicenseTermsRegisteredEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<PiLicenseTemplateLicenseTermsRegisteredEvent> {
+    const targetLogs: Array<PiLicenseTemplateLicenseTermsRegisteredEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        targetLogs.push(
+          decodeEventLog({
+            abi: piLicenseTemplateAbi,
+            eventName: "LicenseTermsRegistered",
+            data: log.data,
+            topics: log.topics,
+          }).args,
+        );
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract PILicenseTemplate readonly method
+ */
+export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method ACCESS_CONTROLLER for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateAccessControllerRequest
+   * @return Promise<PiLicenseTemplateAccessControllerResponse>
+   */
+  public async accessController(): Promise<PiLicenseTemplateAccessControllerResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "ACCESS_CONTROLLER",
+    });
+  }
+
+  /**
+   * method IP_ACCOUNT_REGISTRY for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateIpAccountRegistryRequest
+   * @return Promise<PiLicenseTemplateIpAccountRegistryResponse>
+   */
+  public async ipAccountRegistry(): Promise<PiLicenseTemplateIpAccountRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "IP_ACCOUNT_REGISTRY",
+    });
+  }
+
+  /**
+   * method LICENSE_NFT for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateLicenseNftRequest
+   * @return Promise<PiLicenseTemplateLicenseNftResponse>
+   */
+  public async licenseNft(): Promise<PiLicenseTemplateLicenseNftResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "LICENSE_NFT",
+    });
+  }
+
+  /**
+   * method LICENSE_REGISTRY for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateLicenseRegistryRequest
+   * @return Promise<PiLicenseTemplateLicenseRegistryResponse>
+   */
+  public async licenseRegistry(): Promise<PiLicenseTemplateLicenseRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "LICENSE_REGISTRY",
+    });
+  }
+
+  /**
+   * method ROYALTY_MODULE for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateRoyaltyModuleRequest
+   * @return Promise<PiLicenseTemplateRoyaltyModuleResponse>
+   */
+  public async royaltyModule(): Promise<PiLicenseTemplateRoyaltyModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "ROYALTY_MODULE",
+    });
+  }
+
+  /**
+   * method exists for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateExistsRequest
+   * @return Promise<PiLicenseTemplateExistsResponse>
+   */
+  public async exists(
+    request: PiLicenseTemplateExistsRequest,
+  ): Promise<PiLicenseTemplateExistsResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "exists",
+      args: [request.licenseTermsId],
+    });
+  }
+
+  /**
+   * method getEarlierExpireTime for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateGetEarlierExpireTimeRequest
+   * @return Promise<PiLicenseTemplateGetEarlierExpireTimeResponse>
+   */
+  public async getEarlierExpireTime(
+    request: PiLicenseTemplateGetEarlierExpireTimeRequest,
+  ): Promise<PiLicenseTemplateGetEarlierExpireTimeResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "getEarlierExpireTime",
+      args: [request.licenseTermsIds, request.start],
+    });
+  }
+
+  /**
+   * method getExpireTime for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateGetExpireTimeRequest
+   * @return Promise<PiLicenseTemplateGetExpireTimeResponse>
+   */
+  public async getExpireTime(
+    request: PiLicenseTemplateGetExpireTimeRequest,
+  ): Promise<PiLicenseTemplateGetExpireTimeResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "getExpireTime",
+      args: [request.licenseTermsId, request.start],
+    });
+  }
+
+  /**
+   * method getLicenseTermsId for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateGetLicenseTermsIdRequest
+   * @return Promise<PiLicenseTemplateGetLicenseTermsIdResponse>
+   */
+  public async getLicenseTermsId(
+    request: PiLicenseTemplateGetLicenseTermsIdRequest,
+  ): Promise<PiLicenseTemplateGetLicenseTermsIdResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "getLicenseTermsId",
+      args: [request.terms],
+    });
+    return {
+      selectedLicenseTermsId: result,
+    };
+  }
+
+  /**
+   * method getMetadataURI for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateGetMetadataUriRequest
+   * @return Promise<PiLicenseTemplateGetMetadataUriResponse>
+   */
+  public async getMetadataUri(): Promise<PiLicenseTemplateGetMetadataUriResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "getMetadataURI",
+    });
+  }
+
+  /**
+   * method getRoyaltyPolicy for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateGetRoyaltyPolicyRequest
+   * @return Promise<PiLicenseTemplateGetRoyaltyPolicyResponse>
+   */
+  public async getRoyaltyPolicy(
+    request: PiLicenseTemplateGetRoyaltyPolicyRequest,
+  ): Promise<PiLicenseTemplateGetRoyaltyPolicyResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "getRoyaltyPolicy",
+      args: [request.licenseTermsId],
+    });
+    return {
+      royaltyPolicy: result[0],
+      royaltyData: result[1],
+      mintingFee: result[2],
+      currency: result[3],
+    };
+  }
+
+  /**
+   * method isDerivativeApproved for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateIsDerivativeApprovedRequest
+   * @return Promise<PiLicenseTemplateIsDerivativeApprovedResponse>
+   */
+  public async isDerivativeApproved(
+    request: PiLicenseTemplateIsDerivativeApprovedRequest,
+  ): Promise<PiLicenseTemplateIsDerivativeApprovedResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "isDerivativeApproved",
+      args: [request.licenseTokenId, request.childIpId],
+    });
+  }
+
+  /**
+   * method isLicenseTransferable for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateIsLicenseTransferableRequest
+   * @return Promise<PiLicenseTemplateIsLicenseTransferableResponse>
+   */
+  public async isLicenseTransferable(
+    request: PiLicenseTemplateIsLicenseTransferableRequest,
+  ): Promise<PiLicenseTemplateIsLicenseTransferableResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "isLicenseTransferable",
+      args: [request.licenseTermsId],
+    });
+  }
+
+  /**
+   * method name for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateNameRequest
+   * @return Promise<PiLicenseTemplateNameResponse>
+   */
+  public async name(): Promise<PiLicenseTemplateNameResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method supportsInterface for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateSupportsInterfaceRequest
+   * @return Promise<PiLicenseTemplateSupportsInterfaceResponse>
+   */
+  public async supportsInterface(
+    request: PiLicenseTemplateSupportsInterfaceRequest,
+  ): Promise<PiLicenseTemplateSupportsInterfaceResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "supportsInterface",
+      args: [request.interfaceId],
+    });
+  }
+
+  /**
+   * method toJson for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateToJsonRequest
+   * @return Promise<PiLicenseTemplateToJsonResponse>
+   */
+  public async toJson(
+    request: PiLicenseTemplateToJsonRequest,
+  ): Promise<PiLicenseTemplateToJsonResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "toJson",
+      args: [request.licenseTermsId],
+    });
+  }
+
+  /**
+   * method totalRegisteredLicenseTerms for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateTotalRegisteredLicenseTermsRequest
+   * @return Promise<PiLicenseTemplateTotalRegisteredLicenseTermsResponse>
+   */
+  public async totalRegisteredLicenseTerms(): Promise<PiLicenseTemplateTotalRegisteredLicenseTermsResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "totalRegisteredLicenseTerms",
+    });
+  }
+
+  /**
+   * method verifyCompatibleLicenses for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateVerifyCompatibleLicensesRequest
+   * @return Promise<PiLicenseTemplateVerifyCompatibleLicensesResponse>
+   */
+  public async verifyCompatibleLicenses(
+    request: PiLicenseTemplateVerifyCompatibleLicensesRequest,
+  ): Promise<PiLicenseTemplateVerifyCompatibleLicensesResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "verifyCompatibleLicenses",
+      args: [request.licenseTermsIds],
+    });
+  }
+}
+
+/**
+ * contract PILicenseTemplate write method
+ */
+export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
+  protected readonly wallet: WalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: WalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method initialize for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: PiLicenseTemplateInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.name, request.metadataURI],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method registerLicenseTerms for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateRegisterLicenseTermsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerLicenseTerms(
+    request: PiLicenseTemplateRegisterLicenseTermsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "registerLicenseTerms",
+      account: this.wallet.account,
+      args: [request.terms],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method setApproval for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateSetApprovalRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setApproval(
+    request: PiLicenseTemplateSetApprovalRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "setApproval",
+      account: this.wallet.account,
+      args: [request.licenseTokenId, request.childIpId, request.approved],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method verifyMintLicenseToken for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateVerifyMintLicenseTokenRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async verifyMintLicenseToken(
+    request: PiLicenseTemplateVerifyMintLicenseTokenRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "verifyMintLicenseToken",
+      account: this.wallet.account,
+      args: [request[0], request[1], request[2], request[3]],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method verifyRegisterDerivative for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateVerifyRegisterDerivativeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async verifyRegisterDerivative(
+    request: PiLicenseTemplateVerifyRegisterDerivativeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "verifyRegisterDerivative",
+      account: this.wallet.account,
+      args: [request.childIpId, request.parentIpId, request.licenseTermsId, request.licensee],
+    });
+    return await this.wallet.writeContract(call);
+  }
+
+  /**
+   * method verifyRegisterDerivativeForAllParents for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async verifyRegisterDerivativeForAllParents(
+    request: PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "verifyRegisterDerivativeForAllParents",
+      account: this.wallet.account,
+      args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.childIpOwner],
+    });
+    return await this.wallet.writeContract(call);
   }
 }
 

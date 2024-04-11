@@ -16,7 +16,7 @@ import {
   storyTestnet,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
-import {licensingModuleAbi} from "../../../src/abi/generated";
+import { licensingModuleAbi } from "../../../src/abi/generated";
 
 describe("Test isIntegerString", function () {
   it("should return true when passing in an integer string", function () {

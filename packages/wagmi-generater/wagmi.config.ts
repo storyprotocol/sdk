@@ -52,6 +52,12 @@ export default defineConfig(async () => {
             }
         },
         {
+            name: "PILicenseTemplate", address: {
+                // [sepolia.id]: "",
+                [storyTestnetId]: "0xd0Be223ae9719bBD93447ecf5289319CCf8cA227",
+            }
+        },
+        {
             name: "ModuleRegistry", address: {
                 // [sepolia.id]: "0x5Aac3177F496F503Ac724A0D0A697f6ba9dA2C27",
                 [storyTestnetId]: "0xf2965E3B6251905Dd1E8671077760D07b0408cf2",

@@ -1,7 +1,6 @@
 import { Hex, PublicClient, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
-import { SupportedChainIds } from "../types/config";
 import {
   CollectRoyaltyTokensRequest,
   CollectRoyaltyTokensResponse,
@@ -21,7 +20,7 @@ export class RoyaltyClient {
   public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: WalletClient) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.royaltyVaultImplClient = new IpRoyaltyVaultImplClient(this.rpcClient, this.wallet);
