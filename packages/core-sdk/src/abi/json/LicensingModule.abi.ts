@@ -11,37 +11,6 @@ export default [
       {
         indexed: true,
         internalType: "address",
-        name: "ipId",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "licenseTemplate",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "licenseTermsId",
-        type: "uint256",
-      },
-    ],
-    name: "LicenseTermsAttached",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
         name: "licensorIpId",
         type: "address",
       },
@@ -143,6 +112,62 @@ export default [
         type: "uint256",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "childIpId",
+        type: "address",
+      },
+      {
+        internalType: "address[]",
+        name: "parentIpIds",
+        type: "address[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "licenseTermsIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "address",
+        name: "licenseTemplate",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "royaltyContext",
+        type: "bytes",
+      },
+    ],
+    name: "registerDerivative",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "childIpId",
+        type: "address",
+      },
+      {
+        internalType: "uint256[]",
+        name: "licenseTokenIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "bytes",
+        name: "royaltyContext",
+        type: "bytes",
+      },
+    ],
+    name: "registerDerivativeWithLicenseTokens",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
