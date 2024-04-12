@@ -37,7 +37,7 @@ export type LicenseTerms = {
 export type LicenseTermsIdResponse = number;
 
 export type RegisterLicenseTermsResponse = {
-  licenseId?: string;
+  licenseTermsId?: string;
   txHash?: string;
 };
 
@@ -56,8 +56,8 @@ export type RegisterCommercialRemixPILRequest = {
 
 export type AttachLicenseTermsRequest = {
   ipId: Hex;
-  licenseTemplate?: Hex;
   licenseTermsId: string;
+  licenseTemplate?: Hex;
   txOptions?: TxOptions;
 };
 
