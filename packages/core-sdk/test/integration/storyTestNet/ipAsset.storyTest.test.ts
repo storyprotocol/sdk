@@ -14,6 +14,11 @@ import chaiAsPromised from "chai-as-promised";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+
+const parentIpId = "0xca2def24ec4A50633a922245F84518504aaAE562";
+const noCommercialLicenseTermsId = "6";
+let startTokenId = 126;
+let ipId: Hex;
 describe("IP Asset Functions in storyTestnet", () => {
   let client: StoryClient;
   before(function () {
@@ -28,70 +33,114 @@ describe("IP Asset Functions in storyTestnet", () => {
     client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
     client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
   });
-
-  describe("Create IP Asset", async function () {
-    let tokenId: string = "1";
-    before(async () => {
-      //TODO: wait for MockERC721 redeploy
-      // const baseConfig = {
-      //   chain: chainStringToViemChain("storyTestnet"),
-      //   transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
-      // } as const;
-      // const publicClient = createPublicClient(baseConfig);
-      // const walletClient = createWalletClient({
-      //   ...baseConfig,
-      //   account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
-      // });
-      // const { request } = await publicClient.simulateContract({
-      //   abi: [
-      //     {
-      //       inputs: [
-      //         { internalType: "address", name: "to", type: "address" },
-      //         {
-      //           internalType: "uint256",
-      //           name: "tokenId",
-      //           type: "uint256",
-      //         },
-      //       ],
-      //       name: "mintId",
-      //       outputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-      //       stateMutability: "nonpayable",
-      //       type: "function",
-      //     },
-      //   ],
-      //   address: storyTestnetAddress.MockERC721,
-      //   functionName: "mintId",
-      //   args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex, BigInt(1051)],
-      // });
-      // const hash = await walletClient.writeContract(request);
-      // const { logs } = await publicClient.waitForTransactionReceipt({
-      //   hash,
-      // });
-      // if (logs[0].topics[3]) {
-      //   tokenId = parseInt(logs[0].topics[3], 16).toString();
-      // }
+  const getTokenId = async (tokenId: number): Promise<string | undefined> => {
+    const baseConfig = {
+      chain: chainStringToViemChain("storyTestnet"),
+      transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
+    } as const;
+    const publicClient = createPublicClient(baseConfig);
+    const walletClient = createWalletClient({
+      ...baseConfig,
+      account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
     });
-
+    const { request } = await publicClient.simulateContract({
+      abi: [
+        {
+          inputs: [
+            { internalType: "address", name: "to", type: "address" },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "mintId",
+          outputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      address: storyTestnetAddress.MockERC721,
+      functionName: "mintId",
+      args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex, BigInt(tokenId)],
+      account: walletClient.account,
+    });
+    const hash = await walletClient.writeContract(request);
+    const { logs } = await publicClient.waitForTransactionReceipt({
+      hash,
+    });
+    if (logs[0].topics[3]) {
+      return parseInt(logs[0].topics[3], 16).toString();
+    }
+  };
+  describe("Create IP Asset", async function () {
     it("should not throw error when registering a IP Asset", async () => {
-      expect(tokenId).to.be.a("string");
-      expect(tokenId).not.empty;
-
+      const tokenId = await getTokenId(startTokenId++);
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.register({
           tokenContract: storyTestnetAddress.MockERC721,
-          tokenId: tokenId,
+          tokenId: tokenId!,
           txOptions: {
             waitForTransaction: waitForTransaction,
           },
         }),
       ).to.not.be.rejected;
-      // expect(response.txHash).to.be.a("string");
-      // expect(response.txHash).not.empty;
       if (waitForTransaction) {
-        expect(response.ipId).to.be.a("string");
-        expect(response.ipId).not.empty;
+        expect(response.ipId).to.be.a("string").and.not.empty;
+        ipId = response.ipId;
       }
+    });
+
+    it("should not throw error when registering derivative", async () => {
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const response = await expect(
+        client.ipAsset.registerDerivative({
+          childIpId: ipId,
+          parentIpIds: [parentIpId],
+          licenseTermsIds: [noCommercialLicenseTermsId],
+          txOptions: {
+            waitForTransaction: true,
+          },
+        }),
+      ).to.not.be.rejected;
+      expect(response.txHash).to.be.a("string").and.not.empty;
+    });
+
+    it("should not throw error when registering derivative with license tokens", async () => {
+      const tokenId = await getTokenId(startTokenId++);
+      const ipId = (
+        await client.ipAsset.register({
+          tokenContract: storyTestnetAddress.MockERC721,
+          tokenId: tokenId!,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        })
+      ).ipId!;
+      const mintLicenseTokensResult = await client.license.mintLicenseTokens({
+        licenseTermsId: noCommercialLicenseTermsId,
+        licensorIpId: parentIpId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const response = await expect(
+        client.ipAsset.registerDerivativeWithLicenseTokens({
+          childIpId: ipId,
+          licenseTokenIds: [mintLicenseTokensResult.licenseTokenId!],
+          txOptions: {
+            waitForTransaction: true,
+          },
+        }),
+      ).to.not.be.rejected;
+      expect(response.txHash).to.be.a("string").not.empty;
     });
   });
 });

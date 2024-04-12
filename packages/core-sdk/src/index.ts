@@ -9,7 +9,14 @@ export { DisputeClient } from "./resources/dispute";
 export type { StoryConfig } from "./types/config";
 export type { Hex, TypedData } from "./types/common";
 
-export type { RegisterIpResponse, RegisterRequest } from "./types/resources/ipAsset";
+export type {
+  RegisterIpResponse,
+  RegisterRequest,
+  RegisterDerivativeResponse,
+  RegisterDerivativeRequest,
+  RegisterDerivativeWithLicenseTokensRequest,
+  RegisterDerivativeWithLicenseTokensResponse,
+} from "./types/resources/ipAsset";
 
 export type {
   MintLicenseTokensResponse,
