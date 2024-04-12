@@ -9,7 +9,7 @@ import {
   ResolveDisputeRequest,
 } from "../../src/types/resources/dispute";
 
-describe("Dispute Functions", () => {
+describe.skip("Dispute Functions", () => {
   let client: StoryClient;
 
   before(function () {

@@ -30,13 +30,12 @@ describe("Test StoryClient", function () {
       }).to.throw("transport is null, please pass in a valid RPC Provider URL as the transport.");
     });
 
-    it("should throw error when wallet account is null", function () {
+    it("should throw error when not specify a wallet or account", function () {
       expect(() => {
         StoryClient.newClient({
           transport: http(process.env.RPC_PROVIDER_URL),
-          account: null as any as Account,
         });
-      }).to.throw("account is null");
+      }).to.throw("must specify a wallet or account");
     });
   });
 

@@ -3,12 +3,6 @@ import { StoryClient, StoryConfig } from "../../../src";
 import { Hex, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain } from "../../../src/utils/utils";
-import {
-  IPAccountABI,
-  getIPAssetRegistryConfig,
-  getLicenseRegistryConfig,
-  getLicensingModuleConfig,
-} from "../../config";
 import { storyTestnetAddress } from "../../env";
 import chaiAsPromised from "chai-as-promised";
 
@@ -28,10 +22,6 @@ describe.skip("IP Asset Functions in storyTestnet", () => {
       account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
     };
     client = StoryClient.newClient(config);
-    client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
-    client.license.ipAccountABI = IPAccountABI;
-    client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
-    client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
   });
   const getTokenId = async (tokenId: number): Promise<string | undefined> => {
     const baseConfig = {
