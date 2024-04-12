@@ -9,6 +9,9 @@
   "registerRootIp",
   "registerDerivativeIp",
   "IPRegistered",
+  "registerDerivativeWithLicenseTokens",
+  "registerDerivative",
+  "DerivativeRegistered",
 
   "getLicenseTermsId",
   "registerLicenseTerms",

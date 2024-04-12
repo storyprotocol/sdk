@@ -88,7 +88,7 @@ export class LicenseClient {
       };
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
-        return { licenseId: licenseTermsId.toString() };
+        return { licenseTermsId: licenseTermsId.toString() };
       }
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.licenseTemplateConfig,
@@ -103,7 +103,7 @@ export class LicenseClient {
           ...this.licenseTemplateConfig,
           eventName: "LicenseTermsRegistered",
         });
-        return { txHash: txHash, licenseId: targetLogs[0].args.licenseTermsId.toString() };
+        return { txHash: txHash, licenseTermsId: targetLogs[0].args.licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -146,7 +146,7 @@ export class LicenseClient {
       };
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
-        return { licenseId: licenseTermsId.toString() };
+        return { licenseTermsId: licenseTermsId.toString() };
       }
 
       const { request: call } = await this.rpcClient.simulateContract({
@@ -162,7 +162,7 @@ export class LicenseClient {
           ...this.licenseTemplateConfig,
           eventName: "LicenseTermsRegistered",
         });
-        return { txHash: txHash, licenseId: targetLogs[0].args.licenseTermsId.toString() };
+        return { txHash: txHash, licenseTermsId: targetLogs[0].args.licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -205,7 +205,7 @@ export class LicenseClient {
       };
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
-        return { licenseId: licenseTermsId.toString() };
+        return { licenseTermsId: licenseTermsId.toString() };
       }
       const { request: call } = await this.rpcClient.simulateContract({
         ...this.licenseTemplateConfig,
@@ -220,7 +220,7 @@ export class LicenseClient {
           ...this.licenseTemplateConfig,
           eventName: "LicenseTermsRegistered",
         });
-        return { txHash: txHash, licenseId: targetLogs[0].args.licenseTermsId.toString() };
+        return { txHash: txHash, licenseTermsId: targetLogs[0].args.licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -230,10 +230,9 @@ export class LicenseClient {
   }
 
   /**
-   * Attaches license terms to an IP, and the function must be called by the IP owner or an authorized operator.
+   * Attaches license terms to an IP.
    * @param request The request object that contains all data needed to attach license terms.
-      @param request.ipId The IP ID.
-      @param request.tokenAddress The address of the NFT.
+      @param request.ipId The address of the IP to which the license terms are attached.
       @param request.licenseTemplate The address of the license template.
       @param request.licenseTermsId The ID of the license terms.
    *  @param request.txOptions [Optional] The transaction options.

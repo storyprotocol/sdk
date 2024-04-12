@@ -8,12 +8,9 @@
 //   createWalletClient,
 //   PublicClient,
 //   WalletClient,
-//   Abi,
 // } from "viem";
 // import { privateKeyToAccount } from "viem/accounts";
 // import {
-//   IPAccountABI,
-//   getPILicenseTemplateConfig,
 //   getIPAssetRegistryConfig,
 //   getLicenseRegistryConfig,
 //   getLicensingModuleConfig,
@@ -40,8 +37,6 @@
 //     const configAccount: Account = config.account as Account;
 //     senderAddress = configAccount.address;
 //     client = StoryClient.newClient(config);
-//     client.policy.ipAccountABI = IPAccountABI;
-//     client.policy.getPILicenseTemplateConfig = getPILicenseTemplateConfig("storyTestnet");
 //     client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
 //     client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
 //     client.license.licensingModuleConfig = getLicensingModuleConfig("1513");
@@ -100,57 +95,42 @@
 //       return response.ipId! as Hex;
 //     };
 //     const getCommercialPolicyId = async (): Promise<string> => {
-//       const response = await client.policy.registerPILCommercialUsePolicy({
-//         commercialRevShare: 100,
-//         territories: [],
-//         distributionChannels: [],
-//         contentRestrictions: [],
+//       const response = await client.license.registerCommercialUsePIL({
+//         mintingFee: "1",
+//         currency: storyTestnetAddress.MockERC20,
 //         txOptions: {
 //           waitForTransaction: true,
 //         },
 //       });
-//       return response.policyId!;
+//       return response.licenseTermsId!;
 //     };
 
-//     const addPolicyToIp = async (ipId: Hex, policyId: string) => {
-//       await client.policy.addPolicyToIp({
+//     const attachLicenseTerms = async (ipId: Hex, licenseTermsId: string) => {
+//       await client.license.attachLicenseTerms({
 //         ipId,
-//         policyId,
+//         licenseTermsId: licenseTermsId,
 //         txOptions: {
 //           waitForTransaction: true,
 //         },
 //       });
 //     };
 
-//     const mintLicense = async (ipId: Hex, policyId: string) => {
-//       const mintLicenseResponse = await client.license.mintLicense({
-//         policyId,
-//         licensorIpId: ipId,
-//         mintAmount: 1,
-//         receiverAddress: process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS as Hex,
+//     const registerDerivative = async (ipId: Hex, parentIpId: Hex, licenseTermsIds: string) => {
+//       const result = await client.ipAsset.registerDerivative({
+//         childIpId: ipId,
+//         parentIpIds: [parentIpId],
+//         licenseTermsIds: [licenseTermsIds],
 //         txOptions: {
-//           waitForTransaction: true,
-//         },
-//       });
-//       return mintLicenseResponse.licenseId;
-//     };
-
-//     const linkIpToParents = async (licenseIds: string[], childIpId: Hex) => {
-//       await client.license.linkIpToParent({
-//         licenseIds: licenseIds,
-//         childIpId: childIpId,
-//         txOptions: {
-//           waitForTransaction: true,
+//           waitForTransaction: false,
 //         },
 //       });
 //     };
 //     before(async () => {
 //       ipId1 = await getIpId();
 //       ipId2 = await getIpId();
-//       const commercialPolicyId = await getCommercialPolicyId();
-//       await addPolicyToIp(ipId1, commercialPolicyId);
-//       const licenseForIpId1 = await mintLicense(ipId1, commercialPolicyId);
-//       await linkIpToParents([licenseForIpId1!], ipId2);
+//       const licenseTermsId = await getCommercialPolicyId();
+//       await attachLicenseTerms(ipId1, licenseTermsId);
+//       await registerDerivative(ipId2, ipId1, licenseTermsId);
 //     });
 
 //     it("should not throw error when pay royalty on behalf", async () => {

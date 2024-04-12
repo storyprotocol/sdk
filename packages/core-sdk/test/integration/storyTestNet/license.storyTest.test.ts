@@ -40,7 +40,7 @@ describe("License Functions in storyTestnet", () => {
         },
       });
       // expect(result.txHash).to.a("string").and.not.empty;
-      expect(result.licenseId).to.be.a("string").and.not.empty;
+      expect(result.licenseTermsId).to.be.a("string").and.not.empty;
     });
 
     it("should not throw error when registering license with commercial use", async function () {
@@ -52,7 +52,7 @@ describe("License Functions in storyTestnet", () => {
         },
       });
       // expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseId).to.be.a("string").not.empty;
+      expect(result.licenseTermsId).to.be.a("string").not.empty;
     });
 
     it("should not throw error when registering license with commercial Remix use", async function () {
@@ -65,7 +65,7 @@ describe("License Functions in storyTestnet", () => {
         },
       });
       // expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseId).to.be.a("string").and.not.empty;
+      expect(result.licenseTermsId).to.be.a("string").and.not.empty;
     });
   });
 
@@ -86,7 +86,7 @@ describe("License Functions in storyTestnet", () => {
           waitForTransaction: true,
         },
       });
-      licenseId = registerLicenseResult.licenseId!;
+      licenseId = registerLicenseResult.licenseTermsId!;
     });
 
     it("should not throw error when attach License Terms", async function () {

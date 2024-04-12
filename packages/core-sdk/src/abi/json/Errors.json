@@ -181,42 +181,6 @@
   },
   {
     "inputs": [],
-    "name": "Governance__InconsistentState",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Governance__NewStateIsTheSameWithOldState",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Governance__OnlyProtocolAdmin",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Governance__ProtocolPaused",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "interfaceName",
-        "type": "string"
-      }
-    ],
-    "name": "Governance__UnsupportedInterface",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Governance__ZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "IPAccountRegistry_InvalidIpAccountImpl",
     "type": "error"
   },
