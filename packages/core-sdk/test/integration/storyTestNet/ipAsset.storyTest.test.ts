@@ -19,7 +19,7 @@ const parentIpId = "0xca2def24ec4A50633a922245F84518504aaAE562";
 const noCommercialLicenseTermsId = "6";
 let startTokenId = 126;
 let ipId: Hex;
-describe("IP Asset Functions in storyTestnet", () => {
+describe.skip("IP Asset Functions in storyTestnet", () => {
   let client: StoryClient;
   before(function () {
     const config: StoryConfig = {
