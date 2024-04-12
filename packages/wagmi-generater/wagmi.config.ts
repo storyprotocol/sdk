@@ -123,21 +123,16 @@ export default defineConfig(async () => {
                         "collectRoyaltyTokens",
                         "ipId",
                     ],
-                    // "LicenseRegistry": [
-                    //     "TransferBatch",
-                    //     "TransferSingle",
-                    //     "mintLicense",
-                    // ],
-                    // "LicensingModule": [
-                    //     "IpIdLinkedToParents",
-                    //     "PolicyAddedToIpId",
-                    //     "PolicyRegistered",
-                    //     "addPolicyToIp",
-                    //     "getPolicyId",
-                    //     "linkIpToParents",
-                    //     "mintLicense",
-                    //     "registerPolicy",
-                    // ],
+                    "PiLicenseTemplate": [
+                        "getLicenseTermsId",
+                        "registerLicenseTerms",
+                        "LicenseTermsRegistered"
+                    ],
+                    "LicensingModule": [
+                        "attachLicenseTerms",
+                        "mintLicenseTokens",
+                        "LicenseTokensMinted"
+                    ],
                     "ModuleRegistry": [
                         "isRegistered",
                     ],

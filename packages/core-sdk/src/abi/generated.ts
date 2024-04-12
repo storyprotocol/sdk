@@ -4527,9 +4527,7 @@ export class AccessControllerEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "PermissionSet") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "PermissionSet") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -4690,9 +4688,7 @@ export class DisputeModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DisputeCancelled") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "DisputeCancelled") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -4731,9 +4727,7 @@ export class DisputeModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DisputeRaised") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "DisputeRaised") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -4772,9 +4766,7 @@ export class DisputeModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DisputeResolved") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "DisputeResolved") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -5047,9 +5039,7 @@ export class IpAssetRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "IPRegistered") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "IPRegistered") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -5791,9 +5781,7 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "ExpirationTimeSet") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "ExpirationTimeSet") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -5832,9 +5820,7 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "GovernanceUpdated") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "GovernanceUpdated") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -5873,9 +5859,7 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Initialized") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "Initialized") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -5914,9 +5898,7 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicenseTemplateRegistered") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "LicenseTemplateRegistered") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -5955,9 +5937,7 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "MintingLicenseConfigSetForIP") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "MintingLicenseConfigSetForIP") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -5996,9 +5976,7 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "MintingLicenseConfigSetLicense") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "MintingLicenseConfigSetLicense") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -6035,9 +6013,7 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Upgraded") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "Upgraded") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -6663,58 +6639,6 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
 // Contract LicensingModule =============================================================
 
 /**
- * LicensingModuleDerivativeRegisteredEvent
- *
- * @param caller address
- * @param childIpId address
- * @param licenseTokenIds uint256[]
- * @param parentIpIds address[]
- * @param licenseTermsIds uint256[]
- * @param licenseTemplate address
- */
-export type LicensingModuleDerivativeRegisteredEvent = {
-  caller: Address;
-  childIpId: Address;
-  licenseTokenIds: readonly bigint[];
-  parentIpIds: readonly Address[];
-  licenseTermsIds: readonly bigint[];
-  licenseTemplate: Address;
-};
-
-/**
- * LicensingModuleGovernanceUpdatedEvent
- *
- * @param newGovernance address
- */
-export type LicensingModuleGovernanceUpdatedEvent = {
-  newGovernance: Address;
-};
-
-/**
- * LicensingModuleInitializedEvent
- *
- * @param version uint64
- */
-export type LicensingModuleInitializedEvent = {
-  version: bigint;
-};
-
-/**
- * LicensingModuleLicenseTermsAttachedEvent
- *
- * @param caller address
- * @param ipId address
- * @param licenseTemplate address
- * @param licenseTermsId uint256
- */
-export type LicensingModuleLicenseTermsAttachedEvent = {
-  caller: Address;
-  ipId: Address;
-  licenseTemplate: Address;
-  licenseTermsId: bigint;
-};
-
-/**
  * LicensingModuleLicenseTokensMintedEvent
  *
  * @param caller address
@@ -6736,46 +6660,6 @@ export type LicensingModuleLicenseTokensMintedEvent = {
 };
 
 /**
- * LicensingModuleUpgradedEvent
- *
- * @param implementation address
- */
-export type LicensingModuleUpgradedEvent = {
-  implementation: Address;
-};
-
-export type LicensingModuleAccessControllerResponse = Address;
-
-export type LicensingModuleDisputeModuleResponse = Address;
-
-export type LicensingModuleIpAccountRegistryResponse = Address;
-
-export type LicensingModuleLicenseNftResponse = Address;
-
-export type LicensingModuleLicenseRegistryResponse = Address;
-
-export type LicensingModuleRoyaltyModuleResponse = Address;
-
-export type LicensingModuleUpgradeInterfaceVersionResponse = string;
-
-export type LicensingModuleGetGovernanceResponse = Address;
-
-export type LicensingModuleNameResponse = string;
-
-export type LicensingModuleProxiableUuidResponse = Hex;
-
-/**
- * LicensingModuleSupportsInterfaceRequest
- *
- * @param interfaceId bytes4
- */
-export type LicensingModuleSupportsInterfaceRequest = {
-  interfaceId: Hex;
-};
-
-export type LicensingModuleSupportsInterfaceResponse = boolean;
-
-/**
  * LicensingModuleAttachLicenseTermsRequest
  *
  * @param ipId address
@@ -6786,15 +6670,6 @@ export type LicensingModuleAttachLicenseTermsRequest = {
   ipId: Address;
   licenseTemplate: Address;
   licenseTermsId: bigint;
-};
-
-/**
- * LicensingModuleInitializeRequest
- *
- * @param governance address
- */
-export type LicensingModuleInitializeRequest = {
-  governance: Address;
 };
 
 /**
@@ -6817,56 +6692,6 @@ export type LicensingModuleMintLicenseTokensRequest = {
 };
 
 /**
- * LicensingModuleRegisterDerivativeRequest
- *
- * @param childIpId address
- * @param parentIpIds address[]
- * @param licenseTermsIds uint256[]
- * @param licenseTemplate address
- * @param royaltyContext bytes
- */
-export type LicensingModuleRegisterDerivativeRequest = {
-  childIpId: Address;
-  parentIpIds: readonly Address[];
-  licenseTermsIds: readonly bigint[];
-  licenseTemplate: Address;
-  royaltyContext: Hex;
-};
-
-/**
- * LicensingModuleRegisterDerivativeWithLicenseTokensRequest
- *
- * @param childIpId address
- * @param licenseTokenIds uint256[]
- * @param royaltyContext bytes
- */
-export type LicensingModuleRegisterDerivativeWithLicenseTokensRequest = {
-  childIpId: Address;
-  licenseTokenIds: readonly bigint[];
-  royaltyContext: Hex;
-};
-
-/**
- * LicensingModuleSetGovernanceRequest
- *
- * @param newGovernance address
- */
-export type LicensingModuleSetGovernanceRequest = {
-  newGovernance: Address;
-};
-
-/**
- * LicensingModuleUpgradeToAndCallRequest
- *
- * @param newImplementation address
- * @param data bytes
- */
-export type LicensingModuleUpgradeToAndCallRequest = {
-  newImplementation: Address;
-  data: Hex;
-};
-
-/**
  * contract LicensingModule event
  */
 export class LicensingModuleEventClient {
@@ -6876,170 +6701,6 @@ export class LicensingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(licensingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event DerivativeRegistered for contract LicensingModule
-   */
-  public watchDerivativeRegisteredEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModuleDerivativeRegisteredEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: licensingModuleAbi,
-      address: this.address,
-      eventName: "DerivativeRegistered",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event DerivativeRegistered for contract LicensingModule
-   */
-  public parseTxDerivativeRegisteredEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<LicensingModuleDerivativeRegisteredEvent> {
-    const targetLogs: Array<LicensingModuleDerivativeRegisteredEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: licensingModuleAbi,
-          eventName: "DerivativeRegistered",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "DerivativeRegistered") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event GovernanceUpdated for contract LicensingModule
-   */
-  public watchGovernanceUpdatedEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModuleGovernanceUpdatedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: licensingModuleAbi,
-      address: this.address,
-      eventName: "GovernanceUpdated",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event GovernanceUpdated for contract LicensingModule
-   */
-  public parseTxGovernanceUpdatedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<LicensingModuleGovernanceUpdatedEvent> {
-    const targetLogs: Array<LicensingModuleGovernanceUpdatedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: licensingModuleAbi,
-          eventName: "GovernanceUpdated",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "GovernanceUpdated") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Initialized for contract LicensingModule
-   */
-  public watchInitializedEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModuleInitializedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: licensingModuleAbi,
-      address: this.address,
-      eventName: "Initialized",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Initialized for contract LicensingModule
-   */
-  public parseTxInitializedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<LicensingModuleInitializedEvent> {
-    const targetLogs: Array<LicensingModuleInitializedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: licensingModuleAbi,
-          eventName: "Initialized",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Initialized") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event LicenseTermsAttached for contract LicensingModule
-   */
-  public watchLicenseTermsAttachedEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModuleLicenseTermsAttachedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: licensingModuleAbi,
-      address: this.address,
-      eventName: "LicenseTermsAttached",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event LicenseTermsAttached for contract LicensingModule
-   */
-  public parseTxLicenseTermsAttachedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<LicensingModuleLicenseTermsAttachedEvent> {
-    const targetLogs: Array<LicensingModuleLicenseTermsAttachedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: licensingModuleAbi,
-          eventName: "LicenseTermsAttached",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "LicenseTermsAttached") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
   }
 
   /**
@@ -7073,226 +6734,19 @@ export class LicensingModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicenseTokensMinted") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "LicenseTokensMinted") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
     }
     return targetLogs;
-  }
-
-  /**
-   * event Upgraded for contract LicensingModule
-   */
-  public watchUpgradedEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicensingModuleUpgradedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: licensingModuleAbi,
-      address: this.address,
-      eventName: "Upgraded",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Upgraded for contract LicensingModule
-   */
-  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<LicensingModuleUpgradedEvent> {
-    const targetLogs: Array<LicensingModuleUpgradedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: licensingModuleAbi,
-          eventName: "Upgraded",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Upgraded") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract LicensingModule readonly method
- */
-export class LicensingModuleReadOnlyClient extends LicensingModuleEventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method ACCESS_CONTROLLER for contract LicensingModule
-   *
-   * @param request LicensingModuleAccessControllerRequest
-   * @return Promise<LicensingModuleAccessControllerResponse>
-   */
-  public async accessController(): Promise<LicensingModuleAccessControllerResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "ACCESS_CONTROLLER",
-    });
-  }
-
-  /**
-   * method DISPUTE_MODULE for contract LicensingModule
-   *
-   * @param request LicensingModuleDisputeModuleRequest
-   * @return Promise<LicensingModuleDisputeModuleResponse>
-   */
-  public async disputeModule(): Promise<LicensingModuleDisputeModuleResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "DISPUTE_MODULE",
-    });
-  }
-
-  /**
-   * method IP_ACCOUNT_REGISTRY for contract LicensingModule
-   *
-   * @param request LicensingModuleIpAccountRegistryRequest
-   * @return Promise<LicensingModuleIpAccountRegistryResponse>
-   */
-  public async ipAccountRegistry(): Promise<LicensingModuleIpAccountRegistryResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "IP_ACCOUNT_REGISTRY",
-    });
-  }
-
-  /**
-   * method LICENSE_NFT for contract LicensingModule
-   *
-   * @param request LicensingModuleLicenseNftRequest
-   * @return Promise<LicensingModuleLicenseNftResponse>
-   */
-  public async licenseNft(): Promise<LicensingModuleLicenseNftResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "LICENSE_NFT",
-    });
-  }
-
-  /**
-   * method LICENSE_REGISTRY for contract LicensingModule
-   *
-   * @param request LicensingModuleLicenseRegistryRequest
-   * @return Promise<LicensingModuleLicenseRegistryResponse>
-   */
-  public async licenseRegistry(): Promise<LicensingModuleLicenseRegistryResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "LICENSE_REGISTRY",
-    });
-  }
-
-  /**
-   * method ROYALTY_MODULE for contract LicensingModule
-   *
-   * @param request LicensingModuleRoyaltyModuleRequest
-   * @return Promise<LicensingModuleRoyaltyModuleResponse>
-   */
-  public async royaltyModule(): Promise<LicensingModuleRoyaltyModuleResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "ROYALTY_MODULE",
-    });
-  }
-
-  /**
-   * method UPGRADE_INTERFACE_VERSION for contract LicensingModule
-   *
-   * @param request LicensingModuleUpgradeInterfaceVersionRequest
-   * @return Promise<LicensingModuleUpgradeInterfaceVersionResponse>
-   */
-  public async upgradeInterfaceVersion(): Promise<LicensingModuleUpgradeInterfaceVersionResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "UPGRADE_INTERFACE_VERSION",
-    });
-  }
-
-  /**
-   * method getGovernance for contract LicensingModule
-   *
-   * @param request LicensingModuleGetGovernanceRequest
-   * @return Promise<LicensingModuleGetGovernanceResponse>
-   */
-  public async getGovernance(): Promise<LicensingModuleGetGovernanceResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "getGovernance",
-    });
-  }
-
-  /**
-   * method name for contract LicensingModule
-   *
-   * @param request LicensingModuleNameRequest
-   * @return Promise<LicensingModuleNameResponse>
-   */
-  public async name(): Promise<LicensingModuleNameResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "name",
-    });
-  }
-
-  /**
-   * method proxiableUUID for contract LicensingModule
-   *
-   * @param request LicensingModuleProxiableUuidRequest
-   * @return Promise<LicensingModuleProxiableUuidResponse>
-   */
-  public async proxiableUuid(): Promise<LicensingModuleProxiableUuidResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "proxiableUUID",
-    });
-  }
-
-  /**
-   * method supportsInterface for contract LicensingModule
-   *
-   * @param request LicensingModuleSupportsInterfaceRequest
-   * @return Promise<LicensingModuleSupportsInterfaceResponse>
-   */
-  public async supportsInterface(
-    request: LicensingModuleSupportsInterfaceRequest,
-  ): Promise<LicensingModuleSupportsInterfaceResponse> {
-    return await this.rpcClient.readContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "supportsInterface",
-      args: [request.interfaceId],
-    });
   }
 }
 
 /**
  * contract LicensingModule write method
  */
-export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
+export class LicensingModuleClient extends LicensingModuleEventClient {
   protected readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
@@ -7320,25 +6774,6 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
   }
 
   /**
-   * method initialize for contract LicensingModule
-   *
-   * @param request LicensingModuleInitializeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async initialize(
-    request: LicensingModuleInitializeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "initialize",
-      account: this.wallet.account,
-      args: [request.governance],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
    * method mintLicenseTokens for contract LicensingModule
    *
    * @param request LicensingModuleMintLicenseTokensRequest
@@ -7360,88 +6795,6 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
         request.receiver,
         request.royaltyContext,
       ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerDerivative for contract LicensingModule
-   *
-   * @param request LicensingModuleRegisterDerivativeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerDerivative(
-    request: LicensingModuleRegisterDerivativeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "registerDerivative",
-      account: this.wallet.account,
-      args: [
-        request.childIpId,
-        request.parentIpIds,
-        request.licenseTermsIds,
-        request.licenseTemplate,
-        request.royaltyContext,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerDerivativeWithLicenseTokens for contract LicensingModule
-   *
-   * @param request LicensingModuleRegisterDerivativeWithLicenseTokensRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerDerivativeWithLicenseTokens(
-    request: LicensingModuleRegisterDerivativeWithLicenseTokensRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "registerDerivativeWithLicenseTokens",
-      account: this.wallet.account,
-      args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method setGovernance for contract LicensingModule
-   *
-   * @param request LicensingModuleSetGovernanceRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async setGovernance(
-    request: LicensingModuleSetGovernanceRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "setGovernance",
-      account: this.wallet.account,
-      args: [request.newGovernance],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method upgradeToAndCall for contract LicensingModule
-   *
-   * @param request LicensingModuleUpgradeToAndCallRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async upgradeToAndCall(
-    request: LicensingModuleUpgradeToAndCallRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licensingModuleAbi,
-      address: this.address,
-      functionName: "upgradeToAndCall",
-      account: this.wallet.account,
-      args: [request.newImplementation, request.data],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -7836,9 +7189,7 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DerivativeApproved") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "DerivativeApproved") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -7877,9 +7228,7 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Initialized") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "Initialized") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
@@ -7918,9 +7267,7 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicenseTermsRegistered") {
-          targetLogs.push(event.args);
-        }
+        if (event.eventName === "LicenseTermsRegistered") {targetLogs.push(event.args);}
       } catch (e) {
         /* empty */
       }
