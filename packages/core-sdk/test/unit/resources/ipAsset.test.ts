@@ -3,7 +3,6 @@ import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient } from "../../../src";
 import { PublicClient, WalletClient, Account } from "viem";
-import { getIPAssetRegistryConfig } from "../../config";
 import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -20,7 +19,6 @@ describe("Test IpAssetClient", function () {
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     ipAssetClient = new IPAssetClient(rpcMock, walletMock, "sepolia");
-    ipAssetClient.ipAssetRegistryConfig = getIPAssetRegistryConfig("sepolia");
   });
 
   afterEach(function () {
@@ -127,6 +125,7 @@ describe("Test IpAssetClient", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       rpcMock.readContract = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
+
       await expect(
         ipAssetClient.register({
           tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",

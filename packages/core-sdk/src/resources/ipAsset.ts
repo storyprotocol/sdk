@@ -1,11 +1,6 @@
-import { Hex, PublicClient, WalletClient, getAddress, zeroAddress } from "viem";
+import { Hex, PublicClient, getAddress, zeroAddress } from "viem";
 
-import { chain, parseToBigInt, waitTx, waitTxAndFilterLog } from "../utils/utils";
-import {
-  getIPAssetRegistryConfig,
-  getLicenseTemplateConfig,
-  getLicensingModuleConfig,
-} from "../abi/config";
+import { chain, parseToBigInt } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
@@ -16,23 +11,28 @@ import {
   RegisterIpResponse,
   RegisterRequest,
 } from "../types/resources/ipAsset";
+import {
+  IpAssetRegistryClient,
+  LicensingModuleClient,
+  PiLicenseTemplateClient,
+  SimpleWalletClient,
+} from "../abi/generated";
 
 export class IPAssetClient {
-  private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
   private readonly chainId: SupportedChainIds;
-  public ipAssetRegistryConfig;
-  public licenseModuleConfig;
-  public licenseTemplateConfig;
+  public ipAssetRegistryClient: IpAssetRegistryClient;
+  public licensingModuleClient: LicensingModuleClient;
+  public licenseTemplateClient: PiLicenseTemplateClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
-    this.wallet = wallet;
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.chainId = chainId;
-    this.ipAssetRegistryConfig = getIPAssetRegistryConfig(chainId);
-    this.licenseModuleConfig = getLicensingModuleConfig(chainId);
-    this.licenseTemplateConfig = getLicenseTemplateConfig(chainId);
+    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
+    this.licensingModuleClient = new LicensingModuleClient(this.rpcClient, wallet);
+    this.licenseTemplateClient = new PiLicenseTemplateClient(this.rpcClient, wallet);
   }
+
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
    * @param request The request object that contains all data needed to register IP.
@@ -49,19 +49,14 @@ export class IPAssetClient {
       if (ipId !== "0x") {
         return { ipId: ipId };
       }
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.ipAssetRegistryConfig,
-        functionName: "register",
-        args: [getAddress(request.tokenContract), tokenId],
-        account: this.wallet.account,
+      const txHash = await this.ipAssetRegistryClient.register({
+        tokenContract: getAddress(request.tokenContract),
+        tokenId: tokenId,
       });
-      const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.ipAssetRegistryConfig,
-          eventName: "IPRegistered",
-        });
-        return { txHash: txHash, ipId: targetLogs[0].args.ipId };
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
+        return { txHash: txHash, ipId: targetLogs[0].ipId };
       } else {
         return { txHash: txHash };
       }
@@ -87,21 +82,15 @@ export class IPAssetClient {
     request: RegisterDerivativeRequest,
   ): Promise<RegisterDerivativeResponse> {
     try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.licenseModuleConfig,
-        functionName: "registerDerivative",
-        args: [
-          request.childIpId,
-          request.parentIpIds,
-          request.licenseTermsIds.map((id) => BigInt(id)),
-          request.licenseTemplate || this.licenseTemplateConfig.address,
-          zeroAddress,
-        ],
-        account: this.wallet.account,
+      const txHash = await this.licensingModuleClient.registerDerivative({
+        childIpId: request.childIpId,
+        parentIpIds: request.parentIpIds,
+        licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
+        licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+        royaltyContext: zeroAddress,
       });
-      const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         return { txHash };
       } else {
         return { txHash };
@@ -126,15 +115,13 @@ export class IPAssetClient {
     request: RegisterDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> {
     try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.licenseModuleConfig,
-        functionName: "registerDerivativeWithLicenseTokens",
-        args: [request.childIpId, request.licenseTokenIds.map((id) => BigInt(id)), zeroAddress],
-        account: this.wallet.account,
+      const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
+        childIpId: request.childIpId,
+        licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
+        royaltyContext: zeroAddress,
       });
-      const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         return { txHash: txHash };
       } else {
         return { txHash: txHash };
@@ -143,17 +130,14 @@ export class IPAssetClient {
       handleError(error, "Failed to register derivative with license tokens");
     }
   }
+
   private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
-    const ipId = await this.rpcClient.readContract({
-      ...this.ipAssetRegistryConfig,
-      functionName: "ipId",
-      args: [parseToBigInt(chain[this.chainId]), tokenAddress, tokenId],
+    const ipId = await this.ipAssetRegistryClient.ipId({
+      chainId: parseToBigInt(chain[this.chainId]),
+      tokenContract: tokenAddress,
+      tokenId: tokenId,
     });
-    const isRegistered = await this.rpcClient.readContract({
-      ...this.ipAssetRegistryConfig,
-      functionName: "isRegistered",
-      args: [ipId],
-    });
+    const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: ipId });
     return isRegistered ? ipId : "0x";
   }
 }
