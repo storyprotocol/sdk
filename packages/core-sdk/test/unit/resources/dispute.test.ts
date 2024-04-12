@@ -1,12 +1,10 @@
 import * as sinon from "sinon";
 import { createMock } from "../testUtils";
-import chai from "chai";
-import { expect } from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient } from "viem";
-import { DisputeClient } from "../../../src/resources/dispute";
-import { CancelDisputeRequest, ResolveDisputeRequest } from "../../../src/types/resources/dispute";
-import * as utils from "../../../src/utils/utils";
+import { CancelDisputeRequest, DisputeClient, ResolveDisputeRequest } from "../../../src";
+import { DisputeModuleClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 
@@ -35,6 +33,7 @@ describe("Test DisputeClient", function () {
     const arbitrationPolicy = "0xC6A1c49BCeeE2E512167d5c03e4753776477730b" as `0x${string}`;
     const linkToDisputeEvidence = "foo";
     const targetTag = "bar";
+
     it("should throw simulateContract error if simulateContract throws an error", async () => {
       rpcMock.simulateContract = sinon.stub().throws(new Error("simulateContract error"));
       const raiseDisputeRequest = {
@@ -75,12 +74,9 @@ describe("Test DisputeClient", function () {
     it("should return txHash only if request.txOptions is missing", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+      disputeClient.disputeModuleClient.parseTxDisputeRaisedEvent = sinon.stub().resolves([
         {
-          eventName: "DisputeRaised",
-          args: {
-            disputeId: "7",
-          },
+          disputeId: "7",
         },
       ]);
       const raiseDisputeRequest = {
@@ -95,15 +91,16 @@ describe("Test DisputeClient", function () {
       expect(Object.keys(result)[0]).to.equal("txHash");
       expect(result.txHash).to.equal(mock.txHash);
     });
+
     it("should return txHash and disputeId if request.txOptions is present", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      sinon.stub(utils, "waitTxAndFilterLog").resolves([
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
+
+      disputeClient.disputeModuleClient = createMock<DisputeModuleClient>();
+      disputeClient.disputeModuleClient.raiseDispute = sinon.stub().resolves(mock.txHash);
+      disputeClient.disputeModuleClient.parseTxDisputeRaisedEvent = sinon.stub().returns([
         {
-          eventName: "DisputeRaised",
-          args: {
-            disputeId: "7",
-          },
+          disputeId: "7",
         },
       ]);
       const raiseDisputeRequest = {

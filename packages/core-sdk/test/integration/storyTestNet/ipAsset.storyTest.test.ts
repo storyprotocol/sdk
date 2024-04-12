@@ -11,10 +11,16 @@ import {
 } from "permissionless/clients/pimlico";
 import { createSmartAccountClient, ENTRYPOINT_ADDRESS_V06 } from "permissionless";
 import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+
 describe("IP Asset Functions in storyTestnet", () => {
+  console.log("STORY_TEST_NET_WALLET_PRIVATE_KEY: ", process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY);
+
   let client: StoryClient;
   let permissionLessClient: StoryClient;
   const account = privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex);
@@ -27,7 +33,7 @@ describe("IP Asset Functions in storyTestnet", () => {
     };
     client = StoryClient.newClient(config);
 
-    const rpcUrl = "https://api.pimlico.io/v2/1513/rpc?apikey="+process.env.PIMLICO_API_KEY;
+    const rpcUrl = "https://api.pimlico.io/v2/1513/rpc?apikey=" + process.env.PIMLICO_API_KEY;
     const publicClient = createPublicClient({
       chain: chainStringToViemChain("storyTestnet"),
       transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
@@ -101,7 +107,7 @@ describe("IP Asset Functions in storyTestnet", () => {
         ],
         address: storyTestnetAddress.MockERC721,
         functionName: "mintId",
-        args: [account.address, BigInt(10000)],
+        args: [account.address, BigInt(Math.round(new Date().getTime() / 1000))],
       });
       const hash = await walletClient.writeContract(request);
       const { logs } = await publicClient.waitForTransactionReceipt({
@@ -132,9 +138,8 @@ describe("IP Asset Functions in storyTestnet", () => {
         console.log(err);
       }
 
-      console.log(response);
-      // expect(response.txHash).to.be.a("string");
-      // expect(response.txHash).not.empty;
+      expect(response.txHash).to.be.a("string");
+      expect(response.txHash).not.empty;
       if (waitForTransaction) {
         console.log(response.ipId);
         expect(response.ipId).to.be.a("string");

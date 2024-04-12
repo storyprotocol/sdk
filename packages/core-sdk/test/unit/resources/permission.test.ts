@@ -89,6 +89,7 @@ describe("Test Permission", function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.readContract = sinon.stub().resolves(AddressZero);
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTxAndFilterLog").resolves();
 
@@ -104,9 +105,13 @@ describe("Test Permission", function () {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
+
     it("should throw error when request fails", async function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.readContract = sinon.stub().resolves();
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
+
       await expect(
         permissionClient.setPermission({
           ipId: AddressZero,
@@ -115,7 +120,7 @@ describe("Test Permission", function () {
           func: "0x00000000",
           permission: 0,
           txOptions: {
-            waitForTransaction: false,
+            waitForTransaction: true,
           },
         }),
       ).to.be.rejectedWith("http 500");

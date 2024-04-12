@@ -48,6 +48,7 @@ export class DisputeClient {
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = this.disputeModuleClient.parseTxDisputeRaisedEvent(txReceipt);
+
         return {
           txHash: txHash,
           disputeId: BigInt(targetLogs[0].disputeId).toString() as `0x${string}`,

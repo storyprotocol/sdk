@@ -41,7 +41,8 @@ export class LicenseClient {
   }
 
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
-    return Number(await this.licenseTemplateClient.getLicenseTermsId({ terms: request }));
+    const licenseIdRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
+    return Number(licenseIdRes.selectedLicenseTermsId);
   }
 
   /**
@@ -77,6 +78,7 @@ export class LicenseClient {
       if (licenseTermsId !== 0) {
         return { licenseId: licenseTermsId.toString() };
       }
+
       const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
 
       if (request.txOptions?.waitForTransaction) {
