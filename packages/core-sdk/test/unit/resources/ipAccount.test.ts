@@ -2,13 +2,9 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAccountClient } from "../../../src/resources/ipAccount";
-import {
-  IPAccountExecuteRequest,
-  IPAccountExecuteWithSigRequest,
-} from "../../../src/types/resources/ipAccount";
-import { IPAccountABI } from "../../../src/abi/config";
+import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
 import * as utils from "../../../src/utils/utils";
-import { PublicClient, WalletClient, Account, zeroAddress } from "viem";
+import { Account, PublicClient, WalletClient, zeroAddress } from "viem";
 
 describe("Test IPAccountClient", () => {
   let ipAccountClient: IPAccountClient;
@@ -27,11 +23,7 @@ describe("Test IPAccountClient", () => {
   afterEach(() => {
     sinon.restore();
   });
-  describe("Test constructor", () => {
-    it("should have expected ipAccountABI", () => {
-      expect(ipAccountClient.ipAccountABI).to.equal(IPAccountABI);
-    });
-  });
+
   describe("Test execute", async () => {
     it("should throw invalid address error when accountAddress is invalid", async function () {
       const request: IPAccountExecuteRequest = {
@@ -80,6 +72,7 @@ describe("Test IPAccountClient", () => {
     it("should throw waitTx error when waitTx throws an error", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
       const request: IPAccountExecuteRequest = {
@@ -101,6 +94,7 @@ describe("Test IPAccountClient", () => {
     it("should return txHash if waitTx succeeds", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const request: IPAccountExecuteRequest = {
@@ -195,6 +189,7 @@ describe("Test IPAccountClient", () => {
     it("should throw waitTx error when waitTx throws an error", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
       const request: IPAccountExecuteWithSigRequest = {
@@ -219,6 +214,7 @@ describe("Test IPAccountClient", () => {
     it("should return txHash when waitTx succeeds", async function () {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const request: IPAccountExecuteWithSigRequest = {
