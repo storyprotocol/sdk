@@ -16,7 +16,7 @@ describe("Test Permission", function () {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    permissionClient = new PermissionClient(rpcMock, walletMock, "sepolia");
+    permissionClient = new PermissionClient(rpcMock, walletMock);
   });
 
   afterEach(function () {

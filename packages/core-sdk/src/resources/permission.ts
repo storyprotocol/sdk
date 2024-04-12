@@ -1,21 +1,24 @@
-import { PublicClient, WalletClient, getAddress, Hex, encodeFunctionData } from "viem";
+import { PublicClient, getAddress, Hex, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import { SetPermissionsRequest, SetPermissionsResponse } from "../types/resources/permission";
-import { IPAccountABI, getAccessControllerConfig } from "../abi/config";
-import { parseToBigInt, waitTxAndFilterLog } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
+import { parseToBigInt } from "../utils/utils";
+import {
+  accessControllerAbi,
+  AccessControllerClient,
+  IpAccountImplClient,
+  SimpleWalletClient,
+} from "../abi/generated";
 
 export class PermissionClient {
-  private readonly wallet: WalletClient;
+  private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
-  public ipAccountABI = IPAccountABI;
-  public accessControllerConfig;
+  private accessControllerClient: AccessControllerClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-    this.accessControllerConfig = getAccessControllerConfig(chainId);
+    this.accessControllerClient = new AccessControllerClient(this.rpcClient, this.wallet);
   }
 
   /**
@@ -39,39 +42,30 @@ export class PermissionClient {
    */
   public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
-      const IPAccountConfig = {
-        abi: this.ipAccountABI,
-        address: getAddress(request.ipId),
-      };
+      const ipAccountClient = new IpAccountImplClient(
+        this.rpcClient,
+        this.wallet,
+        getAddress(request.ipId),
+      );
 
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...IPAccountConfig,
-        functionName: "execute",
-        args: [
-          this.accessControllerConfig.address,
-          parseToBigInt(0),
-          encodeFunctionData({
-            abi: this.accessControllerConfig.abi,
-            functionName: "setPermission",
-            args: [
-              getAddress(request.ipId), // 0x Address
-              getAddress(request.signer), // 0x Address
-              getAddress(request.to), // 0x Address
-              (request.func || "0x00000000") as Hex, // bytes4
-              request.permission, // uint8
-            ],
-          }),
-        ],
-        account: this.wallet.account,
+      const txHash = await ipAccountClient.execute({
+        to: this.accessControllerClient.address,
+        value: parseToBigInt(0),
+        data: encodeFunctionData({
+          abi: accessControllerAbi,
+          functionName: "setPermission",
+          args: [
+            getAddress(request.ipId), // 0x Address
+            getAddress(request.signer), // 0x Address
+            getAddress(request.to), // 0x Address
+            (request.func || "0x00000000") as Hex, // bytes4
+            request.permission, // uint8
+          ],
+        }),
       });
 
-      const txHash = await this.wallet.writeContract(call);
-
       if (request.txOptions?.waitForTransaction) {
-        await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.accessControllerConfig,
-          eventName: "PermissionSet",
-        });
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         return { txHash: txHash, success: true };
       } else {
         return { txHash: txHash };

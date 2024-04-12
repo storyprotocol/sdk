@@ -6,7 +6,6 @@ import {
   IPAccountExecuteRequest,
   IPAccountExecuteWithSigRequest,
 } from "../../../src/types/resources/ipAccount";
-import { IPAccountABI } from "../../../src/abi/config";
 import * as utils from "../../../src/utils/utils";
 import { PublicClient, WalletClient, Account, zeroAddress } from "viem";
 
@@ -26,11 +25,6 @@ describe("Test IPAccountClient", () => {
 
   afterEach(() => {
     sinon.restore();
-  });
-  describe("Test constructor", () => {
-    it("should have expected ipAccountABI", () => {
-      expect(ipAccountClient.ipAccountABI).to.equal(IPAccountABI);
-    });
   });
   describe("Test execute", async () => {
     it("should throw invalid address error when accountAddress is invalid", async function () {

@@ -3,7 +3,6 @@ import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient } from "../../../src";
 import { PublicClient, WalletClient, Account } from "viem";
-import { getIPAssetRegistryConfig } from "../../config";
 import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -20,7 +19,6 @@ describe("Test IpAssetClient", function () {
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     ipAssetClient = new IPAssetClient(rpcMock, walletMock, "sepolia");
-    ipAssetClient.ipAssetRegistryConfig = getIPAssetRegistryConfig("sepolia");
   });
 
   afterEach(function () {

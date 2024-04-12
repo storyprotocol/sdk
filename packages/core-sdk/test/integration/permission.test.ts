@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { StoryClient, StoryConfig } from "../../src";
 import { Hex, http, Account } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { IPAccountABI, AccessControllerConfig } from "./testABI.tenderly";
 
 describe("Permission Functions", () => {
   let client: StoryClient;
@@ -18,8 +17,6 @@ describe("Permission Functions", () => {
     const configAccount: Account = config.account as Account;
     senderAddress = configAccount.address;
     client = StoryClient.newClient(config);
-    client.permission.ipAccountABI = IPAccountABI;
-    client.permission.accessControllerConfig = AccessControllerConfig;
   });
 
   describe("Set Permission", async function () {

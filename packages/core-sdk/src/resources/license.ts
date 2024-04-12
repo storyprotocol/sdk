@@ -1,15 +1,13 @@
-import { PublicClient, WalletClient, zeroAddress } from "viem";
+import { PublicClient, zeroAddress } from "viem";
 
-import { handleError } from "../utils/errors";
-import { waitTx, waitTxAndFilterLog } from "../utils/utils";
-import {
-  IPAccountABI,
-  getLicenseRegistryConfig,
-  getLicenseTemplateConfig,
-  getLicensingModuleConfig,
-  getRoyaltyPolicyLAPConfig,
-} from "../abi/config";
 import { StoryAPIClient } from "../clients/storyAPI";
+import {
+  LicenseRegistryEventClient,
+  LicensingModuleClient,
+  PiLicenseTemplateClient,
+  RoyaltyPolicyLapClient,
+  SimpleWalletClient,
+} from "../abi/generated";
 import {
   LicenseTerms,
   RegisterLicenseTermsRequest,
@@ -21,40 +19,29 @@ import {
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
 } from "../types/resources/license";
-import { SupportedChainIds } from "../types/config";
+import { handleError } from "../utils/errors";
 
 export class LicenseClient {
-  private readonly wallet: WalletClient;
+  private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
   private readonly storyClient: StoryAPIClient;
-  public licenseRegistryConfig;
-  public licensingModuleConfig;
-  public ipAccountABI = IPAccountABI;
-  public licenseTemplateConfig;
-  public royaltyPolicyLAPConfig;
+  public licenseRegistryClient: LicenseRegistryEventClient;
+  public licensingModuleClient: LicensingModuleClient;
+  private licenseTemplateClient: PiLicenseTemplateClient;
+  private royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
 
-  constructor(
-    rpcClient: PublicClient,
-    wallet: WalletClient,
-    storyClient: StoryAPIClient,
-    chainId: SupportedChainIds,
-  ) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, storyClient: StoryAPIClient) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.storyClient = storyClient;
-    this.licenseRegistryConfig = getLicenseRegistryConfig(chainId);
-    this.licensingModuleConfig = getLicensingModuleConfig(chainId);
-    this.licenseTemplateConfig = getLicenseTemplateConfig(chainId);
-    this.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig(chainId);
+    this.licenseRegistryClient = new LicenseRegistryEventClient(this.rpcClient);
+    this.licenseTemplateClient = new PiLicenseTemplateClient(this.rpcClient, this.wallet);
+    this.licensingModuleClient = new LicensingModuleClient(this.rpcClient, this.wallet);
+    this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(this.rpcClient, this.wallet);
   }
 
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
-    const selectedLicenseTermsId = await this.rpcClient.readContract({
-      ...this.licenseTemplateConfig,
-      functionName: "getLicenseTermsId",
-      args: [request],
-    });
-    return Number(selectedLicenseTermsId);
+    return Number(await this.licenseTemplateClient.getLicenseTermsId({ terms: request }));
   }
 
   /**
@@ -90,20 +77,13 @@ export class LicenseClient {
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };
       }
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.licenseTemplateConfig,
-        functionName: "registerLicenseTerms",
-        args: [licenseTerms],
-        account: this.wallet.account,
-      });
-      const txHash = await this.wallet.writeContract(call);
+      const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
 
       if (request.txOptions?.waitForTransaction) {
-        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.licenseTemplateConfig,
-          eventName: "LicenseTermsRegistered",
-        });
-        return { txHash: txHash, licenseTermsId: targetLogs[0].args.licenseTermsId.toString() };
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
+
+        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -128,7 +108,7 @@ export class LicenseClient {
     try {
       const licenseTerms: LicenseTerms = {
         transferable: true,
-        royaltyPolicy: this.royaltyPolicyLAPConfig.address,
+        royaltyPolicy: this.royaltyPolicyLAPClient.address,
         mintingFee: BigInt(request.mintingFee),
         expiration: BigInt(0),
         commercialUse: true,
@@ -149,20 +129,12 @@ export class LicenseClient {
         return { licenseTermsId: licenseTermsId.toString() };
       }
 
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.licenseTemplateConfig,
-        functionName: "registerLicenseTerms",
-        args: [licenseTerms],
-        account: this.wallet.account,
-      });
-      const txHash = await this.wallet.writeContract(call);
+      const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
 
       if (request.txOptions?.waitForTransaction) {
-        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.licenseTemplateConfig,
-          eventName: "LicenseTermsRegistered",
-        });
-        return { txHash: txHash, licenseTermsId: targetLogs[0].args.licenseTermsId.toString() };
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
+        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -187,7 +159,7 @@ export class LicenseClient {
     try {
       const licenseTerms: LicenseTerms = {
         transferable: true,
-        royaltyPolicy: this.royaltyPolicyLAPConfig.address,
+        royaltyPolicy: this.royaltyPolicyLAPClient.address,
         mintingFee: BigInt(request.mintingFee),
         expiration: BigInt(0),
         commercialUse: true,
@@ -207,20 +179,12 @@ export class LicenseClient {
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };
       }
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.licenseTemplateConfig,
-        functionName: "registerLicenseTerms",
-        args: [licenseTerms],
-        account: this.wallet.account,
-      });
-      const txHash = await this.wallet.writeContract(call);
+      const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
 
       if (request.txOptions?.waitForTransaction) {
-        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.licenseTemplateConfig,
-          eventName: "LicenseTermsRegistered",
-        });
-        return { txHash: txHash, licenseTermsId: targetLogs[0].args.licenseTermsId.toString() };
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
+        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId.toString() };
       } else {
         return { txHash: txHash };
       }
@@ -232,6 +196,10 @@ export class LicenseClient {
   /**
    * Attaches license terms to an IP.
    * @param request The request object that contains all data needed to attach license terms.
+   @param request.ipId The IP ID.
+   @param request.tokenAddress The address of the NFT.
+   @param request.licenseTemplate The address of the license template.
+   @param request.licenseTermsId The ID of the license terms.
       @param request.ipId The address of the IP to which the license terms are attached.
       @param request.licenseTemplate The address of the license template.
       @param request.licenseTermsId The ID of the license terms.
@@ -239,19 +207,13 @@ export class LicenseClient {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
-    const { request: call } = await this.rpcClient.simulateContract({
-      ...this.licensingModuleConfig,
-      functionName: "attachLicenseTerms",
-      args: [
-        request.ipId,
-        request.licenseTemplate || this.licenseTemplateConfig.address,
-        BigInt(request.licenseTermsId),
-      ],
-      account: this.wallet.account,
+    const txHash = await this.licensingModuleClient.attachLicenseTerms({
+      ipId: request.ipId,
+      licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+      licenseTermsId: BigInt(request.licenseTermsId),
     });
-    const txHash = await this.wallet.writeContract(call);
     if (request.txOptions?.waitForTransaction) {
-      await waitTx(this.rpcClient, txHash);
+      await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       return { txHash: txHash };
     } else {
       return { txHash: txHash };
@@ -284,28 +246,21 @@ export class LicenseClient {
     request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> {
     try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.licensingModuleConfig,
-        functionName: "mintLicenseTokens",
-        args: [
-          request.licensorIpId,
-          request.licenseTemplate || this.licenseTemplateConfig.address,
-          BigInt(request.licenseTermsId),
-          BigInt(request.amount || 1),
-          request.receiver || this.wallet.account!.address,
-          zeroAddress,
-        ],
-        account: this.wallet.account,
+      const txHash = await this.licensingModuleClient.mintLicenseTokens({
+        licensorIpId: request.licensorIpId,
+        licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+        licenseTermsId: BigInt(request.licenseTermsId),
+        amount: BigInt(request.amount || 1),
+        receiver: request.receiver || this.wallet.account!.address,
+        royaltyContext: zeroAddress,
       });
-      const txHash = await this.wallet.writeContract(call);
       if (request.txOptions?.waitForTransaction) {
-        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.licensingModuleConfig,
-          eventName: "LicenseTokensMinted",
-        });
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
+
         return {
           txHash: txHash,
-          licenseTokenId: targetLogs[0].args.startLicenseTokenId.toString(),
+          licenseTokenId: targetLogs[0].startLicenseTokenId.toString(),
         };
       } else {
         return { txHash: txHash };

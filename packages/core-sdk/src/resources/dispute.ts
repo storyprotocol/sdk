@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, stringToHex } from "viem";
+import { PublicClient, stringToHex } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -9,19 +9,15 @@ import {
   ResolveDisputeRequest,
   ResolveDisputeResponse,
 } from "../types/resources/dispute";
-import { waitTx, waitTxAndFilterLog } from "../utils/utils";
-import { getDisputeModuleConfig } from "../abi/config";
-import { SupportedChainIds } from "../types/config";
+import { DisputeModuleClient, SimpleWalletClient } from "../abi/generated";
 
 export class DisputeClient {
-  private readonly wallet: WalletClient;
   private readonly rpcClient: PublicClient;
-  public disputeModuleConfig;
+  public disputeModuleClient: DisputeModuleClient;
 
-  constructor(rpcClient: PublicClient, wallet: WalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
-    this.wallet = wallet;
-    this.disputeModuleConfig = getDisputeModuleConfig(chainId);
+    this.disputeModuleClient = new DisputeModuleClient(rpcClient, wallet);
   }
 
   /**
@@ -42,28 +38,19 @@ export class DisputeClient {
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.disputeModuleConfig,
-        functionName: "raiseDispute",
-        args: [
-          request.targetIpId,
-          request.linkToDisputeEvidence,
-          stringToHex(request.targetTag, { size: 32 }),
-          request.calldata || "0x",
-        ],
-        account: this.wallet.account,
+      const txHash = await this.disputeModuleClient.raiseDispute({
+        targetIpId: request.targetIpId,
+        linkToDisputeEvidence: request.linkToDisputeEvidence,
+        targetTag: stringToHex(request.targetTag, { size: 32 }),
+        data: request.calldata || "0x",
       });
 
-      const txHash = await this.wallet.writeContract(call);
-
       if (request.txOptions?.waitForTransaction) {
-        const targetLogs = await waitTxAndFilterLog(this.rpcClient, txHash, {
-          ...this.disputeModuleConfig,
-          eventName: "DisputeRaised",
-        });
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.disputeModuleClient.parseTxDisputeRaisedEvent(txReceipt);
         return {
           txHash: txHash,
-          disputeId: BigInt(targetLogs[0].args.disputeId).toString() as `0x${string}`,
+          disputeId: BigInt(targetLogs[0].disputeId).toString() as `0x${string}`,
         };
       }
       return { txHash: txHash };
@@ -86,17 +73,13 @@ export class DisputeClient {
    */
   public async cancelDispute(request: CancelDisputeRequest): Promise<CancelDisputeResponse> {
     try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.disputeModuleConfig,
-        functionName: "cancelDispute",
-        args: [BigInt(request.disputeId), request.calldata ? request.calldata : "0x"],
-        account: this.wallet.account,
+      const txHash = await this.disputeModuleClient.cancelDispute({
+        disputeId: BigInt(request.disputeId),
+        data: request.calldata ? request.calldata : "0x",
       });
 
-      const txHash = await this.wallet.writeContract(call);
-
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       }
 
       return { txHash: txHash };
@@ -116,17 +99,12 @@ export class DisputeClient {
    */
   public async resolveDispute(request: ResolveDisputeRequest): Promise<ResolveDisputeResponse> {
     try {
-      const { request: call } = await this.rpcClient.simulateContract({
-        ...this.disputeModuleConfig,
-        functionName: "resolveDispute",
-        args: [BigInt(request.disputeId)],
-        account: this.wallet.account,
+      const txHash = await this.disputeModuleClient.resolveDispute({
+        disputeId: BigInt(request.disputeId),
       });
 
-      const txHash = await this.wallet.writeContract(call);
-
       if (request.txOptions?.waitForTransaction) {
-        await waitTx(this.rpcClient, txHash);
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       }
 
       return { txHash: txHash };
