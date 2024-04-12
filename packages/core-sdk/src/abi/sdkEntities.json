@@ -1,0 +1,57 @@
+[
+  "execute",
+  "executeWithSig",
+
+  "ipId",
+  "isRegistered",
+  "register",
+
+  "registerRootIp",
+  "registerDerivativeIp",
+  "IPRegistered",
+  "registerDerivativeWithLicenseTokens",
+  "registerDerivative",
+  "DerivativeRegistered",
+
+  "getLicenseTermsId",
+  "registerLicenseTerms",
+  "LicenseTermsRegistered",
+  "attachLicenseTerms",
+  "mintLicenseTokens",
+  "LicenseTokensMinted",
+
+  "registerPolicy",
+  "addPolicyToIp",
+  "getPolicyId",
+  "PolicyRegistered",
+  "PolicyAddedToIpId",
+
+  "mintLicense",
+  "linkIpToParents",
+  "TransferSingle",
+  "TransferBatch",
+  "IpIdLinkedToParents",
+
+  "setPermission",
+  "PermissionSet",
+
+  "raiseDispute",
+  "cancelDispute",
+  "resolveDispute",
+  "DisputeCancelled",
+  "DisputeResolved",
+  "DisputeRaised",
+
+  "collectRoyaltyTokens",
+  "claimRevenueBySnapshotBatch",
+  "claimRevenueByTokenBatch",
+  "claimableRevenue",
+
+  "getRoyaltyData",
+  "onRoyaltyPayment",
+  "claimableRevenue",
+  "payRoyaltyOnBehalf",
+  "snapshot",
+  "SnapshotCompleted",
+  "RoyaltyTokensCollected"
+]
