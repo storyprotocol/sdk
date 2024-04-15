@@ -25,7 +25,6 @@ export class RoyaltyClient {
   public royaltyVaultImplClient: IpRoyaltyVaultImplClient;
   public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
-  royaltyVaultImplConfig: any;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
@@ -49,13 +48,17 @@ export class RoyaltyClient {
   ): Promise<CollectRoyaltyTokensResponse> {
     try {
       const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
-      const txHash = await this.royaltyVaultImplClient.collectRoyaltyTokens({
+      const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
+        this.rpcClient,
+        this.wallet,
+        proxyAddress,
+      );
+      const txHash = await ipRoyaltyVault.collectRoyaltyTokens({
         ancestorIpId: request.ancestorIpId,
       });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs =
-          this.royaltyVaultImplClient.parseTxRoyaltyTokensCollectedEvent(txReceipt);
+        const targetLogs = ipRoyaltyVault.parseTxRoyaltyTokensCollectedEvent(txReceipt);
         return {
           txHash: txHash,
           royaltyTokensCollected: targetLogs[0].royaltyTokensCollected.toString(),
@@ -113,11 +116,13 @@ export class RoyaltyClient {
     request: ClaimableRevenueRequest,
   ): Promise<ClaimableRevenueResponse> {
     try {
-      const royaltyVaultProxyAddress = await this.getRoyaltyVaultProxyAddress(
-        request.royaltyVaultIpId,
+      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
+      const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
+        this.rpcClient,
+        this.wallet,
+        proxyAddress,
       );
-      //TODO: how to inject address
-      return await this.royaltyVaultImplClient.claimableRevenue({
+      return await ipRoyaltyVault.claimableRevenue({
         account: request.account,
         snapshotId: BigInt(request.snapshotId),
         token: request.token,
@@ -136,15 +141,16 @@ export class RoyaltyClient {
    */
   public async snapshot(request: SnapshotRequest): Promise<SnapshotResponse> {
     try {
-      const royaltyVaultProxyAddress = await this.getRoyaltyVaultProxyAddress(
-        request.royaltyVaultIpId,
+      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
+      const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
+        this.rpcClient,
+        this.wallet,
+        proxyAddress,
       );
-      const txHash = await this.royaltyVaultImplClient.snapshot();
+      const txHash = await ipRoyaltyVault.snapshot();
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = await this.royaltyVaultImplClient.parseTxSnapshotCompletedEvent(
-          txReceipt,
-        );
+        const targetLogs = ipRoyaltyVault.parseTxSnapshotCompletedEvent(txReceipt);
         return { txHash, snapshotId: targetLogs[0].snapshotId };
       } else {
         return { txHash };
