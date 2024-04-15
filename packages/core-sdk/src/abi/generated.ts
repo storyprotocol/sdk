@@ -5131,6 +5131,30 @@ export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
 // Contract IpRoyaltyVaultImpl =============================================================
 
 /**
+ * IpRoyaltyVaultImplRoyaltyTokensCollectedEvent
+ *
+ * @param ancestorIpId address
+ * @param royaltyTokensCollected uint256
+ */
+export type IpRoyaltyVaultImplRoyaltyTokensCollectedEvent = {
+  ancestorIpId: Address;
+  royaltyTokensCollected: bigint;
+};
+
+/**
+ * IpRoyaltyVaultImplSnapshotCompletedEvent
+ *
+ * @param snapshotId uint256
+ * @param snapshotTimestamp uint256
+ * @param unclaimedTokens uint32
+ */
+export type IpRoyaltyVaultImplSnapshotCompletedEvent = {
+  snapshotId: bigint;
+  snapshotTimestamp: bigint;
+  unclaimedTokens: number;
+};
+
+/**
  * IpRoyaltyVaultImplClaimableRevenueRequest
  *
  * @param account address
@@ -5179,15 +5203,106 @@ export type IpRoyaltyVaultImplCollectRoyaltyTokensRequest = {
 };
 
 /**
- * contract IpRoyaltyVaultImpl readonly method
+ * contract IpRoyaltyVaultImpl event
  */
-export class IpRoyaltyVaultImplReadOnlyClient {
+export class IpRoyaltyVaultImplEventClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(ipRoyaltyVaultImplAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event RoyaltyTokensCollected for contract IpRoyaltyVaultImpl
+   */
+  public watchRoyaltyTokensCollectedEvent(
+    onLogs: (txHash: Hex, ev: Partial<IpRoyaltyVaultImplRoyaltyTokensCollectedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: ipRoyaltyVaultImplAbi,
+      address: this.address,
+      eventName: "RoyaltyTokensCollected",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event RoyaltyTokensCollected for contract IpRoyaltyVaultImpl
+   */
+  public parseTxRoyaltyTokensCollectedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<IpRoyaltyVaultImplRoyaltyTokensCollectedEvent> {
+    const targetLogs: Array<IpRoyaltyVaultImplRoyaltyTokensCollectedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: ipRoyaltyVaultImplAbi,
+          eventName: "RoyaltyTokensCollected",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "RoyaltyTokensCollected") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event SnapshotCompleted for contract IpRoyaltyVaultImpl
+   */
+  public watchSnapshotCompletedEvent(
+    onLogs: (txHash: Hex, ev: Partial<IpRoyaltyVaultImplSnapshotCompletedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: ipRoyaltyVaultImplAbi,
+      address: this.address,
+      eventName: "SnapshotCompleted",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event SnapshotCompleted for contract IpRoyaltyVaultImpl
+   */
+  public parseTxSnapshotCompletedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<IpRoyaltyVaultImplSnapshotCompletedEvent> {
+    const targetLogs: Array<IpRoyaltyVaultImplSnapshotCompletedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: ipRoyaltyVaultImplAbi,
+          eventName: "SnapshotCompleted",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "SnapshotCompleted") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract IpRoyaltyVaultImpl readonly method
+ */
+export class IpRoyaltyVaultImplReadOnlyClient extends IpRoyaltyVaultImplEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
   }
 
   /**
@@ -5286,6 +5401,22 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
       functionName: "collectRoyaltyTokens",
       account: this.wallet.account,
       args: [request.ancestorIpId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method snapshot for contract IpRoyaltyVaultImpl
+   *
+   * @param request IpRoyaltyVaultImplSnapshotRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async snapshot(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: ipRoyaltyVaultImplAbi,
+      address: this.address,
+      functionName: "snapshot",
+      account: this.wallet.account,
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }

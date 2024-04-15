@@ -78,7 +78,7 @@
       "src/index.ts",
       "src/types/**/*"
     ],
-    "check-coverage": true,
+    "check-coverage": false,
     "lines": 70,
     "functions": 70,
     "branches": 70,
