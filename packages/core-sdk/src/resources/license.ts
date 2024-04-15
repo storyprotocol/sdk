@@ -2,7 +2,9 @@ import { PublicClient, zeroAddress } from "viem";
 
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
+  IpAssetRegistryClient,
   LicenseRegistryEventClient,
+  LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
   RoyaltyPolicyLapClient,
@@ -10,8 +12,8 @@ import {
 } from "../abi/generated";
 import {
   LicenseTerms,
-  RegisterLicenseTermsRequest,
-  RegisterLicenseTermsResponse as RegisterPILResponse,
+  RegisterNonComSocialRemixingPILRequest,
+  RegisterPILResponse,
   RegisterCommercialUsePILRequest,
   RegisterCommercialRemixPILRequest,
   AttachLicenseTermsRequest,
@@ -29,6 +31,8 @@ export class LicenseClient {
   public licensingModuleClient: LicensingModuleClient;
   private licenseTemplateClient: PiLicenseTemplateClient;
   private royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
+  private licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
+  public ipAssetRegistryClient: IpAssetRegistryClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, storyClient: StoryAPIClient) {
     this.wallet = wallet;
@@ -38,22 +42,18 @@ export class LicenseClient {
     this.licenseTemplateClient = new PiLicenseTemplateClient(this.rpcClient, this.wallet);
     this.licensingModuleClient = new LicensingModuleClient(this.rpcClient, this.wallet);
     this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(this.rpcClient, this.wallet);
+    this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(this.rpcClient);
+    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
   }
-
-  private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
-    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request })
-    return Number(licenseRes.selectedLicenseTermsId);
-  }
-
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
    * @param request The request object that contains all data needed to register a PIL non commercial social remix license.
    *  @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerNonComSocialRemixingPIL(
-    request: RegisterLicenseTermsRequest,
+    request: RegisterNonComSocialRemixingPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms: LicenseTerms = {
@@ -100,7 +100,7 @@ export class LicenseClient {
    *  the token must be registered in story protocol.
    *  @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *  @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerCommercialUsePIL(
@@ -151,7 +151,7 @@ export class LicenseClient {
    *  @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *  @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *  @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerCommercialRemixPIL(
@@ -208,6 +208,19 @@ export class LicenseClient {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
+    const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: request.ipId });
+    if (!isRegistered) {
+      throw new Error("IP asset must be registered before attaching license terms");
+    }
+    const isAttachedLicenseTerms =
+      await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+        ipId: request.ipId,
+        licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+        licenseTermsId: BigInt(request.licenseTermsId),
+      });
+    if (isAttachedLicenseTerms) {
+      throw new Error("License terms are already attached to the IP");
+    }
     const txHash = await this.licensingModuleClient.attachLicenseTerms({
       ipId: request.ipId,
       licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
@@ -247,6 +260,15 @@ export class LicenseClient {
     request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> {
     try {
+      const isAttachedLicenseTerms =
+        await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+          ipId: request.licensorIpId,
+          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTermsId: BigInt(request.licenseTermsId),
+        });
+      if (!isAttachedLicenseTerms) {
+        throw new Error("License terms are not attached to the IP");
+      }
       const txHash = await this.licensingModuleClient.mintLicenseTokens({
         licensorIpId: request.licensorIpId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
@@ -269,5 +291,10 @@ export class LicenseClient {
     } catch (error) {
       handleError(error, "Failed to mint license tokens");
     }
+  }
+
+  private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
+    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
+    return Number(licenseRes.selectedLicenseTermsId);
   }
 }
