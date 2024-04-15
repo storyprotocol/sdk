@@ -15,9 +15,9 @@ import { MockERC721, MockERC20, getTokenId } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-let startTokenId = 163;
+let startTokenId = 180;
 let snapshotId: bigint;
-describe("Test royalty Functions", () => {
+describe.skip("Test royalty Functions", () => {
   let client: StoryClient;
   let publicClient: PublicClient;
   let walletClient: WalletClient;

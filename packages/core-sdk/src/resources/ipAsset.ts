@@ -105,7 +105,7 @@ export class IPAssetClient {
           });
         if (!isAttachedLicenseTerms) {
           throw new Error(
-            "License terms must be attached to the parent ipId  before registering derivative",
+            "License terms must be attached to the parent ipId before registering derivative",
           );
         }
       }
