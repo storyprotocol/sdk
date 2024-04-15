@@ -2,10 +2,15 @@ import { Hex, PublicClient } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
+  ClaimableRevenueRequest,
+  ClaimableRevenueResponse,
   CollectRoyaltyTokensRequest,
   CollectRoyaltyTokensResponse,
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
+  RoyaltyVaultAddress,
+  SnapshotRequest,
+  SnapshotResponse,
 } from "../types/resources/royalty";
 import {
   IpRoyaltyVaultImplClient,
@@ -20,6 +25,7 @@ export class RoyaltyClient {
   public royaltyVaultImplClient: IpRoyaltyVaultImplClient;
   public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
+  royaltyVaultImplConfig: any;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
@@ -31,35 +37,34 @@ export class RoyaltyClient {
 
   /**
    * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
-   * @param request - the licensing parameters for the Programmable IP License v1 (PIL) standard.
+   * @param request -  The request object that contains all data needed to collect royalty tokens.
    *   @param request.ancestorIpId The ip id of the ancestor to whom the royalty tokens belong to.
+   *   @param request.royaltyVaultIpId The id of the royalty vault.
    *   @param request.txOptions [Optional] The transaction options.
-   * @returns Tx hash for the transaction.
-   * @emits RoyaltyTokensCollected (ancestorIpId, ancestorsRoyalty)
+   * @returns A Promise that resolves to an object containing the transaction hash and optional the amount of royalty tokens collected if waitForTxn is set to true.
+   * @emits RoyaltyTokensCollected (ancestorIpId, royaltyTokensCollected)
    */
   public async collectRoyaltyTokens(
     request: CollectRoyaltyTokensRequest,
   ): Promise<CollectRoyaltyTokensResponse> {
     try {
-      const proxyAddress = await this.getProxyAddress(request.derivativeId);
-      if (!proxyAddress) {
-        throw new Error("Proxy address not found");
-      }
+      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
       const txHash = await this.royaltyVaultImplClient.collectRoyaltyTokens({
         ancestorIpId: request.ancestorIpId,
       });
-      return { txHash };
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs =
+          this.royaltyVaultImplClient.parseTxRoyaltyTokensCollectedEvent(txReceipt);
+        return {
+          txHash: txHash,
+          royaltyTokensCollected: targetLogs[0].royaltyTokensCollected.toString(),
+        };
+      } else {
+        return { txHash: txHash };
+      }
     } catch (error) {
       handleError(error, "Failed to collect royalty tokens");
-    }
-  }
-
-  private async getProxyAddress(derivativeID: Hex) {
-    const data = await this.royaltyPolicyLAPClient.getRoyaltyData({
-      ipId: derivativeID,
-    });
-    if (Array.isArray(data) && data[1]) {
-      return data[1];
     }
   }
 
@@ -72,7 +77,6 @@ export class RoyaltyClient {
    *   @param request.amount The amount to pay.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
-   * @emits RoyaltyPaid (receiverIpId, payerIpId, msg.sender, token, amount)
    */
   public async payRoyaltyOnBehalf(
     request: PayRoyaltyOnBehalfRequest,
@@ -86,10 +90,74 @@ export class RoyaltyClient {
       });
       if (request.txOptions?.waitForTransaction) {
         await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        return { txHash };
+      } else {
+        return { txHash };
       }
-      return { txHash };
     } catch (error) {
       handleError(error, "Failed to pay royalty on behalf");
     }
+  }
+
+  /**
+   * Calculates the amount of revenue token claimable by a token holder at certain snapshot.
+   * @param request - The request object that contains all data needed to claim Revenue.
+   *   @param request.royaltyVaultIpId The id of the royalty vault.
+   *   @param request.account The address of the token holder.
+   *   @param request.snapshotId The snapshot id.
+   *   @param request.token The revenue token to claim.
+   *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that contains the amount of revenue token claimable
+   */
+  public async claimableRevenue(
+    request: ClaimableRevenueRequest,
+  ): Promise<ClaimableRevenueResponse> {
+    try {
+      const royaltyVaultProxyAddress = await this.getRoyaltyVaultProxyAddress(
+        request.royaltyVaultIpId,
+      );
+      //TODO: how to inject address
+      return await this.royaltyVaultImplClient.claimableRevenue({
+        account: request.account,
+        snapshotId: BigInt(request.snapshotId),
+        token: request.token,
+      });
+    } catch (error) {
+      handleError(error, "Failed to calculate claimable revenue");
+    }
+  }
+  /**
+   * Snapshots the claimable revenue and royalty token amounts.
+   * @param request - The request object that contains all data needed to snapshot.
+   *   @param request.royaltyVaultIpId The id of the royalty vault.
+   *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional snapshotId if waitForTxn is set to true.
+   * @emits SnapshotCompleted (snapshotId, snapshotTimestamp, unclaimedTokens).
+   */
+  public async snapshot(request: SnapshotRequest): Promise<SnapshotResponse> {
+    try {
+      const royaltyVaultProxyAddress = await this.getRoyaltyVaultProxyAddress(
+        request.royaltyVaultIpId,
+      );
+      const txHash = await this.royaltyVaultImplClient.snapshot();
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = await this.royaltyVaultImplClient.parseTxSnapshotCompletedEvent(
+          txReceipt,
+        );
+        return { txHash, snapshotId: targetLogs[0].snapshotId };
+      } else {
+        return { txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to snapshot");
+    }
+  }
+
+  private async getRoyaltyVaultProxyAddress(royaltyVaultIpId: Hex): Promise<RoyaltyVaultAddress> {
+    const data = await this.royaltyPolicyLAPClient.getRoyaltyData({
+      ipId: royaltyVaultIpId,
+    });
+    return data[1];
   }
 }

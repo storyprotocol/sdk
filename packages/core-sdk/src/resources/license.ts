@@ -39,17 +39,11 @@ export class LicenseClient {
     this.licensingModuleClient = new LicensingModuleClient(this.rpcClient, this.wallet);
     this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(this.rpcClient, this.wallet);
   }
-
-  private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
-    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request })
-    return Number(licenseRes.selectedLicenseTermsId);
-  }
-
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
    * @param request The request object that contains all data needed to register a PIL non commercial social remix license.
    *  @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerNonComSocialRemixingPIL(
@@ -100,7 +94,7 @@ export class LicenseClient {
    *  the token must be registered in story protocol.
    *  @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *  @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerCommercialUsePIL(
@@ -151,7 +145,7 @@ export class LicenseClient {
    *  @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *  @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *  @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license ID.
+   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerCommercialRemixPIL(
@@ -269,5 +263,10 @@ export class LicenseClient {
     } catch (error) {
       handleError(error, "Failed to mint license tokens");
     }
+  }
+
+  private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
+    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request })
+    return Number(licenseRes.selectedLicenseTermsId);
   }
 }

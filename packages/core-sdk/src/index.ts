@@ -33,6 +33,10 @@ export type {
   CollectRoyaltyTokensResponse,
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
+  SnapshotRequest,
+  SnapshotResponse,
+  ClaimableRevenueRequest,
+  ClaimableRevenueResponse,
 } from "./types/resources/royalty";
 
 export type { SetPermissionsRequest, SetPermissionsResponse } from "./types/resources/permission";

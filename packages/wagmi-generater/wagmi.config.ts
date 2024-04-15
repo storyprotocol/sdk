@@ -122,6 +122,9 @@ export default defineConfig(async () => {
                         "claimableRevenue",
                         "collectRoyaltyTokens",
                         "ipId",
+                        "RoyaltyTokensCollected",
+                        "snapshot",
+                        "SnapshotCompleted"
                     ],
                     "PiLicenseTemplate": [
                         "getLicenseTermsId",
