@@ -19,13 +19,14 @@ export type {
 } from "./types/resources/ipAsset";
 
 export type {
-  MintLicenseTokensResponse,
-  MintLicenseTokensRequest,
+  RegisterNonComSocialRemixingPILRequest,
   RegisterCommercialUsePILRequest,
-  RegisterLicenseTermsResponse,
   RegisterCommercialRemixPILRequest,
+  RegisterPILResponse,
   AttachLicenseTermsRequest,
   LicenseTermsIdResponse,
+  MintLicenseTokensRequest,
+  MintLicenseTokensResponse,
 } from "./types/resources/license";
 
 export type {

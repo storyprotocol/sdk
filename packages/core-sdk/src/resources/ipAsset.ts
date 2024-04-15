@@ -97,14 +97,16 @@ export class IPAssetClient {
         throw new Error("Parent IP IDs and License terms IDs must be provided in pairs");
       }
       for (let i = 0; i < request.parentIpIds.length; i++) {
-        if (
-          !(await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+        const isAttachedLicenseTerms =
+          await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
             ipId: request.parentIpIds[i],
             licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
             licenseTermsId: BigInt(request.licenseTermsIds[i]),
-          }))
-        ) {
-          throw new Error("License terms must be registered before registering derivative");
+          });
+        if (!isAttachedLicenseTerms) {
+          throw new Error(
+            "License terms must be attached to the parent ipId  before registering derivative",
+          );
         }
       }
 

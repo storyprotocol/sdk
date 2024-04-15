@@ -12,7 +12,7 @@ export type License = {
   licensorIpId: Hex;
 };
 
-export type RegisterLicenseTermsRequest = {
+export type RegisterNonComSocialRemixingPILRequest = {
   txOptions?: TxOptions;
 };
 
@@ -36,7 +36,7 @@ export type LicenseTerms = {
 };
 export type LicenseTermsIdResponse = number;
 
-export type RegisterLicenseTermsResponse = {
+export type RegisterPILResponse = {
   licenseTermsId?: string;
   txHash?: string;
 };

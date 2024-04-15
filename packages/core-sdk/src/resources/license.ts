@@ -12,8 +12,8 @@ import {
 } from "../abi/generated";
 import {
   LicenseTerms,
-  RegisterLicenseTermsRequest,
-  RegisterLicenseTermsResponse as RegisterPILResponse,
+  RegisterNonComSocialRemixingPILRequest,
+  RegisterPILResponse,
   RegisterCommercialUsePILRequest,
   RegisterCommercialRemixPILRequest,
   AttachLicenseTermsRequest,
@@ -53,7 +53,7 @@ export class LicenseClient {
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerNonComSocialRemixingPIL(
-    request: RegisterLicenseTermsRequest,
+    request: RegisterNonComSocialRemixingPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms: LicenseTerms = {
