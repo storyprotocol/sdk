@@ -2,7 +2,9 @@ import { PublicClient, zeroAddress } from "viem";
 
 import { StoryAPIClient } from "../clients/storyAPI";
 import {
+  IpAssetRegistryClient,
   LicenseRegistryEventClient,
+  LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
   RoyaltyPolicyLapClient,
@@ -29,6 +31,8 @@ export class LicenseClient {
   public licensingModuleClient: LicensingModuleClient;
   private licenseTemplateClient: PiLicenseTemplateClient;
   private royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
+  private licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
+  public ipAssetRegistryClient: IpAssetRegistryClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, storyClient: StoryAPIClient) {
     this.wallet = wallet;
@@ -38,6 +42,8 @@ export class LicenseClient {
     this.licenseTemplateClient = new PiLicenseTemplateClient(this.rpcClient, this.wallet);
     this.licensingModuleClient = new LicensingModuleClient(this.rpcClient, this.wallet);
     this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(this.rpcClient, this.wallet);
+    this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(this.rpcClient);
+    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
   }
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
@@ -202,6 +208,19 @@ export class LicenseClient {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
+    const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: request.ipId });
+    if (!isRegistered) {
+      throw new Error("IP asset must be registered before attaching license terms");
+    }
+    const isAttachedLicenseTerms =
+      await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+        ipId: request.ipId,
+        licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+        licenseTermsId: BigInt(request.licenseTermsId),
+      });
+    if (isAttachedLicenseTerms) {
+      throw new Error("License terms are already attached to the IP");
+    }
     const txHash = await this.licensingModuleClient.attachLicenseTerms({
       ipId: request.ipId,
       licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
@@ -241,6 +260,15 @@ export class LicenseClient {
     request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> {
     try {
+      const isAttachedLicenseTerms =
+        await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+          ipId: request.licensorIpId,
+          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTermsId: BigInt(request.licenseTermsId),
+        });
+      if (!isAttachedLicenseTerms) {
+        throw new Error("License terms are not attached to the IP");
+      }
       const txHash = await this.licensingModuleClient.mintLicenseTokens({
         licensorIpId: request.licensorIpId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,

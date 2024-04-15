@@ -1,6 +1,6 @@
 import { Hex, PublicClient, getAddress, zeroAddress } from "viem";
 
-import { chain, parseToBigInt } from "../utils/utils";
+import { chain } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../types/resources/ipAsset";
 import {
   IpAssetRegistryClient,
+  LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
   SimpleWalletClient,
@@ -24,6 +25,7 @@ export class IPAssetClient {
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public licensingModuleClient: LicensingModuleClient;
   public licenseTemplateClient: PiLicenseTemplateClient;
+  private licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
@@ -31,6 +33,7 @@ export class IPAssetClient {
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.licensingModuleClient = new LicensingModuleClient(this.rpcClient, wallet);
     this.licenseTemplateClient = new PiLicenseTemplateClient(this.rpcClient, wallet);
+    this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(this.rpcClient);
   }
 
   /**
@@ -43,8 +46,8 @@ export class IPAssetClient {
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
   public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
-    const tokenId = parseToBigInt(request.tokenId);
     try {
+      const tokenId = BigInt(request.tokenId);
       const ipId = await this.isNFTRegistered(request.tokenContract, tokenId);
       if (ipId !== "0x") {
         return { ipId: ipId };
@@ -82,6 +85,29 @@ export class IPAssetClient {
     request: RegisterDerivativeRequest,
   ): Promise<RegisterDerivativeResponse> {
     try {
+      if (!(await this.isIpIdRegistered(request.childIpId))) {
+        throw new Error("IP asset must be registered before registering derivative");
+      }
+      for (const parentId of request.parentIpIds) {
+        if (!(await this.isIpIdRegistered(parentId))) {
+          throw new Error("Parent IP asset must be registered before registering derivative");
+        }
+      }
+      if (request.parentIpIds.length !== request.licenseTermsIds.length) {
+        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs");
+      }
+      for (let i = 0; i < request.parentIpIds.length; i++) {
+        if (
+          !(await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+            ipId: request.parentIpIds[i],
+            licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+            licenseTermsId: BigInt(request.licenseTermsIds[i]),
+          }))
+        ) {
+          throw new Error("License terms must be registered before registering derivative");
+        }
+      }
+
       const txHash = await this.licensingModuleClient.registerDerivative({
         childIpId: request.childIpId,
         parentIpIds: request.parentIpIds,
@@ -115,6 +141,11 @@ export class IPAssetClient {
     request: RegisterDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> {
     try {
+      if (!(await this.isIpIdRegistered(request.childIpId))) {
+        throw new Error(
+          "IP asset must be registered before registering derivative with license tokens",
+        );
+      }
       const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
         childIpId: request.childIpId,
         licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
@@ -133,11 +164,15 @@ export class IPAssetClient {
 
   private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
     const ipId = await this.ipAssetRegistryClient.ipId({
-      chainId: parseToBigInt(chain[this.chainId]),
+      chainId: BigInt(chain[this.chainId]),
       tokenContract: tokenAddress,
       tokenId: tokenId,
     });
     const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: ipId });
     return isRegistered ? ipId : "0x";
+  }
+
+  private async isIpIdRegistered(ipId: Hex): Promise<boolean> {
+    return await this.ipAssetRegistryClient.isRegistered({ id: ipId });
   }
 }
