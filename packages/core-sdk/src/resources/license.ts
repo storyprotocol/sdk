@@ -266,7 +266,7 @@ export class LicenseClient {
   }
 
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
-    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request })
+    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return Number(licenseRes.selectedLicenseTermsId);
   }
 }
