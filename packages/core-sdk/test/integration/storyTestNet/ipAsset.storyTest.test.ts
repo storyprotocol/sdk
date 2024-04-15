@@ -2,9 +2,8 @@ import chai from "chai";
 import { StoryClient, StoryConfig } from "../../../src";
 import { Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { storyTestnetAddress } from "../../env";
 import chaiAsPromised from "chai-as-promised";
-import { getTokenId } from "./util";
+import { MockERC721, getTokenId } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -30,7 +29,7 @@ describe.skip("IP Asset Functions in storyTestnet", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.register({
-          tokenContract: storyTestnetAddress.MockERC721,
+          tokenContract: MockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -68,7 +67,7 @@ describe.skip("IP Asset Functions in storyTestnet", () => {
       const tokenId = await getTokenId(startTokenId++);
       const ipId = (
         await client.ipAsset.register({
-          tokenContract: storyTestnetAddress.MockERC721,
+          tokenContract: MockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,

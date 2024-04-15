@@ -3,30 +3,21 @@ import { StoryClient, StoryConfig } from "../../../src";
 import {
   Hex,
   http,
-  Account,
   createPublicClient,
   createWalletClient,
   PublicClient,
   WalletClient,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import {
-  getIPAssetRegistryConfig,
-  getLicenseRegistryConfig,
-  getLicensingModuleConfig,
-  getRoyaltyPolicyLAPConfig,
-  getRoyaltyVaultImplConfig,
-} from "../../config";
 import chaiAsPromised from "chai-as-promised";
-import { storyTestnetAddress } from "../../env";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { getTokenId } from "./util";
+import { MockERC721, MockERC20, getTokenId } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-let startTokenId = 161;
+let startTokenId = 163;
 let snapshotId: bigint;
-describe.skip("Test royalty Functions", () => {
+describe("Test royalty Functions", () => {
   let client: StoryClient;
   let publicClient: PublicClient;
   let walletClient: WalletClient;
@@ -37,13 +28,7 @@ describe.skip("Test royalty Functions", () => {
       transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
       account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
     };
-    const configAccount: Account = config.account as Account;
     client = StoryClient.newClient(config);
-    client.ipAsset.ipAssetRegistryConfig = getIPAssetRegistryConfig("1513");
-    client.license.licenseRegistryConfig = getLicenseRegistryConfig("1513");
-    client.ipAsset.licenseModuleConfig = getLicensingModuleConfig("1513");
-    client.royalty.royaltyPolicyLAPConfig = getRoyaltyPolicyLAPConfig("1513");
-    client.royalty.royaltyVaultImplConfig = getRoyaltyVaultImplConfig("1513");
     const baseConfig = {
       chain: chainStringToViemChain("storyTestnet"),
       transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
@@ -61,7 +46,7 @@ describe.skip("Test royalty Functions", () => {
       console.log("startTokenId", startTokenId);
       const tokenId = await getTokenId(startTokenId++);
       const response = await client.ipAsset.register({
-        tokenContract: storyTestnetAddress.MockERC721,
+        tokenContract: MockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,
@@ -72,7 +57,7 @@ describe.skip("Test royalty Functions", () => {
     const getCommercialPolicyId = async (): Promise<string> => {
       const response = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
-        currency: storyTestnetAddress.MockERC20,
+        currency: MockERC20,
         commercialRevShare: 100,
         txOptions: {
           waitForTransaction: true,
@@ -138,9 +123,9 @@ describe.skip("Test royalty Functions", () => {
       ];
       const { request: call } = await publicClient.simulateContract({
         abi: abi,
-        address: storyTestnetAddress.MockERC20,
+        address: MockERC20,
         functionName: "approve",
-        args: [client.royalty.royaltyPolicyLAPConfig.address, BigInt(100)],
+        args: [client.royalty.royaltyPolicyLAPClient.address, BigInt(100)],
         account: walletClient.account,
       });
       const approveHash = await walletClient.writeContract(call);
@@ -167,7 +152,7 @@ describe.skip("Test royalty Functions", () => {
             type: "function",
           },
         ],
-        address: storyTestnetAddress.MockERC20,
+        address: MockERC20,
         functionName: "mint",
         account: walletClient.account,
         args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS! as Hex, BigInt(1000)],
@@ -177,7 +162,7 @@ describe.skip("Test royalty Functions", () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: ipId1,
         payerIpId: ipId2,
-        token: storyTestnetAddress.MockERC20,
+        token: MockERC20,
         amount: BigInt(10),
         txOptions: {
           waitForTransaction: true,
@@ -216,7 +201,7 @@ describe.skip("Test royalty Functions", () => {
         royaltyVaultIpId: ipId2,
         account: ipId1,
         snapshotId: snapshotId.toString(),
-        token: storyTestnetAddress.MockERC20,
+        token: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
         txOptions: {
           waitForTransaction: true,
         },

@@ -3,8 +3,8 @@ import { StoryClient, StoryConfig } from "../../../src";
 import { createPublicClient, createWalletClient, Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import chaiAsPromised from "chai-as-promised";
-import { storyTestnetAddress } from "../../env";
 import { chainStringToViemChain } from "../../../src/utils/utils";
+import { MockERC20, MockERC721 } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -35,7 +35,7 @@ describe.skip("License Functions in storyTestnet", () => {
     it("should not throw error when registering license with commercial use", async function () {
       const result = await client.license.registerCommercialUsePIL({
         mintingFee: "1",
-        currency: storyTestnetAddress.MockERC20,
+        currency: MockERC20,
         txOptions: {
           waitForTransaction: true,
         },
@@ -48,7 +48,7 @@ describe.skip("License Functions in storyTestnet", () => {
       const result = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
         commercialRevShare: 100,
-        currency: storyTestnetAddress.MockERC20,
+        currency: MockERC20,
         txOptions: {
           waitForTransaction: true,
         },
@@ -89,7 +89,7 @@ describe.skip("License Functions in storyTestnet", () => {
             type: "function",
           },
         ],
-        address: storyTestnetAddress.MockERC721,
+        address: MockERC721,
         functionName: "mintId",
         args: [account.address, BigInt(Math.round(new Date().getTime() / 1000))],
       });
@@ -102,7 +102,7 @@ describe.skip("License Functions in storyTestnet", () => {
       }
 
       const registerResult = await client.ipAsset.register({
-        tokenContract: storyTestnetAddress.MockERC721,
+        tokenContract: MockERC721,
         tokenId: tokenId,
         txOptions: {
           waitForTransaction: true,
@@ -121,7 +121,6 @@ describe.skip("License Functions in storyTestnet", () => {
     it("should not throw error when attach License Terms", async function () {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
-        licenseTemplate: storyTestnetAddress.PILicenseTemplate,
         licenseTermsId: licenseId,
         txOptions: {
           waitForTransaction: true,
