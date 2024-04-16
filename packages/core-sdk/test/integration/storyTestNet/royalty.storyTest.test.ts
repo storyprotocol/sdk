@@ -125,7 +125,7 @@ describe.skip("Test royalty Functions", () => {
         abi: abi,
         address: MockERC20,
         functionName: "approve",
-        args: [client.royalty.royaltyPolicyLAPClient.address, BigInt(100)],
+        args: [client.royalty.royaltyPolicyLapClient.address, BigInt(100)],
         account: walletClient.account,
       });
       const approveHash = await walletClient.writeContract(call);
@@ -186,7 +186,7 @@ describe.skip("Test royalty Functions", () => {
 
     it("should not throw error when collect royalty tokens", async () => {
       const response = await client.royalty.collectRoyaltyTokens({
-        ancestorIpId: ipId1,
+        parentIpId: ipId1,
         royaltyVaultIpId: ipId2,
         txOptions: {
           waitForTransaction: true,

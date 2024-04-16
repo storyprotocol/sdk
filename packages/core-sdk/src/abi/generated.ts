@@ -2493,6 +2493,621 @@ export const licenseRegistryConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// LicenseToken
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const licenseTokenAbi = [
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "ERC721EnumerableForbiddenBatchMint" },
+  {
+    type: "error",
+    inputs: [
+      { name: "sender", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "owner", internalType: "address", type: "address" },
+    ],
+    name: "ERC721IncorrectOwner",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC721InsufficientApproval",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "approver", internalType: "address", type: "address" }],
+    name: "ERC721InvalidApprover",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "ERC721InvalidOperator",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "ERC721InvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC721InvalidReceiver",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "sender", internalType: "address", type: "address" }],
+    name: "ERC721InvalidSender",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "ERC721NonexistentToken",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC721OutOfBoundsIndex",
+  },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "Governance__InconsistentState" },
+  { type: "error", inputs: [], name: "Governance__OnlyProtocolAdmin" },
+  {
+    type: "error",
+    inputs: [{ name: "interfaceName", internalType: "string", type: "string" }],
+    name: "Governance__UnsupportedInterface",
+  },
+  { type: "error", inputs: [], name: "Governance__ZeroAddress" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      {
+        name: "anotherLicenseTemplate",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "LicenseToken__AllLicenseTokensMustFromSameLicenseTemplate",
+  },
+  { type: "error", inputs: [], name: "LicenseToken__CallerNotLicensingModule" },
+  {
+    type: "error",
+    inputs: [
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "expiredAt", internalType: "uint256", type: "uint256" },
+      { name: "currentTimestamp", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseToken__LicenseTokenExpired",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "iPowner", internalType: "address", type: "address" },
+      { name: "tokenOwner", internalType: "address", type: "address" },
+    ],
+    name: "LicenseToken__NotLicenseTokenOwner",
+  },
+  { type: "error", inputs: [], name: "LicenseToken__NotTransferable" },
+  {
+    type: "error",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "LicenseToken__RevokedLicense",
+  },
+  { type: "error", inputs: [], name: "LicenseToken__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "LicenseToken__ZeroLicensingModule" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
+    ],
+    name: "StringsInsufficientHexLength",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "approved",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "Approval",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "operator",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "approved", internalType: "bool", type: "bool", indexed: false },
+    ],
+    name: "ApprovalForAll",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_fromTokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "_toTokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "BatchMetadataUpdate",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "newGovernance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "GovernanceUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "minter",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "receiver",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "LicenseTokenMinted",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "tokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "Transfer",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "holder", internalType: "address", type: "address" },
+      { name: "tokenIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "burnLicenseTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "getApproved",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "getExpirationTime",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getGovernance",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "getLicenseTemplate",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "getLicenseTermsId",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "getLicenseTokenMetadata",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct ILicenseToken.LicenseTokenMetadata",
+        type: "tuple",
+        components: [
+          { name: "licensorIpId", internalType: "address", type: "address" },
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "mintedAt", internalType: "uint256", type: "uint256" },
+          { name: "expiresAt", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "getLicensorIpId",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "governance", internalType: "address", type: "address" },
+      { name: "imageUrl", internalType: "string", type: "string" },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "operator", internalType: "address", type: "address" },
+    ],
+    name: "isApprovedForAll",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "isLicenseTokenRevoked",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "licensingModule",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "minter", internalType: "address", type: "address" },
+      { name: "receiver", internalType: "address", type: "address" },
+    ],
+    name: "mintLicenseTokens",
+    outputs: [{ name: "startLicenseTokenId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "ownerOf",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "approved", internalType: "bool", type: "bool" },
+    ],
+    name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newDisputeModule", internalType: "address", type: "address" }],
+    name: "setDisputeModule",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newGovernance", internalType: "address", type: "address" }],
+    name: "setGovernance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "url", internalType: "string", type: "string" }],
+    name: "setLicensingImageUrl",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newLicensingModule", internalType: "address", type: "address" }],
+    name: "setLicensingModule",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "index", internalType: "uint256", type: "uint256" }],
+    name: "tokenByIndex",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "index", internalType: "uint256", type: "uint256" },
+    ],
+    name: "tokenOfOwnerByIndex",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "id", internalType: "uint256", type: "uint256" }],
+    name: "tokenURI",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalMintedTokens",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "childIpOwner", internalType: "address", type: "address" },
+      { name: "tokenIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "validateLicenseTokensForDerivative",
+    outputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licensorIpIds", internalType: "address[]", type: "address[]" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "view",
+  },
+] as const;
+
+/**
+ *
+ */
+export const licenseTokenAddress = {
+  1513: "0xD40b7bCA204f96a346021e31c9ad54FF495226e7",
+} as const;
+
+/**
+ *
+ */
+export const licenseTokenConfig = {
+  address: licenseTokenAddress,
+  abi: licenseTokenAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // LicensingModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6788,6 +7403,47 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       args: [request.newImplementation, request.data],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+}
+
+// Contract LicenseToken =============================================================
+
+/**
+ * LicenseTokenOwnerOfRequest
+ *
+ * @param tokenId uint256
+ */
+export type LicenseTokenOwnerOfRequest = {
+  tokenId: bigint;
+};
+
+export type LicenseTokenOwnerOfResponse = Address;
+
+/**
+ * contract LicenseToken readonly method
+ */
+export class LicenseTokenReadOnlyClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(licenseTokenAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method ownerOf for contract LicenseToken
+   *
+   * @param request LicenseTokenOwnerOfRequest
+   * @return Promise<LicenseTokenOwnerOfResponse>
+   */
+  public async ownerOf(request: LicenseTokenOwnerOfRequest): Promise<LicenseTokenOwnerOfResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseTokenAbi,
+      address: this.address,
+      functionName: "ownerOf",
+      args: [request.tokenId],
+    });
   }
 }
 

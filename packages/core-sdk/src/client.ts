@@ -141,7 +141,7 @@ export class StoryClient {
    */
   public get license(): LicenseClient {
     if (this._license === null) {
-      this._license = new LicenseClient(this.rpcClient, this.wallet, this.storyClient);
+      this._license = new LicenseClient(this.rpcClient, this.wallet);
     }
 
     return this._license;
