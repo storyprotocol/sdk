@@ -90,16 +90,16 @@ export class IPAssetClient {
     try {
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
-        throw new Error(`The child IP with id ${request.childIpId} is not registered`);
+        throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
       for (const parentId of request.parentIpIds) {
         const isParentIpIdRegistered = await this.isRegistered(parentId);
         if (!isParentIpIdRegistered) {
-          throw new Error(`The parent IP with id ${parentId} is not registered`);
+          throw new Error(`The parent IP with id ${parentId} is not registered.`);
         }
       }
       if (request.parentIpIds.length !== request.licenseTermsIds.length) {
-        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs");
+        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");
       }
       for (let i = 0; i < request.parentIpIds.length; i++) {
         const isAttachedLicenseTerms =
@@ -110,7 +110,7 @@ export class IPAssetClient {
           });
         if (!isAttachedLicenseTerms) {
           throw new Error(
-            `License terms id ${request.licenseTermsIds[i]} must be attached to the parent ipId ${request.parentIpIds[i]} before registering derivative`,
+            `License terms id ${request.licenseTermsIds[i]} must be attached to the parent ipId ${request.parentIpIds[i]} before registering derivative.`,
           );
         }
       }
@@ -172,7 +172,7 @@ export class IPAssetClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register derivative with license tokens");
+      handleError(error, "Failed to register derivative with license tokens.");
     }
   }
 
