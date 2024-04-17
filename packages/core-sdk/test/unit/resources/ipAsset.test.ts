@@ -2,7 +2,7 @@ import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient } from "../../../src";
-import { PublicClient, WalletClient, Account, Hex } from "viem";
+import { PublicClient, WalletClient, Account } from "viem";
 import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
