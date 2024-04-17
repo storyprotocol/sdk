@@ -22,7 +22,7 @@ export type RoyaltyContext = {
 };
 
 export type CollectRoyaltyTokensRequest = {
-  ancestorIpId: Hex;
+  parentIpId: Hex;
   royaltyVaultIpId: Hex;
   txOptions?: TxOptions;
 };

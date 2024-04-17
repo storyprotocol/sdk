@@ -13,6 +13,7 @@ import {
   SnapshotResponse,
 } from "../types/resources/royalty";
 import {
+  IpAssetRegistryClient,
   IpRoyaltyVaultImplClient,
   RoyaltyModuleClient,
   RoyaltyPolicyLapClient,
@@ -20,24 +21,24 @@ import {
 } from "../abi/generated";
 
 export class RoyaltyClient {
-  private readonly wallet: SimpleWalletClient;
-  private readonly rpcClient: PublicClient;
-  public royaltyVaultImplClient: IpRoyaltyVaultImplClient;
-  public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
+  public royaltyPolicyLapClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
+  public ipAssetRegistryClient: IpAssetRegistryClient;
+  private readonly rpcClient: PublicClient;
+  private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
+    this.royaltyPolicyLapClient = new RoyaltyPolicyLapClient(rpcClient, wallet);
+    this.royaltyModuleClient = new RoyaltyModuleClient(rpcClient, wallet);
+    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-    this.royaltyVaultImplClient = new IpRoyaltyVaultImplClient(this.rpcClient, this.wallet);
-    this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(this.rpcClient, this.wallet);
-    this.royaltyModuleClient = new RoyaltyModuleClient(this.rpcClient, this.wallet);
   }
 
   /**
    * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
    * @param request -  The request object that contains all data needed to collect royalty tokens.
-   *   @param request.ancestorIpId The ip id of the ancestor to whom the royalty tokens belong to.
+   *   @param request.parentIpId The ip id of the ancestor to whom the royalty tokens belong to.
    *   @param request.royaltyVaultIpId The id of the royalty vault.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional the amount of royalty tokens collected if waitForTxn is set to true.
@@ -47,6 +48,12 @@ export class RoyaltyClient {
     request: CollectRoyaltyTokensRequest,
   ): Promise<CollectRoyaltyTokensResponse> {
     try {
+      const isParentIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: request.parentIpId,
+      });
+      if (!isParentIpIdRegistered) {
+        throw new Error(`The parent IP with id ${request.parentIpId} is not registered`);
+      }
       const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
@@ -54,7 +61,7 @@ export class RoyaltyClient {
         proxyAddress,
       );
       const txHash = await ipRoyaltyVault.collectRoyaltyTokens({
-        ancestorIpId: request.ancestorIpId,
+        ancestorIpId: request.parentIpId,
       });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
@@ -85,6 +92,18 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
+      const isReceiverRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: request.receiverIpId,
+      });
+      if (!isReceiverRegistered) {
+        throw new Error(`The receiver IP with id ${request.receiverIpId} is not registered`);
+      }
+      const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: request.payerIpId,
+      });
+      if (!isPayerRegistered) {
+        throw new Error(`The payer IP with id ${request.payerIpId} is not registered`);
+      }
       const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf({
         receiverIpId: request.receiverIpId,
         payerIpId: request.payerIpId,
@@ -161,9 +180,18 @@ export class RoyaltyClient {
   }
 
   private async getRoyaltyVaultProxyAddress(royaltyVaultIpId: Hex): Promise<RoyaltyVaultAddress> {
-    const data = await this.royaltyPolicyLAPClient.getRoyaltyData({
+    const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
+      id: royaltyVaultIpId,
+    });
+    if (!isRoyaltyVaultIpIdRegistered) {
+      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered`);
+    }
+    const data = await this.royaltyPolicyLapClient.getRoyaltyData({
       ipId: royaltyVaultIpId,
     });
+    if (!data[1] || data[1] === "0x") {
+      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} address is not set`);
+    }
     return data[1];
   }
 }

@@ -46,6 +46,12 @@ export default defineConfig(async () => {
             }
         },
         {
+            name: "LicenseToken", address: {
+                // [sepolia.id]: "0x950d766A1a0afDc33c3e653C861A8765cb42DbdC",
+                [storyTestnetId]: "0xD40b7bCA204f96a346021e31c9ad54FF495226e7",
+            }
+        },
+        {
             name: "LicensingModule", address: {
                 // [sepolia.id]: "0x950d766A1a0afDc33c3e653C861A8765cb42DbdC",
                 [storyTestnetId]: "0xEeDDE5529122b621105798860F235c28FD3aBA40",
@@ -148,6 +154,9 @@ export default defineConfig(async () => {
                         "onRoyaltyPayment",
                         "getRoyaltyData",
                     ],
+                    "LicenseToken":[
+                        "ownerOf"
+                    ]
                 }
             }),
         ],
