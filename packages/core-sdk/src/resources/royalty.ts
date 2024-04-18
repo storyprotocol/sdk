@@ -52,7 +52,7 @@ export class RoyaltyClient {
         id: request.parentIpId,
       });
       if (!isParentIpIdRegistered) {
-        throw new Error(`The parent IP with id ${request.parentIpId} is not registered`);
+        throw new Error(`The parent IP with id ${request.parentIpId} is not registered.`);
       }
       const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
@@ -150,6 +150,7 @@ export class RoyaltyClient {
       handleError(error, "Failed to calculate claimable revenue");
     }
   }
+
   /**
    * Snapshots the claimable revenue and royalty token amounts.
    * @param request - The request object that contains all data needed to snapshot.
@@ -184,13 +185,13 @@ export class RoyaltyClient {
       id: royaltyVaultIpId,
     });
     if (!isRoyaltyVaultIpIdRegistered) {
-      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered`);
+      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
     }
     const data = await this.royaltyPolicyLapClient.getRoyaltyData({
       ipId: royaltyVaultIpId,
     });
     if (!data[1] || data[1] === "0x") {
-      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} address is not set`);
+      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} address is not set.`);
     }
     return data[1];
   }
