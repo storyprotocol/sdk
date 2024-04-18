@@ -191,7 +191,7 @@ describe("Test IpAssetClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative: License terms id 1 must be attached to the parent ipId 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627a before registering derivative.",
+          "Failed to register derivative: License terms id 1 must be attached to the parent ipId 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 before registering derivative.",
         );
       }
     });
@@ -261,7 +261,7 @@ describe("Test IpAssetClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative with license tokens: The child IP with id 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not registered.",
+          "Failed to register derivative with license tokens: The child IP with id 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 is not registered.",
         );
       }
     });

@@ -15,7 +15,7 @@ import { MockERC721, MockERC20, getTokenId } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-let startTokenId = 180;
+let startTokenId = 198;
 let snapshotId: bigint;
 describe.skip("Test royalty Functions", () => {
   let client: StoryClient;
@@ -43,7 +43,6 @@ describe.skip("Test royalty Functions", () => {
     let ipId1: Hex;
     let ipId2: Hex;
     const getIpId = async (): Promise<Hex> => {
-      console.log("startTokenId", startTokenId);
       const tokenId = await getTokenId(startTokenId++);
       const response = await client.ipAsset.register({
         tokenContract: MockERC721,
@@ -63,7 +62,6 @@ describe.skip("Test royalty Functions", () => {
           waitForTransaction: true,
         },
       });
-      console.log("licenseTermsId", response.licenseTermsId);
       return response.licenseTermsId!;
     };
 
@@ -80,7 +78,6 @@ describe.skip("Test royalty Functions", () => {
     before(async () => {
       ipId1 = await getIpId();
       ipId2 = await getIpId();
-      console.log("ipId1", ipId1, "ipId2", ipId2);
       const licenseTermsId = await getCommercialPolicyId();
       await attachLicenseTerms(ipId1, licenseTermsId);
       await client.ipAsset.registerDerivative({
@@ -181,7 +178,6 @@ describe.skip("Test royalty Functions", () => {
       expect(response.txHash).to.be.a("string").not.empty;
       expect(response.snapshotId).to.be.a("bigint");
       snapshotId = response.snapshotId!;
-      console.log("snapshot", snapshotId);
     });
 
     it("should not throw error when collect royalty tokens", async () => {
@@ -207,6 +203,19 @@ describe.skip("Test royalty Functions", () => {
         },
       });
       expect(response).to.be.a("bigint");
+    });
+
+    it("should not throw error when claim revenue", async () => {
+      const response = await client.royalty.claimRevenue({
+        royaltyVaultIpId: ipId2,
+        snapshotIds: [snapshotId.toString()],
+        token: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(response.claimableToken).to.be.a("bigint");
     });
   });
 });

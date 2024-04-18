@@ -103,6 +103,5 @@ describe("Test RoyaltyClient", function () {
         );
       }
     });
-
   });
 });

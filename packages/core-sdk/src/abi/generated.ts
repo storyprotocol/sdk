@@ -5746,6 +5746,19 @@ export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
 // Contract IpRoyaltyVaultImpl =============================================================
 
 /**
+ * IpRoyaltyVaultImplRevenueTokenClaimedEvent
+ *
+ * @param claimer address
+ * @param token address
+ * @param amount uint256
+ */
+export type IpRoyaltyVaultImplRevenueTokenClaimedEvent = {
+  claimer: Address;
+  token: Address;
+  amount: bigint;
+};
+
+/**
  * IpRoyaltyVaultImplRoyaltyTokensCollectedEvent
  *
  * @param ancestorIpId address
@@ -5827,6 +5840,47 @@ export class IpRoyaltyVaultImplEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(ipRoyaltyVaultImplAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event RevenueTokenClaimed for contract IpRoyaltyVaultImpl
+   */
+  public watchRevenueTokenClaimedEvent(
+    onLogs: (txHash: Hex, ev: Partial<IpRoyaltyVaultImplRevenueTokenClaimedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: ipRoyaltyVaultImplAbi,
+      address: this.address,
+      eventName: "RevenueTokenClaimed",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event RevenueTokenClaimed for contract IpRoyaltyVaultImpl
+   */
+  public parseTxRevenueTokenClaimedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<IpRoyaltyVaultImplRevenueTokenClaimedEvent> {
+    const targetLogs: Array<IpRoyaltyVaultImplRevenueTokenClaimedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: ipRoyaltyVaultImplAbi,
+          eventName: "RevenueTokenClaimed",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "RevenueTokenClaimed") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**
