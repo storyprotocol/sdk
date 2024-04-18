@@ -14,34 +14,37 @@ import {
 import {
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
+  LicenseTokenReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
   SimpleWalletClient,
 } from "../abi/generated";
 
 export class IPAssetClient {
+  public licensingModuleClient: LicensingModuleClient;
+  public ipAssetRegistryClient: IpAssetRegistryClient;
+  public licenseTemplateClient: PiLicenseTemplateClient;
+  public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
+  public licenseTokenReadOnlyClient: LicenseTokenReadOnlyClient;
   private readonly rpcClient: PublicClient;
   private readonly chainId: SupportedChainIds;
-  public ipAssetRegistryClient: IpAssetRegistryClient;
-  public licensingModuleClient: LicensingModuleClient;
-  public licenseTemplateClient: PiLicenseTemplateClient;
-  private licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+    this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
+    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
+    this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
+    this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
+    this.licenseTokenReadOnlyClient = new LicenseTokenReadOnlyClient(rpcClient);
     this.rpcClient = rpcClient;
     this.chainId = chainId;
-    this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
-    this.licensingModuleClient = new LicensingModuleClient(this.rpcClient, wallet);
-    this.licenseTemplateClient = new PiLicenseTemplateClient(this.rpcClient, wallet);
-    this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(this.rpcClient);
   }
 
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
    * @param request The request object that contains all data needed to register IP.
-   *  @param request.tokenContract The address of the NFT.
-   *  @param request.tokenId The token identifier of the NFT.
-   *  @param request.txOptions [Optional] The transaction options.
+   *   @param request.tokenContract The address of the NFT.
+   *   @param request.tokenId The token identifier of the NFT.
+   *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
@@ -75,26 +78,28 @@ export class IPAssetClient {
    * All IPs attached default license terms by default.
    * The derivative IP owner must be the caller or an authorized operator.
    * @param request The request object that contains all data needed to register derivative IP.
-   *  @param request.childIpId The derivative IP ID.
-   *  @param request.parentIpIds The parent IP IDs.
-   *  @param request.licenseTermsIds The IDs of the license terms that the parent IP supports.
-   *  @param request.txOptions [Optional] The transaction options.
+   *   @param request.childIpId The derivative IP ID.
+   *   @param request.parentIpIds The parent IP IDs.
+   *   @param request.licenseTermsIds The IDs of the license terms that the parent IP supports.
+   *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async registerDerivative(
     request: RegisterDerivativeRequest,
   ): Promise<RegisterDerivativeResponse> {
     try {
-      if (!(await this.isIpIdRegistered(request.childIpId))) {
-        throw new Error("IP asset must be registered before registering derivative");
+      const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
+      if (!isChildIpIdRegistered) {
+        throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
       for (const parentId of request.parentIpIds) {
-        if (!(await this.isIpIdRegistered(parentId))) {
-          throw new Error("Parent IP asset must be registered before registering derivative");
+        const isParentIpIdRegistered = await this.isRegistered(parentId);
+        if (!isParentIpIdRegistered) {
+          throw new Error(`The parent IP with id ${parentId} is not registered.`);
         }
       }
       if (request.parentIpIds.length !== request.licenseTermsIds.length) {
-        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs");
+        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");
       }
       for (let i = 0; i < request.parentIpIds.length; i++) {
         const isAttachedLicenseTerms =
@@ -105,7 +110,7 @@ export class IPAssetClient {
           });
         if (!isAttachedLicenseTerms) {
           throw new Error(
-            "License terms must be attached to the parent ipId before registering derivative",
+            `License terms id ${request.licenseTermsIds[i]} must be attached to the parent ipId ${request.parentIpIds[i]} before registering derivative.`,
           );
         }
       }
@@ -134,19 +139,26 @@ export class IPAssetClient {
    * the license terms of the parent IPs issued with license tokens are attached to the derivative IP.
    * the caller must be the derivative IP owner or an authorized operator.
    * @param request The request object that contains all data needed to register derivative license tokens.
-   *  @param request.childIpId The derivative IP ID.
-   *  @param request.licenseTokenIds The IDs of the license tokens.
-   *  @param request.txOptions [Optional] The transaction options.
+   *   @param request.childIpId The derivative IP ID.
+   *   @param request.licenseTokenIds The IDs of the license tokens.
+   *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async registerDerivativeWithLicenseTokens(
     request: RegisterDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> {
     try {
-      if (!(await this.isIpIdRegistered(request.childIpId))) {
-        throw new Error(
-          "IP asset must be registered before registering derivative with license tokens",
-        );
+      const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
+      if (!isChildIpIdRegistered) {
+        throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
+      }
+      for (const licenseTokenId of request.licenseTokenIds) {
+        const tokenOwnerAddress = await this.licenseTokenReadOnlyClient.ownerOf({
+          tokenId: BigInt(licenseTokenId),
+        });
+        if (!tokenOwnerAddress) {
+          throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
+        }
       }
       const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
         childIpId: request.childIpId,
@@ -174,7 +186,7 @@ export class IPAssetClient {
     return isRegistered ? ipId : "0x";
   }
 
-  private async isIpIdRegistered(ipId: Hex): Promise<boolean> {
+  private async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: ipId });
   }
 }

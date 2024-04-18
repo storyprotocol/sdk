@@ -22,7 +22,7 @@ export type RoyaltyContext = {
 };
 
 export type CollectRoyaltyTokensRequest = {
-  ancestorIpId: Hex;
+  parentIpId: Hex;
   royaltyVaultIpId: Hex;
   txOptions?: TxOptions;
 };
@@ -65,6 +65,18 @@ export type PayRoyaltyOnBehalfResponse = {
 export type SnapshotRequest = {
   royaltyVaultIpId: Hex;
   txOptions?: TxOptions;
+};
+
+export type claimRevenueRequest = {
+  snapshotIds: string[];
+  token: Hex;
+  royaltyVaultIpId: Hex;
+  txOptions?: TxOptions;
+};
+
+export type claimRevenueResponse = {
+  txHash: string;
+  claimableToken?: bigint;
 };
 
 export type SnapshotResponse = {

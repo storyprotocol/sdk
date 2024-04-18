@@ -1,5 +1,8 @@
+import sinon from "sinon";
+
 export function createMock<T>(obj = {}): T {
   const mockObj: any = obj;
+  mockObj.waitForTransactionReceipt = sinon.stub().resolves({});
   return mockObj;
 }
 
