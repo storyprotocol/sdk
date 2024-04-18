@@ -150,14 +150,14 @@ export class IPAssetClient {
     try {
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
-        throw new Error(`The child IP with id ${request.childIpId} is not registered`);
+        throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
       for (const licenseTokenId of request.licenseTokenIds) {
         const tokenOwnerAddress = await this.licenseTokenReadOnlyClient.ownerOf({
           tokenId: BigInt(licenseTokenId),
         });
         if (!tokenOwnerAddress) {
-          throw new Error(`License token id ${licenseTokenId} must be owned by the caller`);
+          throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
         }
       }
       const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
@@ -172,7 +172,7 @@ export class IPAssetClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register derivative with license tokens.");
+      handleError(error, "Failed to register derivative with license tokens");
     }
   }
 

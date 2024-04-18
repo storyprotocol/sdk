@@ -67,6 +67,18 @@ export type SnapshotRequest = {
   txOptions?: TxOptions;
 };
 
+export type claimRevenueRequest = {
+  snapshotIds: string[];
+  token: Hex;
+  royaltyVaultIpId: Hex;
+  txOptions?: TxOptions;
+};
+
+export type claimRevenueResponse = {
+  txHash: string;
+  claimableToken?: bigint;
+};
+
 export type SnapshotResponse = {
   txHash: string;
   snapshotId?: bigint;

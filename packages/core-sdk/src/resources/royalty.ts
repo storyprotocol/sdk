@@ -11,6 +11,8 @@ import {
   RoyaltyVaultAddress,
   SnapshotRequest,
   SnapshotResponse,
+  claimRevenueRequest,
+  claimRevenueResponse,
 } from "../types/resources/royalty";
 import {
   IpAssetRegistryClient,
@@ -52,7 +54,7 @@ export class RoyaltyClient {
         id: request.parentIpId,
       });
       if (!isParentIpIdRegistered) {
-        throw new Error(`The parent IP with id ${request.parentIpId} is not registered`);
+        throw new Error(`The parent IP with id ${request.parentIpId} is not registered.`);
       }
       const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
@@ -150,6 +152,40 @@ export class RoyaltyClient {
       handleError(error, "Failed to calculate claimable revenue");
     }
   }
+
+  /**
+   * Allows token holders to claim by a list of snapshot ids based on the token balance at certain snapshot
+   * @param request - The request object that contains all data needed to claim revenue.
+   *   @param request.snapshotIds The list of snapshot ids.
+   *   @param request.royaltyVaultIpId The id of the royalty vault.
+   *   @param request.token The revenue token to claim.
+   *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional claimableToken if waitForTxn is set to true.
+   * @emits RevenueTokenClaimed (claimer, token, amount).
+   */
+  public async claimRevenue(request: claimRevenueRequest): Promise<claimRevenueResponse> {
+    try {
+      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
+      const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
+        this.rpcClient,
+        this.wallet,
+        proxyAddress,
+      );
+      const txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch({
+        snapshotIds: request.snapshotIds.map((id) => BigInt(id)),
+        token: request.token,
+      });
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = ipRoyaltyVault.parseTxRevenueTokenClaimedEvent(txReceipt);
+        return { txHash, claimableToken: targetLogs[0].amount };
+      } else {
+        return { txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to claim revenue");
+    }
+  }
   /**
    * Snapshots the claimable revenue and royalty token amounts.
    * @param request - The request object that contains all data needed to snapshot.
@@ -184,13 +220,13 @@ export class RoyaltyClient {
       id: royaltyVaultIpId,
     });
     if (!isRoyaltyVaultIpIdRegistered) {
-      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered`);
+      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
     }
     const data = await this.royaltyPolicyLapClient.getRoyaltyData({
       ipId: royaltyVaultIpId,
     });
     if (!data[1] || data[1] === "0x") {
-      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} address is not set`);
+      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} address is not set.`);
     }
     return data[1];
   }

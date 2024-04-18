@@ -47,13 +47,13 @@ export class LicenseClient {
   }
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
-   * @param request The request object that contains all data needed to register a PIL non commercial social remix license.
+   * @param request [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerNonComSocialRemixingPIL(
-    request: RegisterNonComSocialRemixingPILRequest,
+    request?: RegisterNonComSocialRemixingPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms: LicenseTerms = {
@@ -79,7 +79,7 @@ export class LicenseClient {
         return { licenseTermsId: licenseTermsId.toString() };
       }
       const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
-      if (request.txOptions?.waitForTransaction) {
+      if (request?.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
         return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId.toString() };
@@ -198,37 +198,41 @@ export class LicenseClient {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
-    const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: request.ipId });
-    if (!isRegistered) {
-      throw new Error(`The IP with id ${request.ipId} is not registered`);
-    }
-    const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
-      licenseTermsId: BigInt(request.licenseTermsId),
-    });
-    if (!isExisted) {
-      throw new Error(`License terms id ${request.licenseTermsId} do not exist`);
-    }
-    const isAttachedLicenseTerms =
-      await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+    try {
+      const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: request.ipId });
+      if (!isRegistered) {
+        throw new Error(`The IP with id ${request.ipId} is not registered.`);
+      }
+      const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
+        licenseTermsId: BigInt(request.licenseTermsId),
+      });
+      if (!isExisted) {
+        throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
+      }
+      const isAttachedLicenseTerms =
+        await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+          ipId: request.ipId,
+          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTermsId: BigInt(request.licenseTermsId),
+        });
+      if (isAttachedLicenseTerms) {
+        throw new Error(
+          `License terms id ${request.licenseTermsId} is already attached to the IP with id ${request.ipId}.`,
+        );
+      }
+      const txHash = await this.licensingModuleClient.attachLicenseTerms({
         ipId: request.ipId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: BigInt(request.licenseTermsId),
       });
-    if (isAttachedLicenseTerms) {
-      throw new Error(
-        `License terms id ${request.licenseTermsId} is already attached to the IP with id ${request.ipId}`,
-      );
-    }
-    const txHash = await this.licensingModuleClient.attachLicenseTerms({
-      ipId: request.ipId,
-      licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
-      licenseTermsId: BigInt(request.licenseTermsId),
-    });
-    if (request.txOptions?.waitForTransaction) {
-      await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-      return { txHash: txHash };
-    } else {
-      return { txHash: txHash };
+      if (request.txOptions?.waitForTransaction) {
+        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        return { txHash: txHash };
+      } else {
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to attach license terms");
     }
   }
 
@@ -262,13 +266,13 @@ export class LicenseClient {
         id: request.licensorIpId,
       });
       if (!isLicenseIpIdRegistered) {
-        throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered`);
+        throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
       }
       const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
         licenseTermsId: BigInt(request.licenseTermsId),
       });
       if (!isExisted) {
-        throw new Error(`License terms id ${request.licenseTermsId} do not exist`);
+        throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
       }
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
@@ -278,7 +282,7 @@ export class LicenseClient {
         });
       if (!isAttachedLicenseTerms) {
         throw new Error(
-          `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}`,
+          `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}.`,
         );
       }
       const txHash = await this.licensingModuleClient.mintLicenseTokens({
