@@ -78,11 +78,11 @@
       "src/index.ts",
       "src/types/**/*"
     ],
-    "check-coverage": false,
-    "lines": 70,
-    "functions": 70,
-    "branches": 70,
-    "statements": 70
+    "check-coverage": true,
+    "lines": 90,
+    "functions": 90,
+    "branches": 90,
+    "statements": 90
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",
