@@ -15,8 +15,8 @@ import { MockERC721, MockERC20, getTokenId } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-let startTokenId = 198;
-let snapshotId: bigint;
+let startTokenId = 212;
+let snapshotId: string;
 describe.skip("Test royalty Functions", () => {
   let client: StoryClient;
   let publicClient: PublicClient;
@@ -160,7 +160,7 @@ describe.skip("Test royalty Functions", () => {
         receiverIpId: ipId1,
         payerIpId: ipId2,
         token: MockERC20,
-        amount: BigInt(10),
+        amount: "10",
         txOptions: {
           waitForTransaction: true,
         },
@@ -176,7 +176,7 @@ describe.skip("Test royalty Functions", () => {
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
-      expect(response.snapshotId).to.be.a("bigint");
+      expect(response.snapshotId).to.be.a("string");
       snapshotId = response.snapshotId!;
     });
 
@@ -198,11 +198,8 @@ describe.skip("Test royalty Functions", () => {
         account: ipId1,
         snapshotId: snapshotId.toString(),
         token: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
-      expect(response).to.be.a("bigint");
+      expect(response).to.be.a("string");
     });
 
     it("should not throw error when claim revenue", async () => {
@@ -215,7 +212,7 @@ describe.skip("Test royalty Functions", () => {
         },
       });
 
-      expect(response.claimableToken).to.be.a("bigint");
+      expect(response.claimableToken).to.be.a("string");
     });
   });
 });
