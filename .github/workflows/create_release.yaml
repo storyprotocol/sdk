@@ -1,0 +1,15 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+
+  Timestamp:
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
+
+  CreateRelease:
+    needs: [ Timestamp ]
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main 
