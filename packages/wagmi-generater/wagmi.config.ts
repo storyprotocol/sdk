@@ -94,7 +94,6 @@ export default defineConfig(async () => {
                     chainId: sepoliaChainId,
                 }),
                 contracts: contracts,
-                apiKey: "SESFC586HF7TPP759BIWCQ14Q5MP3H5JMC",
             }),
             sdk({
                 permissionLessSDK: true,
