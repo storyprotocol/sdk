@@ -47,7 +47,7 @@ export class LicenseClient {
   }
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
-   * @param request [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
+   * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
@@ -93,7 +93,7 @@ export class LicenseClient {
   }
   /**
    * Convenient function to register a PIL commercial use license to the registry.
-   * @param request The request object that contains all data needed to register a PIL commercial use license.
+   * @param request - The request object that contains all data needed to register a PIL commercial use license.
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
    *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
@@ -142,7 +142,7 @@ export class LicenseClient {
   }
   /**
    * Convenient function to register a PIL commercial Remix license to the registry.
-   * @param request The request object that contains all data needed to register license.
+   * @param request - The request object that contains all data needed to register license.
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
@@ -193,7 +193,7 @@ export class LicenseClient {
 
   /**
    * Attaches license terms to an IP.
-   * @param request The request object that contains all data needed to attach license terms.
+   * @param request - The request object that contains all data needed to attach license terms.
    *   @param request.ipId The address of the IP to which the license terms are attached.
    *   @param request.licenseTemplate The address of the license template.
    *   @param request.licenseTermsId The ID of the license terms.
@@ -251,7 +251,7 @@ export class LicenseClient {
    * The minting fee is paid in the minting fee token specified in the license terms or configured by the IP owner.
    * IP owners can configure the minting fee of their IPs or
    * configure the minting fee module to determine the minting fee.
-   * @param request The request object that contains all data needed to mint license tokens.
+   * @param request - The request object that contains all data needed to mint license tokens.
    *   @param request.licensorIpId The licensor IP ID.
    *   @param request.licenseTemplate The address of the license template.
    *   @param request.licenseTermsId The ID of the license terms within the license template.

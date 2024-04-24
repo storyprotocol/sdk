@@ -1,5 +1,4 @@
-import { expect } from "chai";
-
+import chai from "chai";
 import { StoryClient } from "../../src";
 import {
   CancelDisputeRequest,
@@ -7,6 +6,9 @@ import {
   ResolveDisputeRequest,
 } from "../../src/types/resources/dispute";
 import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
+import chaiAsPromised from "chai-as-promised";
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe.skip("Dispute Functions", () => {
   let client: StoryClient;
