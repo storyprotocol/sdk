@@ -10,6 +10,7 @@ import {
   StoryConfig,
 } from "../../src";
 import { StoryAPIClient } from "../../src/clients/storyAPI";
+import { RoyaltyClient } from "../../src/resources/royalty";
 
 describe("Test StoryClient", function () {
   describe("Test constructor", function () {
@@ -36,6 +37,39 @@ describe("Test StoryClient", function () {
           transport: http(process.env.RPC_PROVIDER_URL),
         });
       }).to.throw("must specify a wallet or account");
+    });
+
+    it("should succeed when passing in wallet", function () {
+      const client = StoryClient.newClient({
+        transport: http(process.env.RPC_PROVIDER_URL),
+        wallet: createWalletClient({
+          account: privateKeyToAccount(generatePrivateKey()),
+          chain: sepolia,
+          transport: http(process.env.RPC_PROVIDER_URL),
+        }),
+      });
+
+      expect(client).to.be.instanceOf(StoryClient);
+    });
+
+    it("should return client storyClient when new newClientUseWallet given wallet config", () => {
+      const client = StoryClient.newClientUseWallet({
+        transport: http(process.env.RPC_PROVIDER_URL),
+        wallet: createWalletClient({
+          account: privateKeyToAccount(generatePrivateKey()),
+          chain: sepolia,
+          transport: http(process.env.RPC_PROVIDER_URL),
+        }),
+      });
+      expect(client).to.be.instanceOf(StoryClient);
+    });
+
+    it("should return client storyClient when new newClientUseAccount given account config", () => {
+      const client = StoryClient.newClientUseAccount({
+        transport: http(process.env.RPC_PROVIDER_URL),
+        account: privateKeyToAccount(generatePrivateKey()),
+      });
+      expect(client).to.be.instanceOf(StoryClient);
     });
   });
 
@@ -85,6 +119,12 @@ describe("Test StoryClient", function () {
       const dispute = new DisputeClient(rpcClient, wallet);
       expect(client.dispute).to.not.equal(null);
       expect(client.dispute).to.not.equal(undefined);
+    });
+
+    it("should return client royalty", () => {
+      const royalty = new RoyaltyClient(rpcClient, wallet);
+      expect(client.royalty).to.not.equal(null);
+      expect(client.royalty).to.not.equal(undefined);
     });
   });
 });

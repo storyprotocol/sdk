@@ -73,6 +73,7 @@ export class LicenseClient {
         derivativesReciprocal: true,
         derivativeRevCelling: BigInt(0),
         currency: zeroAddress,
+        uri: "",
       };
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
@@ -121,6 +122,7 @@ export class LicenseClient {
         derivativesReciprocal: false,
         derivativeRevCelling: BigInt(0),
         currency: request.currency,
+        uri: "",
       };
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
@@ -170,6 +172,7 @@ export class LicenseClient {
         derivativesReciprocal: true,
         derivativeRevCelling: BigInt(0),
         currency: request.currency,
+        uri: "",
       };
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {

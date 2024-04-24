@@ -1,25 +1,20 @@
 import chai from "chai";
-import { StoryClient, StoryConfig } from "../../../src";
+import { StoryClient } from "../../src";
 import { createPublicClient, createWalletClient, Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import chaiAsPromised from "chai-as-promised";
-import { chainStringToViemChain } from "../../../src/utils/utils";
-import { MockERC20, MockERC721 } from "./util";
+import { chainStringToViemChain } from "../../src/utils/utils";
+import { MockERC20, MockERC721, getStoryClientInSepolia } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe.skip("License Functions in storyTestnet", () => {
   let client: StoryClient;
-  const account = privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex);
+  const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
 
   before(function () {
-    const config: StoryConfig = {
-      chainId: "storyTestnet",
-      transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
-      account,
-    };
-    client = StoryClient.newClient(config);
+    client = getStoryClientInSepolia();
   });
   describe("registering license with different types", async function () {
     it("should not throw error when registering license with non commercial social remixing PIL", async function () {
@@ -28,7 +23,6 @@ describe.skip("License Functions in storyTestnet", () => {
           waitForTransaction: true,
         },
       });
-      // expect(result.txHash).to.a("string").and.not.empty;
       expect(result.licenseTermsId).to.be.a("string").and.not.empty;
     });
 
@@ -40,7 +34,6 @@ describe.skip("License Functions in storyTestnet", () => {
           waitForTransaction: true,
         },
       });
-      // expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTermsId).to.be.a("string").not.empty;
     });
 
@@ -53,7 +46,6 @@ describe.skip("License Functions in storyTestnet", () => {
           waitForTransaction: true,
         },
       });
-      // expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTermsId).to.be.a("string").and.not.empty;
     });
   });
