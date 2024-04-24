@@ -192,7 +192,7 @@ describe("Test DisputeClient", function () {
 
       const resolveDisputeRequest: ResolveDisputeRequest = {
         disputeId: 1,
-        data:"0x1111",
+        data: "0x1111",
         txOptions: {
           waitForTransaction: true,
         },
@@ -209,7 +209,7 @@ describe("Test DisputeClient", function () {
       walletMock.writeContract = sinon.stub().throws(new Error("writeContract error"));
       const resolveDisputeRequest: ResolveDisputeRequest = {
         disputeId: 1,
-        data:"0x1111",
+        data: "0x1111",
         txOptions: {
           waitForTransaction: true,
         },
@@ -227,7 +227,7 @@ describe("Test DisputeClient", function () {
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
       const resolveDisputeRequest: ResolveDisputeRequest = {
         disputeId: 1,
-        data:"0x1111",
+        data: "0x1111",
         txOptions: {
           waitForTransaction: true,
         },
@@ -241,7 +241,7 @@ describe("Test DisputeClient", function () {
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
       const resolveDisputeRequest: ResolveDisputeRequest = {
         disputeId: 1,
-        data:"0x1111",
+        data: "0x1111",
         txOptions: {
           waitForTransaction: false,
         },

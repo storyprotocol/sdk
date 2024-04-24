@@ -1,36 +1,37 @@
 import { expect } from "chai";
-import { Hex, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
 
-import { StoryClient, StoryConfig } from "../../src";
+import { StoryClient } from "../../src";
 import {
   CancelDisputeRequest,
   RaiseDisputeRequest,
   ResolveDisputeRequest,
 } from "../../src/types/resources/dispute";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
 
 describe.skip("Dispute Functions", () => {
   let client: StoryClient;
 
   before(function () {
-    const config: StoryConfig = {
-      transport: http(process.env.RPC_PROVIDER_URL),
-      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
-    };
-
-    client = StoryClient.newClient(config);
+    client = getStoryClientInSepolia();
   });
 
   describe("Should be able to", async function () {
     it("raise a dispute", async () => {
-      const waitForTransaction = true;
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        tokenContract: MockERC721,
+        tokenId: tokenId!,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
       const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: "0x004e38104adc39cbf4cea9bd8876440a969e3d0b",
+        targetIpId: registerResult.ipId!,
         arbitrationPolicy: "0xb41BC78478878B338336C5E7a34292213779cd6F",
         linkToDisputeEvidence: "foo",
         targetTag: "PLAGIARISM",
         txOptions: {
-          waitForTransaction: waitForTransaction,
+          waitForTransaction: true,
         },
       };
       const response = await expect(client.dispute.raiseDispute(raiseDisputeRequest)).to.not.be
@@ -39,7 +40,7 @@ describe.skip("Dispute Functions", () => {
       expect(response.txHash).to.be.a("string");
       expect(response.txHash).not.empty;
 
-      if (waitForTransaction) {
+      if (true) {
         expect(response.disputeId).to.be.a("string");
         expect(response.disputeId).not.empty;
       }
@@ -48,6 +49,7 @@ describe.skip("Dispute Functions", () => {
     it.skip("resolve a dispute", async () => {
       const resolveDisputeRequest: ResolveDisputeRequest = {
         disputeId: 3,
+        data: "0x",
         txOptions: {
           waitForTransaction: true,
         },

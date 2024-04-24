@@ -1,4 +1,4 @@
-import { Hex, PublicClient } from "viem";
+import { Hex, PublicClient, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -20,12 +20,15 @@ import {
   RoyaltyModuleClient,
   RoyaltyPolicyLapClient,
   SimpleWalletClient,
+  ipRoyaltyVaultImplAbi,
 } from "../abi/generated";
+import { IPAccountClient } from "./ipAccount";
 
 export class RoyaltyClient {
   public royaltyPolicyLapClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
   public ipAssetRegistryClient: IpAssetRegistryClient;
+  public ipAccountClient: IPAccountClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
 
@@ -33,6 +36,7 @@ export class RoyaltyClient {
     this.royaltyPolicyLapClient = new RoyaltyPolicyLapClient(rpcClient, wallet);
     this.royaltyModuleClient = new RoyaltyModuleClient(rpcClient, wallet);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
+    this.ipAccountClient = new IPAccountClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
@@ -172,12 +176,24 @@ export class RoyaltyClient {
         this.wallet,
         proxyAddress,
       );
-      const txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch({
-        snapshotIds: request.snapshotIds.map((id) => BigInt(id)),
-        token: request.token,
+      const iPAccountExecuteResponse = await this.ipAccountClient.execute({
+        to: proxyAddress,
+        value: 0,
+        accountAddress: request.account,
+        txOptions: {
+          waitForTransaction: true,
+        },
+        data: encodeFunctionData({
+          abi: ipRoyaltyVaultImplAbi,
+          functionName: "claimRevenueBySnapshotBatch",
+          args: [request.snapshotIds.map((item) => BigInt(item)), request.token],
+        }),
       });
+      const txHash = iPAccountExecuteResponse.txHash as Hex;
       if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          hash: txHash,
+        });
         const targetLogs = ipRoyaltyVault.parseTxRevenueTokenClaimedEvent(txReceipt);
         return { txHash, claimableToken: targetLogs[0].amount.toString() };
       } else {

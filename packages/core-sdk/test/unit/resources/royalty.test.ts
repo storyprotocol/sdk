@@ -288,6 +288,7 @@ describe("Test RoyaltyClient", function () {
 
       try {
         await royaltyClient.claimRevenue({
+          account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           snapshotIds: ["1"],
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -307,6 +308,7 @@ describe("Test RoyaltyClient", function () {
 
       try {
         await royaltyClient.claimRevenue({
+          account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           snapshotIds: ["1"],
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -329,11 +331,9 @@ describe("Test RoyaltyClient", function () {
           ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
           [1],
         ]);
-      sinon
-        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
-        .resolves(txHash);
-
+      sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
       const result = await royaltyClient.claimRevenue({
+        account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         snapshotIds: ["1"],
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -355,6 +355,7 @@ describe("Test RoyaltyClient", function () {
       sinon
         .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
         .resolves(txHash);
+      sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "parseTxRevenueTokenClaimedEvent").returns([
         {
           claimer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -364,6 +365,7 @@ describe("Test RoyaltyClient", function () {
       ]);
 
       const result = await royaltyClient.claimRevenue({
+        account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         snapshotIds: ["1"],
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",

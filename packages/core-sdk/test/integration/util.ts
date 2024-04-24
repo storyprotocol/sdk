@@ -1,8 +1,9 @@
-import { http, createPublicClient, createWalletClient, Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { chainStringToViemChain } from "../../../src/utils/utils";
+import { chainStringToViemChain } from "../../src/utils/utils";
+import { http, createPublicClient, createWalletClient, Hex } from "viem";
+import { StoryClient, StoryConfig } from "../../src";
 
-export const getTokenId = async (tokenId: number): Promise<string | undefined> => {
+export const getTokenId = async (): Promise<string | undefined> => {
   const baseConfig = {
     chain: chainStringToViemChain("sepolia"),
     transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
@@ -38,3 +39,12 @@ export const getTokenId = async (tokenId: number): Promise<string | undefined> =
 
 export const MockERC20 = "0x857308523a01B430cB112400976B9FC4A6429D55";
 export const MockERC721 = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
+
+export const getStoryClientInSepolia = (): StoryClient => {
+  const config: StoryConfig = {
+    chainId: "sepolia",
+    transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
+    account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+  };
+  return StoryClient.newClient(config);
+};
