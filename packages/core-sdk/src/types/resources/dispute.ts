@@ -1,33 +1,35 @@
+import { Hex } from "viem";
+
 import { TxOptions } from "../options";
 
 export type Dispute = {
-  targetIpId: `0x${string}`; // The ipId that is the target of the dispute
-  disputeInitiator: `0x${string}`; // The address of the dispute initiator
-  arbitrationPolicy: `0x${string}`; // The address of the arbitration policy
+  targetIpId: Hex; // The ipId that is the target of the dispute
+  disputeInitiator: Hex; // The address of the dispute initiator
+  arbitrationPolicy: Hex; // The address of the arbitration policy
   linkToDisputeEvidence: string; // The link of the dispute evidence
   targetTag: string; // The target tag of the dispute
   currentTag: string; // The current tag of the dispute
 };
 
 export type RaiseDisputeRequest = {
-  targetIpId: `0x${string}`;
-  arbitrationPolicy: `0x${string}`;
+  targetIpId: Hex;
+  arbitrationPolicy: Hex;
   linkToDisputeEvidence: string;
   targetTag: string;
-  calldata?: `0x${string}`;
+  calldata?: Hex;
   txOptions?: TxOptions;
 };
 
 export type RaiseDisputeResponse = {
   txHash: string;
-  disputeId?: `0x${string}`;
-  arbitrationPolicy?: `0x${string}`;
+  disputeId?: Hex;
+  arbitrationPolicy?: Hex;
 };
 
 export type SetDisputeJudgementRequest = {
   disputeId: number;
   decision: boolean;
-  calldata?: `0x${string}`;
+  calldata?: Hex;
   txOptions?: TxOptions;
 };
 
@@ -35,12 +37,12 @@ export type SetDisputeJudgementResponse = {
   txHash: string;
   disputeId?: bigint;
   decision?: boolean;
-  data?: `0x${string}`;
+  data?: Hex;
 };
 
 export type CancelDisputeRequest = {
   disputeId: number | string | bigint;
-  calldata?: `0x${string}`;
+  calldata?: Hex;
   txOptions?: TxOptions;
 };
 
@@ -50,6 +52,7 @@ export type CancelDisputeResponse = {
 
 export type ResolveDisputeRequest = {
   disputeId: number | string | bigint;
+  data: Hex;
   txOptions?: TxOptions;
 };
 

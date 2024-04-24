@@ -32,7 +32,8 @@ export type LicenseTerms = {
   derivativesAttribution: boolean;
   derivativesApproval: boolean;
   derivativesReciprocal: boolean;
-  currency: Hex;
+  currency: Hex
+  uri: string;
 };
 export type LicenseTermsIdResponse = number;
 

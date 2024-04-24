@@ -57,7 +57,8 @@ export class IPAssetClient {
       }
       const txHash = await this.ipAssetRegistryClient.register({
         tokenContract: getAddress(request.tokenContract),
-        tokenId: tokenId,
+        tokenId,
+        chainid: BigInt(chain[this.chainId]),
       });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
