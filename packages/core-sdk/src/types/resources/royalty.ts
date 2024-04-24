@@ -45,16 +45,15 @@ export type ClaimableRevenueRequest = {
   account: Hex;
   snapshotId: string;
   token: Hex;
-  txOptions?: TxOptions;
 };
 
-export type ClaimableRevenueResponse = bigint;
+export type ClaimableRevenueResponse = string;
 
 export type PayRoyaltyOnBehalfRequest = {
   receiverIpId: Hex;
   payerIpId: Hex;
   token: Hex;
-  amount: bigint;
+  amount: string;
   txOptions?: TxOptions;
 };
 
@@ -70,18 +69,19 @@ export type SnapshotRequest = {
 export type claimRevenueRequest = {
   snapshotIds: string[];
   token: Hex;
+  account: Hex;
   royaltyVaultIpId: Hex;
   txOptions?: TxOptions;
 };
 
 export type claimRevenueResponse = {
   txHash: string;
-  claimableToken?: bigint;
+  claimableToken?: string;
 };
 
 export type SnapshotResponse = {
   txHash: string;
-  snapshotId?: bigint;
+  snapshotId?: string;
 };
 
 export type RoyaltyVaultAddress = Hex;

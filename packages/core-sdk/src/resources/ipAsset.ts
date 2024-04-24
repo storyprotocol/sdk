@@ -41,7 +41,7 @@ export class IPAssetClient {
 
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
-   * @param request The request object that contains all data needed to register IP.
+   * @param request - The request object that contains all data needed to register IP.
    *   @param request.tokenContract The address of the NFT.
    *   @param request.tokenId The token identifier of the NFT.
    *   @param request.txOptions [Optional] The transaction options.
@@ -57,7 +57,8 @@ export class IPAssetClient {
       }
       const txHash = await this.ipAssetRegistryClient.register({
         tokenContract: getAddress(request.tokenContract),
-        tokenId: tokenId,
+        tokenId,
+        chainid: BigInt(chain[this.chainId]),
       });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
@@ -77,7 +78,7 @@ export class IPAssetClient {
    * The license terms must be attached to the parent IP before calling this function.
    * All IPs attached default license terms by default.
    * The derivative IP owner must be the caller or an authorized operator.
-   * @param request The request object that contains all data needed to register derivative IP.
+   * @param request - The request object that contains all data needed to register derivative IP.
    *   @param request.childIpId The derivative IP ID.
    *   @param request.parentIpIds The parent IP IDs.
    *   @param request.licenseTermsIds The IDs of the license terms that the parent IP supports.
@@ -138,7 +139,7 @@ export class IPAssetClient {
    * the derivative IP is registered with license tokens minted from the parent IP's license terms.
    * the license terms of the parent IPs issued with license tokens are attached to the derivative IP.
    * the caller must be the derivative IP owner or an authorized operator.
-   * @param request The request object that contains all data needed to register derivative license tokens.
+   * @param request - The request object that contains all data needed to register derivative license tokens.
    *   @param request.childIpId The derivative IP ID.
    *   @param request.licenseTokenIds The IDs of the license tokens.
    *   @param request.txOptions [Optional] The transaction options.

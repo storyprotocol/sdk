@@ -92,6 +92,7 @@ export class DisputeClient {
    * Resolves a dispute after it has been judged
    * @param request The request object containing details to resolve the dispute.
    *   @param request.disputeId The ID of the dispute to be resolved.
+   *   @param request.data The data to resolve the dispute.
    * @returns A Promise that resolves to a ResolveDisputeResponse.
    * @throws NotAbleToResolve, if currentTag is still in dispute (i.e still needs a judgement to be set)
    * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
@@ -101,6 +102,7 @@ export class DisputeClient {
     try {
       const txHash = await this.disputeModuleClient.resolveDispute({
         disputeId: BigInt(request.disputeId),
+        data: request.data,
       });
 
       if (request.txOptions?.waitForTransaction) {

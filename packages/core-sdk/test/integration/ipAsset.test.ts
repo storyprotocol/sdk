@@ -1,31 +1,30 @@
 import chai from "chai";
-import { StoryClient, StoryConfig } from "../../../src";
-import { Hex, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { StoryClient } from "../../src";
+import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getTokenId } from "./util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 let parentIpId: Hex;
 let childIpId: Hex;
-const noCommercialLicenseTermsId = "6";
-let startTokenId = 176;
-describe.skip("IP Asset Functions in storyTestnet", () => {
+let noCommercialLicenseTermsId: string;
+describe.skip("IP Asset Functions ", () => {
   let client: StoryClient;
-  before(function () {
-    const config: StoryConfig = {
-      chainId: "storyTestnet",
-      transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
-      account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
-    };
-    client = StoryClient.newClient(config);
+  before(async function () {
+    client = getStoryClientInSepolia();
+    const registerResult = await client.license.registerNonComSocialRemixingPIL({
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+    noCommercialLicenseTermsId = registerResult.licenseTermsId!;
   });
 
   describe("Create IP Asset", async function () {
     it("should not throw error when registering a IP Asset", async () => {
-      const tokenId = await getTokenId(startTokenId++);
+      const tokenId = await getTokenId();
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.register({
@@ -43,7 +42,7 @@ describe.skip("IP Asset Functions in storyTestnet", () => {
     });
 
     it("should not throw error when registering derivative", async () => {
-      const tokenId = await getTokenId(startTokenId++);
+      const tokenId = await getTokenId();
       parentIpId = (
         await client.ipAsset.register({
           tokenContract: MockERC721,
@@ -74,7 +73,7 @@ describe.skip("IP Asset Functions in storyTestnet", () => {
     });
 
     it("should not throw error when registering derivative with license tokens", async () => {
-      const tokenId = await getTokenId(startTokenId++);
+      const tokenId = await getTokenId();
       const ipId = (
         await client.ipAsset.register({
           tokenContract: MockERC721,

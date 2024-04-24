@@ -1,5 +1,5 @@
 import chai from "chai";
-import { StoryClient, StoryConfig } from "../../../src";
+import { StoryClient } from "../../src";
 import {
   Hex,
   http,
@@ -10,40 +10,34 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import chaiAsPromised from "chai-as-promised";
-import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { MockERC721, MockERC20, getTokenId } from "./util";
+import { chainStringToViemChain, waitTx } from "../../src/utils/utils";
+import { MockERC721, MockERC20, getTokenId, getStoryClientInSepolia } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-let startTokenId = 198;
-let snapshotId: bigint;
+let snapshotId: string;
 describe.skip("Test royalty Functions", () => {
   let client: StoryClient;
   let publicClient: PublicClient;
   let walletClient: WalletClient;
 
   before(function () {
-    const config: StoryConfig = {
-      chainId: "storyTestnet",
-      transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
-      account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
-    };
-    client = StoryClient.newClient(config);
+    client = getStoryClientInSepolia();
     const baseConfig = {
-      chain: chainStringToViemChain("storyTestnet"),
-      transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
+      chain: chainStringToViemChain("sepolia"),
+      transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
     } as const;
     publicClient = createPublicClient(baseConfig);
     walletClient = createWalletClient({
       ...baseConfig,
-      account: privateKeyToAccount(process.env.STORY_TEST_NET_WALLET_PRIVATE_KEY as Hex),
+      account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
     });
   });
   describe("Royalty in storyTestNet", async function () {
     let ipId1: Hex;
     let ipId2: Hex;
     const getIpId = async (): Promise<Hex> => {
-      const tokenId = await getTokenId(startTokenId++);
+      const tokenId = await getTokenId();
       const response = await client.ipAsset.register({
         tokenContract: MockERC721,
         tokenId: tokenId!,
@@ -78,7 +72,9 @@ describe.skip("Test royalty Functions", () => {
     before(async () => {
       ipId1 = await getIpId();
       ipId2 = await getIpId();
+      console.log("ipId1", ipId1, "ipId2", ipId2);
       const licenseTermsId = await getCommercialPolicyId();
+      console.log("licenseTermsId", licenseTermsId);
       await attachLicenseTerms(ipId1, licenseTermsId);
       await client.ipAsset.registerDerivative({
         childIpId: ipId2,
@@ -160,7 +156,7 @@ describe.skip("Test royalty Functions", () => {
         receiverIpId: ipId1,
         payerIpId: ipId2,
         token: MockERC20,
-        amount: BigInt(10),
+        amount: "10",
         txOptions: {
           waitForTransaction: true,
         },
@@ -176,7 +172,7 @@ describe.skip("Test royalty Functions", () => {
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
-      expect(response.snapshotId).to.be.a("bigint");
+      expect(response.snapshotId).to.be.a("string");
       snapshotId = response.snapshotId!;
     });
 
@@ -198,24 +194,26 @@ describe.skip("Test royalty Functions", () => {
         account: ipId1,
         snapshotId: snapshotId.toString(),
         token: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
-      expect(response).to.be.a("bigint");
+      expect(response).to.be.a("string");
     });
 
     it("should not throw error when claim revenue", async () => {
+      const parentIpId = "0x66f90435a01173E727Fffd1BbB5b033a50561325";
+      const childIpId = "0x286e816704883a4087e214C89983A7d84219e4cF";
+      snapshotId = "1";
+      console.log("snapshotId", snapshotId.toString(), "ipId1", ipId1, "ipId2", ipId2);
       const response = await client.royalty.claimRevenue({
-        royaltyVaultIpId: ipId2,
+        royaltyVaultIpId: childIpId,
+        account: parentIpId,
         snapshotIds: [snapshotId.toString()],
         token: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
         txOptions: {
           waitForTransaction: true,
         },
       });
-
-      expect(response.claimableToken).to.be.a("bigint");
+      console.log("response", response);
+      expect(response.claimableToken).to.be.a("string");
     });
   });
 });

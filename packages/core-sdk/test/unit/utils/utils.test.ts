@@ -14,6 +14,7 @@ import {
   typedDataArrayToBytesArray,
   chainStringToViemChain,
   storyTestnet,
+  waitTx,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
@@ -275,5 +276,18 @@ describe("Test chainStringToViemChain", () => {
   it("should return story test network if id is storyTestnet", () => {
     const chain = chainStringToViemChain("storyTestnet");
     expect(chain).to.equal(storyTestnet);
+  });
+});
+
+describe("Test waitTx", () => {
+  it("should return txHash when call waitTx", async () => {
+    const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+    let rpcMock: viem.PublicClient = createMock<viem.PublicClient>();
+    const spyWaitForTransactionReceipt = sinon.spy();
+    rpcMock.waitForTransactionReceipt = spyWaitForTransactionReceipt;
+
+    await waitTx(rpcMock, txHash);
+
+    expect(spyWaitForTransactionReceipt.called);
   });
 });
