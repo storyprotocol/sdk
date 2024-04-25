@@ -61,7 +61,7 @@ export class DisputeClient {
 
   /**
    * Cancels an ongoing dispute
-   * @param request The request object containing details to cancel the dispute.
+   * @param request - The request object containing details to cancel the dispute.
    *   @param request.disputeId The ID of the dispute to be cancelled.
    *   @param request.calldata Optional additional data used in the cancellation process.
    * @returns A Promise that resolves to a CancelDisputeResponse containing the transaction hash.
@@ -90,7 +90,7 @@ export class DisputeClient {
 
   /**
    * Resolves a dispute after it has been judged
-   * @param request The request object containing details to resolve the dispute.
+   * @param request - The request object containing details to resolve the dispute.
    *   @param request.disputeId The ID of the dispute to be resolved.
    *   @param request.data The data to resolve the dispute.
    * @returns A Promise that resolves to a ResolveDisputeResponse.

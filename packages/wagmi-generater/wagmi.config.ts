@@ -1,82 +1,84 @@
 import {defineConfig} from '@wagmi/cli'
-import {blockExplorer, react} from '@wagmi/cli/plugins'
+import {blockExplorer} from '@wagmi/cli/plugins'
 import {sdk} from './sdk'
 import type {Evaluate} from "@wagmi/cli/src/types";
 import type {ContractConfig} from "@wagmi/cli/src/config";
 import {resolveProxyContracts} from "./resolveProxyContracts";
 const storyTestnetId = 1513;
 const sepoliaChainId = 11155111;
+import 'dotenv/config';
+
 export default defineConfig(async () => {
     const contracts: Evaluate<Omit<ContractConfig, 'abi'>>[] = [
         {
             name: "AccessController", address: {
-                [sepoliaChainId]: "0xFbD5BE3815b71564Dc51C3C8301c47770fC9a61c",
+                [sepoliaChainId]: "0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A",
                 // [storyTestnetId]: "0x7e253Df9b0fC872746877Fa362b2cAf32712d770",
             }
         },
         {
             name: "DisputeModule", address: {
-                [sepoliaChainId]: "0xd0194dD93968DE60dBe10610fb6Ce2C86a51A78e",
+                [sepoliaChainId]: "0xEB7B1dd43B81A7be1fA427515a2b173B454A9832",
                 // [storyTestnetId]: "0x6d54456Ae5DCbDC0C9E2713cC8E650fE4f445c7C",
             }
         },
         {
             name: "IPAccountImpl", address: {
-                [sepoliaChainId]: "0x71898BD128039BC5bb8D2451Cfc43A55F64fb9c6",
+                [sepoliaChainId]: "0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d",
                 // [storyTestnetId]: "0x38cAfD16502B1d61c6399A18d6Fa1Ea8CEca3678",
             }
         },
         {
             name: "IPAssetRegistry", address: {
-                [sepoliaChainId]: "0x84c177633adCD26157732e18dd9E145E442E6aCb",
+                [sepoliaChainId]: "0xd43fE0d865cb5C26b1351d3eAf2E3064BE3276F6",
                 // [storyTestnetId]: "0x862de97662a1231FFc14038eC1BE93aB129D2169",
             }
         },
         {
             name: "IpRoyaltyVaultImpl", address: {
-                [sepoliaChainId]: "0xDdAa6A42399F8eA503048ACb93A5fAe6e6b39598",
+                [sepoliaChainId]: "0xD6c2AfB61085f1359d47159f2271BDD0EeBf19C2",
                 // [storyTestnetId]: "0x8Be22cc2D13ADF496a417D9C616dA4a253c68Af8",
             }
         },
         {
             name: "LicenseRegistry", address: {
-                [sepoliaChainId]: "0xbbcb7b0Bd15b1CfcA0A923791e526A6E90774D40",
+                [sepoliaChainId]: "0x4f4b1bf7135C7ff1462826CCA81B048Ed19562ed",
                 // [storyTestnetId]: "0x0c3D467537FAd845a78728CEdc3D9447338c5422",
             }
         },
         {
             name: "LicenseToken", address: {
-                [sepoliaChainId]: "0xCe9862F0a6f39631A2A790237086bd48635e3e42",
+                [sepoliaChainId]: "0x1333c78A821c9a576209B01a16dDCEF881cAb6f2",
                 // [storyTestnetId]: "0xD40b7bCA204f96a346021e31c9ad54FF495226e7",
             }
         },
         {
             name: "LicensingModule", address: {
-                [sepoliaChainId]: "0xf6C72a97E6ef70A9AB0F96c6E4baB93b868DC992",
+                [sepoliaChainId]: "0xe89b0EaA8a0949738efA80bB531a165FB3456CBe",
                 // [storyTestnetId]: "0xEeDDE5529122b621105798860F235c28FD3aBA40",
             }
         },
         {
             name: "PILicenseTemplate", address: {
-                [sepoliaChainId]: "0xFD474b0938303613AAa377BE375c3A571cAA04fb",
+                [sepoliaChainId]: "0x260B6CB6284c89dbE660c0004233f7bB99B5edE7",
                 // [storyTestnetId]: "0xd0Be223ae9719bBD93447ecf5289319CCf8cA227",
             }
         },
         {
             name: "ModuleRegistry", address: {
-                [sepoliaChainId]: "0x59b37bb4D6913eFE32f40D09b5290ff5509E6738",
+                [sepoliaChainId]: "0x2E0a668289D5C4Da6a2264aC8DF03cd600c7aAB8",
                 // [storyTestnetId]: "0xf2965E3B6251905Dd1E8671077760D07b0408cf2",
             }
         },
         {
             name: "RoyaltyModule", address: {
-                [sepoliaChainId]: "0xE50BB9D71b4d5c587d36849460F57df5bc939dab",
+                [sepoliaChainId]: "0xFAE961dd2b87CD5818dbCDc2591e6AB0b50E96b0",
                 // [storyTestnetId]: "0x551AD8CD7893003cE00500aC2aCF1E327763D9f6",
             }
         },
         {
             name: "RoyaltyPolicyLAP", address: {
-                [sepoliaChainId]: "0xf4f93F779BAe88898BA0Fc6ddb6FAA05632ee13c",
+                [sepoliaChainId]: "0xAAbaf349C7a2A84564F9CC4Ac130B3f19A718E86",
                 // [storyTestnetId]: "0x2EcdB5bD12a037dCb9De0Ab7957f35FEeF758eA6",
             }
         },
@@ -94,6 +96,7 @@ export default defineConfig(async () => {
                     chainId: sepoliaChainId,
                 }),
                 contracts: contracts,
+                apiKey: process.env.API_KEY
             }),
             sdk({
                 permissionLessSDK: true,

@@ -37,7 +37,7 @@ export const getTokenId = async (): Promise<string | undefined> => {
   }
 };
 
-export const MockERC20 = "0x857308523a01B430cB112400976B9FC4A6429D55";
+export const MockERC20 = "0xB132A6B7AE652c974EE1557A3521D53d18F6739f";
 export const MockERC721 = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
 
 export const getStoryClientInSepolia = (): StoryClient => {

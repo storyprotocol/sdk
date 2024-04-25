@@ -56,8 +56,8 @@ describe.skip("License Functions in storyTestnet", () => {
     let tokenId: string;
     before(async function () {
       const baseConfig = {
-        chain: chainStringToViemChain("storyTestnet"),
-        transport: http(process.env.STORY_TEST_NET_RPC_PROVIDER_URL),
+        chain: chainStringToViemChain("sepolia"),
+        transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
       } as const;
       const publicClient = createPublicClient(baseConfig);
       const walletClient = createWalletClient({

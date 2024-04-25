@@ -140,6 +140,10 @@ importers:
   packages/tsconfig: {}
 
   packages/wagmi-generater:
+    dependencies:
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.4.5
     devDependencies:
       '@wagmi/cli':
         specifier: 0.0.0-canary-20240313013119

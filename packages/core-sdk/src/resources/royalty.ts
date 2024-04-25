@@ -43,7 +43,7 @@ export class RoyaltyClient {
 
   /**
    * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
-   * @param request -  The request object that contains all data needed to collect royalty tokens.
+   * @param request - The request object that contains all data needed to collect royalty tokens.
    *   @param request.parentIpId The ip id of the ancestor to whom the royalty tokens belong to.
    *   @param request.royaltyVaultIpId The id of the royalty vault.
    *   @param request.txOptions [Optional] The transaction options.
