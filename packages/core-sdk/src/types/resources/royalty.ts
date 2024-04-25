@@ -66,7 +66,7 @@ export type SnapshotRequest = {
   txOptions?: TxOptions;
 };
 
-export type claimRevenueRequest = {
+export type ClaimRevenueRequest = {
   snapshotIds: string[];
   token: Hex;
   account: Hex;
@@ -74,7 +74,7 @@ export type claimRevenueRequest = {
   txOptions?: TxOptions;
 };
 
-export type claimRevenueResponse = {
+export type ClaimRevenueResponse = {
   txHash: string;
   claimableToken?: string;
 };
