@@ -13,7 +13,6 @@ import {
   dictToQueryParams,
   typedDataArrayToBytesArray,
   chainStringToViemChain,
-  storyTestnet,
   waitTx,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
@@ -268,14 +267,6 @@ describe("Test chainStringToViemChain", () => {
   it("should return sepolia if id is sepolia", () => {
     const chain = chainStringToViemChain("sepolia");
     expect(chain).to.equal(sepolia);
-  });
-  it("should return story testnet if id is 1513", () => {
-    const chain = chainStringToViemChain("1513");
-    expect(chain).to.equal(storyTestnet);
-  });
-  it("should return story test network if id is storyTestnet", () => {
-    const chain = chainStringToViemChain("storyTestnet");
-    expect(chain).to.equal(storyTestnet);
   });
 });
 
