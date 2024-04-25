@@ -13,7 +13,6 @@ import { LicenseClient } from "./resources/license";
 import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
-import { StoryAPIClient } from "./clients/storyAPI";
 import { RoyaltyClient } from "./resources/royalty";
 import { SimpleWalletClient } from "./abi/generated";
 
@@ -27,7 +26,6 @@ export class StoryClient {
   private readonly config: StoryConfig & { chainId: SupportedChainIds };
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
-  private readonly storyClient: StoryAPIClient;
   private _ipAsset: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;
@@ -54,7 +52,6 @@ export class StoryClient {
     };
 
     this.rpcClient = createPublicClient(clientConfig);
-    this.storyClient = new StoryAPIClient();
 
     if (this.config.wallet) {
       this.wallet = this.config.wallet;
