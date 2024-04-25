@@ -9,12 +9,11 @@ on:
       - main
 
 jobs:
-
   Timestamp:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
   print_version_to_publish:
-    needs: [ Timestamp ]
+    needs: [Timestamp]
     runs-on: ubuntu-latest
     outputs:
       version_to_be_published: ${{ steps.get_version_to_publish.outputs.VERSION_TO_BE_PUBLISHED }}
@@ -30,7 +29,7 @@ jobs:
 
   # Fetch the latest version from NPM
   fetch_latest_version:
-    needs: [ Timestamp ]
+    needs: [Timestamp]
     runs-on: ubuntu-latest
     outputs:
       LATEST_VERSION: ${{ steps.get_latest_version.outputs.LATEST_VERSION }}
@@ -54,60 +53,76 @@ jobs:
             exit 1
           fi
 
-  build-test-publish:
+  # build-test-publish:
+  #   needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
+  #   # Skip this job if the version to be published is the same as the latest version on NPM
+  #   # and the event triggering the workflow is a push
+  #   if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
+  #   runs-on: ubuntu-latest
+  #   environment: 'beta-sepolia'
+  #   env:
+  #     RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
+  #     WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+  #     TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+  #     SEPOLIA_RPC_PROVIDER_URL: ${{ secrets.SEPOLIA_RPC_PROVIDER_URL }}
+  #     SEPOLIA_WALLET_PRIVATE_KEY: ${{ secrets.SEPOLIA_WALLET_PRIVATE_KEY }}
+  #     SEPOLIA_TEST_WALLET_ADDRESS: ${{ secrets.SEPOLIA_TEST_WALLET_ADDRESS }}
+  #     STORY_TEST_NET_RPC_PROVIDER_URL: ${{ secrets.STORY_TEST_NET_RPC_PROVIDER_URL }}
+  #     STORY_TEST_NET_WALLET_PRIVATE_KEY: ${{ secrets.STORY_TEST_NET_WALLET_PRIVATE_KEY }}
+  #     STORY_TEST_NET_TEST_WALLET_ADDRESS: ${{ secrets.STORY_TEST_NET_TEST_WALLET_ADDRESS }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+  #     - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
+  #       with:
+  #         version: 8.8.0
+
+  #     - name: Setup Node.js environment
+  #       uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+  #       with:
+  #         node-version: 20.0.0
+  #         cache: pnpm
+  #         registry-url: https://registry.npmjs.org/
+
+  #     - name: Install dependencies
+  #       run: pnpm install
+
+  #     - name: Build
+  #       run: pnpm build
+
+  #     - name: Test
+  #       run: pnpm test
+
+  #     - name: Publish to npm
+  #       run: |
+  #         cd packages/core-sdk
+  #         npm publish
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  test_push_tag:
     needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
-    # Skip this job if the version to be published is the same as the latest version on NPM
-    # and the event triggering the workflow is a push
-    if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
     runs-on: ubuntu-latest
-    environment: 'beta-sepolia'
-    env:
-      RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
-      SEPOLIA_RPC_PROVIDER_URL: ${{ secrets.SEPOLIA_RPC_PROVIDER_URL }}
-      SEPOLIA_WALLET_PRIVATE_KEY: ${{ secrets.SEPOLIA_WALLET_PRIVATE_KEY }}
-      SEPOLIA_TEST_WALLET_ADDRESS: ${{ secrets.SEPOLIA_TEST_WALLET_ADDRESS }}
-      STORY_TEST_NET_RPC_PROVIDER_URL: ${{ secrets.STORY_TEST_NET_RPC_PROVIDER_URL }}
-      STORY_TEST_NET_WALLET_PRIVATE_KEY: ${{ secrets.STORY_TEST_NET_WALLET_PRIVATE_KEY }}
-      STORY_TEST_NET_TEST_WALLET_ADDRESS: ${{ secrets.STORY_TEST_NET_TEST_WALLET_ADDRESS }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      
-      - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
-        with:
-          version: 8.8.0
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
-        with:
-          node-version: 20.0.0
-          cache: pnpm
-          registry-url: https://registry.npmjs.org/
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build
-        run: pnpm build
-
-      - name: Test
-        run: pnpm test
-
-      - name: Publish to npm
+      - name: Push tag
         run: |
-          cd packages/core-sdk
-          npm publish
+          VERSION=${{ needs.print_version_to_publish.outputs.version_to_be_published }}
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git tag -a v$VERSION -m "Release v$VERSION"
+          git push origin v$VERSION
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  create_release:
-    needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
-    # Skip this job if the version to be published is the same as the latest version on NPM
-    # and the event triggering the workflow is a push
-    if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
-    with:
-      version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-
+  # create_release:
+  #   needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
+  #   # Skip this job if the version to be published is the same as the latest version on NPM
+  #   # and the event triggering the workflow is a push
+  #   # if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
+  #   uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@fix/workflow_permission
+  #   with:
+  #     version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
