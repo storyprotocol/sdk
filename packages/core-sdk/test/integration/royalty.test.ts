@@ -16,7 +16,7 @@ import { MockERC721, MockERC20, getTokenId, getStoryClientInSepolia } from "./ut
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 let snapshotId: string;
-describe.skip("Test royalty Functions", () => {
+describe("Test royalty Functions", () => {
   let client: StoryClient;
   let publicClient: PublicClient;
   let walletClient: WalletClient;
@@ -86,6 +86,30 @@ describe.skip("Test royalty Functions", () => {
       });
     });
 
+    it("should not throw error when collect royalty tokens", async () => {
+      const response = await client.royalty.collectRoyaltyTokens({
+        parentIpId: ipId1,
+        royaltyVaultIpId: ipId2,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(response.txHash).to.be.a("string").not.empty;
+      expect(response.royaltyTokensCollected).to.be.a("string").not.empty;
+    });
+
+    it("should not throw error when snapshot", async () => {
+      const response = await client.royalty.snapshot({
+        royaltyVaultIpId: ipId2,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(response.txHash).to.be.a("string").not.empty;
+      expect(response.snapshotId).to.be.a("string");
+      snapshotId = response.snapshotId!;
+    });
+    
     it("should not throw error when pay royalty on behalf", async () => {
       //1. approve the spender
       const abi = [
@@ -148,7 +172,7 @@ describe.skip("Test royalty Functions", () => {
         address: MockERC20,
         functionName: "mint",
         account: walletClient.account,
-        args: [process.env.STORY_TEST_NET_TEST_WALLET_ADDRESS! as Hex, BigInt(1000)],
+        args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS! as Hex, BigInt(1000)],
       });
       const mintHash = await walletClient.writeContract(request);
       await waitTx(publicClient, mintHash);
@@ -164,56 +188,30 @@ describe.skip("Test royalty Functions", () => {
       expect(response.txHash).to.be.a("string").not.empty;
     });
 
-    it("should not throw error when snapshot", async () => {
-      const response = await client.royalty.snapshot({
-        royaltyVaultIpId: ipId2,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(response.txHash).to.be.a("string").not.empty;
-      expect(response.snapshotId).to.be.a("string");
-      snapshotId = response.snapshotId!;
-    });
-
-    it("should not throw error when collect royalty tokens", async () => {
-      const response = await client.royalty.collectRoyaltyTokens({
-        parentIpId: ipId1,
-        royaltyVaultIpId: ipId2,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(response.txHash).to.be.a("string").not.empty;
-      expect(response.royaltyTokensCollected).to.be.a("string").not.empty;
-    });
-
     it("should not throw error when claimable revenue", async () => {
       const response = await client.royalty.claimableRevenue({
         royaltyVaultIpId: ipId2,
         account: ipId1,
         snapshotId: snapshotId.toString(),
-        token: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
+        token: MockERC20,
       });
       expect(response).to.be.a("string");
+      console.log('response', response);
     });
 
     it("should not throw error when claim revenue", async () => {
-      const parentIpId = "0x66f90435a01173E727Fffd1BbB5b033a50561325";
-      const childIpId = "0x286e816704883a4087e214C89983A7d84219e4cF";
-      snapshotId = "1";
       console.log("snapshotId", snapshotId.toString(), "ipId1", ipId1, "ipId2", ipId2);
       const response = await client.royalty.claimRevenue({
-        royaltyVaultIpId: childIpId,
-        account: parentIpId,
+        royaltyVaultIpId: ipId2,
+        account: ipId1,
         snapshotIds: [snapshotId.toString()],
-        token: "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAE",
+        token: MockERC20,
         txOptions: {
           waitForTransaction: true,
         },
       });
-      console.log("response", response);
       expect(response.claimableToken).to.be.a("string");
+      console.log('response', response);
     });
   });
 });

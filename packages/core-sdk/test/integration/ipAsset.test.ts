@@ -10,7 +10,7 @@ const expect = chai.expect;
 let parentIpId: Hex;
 let childIpId: Hex;
 let noCommercialLicenseTermsId: string;
-describe.skip("IP Asset Functions ", () => {
+describe("IP Asset Functions ", () => {
   let client: StoryClient;
   before(async function () {
     client = getStoryClientInSepolia();
