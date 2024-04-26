@@ -20,8 +20,10 @@ import {
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
+  PIL_TYPE,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
+import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -56,25 +58,7 @@ export class LicenseClient {
     request?: RegisterNonComSocialRemixingPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms: LicenseTerms = {
-        transferable: true,
-        royaltyPolicy: zeroAddress,
-        mintingFee: BigInt(0),
-        expiration: BigInt(0),
-        commercialUse: false,
-        commercialAttribution: false,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: zeroAddress,
-        commercialRevShare: 0,
-        commercialRevCelling: BigInt(0),
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-        derivativeRevCelling: BigInt(0),
-        currency: zeroAddress,
-        uri: "",
-      };
+      const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };
@@ -96,7 +80,6 @@ export class LicenseClient {
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
-   *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
@@ -105,25 +88,11 @@ export class LicenseClient {
     request: RegisterCommercialUsePILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms: LicenseTerms = {
-        transferable: true,
-        royaltyPolicy: this.royaltyPolicyLAPClient.address,
-        mintingFee: BigInt(request.mintingFee),
-        expiration: BigInt(0),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: zeroAddress,
-        commercialRevShare: 0,
-        commercialRevCelling: BigInt(0),
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-        derivativeRevCelling: BigInt(0),
+      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
+        mintingFee: request.mintingFee,
         currency: request.currency,
-        uri: "",
-      };
+        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+      });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };
@@ -146,7 +115,6 @@ export class LicenseClient {
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
@@ -155,25 +123,12 @@ export class LicenseClient {
     request: RegisterCommercialRemixPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms: LicenseTerms = {
-        transferable: true,
-        royaltyPolicy: this.royaltyPolicyLAPClient.address,
-        mintingFee: BigInt(request.mintingFee),
-        expiration: BigInt(0),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: zeroAddress,
-        commercialRevShare: request.commercialRevShare,
-        commercialRevCelling: BigInt(0),
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-        derivativeRevCelling: BigInt(0),
+      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
+        mintingFee: request.mintingFee,
         currency: request.currency,
-        uri: "",
-      };
+        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+        commercialRevShare: request.commercialRevShare,
+      });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };

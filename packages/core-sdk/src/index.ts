@@ -7,7 +7,7 @@ export { LicenseClient } from "./resources/license";
 export { DisputeClient } from "./resources/dispute";
 
 export type { StoryConfig } from "./types/config";
-export type { Hex, TypedData } from "./types/common";
+export type { TypedData } from "./types/common";
 
 export type {
   RegisterIpResponse,

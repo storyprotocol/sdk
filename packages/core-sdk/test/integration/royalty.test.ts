@@ -109,7 +109,7 @@ describe("Test royalty Functions", () => {
       expect(response.snapshotId).to.be.a("string");
       snapshotId = response.snapshotId!;
     });
-    
+
     it("should not throw error when pay royalty on behalf", async () => {
       //1. approve the spender
       const abi = [
@@ -196,7 +196,7 @@ describe("Test royalty Functions", () => {
         token: MockERC20,
       });
       expect(response).to.be.a("string");
-      console.log('response', response);
+      console.log("response", response);
     });
 
     it("should not throw error when claim revenue", async () => {
@@ -211,7 +211,7 @@ describe("Test royalty Functions", () => {
         },
       });
       expect(response.claimableToken).to.be.a("string");
-      console.log('response', response);
+      console.log("response", response);
     });
   });
 });
