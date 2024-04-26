@@ -101,23 +101,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  test_push_tag:
-    needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-      - name: Push tag
-        run: |
-          VERSION=${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git tag -a v$VERSION -m "Release v$VERSION"
-          git push origin v$VERSION
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   create_release:
     needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
     # Skip this job if the version to be published is the same as the latest version on NPM
