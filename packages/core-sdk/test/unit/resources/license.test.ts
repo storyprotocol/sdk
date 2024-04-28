@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import { LicenseClient } from "../../../src";
 import { PublicClient, WalletClient, Account } from "viem";
 import chaiAsPromised from "chai-as-promised";
+import { PiLicenseTemplateGetLicenseTermsResponse } from "../../../src/abi/generated";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -432,6 +433,53 @@ describe("Test LicenseClient", function () {
 
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTokenId).to.equal("1");
+    });
+  });
+
+  describe("Test licenseClient.getLicenseTerms", async function () {
+    it("should return license terms when call getLicenseTerms given licenseTermsId is exist", async function () {
+      const mockLicenseTermsResponse: PiLicenseTemplateGetLicenseTermsResponse = {
+        terms: {
+          transferable: true,
+          royaltyPolicy: "0x",
+          mintingFee: BigInt(1),
+          expiration: BigInt(1),
+          commercialUse: true,
+          commercialAttribution: true,
+          commercializerChecker: "0x",
+          commercializerCheckerData: "0x",
+          commercialRevShare: 100,
+          commercialRevCelling: BigInt(1),
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: true,
+          derivativesReciprocal: true,
+          derivativeRevCelling: BigInt(1),
+          currency: "0x",
+          uri: "string",
+        },
+      };
+      sinon
+        .stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms")
+        .resolves(mockLicenseTermsResponse);
+
+      const result = await licenseClient.getLicenseTerms("1");
+
+      expect(result).to.equal(mockLicenseTermsResponse);
+    });
+
+    it("should throw error when call getLicenseTerms given licenseTermsId is not exist", async function () {
+      sinon
+        .stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms")
+        .throws(new Error("Given licenseTermsId is not exist."));
+
+      try {
+        await licenseClient.getLicenseTerms("1");
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to get license terms: Given licenseTermsId is not exist.",
+        );
+      }
     });
   });
 });

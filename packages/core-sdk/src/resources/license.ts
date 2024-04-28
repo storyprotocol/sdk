@@ -6,6 +6,7 @@ import {
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
+  PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
   RoyaltyPolicyLapClient,
   SimpleWalletClient,
@@ -264,6 +265,23 @@ export class LicenseClient {
       }
     } catch (error) {
       handleError(error, "Failed to mint license tokens");
+    }
+  }
+
+  /**
+   * Gets license terms of the given ID.
+   * @param selectedLicenseTermsId The ID of the license terms.
+   * @returns A Promise that resolves to an object containing the PILTerms associate with the given ID.
+   */
+  public async getLicenseTerms(
+    selectedLicenseTermsId: string,
+  ): Promise<PiLicenseTemplateGetLicenseTermsResponse> {
+    try {
+      return await this.piLicenseTemplateReadOnlyClient.getLicenseTerms({
+        selectedLicenseTermsId: BigInt(selectedLicenseTermsId),
+      });
+    } catch (error) {
+      handleError(error, "Failed to get license terms");
     }
   }
 

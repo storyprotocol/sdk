@@ -167,6 +167,7 @@ export default defineConfig(async () => {
             "LicenseTokensMinted",
             "registerDerivativeWithLicenseTokens",
             "registerDerivative",
+            "getLicenseTerms"
           ],
           ModuleRegistry: ["isRegistered"],
           RoyaltyModule: ["payRoyaltyOnBehalf"],

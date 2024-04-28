@@ -92,5 +92,10 @@ describe("License Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenId).to.be.a("string").and.not.empty;
     });
+
+    it("should not throw error when get license terms", async function () {
+      const result = await client.license.getLicenseTerms(licenseId);
+      expect(result).not.empty;
+    });
   });
 });
