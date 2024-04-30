@@ -32,7 +32,7 @@ describe.skip("Ip Account functions", () => {
     });
   });
 
-  describe("Execute ipAccount", async function () {
+  describe.skip("Execute ipAccount", async function () {
     it("should not throw error when execute", async () => {
       const response = await client.ipAccount.execute({
         accountAddress: ipId,
@@ -49,7 +49,8 @@ describe.skip("Ip Account functions", () => {
     });
   });
 
-  describe.skip("Execute with sig", async function () {
+  describe("Execute with sig", async function () {
+    // collect signature and help other execute method
     it("should not throw error when executeWithSig setting permission", async () => {
       const account = privateKeyToAccount(process.env.SEPOLIA_TEST_WALLET_PRIVATE_KEY as Hex);
 

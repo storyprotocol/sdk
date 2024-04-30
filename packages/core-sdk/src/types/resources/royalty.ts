@@ -69,8 +69,8 @@ export type SnapshotRequest = {
 export type claimRevenueRequest = {
   snapshotIds: string[];
   token: Hex;
-  account: Hex;
   royaltyVaultIpId: Hex;
+  account?: Hex;
   txOptions?: TxOptions;
 };
 

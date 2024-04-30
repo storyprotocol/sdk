@@ -76,6 +76,7 @@ export class IPAccountClient {
         data: request.data,
         signer: request.signer,
         deadline: parseToBigInt(request.deadline),
+        // 712 signature
         signature: request.signature,
       });
 

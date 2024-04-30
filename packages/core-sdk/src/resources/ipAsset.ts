@@ -207,7 +207,7 @@ export class IPAssetClient {
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  public async mintAndRegisterIpAndAttachPilTerms(
+  private async mintAndRegisterIpAndAttachPilTerms(
     request: MintAndRegisterIpAndAttachPilTermsRequest,
   ) {
     try {
@@ -288,7 +288,7 @@ export class IPAssetClient {
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  public async registerDerivativeIp(request: RegisterIpAndMakeDerivativeRequest) {
+  private async registerDerivativeIp(request: RegisterIpAndMakeDerivativeRequest) {
     try {
       const object: SpgRegisterIpAndMakeDerivativeRequest = {
         nftContract: getAddress(request.nftContract),
@@ -299,7 +299,6 @@ export class IPAssetClient {
           licenseTemplate: request.derivData.licenseTemplate || this.licenseTemplateClient.address,
           royaltyContext: zeroAddress,
         },
-
         sigRegister: {
           signer: getAddress(request.sigRegister.signer),
           deadline: BigInt(request.sigRegister.deadline),
