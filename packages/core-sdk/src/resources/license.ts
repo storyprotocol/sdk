@@ -1,4 +1,4 @@
-import { PublicClient, zeroAddress } from "viem";
+import { PublicClient, getAddress, zeroAddress } from "viem";
 
 import {
   IpAssetRegistryClient,
@@ -91,7 +91,7 @@ export class LicenseClient {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
         mintingFee: request.mintingFee,
-        currency: request.currency,
+        currency: request.currency && getAddress(request.currency),
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
@@ -126,7 +126,7 @@ export class LicenseClient {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
         mintingFee: request.mintingFee,
-        currency: request.currency,
+        currency: request.currency && getAddress(request.currency),
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
@@ -158,7 +158,9 @@ export class LicenseClient {
    */
   public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
     try {
-      const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: request.ipId });
+      const isRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: getAddress(request.ipId),
+      });
       if (!isRegistered) {
         throw new Error(`The IP with id ${request.ipId} is not registered.`);
       }
@@ -171,7 +173,9 @@ export class LicenseClient {
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.ipId,
-          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTemplate:
+            (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
+            this.licenseTemplateClient.address,
           licenseTermsId: BigInt(request.licenseTermsId),
         });
       if (isAttachedLicenseTerms) {
@@ -222,7 +226,7 @@ export class LicenseClient {
   ): Promise<MintLicenseTokensResponse> {
     try {
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: request.licensorIpId,
+        id: getAddress(request.licensorIpId),
       });
       if (!isLicenseIpIdRegistered) {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
@@ -236,7 +240,9 @@ export class LicenseClient {
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.licensorIpId,
-          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTemplate:
+            (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
+            this.licenseTemplateClient.address,
           licenseTermsId: BigInt(request.licenseTermsId),
         });
       if (!isAttachedLicenseTerms) {
@@ -249,7 +255,8 @@ export class LicenseClient {
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: BigInt(request.licenseTermsId),
         amount: BigInt(request.amount || 1),
-        receiver: request.receiver || this.wallet.account!.address,
+        receiver:
+          (request.receiver && getAddress(request.receiver)) || this.wallet.account!.address,
         royaltyContext: zeroAddress,
       });
       if (request.txOptions?.waitForTransaction) {

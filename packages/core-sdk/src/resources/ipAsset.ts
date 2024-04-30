@@ -108,7 +108,7 @@ export class IPAssetClient {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
       for (const parentId of request.parentIpIds) {
-        const isParentIpIdRegistered = await this.isRegistered(parentId);
+        const isParentIpIdRegistered = await this.isRegistered(getAddress(parentId));
         if (!isParentIpIdRegistered) {
           throw new Error(`The parent IP with id ${parentId} is not registered.`);
         }
@@ -119,8 +119,10 @@ export class IPAssetClient {
       for (let i = 0; i < request.parentIpIds.length; i++) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
-            ipId: request.parentIpIds[i],
-            licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+            ipId: getAddress(request.parentIpIds[i]),
+            licenseTemplate:
+              (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
+              this.licenseTemplateClient.address,
             licenseTermsId: BigInt(request.licenseTermsIds[i]),
           });
         if (!isAttachedLicenseTerms) {
@@ -176,7 +178,7 @@ export class IPAssetClient {
         }
       }
       const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
-        childIpId: request.childIpId,
+        childIpId: getAddress(request.childIpId),
         licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
         royaltyContext: zeroAddress,
       });
@@ -229,8 +231,8 @@ export class IPAssetClient {
         );
       }
       const licenseTerm = getLicenseTermByType(request.pilType, {
-        mintingFee: request.mintingFee!,
-        currency: request.currency!,
+        mintingFee: request.mintingFee,
+        currency: request.currency && getAddress(request.currency),
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
@@ -296,7 +298,9 @@ export class IPAssetClient {
         derivData: {
           parentIpIds: request.derivData.parentIpIds.map((id) => getAddress(id)),
           licenseTermsIds: request.derivData.licenseTermsIds.map((id) => BigInt(id)),
-          licenseTemplate: request.derivData.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTemplate:
+            (request.derivData.licenseTemplate && getAddress(request.derivData.licenseTemplate)) ||
+            this.licenseTemplateClient.address,
           royaltyContext: zeroAddress,
         },
         sigRegister: {
@@ -351,7 +355,7 @@ export class IPAssetClient {
   private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
     const ipId = await this.ipAssetRegistryClient.ipId({
       chainId: BigInt(chain[this.chainId]),
-      tokenContract: tokenAddress,
+      tokenContract: getAddress(tokenAddress),
       tokenId: tokenId,
     });
     const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: ipId });
@@ -359,6 +363,6 @@ export class IPAssetClient {
   }
 
   private async isRegistered(ipId: Hex): Promise<boolean> {
-    return await this.ipAssetRegistryClient.isRegistered({ id: ipId });
+    return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId) });
   }
 }

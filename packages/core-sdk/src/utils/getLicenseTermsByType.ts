@@ -5,8 +5,8 @@ import { PIL_TYPE, LicenseTerms } from "../types/resources/license";
 export function getLicenseTermByType(
   type: PIL_TYPE,
   term?: {
-    mintingFee: string;
-    currency: Hex;
+    mintingFee?: string;
+    currency?: Hex;
     royaltyPolicyLAPAddress: Hex;
     commercialRevShare?: number;
   },

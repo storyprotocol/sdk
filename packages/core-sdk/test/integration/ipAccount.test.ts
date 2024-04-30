@@ -2,50 +2,51 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
 import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
-import { Hex, encodeFunctionData } from "viem";
-import { ipAssetRegistryAbi } from "../../src/abi/generated";
+import { Hex, encodeFunctionData, getAddress, zeroAddress } from "viem";
+import { accessControllerAbi, accessControllerAddress } from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const sepoliaChainId = BigInt(11155111);
-describe.skip("Ip Account functions", () => {
+
+describe("Ip Account functions", () => {
   let client: StoryClient;
   let ipId: Hex;
   let data: Hex;
 
   before(async function () {
     client = getStoryClientInSepolia();
-    const waitForTransaction: boolean = true;
     const tokenId = await getTokenId();
-    const registerResponse = await client.ipAsset.register({
+    const registerResult = await client.ipAsset.register({
       tokenContract: MockERC721,
-      tokenId: "1",
+      tokenId: tokenId!,
       txOptions: {
-        waitForTransaction: waitForTransaction,
+        waitForTransaction: true,
       },
     });
-    ipId = registerResponse.ipId!;
+    ipId = registerResult.ipId!;
     data = encodeFunctionData({
-      abi: ipAssetRegistryAbi,
-      functionName: "register",
-      args: [sepoliaChainId, MockERC721, BigInt(tokenId!)],
+      abi: accessControllerAbi,
+      functionName: "setPermission",
+      args: [
+        getAddress(ipId),
+        getAddress(process.env.TEST_WALLET_ADDRESS as Hex),
+        getAddress("0x2ac240293f12032E103458451dE8A8096c5A72E8"),
+        "0x00000000" as Hex,
+        1,
+      ],
     });
   });
 
-  describe.skip("Execute ipAccount", async function () {
+  describe("Execute ipAccount", async function () {
     it("should not throw error when execute", async () => {
       const response = await client.ipAccount.execute({
-        accountAddress: ipId,
+        to: accessControllerAddress[11155111],
         value: 0,
-        to: client.ipAsset.ipAssetRegistryClient.address,
-        data: data,
-        txOptions: {
-          waitForTransaction: true,
-        },
+        data,
+        accountAddress: ipId,
       });
-      console.log("response", response);
-      expect(response.txHash).to.be.a("string");
-      expect(response.txHash).not.empty;
+      expect(response.txHash).to.be.a("string").and.not.empty;
     });
   });
 
