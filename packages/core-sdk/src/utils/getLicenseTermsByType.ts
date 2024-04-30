@@ -55,7 +55,7 @@ export function getLicenseTermByType(
       );
     }
     licenseTerms.royaltyPolicy = getAddress(term.royaltyPolicyLAPAddress);
-    licenseTerms.mintingFee = BigInt(term.mintingFee!);
+    licenseTerms.mintingFee = BigInt(term.mintingFee);
     licenseTerms.commercialUse = true;
     licenseTerms.commercialAttribution = true;
     licenseTerms.commercialRevShare = term.commercialRevShare;

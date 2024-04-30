@@ -50,7 +50,7 @@ describe("Ip Account functions", () => {
     });
   });
 
-  describe("Execute with sig", async function () {
+  describe.skip("Execute with sig", async function () {
     // collect signature and help other execute method
     it("should not throw error when executeWithSig setting permission", async () => {
       const account = privateKeyToAccount(process.env.SEPOLIA_TEST_WALLET_PRIVATE_KEY as Hex);

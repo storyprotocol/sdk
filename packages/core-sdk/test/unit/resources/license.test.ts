@@ -2,9 +2,12 @@ import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { LicenseClient } from "../../../src";
-import { PublicClient, WalletClient, Account } from "viem";
+import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { PiLicenseTemplateGetLicenseTermsResponse } from "../../../src/abi/generated";
+import {
+  PiLicenseTemplateGetLicenseTermsResponse,
+  RoyaltyPolicyLapClient,
+} from "../../../src/abi/generated";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -21,6 +24,11 @@ describe("Test LicenseClient", function () {
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     licenseClient = new LicenseClient(rpcMock, walletMock);
+    licenseClient.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(
+      rpcMock,
+      walletMock,
+      zeroAddress,
+    );
   });
 
   afterEach(function () {
@@ -59,8 +67,8 @@ describe("Test LicenseClient", function () {
         .returns([
           {
             licenseTermsId: BigInt(1),
-            licenseTemplate: "0x",
-            licenseTerms: "0x",
+            licenseTemplate: zeroAddress,
+            licenseTerms: zeroAddress,
           },
         ]);
 
@@ -103,7 +111,7 @@ describe("Test LicenseClient", function () {
 
       const result = await licenseClient.registerCommercialUsePIL({
         mintingFee: "1",
-        currency: "0x",
+        currency: zeroAddress,
       });
 
       expect(result.licenseTermsId).to.equal("1");
@@ -117,7 +125,7 @@ describe("Test LicenseClient", function () {
 
       const result = await licenseClient.registerCommercialUsePIL({
         mintingFee: "1",
-        currency: "0x",
+        currency: zeroAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -133,14 +141,14 @@ describe("Test LicenseClient", function () {
         .returns([
           {
             licenseTermsId: BigInt(1),
-            licenseTemplate: "0x",
-            licenseTerms: "0x",
+            licenseTemplate: zeroAddress,
+            licenseTerms: zeroAddress,
           },
         ]);
 
       const result = await licenseClient.registerCommercialUsePIL({
         mintingFee: "1",
-        currency: "0x",
+        currency: zeroAddress,
         txOptions: {
           waitForTransaction: true,
         },
@@ -161,7 +169,7 @@ describe("Test LicenseClient", function () {
       try {
         await licenseClient.registerCommercialUsePIL({
           mintingFee: "1",
-          currency: "0x",
+          currency: zeroAddress,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -180,7 +188,7 @@ describe("Test LicenseClient", function () {
       const result = await licenseClient.registerCommercialRemixPIL({
         mintingFee: "1",
         commercialRevShare: 100,
-        currency: "0x",
+        currency: zeroAddress,
       });
 
       expect(result.licenseTermsId).to.equal("1");
@@ -195,7 +203,7 @@ describe("Test LicenseClient", function () {
       const result = await licenseClient.registerCommercialRemixPIL({
         mintingFee: "1",
         commercialRevShare: 100,
-        currency: "0x",
+        currency: zeroAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -211,15 +219,15 @@ describe("Test LicenseClient", function () {
         .returns([
           {
             licenseTermsId: BigInt(1),
-            licenseTemplate: "0x",
-            licenseTerms: "0x",
+            licenseTemplate: zeroAddress,
+            licenseTerms: zeroAddress,
           },
         ]);
 
       const result = await licenseClient.registerCommercialRemixPIL({
         mintingFee: "1",
         commercialRevShare: 100,
-        currency: "0x",
+        currency: zeroAddress,
         txOptions: {
           waitForTransaction: true,
         },
@@ -236,11 +244,12 @@ describe("Test LicenseClient", function () {
       sinon
         .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
         .throws(new Error("request fail."));
+
       try {
         await licenseClient.registerCommercialRemixPIL({
           mintingFee: "1",
           commercialRevShare: 100,
-          currency: "0x",
+          currency: zeroAddress,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -256,12 +265,12 @@ describe("Test LicenseClient", function () {
 
       try {
         await licenseClient.attachLicenseTerms({
-          ipId: "0x",
+          ipId: zeroAddress,
           licenseTermsId: "1",
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to attach license terms: The IP with id 0x is not registered.",
+          "Failed to attach license terms: The IP with id 0x0000000000000000000000000000000000000000 is not registered.",
         );
       }
     });
@@ -272,7 +281,7 @@ describe("Test LicenseClient", function () {
 
       try {
         await licenseClient.attachLicenseTerms({
-          ipId: "0x",
+          ipId: zeroAddress,
           licenseTermsId: "1",
         });
       } catch (error) {
@@ -291,12 +300,12 @@ describe("Test LicenseClient", function () {
 
       try {
         await licenseClient.attachLicenseTerms({
-          ipId: "0x",
+          ipId: zeroAddress,
           licenseTermsId: "1",
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to attach license terms: License terms id 1 is already attached to the IP with id 0x.",
+          "Failed to attach license terms: License terms id 1 is already attached to the IP with id 0x0000000000000000000000000000000000000000.",
         );
       }
     });
@@ -310,13 +319,32 @@ describe("Test LicenseClient", function () {
       sinon.stub(licenseClient.licensingModuleClient, "attachLicenseTerms").resolves(txHash);
 
       const result = await licenseClient.attachLicenseTerms({
-        ipId: "0x",
+        ipId: zeroAddress,
         licenseTermsId: "1",
       });
 
       expect(result.txHash).to.equal(txHash);
     });
 
+    it("should throw invalid address when call when call attachLicenseTerms given a invalid licenseTemplate address", async function () {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+
+      try {
+        await licenseClient.attachLicenseTerms({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: "invalid address" as Hex,
+        });
+      } catch (error) {
+        expect((error as Error).message).contain(
+          `Failed to attach license terms: Address "invalid address" is invalid`,
+        );
+      }
+    });
     it("should return txHash when call attachLicenseTerms given args is correct and waitForTransaction of true", async function () {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
@@ -326,7 +354,7 @@ describe("Test LicenseClient", function () {
       sinon.stub(licenseClient.licensingModuleClient, "attachLicenseTerms").resolves(txHash);
 
       const result = await licenseClient.attachLicenseTerms({
-        ipId: "0x",
+        ipId: zeroAddress,
         licenseTermsId: "1",
         txOptions: {
           waitForTransaction: true,
@@ -343,12 +371,49 @@ describe("Test LicenseClient", function () {
 
       try {
         await licenseClient.mintLicenseTokens({
-          licensorIpId: "0x",
+          licensorIpId: zeroAddress,
           licenseTermsId: "1",
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to mint license tokens: The licensor IP with id 0x is not registered.",
+          "Failed to mint license tokens: The licensor IP with id 0x0000000000000000000000000000000000000000 is not registered.",
+        );
+      }
+    });
+
+    it("should throw invalid address when call mintLicenseTokens given invalid licenseTemplate address", async function () {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+      try {
+        await licenseClient.mintLicenseTokens({
+          licensorIpId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: "invalid address" as Hex,
+        });
+      } catch (error) {
+        expect((error as Error).message).contain(
+          `Failed to mint license tokens: Address "invalid address" is invalid`,
+        );
+      }
+    });
+
+    it("should throw invalid address when call mintLicenseTokens given invalid receiver address", async function () {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+
+      try {
+        await licenseClient.mintLicenseTokens({
+          licensorIpId: zeroAddress,
+          licenseTermsId: "1",
+          receiver: "invalid address" as Hex,
+        });
+      } catch (error) {
+        expect((error as Error).message).contain(
+          `Failed to mint license tokens: Address "invalid address" is invalid`,
         );
       }
     });
@@ -359,7 +424,7 @@ describe("Test LicenseClient", function () {
 
       try {
         await licenseClient.mintLicenseTokens({
-          licensorIpId: "0x",
+          licensorIpId: zeroAddress,
           licenseTermsId: "1",
         });
       } catch (error) {
@@ -378,12 +443,12 @@ describe("Test LicenseClient", function () {
 
       try {
         await licenseClient.mintLicenseTokens({
-          licensorIpId: "0x",
+          licensorIpId: zeroAddress,
           licenseTermsId: "1",
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to mint license tokens: License terms id 1 is not attached to the IP with id 0x.",
+          "Failed to mint license tokens: License terms id 1 is not attached to the IP with id 0x0000000000000000000000000000000000000000.",
         );
       }
     });
@@ -397,7 +462,7 @@ describe("Test LicenseClient", function () {
       sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
 
       const result = await licenseClient.mintLicenseTokens({
-        licensorIpId: "0x",
+        licensorIpId: zeroAddress,
         licenseTermsId: "1",
       });
 
@@ -413,18 +478,18 @@ describe("Test LicenseClient", function () {
       sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
       sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
         {
-          caller: "0x",
-          licensorIpId: "0x",
-          licenseTemplate: "0x",
+          caller: zeroAddress,
+          licensorIpId: zeroAddress,
+          licenseTemplate: zeroAddress,
           licenseTermsId: BigInt(1),
           amount: BigInt(1),
-          receiver: "0x",
+          receiver: zeroAddress,
           startLicenseTokenId: BigInt(1),
         },
       ]);
 
       const result = await licenseClient.mintLicenseTokens({
-        licensorIpId: "0x",
+        licensorIpId: zeroAddress,
         licenseTermsId: "1",
         txOptions: {
           waitForTransaction: true,
@@ -441,13 +506,13 @@ describe("Test LicenseClient", function () {
       const mockLicenseTermsResponse: PiLicenseTemplateGetLicenseTermsResponse = {
         terms: {
           transferable: true,
-          royaltyPolicy: "0x",
+          royaltyPolicy: zeroAddress,
           mintingFee: BigInt(1),
           expiration: BigInt(1),
           commercialUse: true,
           commercialAttribution: true,
-          commercializerChecker: "0x",
-          commercializerCheckerData: "0x",
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
           commercialRevShare: 100,
           commercialRevCelling: BigInt(1),
           derivativesAllowed: true,
@@ -455,7 +520,7 @@ describe("Test LicenseClient", function () {
           derivativesApproval: true,
           derivativesReciprocal: true,
           derivativeRevCelling: BigInt(1),
-          currency: "0x",
+          currency: zeroAddress,
           uri: "string",
         },
       };
