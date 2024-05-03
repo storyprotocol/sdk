@@ -11,8 +11,8 @@ import {
   RoyaltyVaultAddress,
   SnapshotRequest,
   SnapshotResponse,
-  claimRevenueRequest,
-  claimRevenueResponse,
+  ClaimRevenueRequest,
+  ClaimRevenueResponse,
 } from "../types/resources/royalty";
 import {
   IpAssetRegistryClient,
@@ -169,7 +169,7 @@ export class RoyaltyClient {
    * @returns A Promise that resolves to an object containing the transaction hash and optional claimableToken if waitForTxn is set to true.
    * @emits RevenueTokenClaimed (claimer, token, amount).
    */
-  public async claimRevenue(request: claimRevenueRequest): Promise<claimRevenueResponse> {
+  public async claimRevenue(request: ClaimRevenueRequest): Promise<ClaimRevenueResponse> {
     try {
       const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
