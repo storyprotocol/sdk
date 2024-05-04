@@ -1,4 +1,4 @@
-import { Hex, PublicClient, encodeFunctionData } from "viem";
+import { Hex, PublicClient, encodeFunctionData, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -55,12 +55,12 @@ export class RoyaltyClient {
   ): Promise<CollectRoyaltyTokensResponse> {
     try {
       const isParentIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: request.parentIpId,
+        id: getAddress(request.parentIpId),
       });
       if (!isParentIpIdRegistered) {
         throw new Error(`The parent IP with id ${request.parentIpId} is not registered.`);
       }
-      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
@@ -99,13 +99,13 @@ export class RoyaltyClient {
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
       const isReceiverRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: request.receiverIpId,
+        id: getAddress(request.receiverIpId),
       });
       if (!isReceiverRegistered) {
         throw new Error(`The receiver IP with id ${request.receiverIpId} is not registered.`);
       }
       const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: request.payerIpId,
+        id: getAddress(request.payerIpId),
       });
       if (!isPayerRegistered) {
         throw new Error(`The payer IP with id ${request.payerIpId} is not registered.`);
@@ -113,7 +113,7 @@ export class RoyaltyClient {
       const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf({
         receiverIpId: request.receiverIpId,
         payerIpId: request.payerIpId,
-        token: request.token,
+        token: getAddress(request.token),
         amount: BigInt(request.amount),
       });
       if (request.txOptions?.waitForTransaction) {
@@ -141,16 +141,16 @@ export class RoyaltyClient {
     request: ClaimableRevenueRequest,
   ): Promise<ClaimableRevenueResponse> {
     try {
-      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
         proxyAddress,
       );
       const amount = await ipRoyaltyVault.claimableRevenue({
-        account: request.account,
+        account: getAddress(request.account),
         snapshotId: BigInt(request.snapshotId),
-        token: request.token,
+        token: getAddress(request.token),
       });
       return amount.toString();
     } catch (error) {
@@ -164,33 +164,41 @@ export class RoyaltyClient {
    *   @param request.snapshotIds The list of snapshot ids.
    *   @param request.royaltyVaultIpId The id of the royalty vault.
    *   @param request.token The revenue token to claim.
-   *   @param request.account The address of the token holder.
+   *   @param request.account [Optional] The ipId to send.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional claimableToken if waitForTxn is set to true.
    * @emits RevenueTokenClaimed (claimer, token, amount).
    */
   public async claimRevenue(request: ClaimRevenueRequest): Promise<ClaimRevenueResponse> {
     try {
-      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
         proxyAddress,
       );
-      const iPAccountExecuteResponse = await this.ipAccountClient.execute({
-        to: proxyAddress,
-        value: 0,
-        accountAddress: request.account,
-        txOptions: {
-          waitForTransaction: true,
-        },
-        data: encodeFunctionData({
-          abi: ipRoyaltyVaultImplAbi,
-          functionName: "claimRevenueBySnapshotBatch",
-          args: [request.snapshotIds.map((item) => BigInt(item)), request.token],
-        }),
-      });
-      const txHash = iPAccountExecuteResponse.txHash as Hex;
+      let txHash: Hex;
+      if (request.account) {
+        const iPAccountExecuteResponse = await this.ipAccountClient.execute({
+          to: proxyAddress,
+          value: 0,
+          accountAddress: getAddress(request.account),
+          txOptions: {
+            waitForTransaction: true,
+          },
+          data: encodeFunctionData({
+            abi: ipRoyaltyVaultImplAbi,
+            functionName: "claimRevenueBySnapshotBatch",
+            args: [request.snapshotIds.map((item) => BigInt(item)), request.token],
+          }),
+        });
+        txHash = iPAccountExecuteResponse.txHash as Hex;
+      } else {
+        txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch({
+          snapshotIds: request.snapshotIds.map((item) => BigInt(item)),
+          token: getAddress(request.token),
+        });
+      }
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({
           hash: txHash,
@@ -214,7 +222,7 @@ export class RoyaltyClient {
    */
   public async snapshot(request: SnapshotRequest): Promise<SnapshotResponse> {
     try {
-      const proxyAddress = await this.getRoyaltyVaultProxyAddress(request.royaltyVaultIpId);
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
@@ -233,9 +241,14 @@ export class RoyaltyClient {
     }
   }
 
-  private async getRoyaltyVaultProxyAddress(royaltyVaultIpId: Hex): Promise<RoyaltyVaultAddress> {
+  /**
+   * Get the royalty vault proxy address of given royaltyVaultIpId.
+   * @param royaltyVaultIpId the id of the royalty vault.
+   * @returns A Promise that resolves to an object containing the royalty vault address.
+   */
+  public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<RoyaltyVaultAddress> {
     const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-      id: royaltyVaultIpId,
+      id: getAddress(royaltyVaultIpId),
     });
     if (!isRoyaltyVaultIpIdRegistered) {
       throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
