@@ -3,7 +3,7 @@ import { StoryClient } from "../../src";
 import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
 import { Hex } from "viem";
 
-describe.skip("Permission Functions", () => {
+describe("Permission Functions", () => {
   let client: StoryClient;
 
   before(function () {

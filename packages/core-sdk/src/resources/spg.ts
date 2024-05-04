@@ -1,0 +1,65 @@
+import { PublicClient, getAddress, isAddress, zeroAddress } from "viem";
+
+import { SimpleWalletClient, SpgClient } from "../abi/generated";
+import {
+  CreateSPGNFTCollectionRequest,
+  CreateSPGNFTCollectionResponse,
+} from "../types/resources/spg";
+import { handleError } from "../utils/errors";
+
+export class SPGClient {
+  public spgClient: SpgClient;
+  private readonly rpcClient: PublicClient;
+  private readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+    this.spgClient = new SpgClient(rpcClient, wallet);
+  }
+
+  /**
+   * Creates a new SPG NFT Collection.
+   * @param request - The request object containing necessary data to create a SPG NFT Collection.
+   *   @param request.name - The name of the collection.
+   * 	 @param request.symbol - The symbol of the collection.
+   * 	 @param request.maxSupply - The maximum supply of the collection.
+   * 	 @param request.mintCost - The cost to mint a token.
+   * 	 @param request.mintToken - The token to mint.
+   * 	 @param request.owner - The owner of the collection.
+   *   @param request.txOptions - Optional transaction options.
+   * @returns A Promise that resolves to a CreateSPGNFTCollectionResponse containing the transaction hash and collection address.
+   * @emits CollectionCreated (nftContract);
+   */
+  public async createSPGNFTCollection<
+    P extends CreateSPGNFTCollectionRequest,
+    R = CreateSPGNFTCollectionResponse<P>,
+  >(request: P): Promise<R> {
+    try {
+      if (request.mintCost > 0n && !isAddress(request.mintToken || "")) {
+        throw new Error("Invalid mint token address, mint cost is greater than 0.");
+      }
+
+      const txHash = await this.spgClient.createCollection({
+        name: request.name,
+        symbol: request.symbol,
+        maxSupply: request.maxSupply,
+        mintCost: request.mintCost,
+        mintToken: request.mintToken ?? zeroAddress,
+        owner: (request.owner && getAddress(request.owner)) || this.wallet.account!.address,
+      });
+
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const targetLogs = this.spgClient.parseTxCollectionCreatedEvent(txReceipt);
+        return {
+          txHash: txHash,
+          nftContract: targetLogs[0].nftContract,
+        } as R;
+      }
+      return { txHash: txHash } as R;
+    } catch (error) {
+      handleError(error, "Failed to create a SPG NFT collection");
+    }
+  }
+}

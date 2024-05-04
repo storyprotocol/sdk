@@ -5,7 +5,7 @@
     "module": "ESNext",
     "outDir": "dist",
     "types": ["mocha"],
-    "lib": ["dom"]
+    "lib": ["dom", "es2015"]
   },
   "include": ["src/**/*", "test/**/*"]
 }
