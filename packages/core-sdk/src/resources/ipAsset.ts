@@ -209,7 +209,7 @@ export class IPAssetClient {
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  private async mintAndRegisterIpAndAttachPilTerms(
+  public async mintAndRegisterIpAndAttachPilTerms(
     request: MintAndRegisterIpAndAttachPilTermsRequest,
   ) {
     try {
