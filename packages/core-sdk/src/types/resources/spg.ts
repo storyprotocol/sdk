@@ -12,7 +12,7 @@ export type CreateSPGNFTCollectionRequest = {
   txOptions?: TxOptions;
 };
 
-export type CreateSPGNFTCollectionResponse<P extends CreateSPGNFTCollectionRequest> =
-  P["txOptions"] extends { waitForTransaction: true }
+export type CreateSPGNFTCollectionResponse<TReq extends CreateSPGNFTCollectionRequest> =
+  TReq["txOptions"] extends { waitForTransaction: true }
     ? { txHash: string; nftContract: Hex }
-    : { txHash: string };
+    : { txHash: string; nftContract?: Hex };

@@ -32,9 +32,9 @@ export class SPGClient {
    * @emits CollectionCreated (nftContract);
    */
   public async createSPGNFTCollection<
-    P extends CreateSPGNFTCollectionRequest,
-    R = CreateSPGNFTCollectionResponse<P>,
-  >(request: P): Promise<R> {
+    TReq extends CreateSPGNFTCollectionRequest,
+    TRes = CreateSPGNFTCollectionResponse<TReq>,
+  >(request: TReq): Promise<TRes> {
     try {
       if (request.mintCost > 0n && !isAddress(request.mintToken || "")) {
         throw new Error("Invalid mint token address, mint cost is greater than 0.");
@@ -55,9 +55,9 @@ export class SPGClient {
         return {
           txHash: txHash,
           nftContract: targetLogs[0].nftContract,
-        } as R;
+        } as TRes;
       }
-      return { txHash: txHash } as R;
+      return { txHash: txHash } as TRes;
     } catch (error) {
       handleError(error, "Failed to create a SPG NFT collection");
     }

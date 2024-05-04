@@ -5,6 +5,7 @@ export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
 export { DisputeClient } from "./resources/dispute";
+export { SPGClient } from "./resources/spg";
 
 export type { StoryConfig } from "./types/config";
 export type { TypedData } from "./types/common";
@@ -61,5 +62,10 @@ export type {
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
 } from "./types/resources/ipAccount";
+
+export type {
+  CreateSPGNFTCollectionRequest,
+  CreateSPGNFTCollectionResponse,
+} from "./types/resources/spg";
 
 export type { PiLicenseTemplateGetLicenseTermsResponse } from "./abi/generated";
