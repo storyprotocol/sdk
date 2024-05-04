@@ -105,7 +105,7 @@ describe("IP Asset Functions ", () => {
     });
   });
 
-  describe.only("SPG", () => {
+  describe("SPG", () => {
     let nftContract: Hex;
 
     before(async () => {
