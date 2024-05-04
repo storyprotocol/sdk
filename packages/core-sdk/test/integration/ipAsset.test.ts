@@ -1,9 +1,10 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
-import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
+import { Hex } from "viem";
+
+import { StoryClient } from "../../src";
+import { PIL_TYPE } from "../../src/types/resources/license";
 import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
-// import { PIL_TYPE } from "../../src/types/resources/license";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -104,39 +105,36 @@ describe("IP Asset Functions ", () => {
     });
   });
 
-  // describe("SPG", () => {
-  //   const nftContract = "0x861554A6C750E0442f5e750B90Ca7eb80cbaED3F";
-  //   it.skip("should not throw error when mint and register ip and attach pil terms", async () => {
-  //     const txHash = await client.ipAsset.mintAndRegisterIpAndAttachPilTerms({
-  //       nftContract,
-  //       pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
-  //       metadata: {
-  //         metadataURI: "test-uri",
-  //         metadata: "test-metadata-hash",
-  //         nftMetadata: "test-nft-metadata-hash",
-  //       },
-  //     });
-  //     console.log("txHash: ", txHash);
-  //     expect(txHash).to.be.a("string").and.not.empty;
-  //   });
+  describe.only("SPG", () => {
+    let nftContract: Hex;
 
-  //   it("should not throw error when register derivative ip", async () => {
-  //     const tokenId = await getTokenId();
-  //     const txHash = await client.ipAsset.registerDerivativeIp({
-  //       nftContract: MockERC721,
-  //       tokenId: tokenId!,
-  //       derivData: {
-  //         parentIpIds: [parentIpId],
-  //         licenseTermsIds: [noCommercialLicenseTermsId],
-  //       },
-  //       sigRegister: {
-  //         signature: toHex(toBytes("test-signature")),
-  //         signer: "0x861554A6C750E0442f5e750B90Ca7eb80cbaED3F",
-  //         deadline: "2022-12-12",
-  //       },
-  //     });
-  //     console.log("txHash: ", txHash);
-  //     expect(txHash).to.be.a("string").and.not.empty;
-  //   });
-  // });
+    before(async () => {
+      // Create a SPG NFT collection for this test-suite
+      const txData = await client.spg.createSPGNFTCollection({
+        name: "test-collection",
+        symbol: "TEST",
+        maxSupply: 100,
+        mintCost: 0n,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(txData.nftContract).to.be.a("string").and.not.empty;
+      nftContract = txData.nftContract;
+    });
+
+    it("should not throw error when mint and register ip and attach pil terms", async () => {
+      const txHash = await client.ipAsset.mintAndRegisterIpAndAttachPilTerms({
+        nftContract,
+        pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+        metadata: {
+          metadataURI: "test-uri",
+          metadata: "test-metadata-hash",
+          nftMetadata: "test-nft-metadata-hash",
+        },
+      });
+      expect(txHash).to.be.a("string").and.not.empty;
+    });
+  });
 });
