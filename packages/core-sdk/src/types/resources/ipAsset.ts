@@ -1,21 +1,21 @@
-import { Address, Hex } from "viem";
+import { Address, Address } from "viem";
 
 import { TxOptions } from "../options";
 import { PIL_TYPE } from "./license";
 
 export type RegisterIpResponse = {
   txHash?: string;
-  ipId?: Hex;
+  ipId?: Address;
 };
 
 export type RegisterRequest = {
-  tokenContract: Hex;
+  tokenContract: Address;
   tokenId: string;
   txOptions?: TxOptions;
 };
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
-  childIpId: Hex;
+  childIpId: Address;
   licenseTokenIds: string[];
   txOptions?: TxOptions;
 };
@@ -25,16 +25,16 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
 };
 
 export type RegisterDerivativeRequest = {
-  childIpId: Hex;
-  parentIpIds: Hex[];
+  childIpId: Address;
+  parentIpIds: Address[];
   licenseTermsIds: string[];
-  licenseTemplate?: Hex;
+  licenseTemplate?: Address;
   txOptions?: TxOptions;
 };
 
 export type RegisterDerivativeResponse = {
   txHash?: string;
-  childIpId?: Hex;
+  childIpId?: Address;
 };
 
 export type CreateIpAssetWithPilTermsRequest = {
@@ -45,9 +45,9 @@ export type CreateIpAssetWithPilTermsRequest = {
     metadata: string;
     nftMetadata: string;
   };
-  recipient?: Hex;
+  recipient?: Address;
   mintingFee?: string;
-  currency?: Hex;
+  currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
 };
@@ -68,11 +68,11 @@ export type RegisterIpAndMakeDerivativeRequest = {
   sigMetadata?: {
     signer: Address;
     deadline: string;
-    signature: Hex;
+    signature: Address;
   };
   sigRegister: {
     signer: Address;
     deadline: string;
-    signature: Hex;
+    signature: Address;
   };
 };

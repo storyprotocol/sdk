@@ -1,4 +1,4 @@
-import { Hex, PublicClient, getAddress, toHex, zeroAddress } from "viem";
+import { Hex, PublicClient, getAddress, zeroAddress,toHex } from "viem";
 
 import { chain } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -25,8 +25,8 @@ import {
   SpgMintAndRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
 } from "../abi/generated";
-import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 import { PIL_TYPE } from "../types/resources/license";
+import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
