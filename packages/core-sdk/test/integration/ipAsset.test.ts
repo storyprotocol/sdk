@@ -1,9 +1,8 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Hex, toBytes, toHex } from "viem";
+import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
-import { PIL_TYPE } from "../../src/types/resources/license";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

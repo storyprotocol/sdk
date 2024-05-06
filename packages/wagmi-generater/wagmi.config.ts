@@ -143,7 +143,7 @@ export default defineConfig(async () => {
             "raiseDispute",
             "resolveDispute",
           ],
-          IPAccountImpl: ["execute", "executeWithSig"],
+          IPAccountImpl: ["execute", "executeWithSig","state"],
           IPAssetRegistry: ["IPRegistered", "ipId", "isRegistered", "register"],
           IpRoyaltyVaultImpl: [
             "claimRevenueBySnapshotBatch",

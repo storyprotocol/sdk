@@ -8,7 +8,11 @@ import {
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
 import { parseToBigInt } from "../utils/utils";
-import { IpAccountImplClient, SimpleWalletClient } from "../abi/generated";
+import {
+  IpAccountImplClient,
+  IpAccountImplStateResponse,
+  SimpleWalletClient,
+} from "../abi/generated";
 
 export class IPAccountClient {
   private readonly wallet: SimpleWalletClient;
@@ -76,7 +80,6 @@ export class IPAccountClient {
         data: request.data,
         signer: request.signer,
         deadline: parseToBigInt(request.deadline),
-        // 712 signature
         signature: request.signature,
       });
 
@@ -87,5 +90,13 @@ export class IPAccountClient {
     } catch (error) {
       handleError(error, "Failed to execute with signature for the IP Account transaction");
     }
+  }
+  public async getIpAccountAddress(accountAddress: string): Promise<IpAccountImplStateResponse> {
+    const ipAccount = new IpAccountImplClient(
+      this.rpcClient,
+      this.wallet,
+      getAddress(accountAddress),
+    );
+    return await ipAccount.state();
   }
 }
