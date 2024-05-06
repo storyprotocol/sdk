@@ -75,7 +75,7 @@ jobs:
         run: pnpm fix
 
       - name: Test
-        run:
+        run: |
           anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --block-time 1 --silent
           pnpm test
 
