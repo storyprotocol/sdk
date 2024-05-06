@@ -22,9 +22,9 @@ on:
         required: true
       SEPOLIA_TEST_WALLET_ADDRESS:
         required: true
-      STORY_TEST_NET_RPC_PROVIDER_URL: 
+      STORY_TEST_NET_RPC_PROVIDER_URL:
         required: true
-      STORY_TEST_NET_WALLET_PRIVATE_KEY: 
+      STORY_TEST_NET_WALLET_PRIVATE_KEY:
         required: true
       STORY_TEST_NET_TEST_WALLET_ADDRESS:
         required: true
@@ -62,6 +62,11 @@ jobs:
         with:
           node-version: 20.0.0
           cache: pnpm
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - name: Install dependencies
         run: pnpm install
