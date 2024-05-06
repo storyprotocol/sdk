@@ -70,7 +70,9 @@ jobs:
         run: pnpm fix
 
       - name: Test
-        run: pnpm test
+        run:
+          anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --block-time 1 --silent
+          pnpm test
 
       - name: Build
         run: pnpm build
