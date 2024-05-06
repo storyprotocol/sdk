@@ -125,7 +125,7 @@ describe("IP Asset Functions ", () => {
     });
 
     it("should not throw error when mint and register ip and attach pil terms", async () => {
-      const txHash = await client.ipAsset.mintAndRegisterIpAndAttachPilTerms({
+      const txHash = await client.ipAsset.createIpAssetWithPilTerms({
         nftContract,
         pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
         metadata: {

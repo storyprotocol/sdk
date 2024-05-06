@@ -37,7 +37,7 @@ export type RegisterDerivativeResponse = {
   childIpId?: Hex;
 };
 
-export type MintAndRegisterIpAndAttachPilTermsRequest = {
+export type CreateIpAssetWithPilTermsRequest = {
   nftContract: Address;
   pilType: PIL_TYPE;
   metadata?: {
