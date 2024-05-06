@@ -1,4 +1,4 @@
-import { PublicClient, getAddress, isAddress, zeroAddress } from "viem";
+import { PublicClient, getAddress, isAddress, maxUint32, zeroAddress } from "viem";
 
 import { SimpleWalletClient, SpgClient } from "../abi/generated";
 import {
@@ -36,15 +36,15 @@ export class SPGClient {
     TRes = CreateSPGNFTCollectionResponse<TReq>,
   >(request: TReq): Promise<TRes> {
     try {
-      if (request.mintCost > 0n && !isAddress(request.mintToken || "")) {
+      if (request.mintCost && request.mintCost > 0n && !isAddress(request.mintToken || "")) {
         throw new Error("Invalid mint token address, mint cost is greater than 0.");
       }
 
       const txHash = await this.spgClient.createCollection({
         name: request.name,
         symbol: request.symbol,
-        maxSupply: request.maxSupply,
-        mintCost: request.mintCost,
+        maxSupply: request.maxSupply ?? Number(maxUint32),
+        mintCost: request.mintCost ?? 0n,
         mintToken: request.mintToken ?? zeroAddress,
         owner: (request.owner && getAddress(request.owner)) || this.wallet.account!.address,
       });
