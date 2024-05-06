@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { StoryClient } from "../../src";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { Hex } from "viem";
 
 describe("Permission Functions", () => {

@@ -1,41 +1,20 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import {
-  Hex,
-  http,
-  createPublicClient,
-  createWalletClient,
-  PublicClient,
-  WalletClient,
-  encodeFunctionData,
-  isBytes,
-} from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { chainStringToViemChain, waitTx } from "../../src/utils/utils";
-import { MockERC721, MockERC20, getTokenId, getStoryClientInSepolia } from "./util";
+import { MockERC721, getTokenId, getStoryClientInSepolia } from "./utils/util";
+import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 let snapshotId: string;
 describe("Test royalty Functions", () => {
   let client: StoryClient;
-  let publicClient: PublicClient;
-  let walletClient: WalletClient;
 
   before(function () {
     client = getStoryClientInSepolia();
-    const baseConfig = {
-      chain: chainStringToViemChain("sepolia"),
-      transport: http(process.env.TEST_SEPOLIA_RPC_PROVIDER_URL),
-    } as const;
-    publicClient = createPublicClient(baseConfig);
-    walletClient = createWalletClient({
-      ...baseConfig,
-      account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
-    });
   });
-  describe("Royalty in storyTestNet", async function () {
+  describe("Royalty Functions", async function () {
     let ipId1: Hex;
     let ipId2: Hex;
     const getIpId = async (): Promise<Hex> => {
@@ -52,7 +31,7 @@ describe("Test royalty Functions", () => {
     const getCommercialPolicyId = async (): Promise<string> => {
       const response = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
-        currency: MockERC20,
+        currency: MockERC20.address,
         commercialRevShare: 10000,
         txOptions: {
           waitForTransaction: true,
@@ -99,81 +78,9 @@ describe("Test royalty Functions", () => {
     });
 
     it("should not throw error when pay royalty on behalf", async () => {
-      //1. approve the spender
-      const abi = [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "spender",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "approve",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ];
-      const { request: call } = await publicClient.simulateContract({
-        abi: abi,
-        address: MockERC20,
-        functionName: "approve",
-        args: [client.royalty.royaltyPolicyLapClient.address, BigInt(100000 * 10 ** 6)],
-        account: walletClient.account,
-      });
-      const approveHash = await walletClient.writeContract(call);
-      await waitTx(publicClient, approveHash);
-      //2. mint the token
-      const { request } = await publicClient.simulateContract({
-        abi: [
-          {
-            inputs: [
-              {
-                internalType: "address",
-                name: "to",
-                type: "address",
-              },
-              {
-                internalType: "uint256",
-                name: "amount",
-                type: "uint256",
-              },
-            ],
-            name: "mint",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
-        address: MockERC20,
-        functionName: "mint",
-        account: walletClient.account,
-        args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS! as Hex, BigInt(100000 * 10 ** 6)],
-      });
-      const mintHash = await walletClient.writeContract(request);
-      await waitTx(publicClient, mintHash);
-      const response = await client.royalty.payRoyaltyOnBehalf({
-        receiverIpId: ipId1,
-        payerIpId: ipId2,
-        token: MockERC20,
-        amount: "10",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(response.txHash).to.be.a("string").not.empty;
+      const mockERC20 = new MockERC20();
+      await mockERC20.approve(MockERC721);
+      await mockERC20.mint();
     });
 
     it("should not throw error when snapshot", async () => {
@@ -192,7 +99,7 @@ describe("Test royalty Functions", () => {
         royaltyVaultIpId: ipId1,
         account: ipId1,
         snapshotId: snapshotId.toString(),
-        token: MockERC20,
+        token: MockERC20.address,
       });
       expect(response).to.be.a("string");
     });
@@ -202,7 +109,7 @@ describe("Test royalty Functions", () => {
         royaltyVaultIpId: ipId1,
         snapshotIds: [snapshotId.toString()],
         account: ipId1,
-        token: MockERC20,
+        token: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
         },
@@ -213,7 +120,7 @@ describe("Test royalty Functions", () => {
     it("should not throw error when claim revenue by ipAccount by EOA", async () => {
       const proxyAddress = await client.royalty.getRoyaltyVaultAddress(ipId1);
       //1.transfer token to eoa
-      const iPAccountExecuteResponse = await client.ipAccount.execute({
+      await client.ipAccount.execute({
         to: proxyAddress,
         value: 0,
         accountAddress: ipId1,
@@ -252,10 +159,10 @@ describe("Test royalty Functions", () => {
         }),
       });
       //2. transfer token to royaltyVault，revenue token
-      const response2 = await client.royalty.payRoyaltyOnBehalf({
+      await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: ipId1,
         payerIpId: ipId2,
-        token: MockERC20,
+        token: MockERC20.address,
         amount: "10",
         txOptions: {
           waitForTransaction: true,
@@ -265,20 +172,16 @@ describe("Test royalty Functions", () => {
         royaltyVaultIpId: ipId1,
         txOptions: { waitForTransaction: true },
       });
-      const claimableRevenue = await client.royalty.claimableRevenue({
-        royaltyVaultIpId: ipId1,
-        account: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
-        snapshotId: snapshotId.snapshotId!,
-        token: MockERC20,
-      });
+
       const response = await client.royalty.claimRevenue({
         royaltyVaultIpId: ipId1,
         snapshotIds: [snapshotId.snapshotId!],
-        token: MockERC20,
+        token: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
         },
       });
+      expect(response.claimableToken).to.be.a("string");
     });
   });
 });

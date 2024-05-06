@@ -2,7 +2,8 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC20, MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -26,7 +27,7 @@ describe("License Functions", () => {
     it("should not throw error when registering license with commercial use", async function () {
       const result = await client.license.registerCommercialUsePIL({
         mintingFee: "1",
-        currency: MockERC20,
+        currency: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
         },
@@ -38,7 +39,7 @@ describe("License Functions", () => {
       const result = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
         commercialRevShare: 100,
-        currency: MockERC20,
+        currency: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
         },

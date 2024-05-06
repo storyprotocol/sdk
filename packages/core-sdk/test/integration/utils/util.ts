@@ -1,7 +1,7 @@
 import { privateKeyToAccount } from "viem/accounts";
-import { chainStringToViemChain } from "../../src/utils/utils";
+import { chainStringToViemChain } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex } from "viem";
-import { StoryClient, StoryConfig } from "../../src";
+import { StoryClient, StoryConfig } from "../../../src";
 
 export const getTokenId = async (): Promise<string | undefined> => {
   const baseConfig = {
@@ -37,7 +37,6 @@ export const getTokenId = async (): Promise<string | undefined> => {
   }
 };
 
-export const MockERC20 = "0xB132A6B7AE652c974EE1557A3521D53d18F6739f";
 export const MockERC721 = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
 
 export const getStoryClientInSepolia = (): StoryClient => {

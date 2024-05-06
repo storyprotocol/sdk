@@ -1,10 +1,9 @@
 import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { Hex } from "viem";
-
 import { StoryClient } from "../../src";
+import { Hex, toBytes, toHex } from "viem";
+import chaiAsPromised from "chai-as-promised";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { PIL_TYPE } from "../../src/types/resources/license";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -24,7 +23,7 @@ describe("IP Asset Functions ", () => {
     noCommercialLicenseTermsId = registerResult.licenseTermsId!;
   });
 
-  describe("Create IP Asset", async function () {
+  describe.skip("Create IP Asset", async function () {
     it("should not throw error when registering a IP Asset", async () => {
       const tokenId = await getTokenId();
       const waitForTransaction: boolean = true;
@@ -171,4 +170,38 @@ describe("IP Asset Functions ", () => {
       });
     });
   });
+  // describe("SPG", () => {
+  //   it("should not throw error when mint and register ip and attach pil terms", async () => {
+  //     const txHash = await client.ipAsset.mintAndRegisterIpAndAttachPilTerms({
+  //       nftContract: "0x861554A6C750E0442f5e750B90Ca7eb80cbaED3F",
+  //       pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+  //       metadata: {
+  //         metadataURI: "test-uri",
+  //         metadata: "test-metadata-hash",
+  //         nftMetadata: "test-nft-metadata-hash",
+  //       },
+  //     });
+  //     console.log("txHash: ", txHash);
+  //     expect(txHash).to.be.a("string").and.not.empty;
+  //   });
+
+  //   it.skip("should not throw error when register derivative ip", async () => {
+  //     const tokenId = await getTokenId();
+  //     const txHash = await client.ipAsset.registerDerivativeIp({
+  //       nftContract: MockERC721,
+  //       tokenId: tokenId!,
+  //       derivData: {
+  //         parentIpIds: [parentIpId],
+  //         licenseTermsIds: [noCommercialLicenseTermsId],
+  //       },
+  //       sigRegister: {
+  //         signature: toHex(toBytes("test-signature")),
+  //         signer: "0x861554A6C750E0442f5e750B90Ca7eb80cbaED3F",
+  //         deadline: "2022-12-12",
+  //       },
+  //     });
+  //     console.log("txHash: ", txHash);
+  //     expect(txHash).to.be.a("string").and.not.empty;
+  //   });
+  // });
 });

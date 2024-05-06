@@ -5,7 +5,7 @@ import {
   RaiseDisputeRequest,
   ResolveDisputeRequest,
 } from "../../src/types/resources/dispute";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
