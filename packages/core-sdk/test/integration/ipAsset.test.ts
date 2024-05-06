@@ -124,17 +124,51 @@ describe("IP Asset Functions ", () => {
       nftContract = txData.nftContract;
     });
 
-    it("should not throw error when mint and register ip and attach pil terms", async () => {
-      const txHash = await client.ipAsset.createIpAssetWithPilTerms({
-        nftContract,
-        pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
-        metadata: {
-          metadataURI: "test-uri",
-          metadata: "test-metadata-hash",
-          nftMetadata: "test-nft-metadata-hash",
-        },
+    describe("should not throw error when mint and register ip and attach pil terms", async () => {
+      it("Non-Commercial Remix", async () => {
+        const txHash = await client.ipAsset.createIpAssetWithPilTerms({
+          nftContract,
+          pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+          metadata: {
+            metadataURI: "test-uri",
+            metadata: "test-metadata-hash",
+            nftMetadata: "test-nft-metadata-hash",
+          },
+        });
+        expect(txHash).to.be.a("string").and.not.empty;
       });
-      expect(txHash).to.be.a("string").and.not.empty;
+
+      it("Commercial Use", async () => {
+        const txHash = await client.ipAsset.createIpAssetWithPilTerms({
+          nftContract,
+          pilType: PIL_TYPE.COMMERCIAL_USE,
+          commercialRevShare: 10,
+          mintingFee: "100",
+          currency: "0xB132A6B7AE652c974EE1557A3521D53d18F6739f",
+          metadata: {
+            metadataURI: "test-uri",
+            metadata: "test-metadata-hash",
+            nftMetadata: "test-nft-metadata-hash",
+          },
+        });
+        expect(txHash).to.be.a("string").and.not.empty;
+      });
+
+      it("Commercial Remix", async () => {
+        const txHash = await client.ipAsset.createIpAssetWithPilTerms({
+          nftContract,
+          pilType: PIL_TYPE.COMMERCIAL_REMIX,
+          commercialRevShare: 10,
+          mintingFee: "100",
+          currency: "0xB132A6B7AE652c974EE1557A3521D53d18F6739f",
+          metadata: {
+            metadataURI: "test-uri",
+            metadata: "test-metadata-hash",
+            nftMetadata: "test-nft-metadata-hash",
+          },
+        });
+        expect(txHash).to.be.a("string").and.not.empty;
+      });
     });
   });
 });
