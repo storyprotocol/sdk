@@ -3,13 +3,13 @@ import chaiAsPromised from "chai-as-promised";
 import * as sinon from "sinon";
 import { Hex, PublicClient, WalletClient } from "viem";
 
-import { CreateNFTCollectionRequest, SPGClient } from "../../../src";
+import { CreateNFTCollectionRequest, NftClient } from "../../../src";
 import { createMock } from "../testUtils";
 
 chai.use(chaiAsPromised);
 
-describe("Test SPGClient", function () {
-  let spgClient: SPGClient;
+describe("Test NftClient", function () {
+  let nftClient: NftClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
 
@@ -21,7 +21,7 @@ describe("Test SPGClient", function () {
   beforeEach(function () {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
-    spgClient = new SPGClient(rpcMock, walletMock);
+    nftClient = new NftClient(rpcMock, walletMock);
   });
 
   afterEach(function () {
@@ -46,7 +46,7 @@ describe("Test SPGClient", function () {
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
       try {
-        await spgClient.CreateNFTCollection(reqBody);
+        await nftClient.createNFTCollection(reqBody);
       } catch (err) {
         expect((err as Error).message.includes("simulateContract error"));
       }
@@ -57,7 +57,7 @@ describe("Test SPGClient", function () {
       walletMock.writeContract = sinon.stub().throws(new Error("writeContract error"));
 
       try {
-        await spgClient.CreateNFTCollection(reqBody);
+        await nftClient.createNFTCollection(reqBody);
       } catch (err) {
         expect((err as Error).message.includes("writeContract error"));
       }
@@ -68,13 +68,13 @@ describe("Test SPGClient", function () {
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
-      sinon.stub(spgClient.spgClient, "parseTxCollectionCreatedEvent").returns([
+      sinon.stub(nftClient.spgClient, "parseTxCollectionCreatedEvent").returns([
         {
           nftContract: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         },
       ]);
 
-      const result = await spgClient.CreateNFTCollection({
+      const result = await nftClient.createNFTCollection({
         ...reqBody,
         txOptions: {
           waitForTransaction: true,
@@ -88,7 +88,7 @@ describe("Test SPGClient", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
-      const result = await spgClient.CreateNFTCollection(reqBody);
+      const result = await nftClient.createNFTCollection(reqBody);
       expect(result.txHash).to.equal(mock.txHash);
     });
   });
