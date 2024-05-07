@@ -11284,6 +11284,51 @@ export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
 // Contract SPG =============================================================
 
 /**
+ * SpgCollectionCreatedEvent
+ *
+ * @param nftContract address
+ */
+export type SpgCollectionCreatedEvent = {
+  nftContract: Address;
+};
+
+/**
+ * SpgCreateCollectionRequest
+ *
+ * @param name string
+ * @param symbol string
+ * @param maxSupply uint32
+ * @param mintCost uint256
+ * @param mintToken address
+ * @param owner address
+ */
+export type SpgCreateCollectionRequest = {
+  name: string;
+  symbol: string;
+  maxSupply: number;
+  mintCost: bigint;
+  mintToken: Address;
+  owner: Address;
+};
+
+/**
+ * SpgMintAndRegisterIpRequest
+ *
+ * @param nftContract address
+ * @param recipient address
+ * @param metadata tuple
+ */
+export type SpgMintAndRegisterIpRequest = {
+  nftContract: Address;
+  recipient: Address;
+  metadata: {
+    metadataURI: string;
+    metadataHash: Hex;
+    nftMetadataHash: Hex;
+  };
+};
+
+/**
  * SpgMintAndRegisterIpAndAttachPilTermsRequest
  *
  * @param nftContract address
@@ -11317,6 +11362,100 @@ export type SpgMintAndRegisterIpAndAttachPilTermsRequest = {
     derivativeRevCelling: bigint;
     currency: Address;
     uri: string;
+  };
+};
+
+/**
+ * SpgMintAndRegisterIpAndMakeDerivativeRequest
+ *
+ * @param nftContract address
+ * @param derivData tuple
+ * @param metadata tuple
+ * @param recipient address
+ */
+export type SpgMintAndRegisterIpAndMakeDerivativeRequest = {
+  nftContract: Address;
+  derivData: {
+    parentIpIds: readonly Address[];
+    licenseTemplate: Address;
+    licenseTermsIds: readonly bigint[];
+    royaltyContext: Hex;
+  };
+  metadata: {
+    metadataURI: string;
+    metadataHash: Hex;
+    nftMetadataHash: Hex;
+  };
+  recipient: Address;
+};
+
+/**
+ * SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+ *
+ * @param nftContract address
+ * @param licenseTokenIds uint256[]
+ * @param royaltyContext bytes
+ * @param metadata tuple
+ * @param recipient address
+ */
+export type SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  nftContract: Address;
+  licenseTokenIds: readonly bigint[];
+  royaltyContext: Hex;
+  metadata: {
+    metadataURI: string;
+    metadataHash: Hex;
+    nftMetadataHash: Hex;
+  };
+  recipient: Address;
+};
+
+/**
+ * SpgRegisterIpAndAttachPilTermsRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param metadata tuple
+ * @param terms tuple
+ * @param sigMetadata tuple
+ * @param sigAttach tuple
+ */
+export type SpgRegisterIpAndAttachPilTermsRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  metadata: {
+    metadataURI: string;
+    metadataHash: Hex;
+    nftMetadataHash: Hex;
+  };
+  terms: {
+    transferable: boolean;
+    royaltyPolicy: Address;
+    mintingFee: bigint;
+    expiration: bigint;
+    commercialUse: boolean;
+    commercialAttribution: boolean;
+    commercializerChecker: Address;
+    commercializerCheckerData: Hex;
+    commercialRevShare: number;
+    commercialRevCelling: bigint;
+    derivativesAllowed: boolean;
+    derivativesAttribution: boolean;
+    derivativesApproval: boolean;
+    derivativesReciprocal: boolean;
+    derivativeRevCelling: bigint;
+    currency: Address;
+    uri: string;
+  };
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+  sigAttach: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
   };
 };
 
@@ -11357,17 +11496,175 @@ export type SpgRegisterIpAndMakeDerivativeRequest = {
 };
 
 /**
- * contract SPG write method
+ * SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param licenseTokenIds uint256[]
+ * @param royaltyContext bytes
+ * @param metadata tuple
+ * @param sigMetadata tuple
+ * @param sigRegister tuple
  */
-export class SpgClient {
-  protected readonly wallet: SimpleWalletClient;
+export type SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  licenseTokenIds: readonly bigint[];
+  royaltyContext: Hex;
+  metadata: {
+    metadataURI: string;
+    metadataHash: Hex;
+    nftMetadataHash: Hex;
+  };
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+  sigRegister: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * SpgRegisterPilTermsAndAttachRequest
+ *
+ * @param ipId address
+ * @param terms tuple
+ */
+export type SpgRegisterPilTermsAndAttachRequest = {
+  ipId: Address;
+  terms: {
+    transferable: boolean;
+    royaltyPolicy: Address;
+    mintingFee: bigint;
+    expiration: bigint;
+    commercialUse: boolean;
+    commercialAttribution: boolean;
+    commercializerChecker: Address;
+    commercializerCheckerData: Hex;
+    commercialRevShare: number;
+    commercialRevCelling: bigint;
+    derivativesAllowed: boolean;
+    derivativesAttribution: boolean;
+    derivativesApproval: boolean;
+    derivativesReciprocal: boolean;
+    derivativeRevCelling: bigint;
+    currency: Address;
+    uri: string;
+  };
+};
+
+/**
+ * contract SPG event
+ */
+export class SpgEventClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(spgAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event CollectionCreated for contract SPG
+   */
+  public watchCollectionCreatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<SpgCollectionCreatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: spgAbi,
+      address: this.address,
+      eventName: "CollectionCreated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event CollectionCreated for contract SPG
+   */
+  public parseTxCollectionCreatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<SpgCollectionCreatedEvent> {
+    const targetLogs: Array<SpgCollectionCreatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: spgAbi,
+          eventName: "CollectionCreated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "CollectionCreated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract SPG write method
+ */
+export class SpgClient extends SpgEventClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
     this.wallet = wallet;
+  }
+
+  /**
+   * method createCollection for contract SPG
+   *
+   * @param request SpgCreateCollectionRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async createCollection(
+    request: SpgCreateCollectionRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "createCollection",
+      account: this.wallet.account,
+      args: [
+        request.name,
+        request.symbol,
+        request.maxSupply,
+        request.mintCost,
+        request.mintToken,
+        request.owner,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIp for contract SPG
+   *
+   * @param request SpgMintAndRegisterIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIp(
+    request: SpgMintAndRegisterIpRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIp",
+      account: this.wallet.account,
+      args: [request.nftContract, request.recipient, request.metadata],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -11385,6 +11682,76 @@ export class SpgClient {
       functionName: "mintAndRegisterIpAndAttachPILTerms",
       account: this.wallet.account,
       args: [request.nftContract, request.recipient, request.metadata, request.terms],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivative for contract SPG
+   *
+   * @param request SpgMintAndRegisterIpAndMakeDerivativeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndMakeDerivative(
+    request: SpgMintAndRegisterIpAndMakeDerivativeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndMakeDerivative",
+      account: this.wallet.account,
+      args: [request.nftContract, request.derivData, request.metadata, request.recipient],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract SPG
+   *
+   * @param request SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
+    request: SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.licenseTokenIds,
+        request.royaltyContext,
+        request.metadata,
+        request.recipient,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndAttachPILTerms for contract SPG
+   *
+   * @param request SpgRegisterIpAndAttachPilTermsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndAttachPilTerms(
+    request: SpgRegisterIpAndAttachPilTermsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "registerIpAndAttachPILTerms",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.metadata,
+        request.terms,
+        request.sigMetadata,
+        request.sigAttach,
+      ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -11411,6 +11778,52 @@ export class SpgClient {
         request.sigMetadata,
         request.sigRegister,
       ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndMakeDerivativeWithLicenseTokens for contract SPG
+   *
+   * @param request SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndMakeDerivativeWithLicenseTokens(
+    request: SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.licenseTokenIds,
+        request.royaltyContext,
+        request.metadata,
+        request.sigMetadata,
+        request.sigRegister,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerPILTermsAndAttach for contract SPG
+   *
+   * @param request SpgRegisterPilTermsAndAttachRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerPilTermsAndAttach(
+    request: SpgRegisterPilTermsAndAttachRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "registerPILTermsAndAttach",
+      account: this.wallet.account,
+      args: [request.ipId, request.terms],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }

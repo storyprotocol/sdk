@@ -5,6 +5,7 @@ export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
 export { DisputeClient } from "./resources/dispute";
+export { NftClient } from "./resources/nftClient";
 
 export type { StoryConfig } from "./types/config";
 export type { TypedData } from "./types/common";
@@ -61,5 +62,10 @@ export type {
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
 } from "./types/resources/ipAccount";
+
+export type {
+  CreateNFTCollectionRequest,
+  CreateNFTCollectionResponse,
+} from "./types/resources/nftClient";
 
 export type { PiLicenseTemplateGetLicenseTermsResponse } from "./abi/generated";

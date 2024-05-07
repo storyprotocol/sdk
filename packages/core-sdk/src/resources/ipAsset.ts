@@ -4,7 +4,7 @@ import { chain } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
-  MintAndRegisterIpAndAttachPilTermsRequest,
+  CreateIpAssetWithPilTermsRequest,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
@@ -209,9 +209,7 @@ export class IPAssetClient {
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  private async mintAndRegisterIpAndAttachPilTerms(
-    request: MintAndRegisterIpAndAttachPilTermsRequest,
-  ) {
+  public async createIpAssetWithPilTerms(request: CreateIpAssetWithPilTermsRequest) {
     try {
       if (request.pilType === undefined || request.pilType === null) {
         throw new Error("PIL type is required.");
