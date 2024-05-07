@@ -27,7 +27,7 @@ describe("Test royalty Functions", () => {
     client = getStoryClientInSepolia();
     const baseConfig = {
       chain: chainStringToViemChain("sepolia"),
-      transport: http("http://127.0.0.1:8545"),
+      transport: http(process.env.TEST_SEPOLIA_RPC_PROVIDER_URL),
     } as const;
     publicClient = createPublicClient(baseConfig);
     walletClient = createWalletClient({
