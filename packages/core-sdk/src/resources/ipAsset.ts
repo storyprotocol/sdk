@@ -209,9 +209,7 @@ export class IPAssetClient {
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  public async createIpAssetWithPilTerms(
-    request: CreateIpAssetWithPilTermsRequest,
-  ) {
+  public async createIpAssetWithPilTerms(request: CreateIpAssetWithPilTermsRequest) {
     try {
       if (request.pilType === undefined || request.pilType === null) {
         throw new Error("PIL type is required.");
