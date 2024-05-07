@@ -2,7 +2,7 @@ import { Hex } from "viem";
 
 import { TxOptions } from "../options";
 
-export type CreateSPGNFTCollectionRequest = {
+export type CreateNFTCollectionRequest = {
   name: string;
   symbol: string;
   maxSupply?: number;
@@ -12,7 +12,7 @@ export type CreateSPGNFTCollectionRequest = {
   txOptions?: TxOptions;
 };
 
-export type CreateSPGNFTCollectionResponse<TReq extends CreateSPGNFTCollectionRequest> =
+export type CreateNFTCollectionResponse<TReq extends CreateNFTCollectionRequest> =
   TReq["txOptions"] extends { waitForTransaction: true }
     ? { txHash: string; nftContract: Hex }
     : { txHash: string; nftContract?: Hex };

@@ -14,7 +14,7 @@ import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
 import { RoyaltyClient } from "./resources/royalty";
-import { SPGClient } from "./resources/spg";
+import { NftClient } from "./resources/nftClient";
 import { SimpleWalletClient } from "./abi/generated";
 
 if (typeof process !== "undefined") {
@@ -33,7 +33,7 @@ export class StoryClient {
   private _dispute: DisputeClient | null = null;
   private _ipAccount: IPAccountClient | null = null;
   private _royalty: RoyaltyClient | null = null;
-  private _spg: SPGClient | null = null;
+  private _nftClient: NftClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -190,16 +190,16 @@ export class StoryClient {
   }
 
   /**
-   * Getter for the SPG client. The client is lazily created when
+   * Getter for the NFT client. The client is lazily created when
    * this method is called.
    *
-   * @returns the SPGClient instance
+   * @returns the NftClient instance
    */
-  public get spg(): SPGClient {
-    if (this._spg === null) {
-      this._spg = new SPGClient(this.rpcClient, this.wallet);
+  public get nftClient(): NftClient {
+    if (this._nftClient === null) {
+      this._nftClient = new NftClient(this.rpcClient, this.wallet);
     }
 
-    return this._spg;
+    return this._nftClient;
   }
 }

@@ -105,12 +105,12 @@ describe("IP Asset Functions ", () => {
     });
   });
 
-  describe("SPG", () => {
+  describe("NFT Client (SPG)", () => {
     let nftContract: Hex;
 
     before(async () => {
-      // Create a SPG NFT collection for this test-suite
-      const txData = await client.spg.createSPGNFTCollection({
+      // Create a NFT collection for this test-suite
+      const txData = await client.nftClient.createNFTCollection({
         name: "test-collection",
         symbol: "TEST",
         maxSupply: 100,

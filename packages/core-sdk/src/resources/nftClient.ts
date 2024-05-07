@@ -2,12 +2,12 @@ import { PublicClient, getAddress, isAddress, maxUint32, zeroAddress } from "vie
 
 import { SimpleWalletClient, SpgClient } from "../abi/generated";
 import {
-  CreateSPGNFTCollectionRequest,
-  CreateSPGNFTCollectionResponse,
-} from "../types/resources/spg";
+  CreateNFTCollectionRequest,
+  CreateNFTCollectionResponse,
+} from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
 
-export class SPGClient {
+export class NftClient {
   public spgClient: SpgClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -28,12 +28,12 @@ export class SPGClient {
    * 	 @param request.mintToken - The token to mint.
    * 	 @param request.owner - The owner of the collection.
    *   @param request.txOptions - Optional transaction options.
-   * @returns A Promise that resolves to a CreateSPGNFTCollectionResponse containing the transaction hash and collection address.
+   * @returns A Promise that resolves to a CreateNFTCollectionResponse containing the transaction hash and collection address.
    * @emits CollectionCreated (nftContract);
    */
-  public async createSPGNFTCollection<
-    TReq extends CreateSPGNFTCollectionRequest,
-    TRes = CreateSPGNFTCollectionResponse<TReq>,
+  public async createNFTCollection<
+    TReq extends CreateNFTCollectionRequest,
+    TRes = CreateNFTCollectionResponse<TReq>,
   >(request: TReq): Promise<TRes> {
     try {
       if (request.mintCost && request.mintCost > 0n && !isAddress(request.mintToken || "")) {

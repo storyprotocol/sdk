@@ -3,7 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import * as sinon from "sinon";
 import { Hex, PublicClient, WalletClient } from "viem";
 
-import { CreateSPGNFTCollectionRequest, SPGClient } from "../../../src";
+import { CreateNFTCollectionRequest, SPGClient } from "../../../src";
 import { createMock } from "../testUtils";
 
 chai.use(chaiAsPromised);
@@ -28,8 +28,8 @@ describe("Test SPGClient", function () {
     sinon.restore();
   });
 
-  describe("test for createSPGNFTCollection", () => {
-    const reqBody: CreateSPGNFTCollectionRequest = {
+  describe("test for CreateNFTCollection", () => {
+    const reqBody: CreateNFTCollectionRequest = {
       name: "test-collection",
       symbol: "TEST",
       maxSupply: 100,
@@ -46,7 +46,7 @@ describe("Test SPGClient", function () {
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
       try {
-        await spgClient.createSPGNFTCollection(reqBody);
+        await spgClient.CreateNFTCollection(reqBody);
       } catch (err) {
         expect((err as Error).message.includes("simulateContract error"));
       }
@@ -57,7 +57,7 @@ describe("Test SPGClient", function () {
       walletMock.writeContract = sinon.stub().throws(new Error("writeContract error"));
 
       try {
-        await spgClient.createSPGNFTCollection(reqBody);
+        await spgClient.CreateNFTCollection(reqBody);
       } catch (err) {
         expect((err as Error).message.includes("writeContract error"));
       }
@@ -74,7 +74,7 @@ describe("Test SPGClient", function () {
         },
       ]);
 
-      const result = await spgClient.createSPGNFTCollection({
+      const result = await spgClient.CreateNFTCollection({
         ...reqBody,
         txOptions: {
           waitForTransaction: true,
@@ -88,7 +88,7 @@ describe("Test SPGClient", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
-      const result = await spgClient.createSPGNFTCollection(reqBody);
+      const result = await spgClient.CreateNFTCollection(reqBody);
       expect(result.txHash).to.equal(mock.txHash);
     });
   });
