@@ -32,27 +32,10 @@ on:
         required: true
 
 jobs:
-  anvil:
-    name: Install and Run Anvil
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.ENVIRONMENT }}
-    env:
-      SEPOLIA_RPC_PROVIDER_URL: ${{ secrets.SEPOLIA_RPC_PROVIDER_URL }}
-
-    steps:
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Run Anvil
-        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --block-time 1 --silent &
-
   build:
     name: Build and Test
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    needs: anvil
     ## Example to fix envrionment secret not passing in: https://github.com/AllanOricil/workflow-template-bug/blob/master/.github/workflows/workflow-template-fix-without-required-secret.yml
     environment: ${{ inputs.ENVIRONMENT }}
     env:
@@ -83,13 +66,27 @@ jobs:
           node-version: 20.0.0
           cache: pnpm
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
       - name: Install dependencies
         run: pnpm install
 
       - name: Fix
         run: pnpm fix
 
+      - name: Run Anvil
+        id: run_anvil
+        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --block-time 1 --silent &
+
+      - name: Check on Run Anvil
+        if: steps.run_anvil.outcome != 'success'
+        run: exit 1
+
       - name: Test
+        if: steps.run_anvil.outcome == 'success'
         run: pnpm test
 
       - name: Build
