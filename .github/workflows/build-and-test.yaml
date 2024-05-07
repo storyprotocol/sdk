@@ -87,9 +87,7 @@ jobs:
 
       - name: Test
         if: steps.run_anvil.outcome == 'success'
-        run: |
-          echo ${{ secrets.TEST_SEPOLIA_RPC_PROVIDER_URL }}
-          pnpm test
+        run: pnpm test
 
       - name: Build
         run: pnpm build
