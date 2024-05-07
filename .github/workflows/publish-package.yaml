@@ -105,7 +105,7 @@ jobs:
     needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
     # Skip this job if the version to be published is the same as the latest version on NPM
     # and the event triggering the workflow is a push
-    # if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
+    if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
     with:
       version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
