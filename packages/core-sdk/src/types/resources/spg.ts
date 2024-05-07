@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { PIL_TYPE } from "./license";
@@ -15,7 +15,7 @@ export type CreateSPGNFTCollectionRequest = {
 
 export type CreateSPGNFTCollectionResponse = {
   txHash: string;
-  nftContract?: Hex;
+  nftContract?: Address;
 };
 
 export type MintAndRegisterIpAndAttachPilTermsRequest = {
@@ -26,9 +26,9 @@ export type MintAndRegisterIpAndAttachPilTermsRequest = {
     metadata: string;
     nftMetadata: string;
   };
-  recipient?: Hex;
+  recipient?: Address;
   mintingFee?: string;
-  currency?: Hex;
+  currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
 };
@@ -49,11 +49,11 @@ export type RegisterIpAndMakeDerivativeRequest = {
   sigMetadata?: {
     signer: Address;
     deadline: string | number | bigint;
-    signature: Hex;
+    signature: Address;
   };
   sigRegister: {
     signer: Address;
     deadline: string | number | bigint;
-    signature: Hex;
+    signature: Address;
   };
 };

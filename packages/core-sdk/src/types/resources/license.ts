@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 
@@ -9,7 +9,7 @@ export type LicenseApiResponse = {
 export type License = {
   id: string;
   policyId: string;
-  licensorIpId: Hex;
+  licensorIpId: Address;
 };
 
 export type RegisterNonComSocialRemixingPILRequest = {
@@ -21,18 +21,18 @@ export type LicenseTerms = {
   expiration: bigint;
   commercialRevCelling: bigint;
   derivativeRevCelling: bigint;
-  commercializerCheckerData: Hex;
+  commercializerCheckerData: Address;
   transferable: boolean;
-  royaltyPolicy: Hex;
+  royaltyPolicy: Address;
   commercialUse: boolean;
   commercialAttribution: boolean;
-  commercializerChecker: Hex;
+  commercializerChecker: Address;
   commercialRevShare: number;
   derivativesAllowed: boolean;
   derivativesAttribution: boolean;
   derivativesApproval: boolean;
   derivativesReciprocal: boolean;
-  currency: Hex;
+  currency: Address;
   uri: string;
 };
 export type LicenseTermsIdResponse = bigint;
@@ -44,30 +44,30 @@ export type RegisterPILResponse = {
 
 export type RegisterCommercialUsePILRequest = {
   mintingFee: string | number | bigint;
-  currency: Hex;
+  currency: Address;
   txOptions?: TxOptions;
 };
 
 export type RegisterCommercialRemixPILRequest = {
   mintingFee: string;
   commercialRevShare: number;
-  currency: Hex;
+  currency: Address;
   txOptions?: TxOptions;
 };
 
 export type AttachLicenseTermsRequest = {
-  ipId: Hex;
+  ipId: Address;
   licenseTermsId: string | number | bigint;
-  licenseTemplate?: Hex;
+  licenseTemplate?: Address;
   txOptions?: TxOptions;
 };
 
 export type MintLicenseTokensRequest = {
-  licensorIpId: Hex;
+  licensorIpId: Address;
   licenseTermsId: string | number | bigint;
-  licenseTemplate?: Hex;
+  licenseTemplate?: Address;
   amount?: number | string | bigint;
-  receiver?: Hex;
+  receiver?: Address;
   txOptions?: TxOptions;
 };
 
