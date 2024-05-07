@@ -20,7 +20,7 @@ export type IPAccountExecuteWithSigRequest = {
   value: number;
   data: Hex;
   signer: Hex;
-  deadline: number;
+  deadline: number | bigint | string;
   signature: Hex;
   txOptions?: TxOptions;
 };

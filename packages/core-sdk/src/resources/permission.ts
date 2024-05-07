@@ -2,7 +2,6 @@ import { PublicClient, getAddress, Hex, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import { SetPermissionsRequest, SetPermissionsResponse } from "../types/resources/permission";
-import { parseToBigInt } from "../utils/utils";
 import {
   accessControllerAbi,
   AccessControllerClient,
@@ -50,7 +49,7 @@ export class PermissionClient {
 
       const txHash = await ipAccountClient.execute({
         to: this.accessControllerClient.address,
-        value: parseToBigInt(0),
+        value: BigInt(0),
         data: encodeFunctionData({
           abi: accessControllerAbi,
           functionName: "setPermission",

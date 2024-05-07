@@ -7,9 +7,9 @@ export type CreateSPGNFTCollectionRequest = {
   name: string;
   symbol: string;
   maxSupply: number;
-  mintCost: string;
-  mintToken?: Hex;
-  owner?: Hex;
+  mintCost: string | number | bigint;
+  mintToken?: Address;
+  owner?: Address;
   txOptions?: TxOptions;
 };
 
@@ -35,10 +35,10 @@ export type MintAndRegisterIpAndAttachPilTermsRequest = {
 
 export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
-  tokenId: string;
+  tokenId: string | number | bigint;
   derivData: {
     parentIpIds: Address[];
-    licenseTermsIds: string[];
+    licenseTermsIds: string[] | bigint[] | number[];
     licenseTemplate?: Address;
   };
   metadata?: {
@@ -48,12 +48,12 @@ export type RegisterIpAndMakeDerivativeRequest = {
   };
   sigMetadata?: {
     signer: Address;
-    deadline: string;
+    deadline: string | number | bigint;
     signature: Hex;
   };
   sigRegister: {
     signer: Address;
-    deadline: string;
+    deadline: string | number | bigint;
     signature: Hex;
   };
 };

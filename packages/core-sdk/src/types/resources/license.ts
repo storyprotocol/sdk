@@ -35,15 +35,15 @@ export type LicenseTerms = {
   currency: Hex;
   uri: string;
 };
-export type LicenseTermsIdResponse = number;
+export type LicenseTermsIdResponse = bigint;
 
 export type RegisterPILResponse = {
-  licenseTermsId?: string;
+  licenseTermsId?: bigint;
   txHash?: string;
 };
 
 export type RegisterCommercialUsePILRequest = {
-  mintingFee: string;
+  mintingFee: string | number | bigint;
   currency: Hex;
   txOptions?: TxOptions;
 };
@@ -57,22 +57,22 @@ export type RegisterCommercialRemixPILRequest = {
 
 export type AttachLicenseTermsRequest = {
   ipId: Hex;
-  licenseTermsId: string;
+  licenseTermsId: string | number | bigint;
   licenseTemplate?: Hex;
   txOptions?: TxOptions;
 };
 
 export type MintLicenseTokensRequest = {
   licensorIpId: Hex;
-  licenseTermsId: string;
+  licenseTermsId: string | number | bigint;
   licenseTemplate?: Hex;
-  amount?: number;
+  amount?: number | string | bigint;
   receiver?: Hex;
   txOptions?: TxOptions;
 };
 
 export type MintLicenseTokensResponse = {
-  licenseTokenId?: string;
+  licenseTokenId?: bigint;
   txHash?: string;
 };
 

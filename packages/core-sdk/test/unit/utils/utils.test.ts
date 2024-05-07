@@ -6,7 +6,6 @@ import { TypedData } from "../../../src/types/common";
 import { SupportedChainIds } from "../../../src/types/config";
 import {
   isIntegerString,
-  parseToBigInt,
   decodeShortstring,
   splitIntoBytes32,
   waitTxAndFilterLog,
@@ -25,10 +24,6 @@ describe("Test isIntegerString", function () {
 
   it("should return false when passing in a non-integer string", function () {
     expect(isIntegerString("a")).to.be.false;
-  });
-
-  it("should parse string to big int", function () {
-    expect(parseToBigInt("7")).to.be.equal(7n);
   });
 });
 

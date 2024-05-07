@@ -61,14 +61,14 @@ export class LicenseClient {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0) {
-        return { licenseTermsId: licenseTermsId.toString() };
+      if (licenseTermsId !== 0n) {
+        return { licenseTermsId: licenseTermsId };
       }
       const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
       if (request?.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId.toString() };
+        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
       } else {
         return { txHash: txHash };
       }
@@ -91,18 +91,18 @@ export class LicenseClient {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
         mintingFee: request.mintingFee,
-        currency: request.currency && getAddress(request.currency),
+        currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0) {
-        return { licenseTermsId: licenseTermsId.toString() };
+      if (licenseTermsId !== 0n) {
+        return { licenseTermsId: licenseTermsId };
       }
       const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId.toString() };
+        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
       } else {
         return { txHash: txHash };
       }
@@ -126,19 +126,19 @@ export class LicenseClient {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
         mintingFee: request.mintingFee,
-        currency: request.currency && getAddress(request.currency),
+        currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0) {
-        return { licenseTermsId: licenseTermsId.toString() };
+      if (licenseTermsId !== 0n) {
+        return { licenseTermsId: licenseTermsId };
       }
       const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId.toString() };
+        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
       } else {
         return { txHash: txHash };
       }
@@ -158,6 +158,7 @@ export class LicenseClient {
    */
   public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
     try {
+      request.licenseTermsId = BigInt(request.licenseTermsId);
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(request.ipId),
       });
@@ -165,7 +166,7 @@ export class LicenseClient {
         throw new Error(`The IP with id ${request.ipId} is not registered.`);
       }
       const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
-        licenseTermsId: BigInt(request.licenseTermsId),
+        licenseTermsId: request.licenseTermsId,
       });
       if (!isExisted) {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
@@ -176,7 +177,7 @@ export class LicenseClient {
           licenseTemplate:
             (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
             this.licenseTemplateClient.address,
-          licenseTermsId: BigInt(request.licenseTermsId),
+          licenseTermsId: request.licenseTermsId,
         });
       if (isAttachedLicenseTerms) {
         throw new Error(
@@ -186,7 +187,7 @@ export class LicenseClient {
       const txHash = await this.licensingModuleClient.attachLicenseTerms({
         ipId: request.ipId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
-        licenseTermsId: BigInt(request.licenseTermsId),
+        licenseTermsId: request.licenseTermsId,
       });
       if (request.txOptions?.waitForTransaction) {
         await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
@@ -225,6 +226,7 @@ export class LicenseClient {
     request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> {
     try {
+      request.licenseTermsId = BigInt(request.licenseTermsId);
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(request.licensorIpId),
       });
@@ -232,7 +234,7 @@ export class LicenseClient {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
       }
       const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
-        licenseTermsId: BigInt(request.licenseTermsId),
+        licenseTermsId: request.licenseTermsId,
       });
       if (!isExisted) {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
@@ -243,7 +245,7 @@ export class LicenseClient {
           licenseTemplate:
             (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
             this.licenseTemplateClient.address,
-          licenseTermsId: BigInt(request.licenseTermsId),
+          licenseTermsId: request.licenseTermsId,
         });
       if (!isAttachedLicenseTerms) {
         throw new Error(
@@ -253,7 +255,7 @@ export class LicenseClient {
       const txHash = await this.licensingModuleClient.mintLicenseTokens({
         licensorIpId: request.licensorIpId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
-        licenseTermsId: BigInt(request.licenseTermsId),
+        licenseTermsId: request.licenseTermsId,
         amount: BigInt(request.amount || 1),
         receiver:
           (request.receiver && getAddress(request.receiver)) || this.wallet.account!.address,
@@ -265,7 +267,7 @@ export class LicenseClient {
 
         return {
           txHash: txHash,
-          licenseTokenId: targetLogs[0].startLicenseTokenId.toString(),
+          licenseTokenId: targetLogs[0].startLicenseTokenId,
         };
       } else {
         return { txHash: txHash };
@@ -281,7 +283,7 @@ export class LicenseClient {
    * @returns A Promise that resolves to an object containing the PILTerms associate with the given ID.
    */
   public async getLicenseTerms(
-    selectedLicenseTermsId: string,
+    selectedLicenseTermsId: string | number | bigint,
   ): Promise<PiLicenseTemplateGetLicenseTermsResponse> {
     try {
       return await this.piLicenseTemplateReadOnlyClient.getLicenseTerms({
@@ -294,6 +296,6 @@ export class LicenseClient {
 
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
-    return Number(licenseRes.selectedLicenseTermsId);
+    return licenseRes.selectedLicenseTermsId;
   }
 }

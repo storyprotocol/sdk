@@ -7,7 +7,6 @@ import {
   IPAccountExecuteWithSigResponse,
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
-import { parseToBigInt } from "../utils/utils";
 import {
   IpAccountImplClient,
   IpAccountImplStateResponse,
@@ -41,7 +40,7 @@ export class IPAccountClient {
 
       const txHash = await ipAccountClient.execute({
         to: request.to,
-        value: parseToBigInt(0),
+        value: BigInt(0),
         data: request.data,
       });
 
@@ -76,10 +75,10 @@ export class IPAccountClient {
 
       const txHash = await ipAccountClient.executeWithSig({
         to: request.to,
-        value: parseToBigInt(0),
+        value: BigInt(0),
         data: request.data,
         signer: request.signer,
-        deadline: parseToBigInt(request.deadline),
+        deadline: BigInt(request.deadline),
         signature: request.signature,
       });
 

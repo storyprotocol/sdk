@@ -1,4 +1,4 @@
-import { Address, Address } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { PIL_TYPE } from "./license";
@@ -10,13 +10,13 @@ export type RegisterIpResponse = {
 
 export type RegisterRequest = {
   tokenContract: Address;
-  tokenId: string;
+  tokenId: string | number | bigint;
   txOptions?: TxOptions;
 };
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
   childIpId: Address;
-  licenseTokenIds: string[];
+  licenseTokenIds: string[] | bigint[] | number[];
   txOptions?: TxOptions;
 };
 
@@ -27,7 +27,7 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
 export type RegisterDerivativeRequest = {
   childIpId: Address;
   parentIpIds: Address[];
-  licenseTermsIds: string[];
+  licenseTermsIds: string[] | bigint[] | number[];
   licenseTemplate?: Address;
   txOptions?: TxOptions;
 };

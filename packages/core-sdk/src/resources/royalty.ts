@@ -74,7 +74,7 @@ export class RoyaltyClient {
         const targetLogs = ipRoyaltyVault.parseTxRoyaltyTokensCollectedEvent(txReceipt);
         return {
           txHash: txHash,
-          royaltyTokensCollected: targetLogs[0].royaltyTokensCollected.toString(),
+          royaltyTokensCollected: targetLogs[0].royaltyTokensCollected,
         };
       } else {
         return { txHash: txHash };
@@ -147,12 +147,11 @@ export class RoyaltyClient {
         this.wallet,
         proxyAddress,
       );
-      const amount = await ipRoyaltyVault.claimableRevenue({
+      return await ipRoyaltyVault.claimableRevenue({
         account: getAddress(request.account),
         snapshotId: BigInt(request.snapshotId),
         token: getAddress(request.token),
       });
-      return amount.toString();
     } catch (error) {
       handleError(error, "Failed to calculate claimable revenue");
     }
@@ -177,6 +176,7 @@ export class RoyaltyClient {
         this.wallet,
         proxyAddress,
       );
+      request.snapshotIds = request.snapshotIds.map((item) => BigInt(item));
       let txHash: Hex;
       if (request.account) {
         const iPAccountExecuteResponse = await this.ipAccountClient.execute({
@@ -189,13 +189,13 @@ export class RoyaltyClient {
           data: encodeFunctionData({
             abi: ipRoyaltyVaultImplAbi,
             functionName: "claimRevenueBySnapshotBatch",
-            args: [request.snapshotIds.map((item) => BigInt(item)), request.token],
+            args: [request.snapshotIds, request.token],
           }),
         });
         txHash = iPAccountExecuteResponse.txHash as Hex;
       } else {
         txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch({
-          snapshotIds: request.snapshotIds.map((item) => BigInt(item)),
+          snapshotIds: request.snapshotIds,
           token: getAddress(request.token),
         });
       }
@@ -204,7 +204,7 @@ export class RoyaltyClient {
           hash: txHash,
         });
         const targetLogs = ipRoyaltyVault.parseTxRevenueTokenClaimedEvent(txReceipt);
-        return { txHash, claimableToken: targetLogs[0].amount.toString() };
+        return { txHash, claimableToken: targetLogs[0].amount };
       } else {
         return { txHash };
       }
@@ -232,7 +232,7 @@ export class RoyaltyClient {
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = ipRoyaltyVault.parseTxSnapshotCompletedEvent(txReceipt);
-        return { txHash, snapshotId: targetLogs[0].snapshotId.toString() };
+        return { txHash, snapshotId: targetLogs[0].snapshotId };
       } else {
         return { txHash };
       }

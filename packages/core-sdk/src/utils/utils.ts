@@ -20,10 +20,6 @@ export function isIntegerString(s: string): boolean {
   return !isNaN(num) && parseInt(s, 10) === num;
 }
 
-export function parseToBigInt(num: string | number): bigint {
-  return BigInt(num);
-}
-
 export async function waitTxAndFilterLog<
   const TAbi extends Abi | readonly unknown[],
   TEventName extends ContractEventName<TAbi> | undefined = ContractEventName<TAbi>,
@@ -154,7 +150,7 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   }
 }
 
-export const chain: { [key in SupportedChainIds]: string } = {
-  sepolia: "11155111",
-  11155111: "11155111",
+export const chain: { [key in SupportedChainIds]: bigint } = {
+  sepolia: 11155111n,
+  11155111: 11155111n,
 };

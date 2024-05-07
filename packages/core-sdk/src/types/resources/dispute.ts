@@ -22,7 +22,7 @@ export type RaiseDisputeRequest = {
 
 export type RaiseDisputeResponse = {
   txHash: string;
-  disputeId?: Hex;
+  disputeId?: bigint;
   arbitrationPolicy?: Hex;
 };
 

@@ -7,7 +7,7 @@ import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-let snapshotId: string;
+let snapshotId: bigint;
 describe("Test royalty Functions", () => {
   let client: StoryClient;
 
@@ -28,7 +28,7 @@ describe("Test royalty Functions", () => {
       });
       return response.ipId! as Hex;
     };
-    const getCommercialPolicyId = async (): Promise<string> => {
+    const getCommercialPolicyId = async (): Promise<bigint> => {
       const response = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
         currency: MockERC20.address,
@@ -40,7 +40,7 @@ describe("Test royalty Functions", () => {
       return response.licenseTermsId!;
     };
 
-    const attachLicenseTerms = async (ipId: Hex, licenseTermsId: string) => {
+    const attachLicenseTerms = async (ipId: Hex, licenseTermsId: bigint) => {
       await client.license.attachLicenseTerms({
         ipId,
         licenseTermsId: licenseTermsId,
@@ -74,7 +74,7 @@ describe("Test royalty Functions", () => {
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
-      expect(response.royaltyTokensCollected).to.be.a("string").not.empty;
+      expect(response.royaltyTokensCollected).to.be.a("bigint");
     });
 
     it("should not throw error when pay royalty on behalf", async () => {
@@ -91,7 +91,7 @@ describe("Test royalty Functions", () => {
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
-      expect(response.snapshotId).to.be.a("string");
+      expect(response.snapshotId).to.be.a("bigint");
       snapshotId = response.snapshotId!;
     });
     it("should not throw error when claimable revenue", async () => {
@@ -101,7 +101,7 @@ describe("Test royalty Functions", () => {
         snapshotId: snapshotId.toString(),
         token: MockERC20.address,
       });
-      expect(response).to.be.a("string");
+      expect(response).to.be.a("bigint");
     });
 
     it("should not throw error when claim revenue by ipAccount", async () => {
@@ -114,7 +114,7 @@ describe("Test royalty Functions", () => {
           waitForTransaction: true,
         },
       });
-      expect(response.claimableToken).to.be.a("string");
+      expect(response.claimableToken).to.be.a("bigint");
     });
 
     it("should not throw error when claim revenue by ipAccount by EOA", async () => {
@@ -181,7 +181,7 @@ describe("Test royalty Functions", () => {
           waitForTransaction: true,
         },
       });
-      expect(response.claimableToken).to.be.a("string");
+      expect(response.claimableToken).to.be.a("bigint");
     });
   });
 });

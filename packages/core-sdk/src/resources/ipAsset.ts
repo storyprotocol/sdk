@@ -72,7 +72,7 @@ export class IPAssetClient {
       const txHash = await this.ipAssetRegistryClient.register({
         tokenContract: getAddress(request.tokenContract),
         tokenId,
-        chainid: BigInt(chain[this.chainId]),
+        chainid: chain[this.chainId],
       });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
@@ -169,9 +169,10 @@ export class IPAssetClient {
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
+      request.licenseTokenIds = request.licenseTokenIds.map((id) => BigInt(id));
       for (const licenseTokenId of request.licenseTokenIds) {
         const tokenOwnerAddress = await this.licenseTokenReadOnlyClient.ownerOf({
-          tokenId: BigInt(licenseTokenId),
+          tokenId: licenseTokenId,
         });
         if (!tokenOwnerAddress) {
           throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
@@ -179,7 +180,7 @@ export class IPAssetClient {
       }
       const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
         childIpId: getAddress(request.childIpId),
-        licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
+        licenseTokenIds: request.licenseTokenIds,
         royaltyContext: zeroAddress,
       });
       if (request.txOptions?.waitForTransaction) {
@@ -352,7 +353,7 @@ export class IPAssetClient {
   }
   private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
     const ipId = await this.ipAssetRegistryClient.ipId({
-      chainId: BigInt(chain[this.chainId]),
+      chainId: chain[this.chainId],
       tokenContract: getAddress(tokenAddress),
       tokenId: tokenId,
     });

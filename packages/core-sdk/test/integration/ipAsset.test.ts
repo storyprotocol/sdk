@@ -9,7 +9,7 @@ const expect = chai.expect;
 
 let parentIpId: Hex;
 let childIpId: Hex;
-let noCommercialLicenseTermsId: string;
+let noCommercialLicenseTermsId: bigint;
 describe("IP Asset Functions ", () => {
   let client: StoryClient;
   before(async function () {

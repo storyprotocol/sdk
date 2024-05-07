@@ -29,7 +29,7 @@ export type CollectRoyaltyTokensRequest = {
 
 export type CollectRoyaltyTokensResponse = {
   txHash: string;
-  royaltyTokensCollected?: string;
+  royaltyTokensCollected?: bigint;
 };
 
 export type RoyaltyData = [
@@ -43,17 +43,17 @@ export type RoyaltyData = [
 export type ClaimableRevenueRequest = {
   royaltyVaultIpId: Hex;
   account: Hex;
-  snapshotId: string;
+  snapshotId: string | number | bigint;
   token: Hex;
 };
 
-export type ClaimableRevenueResponse = string;
+export type ClaimableRevenueResponse = bigint;
 
 export type PayRoyaltyOnBehalfRequest = {
   receiverIpId: Hex;
   payerIpId: Hex;
   token: Hex;
-  amount: string;
+  amount: string | number | bigint;
   txOptions?: TxOptions;
 };
 
@@ -67,7 +67,7 @@ export type SnapshotRequest = {
 };
 
 export type ClaimRevenueRequest = {
-  snapshotIds: string[];
+  snapshotIds: string[] | number[] | bigint[];
   token: Hex;
   royaltyVaultIpId: Hex;
   account?: Hex;
@@ -76,12 +76,12 @@ export type ClaimRevenueRequest = {
 
 export type ClaimRevenueResponse = {
   txHash: string;
-  claimableToken?: string;
+  claimableToken?: bigint;
 };
 
 export type SnapshotResponse = {
   txHash: string;
-  snapshotId?: string;
+  snapshotId?: bigint;
 };
 
 export type RoyaltyVaultAddress = Hex;

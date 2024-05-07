@@ -21,7 +21,7 @@ describe("License Functions", () => {
           waitForTransaction: true,
         },
       });
-      expect(result.licenseTermsId).to.be.a("string").and.not.empty;
+      expect(result.licenseTermsId).to.be.a("bigint");
     });
 
     it("should not throw error when registering license with commercial use", async function () {
@@ -32,7 +32,7 @@ describe("License Functions", () => {
           waitForTransaction: true,
         },
       });
-      expect(result.licenseTermsId).to.be.a("string").not.empty;
+      expect(result.licenseTermsId).to.be.a("bigint");
     });
 
     it("should not throw error when registering license with commercial Remix use", async function () {
@@ -44,13 +44,13 @@ describe("License Functions", () => {
           waitForTransaction: true,
         },
       });
-      expect(result.licenseTermsId).to.be.a("string").and.not.empty;
+      expect(result.licenseTermsId).to.be.a("bigint");
     });
   });
 
   describe("attach License Terms and mint license tokens", async function () {
     let ipId: Hex;
-    let licenseId: string;
+    let licenseId: bigint;
     let tokenId;
     before(async function () {
       tokenId = await getTokenId();
@@ -91,7 +91,7 @@ describe("License Functions", () => {
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseTokenId).to.be.a("string").and.not.empty;
+      expect(result.licenseTokenId).to.be.a("bigint");
     });
 
     it("should not throw error when get license terms", async function () {
