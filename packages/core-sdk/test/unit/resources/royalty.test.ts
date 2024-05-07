@@ -60,7 +60,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to collect royalty tokens: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
+          "Failed to collect royalty tokens: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 is not registered.",
         );
       }
     });
@@ -78,7 +78,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to collect royalty tokens: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 address is not set.",
+          "Failed to collect royalty tokens: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 address is not set.",
         );
       }
     });
@@ -96,7 +96,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to collect royalty tokens: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 address is not set.",
+          "Failed to collect royalty tokens: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 address is not set.",
         );
       }
     });
@@ -234,7 +234,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to calculate claimable revenue: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
+          "Failed to calculate claimable revenue: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 is not registered.",
         );
       }
     });
@@ -254,7 +254,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to calculate claimable revenue: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 address is not set.",
+          "Failed to calculate claimable revenue: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 address is not set.",
         );
       }
     });
@@ -295,7 +295,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to claim revenue: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
+          "Failed to claim revenue: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 is not registered.",
         );
       }
     });
@@ -315,7 +315,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to claim revenue: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 address is not set.",
+          "Failed to claim revenue: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 address is not set.",
         );
       }
     });
@@ -341,7 +341,7 @@ describe("Test RoyaltyClient", function () {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should return txHash when call claimRevenue given correct args and waitForTransaction is true", async function () {
+    it("should return txHash when call claimRevenue given correct args and waitForTransaction is true by ip account", async function () {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -375,6 +375,40 @@ describe("Test RoyaltyClient", function () {
       expect(result.txHash).equals(txHash);
       expect(result.claimableToken).equals("1");
     });
+
+    it("should return txHash when call claimRevenue given correct args and waitForTransaction is true by EOA", async function () {
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
+        .resolves([
+          true,
+          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          1,
+          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
+          [1],
+        ]);
+      sinon
+        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
+        .resolves(txHash);
+      sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
+      sinon.stub(IpRoyaltyVaultImplClient.prototype, "parseTxRevenueTokenClaimedEvent").returns([
+        {
+          claimer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          amount: 1,
+        },
+      ]);
+
+      const result = await royaltyClient.claimRevenue({
+        snapshotIds: ["1"],
+        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        txOptions: { waitForTransaction: true },
+      });
+
+      expect(result.txHash).equals(txHash);
+      expect(result.claimableToken).equals("1");
+    });
   });
 
   describe("Test royaltyClient.snapshot", async function () {
@@ -387,7 +421,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to snapshot: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
+          "Failed to snapshot: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 is not registered.",
         );
       }
     });
@@ -404,7 +438,7 @@ describe("Test RoyaltyClient", function () {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to snapshot: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 address is not set.",
+          "Failed to snapshot: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 address is not set.",
         );
       }
     });
