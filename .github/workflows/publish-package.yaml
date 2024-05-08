@@ -75,14 +75,30 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org/
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
       - name: Install dependencies
         run: pnpm install
+      
+      - name: Fix
+        run: pnpm fix
 
-      - name: Build
-        run: pnpm build
+      - name: Run Anvil
+        id: run_anvil
+        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --block-time 1 --silent &
+
+      - name: Check on Run Anvil
+        if: steps.run_anvil.outcome != 'success'
+        run: exit 1
 
       - name: Test
         run: pnpm test
+      
+       - name: Build
+        run: pnpm build
 
       - name: Publish to npm
         run: |
