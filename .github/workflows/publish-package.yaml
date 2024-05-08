@@ -108,7 +108,7 @@ jobs:
       - name: Test
         run: pnpm test
       
-       - name: Build
+      - name: Build
         run: pnpm build
 
       - name: Publish to npm
