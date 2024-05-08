@@ -23,6 +23,7 @@ export class IPAccountClient {
    * @param request - The request object containing necessary data to execute IP Account a transaction.
    *   @param request.to The recipient of the transaction.
    *   @param request.value The amount of Ether to send.
+   *   @param request.accountAddress The ipId to send.
    *   @param request.data The data to send along with the transaction.
    * @returns Tx hash for the transaction.
    */
@@ -75,6 +76,7 @@ export class IPAccountClient {
         data: request.data,
         signer: request.signer,
         deadline: parseToBigInt(request.deadline),
+        // 712 signature
         signature: request.signature,
       });
 

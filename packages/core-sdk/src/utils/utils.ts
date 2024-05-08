@@ -8,10 +8,11 @@ import {
   parseAbiParameters,
   Chain,
   ContractEventName,
+  Hex,
 } from "viem";
 import { sepolia } from "viem/chains";
 
-import { Hex, TypedData } from "../types/common";
+import { TypedData } from "../types/common";
 import { SupportedChainIds } from "../types/config";
 
 export function isIntegerString(s: string): boolean {

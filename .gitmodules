@@ -1,4 +1,8 @@
-[submodule "packages/core-sdk/protocol-contracts"]
-	path = packages/core-sdk/protocol-contracts
+[submodule "packages/core-sdk/protocol-periphery-contracts"]
+	path = packages/core-sdk/protocol-periphery-contracts
+	url = https://github.com/storyprotocol/protocol-periphery-v1
+	branch = release-v1.x.x
+[submodule "packages/core-sdk/protocol-core-contracts"]
+	path = packages/core-sdk/protocol-core-contracts
 	url = https://github.com/storyprotocol/protocol-core-v1
-	branch = main
+	branch = release-v1.x.x

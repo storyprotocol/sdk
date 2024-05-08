@@ -1,4 +1,4 @@
-import { PublicClient, zeroAddress } from "viem";
+import { PublicClient, getAddress, zeroAddress } from "viem";
 
 import {
   IpAssetRegistryClient,
@@ -6,6 +6,7 @@ import {
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
+  PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
   RoyaltyPolicyLapClient,
   SimpleWalletClient,
@@ -20,8 +21,10 @@ import {
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
+  PIL_TYPE,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
+import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -56,25 +59,7 @@ export class LicenseClient {
     request?: RegisterNonComSocialRemixingPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms: LicenseTerms = {
-        transferable: true,
-        royaltyPolicy: zeroAddress,
-        mintingFee: BigInt(0),
-        expiration: BigInt(0),
-        commercialUse: false,
-        commercialAttribution: false,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: zeroAddress,
-        commercialRevShare: 0,
-        commercialRevCelling: BigInt(0),
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-        derivativeRevCelling: BigInt(0),
-        currency: zeroAddress,
-        uri: "",
-      };
+      const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };
@@ -96,7 +81,6 @@ export class LicenseClient {
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
-   *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
@@ -105,25 +89,11 @@ export class LicenseClient {
     request: RegisterCommercialUsePILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms: LicenseTerms = {
-        transferable: true,
-        royaltyPolicy: this.royaltyPolicyLAPClient.address,
-        mintingFee: BigInt(request.mintingFee),
-        expiration: BigInt(0),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: zeroAddress,
-        commercialRevShare: 0,
-        commercialRevCelling: BigInt(0),
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-        derivativeRevCelling: BigInt(0),
-        currency: request.currency,
-        uri: "",
-      };
+      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
+        mintingFee: request.mintingFee,
+        currency: request.currency && getAddress(request.currency),
+        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+      });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };
@@ -146,7 +116,6 @@ export class LicenseClient {
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
@@ -155,25 +124,12 @@ export class LicenseClient {
     request: RegisterCommercialRemixPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms: LicenseTerms = {
-        transferable: true,
-        royaltyPolicy: this.royaltyPolicyLAPClient.address,
-        mintingFee: BigInt(request.mintingFee),
-        expiration: BigInt(0),
-        commercialUse: true,
-        commercialAttribution: true,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: zeroAddress,
+      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
+        mintingFee: request.mintingFee,
+        currency: request.currency && getAddress(request.currency),
+        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
-        commercialRevCelling: BigInt(0),
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-        derivativeRevCelling: BigInt(0),
-        currency: request.currency,
-        uri: "",
-      };
+      });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0) {
         return { licenseTermsId: licenseTermsId.toString() };
@@ -202,7 +158,9 @@ export class LicenseClient {
    */
   public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
     try {
-      const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: request.ipId });
+      const isRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: getAddress(request.ipId),
+      });
       if (!isRegistered) {
         throw new Error(`The IP with id ${request.ipId} is not registered.`);
       }
@@ -215,7 +173,9 @@ export class LicenseClient {
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.ipId,
-          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTemplate:
+            (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
+            this.licenseTemplateClient.address,
           licenseTermsId: BigInt(request.licenseTermsId),
         });
       if (isAttachedLicenseTerms) {
@@ -266,7 +226,7 @@ export class LicenseClient {
   ): Promise<MintLicenseTokensResponse> {
     try {
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: request.licensorIpId,
+        id: getAddress(request.licensorIpId),
       });
       if (!isLicenseIpIdRegistered) {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
@@ -280,7 +240,9 @@ export class LicenseClient {
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.licensorIpId,
-          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTemplate:
+            (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
+            this.licenseTemplateClient.address,
           licenseTermsId: BigInt(request.licenseTermsId),
         });
       if (!isAttachedLicenseTerms) {
@@ -293,7 +255,8 @@ export class LicenseClient {
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: BigInt(request.licenseTermsId),
         amount: BigInt(request.amount || 1),
-        receiver: request.receiver || this.wallet.account!.address,
+        receiver:
+          (request.receiver && getAddress(request.receiver)) || this.wallet.account!.address,
         royaltyContext: zeroAddress,
       });
       if (request.txOptions?.waitForTransaction) {
@@ -309,6 +272,23 @@ export class LicenseClient {
       }
     } catch (error) {
       handleError(error, "Failed to mint license tokens");
+    }
+  }
+
+  /**
+   * Gets license terms of the given ID.
+   * @param selectedLicenseTermsId The ID of the license terms.
+   * @returns A Promise that resolves to an object containing the PILTerms associate with the given ID.
+   */
+  public async getLicenseTerms(
+    selectedLicenseTermsId: string,
+  ): Promise<PiLicenseTemplateGetLicenseTermsResponse> {
+    try {
+      return await this.piLicenseTemplateReadOnlyClient.getLicenseTerms({
+        selectedLicenseTermsId: BigInt(selectedLicenseTermsId),
+      });
+    } catch (error) {
+      handleError(error, "Failed to get license terms");
     }
   }
 

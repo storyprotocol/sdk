@@ -14,6 +14,7 @@ import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
 import { RoyaltyClient } from "./resources/royalty";
+import { NftClient } from "./resources/nftClient";
 import { SimpleWalletClient } from "./abi/generated";
 
 if (typeof process !== "undefined") {
@@ -32,6 +33,8 @@ export class StoryClient {
   private _dispute: DisputeClient | null = null;
   private _ipAccount: IPAccountClient | null = null;
   private _royalty: RoyaltyClient | null = null;
+  private _nftClient: NftClient | null = null;
+
   /**
    * @param config - the configuration for the SDK client
    */
@@ -171,6 +174,7 @@ export class StoryClient {
 
     return this._ipAccount;
   }
+
   /**
    * Getter for the royalty client. The client is lazily created when
    * this method is called.
@@ -183,5 +187,19 @@ export class StoryClient {
     }
 
     return this._royalty;
+  }
+
+  /**
+   * Getter for the NFT client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the NftClient instance
+   */
+  public get nftClient(): NftClient {
+    if (this._nftClient === null) {
+      this._nftClient = new NftClient(this.rpcClient, this.wallet);
+    }
+
+    return this._nftClient;
   }
 }
