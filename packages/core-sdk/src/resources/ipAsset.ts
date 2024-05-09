@@ -242,9 +242,9 @@ export class IPAssetClient {
       };
       if (
         request.metadata &&
-        !request.metadata.metadataURI &&
-        !request.metadata.metadata &&
-        !request.metadata.nftMetadata
+        request.metadata.metadataURI &&
+        request.metadata.metadata &&
+        request.metadata.nftMetadata
       ) {
         object.metadata = {
           metadataURI: request.metadata.metadataURI,
@@ -255,11 +255,15 @@ export class IPAssetClient {
       const txHash = await this.spgClient.mintAndRegisterIpAndAttachPilTerms(object);
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const ipId = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0].ipId;
+        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0];
         const licenseTermsId =
           this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0].licenseTermsId;
-        const tokenId = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0].tokenId;
-        return { txHash: txHash, ipId, licenseTermsId, tokenId };
+        return {
+          txHash: txHash,
+          ipId: iPRegisteredLog.ipId,
+          licenseTermsId,
+          tokenId: iPRegisteredLog.tokenId,
+        };
       }
       return { txHash };
     } catch (error) {
@@ -267,7 +271,7 @@ export class IPAssetClient {
     }
   }
   /**
-   * in progress
+   * In progress
    * Register a given NFT as an IP and attach Programmable IP License Terms.R.
    * @param request - The request object that contains all data needed to mint and register ip.
    *   @param request.nftContract The address of the NFT collection.

@@ -1,7 +1,7 @@
 import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { IPAssetClient } from "../../../src";
+import { CreateIpAssetWithPilTermsRequest, IPAssetClient } from "../../../src";
 import { PublicClient, WalletClient, Account } from "viem";
 import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
@@ -336,6 +336,86 @@ describe("Test IpAssetClient", function () {
       expect(res.txHash).equal(
         "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
       );
+    });
+  });
+
+  describe("Test ipAssetClient.createIpAssetWithPilTerms", async function () {
+    it("throw PIL_TYPE error when createIpAssetWithPilTerms given PIL_TYPE is not match", async () => {
+      try {
+        await ipAssetClient.createIpAssetWithPilTerms({
+          nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        } as unknown as CreateIpAssetWithPilTermsRequest);
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to mint and register IP and attach PIL terms: PIL type is required.",
+        );
+      }
+    });
+
+    it("should throw address error when createIpAssetWithPilTerms given nftContract is not registered", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await ipAssetClient.createIpAssetWithPilTerms({
+          nftContract: "0x",
+          pilType: 0,
+        });
+      } catch (err) {
+        expect((err as Error).message).contains(
+          `Failed to mint and register IP and attach PIL terms: Address "0x" is invalid.`,
+        );
+      }
+    });
+
+    it("should return txHash when createIpAssetWithPilTerms given correct args", async () => {
+      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIpAndAttachPilTerms").resolves(hash);
+      const result = await ipAssetClient.createIpAssetWithPilTerms({
+        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        pilType: 0,
+      });
+
+      expect(result.txHash).to.equal(hash);
+    });
+    it("should return ipId, tokenId, licenseTermsId,txHash when createIpAssetWithPilTerms given correct args and waitForTransaction of true", async () => {
+      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIpAndAttachPilTerms").resolves(hash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      sinon.stub(ipAssetClient.licensingModuleClient, "parseTxLicenseTermsAttachedEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          caller: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsId: 0n,
+        },
+      ]);
+      const result = await ipAssetClient.createIpAssetWithPilTerms({
+        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c662ac",
+        pilType: 0,
+        metadata: {
+          metadataURI: "https://",
+          metadata: "metadata",
+          nftMetadata: "nftMetadata",
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(result.txHash).to.equal(hash);
+      expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      expect(result.licenseTermsId).to.equal(0n);
+      expect(result.tokenId).to.equal(1n);
     });
   });
 });
