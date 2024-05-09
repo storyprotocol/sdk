@@ -1,4 +1,4 @@
-import { Hex, PublicClient, getAddress, zeroAddress,toHex } from "viem";
+import { Hex, PublicClient, getAddress, zeroAddress, toHex } from "viem";
 
 import { chain } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
