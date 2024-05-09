@@ -90,7 +90,7 @@ export class IPAccountClient {
       handleError(error, "Failed to execute with signature for the IP Account transaction");
     }
   }
-  public async getIpAccountAddress(accountAddress: string): Promise<IpAccountImplStateResponse> {
+  public async getIpAccountNonce(accountAddress: string): Promise<IpAccountImplStateResponse> {
     const ipAccount = new IpAccountImplClient(
       this.rpcClient,
       this.wallet,

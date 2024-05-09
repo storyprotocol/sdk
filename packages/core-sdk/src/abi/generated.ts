@@ -389,7 +389,7 @@ export const accessControllerAbi = [
  * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A)
  */
 export const accessControllerAddress = {
-  11155111: "0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A",
+  11155111: "0x01d470c28822d3701Db6325333cEE9737524776E",
 } as const;
 
 /**
@@ -1394,7 +1394,7 @@ export const ipAccountImplAbi = [
  * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d)
  */
 export const ipAccountImplAddress = {
-  11155111: "0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d",
+  11155111: "0x8F763c16753e830a8020c80f9F0131Eb8Ef52879",
 } as const;
 
 /**

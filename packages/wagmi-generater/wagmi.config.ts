@@ -4,7 +4,6 @@ import { sdk } from "./sdk";
 import type { Evaluate } from "@wagmi/cli/src/types";
 import type { ContractConfig } from "@wagmi/cli/src/config";
 import { resolveProxyContracts } from "./resolveProxyContracts";
-const storyTestnetId = 1513;
 const sepoliaChainId = 11155111;
 import "dotenv/config";
 
