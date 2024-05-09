@@ -71,4 +71,7 @@ export type {
   CreateNFTCollectionResponse,
 } from "./types/resources/nftClient";
 
-export type { PiLicenseTemplateGetLicenseTermsResponse } from "./abi/generated";
+export type {
+  PiLicenseTemplateGetLicenseTermsResponse,
+  IpAccountImplStateResponse,
+} from "./abi/generated";

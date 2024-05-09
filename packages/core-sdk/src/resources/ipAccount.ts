@@ -90,12 +90,13 @@ export class IPAccountClient {
       handleError(error, "Failed to execute with signature for the IP Account transaction");
     }
   }
-  public async getIpAccountNonce(accountAddress: string): Promise<IpAccountImplStateResponse> {
-    const ipAccount = new IpAccountImplClient(
-      this.rpcClient,
-      this.wallet,
-      getAddress(accountAddress),
-    );
+
+  /** Returns the IPAccount's internal nonce for transaction ordering.
+   * @param ipId The derivative IP ID
+   * @returns The IPAccount's internal nonce for transaction ordering.
+   */
+  public async getIpAccountNonce(ipId: string): Promise<IpAccountImplStateResponse> {
+    const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, getAddress(ipId));
     return await ipAccount.state();
   }
 }

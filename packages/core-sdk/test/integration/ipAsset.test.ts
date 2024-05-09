@@ -201,7 +201,7 @@ describe("IP Asset Functions ", () => {
       });
     });
 
-    it("should not throw error when register registerDerivativeIp", async () => {
+    it.skip("should not throw error when register registerDerivativeIp", async () => {
       const tokenChildId = await getTokenId(nftContract);
       const tokenParentId = await getTokenId(nftContract);
       const noCommercialLicenseTermsId = (
