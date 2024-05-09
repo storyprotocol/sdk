@@ -389,7 +389,7 @@ export const accessControllerAbi = [
  * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A)
  */
 export const accessControllerAddress = {
-  11155111: "0x01d470c28822d3701Db6325333cEE9737524776E",
+  11155111: "0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A",
 } as const;
 
 /**
@@ -1394,7 +1394,7 @@ export const ipAccountImplAbi = [
  * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d)
  */
 export const ipAccountImplAddress = {
-  11155111: "0x8F763c16753e830a8020c80f9F0131Eb8Ef52879",
+  11155111: "0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d",
 } as const;
 
 /**
@@ -7752,6 +7752,23 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
 // Contract IPAssetRegistry =============================================================
 
 /**
+ * IpAssetRegistryIpAccountRegisteredEvent
+ *
+ * @param account address
+ * @param implementation address
+ * @param chainId uint256
+ * @param tokenContract address
+ * @param tokenId uint256
+ */
+export type IpAssetRegistryIpAccountRegisteredEvent = {
+  account: Address;
+  implementation: Address;
+  chainId: bigint;
+  tokenContract: Address;
+  tokenId: bigint;
+};
+
+/**
  * IpAssetRegistryIpRegisteredEvent
  *
  * @param ipId address
@@ -7821,6 +7838,47 @@ export class IpAssetRegistryEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(ipAssetRegistryAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event IPAccountRegistered for contract IPAssetRegistry
+   */
+  public watchIpAccountRegisteredEvent(
+    onLogs: (txHash: Hex, ev: Partial<IpAssetRegistryIpAccountRegisteredEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: ipAssetRegistryAbi,
+      address: this.address,
+      eventName: "IPAccountRegistered",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event IPAccountRegistered for contract IPAssetRegistry
+   */
+  public parseTxIpAccountRegisteredEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<IpAssetRegistryIpAccountRegisteredEvent> {
+    const targetLogs: Array<IpAssetRegistryIpAccountRegisteredEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: ipAssetRegistryAbi,
+          eventName: "IPAccountRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "IPAccountRegistered") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**
@@ -9709,6 +9767,21 @@ export class LicenseTokenReadOnlyClient {
 // Contract LicensingModule =============================================================
 
 /**
+ * LicensingModuleLicenseTermsAttachedEvent
+ *
+ * @param caller address
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicensingModuleLicenseTermsAttachedEvent = {
+  caller: Address;
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
  * LicensingModuleLicenseTokensMintedEvent
  *
  * @param caller address
@@ -9801,6 +9874,47 @@ export class LicensingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(licensingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event LicenseTermsAttached for contract LicensingModule
+   */
+  public watchLicenseTermsAttachedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleLicenseTermsAttachedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licensingModuleAbi,
+      address: this.address,
+      eventName: "LicenseTermsAttached",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event LicenseTermsAttached for contract LicensingModule
+   */
+  public parseTxLicenseTermsAttachedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicensingModuleLicenseTermsAttachedEvent> {
+    const targetLogs: Array<LicensingModuleLicenseTermsAttachedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "LicenseTermsAttached",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "LicenseTermsAttached") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**

@@ -17,6 +17,8 @@ export type {
   RegisterDerivativeRequest,
   RegisterDerivativeWithLicenseTokensRequest,
   RegisterDerivativeWithLicenseTokensResponse,
+  CreateIpAssetWithPilTermsRequest,
+  CreateIpAssetWithPilTermsResponse,
 } from "./types/resources/ipAsset";
 
 export type {
@@ -28,6 +30,7 @@ export type {
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
+  PIL_TYPE,
 } from "./types/resources/license";
 
 export type {

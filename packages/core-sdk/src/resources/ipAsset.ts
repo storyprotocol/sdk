@@ -5,10 +5,12 @@ import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
   CreateIpAssetWithPilTermsRequest,
+  CreateIpAssetWithPilTermsResponse,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
   RegisterDerivativeWithLicenseTokensResponse,
+  RegisterIpAndAttachPilTerms,
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpResponse,
   RegisterRequest,
@@ -23,9 +25,9 @@ import {
   SimpleWalletClient,
   SpgClient,
   SpgMintAndRegisterIpAndAttachPilTermsRequest,
+  SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
 } from "../abi/generated";
-import { PIL_TYPE } from "../types/resources/license";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 
 export class IPAssetClient {
@@ -208,26 +210,17 @@ export class IPAssetClient {
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the transaction hash.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, Token ID, License Terms Id if waitForTxn is set to true.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * @emits IPRegistered (caller, ipId, licenseTemplate, licenseTermsId)
+   * @emits IPAccountRegistered (account, implementation, chainId, tokenContract, tokenId)
    */
-  public async createIpAssetWithPilTerms(request: CreateIpAssetWithPilTermsRequest) {
+  public async createIpAssetWithPilTerms(
+    request: CreateIpAssetWithPilTermsRequest,
+  ): Promise<CreateIpAssetWithPilTermsResponse> {
     try {
       if (request.pilType === undefined || request.pilType === null) {
         throw new Error("PIL type is required.");
-      }
-      if (
-        request.pilType === PIL_TYPE.COMMERCIAL_USE &&
-        (!request.mintingFee || !request.currency)
-      ) {
-        throw new Error("Minting fee and currency are required for commercial use PIL.");
-      }
-      if (
-        request.pilType === PIL_TYPE.COMMERCIAL_REMIX &&
-        (!request.mintingFee || !request.currency || !request.commercialRevShare)
-      ) {
-        throw new Error(
-          "Minting fee, currency and commercialRevShare are required for commercial remix PIL.",
-        );
       }
       const licenseTerm = getLicenseTermByType(request.pilType, {
         mintingFee: request.mintingFee,
@@ -260,12 +253,95 @@ export class IPAssetClient {
         };
       }
       const txHash = await this.spgClient.mintAndRegisterIpAndAttachPilTerms(object);
-      return txHash;
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const ipId = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0].ipId;
+        const licenseTermsId =
+          this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0].licenseTermsId;
+        const tokenId = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0].tokenId;
+        return { txHash: txHash, ipId, licenseTermsId, tokenId };
+      }
+      return { txHash };
     } catch (error) {
       handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
   }
   /**
+   * in progress
+   * Register a given NFT as an IP and attach Programmable IP License Terms.R.
+   * @param request - The request object that contains all data needed to mint and register ip.
+   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.tokenId The ID of the NFT.
+   *   @param request.pilType The type of the PIL.
+   *   @param request.metadata - [Optional] The desired metadata for the newly registered IP.
+   *   @param request.metadataURI The the metadata for the IP hash.
+   *   @param request.metadata The metadata for the IP.
+   *   @param request.nftMetadata The metadata for the IP NFT.
+   *   @param request.sigMetadata - [OPTIONAL] The signature data for execution via IP Account.
+   *   @param request.sigMetadata.signer The address of the signer for execution with signature.
+   *   @param request.sigMetadata.deadline The deadline for the signature.
+   *   @param request.sigMetadata.signature The signature for the execution via IP Account.
+   *   @param request.sigAttach - The signature data for execution via IP Account.
+   *   @param request.sigAttach.signer The address of the signer for execution with signature.
+   *   @param request.sigAttach.deadline The deadline for the signature.
+   *   @param request.sigAttach.signature The signature for the execution via IP Account.
+   *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
+   *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
+   *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *   @param request.txOptions [Optional] The transaction options.
+   */
+  public async registerIpAndAttachPilTerms(request: RegisterIpAndAttachPilTerms) {
+    try {
+      if (request.pilType === undefined || request.pilType === null) {
+        throw new Error("PIL type is required.");
+      }
+      const licenseTerm = getLicenseTermByType(request.pilType, {
+        mintingFee: request.mintingFee,
+        currency: request.currency && getAddress(request.currency),
+        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+        commercialRevShare: request.commercialRevShare,
+      });
+      const object: SpgRegisterIpAndAttachPilTermsRequest = {
+        nftContract: getAddress(request.nftContract),
+        tokenId: BigInt(request.tokenId),
+
+        terms: licenseTerm,
+        metadata: {
+          metadataURI: "",
+          metadataHash: toHex("", { size: 32 }),
+          nftMetadataHash: toHex("", { size: 32 }),
+        },
+        sigMetadata: {
+          signer: zeroAddress,
+          deadline: BigInt(0),
+          signature: zeroAddress,
+        },
+        sigAttach: {
+          signer: zeroAddress,
+          deadline: BigInt(0),
+          signature: zeroAddress,
+        },
+      };
+      if (
+        request.metadata &&
+        !request.metadata.metadataURI &&
+        !request.metadata.metadata &&
+        !request.metadata.nftMetadata
+      ) {
+        object.metadata = {
+          metadataURI: request.metadata.metadataURI,
+          metadataHash: toHex(request.metadata.metadata, { size: 32 }),
+          nftMetadataHash: toHex(request.metadata.nftMetadata, { size: 32 }),
+        };
+      }
+      const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
+      return txHash;
+    } catch (error) {
+      handleError(error, "Failed to register IP and attach PIL terms");
+    }
+  }
+  /**
+   * In progress
    * Register the given NFT as a derivative IP with metadata without using license tokens.
    * @param request - The request object that contains all data needed to register derivative IP.
    *   @param request.nftContract The address of the NFT collection.
@@ -278,18 +354,18 @@ export class IPAssetClient {
    *   @param request.sigRegister.signer The address of the signer for execution with signature.
    *   @param request.sigRegister.deadline The deadline for the signature.
    *   @param request.sigRegister.signature The signature for the execution via IP Account.
-   *   @param request.metadata [Optional] The desired metadata for the newly registered IP.
+   *   @param request.metadata - [Optional] The desired metadata for the newly registered IP.
    *   @param request.metadata.metadataURI The URI of the metadata for the IP.
    *   @param request.metadata.metadata The metadata for the IP.
    *   @param request.metadata.nftMetadata The the metadata for the IP NFT.
-   *   @param request.sigMetadata [Optional] Signature data for setAll (metadata) for the IP via the Core Metadata Module.
+   *   @param request.sigMetadata - [Optional] Signature data for setAll (metadata) for the IP via the Core Metadata Module.
    *   @param request.sigMetadata.signer The address of the signer for execution with signature.
    *   @param request.sigMetadata.deadline The deadline for the signature.
    *   @param request.sigMetadata.signature The signature for the execution via IP Account.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  private async registerDerivativeIp(request: RegisterIpAndMakeDerivativeRequest) {
+  public async registerDerivativeIp(request: RegisterIpAndMakeDerivativeRequest) {
     try {
       const object: SpgRegisterIpAndMakeDerivativeRequest = {
         nftContract: getAddress(request.nftContract),
@@ -321,10 +397,10 @@ export class IPAssetClient {
       if (
         request.sigMetadata &&
         request.sigMetadata.signature &&
-        request.sigMetadata.signature !== zeroAddress &&
+        request.sigMetadata.signature.length > 0 &&
         request.sigMetadata.signer &&
         request.sigMetadata.signer !== zeroAddress &&
-        request.sigMetadata.deadline
+        request.sigMetadata.deadline !== 0n
       ) {
         object.sigMetadata = {
           signer: getAddress(request.sigMetadata.signer),
@@ -344,7 +420,6 @@ export class IPAssetClient {
           nftMetadataHash: toHex(request.metadata.nftMetadata, { size: 32 }),
         };
       }
-
       const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
       return txHash;
     } catch (error) {

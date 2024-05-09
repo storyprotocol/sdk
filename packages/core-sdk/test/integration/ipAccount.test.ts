@@ -1,7 +1,7 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { MockERC721, getDeadline, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { Hex, PublicClient, createPublicClient, encodeFunctionData, getAddress, http } from "viem";
 import { accessControllerAbi, accessControllerAddress } from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
@@ -57,7 +57,7 @@ describe("Ip Account functions", () => {
 
   it("should not throw error when executeWithSig setting permission", async () => {
     const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
-    const deadline = Number((await publicClient.getBlock()).timestamp + 100n);
+    const deadline = await getDeadline();
     const state = await client.ipAccount.getIpAccountNonce(ipId);
     const expectedState = state + 1n;
     const signature = await account.signTypedData({

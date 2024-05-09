@@ -142,8 +142,14 @@ export default defineConfig(async () => {
             "raiseDispute",
             "resolveDispute",
           ],
-          IPAccountImpl: ["execute", "executeWithSig","state"],
-          IPAssetRegistry: ["IPRegistered", "ipId", "isRegistered", "register"],
+          IPAccountImpl: ["execute", "executeWithSig", "state"],
+          IPAssetRegistry: [
+            "IPRegistered",
+            "ipId",
+            "isRegistered",
+            "register",
+            "IPAccountRegistered",
+          ],
           IpRoyaltyVaultImpl: [
             "claimRevenueBySnapshotBatch",
             "claimRevenueByTokenBatch",
@@ -167,6 +173,7 @@ export default defineConfig(async () => {
             "registerDerivativeWithLicenseTokens",
             "registerDerivative",
             "getLicenseTerms",
+            "LicenseTermsAttached",
           ],
           ModuleRegistry: ["isRegistered"],
           RoyaltyModule: ["payRoyaltyOnBehalf"],
@@ -182,7 +189,7 @@ export default defineConfig(async () => {
             "mintAndRegisterIpAndMakeDerivative",
             "registerIpAndMakeDerivative",
             "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
-            "registerIpAndMakeDerivativeWithLicenseTokens"
+            "registerIpAndMakeDerivativeWithLicenseTokens",
           ],
         },
       }),

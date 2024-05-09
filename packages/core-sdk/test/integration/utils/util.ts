@@ -1,18 +1,18 @@
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain } from "../../../src/utils/utils";
-import { http, createPublicClient, createWalletClient, Hex } from "viem";
+import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
+const baseConfig = {
+  chain: chainStringToViemChain("sepolia"),
+  transport: http(process.env.TEST_SEPOLIA_RPC_PROVIDER_URL),
+} as const;
+const publicClient = createPublicClient(baseConfig);
+const walletClient = createWalletClient({
+  ...baseConfig,
+  account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+});
 
-export const getTokenId = async (): Promise<string | undefined> => {
-  const baseConfig = {
-    chain: chainStringToViemChain("sepolia"),
-    transport: http(process.env.TEST_SEPOLIA_RPC_PROVIDER_URL),
-  } as const;
-  const publicClient = createPublicClient(baseConfig);
-  const walletClient = createWalletClient({
-    ...baseConfig,
-    account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
-  });
+export const getTokenId = async (nftContract?: Address): Promise<string | undefined> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -23,7 +23,7 @@ export const getTokenId = async (): Promise<string | undefined> => {
         type: "function",
       },
     ],
-    address: MockERC721,
+    address: nftContract || MockERC721,
     functionName: "mint",
     args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex],
     account: walletClient.account,
@@ -46,4 +46,8 @@ export const getStoryClientInSepolia = (): StoryClient => {
     account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
   };
   return StoryClient.newClient(config);
+};
+
+export const getDeadline = async () => {
+  return Number((await publicClient.getBlock()).timestamp + 100n);
 };

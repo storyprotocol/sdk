@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { PIL_TYPE } from "./license";
@@ -52,12 +52,19 @@ export type CreateIpAssetWithPilTermsRequest = {
   txOptions?: TxOptions;
 };
 
+export type CreateIpAssetWithPilTermsResponse = {
+  txHash: string;
+  ipId?: Address;
+  tokenId?: bigint;
+  licenseTermsId?: bigint;
+};
+
 export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
   tokenId: string;
   derivData: {
     parentIpIds: Address[];
-    licenseTermsIds: string[];
+    licenseTermsIds: string[] | bigint[] | number[];
     licenseTemplate?: Address;
   };
   metadata?: {
@@ -67,12 +74,37 @@ export type RegisterIpAndMakeDerivativeRequest = {
   };
   sigMetadata?: {
     signer: Address;
-    deadline: string;
-    signature: Address;
+    deadline: string | number | bigint;
+    signature: Hex;
   };
   sigRegister: {
     signer: Address;
-    deadline: string;
-    signature: Address;
+    deadline: string | number | bigint;
+    signature: Hex;
   };
+};
+
+export type RegisterIpAndAttachPilTerms = {
+  nftContract: Address;
+  tokenId: bigint;
+  metadata: {
+    metadataURI: string;
+    metadata: string;
+    nftMetadata: string;
+  };
+  pilType: PIL_TYPE;
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint | number | string;
+    signature: Hex;
+  };
+  sigAttach: {
+    signer: Address;
+    deadline: bigint | number | string;
+    signature: Hex;
+  };
+  mintingFee?: string;
+  currency?: Address;
+  commercialRevShare?: number;
+  txOptions?: TxOptions;
 };
