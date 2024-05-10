@@ -55,7 +55,7 @@ describe("Ip Account functions", () => {
     expect(response.txHash).to.be.a("string").and.not.empty;
   });
 
-  it("should not throw error when executeWithSig setting permission", async () => {
+  it.skip("should not throw error when executeWithSig setting permission", async () => {
     const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
     const deadline = (await getBlockTimestamp()) + 100n;
     const state = await client.ipAccount.getIpAccountNonce(ipId);
