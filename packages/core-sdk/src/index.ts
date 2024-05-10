@@ -19,6 +19,8 @@ export type {
   RegisterDerivativeWithLicenseTokensResponse,
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
+  RegisterIpAndMakeDerivativeRequest,
+  RegisterIpAndMakeDerivativeResponse,
 } from "./types/resources/ipAsset";
 
 export type {

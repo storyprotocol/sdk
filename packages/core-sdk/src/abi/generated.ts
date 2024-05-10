@@ -401,6 +401,177 @@ export const accessControllerConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CoreMetadataModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ */
+export const coreMetadataModuleAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAccountRegistry", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
+  },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
+  {
+    type: "error",
+    inputs: [],
+    name: "CoreMetadataModule__MetadataAlreadyFrozen",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "ipId", internalType: "address", type: "address", indexed: true }],
+    name: "MetadataFrozen",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      {
+        name: "metadataURI",
+        internalType: "string",
+        type: "string",
+        indexed: false,
+      },
+      {
+        name: "metadataHash",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+    ],
+    name: "MetadataURISet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      {
+        name: "nftTokenURI",
+        internalType: "string",
+        type: "string",
+        indexed: false,
+      },
+      {
+        name: "nftMetadataHash",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+    ],
+    name: "NFTTokenURISet",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ACCOUNT_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "freezeMetadata",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "isMetadataFrozen",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "metadataURI", internalType: "string", type: "string" },
+      { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+      { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "setAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "metadataURI", internalType: "string", type: "string" },
+      { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "setMetadataURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "updateNftTokenURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ */
+export const coreMetadataModuleAddress = {
+  11155111: "0xDa498A3f7c8a88cb72201138C366bE3778dB9575",
+} as const;
+
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ */
+export const coreMetadataModuleConfig = {
+  address: coreMetadataModuleAddress,
+  abi: coreMetadataModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DisputeModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -7341,6 +7512,55 @@ export class AccessControllerClient extends AccessControllerEventClient {
       functionName: "setPermission",
       account: this.wallet.account,
       args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+}
+
+// Contract CoreMetadataModule =============================================================
+
+/**
+ * CoreMetadataModuleSetAllRequest
+ *
+ * @param ipId address
+ * @param metadataURI string
+ * @param metadataHash bytes32
+ * @param nftMetadataHash bytes32
+ */
+export type CoreMetadataModuleSetAllRequest = {
+  ipId: Address;
+  metadataURI: string;
+  metadataHash: Hex;
+  nftMetadataHash: Hex;
+};
+
+/**
+ * contract CoreMetadataModule write method
+ */
+export class CoreMetadataModuleClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(coreMetadataModuleAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method setAll for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleSetAllRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAll(request: CoreMetadataModuleSetAllRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "setAll",
+      account: this.wallet.account,
+      args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }

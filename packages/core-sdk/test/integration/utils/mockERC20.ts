@@ -26,7 +26,7 @@ export class MockERC20 {
     });
   }
 
-  public async approve(nftContractAddress: Hex): Promise<void> {
+  public async approve(contract: Address): Promise<void> {
     const abi = [
       {
         inputs: [
@@ -57,7 +57,7 @@ export class MockERC20 {
       abi: abi,
       address: MockERC20.address,
       functionName: "approve",
-      args: [nftContractAddress, BigInt(100000 * 10 ** 6)],
+      args: [contract, BigInt(100000 * 10 ** 6)],
       account: this.walletClient.account,
     });
     const approveHash = await this.walletClient.writeContract(call);
@@ -89,7 +89,7 @@ export class MockERC20 {
       address: MockERC20.address,
       functionName: "mint",
       account: this.walletClient.account,
-      args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS! as Hex, BigInt(100000 * 10 ** 6)],
+      args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS! as Address, BigInt(100000 * 10 ** 6)],
     });
     const mintHash = await this.walletClient.writeContract(request);
     await waitTx(this.publicClient, mintHash);

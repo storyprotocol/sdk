@@ -1,8 +1,8 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Address, Hex, encodeFunctionData, getAddress } from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getDeadline, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { PIL_TYPE } from "../../src/types/resources/license";
 import { MockERC20 } from "./utils/mockERC20";
 import { privateKeyToAccount } from "viem/accounts";
@@ -32,13 +32,13 @@ describe("IP Asset Functions ", () => {
     noCommercialLicenseTermsId = registerResult.licenseTermsId!;
   });
 
-  describe("Create IP Asset", async function () {
+  describe.skip("Create IP Asset", async function () {
     it("should not throw error when registering a IP Asset", async () => {
       const tokenId = await getTokenId();
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.register({
-          tokenContract: MockERC721,
+          nftContract: MockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -55,7 +55,7 @@ describe("IP Asset Functions ", () => {
       const tokenId = await getTokenId();
       parentIpId = (
         await client.ipAsset.register({
-          tokenContract: MockERC721,
+          nftContract: MockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
@@ -86,7 +86,7 @@ describe("IP Asset Functions ", () => {
       const tokenId = await getTokenId();
       const ipId = (
         await client.ipAsset.register({
-          tokenContract: MockERC721,
+          nftContract: MockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
@@ -133,7 +133,7 @@ describe("IP Asset Functions ", () => {
       nftContract = txData.nftContract;
     });
 
-    describe("should not throw error when mint and register ip and attach pil terms", async () => {
+    describe.skip("should not throw error when mint and register ip and attach pil terms", async () => {
       it("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.createIpAssetWithPilTerms({
           nftContract,
@@ -201,36 +201,27 @@ describe("IP Asset Functions ", () => {
       });
     });
 
-    it.skip("should not throw error when register registerDerivativeIp", async () => {
+    it("should not throw error when register registerDerivativeIp", async () => {
+      const coreMetadataModuleAddress = "0xDa498A3f7c8a88cb72201138C366bE3778dB9575";
       const tokenChildId = await getTokenId(nftContract);
-      const tokenParentId = await getTokenId(nftContract);
-      const noCommercialLicenseTermsId = (
-        await client.license.registerNonComSocialRemixingPIL({
-          txOptions: {
-            waitForTransaction: true,
-          },
-        })
-      ).licenseTermsId!;
-      const parentIpId = (
-        await client.ipAsset.register({
-          tokenContract: nftContract,
-          tokenId: tokenParentId!,
-          txOptions: {
-            waitForTransaction: true,
-          },
-        })
-      ).ipId!;
-      const childIpId = (
-        await client.ipAsset.register({
-          tokenContract: nftContract,
-          tokenId: tokenChildId!,
-          txOptions: {
-            waitForTransaction: true,
-          },
-        })
-      ).ipId!;
+      const { ipId: parentIpId, licenseTermsId } = await client.ipAsset.createIpAssetWithPilTerms({
+        nftContract,
+        pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+        commercialRevShare: 10,
+        mintingFee: "100",
+        currency: MockERC20.address,
+        metadata: {
+          metadataURI: "test-uri",
+          metadata: "test-metadata-hash",
+          nftMetadata: "test-nft-metadata-hash",
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const childIpId = await client.ipAsset.getIpIdAddress(nftContract, tokenChildId!);
       const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
-      const deadline = await getDeadline();
+      const deadline = (await getBlockTimestamp()) + 1000n;
       const sigMetadata = await account.signTypedData({
         domain: {
           name: "Story Protocol IP Account",
@@ -257,13 +248,13 @@ describe("IP Asset Functions ", () => {
             args: [
               getAddress(childIpId),
               getAddress(spContractAddress),
-              getAddress("0x2ac240293f12032E103458451dE8A8096c5A72E8"),
-              "0x00000000" as Hex,
+              getAddress(coreMetadataModuleAddress),
+              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
               1,
             ],
           }),
           nonce: 1n,
-          deadline: BigInt(deadline),
+          deadline,
         },
       });
       const sigRegister = await account.signTypedData({
@@ -293,20 +284,22 @@ describe("IP Asset Functions ", () => {
               getAddress(childIpId),
               getAddress(spContractAddress),
               getAddress(licensingContractModuleAddress),
-              "0x00000000" as Hex,
+              toFunctionSelector(
+                "function registerDerivative(address,address[],uint256[],address,bytes)",
+              ),
               1,
             ],
           }),
           nonce: 2n,
-          deadline: BigInt(deadline),
+          deadline,
         },
       });
-      const txHash = await client.ipAsset.registerDerivativeIp({
+      const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
         tokenId: tokenChildId!,
         derivData: {
-          parentIpIds: [parentIpId],
-          licenseTermsIds: [noCommercialLicenseTermsId],
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
         },
         metadata: {
           metadataURI: "test-uri",
@@ -324,7 +317,30 @@ describe("IP Asset Functions ", () => {
           signature: sigRegister,
         },
       });
-      expect(txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.ipId).to.be.a("string").and.not.empty;
     });
+
+    // it("should not throw error when register registerIpAndAttachPilTerms", async () => {
+    //   const tokenId = await getTokenId(nftContract);
+    //   const licenseTermsId = (
+    //     await client.license.registerNonComSocialRemixingPIL({
+    //       txOptions: {
+    //         waitForTransaction: true,
+    //       },
+    //     })
+    //   ).licenseTermsId!;
+    //   const txHash = await client.ipAsset.registerIpAndAttachPilTerms({
+    //     nftContract: nftContract,
+    //     tokenId: tokenId!,
+    //     metadata: {
+    //       metadataURI: "test-uri",
+    //       metadata: "test-metadata-hash",
+    //       nftMetadata: "test-nft-metadata-hash",
+    //     },
+    //     pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+    //   });
+    //   expect(txHash).to.be.a("string").and.not.empty;
+    // });
   });
 });

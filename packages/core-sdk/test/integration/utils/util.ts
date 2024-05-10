@@ -12,7 +12,7 @@ const walletClient = createWalletClient({
   account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
 });
 
-export const getTokenId = async (nftContract?: Address): Promise<string | undefined> => {
+export const getTokenId = async (nftContract?: Address): Promise<number | undefined> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -33,7 +33,7 @@ export const getTokenId = async (nftContract?: Address): Promise<string | undefi
     hash,
   });
   if (logs[0].topics[3]) {
-    return parseInt(logs[0].topics[3], 16).toString();
+    return parseInt(logs[0].topics[3], 16);
   }
 };
 
@@ -48,6 +48,6 @@ export const getStoryClientInSepolia = (): StoryClient => {
   return StoryClient.newClient(config);
 };
 
-export const getDeadline = async () => {
-  return Number((await publicClient.getBlock()).timestamp + 100n);
+export const getBlockTimestamp = async (): Promise<bigint> => {
+  return (await publicClient.getBlock()).timestamp;
 };

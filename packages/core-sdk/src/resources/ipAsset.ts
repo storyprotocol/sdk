@@ -1,4 +1,4 @@
-import { Hex, PublicClient, getAddress, zeroAddress, toHex } from "viem";
+import { Hex, PublicClient, getAddress, zeroAddress, toHex, Address } from "viem";
 
 import { chain } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -12,6 +12,7 @@ import {
   RegisterDerivativeWithLicenseTokensResponse,
   RegisterIpAndAttachPilTerms,
   RegisterIpAndMakeDerivativeRequest,
+  RegisterIpAndMakeDerivativeResponse,
   RegisterIpResponse,
   RegisterRequest,
 } from "../types/resources/ipAsset";
@@ -58,7 +59,7 @@ export class IPAssetClient {
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
    * @param request - The request object that contains all data needed to register IP.
-   *   @param request.tokenContract The address of the NFT.
+   *   @param request.nftContract The address of the NFT.
    *   @param request.tokenId The token identifier of the NFT.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
@@ -67,12 +68,12 @@ export class IPAssetClient {
   public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
     try {
       const tokenId = BigInt(request.tokenId);
-      const ipId = await this.isNFTRegistered(request.tokenContract, tokenId);
+      const ipId = await this.isNftRegistered(request.nftContract, tokenId);
       if (ipId !== "0x") {
         return { ipId: ipId };
       }
       const txHash = await this.ipAssetRegistryClient.register({
-        tokenContract: getAddress(request.tokenContract),
+        tokenContract: getAddress(request.nftContract),
         tokenId,
         chainid: chain[this.chainId],
       });
@@ -212,8 +213,7 @@ export class IPAssetClient {
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, Token ID, License Terms Id if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
-   * @emits IPRegistered (caller, ipId, licenseTemplate, licenseTermsId)
-   * @emits IPAccountRegistered (account, implementation, chainId, tokenContract, tokenId)
+   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   public async createIpAssetWithPilTerms(
     request: CreateIpAssetWithPilTermsRequest,
@@ -345,7 +345,6 @@ export class IPAssetClient {
     }
   }
   /**
-   * In progress
    * Register the given NFT as a derivative IP with metadata without using license tokens.
    * @param request - The request object that contains all data needed to register derivative IP.
    *   @param request.nftContract The address of the NFT collection.
@@ -367,10 +366,37 @@ export class IPAssetClient {
    *   @param request.sigMetadata.deadline The deadline for the signature.
    *   @param request.sigMetadata.signature The signature for the execution via IP Account.
    *   @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the transaction hash.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
-  public async registerDerivativeIp(request: RegisterIpAndMakeDerivativeRequest) {
+  public async registerDerivativeIp(
+    request: RegisterIpAndMakeDerivativeRequest,
+  ): Promise<RegisterIpAndMakeDerivativeResponse> {
     try {
+      const tokenId = BigInt(request.tokenId);
+      const ipId = await this.isNftRegistered(request.nftContract, tokenId);
+      if (ipId !== "0x") {
+        throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
+      }
+      if (request.derivData.parentIpIds.length !== request.derivData.licenseTermsIds.length) {
+        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");
+      }
+      for (let i = 0; i < request.derivData.parentIpIds.length; i++) {
+        const isAttachedLicenseTerms =
+          await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+            ipId: getAddress(request.derivData.parentIpIds[i]),
+            licenseTemplate:
+              (request.derivData.licenseTemplate &&
+                getAddress(request.derivData.licenseTemplate)) ||
+              this.licenseTemplateClient.address,
+            licenseTermsId: BigInt(request.derivData.licenseTermsIds[i]),
+          });
+        if (!isAttachedLicenseTerms) {
+          throw new Error(
+            `License terms id ${request.derivData.licenseTermsIds[i]} must be attached to the parent ipId ${request.derivData.parentIpIds[i]} before registering derivative.`,
+          );
+        }
+      }
       const object: SpgRegisterIpAndMakeDerivativeRequest = {
         nftContract: getAddress(request.nftContract),
         tokenId: BigInt(request.tokenId),
@@ -425,17 +451,36 @@ export class IPAssetClient {
         };
       }
       const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
-      return txHash;
+      if (request.txOptions?.waitForTransaction) {
+        const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+        return { txHash, ipId: log.ipId };
+      }
+      return { txHash };
     } catch (error) {
       handleError(error, "Failed to register derivative IP");
     }
   }
-  private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
+  /**
+   * Gets the canonical IP identifier associated with an IP NFT.
+   * @param nftContract The address of the NFT collection.
+   * @param tokenId The token identifier of the IP.
+   * @returns The IP's canonical address identifier.
+   */
+  public async getIpIdAddress(
+    nftContract: Address,
+    tokenId: bigint | string | number,
+  ): Promise<Address> {
     const ipId = await this.ipAssetRegistryClient.ipId({
       chainId: chain[this.chainId],
-      tokenContract: getAddress(tokenAddress),
-      tokenId: tokenId,
+      tokenContract: getAddress(nftContract),
+      tokenId: BigInt(tokenId),
     });
+    return ipId;
+  }
+
+  private async isNftRegistered(nftContract: Address, tokenId: bigint): Promise<Hex> {
+    const ipId = await this.getIpIdAddress(nftContract, tokenId);
     const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: ipId });
     return isRegistered ? ipId : "0x";
   }

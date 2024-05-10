@@ -20,7 +20,7 @@ describe("Test royalty Functions", () => {
     const getIpId = async (): Promise<Hex> => {
       const tokenId = await getTokenId();
       const response = await client.ipAsset.register({
-        tokenContract: MockERC721,
+        nftContract: MockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,

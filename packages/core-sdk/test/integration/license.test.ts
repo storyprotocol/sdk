@@ -55,7 +55,7 @@ describe("License Functions", () => {
     before(async function () {
       tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
-        tokenContract: MockERC721,
+        nftContract: MockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,

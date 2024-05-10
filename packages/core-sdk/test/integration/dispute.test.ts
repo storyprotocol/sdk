@@ -21,7 +21,7 @@ describe.skip("Dispute Functions", () => {
     it("raise a dispute", async () => {
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
-        tokenContract: MockERC721,
+        nftContract: MockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,

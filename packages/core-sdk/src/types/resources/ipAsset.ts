@@ -9,7 +9,7 @@ export type RegisterIpResponse = {
 };
 
 export type RegisterRequest = {
-  tokenContract: Address;
+  nftContract: Address;
   tokenId: string | number | bigint;
   txOptions?: TxOptions;
 };
@@ -61,7 +61,7 @@ export type CreateIpAssetWithPilTermsResponse = {
 
 export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
-  tokenId: string;
+  tokenId: string | number | bigint;
   derivData: {
     parentIpIds: Address[];
     licenseTermsIds: string[] | bigint[] | number[];
@@ -82,6 +82,12 @@ export type RegisterIpAndMakeDerivativeRequest = {
     deadline: string | number | bigint;
     signature: Hex;
   };
+  txOptions?: TxOptions;
+};
+
+export type RegisterIpAndMakeDerivativeResponse = {
+  txHash: string;
+  ipId?: Address;
 };
 
 export type RegisterIpAndAttachPilTerms = {
