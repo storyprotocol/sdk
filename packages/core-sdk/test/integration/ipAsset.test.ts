@@ -138,7 +138,7 @@ describe("IP Asset Functions ", () => {
       nftContract = txData.nftContract;
     });
 
-    describe.skip("should not throw error when mint and register ip and attach pil terms", async () => {
+    describe("should not throw error when mint and register ip and attach pil terms", async () => {
       it("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.createIpAssetWithPilTerms({
           nftContract,
@@ -206,7 +206,7 @@ describe("IP Asset Functions ", () => {
       });
     });
 
-    it.skip("should not throw error when register registerDerivativeIp", async () => {
+    it("should not throw error when register registerDerivativeIp", async () => {
       const tokenChildId = await getTokenId(nftContract);
       const { ipId: parentIpId, licenseTermsId } = await client.ipAsset.createIpAssetWithPilTerms({
         nftContract,
