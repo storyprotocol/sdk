@@ -7,7 +7,7 @@ export { LicenseClient } from "./resources/license";
 export { DisputeClient } from "./resources/dispute";
 export { NftClient } from "./resources/nftClient";
 
-export type { StoryConfig } from "./types/config";
+export type { StoryConfig, SupportedChainIds } from "./types/config";
 export type { TypedData } from "./types/common";
 
 export type {
