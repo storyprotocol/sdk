@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector, Address } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { PIL_TYPE } from "../../src/types/resources/license";
@@ -17,22 +17,24 @@ const sepoliaChainId = 11155111;
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-let parentIpId: Hex;
-let childIpId: Hex;
-let noCommercialLicenseTermsId: bigint;
 describe("IP Asset Functions ", () => {
   let client: StoryClient;
   before(async function () {
     client = getStoryClientInSepolia();
-    const registerResult = await client.license.registerNonComSocialRemixingPIL({
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-    noCommercialLicenseTermsId = registerResult.licenseTermsId!;
   });
 
-  describe.skip("Create IP Asset", async function () {
+  describe("Create IP Asset", async function () {
+    let parentIpId: Hex;
+    let childIpId: Hex;
+    let noCommercialLicenseTermsId: bigint;
+    before(async () => {
+      const registerResult = await client.license.registerNonComSocialRemixingPIL({
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      noCommercialLicenseTermsId = registerResult.licenseTermsId!;
+    });
     it("should not throw error when registering a IP Asset", async () => {
       const tokenId = await getTokenId();
       const waitForTransaction: boolean = true;
@@ -114,10 +116,13 @@ describe("IP Asset Functions ", () => {
   });
 
   describe("NFT Client (SPG)", () => {
+    let nftContract: Hex;
     const permissionAddress = accessControllerAddress[sepoliaChainId];
     const spContractAddress = spgAddress[sepoliaChainId];
     const licensingContractModuleAddress = licensingModuleAddress[sepoliaChainId];
-    let nftContract: Hex;
+    const coreMetadataModuleAddress = "0xDa498A3f7c8a88cb72201138C366bE3778dB9575";
+    const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Address);
+
     before(async () => {
       // Create a NFT collection for this test-suite
       const txData = await client.nftClient.createNFTCollection({
@@ -201,8 +206,7 @@ describe("IP Asset Functions ", () => {
       });
     });
 
-    it("should not throw error when register registerDerivativeIp", async () => {
-      const coreMetadataModuleAddress = "0xDa498A3f7c8a88cb72201138C366bE3778dB9575";
+    it.skip("should not throw error when register registerDerivativeIp", async () => {
       const tokenChildId = await getTokenId(nftContract);
       const { ipId: parentIpId, licenseTermsId } = await client.ipAsset.createIpAssetWithPilTerms({
         nftContract,
@@ -220,7 +224,6 @@ describe("IP Asset Functions ", () => {
         },
       });
       const childIpId = await client.ipAsset.getIpIdAddress(nftContract, tokenChildId!);
-      const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
       const deadline = (await getBlockTimestamp()) + 1000n;
       const sigMetadata = await account.signTypedData({
         domain: {
@@ -316,31 +319,102 @@ describe("IP Asset Functions ", () => {
           deadline: deadline,
           signature: sigRegister,
         },
+        txOptions: {
+          waitForTransaction: true,
+        },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
 
-    // it("should not throw error when register registerIpAndAttachPilTerms", async () => {
-    //   const tokenId = await getTokenId(nftContract);
-    //   const licenseTermsId = (
-    //     await client.license.registerNonComSocialRemixingPIL({
-    //       txOptions: {
-    //         waitForTransaction: true,
-    //       },
-    //     })
-    //   ).licenseTermsId!;
-    //   const txHash = await client.ipAsset.registerIpAndAttachPilTerms({
-    //     nftContract: nftContract,
-    //     tokenId: tokenId!,
-    //     metadata: {
-    //       metadataURI: "test-uri",
-    //       metadata: "test-metadata-hash",
-    //       nftMetadata: "test-nft-metadata-hash",
-    //     },
-    //     pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
-    //   });
-    //   expect(txHash).to.be.a("string").and.not.empty;
-    // });
+    it("should not throw error when register registerIpAndAttachPilTerms", async () => {
+      const getPermissionSignatureForSpg = async (params: {
+        ipId: Address;
+        moduleAddress: Address;
+        deadline: bigint;
+        nonce: bigint;
+        selectorHash: Hex;
+      }) => {
+        const { ipId, moduleAddress, deadline, nonce, selectorHash } = params;
+        return await account.signTypedData({
+          domain: {
+            name: "Story Protocol IP Account",
+            version: "1",
+            chainId: sepoliaChainId,
+            verifyingContract: ipId,
+          },
+          types: {
+            Execute: [
+              { name: "to", type: "address" },
+              { name: "value", type: "uint256" },
+              { name: "data", type: "bytes" },
+              { name: "nonce", type: "uint256" },
+              { name: "deadline", type: "uint256" },
+            ],
+          },
+          primaryType: "Execute",
+          message: {
+            to: permissionAddress,
+            value: BigInt(0),
+            data: encodeFunctionData({
+              abi: accessControllerAbi,
+              functionName: "setPermission",
+              args: [
+                getAddress(ipId),
+                getAddress(spContractAddress),
+                getAddress(moduleAddress),
+                selectorHash,
+                1,
+              ],
+            }),
+            nonce,
+            deadline,
+          },
+        });
+      };
+      const tokenId = await getTokenId(nftContract);
+      const ipId = await client.ipAsset.getIpIdAddress(nftContract, tokenId!);
+      const deadline = (await getBlockTimestamp()) + 1000n;
+      const sigMetadata = await getPermissionSignatureForSpg({
+        ipId,
+        moduleAddress: coreMetadataModuleAddress,
+        deadline,
+        nonce: 1n,
+        selectorHash: toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
+      });
+      const sigAttach = await getPermissionSignatureForSpg({
+        ipId,
+        moduleAddress: licensingModuleAddress[sepoliaChainId],
+        deadline,
+        nonce: 2n,
+        selectorHash: toFunctionSelector("function attachLicenseTerms(address,address,uint256)"),
+      });
+      const result = await client.ipAsset.registerIpAndAttachPilTerms({
+        nftContract: nftContract,
+        tokenId: tokenId!,
+        metadata: {
+          metadataURI: "test-uri",
+          metadata: "test-metadata-hash",
+          nftMetadata: "test-nft-metadata-hash",
+        },
+        sigMetadata: {
+          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          deadline,
+          signature: sigMetadata,
+        },
+        sigAttach: {
+          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          deadline,
+          signature: sigAttach,
+        },
+        pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
   });
 });

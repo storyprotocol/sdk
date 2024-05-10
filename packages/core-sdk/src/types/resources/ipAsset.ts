@@ -90,9 +90,9 @@ export type RegisterIpAndMakeDerivativeResponse = {
   ipId?: Address;
 };
 
-export type RegisterIpAndAttachPilTerms = {
+export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
-  tokenId: bigint;
+  tokenId: bigint | string | number;
   metadata: {
     metadataURI: string;
     metadata: string;
@@ -113,4 +113,10 @@ export type RegisterIpAndAttachPilTerms = {
   currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
+};
+
+export type RegisterIpAndAttachPilTermsResponse = {
+  txHash: string;
+  ipId?: Address;
+  licenseTermsId?: bigint;
 };

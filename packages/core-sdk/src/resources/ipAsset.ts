@@ -10,7 +10,8 @@ import {
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
   RegisterDerivativeWithLicenseTokensResponse,
-  RegisterIpAndAttachPilTerms,
+  RegisterIpAndAttachPilTermsRequest,
+  RegisterIpAndAttachPilTermsResponse,
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpResponse,
@@ -224,7 +225,7 @@ export class IPAssetClient {
       }
       const licenseTerm = getLicenseTermByType(request.pilType, {
         mintingFee: request.mintingFee,
-        currency: request.currency && getAddress(request.currency),
+        currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
@@ -271,7 +272,6 @@ export class IPAssetClient {
     }
   }
   /**
-   * In progress
    * Register a given NFT as an IP and attach Programmable IP License Terms.R.
    * @param request - The request object that contains all data needed to mint and register ip.
    *   @param request.nftContract The address of the NFT collection.
@@ -281,7 +281,7 @@ export class IPAssetClient {
    *   @param request.metadataURI The the metadata for the IP hash.
    *   @param request.metadata The metadata for the IP.
    *   @param request.nftMetadata The metadata for the IP NFT.
-   *   @param request.sigMetadata - [OPTIONAL] The signature data for execution via IP Account.
+   *   @param request.sigMetadata - [Optional] The signature data for execution via IP Account.
    *   @param request.sigMetadata.signer The address of the signer for execution with signature.
    *   @param request.sigMetadata.deadline The deadline for the signature.
    *   @param request.sigMetadata.signature The signature for the execution via IP Account.
@@ -293,22 +293,30 @@ export class IPAssetClient {
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, License Terms Id if waitForTxn is set to true.
+   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
-  public async registerIpAndAttachPilTerms(request: RegisterIpAndAttachPilTerms) {
+  public async registerIpAndAttachPilTerms(
+    request: RegisterIpAndAttachPilTermsRequest,
+  ): Promise<RegisterIpAndAttachPilTermsResponse> {
     try {
       if (request.pilType === undefined || request.pilType === null) {
         throw new Error("PIL type is required.");
       }
+      request.tokenId = BigInt(request.tokenId);
+      const ipId = await this.isNftRegistered(request.nftContract, request.tokenId);
+      if (ipId !== "0x") {
+        throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
+      }
       const licenseTerm = getLicenseTermByType(request.pilType, {
         mintingFee: request.mintingFee,
-        currency: request.currency && getAddress(request.currency),
+        currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
       const object: SpgRegisterIpAndAttachPilTermsRequest = {
         nftContract: getAddress(request.nftContract),
-        tokenId: BigInt(request.tokenId),
-
+        tokenId: request.tokenId,
         terms: licenseTerm,
         metadata: {
           metadataURI: "",
@@ -321,16 +329,16 @@ export class IPAssetClient {
           signature: zeroAddress,
         },
         sigAttach: {
-          signer: zeroAddress,
-          deadline: BigInt(0),
-          signature: zeroAddress,
+          signer: getAddress(request.sigAttach.signer),
+          deadline: BigInt(request.sigAttach.deadline),
+          signature: request.sigAttach.signature,
         },
       };
       if (
         request.metadata &&
-        !request.metadata.metadataURI &&
-        !request.metadata.metadata &&
-        !request.metadata.nftMetadata
+        request.metadata.metadataURI &&
+        request.metadata.metadata &&
+        request.metadata.nftMetadata
       ) {
         object.metadata = {
           metadataURI: request.metadata.metadataURI,
@@ -338,8 +346,25 @@ export class IPAssetClient {
           nftMetadataHash: toHex(request.metadata.nftMetadata, { size: 32 }),
         };
       }
+      if (
+        request.sigMetadata &&
+        request.sigMetadata.signature &&
+        request.sigMetadata.signer &&
+        request.sigMetadata.deadline
+      ) {
+        object.sigMetadata = {
+          signer: getAddress(request.sigMetadata.signer),
+          deadline: BigInt(request.sigMetadata.deadline),
+          signature: request.sigMetadata.signature,
+        };
+      }
       const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
-      return txHash;
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const log = this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0];
+        return { txHash, licenseTermsId: log.licenseTermsId, ipId: log.ipId };
+      }
+      return { txHash };
     } catch (error) {
       handleError(error, "Failed to register IP and attach PIL terms");
     }

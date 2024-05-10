@@ -21,6 +21,8 @@ export type {
   CreateIpAssetWithPilTermsResponse,
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
+  RegisterIpAndAttachPilTermsRequest,
+  RegisterIpAndAttachPilTermsResponse,
 } from "./types/resources/ipAsset";
 
 export type {
