@@ -117,12 +117,55 @@ describe("IP Asset Functions ", () => {
 
   describe("NFT Client (SPG)", () => {
     let nftContract: Hex;
-    const permissionAddress = accessControllerAddress[sepoliaChainId];
-    const spContractAddress = spgAddress[sepoliaChainId];
     const licensingContractModuleAddress = licensingModuleAddress[sepoliaChainId];
     const coreMetadataModuleAddress = "0xDa498A3f7c8a88cb72201138C366bE3778dB9575";
-    const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Address);
-
+    const getPermissionSignatureForSpg = async (params: {
+      ipId: Address;
+      moduleAddress: Address;
+      deadline: bigint;
+      nonce: bigint;
+      selectorHash: Hex;
+    }) => {
+      const { ipId, moduleAddress, deadline, nonce, selectorHash } = params;
+      const permissionAddress = accessControllerAddress[sepoliaChainId];
+      const spContractAddress = spgAddress[sepoliaChainId];
+      const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Address);
+      return await account.signTypedData({
+        domain: {
+          name: "Story Protocol IP Account",
+          version: "1",
+          chainId: sepoliaChainId,
+          verifyingContract: ipId,
+        },
+        types: {
+          Execute: [
+            { name: "to", type: "address" },
+            { name: "value", type: "uint256" },
+            { name: "data", type: "bytes" },
+            { name: "nonce", type: "uint256" },
+            { name: "deadline", type: "uint256" },
+          ],
+        },
+        primaryType: "Execute",
+        message: {
+          to: permissionAddress,
+          value: BigInt(0),
+          data: encodeFunctionData({
+            abi: accessControllerAbi,
+            functionName: "setPermission",
+            args: [
+              getAddress(ipId),
+              getAddress(spContractAddress),
+              getAddress(moduleAddress),
+              selectorHash,
+              1,
+            ],
+          }),
+          nonce,
+          deadline,
+        },
+      });
+    };
     before(async () => {
       // Create a NFT collection for this test-suite
       const txData = await client.nftClient.createNFTCollection({
@@ -225,77 +268,21 @@ describe("IP Asset Functions ", () => {
       });
       const childIpId = await client.ipAsset.getIpIdAddress(nftContract, tokenChildId!);
       const deadline = (await getBlockTimestamp()) + 1000n;
-      const sigMetadata = await account.signTypedData({
-        domain: {
-          name: "Story Protocol IP Account",
-          version: "1",
-          chainId: sepoliaChainId,
-          verifyingContract: childIpId,
-        },
-        types: {
-          Execute: [
-            { name: "to", type: "address" },
-            { name: "value", type: "uint256" },
-            { name: "data", type: "bytes" },
-            { name: "nonce", type: "uint256" },
-            { name: "deadline", type: "uint256" },
-          ],
-        },
-        primaryType: "Execute",
-        message: {
-          to: permissionAddress,
-          value: BigInt(0),
-          data: encodeFunctionData({
-            abi: accessControllerAbi,
-            functionName: "setPermission",
-            args: [
-              getAddress(childIpId),
-              getAddress(spContractAddress),
-              getAddress(coreMetadataModuleAddress),
-              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
-              1,
-            ],
-          }),
-          nonce: 1n,
-          deadline,
-        },
+      const sigMetadata = await getPermissionSignatureForSpg({
+        ipId: childIpId,
+        moduleAddress: coreMetadataModuleAddress,
+        deadline,
+        nonce: 1n,
+        selectorHash: toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
       });
-      const sigRegister = await account.signTypedData({
-        domain: {
-          name: "Story Protocol IP Account",
-          version: "1",
-          chainId: sepoliaChainId,
-          verifyingContract: childIpId,
-        },
-        types: {
-          Execute: [
-            { name: "to", type: "address" },
-            { name: "value", type: "uint256" },
-            { name: "data", type: "bytes" },
-            { name: "nonce", type: "uint256" },
-            { name: "deadline", type: "uint256" },
-          ],
-        },
-        primaryType: "Execute",
-        message: {
-          to: permissionAddress,
-          value: BigInt(0),
-          data: encodeFunctionData({
-            abi: accessControllerAbi,
-            functionName: "setPermission",
-            args: [
-              getAddress(childIpId),
-              getAddress(spContractAddress),
-              getAddress(licensingContractModuleAddress),
-              toFunctionSelector(
-                "function registerDerivative(address,address[],uint256[],address,bytes)",
-              ),
-              1,
-            ],
-          }),
-          nonce: 2n,
-          deadline,
-        },
+      const sigRegister = await getPermissionSignatureForSpg({
+        ipId: childIpId,
+        moduleAddress: licensingContractModuleAddress,
+        deadline,
+        nonce: 2n,
+        selectorHash: toFunctionSelector(
+          "function registerDerivative(address,address[],uint256[],address,bytes)",
+        ),
       });
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
@@ -328,50 +315,6 @@ describe("IP Asset Functions ", () => {
     });
 
     it("should not throw error when register registerIpAndAttachPilTerms", async () => {
-      const getPermissionSignatureForSpg = async (params: {
-        ipId: Address;
-        moduleAddress: Address;
-        deadline: bigint;
-        nonce: bigint;
-        selectorHash: Hex;
-      }) => {
-        const { ipId, moduleAddress, deadline, nonce, selectorHash } = params;
-        return await account.signTypedData({
-          domain: {
-            name: "Story Protocol IP Account",
-            version: "1",
-            chainId: sepoliaChainId,
-            verifyingContract: ipId,
-          },
-          types: {
-            Execute: [
-              { name: "to", type: "address" },
-              { name: "value", type: "uint256" },
-              { name: "data", type: "bytes" },
-              { name: "nonce", type: "uint256" },
-              { name: "deadline", type: "uint256" },
-            ],
-          },
-          primaryType: "Execute",
-          message: {
-            to: permissionAddress,
-            value: BigInt(0),
-            data: encodeFunctionData({
-              abi: accessControllerAbi,
-              functionName: "setPermission",
-              args: [
-                getAddress(ipId),
-                getAddress(spContractAddress),
-                getAddress(moduleAddress),
-                selectorHash,
-                1,
-              ],
-            }),
-            nonce,
-            deadline,
-          },
-        });
-      };
       const tokenId = await getTokenId(nftContract);
       const ipId = await client.ipAsset.getIpIdAddress(nftContract, tokenId!);
       const deadline = (await getBlockTimestamp()) + 1000n;
