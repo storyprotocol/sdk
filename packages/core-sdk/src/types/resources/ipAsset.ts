@@ -5,18 +5,18 @@ import { PIL_TYPE } from "./license";
 
 export type RegisterIpResponse = {
   txHash?: string;
-  ipId?: Hex;
+  ipId?: Address;
 };
 
 export type RegisterRequest = {
-  tokenContract: Hex;
-  tokenId: string;
+  nftContract: Address;
+  tokenId: string | number | bigint;
   txOptions?: TxOptions;
 };
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
-  childIpId: Hex;
-  licenseTokenIds: string[];
+  childIpId: Address;
+  licenseTokenIds: string[] | bigint[] | number[];
   txOptions?: TxOptions;
 };
 
@@ -25,16 +25,16 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
 };
 
 export type RegisterDerivativeRequest = {
-  childIpId: Hex;
-  parentIpIds: Hex[];
-  licenseTermsIds: string[];
-  licenseTemplate?: Hex;
+  childIpId: Address;
+  parentIpIds: Address[];
+  licenseTermsIds: string[] | bigint[] | number[];
+  licenseTemplate?: Address;
   txOptions?: TxOptions;
 };
 
 export type RegisterDerivativeResponse = {
   txHash?: string;
-  childIpId?: Hex;
+  childIpId?: Address;
 };
 
 export type CreateIpAssetWithPilTermsRequest = {
@@ -45,19 +45,26 @@ export type CreateIpAssetWithPilTermsRequest = {
     metadata: string;
     nftMetadata: string;
   };
-  recipient?: Hex;
+  recipient?: Address;
   mintingFee?: string;
-  currency?: Hex;
+  currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
 };
 
+export type CreateIpAssetWithPilTermsResponse = {
+  txHash: string;
+  ipId?: Address;
+  tokenId?: bigint;
+  licenseTermsId?: bigint;
+};
+
 export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
-  tokenId: string;
+  tokenId: string | number | bigint;
   derivData: {
     parentIpIds: Address[];
-    licenseTermsIds: string[];
+    licenseTermsIds: string[] | bigint[] | number[];
     licenseTemplate?: Address;
   };
   metadata?: {
@@ -67,12 +74,49 @@ export type RegisterIpAndMakeDerivativeRequest = {
   };
   sigMetadata?: {
     signer: Address;
-    deadline: string;
+    deadline: string | number | bigint;
     signature: Hex;
   };
   sigRegister: {
     signer: Address;
-    deadline: string;
+    deadline: string | number | bigint;
     signature: Hex;
   };
+  txOptions?: TxOptions;
+};
+
+export type RegisterIpAndMakeDerivativeResponse = {
+  txHash: string;
+  ipId?: Address;
+};
+
+export type RegisterIpAndAttachPilTermsRequest = {
+  nftContract: Address;
+  tokenId: bigint | string | number;
+  metadata: {
+    metadataURI: string;
+    metadata: string;
+    nftMetadata: string;
+  };
+  pilType: PIL_TYPE;
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint | number | string;
+    signature: Hex;
+  };
+  sigAttach: {
+    signer: Address;
+    deadline: bigint | number | string;
+    signature: Hex;
+  };
+  mintingFee?: string;
+  currency?: Address;
+  commercialRevShare?: number;
+  txOptions?: TxOptions;
+};
+
+export type RegisterIpAndAttachPilTermsResponse = {
+  txHash: string;
+  ipId?: Address;
+  licenseTermsId?: bigint;
 };

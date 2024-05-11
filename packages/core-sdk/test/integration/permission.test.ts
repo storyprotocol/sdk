@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { StoryClient } from "../../src";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { Hex } from "viem";
 
 describe("Permission Functions", () => {
@@ -15,7 +15,7 @@ describe("Permission Functions", () => {
       const waitForTransaction: boolean = true;
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
-        tokenContract: MockERC721,
+        nftContract: MockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,

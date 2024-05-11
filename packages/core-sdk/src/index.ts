@@ -17,6 +17,12 @@ export type {
   RegisterDerivativeRequest,
   RegisterDerivativeWithLicenseTokensRequest,
   RegisterDerivativeWithLicenseTokensResponse,
+  CreateIpAssetWithPilTermsRequest,
+  CreateIpAssetWithPilTermsResponse,
+  RegisterIpAndMakeDerivativeRequest,
+  RegisterIpAndMakeDerivativeResponse,
+  RegisterIpAndAttachPilTermsRequest,
+  RegisterIpAndAttachPilTermsResponse,
 } from "./types/resources/ipAsset";
 
 export type {
@@ -28,6 +34,7 @@ export type {
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
+  PIL_TYPE,
 } from "./types/resources/license";
 
 export type {
@@ -68,4 +75,7 @@ export type {
   CreateNFTCollectionResponse,
 } from "./types/resources/nftClient";
 
-export type { PiLicenseTemplateGetLicenseTermsResponse } from "./abi/generated";
+export type {
+  PiLicenseTemplateGetLicenseTermsResponse,
+  IpAccountImplStateResponse,
+} from "./abi/generated";

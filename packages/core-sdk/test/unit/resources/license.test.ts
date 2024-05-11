@@ -43,7 +43,7 @@ describe("Test LicenseClient", function () {
 
       const result = await licenseClient.registerNonComSocialRemixingPIL();
 
-      expect(result.licenseTermsId).to.equal("1");
+      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return txhash when call registerNonComSocialRemixingPIL given licenseTermsId is not registered", async function () {
@@ -79,7 +79,7 @@ describe("Test LicenseClient", function () {
       });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsId).to.equal("1");
+      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return throw error when call registerNonComSocialRemixingPIL given request fail", async function () {
@@ -110,11 +110,11 @@ describe("Test LicenseClient", function () {
         .resolves({ selectedLicenseTermsId: BigInt(1) });
 
       const result = await licenseClient.registerCommercialUsePIL({
-        mintingFee: "1",
+        mintingFee: 1,
         currency: zeroAddress,
       });
 
-      expect(result.licenseTermsId).to.equal("1");
+      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return txhash when call registerCommercialUsePIL given licenseTermsId is not registered", async function () {
@@ -155,7 +155,7 @@ describe("Test LicenseClient", function () {
       });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsId).to.equal("1");
+      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return throw error when call registerCommercialUsePIL given request fail", async function () {
@@ -191,7 +191,7 @@ describe("Test LicenseClient", function () {
         currency: zeroAddress,
       });
 
-      expect(result.licenseTermsId).to.equal("1");
+      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return txhash when call registerCommercialRemixPIL given licenseTermsId is not registered", async function () {
@@ -234,7 +234,7 @@ describe("Test LicenseClient", function () {
       });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsId).to.equal("1");
+      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return throw error when call registerCommercialRemixPIL given request fail", async function () {
@@ -497,7 +497,7 @@ describe("Test LicenseClient", function () {
       });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTokenId).to.equal("1");
+      expect(result.licenseTokenId).to.equal(1n);
     });
   });
 

@@ -20,7 +20,7 @@ describe("Test NftClient", function () {
 
   beforeEach(function () {
     rpcMock = createMock<PublicClient>();
-    walletMock = createMock<WalletClient>();
+    walletMock = createMock<WalletClient>({ account: { address: "0x" } });
     nftClient = new NftClient(rpcMock, walletMock);
   });
 
@@ -63,6 +63,19 @@ describe("Test NftClient", function () {
       }
     });
 
+    it("should throw Invalid mintCost and mintToken error if mintCost is 0", async () => {
+      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
+      try {
+        await nftClient.createNFTCollection({ ...reqBody, mintCost: 6n });
+      } catch (err) {
+        expect(
+          (err as Error).message.includes(
+            "Invalid mint token address, mint cost is greater than 0",
+          ),
+        );
+      }
+    });
+
     it("should return txHash and nftContract if txOptions.waitForTransaction is truthy", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
@@ -76,6 +89,7 @@ describe("Test NftClient", function () {
 
       const result = await nftClient.createNFTCollection({
         ...reqBody,
+        owner: undefined,
         txOptions: {
           waitForTransaction: true,
         },
@@ -88,7 +102,12 @@ describe("Test NftClient", function () {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(mock.txHash);
 
-      const result = await nftClient.createNFTCollection(reqBody);
+      const result = await nftClient.createNFTCollection({
+        ...reqBody,
+        maxSupply: undefined,
+        mintCost: undefined,
+        mintToken: undefined,
+      });
       expect(result.txHash).to.equal(mock.txHash);
     });
   });

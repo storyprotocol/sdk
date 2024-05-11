@@ -5,7 +5,7 @@ import {
   RaiseDisputeRequest,
   ResolveDisputeRequest,
 } from "../../src/types/resources/dispute";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -21,7 +21,7 @@ describe.skip("Dispute Functions", () => {
     it("raise a dispute", async () => {
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
-        tokenContract: MockERC721,
+        nftContract: MockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,

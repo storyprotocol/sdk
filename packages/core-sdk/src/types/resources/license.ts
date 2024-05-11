@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 
@@ -9,7 +9,7 @@ export type LicenseApiResponse = {
 export type License = {
   id: string;
   policyId: string;
-  licensorIpId: Hex;
+  licensorIpId: Address;
 };
 
 export type RegisterNonComSocialRemixingPILRequest = {
@@ -21,58 +21,58 @@ export type LicenseTerms = {
   expiration: bigint;
   commercialRevCelling: bigint;
   derivativeRevCelling: bigint;
-  commercializerCheckerData: Hex;
+  commercializerCheckerData: Address;
   transferable: boolean;
-  royaltyPolicy: Hex;
+  royaltyPolicy: Address;
   commercialUse: boolean;
   commercialAttribution: boolean;
-  commercializerChecker: Hex;
+  commercializerChecker: Address;
   commercialRevShare: number;
   derivativesAllowed: boolean;
   derivativesAttribution: boolean;
   derivativesApproval: boolean;
   derivativesReciprocal: boolean;
-  currency: Hex;
+  currency: Address;
   uri: string;
 };
-export type LicenseTermsIdResponse = number;
+export type LicenseTermsIdResponse = bigint;
 
 export type RegisterPILResponse = {
-  licenseTermsId?: string;
+  licenseTermsId?: bigint;
   txHash?: string;
 };
 
 export type RegisterCommercialUsePILRequest = {
-  mintingFee: string;
-  currency: Hex;
+  mintingFee: string | number | bigint;
+  currency: Address;
   txOptions?: TxOptions;
 };
 
 export type RegisterCommercialRemixPILRequest = {
   mintingFee: string;
   commercialRevShare: number;
-  currency: Hex;
+  currency: Address;
   txOptions?: TxOptions;
 };
 
 export type AttachLicenseTermsRequest = {
-  ipId: Hex;
-  licenseTermsId: string;
-  licenseTemplate?: Hex;
+  ipId: Address;
+  licenseTermsId: string | number | bigint;
+  licenseTemplate?: Address;
   txOptions?: TxOptions;
 };
 
 export type MintLicenseTokensRequest = {
-  licensorIpId: Hex;
-  licenseTermsId: string;
-  licenseTemplate?: Hex;
-  amount?: number;
-  receiver?: Hex;
+  licensorIpId: Address;
+  licenseTermsId: string | number | bigint;
+  licenseTemplate?: Address;
+  amount?: number | string | bigint;
+  receiver?: Address;
   txOptions?: TxOptions;
 };
 
 export type MintLicenseTokensResponse = {
-  licenseTokenId?: string;
+  licenseTokenId?: bigint;
   txHash?: string;
 };
 

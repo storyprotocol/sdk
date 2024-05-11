@@ -5,6 +5,7 @@ import { IPAccountClient } from "../../../src/resources/ipAccount";
 import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
 import * as utils from "../../../src/utils/utils";
 import { Account, PublicClient, WalletClient, zeroAddress } from "viem";
+const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 describe("Test IPAccountClient", () => {
   let ipAccountClient: IPAccountClient;
@@ -253,6 +254,16 @@ describe("Test IPAccountClient", () => {
 
       const result = await ipAccountClient.executeWithSig(request);
       expect(result.txHash).to.equal(txHash);
+    });
+  });
+
+  describe("Test getIpAccountNonce", () => {
+    it("should return the state of the IP Account", async function () {
+      sinon.stub(IpAccountImplClient.prototype, "state").resolves(1n);
+      const state = await ipAccountClient.getIpAccountNonce(
+        "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+      );
+      expect(state).to.equal(1n);
     });
   });
 });
