@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 
@@ -7,7 +7,7 @@ export type RoyaltyPolicyApiResponse = {
 };
 
 export type RoyaltyPolicy = {
-  id: `0x${string}`; // ipId
+  id: Address; // ipId
   targetAncestors: string[];
   targetRoyaltyAmount: string[];
 };
@@ -22,38 +22,38 @@ export type RoyaltyContext = {
 };
 
 export type CollectRoyaltyTokensRequest = {
-  parentIpId: Hex;
-  royaltyVaultIpId: Hex;
+  parentIpId: Address;
+  royaltyVaultIpId: Address;
   txOptions?: TxOptions;
 };
 
 export type CollectRoyaltyTokensResponse = {
   txHash: string;
-  royaltyTokensCollected?: string;
+  royaltyTokensCollected?: bigint;
 };
 
 export type RoyaltyData = [
   isUnlinkableToParents: boolean,
-  ipRoyaltyVault: Hex,
+  ipRoyaltyVault: Address,
   royaltyStack: bigint,
-  ancestorsAddresses: Hex,
+  ancestorsAddresses: Address,
   ancestorsRoyalties: bigint[],
 ];
 
 export type ClaimableRevenueRequest = {
-  royaltyVaultIpId: Hex;
-  account: Hex;
-  snapshotId: string;
-  token: Hex;
+  royaltyVaultIpId: Address;
+  account: Address;
+  snapshotId: string | number | bigint;
+  token: Address;
 };
 
-export type ClaimableRevenueResponse = string;
+export type ClaimableRevenueResponse = bigint;
 
 export type PayRoyaltyOnBehalfRequest = {
-  receiverIpId: Hex;
-  payerIpId: Hex;
-  token: Hex;
-  amount: string;
+  receiverIpId: Address;
+  payerIpId: Address;
+  token: Address;
+  amount: string | number | bigint;
   txOptions?: TxOptions;
 };
 
@@ -62,26 +62,26 @@ export type PayRoyaltyOnBehalfResponse = {
 };
 
 export type SnapshotRequest = {
-  royaltyVaultIpId: Hex;
+  royaltyVaultIpId: Address;
   txOptions?: TxOptions;
 };
 
 export type ClaimRevenueRequest = {
-  snapshotIds: string[];
-  token: Hex;
-  royaltyVaultIpId: Hex;
-  account?: Hex;
+  snapshotIds: string[] | number[] | bigint[];
+  token: Address;
+  royaltyVaultIpId: Address;
+  account?: Address;
   txOptions?: TxOptions;
 };
 
 export type ClaimRevenueResponse = {
   txHash: string;
-  claimableToken?: string;
+  claimableToken?: bigint;
 };
 
 export type SnapshotResponse = {
   txHash: string;
-  snapshotId?: string;
+  snapshotId?: bigint;
 };
 
-export type RoyaltyVaultAddress = Hex;
+export type RoyaltyVaultAddress = Address;

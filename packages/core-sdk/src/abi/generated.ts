@@ -401,6 +401,177 @@ export const accessControllerConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CoreMetadataModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ */
+export const coreMetadataModuleAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAccountRegistry", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
+  },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
+  {
+    type: "error",
+    inputs: [],
+    name: "CoreMetadataModule__MetadataAlreadyFrozen",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [{ name: "ipId", internalType: "address", type: "address", indexed: true }],
+    name: "MetadataFrozen",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      {
+        name: "metadataURI",
+        internalType: "string",
+        type: "string",
+        indexed: false,
+      },
+      {
+        name: "metadataHash",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+    ],
+    name: "MetadataURISet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address", indexed: true },
+      {
+        name: "nftTokenURI",
+        internalType: "string",
+        type: "string",
+        indexed: false,
+      },
+      {
+        name: "nftMetadataHash",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+    ],
+    name: "NFTTokenURISet",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ACCOUNT_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "freezeMetadata",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "isMetadataFrozen",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "metadataURI", internalType: "string", type: "string" },
+      { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+      { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "setAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "metadataURI", internalType: "string", type: "string" },
+      { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "setMetadataURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "updateNftTokenURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ */
+export const coreMetadataModuleAddress = {
+  11155111: "0xDa498A3f7c8a88cb72201138C366bE3778dB9575",
+} as const;
+
+/**
+ * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ */
+export const coreMetadataModuleConfig = {
+  address: coreMetadataModuleAddress,
+  abi: coreMetadataModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DisputeModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -7346,6 +7517,55 @@ export class AccessControllerClient extends AccessControllerEventClient {
   }
 }
 
+// Contract CoreMetadataModule =============================================================
+
+/**
+ * CoreMetadataModuleSetAllRequest
+ *
+ * @param ipId address
+ * @param metadataURI string
+ * @param metadataHash bytes32
+ * @param nftMetadataHash bytes32
+ */
+export type CoreMetadataModuleSetAllRequest = {
+  ipId: Address;
+  metadataURI: string;
+  metadataHash: Hex;
+  nftMetadataHash: Hex;
+};
+
+/**
+ * contract CoreMetadataModule write method
+ */
+export class CoreMetadataModuleClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(coreMetadataModuleAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method setAll for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleSetAllRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAll(request: CoreMetadataModuleSetAllRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "setAll",
+      account: this.wallet.account,
+      args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+}
+
 // Contract DisputeModule =============================================================
 
 /**
@@ -7633,6 +7853,8 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
 
 // Contract IPAccountImpl =============================================================
 
+export type IpAccountImplStateResponse = bigint;
+
 /**
  * IpAccountImplExecuteRequest
  *
@@ -7666,16 +7888,40 @@ export type IpAccountImplExecuteWithSigRequest = {
 };
 
 /**
- * contract IPAccountImpl write method
+ * contract IPAccountImpl readonly method
  */
-export class IpAccountImplClient {
-  protected readonly wallet: SimpleWalletClient;
+export class IpAccountImplReadOnlyClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(ipAccountImplAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method state for contract IPAccountImpl
+   *
+   * @param request IpAccountImplStateRequest
+   * @return Promise<IpAccountImplStateResponse>
+   */
+  public async state(): Promise<IpAccountImplStateResponse> {
+    return await this.rpcClient.readContract({
+      abi: ipAccountImplAbi,
+      address: this.address,
+      functionName: "state",
+    });
+  }
+}
+
+/**
+ * contract IPAccountImpl write method
+ */
+export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
     this.wallet = wallet;
   }
 
@@ -7724,6 +7970,23 @@ export class IpAccountImplClient {
 }
 
 // Contract IPAssetRegistry =============================================================
+
+/**
+ * IpAssetRegistryIpAccountRegisteredEvent
+ *
+ * @param account address
+ * @param implementation address
+ * @param chainId uint256
+ * @param tokenContract address
+ * @param tokenId uint256
+ */
+export type IpAssetRegistryIpAccountRegisteredEvent = {
+  account: Address;
+  implementation: Address;
+  chainId: bigint;
+  tokenContract: Address;
+  tokenId: bigint;
+};
 
 /**
  * IpAssetRegistryIpRegisteredEvent
@@ -7795,6 +8058,47 @@ export class IpAssetRegistryEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(ipAssetRegistryAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event IPAccountRegistered for contract IPAssetRegistry
+   */
+  public watchIpAccountRegisteredEvent(
+    onLogs: (txHash: Hex, ev: Partial<IpAssetRegistryIpAccountRegisteredEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: ipAssetRegistryAbi,
+      address: this.address,
+      eventName: "IPAccountRegistered",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event IPAccountRegistered for contract IPAssetRegistry
+   */
+  public parseTxIpAccountRegisteredEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<IpAssetRegistryIpAccountRegisteredEvent> {
+    const targetLogs: Array<IpAssetRegistryIpAccountRegisteredEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: ipAssetRegistryAbi,
+          eventName: "IPAccountRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "IPAccountRegistered") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**
@@ -9683,6 +9987,21 @@ export class LicenseTokenReadOnlyClient {
 // Contract LicensingModule =============================================================
 
 /**
+ * LicensingModuleLicenseTermsAttachedEvent
+ *
+ * @param caller address
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicensingModuleLicenseTermsAttachedEvent = {
+  caller: Address;
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
  * LicensingModuleLicenseTokensMintedEvent
  *
  * @param caller address
@@ -9775,6 +10094,47 @@ export class LicensingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(licensingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event LicenseTermsAttached for contract LicensingModule
+   */
+  public watchLicenseTermsAttachedEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicensingModuleLicenseTermsAttachedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licensingModuleAbi,
+      address: this.address,
+      eventName: "LicenseTermsAttached",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event LicenseTermsAttached for contract LicensingModule
+   */
+  public parseTxLicenseTermsAttachedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicensingModuleLicenseTermsAttachedEvent> {
+    const targetLogs: Array<LicensingModuleLicenseTermsAttachedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: licensingModuleAbi,
+          eventName: "LicenseTermsAttached",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "LicenseTermsAttached") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**

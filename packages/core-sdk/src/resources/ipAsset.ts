@@ -1,15 +1,19 @@
-import { Hex, PublicClient, getAddress, toHex, zeroAddress } from "viem";
+import { Hex, PublicClient, getAddress, zeroAddress, toHex, Address } from "viem";
 
 import { chain } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
   CreateIpAssetWithPilTermsRequest,
+  CreateIpAssetWithPilTermsResponse,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
   RegisterDerivativeWithLicenseTokensResponse,
+  RegisterIpAndAttachPilTermsRequest,
+  RegisterIpAndAttachPilTermsResponse,
   RegisterIpAndMakeDerivativeRequest,
+  RegisterIpAndMakeDerivativeResponse,
   RegisterIpResponse,
   RegisterRequest,
 } from "../types/resources/ipAsset";
@@ -23,10 +27,10 @@ import {
   SimpleWalletClient,
   SpgClient,
   SpgMintAndRegisterIpAndAttachPilTermsRequest,
+  SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
 } from "../abi/generated";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
-import { PIL_TYPE } from "../types/resources/license";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -56,7 +60,7 @@ export class IPAssetClient {
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
    * @param request - The request object that contains all data needed to register IP.
-   *   @param request.tokenContract The address of the NFT.
+   *   @param request.nftContract The address of the NFT.
    *   @param request.tokenId The token identifier of the NFT.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
@@ -65,14 +69,14 @@ export class IPAssetClient {
   public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
     try {
       const tokenId = BigInt(request.tokenId);
-      const ipId = await this.isNFTRegistered(request.tokenContract, tokenId);
+      const ipId = await this.isNftRegistered(request.nftContract, tokenId);
       if (ipId !== "0x") {
         return { ipId: ipId };
       }
       const txHash = await this.ipAssetRegistryClient.register({
-        tokenContract: getAddress(request.tokenContract),
+        tokenContract: getAddress(request.nftContract),
         tokenId,
-        chainid: BigInt(chain[this.chainId]),
+        chainid: chain[this.chainId],
       });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
@@ -169,9 +173,10 @@ export class IPAssetClient {
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
+      request.licenseTokenIds = request.licenseTokenIds.map((id) => BigInt(id));
       for (const licenseTokenId of request.licenseTokenIds) {
         const tokenOwnerAddress = await this.licenseTokenReadOnlyClient.ownerOf({
-          tokenId: BigInt(licenseTokenId),
+          tokenId: licenseTokenId,
         });
         if (!tokenOwnerAddress) {
           throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
@@ -179,7 +184,7 @@ export class IPAssetClient {
       }
       const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
         childIpId: getAddress(request.childIpId),
-        licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
+        licenseTokenIds: request.licenseTokenIds,
         royaltyContext: zeroAddress,
       });
       if (request.txOptions?.waitForTransaction) {
@@ -207,30 +212,20 @@ export class IPAssetClient {
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the transaction hash.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, Token ID, License Terms Id if waitForTxn is set to true.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
-  public async createIpAssetWithPilTerms(request: CreateIpAssetWithPilTermsRequest) {
+  public async createIpAssetWithPilTerms(
+    request: CreateIpAssetWithPilTermsRequest,
+  ): Promise<CreateIpAssetWithPilTermsResponse> {
     try {
       if (request.pilType === undefined || request.pilType === null) {
         throw new Error("PIL type is required.");
       }
-      if (
-        request.pilType === PIL_TYPE.COMMERCIAL_USE &&
-        (!request.mintingFee || !request.currency)
-      ) {
-        throw new Error("Minting fee and currency are required for commercial use PIL.");
-      }
-      if (
-        request.pilType === PIL_TYPE.COMMERCIAL_REMIX &&
-        (!request.mintingFee || !request.currency || !request.commercialRevShare)
-      ) {
-        throw new Error(
-          "Minting fee, currency and commercialRevShare are required for commercial remix PIL.",
-        );
-      }
       const licenseTerm = getLicenseTermByType(request.pilType, {
         mintingFee: request.mintingFee,
-        currency: request.currency && getAddress(request.currency),
+        currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
@@ -248,9 +243,9 @@ export class IPAssetClient {
       };
       if (
         request.metadata &&
-        !request.metadata.metadataURI &&
-        !request.metadata.metadata &&
-        !request.metadata.nftMetadata
+        request.metadata.metadataURI &&
+        request.metadata.metadata &&
+        request.metadata.nftMetadata
       ) {
         object.metadata = {
           metadataURI: request.metadata.metadataURI,
@@ -259,9 +254,119 @@ export class IPAssetClient {
         };
       }
       const txHash = await this.spgClient.mintAndRegisterIpAndAttachPilTerms(object);
-      return txHash;
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0];
+        const licenseTermsId =
+          this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0].licenseTermsId;
+        return {
+          txHash: txHash,
+          ipId: iPRegisteredLog.ipId,
+          licenseTermsId,
+          tokenId: iPRegisteredLog.tokenId,
+        };
+      }
+      return { txHash };
     } catch (error) {
       handleError(error, "Failed to mint and register IP and attach PIL terms");
+    }
+  }
+  /**
+   * Register a given NFT as an IP and attach Programmable IP License Terms.R.
+   * @param request - The request object that contains all data needed to mint and register ip.
+   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.tokenId The ID of the NFT.
+   *   @param request.pilType The type of the PIL.
+   *   @param request.metadata - [Optional] The desired metadata for the newly registered IP.
+   *   @param request.metadataURI The the metadata for the IP hash.
+   *   @param request.metadata The metadata for the IP.
+   *   @param request.nftMetadata The metadata for the IP NFT.
+   *   @param request.sigMetadata - [Optional] The signature data for execution via IP Account.
+   *   @param request.sigMetadata.signer The address of the signer for execution with signature.
+   *   @param request.sigMetadata.deadline The deadline for the signature.
+   *   @param request.sigMetadata.signature The signature for the execution via IP Account.
+   *   @param request.sigAttach - The signature data for execution via IP Account.
+   *   @param request.sigAttach.signer The address of the signer for execution with signature.
+   *   @param request.sigAttach.deadline The deadline for the signature.
+   *   @param request.sigAttach.signature The signature for the execution via IP Account.
+   *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
+   *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
+   *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, License Terms Id if waitForTxn is set to true.
+   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
+   */
+  public async registerIpAndAttachPilTerms(
+    request: RegisterIpAndAttachPilTermsRequest,
+  ): Promise<RegisterIpAndAttachPilTermsResponse> {
+    try {
+      if (request.pilType === undefined || request.pilType === null) {
+        throw new Error("PIL type is required.");
+      }
+      request.tokenId = BigInt(request.tokenId);
+      const ipId = await this.isNftRegistered(request.nftContract, request.tokenId);
+      if (ipId !== "0x") {
+        throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
+      }
+      const licenseTerm = getLicenseTermByType(request.pilType, {
+        mintingFee: request.mintingFee,
+        currency: request.currency,
+        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+        commercialRevShare: request.commercialRevShare,
+      });
+      const object: SpgRegisterIpAndAttachPilTermsRequest = {
+        nftContract: getAddress(request.nftContract),
+        tokenId: request.tokenId,
+        terms: licenseTerm,
+        metadata: {
+          metadataURI: "",
+          metadataHash: toHex("", { size: 32 }),
+          nftMetadataHash: toHex("", { size: 32 }),
+        },
+        sigMetadata: {
+          signer: zeroAddress,
+          deadline: BigInt(0),
+          signature: zeroAddress,
+        },
+        sigAttach: {
+          signer: getAddress(request.sigAttach.signer),
+          deadline: BigInt(request.sigAttach.deadline),
+          signature: request.sigAttach.signature,
+        },
+      };
+      if (
+        request.metadata &&
+        request.metadata.metadataURI &&
+        request.metadata.metadata &&
+        request.metadata.nftMetadata
+      ) {
+        object.metadata = {
+          metadataURI: request.metadata.metadataURI,
+          metadataHash: toHex(request.metadata.metadata, { size: 32 }),
+          nftMetadataHash: toHex(request.metadata.nftMetadata, { size: 32 }),
+        };
+      }
+      if (
+        request.sigMetadata &&
+        request.sigMetadata.signature &&
+        request.sigMetadata.signer &&
+        request.sigMetadata.deadline
+      ) {
+        object.sigMetadata = {
+          signer: getAddress(request.sigMetadata.signer),
+          deadline: BigInt(request.sigMetadata.deadline),
+          signature: request.sigMetadata.signature,
+        };
+      }
+      const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const log = this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0];
+        return { txHash, licenseTermsId: log.licenseTermsId, ipId: log.ipId };
+      }
+      return { txHash };
+    } catch (error) {
+      handleError(error, "Failed to register IP and attach PIL terms");
     }
   }
   /**
@@ -277,19 +382,46 @@ export class IPAssetClient {
    *   @param request.sigRegister.signer The address of the signer for execution with signature.
    *   @param request.sigRegister.deadline The deadline for the signature.
    *   @param request.sigRegister.signature The signature for the execution via IP Account.
-   *   @param request.metadata [Optional] The desired metadata for the newly registered IP.
+   *   @param request.metadata - [Optional] The desired metadata for the newly registered IP.
    *   @param request.metadata.metadataURI The URI of the metadata for the IP.
    *   @param request.metadata.metadata The metadata for the IP.
    *   @param request.metadata.nftMetadata The the metadata for the IP NFT.
-   *   @param request.sigMetadata [Optional] Signature data for setAll (metadata) for the IP via the Core Metadata Module.
+   *   @param request.sigMetadata - [Optional] Signature data for setAll (metadata) for the IP via the Core Metadata Module.
    *   @param request.sigMetadata.signer The address of the signer for execution with signature.
    *   @param request.sigMetadata.deadline The deadline for the signature.
    *   @param request.sigMetadata.signature The signature for the execution via IP Account.
    *   @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the transaction hash.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
-  private async registerDerivativeIp(request: RegisterIpAndMakeDerivativeRequest) {
+  public async registerDerivativeIp(
+    request: RegisterIpAndMakeDerivativeRequest,
+  ): Promise<RegisterIpAndMakeDerivativeResponse> {
     try {
+      const tokenId = BigInt(request.tokenId);
+      const ipId = await this.isNftRegistered(request.nftContract, tokenId);
+      if (ipId !== "0x") {
+        throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
+      }
+      if (request.derivData.parentIpIds.length !== request.derivData.licenseTermsIds.length) {
+        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");
+      }
+      for (let i = 0; i < request.derivData.parentIpIds.length; i++) {
+        const isAttachedLicenseTerms =
+          await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+            ipId: getAddress(request.derivData.parentIpIds[i]),
+            licenseTemplate:
+              (request.derivData.licenseTemplate &&
+                getAddress(request.derivData.licenseTemplate)) ||
+              this.licenseTemplateClient.address,
+            licenseTermsId: BigInt(request.derivData.licenseTermsIds[i]),
+          });
+        if (!isAttachedLicenseTerms) {
+          throw new Error(
+            `License terms id ${request.derivData.licenseTermsIds[i]} must be attached to the parent ipId ${request.derivData.parentIpIds[i]} before registering derivative.`,
+          );
+        }
+      }
       const object: SpgRegisterIpAndMakeDerivativeRequest = {
         nftContract: getAddress(request.nftContract),
         tokenId: BigInt(request.tokenId),
@@ -320,10 +452,10 @@ export class IPAssetClient {
       if (
         request.sigMetadata &&
         request.sigMetadata.signature &&
-        request.sigMetadata.signature !== zeroAddress &&
+        request.sigMetadata.signature.length > 0 &&
         request.sigMetadata.signer &&
         request.sigMetadata.signer !== zeroAddress &&
-        request.sigMetadata.deadline
+        request.sigMetadata.deadline !== 0n
       ) {
         object.sigMetadata = {
           signer: getAddress(request.sigMetadata.signer),
@@ -343,19 +475,37 @@ export class IPAssetClient {
           nftMetadataHash: toHex(request.metadata.nftMetadata, { size: 32 }),
         };
       }
-
       const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
-      return txHash;
+      if (request.txOptions?.waitForTransaction) {
+        const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+        return { txHash, ipId: log.ipId };
+      }
+      return { txHash };
     } catch (error) {
       handleError(error, "Failed to register derivative IP");
     }
   }
-  private async isNFTRegistered(tokenAddress: Hex, tokenId: bigint): Promise<Hex> {
+  /**
+   * Gets the canonical IP identifier associated with an IP NFT.
+   * @param nftContract The address of the NFT collection.
+   * @param tokenId The token identifier of the IP.
+   * @returns The IP's canonical address identifier.
+   */
+  public async getIpIdAddress(
+    nftContract: Address,
+    tokenId: bigint | string | number,
+  ): Promise<Address> {
     const ipId = await this.ipAssetRegistryClient.ipId({
-      chainId: BigInt(chain[this.chainId]),
-      tokenContract: getAddress(tokenAddress),
-      tokenId: tokenId,
+      chainId: chain[this.chainId],
+      tokenContract: getAddress(nftContract),
+      tokenId: BigInt(tokenId),
     });
+    return ipId;
+  }
+
+  private async isNftRegistered(nftContract: Address, tokenId: bigint): Promise<Hex> {
+    const ipId = await this.getIpIdAddress(nftContract, tokenId);
     const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: ipId });
     return isRegistered ? ipId : "0x";
   }

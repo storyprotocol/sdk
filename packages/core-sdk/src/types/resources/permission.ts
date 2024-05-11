@@ -1,9 +1,11 @@
+import { Address } from "viem";
+
 import { TxOptions } from "../options";
 
 export type SetPermissionsRequest = {
-  ipId: `0x${string}`;
-  signer: `0x${string}`;
-  to: `0x${string}`;
+  ipId: Address;
+  signer: Address;
+  to: Address;
   func?: string;
   permission: number;
   txOptions?: TxOptions;

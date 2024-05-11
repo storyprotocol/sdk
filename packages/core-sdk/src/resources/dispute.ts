@@ -50,7 +50,7 @@ export class DisputeClient {
         const targetLogs = this.disputeModuleClient.parseTxDisputeRaisedEvent(txReceipt);
         return {
           txHash: txHash,
-          disputeId: BigInt(targetLogs[0].disputeId).toString() as `0x${string}`,
+          disputeId: targetLogs[0].disputeId,
         };
       }
       return { txHash: txHash };

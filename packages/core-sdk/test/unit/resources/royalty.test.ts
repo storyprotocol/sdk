@@ -147,7 +147,7 @@ describe("Test RoyaltyClient", function () {
       });
 
       expect(result.txHash).equals(txHash);
-      expect(result.royaltyTokensCollected).equals("1");
+      expect(result.royaltyTokensCollected).equals(1);
     });
   });
 
@@ -160,7 +160,7 @@ describe("Test RoyaltyClient", function () {
           receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          amount: "1",
+          amount: 1,
         });
       } catch (err) {
         expect((err as Error).message).equals(
@@ -182,7 +182,7 @@ describe("Test RoyaltyClient", function () {
           receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          amount: "1",
+          amount: 1,
         });
       } catch (err) {
         expect((err as Error).message).equals(
@@ -199,7 +199,7 @@ describe("Test RoyaltyClient", function () {
         receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        amount: "1",
+        amount: 1,
       });
 
       expect(result.txHash).equals(txHash);
@@ -213,7 +213,7 @@ describe("Test RoyaltyClient", function () {
         receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        amount: "1",
+        amount: 1,
         txOptions: { waitForTransaction: true },
       });
 
@@ -229,7 +229,7 @@ describe("Test RoyaltyClient", function () {
         await royaltyClient.claimableRevenue({
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          snapshotId: "1",
+          snapshotId: 1,
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         });
       } catch (err) {
@@ -249,7 +249,7 @@ describe("Test RoyaltyClient", function () {
         await royaltyClient.claimableRevenue({
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          snapshotId: "1",
+          snapshotId: 1,
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         });
       } catch (err) {
@@ -275,10 +275,10 @@ describe("Test RoyaltyClient", function () {
       const result = await royaltyClient.claimableRevenue({
         royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        snapshotId: "1",
+        snapshotId: 1,
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       });
-      expect(result).equals("1");
+      expect(result).equals(1);
     });
   });
 
@@ -289,7 +289,7 @@ describe("Test RoyaltyClient", function () {
       try {
         await royaltyClient.claimRevenue({
           account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          snapshotIds: ["1"],
+          snapshotIds: [1],
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         });
@@ -309,7 +309,7 @@ describe("Test RoyaltyClient", function () {
       try {
         await royaltyClient.claimRevenue({
           account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          snapshotIds: ["1"],
+          snapshotIds: [1],
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         });
@@ -334,7 +334,7 @@ describe("Test RoyaltyClient", function () {
       sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
       const result = await royaltyClient.claimRevenue({
         account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        snapshotIds: ["1"],
+        snapshotIds: [1],
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       });
@@ -366,14 +366,14 @@ describe("Test RoyaltyClient", function () {
 
       const result = await royaltyClient.claimRevenue({
         account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        snapshotIds: ["1"],
+        snapshotIds: [1],
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).equals(txHash);
-      expect(result.claimableToken).equals("1");
+      expect(result.claimableToken).equals(1);
     });
 
     it("should return txHash when call claimRevenue given correct args and waitForTransaction is true by EOA", async function () {
@@ -400,14 +400,14 @@ describe("Test RoyaltyClient", function () {
       ]);
 
       const result = await royaltyClient.claimRevenue({
-        snapshotIds: ["1"],
+        snapshotIds: [1],
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).equals(txHash);
-      expect(result.claimableToken).equals("1");
+      expect(result.claimableToken).equals(1);
     });
   });
 
@@ -478,7 +478,7 @@ describe("Test RoyaltyClient", function () {
         {
           snapshotId: 1,
           snapshotTimestamp: 1,
-          unclaimedTokens: "1",
+          unclaimedTokens: 1,
         },
       ]);
 
@@ -488,7 +488,7 @@ describe("Test RoyaltyClient", function () {
       });
 
       expect(result.txHash).equals(txHash);
-      expect(result.snapshotId).equals("1");
+      expect(result.snapshotId).equals(1);
     });
   });
 });

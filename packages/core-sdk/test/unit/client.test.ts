@@ -5,6 +5,7 @@ import { Account, createPublicClient, createWalletClient, http, Transport } from
 import {
   DisputeClient,
   LicenseClient,
+  NftClient,
   PermissionClient,
   StoryClient,
   StoryConfig,
@@ -125,6 +126,12 @@ describe("Test StoryClient", function () {
       const royalty = new RoyaltyClient(rpcClient, wallet);
       expect(client.royalty).to.not.equal(null);
       expect(client.royalty).to.not.equal(undefined);
+    });
+
+    it("should return client nft", () => {
+      const royalty = new NftClient(rpcClient, wallet);
+      expect(client.nftClient).to.not.equal(null);
+      expect(client.nftClient).to.not.equal(undefined);
     });
   });
 });

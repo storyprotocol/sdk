@@ -1,12 +1,12 @@
-import { Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 
 export type IPAccountExecuteRequest = {
-  accountAddress: Hex;
-  to: Hex;
+  accountAddress: Address;
+  to: Address;
   value: number;
-  data: Hex;
+  data: Address;
   txOptions?: TxOptions;
 };
 
@@ -15,13 +15,13 @@ export type IPAccountExecuteResponse = {
 };
 
 export type IPAccountExecuteWithSigRequest = {
-  accountAddress: Hex;
-  to: Hex;
+  accountAddress: Address;
+  to: Address;
   value: number;
-  data: Hex;
-  signer: Hex;
-  deadline: number;
-  signature: Hex;
+  data: Address;
+  signer: Address;
+  deadline: number | bigint | string;
+  signature: Address;
   txOptions?: TxOptions;
 };
 
