@@ -41,9 +41,9 @@ export type CreateIpAssetWithPilTermsRequest = {
   nftContract: Address;
   pilType: PIL_TYPE;
   metadata?: {
-    metadataURI: string;
-    metadata: string;
-    nftMetadata: string;
+    metadataURI?: string;
+    metadataHash?: Hex;
+    nftMetadataHash?: Hex;
   };
   recipient?: Address;
   mintingFee?: string;
@@ -68,9 +68,9 @@ export type RegisterIpAndMakeDerivativeRequest = {
     licenseTemplate?: Address;
   };
   metadata?: {
-    metadataURI: string;
-    metadata: string;
-    nftMetadata: string;
+    metadataURI?: string;
+    metadataHash?: Hex;
+    nftMetadataHash?: Hex;
   };
   sigMetadata?: {
     signer: Address;
@@ -94,9 +94,9 @@ export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   metadata: {
-    metadataURI: string;
-    metadata: string;
-    nftMetadata: string;
+    metadataURI?: string;
+    metadataHash?: Hex;
+    nftMetadataHash?: Hex;
   };
   pilType: PIL_TYPE;
   sigMetadata: {
