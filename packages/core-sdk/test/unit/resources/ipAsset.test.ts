@@ -2,7 +2,7 @@ import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { CreateIpAssetWithPilTermsRequest, IPAssetClient } from "../../../src";
-import { PublicClient, WalletClient, Account } from "viem";
+import { PublicClient, WalletClient, Account, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
 chai.use(chaiAsPromised);
@@ -345,7 +345,7 @@ describe("Test IpAssetClient", function () {
   describe("Test ipAssetClient.createIpAssetWithPilTerms", async function () {
     it("throw PIL_TYPE error when createIpAssetWithPilTerms given PIL_TYPE is not match", async () => {
       try {
-        await ipAssetClient.createIpAssetWithPilTerms({
+        await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
           nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         } as unknown as CreateIpAssetWithPilTermsRequest);
       } catch (err) {
@@ -359,7 +359,7 @@ describe("Test IpAssetClient", function () {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
-        await ipAssetClient.createIpAssetWithPilTerms({
+        await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
           nftContract: "0x",
           pilType: 0,
         });
@@ -373,10 +373,14 @@ describe("Test IpAssetClient", function () {
     it("should return txHash when createIpAssetWithPilTerms given correct args", async () => {
       const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIpAndAttachPilTerms").resolves(hash);
-      const result = await ipAssetClient.createIpAssetWithPilTerms({
+      const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         pilType: 0,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        metadata: {
+          metadataURI: "",
+          metadataHash: toHex(0, { size: 32 }),
+        },
       });
 
       expect(result.txHash).to.equal(hash);
@@ -403,13 +407,11 @@ describe("Test IpAssetClient", function () {
           licenseTermsId: 0n,
         },
       ]);
-      const result = await ipAssetClient.createIpAssetWithPilTerms({
+      const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c662ac",
         pilType: 0,
         metadata: {
-          metadataURI: "https://",
-          metadata: "metadata",
-          nftMetadata: "nftMetadata",
+          nftMetadataHash: toHex(0, { size: 32 }),
         },
         txOptions: {
           waitForTransaction: true,
@@ -528,6 +530,44 @@ describe("Test IpAssetClient", function () {
           licenseTermsIds: ["1"],
           licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         },
+        metadata: {
+          metadataHash: toHex(0, { size: 32 }),
+        },
+        sigRegister: {
+          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          deadline: "1",
+          signature: "0x",
+        },
+      });
+
+      expect(res.txHash).equal(
+        "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+      );
+    });
+    it("should return txHash when registerDerivativeIp given correct args", async () => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.spgClient, "registerIpAndMakeDerivative")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+
+      const res = await ipAssetClient.registerDerivativeIp({
+        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        derivData: {
+          parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+          licenseTermsIds: ["1"],
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
+        metadata: {
+          metadataHash: toHex(0, { size: 32 }),
+          metadataURI: "",
+        },
         sigRegister: {
           signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           deadline: "1",
@@ -577,8 +617,7 @@ describe("Test IpAssetClient", function () {
         },
         metadata: {
           metadataURI: "https://",
-          metadata: "metadata",
-          nftMetadata: "nftMetadata",
+          nftMetadataHash: toHex("nftMetadata", { size: 32 }),
         },
         sigMetadata: {
           signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -610,8 +649,8 @@ describe("Test IpAssetClient", function () {
           tokenId: "3",
           metadata: {
             metadataURI: "https://",
-            metadata: "metadata",
-            nftMetadata: "nftMetadata",
+            metadataHash: toHex("metadata", { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
           },
           pilType: 0,
           sigAttach: {
@@ -643,6 +682,39 @@ describe("Test IpAssetClient", function () {
         );
       }
     });
+
+    it("should called with initial metadata when registerIpAndAttachPilTerms given empty metadataURI", async () => {
+      const stub = sinon.stub(ipAssetClient.spgClient, "registerIpAndAttachPilTerms");
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      await ipAssetClient.registerIpAndAttachPilTerms({
+        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        metadata: {
+          metadataHash: toHex(0, { size: 32 }),
+          metadataURI: "",
+        },
+        pilType: 0,
+        sigAttach: {
+          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          deadline: "1",
+          signature: "0x",
+        },
+        sigMetadata: {
+          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          deadline: "1",
+          signature: "0x",
+        },
+      });
+      expect(stub.args[0][0].metadata).to.deep.equal({
+        metadataURI: "",
+        metadataHash: toHex(0, { size: 32 }),
+        nftMetadataHash: toHex(0, { size: 32 }),
+      });
+    });
     it("should return hash when registerIpAndAttachPilTerms given correct args", async () => {
       const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(ipAssetClient.spgClient, "registerIpAndAttachPilTerms").resolves(hash);
@@ -655,9 +727,7 @@ describe("Test IpAssetClient", function () {
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
         metadata: {
-          metadataURI: "https://",
-          metadata: "metadata",
-          nftMetadata: "nftMetadata",
+          metadataHash: toHex(0, { size: 32 }),
         },
         pilType: 0,
         sigAttach: {
@@ -696,8 +766,6 @@ describe("Test IpAssetClient", function () {
         tokenId: "3",
         metadata: {
           metadataURI: "https://",
-          metadata: "metadata",
-          nftMetadata: "nftMetadata",
         },
         pilType: 0,
         sigAttach: {

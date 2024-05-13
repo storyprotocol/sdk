@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector, Address } from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector, Address, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { PIL_TYPE } from "../../src/types/resources/license";
@@ -183,20 +183,20 @@ describe("IP Asset Functions ", () => {
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
       it("Non-Commercial Remix", async () => {
-        const result = await client.ipAsset.createIpAssetWithPilTerms({
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
           pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
           metadata: {
             metadataURI: "test-uri",
-            metadata: "test-metadata-hash",
-            nftMetadata: "test-nft-metadata-hash",
+            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
 
       it("Commercial Use", async () => {
-        const result = await client.ipAsset.createIpAssetWithPilTerms({
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
           pilType: PIL_TYPE.COMMERCIAL_USE,
           commercialRevShare: 10,
@@ -204,15 +204,15 @@ describe("IP Asset Functions ", () => {
           currency: MockERC20.address,
           metadata: {
             metadataURI: "test-uri",
-            metadata: "test-metadata-hash",
-            nftMetadata: "test-nft-metadata-hash",
+            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
 
       it("Commercial Remix", async () => {
-        const result = await client.ipAsset.createIpAssetWithPilTerms({
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
           pilType: PIL_TYPE.COMMERCIAL_REMIX,
           commercialRevShare: 10,
@@ -220,14 +220,14 @@ describe("IP Asset Functions ", () => {
           currency: MockERC20.address,
           metadata: {
             metadataURI: "test-uri",
-            metadata: "test-metadata-hash",
-            nftMetadata: "test-nft-metadata-hash",
+            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
       it("should get the related log when createIpAssetWithPilTerms given waitForTransaction is true ", async () => {
-        const result = await client.ipAsset.createIpAssetWithPilTerms({
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
           pilType: PIL_TYPE.COMMERCIAL_REMIX,
           commercialRevShare: 10,
@@ -235,8 +235,8 @@ describe("IP Asset Functions ", () => {
           currency: MockERC20.address,
           metadata: {
             metadataURI: "test-uri",
-            metadata: "test-metadata-hash",
-            nftMetadata: "test-nft-metadata-hash",
+            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
           txOptions: {
             waitForTransaction: true,
@@ -251,21 +251,21 @@ describe("IP Asset Functions ", () => {
 
     it("should not throw error when register registerDerivativeIp", async () => {
       const tokenChildId = await getTokenId(nftContract);
-      const { ipId: parentIpId, licenseTermsId } = await client.ipAsset.createIpAssetWithPilTerms({
-        nftContract,
-        pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
-        commercialRevShare: 10,
-        mintingFee: "100",
-        currency: MockERC20.address,
-        metadata: {
-          metadataURI: "test-uri",
-          metadata: "test-metadata-hash",
-          nftMetadata: "test-nft-metadata-hash",
-        },
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
+      const { ipId: parentIpId, licenseTermsId } =
+        await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          nftContract,
+          pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+          commercialRevShare: 10,
+          mintingFee: "100",
+          currency: MockERC20.address,
+          metadata: {
+            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          txOptions: {
+            waitForTransaction: true,
+          },
+        });
       const childIpId = await client.ipAsset.getIpIdAddress(nftContract, tokenChildId!);
       const deadline = (await getBlockTimestamp()) + 1000n;
       const sigMetadata = await getPermissionSignatureForSpg({
@@ -293,8 +293,7 @@ describe("IP Asset Functions ", () => {
         },
         metadata: {
           metadataURI: "test-uri",
-          metadata: "test-metadata-hash",
-          nftMetadata: "test-nft-metadata-hash",
+          metadataHash: toHex("test-metadata-hash", { size: 32 }),
         },
         sigMetadata: {
           signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
@@ -337,8 +336,7 @@ describe("IP Asset Functions ", () => {
         tokenId: tokenId!,
         metadata: {
           metadataURI: "test-uri",
-          metadata: "test-metadata-hash",
-          nftMetadata: "test-nft-metadata-hash",
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
         sigMetadata: {
           signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
