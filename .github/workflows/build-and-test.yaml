@@ -79,7 +79,7 @@ jobs:
 
       - name: Run Anvil
         id: run_anvil
-        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --block-time 1 --silent &
+        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --silent &
 
       - name: Check on Run Anvil
         if: steps.run_anvil.outcome != 'success'
