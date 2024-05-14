@@ -32,7 +32,7 @@ describe("Test royalty Functions", () => {
       const response = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
         currency: MockERC20.address,
-        commercialRevShare: 10000,
+        commercialRevShare: 100,
         txOptions: {
           waitForTransaction: true,
         },
