@@ -1,7 +1,13 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
-import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import {
+  MockERC721,
+  getBlockTimestamp,
+  getStoryClientInSepolia,
+  getTokenId,
+  sepoliaChainId,
+} from "./utils/util";
 import {
   Hex,
   PublicClient,
@@ -16,7 +22,6 @@ import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain } from "../../src/utils/utils";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const sepoliaChainId = 11155111;
 
 describe("Ip Account functions", () => {
   let client: StoryClient;
@@ -106,7 +111,6 @@ describe("Ip Account functions", () => {
       },
     });
 
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
+    expect(response.txHash).to.be.a("string").and.not.empty;
   });
 });

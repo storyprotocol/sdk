@@ -1,9 +1,14 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
+import { StoryClient, PIL_TYPE } from "../../src";
 import { Hex, encodeFunctionData, getAddress, toFunctionSelector, Address, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
-import { PIL_TYPE } from "../../src/types/resources/license";
+import {
+  MockERC721,
+  getBlockTimestamp,
+  getStoryClientInSepolia,
+  getTokenId,
+  sepoliaChainId,
+} from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import { privateKeyToAccount } from "viem/accounts";
 import {
@@ -12,7 +17,6 @@ import {
   licensingModuleAddress,
   spgAddress,
 } from "../../src/abi/generated";
-const sepoliaChainId = 11155111;
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

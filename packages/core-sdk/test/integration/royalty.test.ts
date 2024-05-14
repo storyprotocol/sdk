@@ -81,6 +81,16 @@ describe("Test royalty Functions", () => {
       const mockERC20 = new MockERC20();
       await mockERC20.approve(MockERC721);
       await mockERC20.mint();
+      const response = await client.royalty.payRoyaltyOnBehalf({
+        receiverIpId: ipId1,
+        payerIpId: ipId2,
+        token: MockERC20.address,
+        amount: "10",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(response.txHash).to.be.a("string").not.empty;
     });
 
     it("should not throw error when snapshot", async () => {

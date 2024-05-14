@@ -6,11 +6,12 @@ const baseConfig = {
   chain: chainStringToViemChain("sepolia"),
   transport: http(process.env.TEST_SEPOLIA_RPC_PROVIDER_URL),
 } as const;
-const publicClient = createPublicClient(baseConfig);
-const walletClient = createWalletClient({
+export const publicClient = createPublicClient(baseConfig);
+export const walletClient = createWalletClient({
   ...baseConfig,
   account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
 });
+export const sepoliaChainId = 11155111;
 
 export const getTokenId = async (nftContract?: Address): Promise<number | undefined> => {
   const { request } = await publicClient.simulateContract({
@@ -39,11 +40,11 @@ export const getTokenId = async (nftContract?: Address): Promise<number | undefi
 
 export const MockERC721 = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
 
-export const getStoryClientInSepolia = (): StoryClient => {
+export const getStoryClientInSepolia = (privateKey?: Address): StoryClient => {
   const config: StoryConfig = {
     chainId: "sepolia",
     transport: http(process.env.TEST_SEPOLIA_RPC_PROVIDER_URL),
-    account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+    account: privateKeyToAccount(privateKey || (process.env.SEPOLIA_WALLET_PRIVATE_KEY as Address)),
   };
   return StoryClient.newClient(config);
 };
