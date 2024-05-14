@@ -134,26 +134,26 @@ jobs:
       - name: Push Slack Notification
         uses: slackapi/slack-github-action@v1.25.0
         with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID_API_INTEGRATION_TESTS }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
           payload: |
             {
-              "text": "${{ github.repository }}: API Integration Tests have been completed. Check the results at github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "text": "${{ github.repository }}: Package has been published to NPM Registry.",
               "blocks": [
                 { "type": "divider" },
                 {
                   "type": "image",
                   "title": {
                     "type": "plain_text",
-                    "text": "Playwright Test Results"
+                    "text": "Published to Registry"
                   },
-                  "image_url": "http://www.quickmeme.com/img/b9/b9848df257b95cd39585368475a4b4e4a3a8c774f7390226daecb79b912087ad.jpg",
-                  "alt_text": "Playwright Test Results"
+                  "image_url": "https://imgur.com/gallery/npm-install-OsbqxXW",
+                  "alt_text": "Published to Registry"
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text":"${{ github.repository }}: API Integration Tests have been completed. \nCheck the results at https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" 
+                    "text":"${{ github.repository }}: Package has been published to NPM Registry" 
                   }
                 }
               ]
