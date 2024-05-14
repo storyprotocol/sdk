@@ -126,3 +126,38 @@ jobs:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
     with:
       version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
+
+  send_slack_notif:
+    needs: [build-test-publish, create_release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push Slack Notification
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID_API_INTEGRATION_TESTS }}
+          payload: |
+            {
+              "text": "${{ github.repository }}: API Integration Tests have been completed. Check the results at github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "blocks": [
+                { "type": "divider" },
+                {
+                  "type": "image",
+                  "title": {
+                    "type": "plain_text",
+                    "text": "Playwright Test Results"
+                  },
+                  "image_url": "http://www.quickmeme.com/img/b9/b9848df257b95cd39585368475a4b4e4a3a8c774f7390226daecb79b912087ad.jpg",
+                  "alt_text": "Playwright Test Results"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text":"${{ github.repository }}: API Integration Tests have been completed. \nCheck the results at https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" 
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+    
