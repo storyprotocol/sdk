@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
-import { Account, createPublicClient, createWalletClient, http, Transport } from "viem";
+import { createPublicClient, createWalletClient, http, Transport } from "viem";
 import {
   DisputeClient,
   LicenseClient,
@@ -17,7 +17,7 @@ describe("Test StoryClient", function () {
   describe("Test constructor", function () {
     it("should succeed when passing in default params", function () {
       const client = StoryClient.newClient({
-        transport: http(process.env.RPC_PROVIDER_URL),
+        transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
         account: privateKeyToAccount(generatePrivateKey()),
       });
       expect(client).to.be.instanceOf(StoryClient);
@@ -35,18 +35,18 @@ describe("Test StoryClient", function () {
     it("should throw error when not specify a wallet or account", function () {
       expect(() => {
         StoryClient.newClient({
-          transport: http(process.env.RPC_PROVIDER_URL),
+          transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
         });
       }).to.throw("must specify a wallet or account");
     });
 
     it("should succeed when passing in wallet", function () {
       const client = StoryClient.newClient({
-        transport: http(process.env.RPC_PROVIDER_URL),
+        transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
         wallet: createWalletClient({
           account: privateKeyToAccount(generatePrivateKey()),
           chain: sepolia,
-          transport: http(process.env.RPC_PROVIDER_URL),
+          transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
         }),
       });
 
@@ -55,11 +55,11 @@ describe("Test StoryClient", function () {
 
     it("should return client storyClient when new newClientUseWallet given wallet config", () => {
       const client = StoryClient.newClientUseWallet({
-        transport: http(process.env.RPC_PROVIDER_URL),
+        transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
         wallet: createWalletClient({
           account: privateKeyToAccount(generatePrivateKey()),
           chain: sepolia,
-          transport: http(process.env.RPC_PROVIDER_URL),
+          transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
         }),
       });
       expect(client).to.be.instanceOf(StoryClient);
@@ -67,7 +67,7 @@ describe("Test StoryClient", function () {
 
     it("should return client storyClient when new newClientUseAccount given account config", () => {
       const client = StoryClient.newClientUseAccount({
-        transport: http(process.env.RPC_PROVIDER_URL),
+        transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
         account: privateKeyToAccount(generatePrivateKey()),
       });
       expect(client).to.be.instanceOf(StoryClient);
@@ -76,7 +76,7 @@ describe("Test StoryClient", function () {
 
   describe("Test getters", function () {
     const account = privateKeyToAccount(generatePrivateKey());
-    const transport = http(process.env.RPC_PROVIDER_URL);
+    const transport = http(process.env.SEPOLIA_RPC_PROVIDER_URL);
     const config: StoryConfig = {
       chainId: "sepolia",
       transport,

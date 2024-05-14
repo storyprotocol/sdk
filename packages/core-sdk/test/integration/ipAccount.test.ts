@@ -8,18 +8,9 @@ import {
   getTokenId,
   sepoliaChainId,
 } from "./utils/util";
-import {
-  Hex,
-  PublicClient,
-  createPublicClient,
-  encodeFunctionData,
-  getAddress,
-  http,
-  toFunctionSelector,
-} from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import { accessControllerAbi, accessControllerAddress } from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
-import { chainStringToViemChain } from "../../src/utils/utils";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -27,7 +18,6 @@ describe("Ip Account functions", () => {
   let client: StoryClient;
   let ipId: Hex;
   let data: Hex;
-  let publicClient: PublicClient;
   const permissionAddress = accessControllerAddress[sepoliaChainId];
 
   before(async function () {
@@ -51,10 +41,6 @@ describe("Ip Account functions", () => {
         toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         1,
       ],
-    });
-    publicClient = await createPublicClient({
-      chain: chainStringToViemChain("sepolia"),
-      transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
     });
   });
 
