@@ -1,25 +1,19 @@
-name: Publish to npm, Tag and GH Release
+name: Publish to npm, Tag and create GH Release
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  # Add  timestamp
-  print_timestamp: 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate timestamp
-        run: |
-          echo "TIMESTAMP=$(TZ='America/Los_Angeles' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-
-      - name: Print timestamp
-        run: |
-          echo "Execution time (Pacific Time Zone) $TIMESTAMP"
+  Timestamp:
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
   print_version_to_publish:
-    needs: [print_timestamp]
+    needs: [Timestamp]
     runs-on: ubuntu-latest
     outputs:
       version_to_be_published: ${{ steps.get_version_to_publish.outputs.VERSION_TO_BE_PUBLISHED }}
@@ -35,18 +29,35 @@ jobs:
 
   # Fetch the latest version from NPM
   fetch_latest_version:
-    needs: [print_timestamp]
+    needs: [Timestamp]
     runs-on: ubuntu-latest
+    outputs:
+      LATEST_VERSION: ${{ steps.get_latest_version.outputs.LATEST_VERSION }}
     steps:
       - name: Get latest package version
+        id: get_latest_version
         run: |
           LATEST_VERSION=$(npm view @story-protocol/core-sdk version)
           echo "Latest version of @story-protocol/core-sdk on NPMJS is $LATEST_VERSION"
+          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_OUTPUT
 
-  # TO-DO: check if pushed version is greater than the latest version on NPM
+  # Fail the PR if the version to be published is the same as the latest version on NPM
+  fail_if_version_is_same:
+    needs: [print_version_to_publish, fetch_latest_version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if version is the same
+        run: |
+          if [ "${{ needs.fetch_latest_version.outputs.LATEST_VERSION }}" == "${{ needs.print_version_to_publish.outputs.version_to_be_published }}" ]; then
+            echo "The version to be published is the same as the latest version on NPM. Exiting..."
+            exit 1
+          fi
 
   build-test-publish:
-    needs: [print_version_to_publish, fetch_latest_version]
+    needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
+    # Skip this job if the version to be published is the same as the latest version on NPM
+    # and the event triggering the workflow is a push
+    if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
     runs-on: ubuntu-latest
     environment: 'beta-sepolia'
     env:
@@ -63,7 +74,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      
+
       - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
         with:
           version: 8.8.0
@@ -97,7 +108,7 @@ jobs:
       - name: Test
         run: pnpm test
       
-       - name: Build
+      - name: Build
         run: pnpm build
 
       - name: Publish to npm
@@ -107,24 +118,11 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Tag and Push
-        run: |
-          VERSION=${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git tag -a v$VERSION -m "Release v$VERSION"
-          git push origin v$VERSION
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-          release_name: Release v${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-          body: Release of version v${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-          draft: false
-          prerelease: false
+  create_release:
+    needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
+    # Skip this job if the version to be published is the same as the latest version on NPM
+    # and the event triggering the workflow is a push
+    if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
+    with:
+      version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
