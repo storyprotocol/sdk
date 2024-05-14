@@ -137,7 +137,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
           payload: |
             {
-              "text": "${{ github.repository }}: Package has been published to NPM Registry.",
+              "text": "${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}",
               "blocks": [
                 { "type": "divider" },
                 {
@@ -146,14 +146,14 @@ jobs:
                     "type": "plain_text",
                     "text": "Published to Registry"
                   },
-                  "image_url": "https://imgur.com/gallery/npm-install-OsbqxXW",
+                  "image_url": "https://imgur.com/a/6P1xFvE",
                   "alt_text": "Published to Registry"
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text":"${{ github.repository }}: Package has been published to NPM Registry" 
+                    "text":"${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}" 
                   }
                 }
               ]
