@@ -2,7 +2,7 @@ import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { CreateIpAssetWithPilTermsRequest, IPAssetClient } from "../../../src";
-import { PublicClient, WalletClient, Account, toHex } from "viem";
+import { PublicClient, WalletClient, Account, toHex, zeroHash, LocalAccount } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
 chai.use(chaiAsPromised);
@@ -16,10 +16,20 @@ describe("Test IpAssetClient", function () {
   beforeEach(function () {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
-    const accountMock = createMock<Account>();
+    const accountMock = createMock<LocalAccount>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
+    walletMock.account.signTypedData = sinon
+      .stub()
+      .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
     ipAssetClient = new IPAssetClient(rpcMock, walletMock, "sepolia");
+    (ipAssetClient.spgClient as any).address = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (ipAssetClient.accessControllerClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (ipAssetClient.coreMetadataModuleClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (ipAssetClient.licensingModuleClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
 
   afterEach(function () {
@@ -40,6 +50,52 @@ describe("Test IpAssetClient", function () {
 
       expect(res.ipId).equal("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       expect(res.txHash).to.be.undefined;
+    });
+
+    it("should throw invalid address error when register given deadline is string", async function () {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await ipAssetClient.register({
+          nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: "3",
+          deadline: "error",
+          metadata: {
+            metadataURI: "1",
+            metadataHash: zeroHash,
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message).equal("Failed to register IP: Invalid deadline value.");
+      }
+    });
+
+    it("should throw account error when register given account is not local account ", async function () {
+      const walletMock = createMock<WalletClient>();
+      walletMock.account = createMock<Account>();
+      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "sepolia");
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await ipAssetClient.register({
+          nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: "3",
+          deadline: "12321",
+          metadata: {
+            metadataURI: "",
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP: The account does not support signTypedData, Please use a local account.",
+        );
+      }
     });
 
     it("should return txHash when register given tokenId have no registered", async function () {
@@ -84,6 +140,44 @@ describe("Test IpAssetClient", function () {
       const response = await ipAssetClient.register({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(response.txHash).equal(
+        "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+      );
+      expect(response.ipId).equals("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
+    });
+
+    it("should return ipId and txHash when register a IP given correct args, waitForTransaction is true and metadata", async function () {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon
+        .stub(ipAssetClient.spgClient, "registerIp")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const response = await ipAssetClient.register({
+        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        metadata: {
+          metadataURI: "",
+          metadataHash: zeroHash,
+          nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
         txOptions: {
           waitForTransaction: true,
         },
@@ -440,11 +534,6 @@ describe("Test IpAssetClient", function () {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
             licenseTermsIds: ["1"],
           },
-          sigRegister: {
-            signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-            deadline: "1",
-            signature: "0x",
-          },
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -466,11 +555,6 @@ describe("Test IpAssetClient", function () {
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
             licenseTermsIds: ["1", "2"],
-          },
-          sigRegister: {
-            signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-            deadline: "1",
-            signature: "0x",
           },
         });
       } catch (err) {
@@ -496,11 +580,6 @@ describe("Test IpAssetClient", function () {
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
             licenseTermsIds: ["1"],
-          },
-          sigRegister: {
-            signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-            deadline: "1",
-            signature: "0x",
           },
         });
       } catch (err) {
@@ -533,11 +612,6 @@ describe("Test IpAssetClient", function () {
         metadata: {
           metadataHash: toHex(0, { size: 32 }),
         },
-        sigRegister: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
       });
 
       expect(res.txHash).equal(
@@ -567,11 +641,6 @@ describe("Test IpAssetClient", function () {
         metadata: {
           metadataHash: toHex(0, { size: 32 }),
           metadataURI: "",
-        },
-        sigRegister: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
         },
       });
 
@@ -610,19 +679,9 @@ describe("Test IpAssetClient", function () {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
           licenseTermsIds: ["1"],
         },
-        sigRegister: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
         metadata: {
           metadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-        },
-        sigMetadata: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
         },
         txOptions: {
           waitForTransaction: true,
@@ -653,16 +712,6 @@ describe("Test IpAssetClient", function () {
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
           },
           pilType: 0,
-          sigAttach: {
-            signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-            deadline: "1",
-            signature: "0x",
-          },
-          sigMetadata: {
-            signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-            deadline: "1",
-            signature: "0x",
-          },
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -698,16 +747,6 @@ describe("Test IpAssetClient", function () {
           metadataURI: "",
         },
         pilType: 0,
-        sigAttach: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
-        sigMetadata: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
       });
       expect(stub.args[0][0].metadata).to.deep.equal({
         metadataURI: "",
@@ -730,16 +769,6 @@ describe("Test IpAssetClient", function () {
           metadataHash: toHex(0, { size: 32 }),
         },
         pilType: 0,
-        sigAttach: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
-        sigMetadata: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
       });
 
       expect(result.txHash).to.equal(hash);
@@ -768,16 +797,6 @@ describe("Test IpAssetClient", function () {
           metadataURI: "https://",
         },
         pilType: 0,
-        sigAttach: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
-        sigMetadata: {
-          signer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          deadline: "1",
-          signature: "0x",
-        },
         txOptions: {
           waitForTransaction: true,
         },

@@ -92,7 +92,7 @@ export class IPAccountClient {
   }
 
   /** Returns the IPAccount's internal nonce for transaction ordering.
-   * @param ipId The derivative IP ID
+   * @param ipId The IP ID
    * @returns The IPAccount's internal nonce for transaction ordering.
    */
   public async getIpAccountNonce(ipId: string): Promise<IpAccountImplStateResponse> {

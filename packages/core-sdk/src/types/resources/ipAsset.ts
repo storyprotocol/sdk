@@ -3,6 +3,14 @@ import { Address, Hex } from "viem";
 import { TxOptions } from "../options";
 import { PIL_TYPE } from "./license";
 
+type Metadata = {
+  metadata?: {
+    metadataURI?: string;
+    metadataHash?: Hex;
+    nftMetadataHash?: Hex;
+  };
+};
+
 export type RegisterIpResponse = {
   txHash?: string;
   ipId?: Address;
@@ -12,7 +20,8 @@ export type RegisterRequest = {
   nftContract: Address;
   tokenId: string | number | bigint;
   txOptions?: TxOptions;
-};
+  deadline?: string | number | bigint;
+} & Metadata;
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
   childIpId: Address;
@@ -40,17 +49,12 @@ export type RegisterDerivativeResponse = {
 export type CreateIpAssetWithPilTermsRequest = {
   nftContract: Address;
   pilType: PIL_TYPE;
-  metadata?: {
-    metadataURI?: string;
-    metadataHash?: Hex;
-    nftMetadataHash?: Hex;
-  };
   recipient?: Address;
   mintingFee?: string;
   currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
-};
+} & Metadata;
 
 export type CreateIpAssetWithPilTermsResponse = {
   txHash: string;
@@ -62,28 +66,14 @@ export type CreateIpAssetWithPilTermsResponse = {
 export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
   tokenId: string | number | bigint;
+  deadline?: string | number | bigint;
   derivData: {
     parentIpIds: Address[];
     licenseTermsIds: string[] | bigint[] | number[];
     licenseTemplate?: Address;
   };
-  metadata?: {
-    metadataURI?: string;
-    metadataHash?: Hex;
-    nftMetadataHash?: Hex;
-  };
-  sigMetadata?: {
-    signer: Address;
-    deadline: string | number | bigint;
-    signature: Hex;
-  };
-  sigRegister: {
-    signer: Address;
-    deadline: string | number | bigint;
-    signature: Hex;
-  };
   txOptions?: TxOptions;
-};
+} & Metadata;
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash: string;
@@ -93,27 +83,13 @@ export type RegisterIpAndMakeDerivativeResponse = {
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  metadata: {
-    metadataURI?: string;
-    metadataHash?: Hex;
-    nftMetadataHash?: Hex;
-  };
   pilType: PIL_TYPE;
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint | number | string;
-    signature: Hex;
-  };
-  sigAttach: {
-    signer: Address;
-    deadline: bigint | number | string;
-    signature: Hex;
-  };
+  deadline?: bigint | number | string;
   mintingFee?: string;
   currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
-};
+} & Metadata;
 
 export type RegisterIpAndAttachPilTermsResponse = {
   txHash: string;
