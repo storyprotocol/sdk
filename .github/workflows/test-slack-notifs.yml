@@ -1,0 +1,16 @@
+name: test slack notifications
+
+on:
+  workflow_dispatch:
+
+jobs:
+  call-slack-notif:
+    uses: cenevan/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
+    with:
+      short-desc: 'Test Description'
+      title: 'Test Title'
+      img-url: 'https://imgur.com/gallery/npm-install-OsbqxXW'
+      img-alt-text: 'Test alt text'
+    secrets:
+      channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
+      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
