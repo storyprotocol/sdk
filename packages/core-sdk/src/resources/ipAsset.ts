@@ -548,9 +548,7 @@ export class IPAssetClient {
           signature,
         };
       }
-      const txHash = await this.spgClient.registerIpAndMakeDerivative(
-        object,
-      );
+      const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
       if (request.txOptions?.waitForTransaction) {
         const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];

@@ -1,5 +1,5 @@
 {
-  "name": "@story-protocol/wagmi-generater",
+  "name": "@story-protocol/wagmi-generator",
   "version": "0.1.0",
   "scripts": {
     "generate": "wagmi generate"
