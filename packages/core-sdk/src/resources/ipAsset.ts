@@ -59,7 +59,6 @@ export class IPAssetClient {
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: SupportedChainIds;
-  // private readonly ipAccount: IPAccountClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
@@ -74,7 +73,6 @@ export class IPAssetClient {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
-    // this.ipAccount = new IPAccountClient(rpcClient, wallet);
   }
 
   /**
@@ -593,10 +591,6 @@ export class IPAssetClient {
     if (!account.signTypedData) {
       throw new Error("The account does not support signTypedData, Please use a local account.");
     }
-    // const nonce = this.ipAccount.getIpAccountNonce(account.address);
-    // if (nonce === undefined) {
-    //   throw new Error("Failed to get nonce for the account.");
-    // }
     return await account.signTypedData({
       domain: {
         name: "Story Protocol IP Account",
@@ -628,7 +622,6 @@ export class IPAssetClient {
             1,
           ],
         }),
-        // nonce: BigInt(nonce),
         nonce: BigInt(nonce),
         deadline,
       },
