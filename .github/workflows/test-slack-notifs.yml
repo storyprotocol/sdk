@@ -7,8 +7,8 @@ jobs:
   call-slack-notif:
     uses: cenevan/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
     with:
-      short-desc: 'Test Description'
-      title: 'Test Title'
+      short-desc: 'Core SDK v1.0.demo'
+      title: 'Package Published'
       img-url: 'https://i.imgur.com/eqfFZRb.jpeg'
       img-alt-text: 'Test alt text'
     secrets:
