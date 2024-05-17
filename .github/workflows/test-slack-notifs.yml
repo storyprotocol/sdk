@@ -9,7 +9,7 @@ jobs:
     with:
       short-desc: 'Test Description'
       title: 'Test Title'
-      img-url: 'https://imgur.com/gallery/npm-install-OsbqxXW'
+      img-url: 'https://i.imgur.com/eqfFZRb.jpeg'
       img-alt-text: 'Test alt text'
     secrets:
       channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
