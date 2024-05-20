@@ -12,7 +12,7 @@ import {
 } from "../../src";
 import { StoryAPIClient } from "../../src/clients/storyAPI";
 import { RoyaltyClient } from "../../src/resources/royalty";
-const rpc = "http://localhost:8545";
+const rpc = "http://127.0.0.1:8545";
 describe("Test StoryClient", function () {
   describe("Test constructor", function () {
     it("should succeed when passing in default params", function () {

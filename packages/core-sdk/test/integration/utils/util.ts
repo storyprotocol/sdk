@@ -2,7 +2,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
-const rpc = "http://localhost:8545";
+const rpc = "http://127.0.0.1:8545";
 const baseConfig = {
   chain: chainStringToViemChain("sepolia"),
   transport: http(rpc),
