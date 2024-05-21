@@ -48,6 +48,7 @@ export class PermissionClient {
    */
   public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
+      await this.checkIsRegistered(request.ipId);
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,

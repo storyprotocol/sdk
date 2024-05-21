@@ -16,7 +16,6 @@ describe("Test IPAccountClient", () => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<Account>();
-    accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     ipAccountClient = new IPAccountClient(rpcMock, walletMock);
   });
@@ -28,7 +27,7 @@ describe("Test IPAccountClient", () => {
   describe("Test execute", async () => {
     it("should throw invalid address error when accountAddress is invalid", async function () {
       const request: IPAccountExecuteRequest = {
-        accountAddress: "0xkkkkkkkkkk", // invalid address
+        accountAddress: "0x123", // invalid address
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -36,7 +35,7 @@ describe("Test IPAccountClient", () => {
       try {
         await ipAccountClient.execute(request);
       } catch (err) {
-        expect((err as Error).message).includes('Address "0xkkkkkkkkkk" is invalid');
+        expect((err as Error).message).includes('Address "0x123" is invalid');
       }
     });
     it("should throw simulateContract error when simulateContract throws an error", async function () {
@@ -135,7 +134,7 @@ describe("Test IPAccountClient", () => {
   describe("Test executeWithSig", () => {
     it("should throw invalid address error when accountAddress is invalid", async function () {
       const request: IPAccountExecuteWithSigRequest = {
-        accountAddress: "0xkkkkkkkkkk", // invalid address
+        accountAddress: "0x123", // invalid address
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -146,7 +145,7 @@ describe("Test IPAccountClient", () => {
       try {
         await ipAccountClient.executeWithSig(request);
       } catch (err) {
-        expect((err as Error).message).includes('Address "0xkkkkkkkkkk" is invalid');
+        expect((err as Error).message).includes('Address "0x123" is invalid');
       }
     });
 

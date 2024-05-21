@@ -50,7 +50,7 @@ export type {
 } from "./types/resources/royalty";
 
 export type { SetPermissionsRequest, SetPermissionsResponse } from "./types/resources/permission";
-
+export { AccessPermission } from "./types/resources/permission";
 export type {
   Dispute,
   RaiseDisputeRequest,
