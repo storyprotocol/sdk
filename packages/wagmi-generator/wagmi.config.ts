@@ -140,7 +140,12 @@ export default defineConfig(async () => {
       sdk({
         permissionLessSDK: true,
         whiteList: {
-          AccessController: ["PermissionSet", "setPermission"],
+          AccessController: [
+            "PermissionSet",
+            "setPermission",
+            "setAllPermissions",
+            "setBatchPermissions",
+          ],
           DisputeModule: [
             "DisputeCancelled",
             "DisputeRaised",
