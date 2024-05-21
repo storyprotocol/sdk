@@ -6296,8 +6296,8 @@ export const spgAbi = [
       { name: "name", internalType: "string", type: "string" },
       { name: "symbol", internalType: "string", type: "string" },
       { name: "maxSupply", internalType: "uint32", type: "uint32" },
-      { name: "mintCost", internalType: "uint256", type: "uint256" },
-      { name: "mintToken", internalType: "address", type: "address" },
+      { name: "mintFee", internalType: "uint256", type: "uint256" },
+      { name: "mintFeeToken", internalType: "address", type: "address" },
       { name: "owner", internalType: "address", type: "address" },
     ],
     name: "createCollection",
@@ -6482,6 +6482,36 @@ export const spgAbi = [
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      {
+        name: "metadata",
+        internalType: "struct IStoryProtocolGateway.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "metadataURI", internalType: "string", type: "string" },
+          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadata",
+        internalType: "struct IStoryProtocolGateway.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIp",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -7520,6 +7550,78 @@ export class AccessControllerClient extends AccessControllerEventClient {
 // Contract CoreMetadataModule =============================================================
 
 /**
+ * CoreMetadataModuleMetadataFrozenEvent
+ *
+ * @param ipId address
+ */
+export type CoreMetadataModuleMetadataFrozenEvent = {
+  ipId: Address;
+};
+
+/**
+ * CoreMetadataModuleMetadataUriSetEvent
+ *
+ * @param ipId address
+ * @param metadataURI string
+ * @param metadataHash bytes32
+ */
+export type CoreMetadataModuleMetadataUriSetEvent = {
+  ipId: Address;
+  metadataURI: string;
+  metadataHash: Hex;
+};
+
+/**
+ * CoreMetadataModuleNftTokenUriSetEvent
+ *
+ * @param ipId address
+ * @param nftTokenURI string
+ * @param nftMetadataHash bytes32
+ */
+export type CoreMetadataModuleNftTokenUriSetEvent = {
+  ipId: Address;
+  nftTokenURI: string;
+  nftMetadataHash: Hex;
+};
+
+export type CoreMetadataModuleAccessControllerResponse = Address;
+
+export type CoreMetadataModuleIpAccountRegistryResponse = Address;
+
+/**
+ * CoreMetadataModuleIsMetadataFrozenRequest
+ *
+ * @param ipId address
+ */
+export type CoreMetadataModuleIsMetadataFrozenRequest = {
+  ipId: Address;
+};
+
+export type CoreMetadataModuleIsMetadataFrozenResponse = boolean;
+
+export type CoreMetadataModuleNameResponse = string;
+
+/**
+ * CoreMetadataModuleSupportsInterfaceRequest
+ *
+ * @param interfaceId bytes4
+ */
+export type CoreMetadataModuleSupportsInterfaceRequest = {
+  interfaceId: Hex;
+};
+
+export type CoreMetadataModuleSupportsInterfaceResponse = boolean;
+
+/**
+ * CoreMetadataModuleFreezeMetadataRequest
+ *
+ * @param ipId address
+ */
+export type CoreMetadataModuleFreezeMetadataRequest = {
+  ipId: Address;
+};
+
+/**
  * CoreMetadataModuleSetAllRequest
  *
  * @param ipId address
@@ -7535,17 +7637,278 @@ export type CoreMetadataModuleSetAllRequest = {
 };
 
 /**
- * contract CoreMetadataModule write method
+ * CoreMetadataModuleSetMetadataUriRequest
+ *
+ * @param ipId address
+ * @param metadataURI string
+ * @param metadataHash bytes32
  */
-export class CoreMetadataModuleClient {
-  protected readonly wallet: SimpleWalletClient;
+export type CoreMetadataModuleSetMetadataUriRequest = {
+  ipId: Address;
+  metadataURI: string;
+  metadataHash: Hex;
+};
+
+/**
+ * CoreMetadataModuleUpdateNftTokenUriRequest
+ *
+ * @param ipId address
+ * @param nftMetadataHash bytes32
+ */
+export type CoreMetadataModuleUpdateNftTokenUriRequest = {
+  ipId: Address;
+  nftMetadataHash: Hex;
+};
+
+/**
+ * contract CoreMetadataModule event
+ */
+export class CoreMetadataModuleEventClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(coreMetadataModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event MetadataFrozen for contract CoreMetadataModule
+   */
+  public watchMetadataFrozenEvent(
+    onLogs: (txHash: Hex, ev: Partial<CoreMetadataModuleMetadataFrozenEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      eventName: "MetadataFrozen",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event MetadataFrozen for contract CoreMetadataModule
+   */
+  public parseTxMetadataFrozenEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<CoreMetadataModuleMetadataFrozenEvent> {
+    const targetLogs: Array<CoreMetadataModuleMetadataFrozenEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: coreMetadataModuleAbi,
+          eventName: "MetadataFrozen",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "MetadataFrozen") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event MetadataURISet for contract CoreMetadataModule
+   */
+  public watchMetadataUriSetEvent(
+    onLogs: (txHash: Hex, ev: Partial<CoreMetadataModuleMetadataUriSetEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      eventName: "MetadataURISet",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event MetadataURISet for contract CoreMetadataModule
+   */
+  public parseTxMetadataUriSetEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<CoreMetadataModuleMetadataUriSetEvent> {
+    const targetLogs: Array<CoreMetadataModuleMetadataUriSetEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: coreMetadataModuleAbi,
+          eventName: "MetadataURISet",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "MetadataURISet") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event NFTTokenURISet for contract CoreMetadataModule
+   */
+  public watchNftTokenUriSetEvent(
+    onLogs: (txHash: Hex, ev: Partial<CoreMetadataModuleNftTokenUriSetEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      eventName: "NFTTokenURISet",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event NFTTokenURISet for contract CoreMetadataModule
+   */
+  public parseTxNftTokenUriSetEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<CoreMetadataModuleNftTokenUriSetEvent> {
+    const targetLogs: Array<CoreMetadataModuleNftTokenUriSetEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: coreMetadataModuleAbi,
+          eventName: "NFTTokenURISet",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "NFTTokenURISet") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract CoreMetadataModule readonly method
+ */
+export class CoreMetadataModuleReadOnlyClient extends CoreMetadataModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method ACCESS_CONTROLLER for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleAccessControllerRequest
+   * @return Promise<CoreMetadataModuleAccessControllerResponse>
+   */
+  public async accessController(): Promise<CoreMetadataModuleAccessControllerResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "ACCESS_CONTROLLER",
+    });
+  }
+
+  /**
+   * method IP_ACCOUNT_REGISTRY for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleIpAccountRegistryRequest
+   * @return Promise<CoreMetadataModuleIpAccountRegistryResponse>
+   */
+  public async ipAccountRegistry(): Promise<CoreMetadataModuleIpAccountRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "IP_ACCOUNT_REGISTRY",
+    });
+  }
+
+  /**
+   * method isMetadataFrozen for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleIsMetadataFrozenRequest
+   * @return Promise<CoreMetadataModuleIsMetadataFrozenResponse>
+   */
+  public async isMetadataFrozen(
+    request: CoreMetadataModuleIsMetadataFrozenRequest,
+  ): Promise<CoreMetadataModuleIsMetadataFrozenResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "isMetadataFrozen",
+      args: [request.ipId],
+    });
+  }
+
+  /**
+   * method name for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleNameRequest
+   * @return Promise<CoreMetadataModuleNameResponse>
+   */
+  public async name(): Promise<CoreMetadataModuleNameResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method supportsInterface for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleSupportsInterfaceRequest
+   * @return Promise<CoreMetadataModuleSupportsInterfaceResponse>
+   */
+  public async supportsInterface(
+    request: CoreMetadataModuleSupportsInterfaceRequest,
+  ): Promise<CoreMetadataModuleSupportsInterfaceResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "supportsInterface",
+      args: [request.interfaceId],
+    });
+  }
+}
+
+/**
+ * contract CoreMetadataModule write method
+ */
+export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
     this.wallet = wallet;
+  }
+
+  /**
+   * method freezeMetadata for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleFreezeMetadataRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async freezeMetadata(
+    request: CoreMetadataModuleFreezeMetadataRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "freezeMetadata",
+      account: this.wallet.account,
+      args: [request.ipId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
@@ -7561,6 +7924,44 @@ export class CoreMetadataModuleClient {
       functionName: "setAll",
       account: this.wallet.account,
       args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setMetadataURI for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleSetMetadataUriRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setMetadataUri(
+    request: CoreMetadataModuleSetMetadataUriRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "setMetadataURI",
+      account: this.wallet.account,
+      args: [request.ipId, request.metadataURI, request.metadataHash],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method updateNftTokenURI for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleUpdateNftTokenUriRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async updateNftTokenUri(
+    request: CoreMetadataModuleUpdateNftTokenUriRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "updateNftTokenURI",
+      account: this.wallet.account,
+      args: [request.ipId, request.nftMetadataHash],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -11658,16 +12059,16 @@ export type SpgCollectionCreatedEvent = {
  * @param name string
  * @param symbol string
  * @param maxSupply uint32
- * @param mintCost uint256
- * @param mintToken address
+ * @param mintFee uint256
+ * @param mintFeeToken address
  * @param owner address
  */
 export type SpgCreateCollectionRequest = {
   name: string;
   symbol: string;
   maxSupply: number;
-  mintCost: bigint;
-  mintToken: Address;
+  mintFee: bigint;
+  mintFeeToken: Address;
   owner: Address;
 };
 
@@ -11768,6 +12169,29 @@ export type SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
     nftMetadataHash: Hex;
   };
   recipient: Address;
+};
+
+/**
+ * SpgRegisterIpRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param metadata tuple
+ * @param sigMetadata tuple
+ */
+export type SpgRegisterIpRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  metadata: {
+    metadataURI: string;
+    metadataHash: Hex;
+    nftMetadataHash: Hex;
+  };
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
 };
 
 /**
@@ -12000,8 +12424,8 @@ export class SpgClient extends SpgEventClient {
         request.name,
         request.symbol,
         request.maxSupply,
-        request.mintCost,
-        request.mintToken,
+        request.mintFee,
+        request.mintFeeToken,
         request.owner,
       ],
     });
@@ -12086,6 +12510,23 @@ export class SpgClient extends SpgEventClient {
         request.metadata,
         request.recipient,
       ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIp for contract SPG
+   *
+   * @param request SpgRegisterIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIp(request: SpgRegisterIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgAbi,
+      address: this.address,
+      functionName: "registerIp",
+      account: this.wallet.account,
+      args: [request.nftContract, request.tokenId, request.metadata, request.sigMetadata],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }

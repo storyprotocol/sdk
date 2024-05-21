@@ -6,8 +6,8 @@ export type CreateNFTCollectionRequest = {
   name: string;
   symbol: string;
   maxSupply?: number;
-  mintCost?: bigint;
-  mintToken?: Hex;
+  mintFee?: bigint;
+  mintFeeToken?: Hex;
   owner?: Hex;
   txOptions?: TxOptions;
 };

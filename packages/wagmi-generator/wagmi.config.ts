@@ -114,6 +114,13 @@ export default defineConfig(async () => {
         // [storyTestnetId]: "0x2EcdB5bD12a037dCb9De0Ab7957f35FEeF758eA6",
       },
     },
+    {
+      name: "CoreMetadataModule",
+      address: {
+        [sepoliaChainId]: "0xDa498A3f7c8a88cb72201138C366bE3778dB9575",
+        // [storyTestnetId]: "0x2EcdB5bD12a037dCb9De0Ab7957f35FEeF758eA6",
+      },
+    },
   ];
   return {
     out: "../core-sdk/src/abi/generated.ts",
@@ -190,6 +197,7 @@ export default defineConfig(async () => {
             "registerIpAndMakeDerivative",
             "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
             "registerIpAndMakeDerivativeWithLicenseTokens",
+            "registerIp",
           ],
         },
       }),

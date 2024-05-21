@@ -18,7 +18,7 @@ export class MockERC20 {
   constructor() {
     const baseConfig = {
       chain: chainStringToViemChain("sepolia"),
-      transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
+      transport: http("http://127.0.0.1:8545"),
     } as const;
     this.publicClient = createPublicClient(baseConfig);
     this.walletClient = createWalletClient({

@@ -24,8 +24,8 @@ export class NftClient {
    *   @param request.name - The name of the collection.
    * 	 @param request.symbol - The symbol of the collection.
    * 	 @param request.maxSupply - The maximum supply of the collection.
-   * 	 @param request.mintCost - The cost to mint a token.
-   * 	 @param request.mintToken - The token to mint.
+   * 	 @param request.mintFee - The cost to mint a token.
+   * 	 @param request.mintFeeToken - The token to mint.
    * 	 @param request.owner - The owner of the collection.
    *   @param request.txOptions - Optional transaction options.
    * @returns A Promise that resolves to a CreateNFTCollectionResponse containing the transaction hash and collection address.
@@ -36,16 +36,19 @@ export class NftClient {
     TRes = CreateNFTCollectionResponse<TReq>,
   >(request: TReq): Promise<TRes> {
     try {
-      if (request.mintCost && request.mintCost > 0n && !isAddress(request.mintToken || "")) {
-        throw new Error("Invalid mint token address, mint cost is greater than 0.");
+      if (
+        request.mintFee !== undefined &&
+        (request.mintFee < 0n || !isAddress(request.mintFeeToken || ""))
+      ) {
+        throw new Error("Invalid mint fee token address, mint fee is greater than 0.");
       }
 
       const txHash = await this.spgClient.createCollection({
         name: request.name,
         symbol: request.symbol,
         maxSupply: request.maxSupply ?? Number(maxUint32),
-        mintCost: request.mintCost ?? 0n,
-        mintToken: request.mintToken ?? zeroAddress,
+        mintFee: request.mintFee ?? 0n,
+        mintFeeToken: request.mintFeeToken ?? zeroAddress,
         owner: (request.owner && getAddress(request.owner)) || this.wallet.account!.address,
       });
 

@@ -33,7 +33,6 @@ describe("Test NftClient", function () {
       name: "test-collection",
       symbol: "TEST",
       maxSupply: 100,
-      mintCost: 0n,
       owner: "0x0000000000000000000000000000000000000001" as Hex,
       txOptions: {
         waitForTransaction: false,
@@ -63,15 +62,13 @@ describe("Test NftClient", function () {
       }
     });
 
-    it("should throw Invalid mintCost and mintToken error if mintCost is 0", async () => {
+    it("should throw Invalid mintFee and mintFeeToken error if mintFee is 0", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       try {
-        await nftClient.createNFTCollection({ ...reqBody, mintCost: 6n });
+        await nftClient.createNFTCollection({ ...reqBody, mintFee: 0n });
       } catch (err) {
-        expect(
-          (err as Error).message.includes(
-            "Invalid mint token address, mint cost is greater than 0",
-          ),
+        expect((err as Error).message).equal(
+          "Failed to create a SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
         );
       }
     });
