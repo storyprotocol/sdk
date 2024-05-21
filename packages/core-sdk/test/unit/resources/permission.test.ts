@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import { PermissionClient, AddressZero } from "../../../src";
 import * as utils from "../../../src/utils/utils";
 import { PublicClient, WalletClient, Account } from "viem";
+const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 describe("Test Permission", function () {
   let permissionClient: PermissionClient;
@@ -112,8 +113,8 @@ describe("Test Permission", function () {
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
       walletMock.writeContract = sinon.stub().rejects(new Error("http 500"));
 
-      await expect(
-        permissionClient.setPermission({
+      try {
+        await permissionClient.setPermission({
           ipId: AddressZero,
           signer: AddressZero,
           to: AddressZero,
@@ -122,28 +123,60 @@ describe("Test Permission", function () {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
-      ).to.be.rejectedWith("http 500");
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal("Failed to set permissions: http 500");
+      }
     });
+  });
 
-    it("should throw error when invalid policy ID is provided", async function () {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.readContract = sinon.stub().resolves(AddressZero);
-      rpcMock.simulateContract = sinon.stub().rejects();
-      walletMock.writeContract = sinon.stub().resolves(txHash);
-
-      await expect(
-        permissionClient.setPermission({
+  describe("Test permission.setAllPermissions", async () => {
+    it("should throw IpId error when call setAllPermissions given ipId is not registered ", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await permissionClient.setAllPermissions({
           ipId: AddressZero,
           signer: AddressZero,
-          to: AddressZero,
-          func: AddressZero,
           permission: 0,
           txOptions: {
             waitForTransaction: false,
           },
-        }),
-      ).to.be.rejectedWith("Failed to set permissions");
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          "Failed to set all permissions: IP is not registered.",
+        );
+      }
+    });
+
+    it("should return hash when call setAllPermissions given ipId is registered ", async () => {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+
+      const res = await permissionClient.setAllPermissions({
+        ipId: AddressZero,
+        signer: AddressZero,
+        permission: 0,
+      });
+      expect(res.txHash).to.equal(txHash);
+    });
+
+    it("should return txHash and success when call setAllPermissions given correct args and waitForTransaction of true", async () => {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+
+      const res = await permissionClient.setAllPermissions({
+        ipId: AddressZero,
+        signer: AddressZero,
+        permission: 0,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(res.txHash).to.equal(txHash);
+      expect(res.success).to.equal(true);
     });
   });
 });
