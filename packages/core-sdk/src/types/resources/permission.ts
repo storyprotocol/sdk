@@ -6,8 +6,8 @@ export type SetPermissionsRequest = {
   ipId: Address;
   signer: Address;
   to: Address;
-  func?: string;
   permission: AccessPermission;
+  func?: string;
   txOptions?: TxOptions;
 };
 
@@ -34,3 +34,7 @@ export enum AccessPermission {
   /* DENY means the permission is denied to transaction signer to call the function. */
   DENY,
 }
+
+export type CreateSetPermissionSignatureRequest = {
+  deadline?: bigint | number | string;
+} & SetPermissionsRequest;

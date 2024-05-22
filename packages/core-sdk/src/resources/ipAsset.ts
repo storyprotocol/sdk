@@ -84,7 +84,7 @@ export class IPAssetClient {
    *   @param request.metadata.metadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.metadata.metadataHash [Optional] The metadata for the IP.
    *   @param request.metadata.nftMetadataHash [Optional] The metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds.
+   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
@@ -349,7 +349,7 @@ export class IPAssetClient {
    *   @param request.metadata.metadataURI [Optional] The the metadata for the IP hash.
    *   @param request.metadata.metadataHash [Optional] The metadata for the IP.
    *   @param request.metadata.nftMetadataHash [Optional] The metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds.
+   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
@@ -453,7 +453,7 @@ export class IPAssetClient {
    *   @param request.metadata.metadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.metadata.metadataHash [Optional] The metadata for the IP.
    *   @param request.metadata.nftMetadataHash [Optional] The the metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds.
+   *   @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)

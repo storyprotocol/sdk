@@ -1,8 +1,10 @@
 import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { PermissionClient, AddressZero } from "../../../src";
-import { PublicClient, WalletClient, Account } from "viem";
+import { PermissionClient, AddressZero, SupportedChainIds } from "../../../src";
+import { PublicClient, WalletClient, Account, LocalAccount } from "viem";
+import { sepoliaChainId } from "../../integration/utils/util";
+import { AccessPermission } from "../../../src/types/resources/permission";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 describe("Test Permission", () => {
@@ -14,9 +16,15 @@ describe("Test Permission", () => {
   beforeEach(function () {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
-    const accountMock = createMock<Account>();
+    const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
-    permissionClient = new PermissionClient(rpcMock, walletMock);
+    permissionClient = new PermissionClient(rpcMock, walletMock, sepoliaChainId);
+    IpAccountImplClient.prototype.state = sinon.stub().resolves(1n);
+    walletMock.account.signTypedData = sinon
+      .stub()
+      .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+    (permissionClient.accessControllerClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
 
   afterEach(() => {
@@ -31,15 +39,14 @@ describe("Test Permission", () => {
           ipId: AddressZero,
           signer: AddressZero,
           to: AddressZero,
-          func: "0x00000000",
-          permission: 0,
+          permission: AccessPermission.ALLOW,
           txOptions: {
             waitForTransaction: false,
           },
         });
       } catch (error) {
         expect((error as Error).message).to.equal(
-          "Failed to set permissions: IP is not registered.",
+          "Failed to set permissions: IP id with 0x0000000000000000000000000000000000000000 is not registered.",
         );
       }
     });
@@ -53,8 +60,8 @@ describe("Test Permission", () => {
         ipId: AddressZero,
         signer: AddressZero,
         to: AddressZero,
-        func: "0x00000000",
-        permission: 0,
+        func: "function setAll(address,string,bytes32,bytes32)",
+        permission: AccessPermission.ALLOW,
       });
       expect(res.txHash).to.equal(txHash);
     });
@@ -68,7 +75,7 @@ describe("Test Permission", () => {
         ipId: AddressZero,
         signer: AddressZero,
         to: AddressZero,
-        permission: 0,
+        permission: AccessPermission.ALLOW,
         txOptions: {
           waitForTransaction: true,
         },
@@ -85,14 +92,14 @@ describe("Test Permission", () => {
         await permissionClient.setAllPermissions({
           ipId: AddressZero,
           signer: AddressZero,
-          permission: 0,
+          permission: AccessPermission.ALLOW,
           txOptions: {
             waitForTransaction: false,
           },
         });
       } catch (error) {
         expect((error as Error).message).to.equal(
-          "Failed to set all permissions: IP is not registered.",
+          "Failed to set all permissions: IP id with 0x0000000000000000000000000000000000000000 is not registered.",
         );
       }
     });
@@ -105,7 +112,7 @@ describe("Test Permission", () => {
       const res = await permissionClient.setAllPermissions({
         ipId: AddressZero,
         signer: AddressZero,
-        permission: 0,
+        permission: AccessPermission.ALLOW,
       });
       expect(res.txHash).to.equal(txHash);
     });
@@ -117,7 +124,114 @@ describe("Test Permission", () => {
       const res = await permissionClient.setAllPermissions({
         ipId: AddressZero,
         signer: AddressZero,
-        permission: 0,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(res.txHash).to.equal(txHash);
+      expect(res.success).to.equal(true);
+    });
+  });
+
+  describe("Test permission.createSetPermissionSignature", async () => {
+    it("should throw IpId error when call createSetPermissionSignature given ipId is not registered ", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await permissionClient.createSetPermissionSignature({
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          "Failed to create set permission signature: IP id with 0x0000000000000000000000000000000000000000 is not registered.",
+        );
+      }
+    });
+
+    it("should throw deadline error when call createSetPermissionSignature given deadline is not number", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      try {
+        await permissionClient.createSetPermissionSignature({
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+          deadline: "error",
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          "Failed to create set permission signature: Invalid deadline value.",
+        );
+      }
+    });
+
+    it("should throw deadline error when call createSetPermissionSignature given deadline is less than 0", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      try {
+        await permissionClient.createSetPermissionSignature({
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          func: "function setAll(address,string,bytes32,bytes32)",
+          permission: AccessPermission.ALLOW,
+          deadline: -2,
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          "Failed to create set permission signature: Invalid deadline value.",
+        );
+      }
+    });
+
+    it("should account error when call createSetPermissionSignature given account is not instance of local account", async () => {
+      walletMock.account = createMock<Account>();
+      permissionClient = new PermissionClient(rpcMock, walletMock, sepoliaChainId);
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      try {
+        await permissionClient.createSetPermissionSignature({
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          func: "function setAll(address,string,bytes32,bytes32)",
+          permission: AccessPermission.ALLOW,
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          "Failed to create set permission signature: The account does not support signTypedData, Please use a local account.",
+        );
+      }
+    });
+
+    it("should return hash when call createSetPermissionSignature given correct args", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+
+      const res = await permissionClient.createSetPermissionSignature({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        func: "function setAll(address,string,bytes32,bytes32)",
+        permission: AccessPermission.ALLOW,
+      });
+      expect(res.txHash).to.equal(txHash);
+      expect(res.success).to.equal(undefined);
+    });
+
+    it("should return txHash and success when call createSetPermissionSignature given correct args and waitForTransaction of true", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+
+      const res = await permissionClient.createSetPermissionSignature({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        func: "function setAll(address,string,bytes32,bytes32)",
+        deadline: 2000,
+        permission: AccessPermission.ALLOW,
         txOptions: {
           waitForTransaction: true,
         },
