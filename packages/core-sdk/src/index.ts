@@ -54,6 +54,7 @@ export type {
   SetPermissionsResponse,
   CreateSetPermissionSignatureRequest,
   SetAllPermissionsRequest,
+  SetBatchPermissionsRequest,
 } from "./types/resources/permission";
 export { AccessPermission } from "./types/resources/permission";
 export type {

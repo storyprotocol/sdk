@@ -26,7 +26,7 @@ describe("Permission Functions", () => {
       })
     ).ipId!;
   });
-  it.skip("should not throw error when setting permission", async () => {
+  it("should not throw error when call setPermission", async () => {
     const response = await client.permission.setPermission({
       ipId: ipId,
       signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
@@ -41,7 +41,7 @@ describe("Permission Functions", () => {
     expect(response.success).to.be.a("boolean").and.to.equal(true);
   });
 
-  it.skip("should not throw error when setting all permissions", async () => {
+  it("should not throw error when call setAllPermissions", async () => {
     const response = await client.permission.setAllPermissions({
       ipId: ipId,
       signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
@@ -55,13 +55,40 @@ describe("Permission Functions", () => {
     expect(response.success).to.be.a("boolean").and.to.equal(true);
   });
 
-  it("should not throw error when createSetPermissionSignature", async () => {
+  it("should not throw error when call createSetPermissionSignature", async () => {
     const response = await client.permission.createSetPermissionSignature({
       ipId,
       signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
       to: coreMetadataModule,
       func: "function setAll(address,string,bytes32,bytes32)",
       permission: AccessPermission.ALLOW,
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+
+    expect(response.txHash).to.be.a("string").and.not.empty;
+    expect(response.success).to.be.a("boolean").and.to.equal(true);
+  });
+
+  it("should not throw error when call setBatchPermissions", async () => {
+    const response = await client.permission.setBatchPermissions({
+      permissions: [
+        {
+          ipId: ipId,
+          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          to: coreMetadataModule,
+          permission: AccessPermission.DENY,
+          func: "function setAll(address,string,bytes32,bytes32)",
+        },
+        {
+          ipId: ipId,
+          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          to: coreMetadataModule,
+          permission: AccessPermission.DENY,
+          func: "function freezeMetadata(address)",
+        },
+      ],
       txOptions: {
         waitForTransaction: true,
       },

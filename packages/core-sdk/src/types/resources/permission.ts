@@ -38,3 +38,8 @@ export enum AccessPermission {
 export type CreateSetPermissionSignatureRequest = {
   deadline?: bigint | number | string;
 } & SetPermissionsRequest;
+
+export type SetBatchPermissionsRequest = {
+  permissions: Omit<SetPermissionsRequest, "txOptions">[];
+  txOptions?: TxOptions;
+};
