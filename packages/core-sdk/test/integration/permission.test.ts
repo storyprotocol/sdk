@@ -12,6 +12,7 @@ describe("Permission Functions", () => {
   let client: StoryClient;
   let ipId: Address;
   const coreMetadataModule = coreMetadataModuleAddress[sepoliaChainId];
+
   before(async () => {
     client = getStoryClientInSepolia();
     const tokenId = await getTokenId();

@@ -9,6 +9,7 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
+import { RPC } from "./util";
 
 export class MockERC20 {
   private publicClient: PublicClient;
@@ -18,7 +19,7 @@ export class MockERC20 {
   constructor() {
     const baseConfig = {
       chain: chainStringToViemChain("sepolia"),
-      transport: http("http://127.0.0.1:8545"),
+      transport: http(RPC),
     } as const;
     this.publicClient = createPublicClient(baseConfig);
     this.walletClient = createWalletClient({

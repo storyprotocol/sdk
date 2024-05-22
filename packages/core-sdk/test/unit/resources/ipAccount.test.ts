@@ -25,7 +25,7 @@ describe("Test IPAccountClient", () => {
   });
 
   describe("Test execute", async () => {
-    it("should throw invalid address error when accountAddress is invalid", async function () {
+    it("should throw invalid address error when accountAddress is invalid", async () => {
       const request: IPAccountExecuteRequest = {
         accountAddress: "0x123", // invalid address
         to: zeroAddress,
@@ -38,7 +38,7 @@ describe("Test IPAccountClient", () => {
         expect((err as Error).message).includes('Address "0x123" is invalid');
       }
     });
-    it("should throw simulateContract error when simulateContract throws an error", async function () {
+    it("should throw simulateContract error when simulateContract throws an error", async () => {
       rpcMock.simulateContract = sinon.stub().rejects(new Error("simulateContract error"));
       const request: IPAccountExecuteRequest = {
         accountAddress: zeroAddress,
@@ -53,7 +53,7 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should throw writeContract error when writeContract throws an error", async function () {
+    it("should throw writeContract error when writeContract throws an error", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("writeContract error"));
       const request: IPAccountExecuteRequest = {
@@ -69,7 +69,7 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should throw waitTx error when waitTx throws an error", async function () {
+    it("should throw waitTx error when waitTx throws an error", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
@@ -91,7 +91,7 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should return txHash if waitTx succeeds", async function () {
+    it("should return txHash if waitTx succeeds", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
@@ -111,7 +111,7 @@ describe("Test IPAccountClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash if txOptions is falsy", async function () {
+    it("should return txHash if txOptions is falsy", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
@@ -132,7 +132,7 @@ describe("Test IPAccountClient", () => {
   });
 
   describe("Test executeWithSig", () => {
-    it("should throw invalid address error when accountAddress is invalid", async function () {
+    it("should throw invalid address error when accountAddress is invalid", async () => {
       const request: IPAccountExecuteWithSigRequest = {
         accountAddress: "0x123", // invalid address
         to: zeroAddress,
@@ -149,7 +149,7 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should throw simulateContract error when simulateContract throws an error", async function () {
+    it("should throw simulateContract error when simulateContract throws an error", async () => {
       rpcMock.simulateContract = sinon.stub().rejects(new Error("simulateContract error"));
       const request: IPAccountExecuteWithSigRequest = {
         accountAddress: zeroAddress,
@@ -167,7 +167,7 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should throw writeContract error when writeContract throws an error", async function () {
+    it("should throw writeContract error when writeContract throws an error", async () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("writeContract error"));
       const request: IPAccountExecuteWithSigRequest = {
@@ -186,7 +186,7 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should throw waitTx error when waitTx throws an error", async function () {
+    it("should throw waitTx error when waitTx throws an error", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
@@ -211,7 +211,7 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should return txHash when waitTx succeeds", async function () {
+    it("should return txHash when waitTx succeeds", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
@@ -233,7 +233,7 @@ describe("Test IPAccountClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash if txOptions is falsy", async function () {
+    it("should return txHash if txOptions is falsy", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().resolves(txHash);
@@ -257,7 +257,7 @@ describe("Test IPAccountClient", () => {
   });
 
   describe("Test getIpAccountNonce", () => {
-    it("should return the state of the IP Account", async function () {
+    it("should return the state of the IP Account", async () => {
       sinon.stub(IpAccountImplClient.prototype, "state").resolves(1n);
       const state = await ipAccountClient.getIpAccountNonce(
         "0x73fcb515cee99e4991465ef586cfe2b072ebb512",

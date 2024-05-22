@@ -20,7 +20,7 @@ describe("Ip Account functions", () => {
   let data: Hex;
   const permissionAddress = accessControllerAddress[sepoliaChainId];
 
-  before(async function () {
+  before(async () => {
     client = getStoryClientInSepolia();
     const tokenId = await getTokenId();
     const registerResult = await client.ipAsset.register({
@@ -56,7 +56,6 @@ describe("Ip Account functions", () => {
 
   it.skip("should not throw error when executeWithSig setting permission", async () => {
     const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
-    const deadline = (await getBlockTimestamp()) + 100n;
     const state = await client.ipAccount.getIpAccountNonce(ipId);
     const expectedState = state + 1n;
     const signature = await account.signTypedData({
@@ -81,7 +80,7 @@ describe("Ip Account functions", () => {
         value: BigInt(0),
         data: data,
         nonce: expectedState,
-        deadline: BigInt(deadline),
+        deadline: BigInt(1000n),
       },
     });
     const response = await client.ipAccount.executeWithSig({
@@ -89,7 +88,7 @@ describe("Ip Account functions", () => {
       value: 0,
       to: permissionAddress,
       data: data,
-      deadline: deadline,
+      deadline: 1000n,
       signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
       signature: signature,
       txOptions: {

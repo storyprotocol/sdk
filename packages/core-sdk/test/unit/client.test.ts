@@ -12,10 +12,12 @@ import {
 } from "../../src";
 import { StoryAPIClient } from "../../src/clients/storyAPI";
 import { RoyaltyClient } from "../../src/resources/royalty";
+import { sepoliaChainId } from "../integration/utils/util";
 const rpc = "http://127.0.0.1:8545";
-describe("Test StoryClient", function () {
-  describe("Test constructor", function () {
-    it("should succeed when passing in default params", function () {
+
+describe("Test StoryClient", () => {
+  describe("Test constructor", () => {
+    it("should succeed when passing in default params", () => {
       const client = StoryClient.newClient({
         transport: http(rpc),
         account: privateKeyToAccount(generatePrivateKey()),
@@ -23,7 +25,7 @@ describe("Test StoryClient", function () {
       expect(client).to.be.instanceOf(StoryClient);
     });
 
-    it("should throw transport error when transport field is missing", function () {
+    it("should throw transport error when transport field is missing", () => {
       expect(() => {
         StoryClient.newClient({
           transport: null as any as Transport,
@@ -32,7 +34,7 @@ describe("Test StoryClient", function () {
       }).to.throw("transport is null, please pass in a valid RPC Provider URL as the transport.");
     });
 
-    it("should throw error when not specify a wallet or account", function () {
+    it("should throw error when not specify a wallet or account", () => {
       expect(() => {
         StoryClient.newClient({
           transport: http(rpc),
@@ -40,7 +42,7 @@ describe("Test StoryClient", function () {
       }).to.throw("must specify a wallet or account");
     });
 
-    it("should succeed when passing in wallet", function () {
+    it("should succeed when passing in wallet", () => {
       const client = StoryClient.newClient({
         transport: http(rpc),
         wallet: createWalletClient({
@@ -74,7 +76,7 @@ describe("Test StoryClient", function () {
     });
   });
 
-  describe("Test getters", function () {
+  describe("Test getters", () => {
     const account = privateKeyToAccount(generatePrivateKey());
     const transport = http(rpc);
     const config: StoryConfig = {
@@ -100,7 +102,7 @@ describe("Test StoryClient", function () {
     });
 
     it("should return client permission", () => {
-      const permission = new PermissionClient(rpcClient, wallet);
+      const permission = new PermissionClient(rpcClient, wallet, "sepolia");
       expect(client.permission).to.not.equal(null);
       expect(client.permission).to.not.equal(undefined);
     });

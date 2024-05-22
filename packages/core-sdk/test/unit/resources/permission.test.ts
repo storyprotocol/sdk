@@ -1,9 +1,8 @@
 import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { PermissionClient, AddressZero, SupportedChainIds } from "../../../src";
+import { PermissionClient, AddressZero } from "../../../src";
 import { PublicClient, WalletClient, Account, LocalAccount } from "viem";
-import { sepoliaChainId } from "../../integration/utils/util";
 import { AccessPermission } from "../../../src/types/resources/permission";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
@@ -18,7 +17,7 @@ describe("Test Permission", () => {
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
-    permissionClient = new PermissionClient(rpcMock, walletMock, sepoliaChainId);
+    permissionClient = new PermissionClient(rpcMock, walletMock, "sepolia");
     IpAccountImplClient.prototype.state = sinon.stub().resolves(1n);
     walletMock.account.signTypedData = sinon
       .stub()
@@ -188,7 +187,7 @@ describe("Test Permission", () => {
 
     it("should account error when call createSetPermissionSignature given account is not instance of local account", async () => {
       walletMock.account = createMock<Account>();
-      permissionClient = new PermissionClient(rpcMock, walletMock, sepoliaChainId);
+      permissionClient = new PermissionClient(rpcMock, walletMock, "11155111");
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       try {

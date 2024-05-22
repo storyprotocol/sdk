@@ -10,12 +10,12 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 
-describe("Test RoyaltyClient", function () {
+describe("Test RoyaltyClient", () => {
   let royaltyClient: RoyaltyClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
 
-  beforeEach(function () {
+  beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<Account>();
@@ -25,12 +25,12 @@ describe("Test RoyaltyClient", function () {
     sinon.stub();
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sinon.restore();
   });
 
-  describe("Test royaltyClient.collectRoyaltyTokens", async function () {
-    it("should throw parentIpId error when call collectRoyaltyTokens given parentIpId is not registered", async function () {
+  describe("Test royaltyClient.collectRoyaltyTokens", async () => {
+    it("should throw parentIpId error when call collectRoyaltyTokens given parentIpId is not registered", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
@@ -45,7 +45,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should throw royaltyVaultIpId error when call collectRoyaltyTokens given royaltyVaultIpId is not registered", async function () {
+    it("should throw royaltyVaultIpId error when call collectRoyaltyTokens given royaltyVaultIpId is not registered", async () => {
       sinon
         .stub(royaltyClient.ipAssetRegistryClient, "isRegistered")
         .onFirstCall()
@@ -65,7 +65,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should throw royaltyVaultAddress error when call collectRoyaltyTokens given royalty vault address is empty", async function () {
+    it("should throw royaltyVaultAddress error when call collectRoyaltyTokens given royalty vault address is empty", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -83,7 +83,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should throw royaltyVaultAddress error when call collectRoyaltyTokens given royalty vault address is 0x", async function () {
+    it("should throw royaltyVaultAddress error when call collectRoyaltyTokens given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -101,7 +101,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should return txHash when call collectRoyaltyTokens given correct args", async function () {
+    it("should return txHash when call collectRoyaltyTokens given correct args", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -122,7 +122,7 @@ describe("Test RoyaltyClient", function () {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should return txHash when call collectRoyaltyTokens given given correct args and waitForTransaction is true", async function () {
+    it("should return txHash when call collectRoyaltyTokens given given correct args and waitForTransaction is true", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -151,8 +151,8 @@ describe("Test RoyaltyClient", function () {
     });
   });
 
-  describe("Test royaltyClient.payRoyaltyOnBehalf", async function () {
-    it("should throw receiverIpId error when call payRoyaltyOnBehalf given receiverIpId is not registered", async function () {
+  describe("Test royaltyClient.payRoyaltyOnBehalf", async () => {
+    it("should throw receiverIpId error when call payRoyaltyOnBehalf given receiverIpId is not registered", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
@@ -169,7 +169,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should throw payerIpId error when call payRoyaltyOnBehalf given payerIpId is not registered", async function () {
+    it("should throw payerIpId error when call payRoyaltyOnBehalf given payerIpId is not registered", async () => {
       sinon
         .stub(royaltyClient.ipAssetRegistryClient, "isRegistered")
         .onFirstCall()
@@ -191,7 +191,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should return txHash when call payRoyaltyOnBehalf given correct args", async function () {
+    it("should return txHash when call payRoyaltyOnBehalf given correct args", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalf").resolves(txHash);
 
@@ -205,7 +205,7 @@ describe("Test RoyaltyClient", function () {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should return txHash when call payRoyaltyOnBehalf given given correct args and waitForTransaction is true", async function () {
+    it("should return txHash when call payRoyaltyOnBehalf given given correct args and waitForTransaction is true", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalf").resolves(txHash);
 
@@ -221,8 +221,8 @@ describe("Test RoyaltyClient", function () {
     });
   });
 
-  describe("Test royaltyClient.claimableRevenue", async function () {
-    it("should throw royaltyVaultIpId error when call claimableRevenue given royaltyVaultIpId is not registered", async function () {
+  describe("Test royaltyClient.claimableRevenue", async () => {
+    it("should throw royaltyVaultIpId error when call claimableRevenue given royaltyVaultIpId is not registered", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
@@ -239,7 +239,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should throw royaltyVaultAddress error when call claimableRevenue given royalty vault address is 0x", async function () {
+    it("should throw royaltyVaultAddress error when call claimableRevenue given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -259,7 +259,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should return txHash when call claimableRevenue given correct args", async function () {
+    it("should return txHash when call claimableRevenue given correct args", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -282,8 +282,8 @@ describe("Test RoyaltyClient", function () {
     });
   });
 
-  describe("Test royaltyClient.claimRevenue", async function () {
-    it("should throw royaltyVaultIpId error when call claimRevenue given royaltyVaultIpId is not registered", async function () {
+  describe("Test royaltyClient.claimRevenue", async () => {
+    it("should throw royaltyVaultIpId error when call claimRevenue given royaltyVaultIpId is not registered", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
@@ -300,7 +300,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should throw royaltyVaultAddress error when call claimRevenue given royalty vault address is 0x", async function () {
+    it("should throw royaltyVaultAddress error when call claimRevenue given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -320,7 +320,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should return txHash when call claimRevenue given correct args", async function () {
+    it("should return txHash when call claimRevenue given correct args", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -341,7 +341,7 @@ describe("Test RoyaltyClient", function () {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should return txHash when call claimRevenue given correct args and waitForTransaction is true by ip account", async function () {
+    it("should return txHash when call claimRevenue given correct args and waitForTransaction is true by ip account", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -376,7 +376,7 @@ describe("Test RoyaltyClient", function () {
       expect(result.claimableToken).equals(1);
     });
 
-    it("should return txHash when call claimRevenue given correct args and waitForTransaction is true by EOA", async function () {
+    it("should return txHash when call claimRevenue given correct args and waitForTransaction is true by EOA", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -411,8 +411,8 @@ describe("Test RoyaltyClient", function () {
     });
   });
 
-  describe("Test royaltyClient.snapshot", async function () {
-    it("should throw royaltyVaultIpId error when call snapshot given royaltyVaultIpId is not registered", async function () {
+  describe("Test royaltyClient.snapshot", async () => {
+    it("should throw royaltyVaultIpId error when call snapshot given royaltyVaultIpId is not registered", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
@@ -426,7 +426,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should throw royaltyVaultAddress error when call snapshot given royalty vault address is 0x", async function () {
+    it("should throw royaltyVaultAddress error when call snapshot given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -443,7 +443,7 @@ describe("Test RoyaltyClient", function () {
       }
     });
 
-    it("should return txHash when call snapshot given correct args", async function () {
+    it("should return txHash when call snapshot given correct args", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
@@ -462,7 +462,7 @@ describe("Test RoyaltyClient", function () {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should return txHash when call snapshot given correct args and waitForTransaction is true", async function () {
+    it("should return txHash when call snapshot given correct args and waitForTransaction is true", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
