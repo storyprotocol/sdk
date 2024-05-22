@@ -1,20 +1,23 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
-import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
-import { Hex, PublicClient, createPublicClient, encodeFunctionData, getAddress, http } from "viem";
+import {
+  MockERC721,
+  getBlockTimestamp,
+  getStoryClientInSepolia,
+  getTokenId,
+  sepoliaChainId,
+} from "./utils/util";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import { accessControllerAbi, accessControllerAddress } from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
-import { chainStringToViemChain } from "../../src/utils/utils";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const sepoliaChainId = 11155111;
 
 describe("Ip Account functions", () => {
   let client: StoryClient;
   let ipId: Hex;
   let data: Hex;
-  let publicClient: PublicClient;
   const permissionAddress = accessControllerAddress[sepoliaChainId];
 
   before(async function () {
@@ -33,15 +36,11 @@ describe("Ip Account functions", () => {
       functionName: "setPermission",
       args: [
         getAddress(ipId),
-        getAddress(process.env.TEST_WALLET_ADDRESS as Hex),
-        getAddress("0x2ac240293f12032E103458451dE8A8096c5A72E8"),
-        "0x00000000" as Hex,
+        getAddress(process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex),
+        getAddress("0xDa498A3f7c8a88cb72201138C366bE3778dB9575"),
+        toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         1,
       ],
-    });
-    publicClient = await createPublicClient({
-      chain: chainStringToViemChain("sepolia"),
-      transport: http(process.env.SEPOLIA_RPC_PROVIDER_URL),
     });
   });
 
@@ -98,7 +97,6 @@ describe("Ip Account functions", () => {
       },
     });
 
-    expect(response.txHash).to.be.a("string");
-    expect(response.txHash).not.empty;
+    expect(response.txHash).to.be.a("string").and.not.empty;
   });
 });

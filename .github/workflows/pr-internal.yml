@@ -1,20 +1,25 @@
-name: External PR
+name: Workflow for internal PRs
 
-on: 
-  pull_request_target:
-    types: [opened, synchronize]
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
 
 jobs:
-  authorize:
-    if: github.event.pull_request.head.repo.full_name != github.repository
-    environment: 'external'
-    runs-on: ubuntu-latest
-    steps:
-      - run: true
+
+  Timestamp:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
+  
   build_and_test:
-    needs: authorize
-    uses: ./.github/workflows/build-and-test.yaml 
-    with: 
+    needs: [Timestamp]
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-test-workflow.yml@main
+    with:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: 'beta-sepolia'
     secrets:

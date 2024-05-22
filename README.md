@@ -39,10 +39,10 @@ The SDK supports using `viem` for initiating SDK client. Create a typescript fil
 > :information-source: Make sure to have WALLET_PRIVATE_KEY set up in your .env file.
 
 ```typescript index.ts
-import { privateKeyToAccount } from 'viem/accounts';
+import { privateKeyToAccount } from "viem/accounts";
 
-const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || '0x';
-const account = privateKeyToAccount(WALLET_PRIVATE_KEY as `0x${string}`);
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
+const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
 ```
 
 The preceding code created the `account` object for creating the SDK client.
@@ -54,7 +54,7 @@ To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-pr
 > :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Sepolia network with `RPC_PROVIDER_URL=https://rpc.ankr.com/eth_sepolia`.
 
 ```typescript index.ts
-import { StoryClient, StoryConfig } from '@story-protocol/core-sdk';
+import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
 
 const config: StoryConfig = {
   transport: http(process.env.RPC_PROVIDER_URL),
@@ -100,9 +100,7 @@ In your testing environment:
 
 ## Steps to pull and compile latest Protocol Core & Periphery v1 Smart Contract ABIs (Currently pulls from the protocol-core-v1 and protocol-periphery-v1 `release-v1.x.x` branch)
 
-Must have `solc` installed (https://docs.soliditylang.org/en/v0.8.23/installing-solidity.html)
-
-- run `make compile_contracts`
+- run `cd packages/wagmi-generator && npm run generate`
 
 ## Release
 

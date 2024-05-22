@@ -42,7 +42,7 @@ The SDK supports using `viem` for initiating SDK client. Create a typescript fil
 import { privateKeyToAccount } from "viem/accounts";
 
 const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
-const account = privateKeyToAccount(WALLET_PRIVATE_KEY as `0x${string}`);
+const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
 ```
 
 The preceding code created the `account` object for creating the SDK client.
@@ -100,9 +100,7 @@ In your testing environment:
 
 ## Steps to pull and compile latest smart contract ABIs (Currently pulls from the protocol-contracts `dev` branch)
 
-Must have `solc` installed (https://docs.soliditylang.org/en/v0.8.9/installing-solidity.html)
-
-- run `make compile_contracts`
+- run `cd packages/wagmi-generator && npm run generate`
 
 ## Release
 

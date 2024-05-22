@@ -154,7 +154,7 @@ describe("Get License Terms By Type", () => {
       expect(result).to.deep.contain({
         commercialAttribution: true,
         commercialRevCelling: 0n,
-        commercialRevShare: 100,
+        commercialRevShare: 100000000,
         commercialUse: true,
         commercializerChecker: "0x0000000000000000000000000000000000000000",
         commercializerCheckerData: "0x0000000000000000000000000000000000000000",
@@ -169,6 +169,39 @@ describe("Get License Terms By Type", () => {
         royaltyPolicy: "0x0000000000000000000000000000000000000000",
         transferable: true,
         uri: "",
+      });
+    });
+    it("it throw commercialRevShare error  when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is less than 0 ", async () => {
+      expect(() =>
+        getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
+          royaltyPolicyLAPAddress: zeroAddress,
+          mintingFee: "1",
+          currency: zeroAddress,
+          commercialRevShare: -8,
+        }),
+      ).to.throw(`commercialRevShare should be between 0 and 100.`);
+    });
+
+    it("it throw commercialRevShare error  when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is greater than 100", async () => {
+      expect(() =>
+        getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
+          royaltyPolicyLAPAddress: zeroAddress,
+          mintingFee: "1",
+          currency: zeroAddress,
+          commercialRevShare: 105,
+        }),
+      ).to.throw(`commercialRevShare should be between 0 and 100.`);
+    });
+
+    it("it get commercialRevShare correct value when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is 10", async () => {
+      const result = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
+        royaltyPolicyLAPAddress: zeroAddress,
+        mintingFee: "1",
+        currency: zeroAddress,
+        commercialRevShare: 10,
+      });
+      expect(result).to.contains({
+        commercialRevShare: 10000000,
       });
     });
   });
