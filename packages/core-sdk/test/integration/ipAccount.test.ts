@@ -3,12 +3,16 @@ import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
 import { MockERC721, getStoryClientInSepolia, getTokenId, sepoliaChainId } from "./utils/util";
 import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
-import { accessControllerAbi, accessControllerAddress } from "../../src/abi/generated";
+import {
+  accessControllerAbi,
+  accessControllerAddress,
+  coreMetadataModuleAddress,
+} from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
 import { getDeadline, getPermissionSignature } from "../../src/utils/sign";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-
+const coreMetadataModule = coreMetadataModuleAddress[sepoliaChainId];
 describe("Ip Account functions", () => {
   let client: StoryClient;
   let ipId: Hex;
@@ -32,7 +36,7 @@ describe("Ip Account functions", () => {
       args: [
         getAddress(ipId),
         getAddress(process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex),
-        getAddress("0xDa498A3f7c8a88cb72201138C366bE3778dB9575"),
+        getAddress(coreMetadataModule),
         toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         1,
       ],
