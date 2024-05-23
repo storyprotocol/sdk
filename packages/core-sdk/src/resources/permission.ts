@@ -72,28 +72,13 @@ export class PermissionClient {
   public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
       await this.checkIsRegistered(request.ipId);
-      const ipAccountClient = new IpAccountImplClient(
-        this.rpcClient,
-        this.wallet,
-        getAddress(request.ipId),
-      );
-
-      const txHash = await ipAccountClient.execute({
-        to: this.accessControllerClient.address,
-        value: BigInt(0),
-        data: encodeFunctionData({
-          abi: accessControllerAbi,
-          functionName: "setPermission",
-          args: [
-            getAddress(request.ipId),
-            getAddress(request.signer),
-            getAddress(request.to),
-            request.func ? toFunctionSelector(request.func) : defaultFunctionSelector,
-            request.permission,
-          ],
-        }),
+      const txHash = await this.accessControllerClient.setPermission({
+        ipAccount: request.ipId,
+        signer: request.signer,
+        to: request.to,
+        func: request.func ? toFunctionSelector(request.func) : defaultFunctionSelector,
+        permission: request.permission,
       });
-
       if (request.txOptions?.waitForTransaction) {
         await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         return { txHash: txHash, success: true };
@@ -179,22 +164,11 @@ export class PermissionClient {
   ): Promise<SetPermissionsResponse> {
     try {
       await this.checkIsRegistered(request.ipId);
-      const ipAccountClient = new IpAccountImplClient(
-        this.rpcClient,
-        this.wallet,
-        getAddress(request.ipId),
-      );
-
-      const txHash = await ipAccountClient.execute({
-        to: this.accessControllerClient.address,
-        value: BigInt(0),
-        data: encodeFunctionData({
-          abi: accessControllerAbi,
-          functionName: "setAllPermissions",
-          args: [getAddress(request.ipId), getAddress(request.signer), request.permission],
-        }),
+      const txHash = await this.accessControllerClient.setAllPermissions({
+        ipAccount: request.ipId,
+        signer: request.signer,
+        permission: request.permission,
       });
-
       if (request.txOptions?.waitForTransaction) {
         await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         return { txHash: txHash, success: true };

@@ -53,7 +53,7 @@ describe("Test Permission", () => {
     it("should return hash when call setPermission given ipId is registered ", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
         ipId: AddressZero,
@@ -68,7 +68,7 @@ describe("Test Permission", () => {
     it("should return txHash and success when call setPermission given correct args and waitForTransaction of true", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
         ipId: AddressZero,
@@ -106,7 +106,7 @@ describe("Test Permission", () => {
     it("should return hash when call setAllPermissions given ipId is registered ", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
         ipId: AddressZero,
@@ -118,7 +118,7 @@ describe("Test Permission", () => {
 
     it("should return txHash and success when call setAllPermissions given correct args and waitForTransaction of true", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
         ipId: AddressZero,

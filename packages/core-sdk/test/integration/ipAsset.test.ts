@@ -41,7 +41,6 @@ describe("IP Asset Functions ", () => {
       if (waitForTransaction) {
         expect(response.ipId).to.be.a("string").and.not.empty;
         childIpId = response.ipId;
-        const isRegistered = await client.ipAsset.isRegistered(childIpId);
       }
     });
 
