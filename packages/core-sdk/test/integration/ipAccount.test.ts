@@ -2,7 +2,7 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
 import { MockERC721, getStoryClientInSepolia, getTokenId, sepoliaChainId } from "./utils/util";
-import { Hex, LocalAccount, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import { accessControllerAbi, accessControllerAddress } from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
 import { getDeadline, getPermissionSignature } from "../../src/utils/sign";
