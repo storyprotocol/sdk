@@ -1,16 +1,11 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
-import {
-  MockERC721,
-  getBlockTimestamp,
-  getStoryClientInSepolia,
-  getTokenId,
-  sepoliaChainId,
-} from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
+import { MockERC721, getStoryClientInSepolia, getTokenId, sepoliaChainId } from "./utils/util";
+import { Hex, LocalAccount, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import { accessControllerAbi, accessControllerAddress } from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
+import { getDeadline, getPermissionSignature } from "../../src/utils/sign";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -54,41 +49,25 @@ describe("Ip Account functions", () => {
     expect(response.txHash).to.be.a("string").and.not.empty;
   });
 
-  it.skip("should not throw error when executeWithSig setting permission", async () => {
+  it("should not throw error when executeWithSig setting permission", async () => {
     const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
     const state = await client.ipAccount.getIpAccountNonce(ipId);
     const expectedState = state + 1n;
-    const signature = await account.signTypedData({
-      domain: {
-        name: "Story Protocol IP Account",
-        version: "1",
-        chainId: sepoliaChainId,
-        verifyingContract: ipId,
-      },
-      types: {
-        Execute: [
-          { name: "to", type: "address" },
-          { name: "value", type: "uint256" },
-          { name: "data", type: "bytes" },
-          { name: "nonce", type: "uint256" },
-          { name: "deadline", type: "uint256" },
-        ],
-      },
-      primaryType: "Execute",
-      message: {
-        to: permissionAddress,
-        value: BigInt(0),
-        data: data,
-        nonce: expectedState,
-        deadline: BigInt(1000n),
-      },
+    const deadline = getDeadline(1000n);
+    const signature = await getPermissionSignature({
+      ipId,
+      data,
+      nonce: expectedState,
+      account,
+      chainId: BigInt(sepoliaChainId),
+      deadline: deadline,
     });
     const response = await client.ipAccount.executeWithSig({
       accountAddress: ipId,
       value: 0,
       to: permissionAddress,
       data: data,
-      deadline: 1000n,
+      deadline: deadline,
       signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
       signature: signature,
       txOptions: {

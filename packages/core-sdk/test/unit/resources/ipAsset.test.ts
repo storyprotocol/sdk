@@ -17,7 +17,6 @@ describe("Test IpAssetClient", () => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
-    accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     walletMock.account.signTypedData = sinon
       .stub()
@@ -77,6 +76,9 @@ describe("Test IpAssetClient", () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
       ipAssetClient = new IPAssetClient(rpcMock, walletMock, "sepolia");
+      (ipAssetClient.spgClient as any).address = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+      (ipAssetClient.coreMetadataModuleClient as any).address =
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");

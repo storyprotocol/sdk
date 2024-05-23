@@ -301,4 +301,71 @@ describe("Test Permission", () => {
       expect(res.success).to.equal(true);
     });
   });
+
+  describe("Test permission.createSetBatchPermissionsSignature", async () => {
+    it("should throw IpId error when call createSetBatchPermissionsSignature given ipId is not registered ", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await permissionClient.createBatchPermissionSignature({
+          ipId: AddressZero,
+          permissions: [
+            {
+              ipId: AddressZero,
+              signer: AddressZero,
+              to: AddressZero,
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          "Failed to create batch permission signature: IP id with 0x0000000000000000000000000000000000000000 is not registered.",
+        );
+      }
+    });
+
+    it("should return hash when call createSetBatchPermissionsSignature given correct args", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+
+      const res = await permissionClient.createBatchPermissionSignature({
+        ipId: AddressZero,
+        permissions: [
+          {
+            ipId: AddressZero,
+            signer: AddressZero,
+            to: AddressZero,
+            permission: AccessPermission.ALLOW,
+          },
+        ],
+      });
+      expect(res.txHash).to.equal(txHash);
+      expect(res.success).to.equal(undefined);
+    });
+
+    it("should return txHash and success when call createSetBatchPermissionsSignature given correct args and waitForTransaction of true", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+
+      const res = await permissionClient.createBatchPermissionSignature({
+        ipId: AddressZero,
+        deadline: 2000,
+        permissions: [
+          {
+            ipId: AddressZero,
+            signer: AddressZero,
+            to: AddressZero,
+            permission: AccessPermission.ALLOW,
+            func: "function setAll(address,string,bytes32,bytes32)",
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(res.txHash).to.equal(txHash);
+      expect(res.success).to.equal(true);
+    });
+  });
 });

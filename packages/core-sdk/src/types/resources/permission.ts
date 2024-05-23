@@ -43,3 +43,8 @@ export type SetBatchPermissionsRequest = {
   permissions: Omit<SetPermissionsRequest, "txOptions">[];
   txOptions?: TxOptions;
 };
+
+export type CreateBatchPermissionSignatureRequest = {
+  ipId: Address;
+  deadline?: bigint | number | string;
+} & SetBatchPermissionsRequest;

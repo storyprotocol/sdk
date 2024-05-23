@@ -45,6 +45,7 @@ import {
   accessControllerAbi,
 } from "../abi/generated";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
+import { getDeadline, getPermissionSignature } from "../utils/sign";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -122,13 +123,24 @@ export class IPAssetClient {
           metadataHash: request.metadata.metadataHash || object.metadata.metadataHash,
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
-        const calculatedDeadline = this.getDeadline(request.deadline);
-        const signature = await this.getPermissionSignatureForSpg({
+        const calculatedDeadline = getDeadline(request.deadline);
+        const signature = await getPermissionSignature({
           ipId: ipIdAddress,
-          moduleAddress: this.coreMetadataModuleClient.address,
-          selector: "function setAll(address,string,bytes32,bytes32)",
           deadline: calculatedDeadline,
-          nonce: BigInt(1),
+          nonce: 1,
+          account: this.wallet.account as LocalAccount,
+          chainId: chain[this.chainId],
+          data: encodeFunctionData({
+            abi: accessControllerAbi,
+            functionName: "setPermission",
+            args: [
+              getAddress(ipIdAddress),
+              getAddress(this.spgClient.address),
+              getAddress(this.coreMetadataModuleClient.address),
+              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
+              1,
+            ],
+          }),
         });
         object.sigMetadata = {
           signer: getAddress(this.wallet.account!.address),
@@ -376,13 +388,24 @@ export class IPAssetClient {
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
-      const calculatedDeadline = this.getDeadline(request.deadline);
-      const sigAttachSignature = await this.getPermissionSignatureForSpg({
+      const calculatedDeadline = getDeadline(request.deadline);
+      const sigAttachSignature = await getPermissionSignature({
         ipId,
-        moduleAddress: this.licensingModuleClient.address,
         deadline: calculatedDeadline,
-        selector: "function attachLicenseTerms(address,address,uint256)",
-        nonce: BigInt(2),
+        nonce: 2,
+        account: this.wallet.account as LocalAccount,
+        chainId: chain[this.chainId],
+        data: encodeFunctionData({
+          abi: accessControllerAbi,
+          functionName: "setPermission",
+          args: [
+            getAddress(ipId),
+            getAddress(this.spgClient.address),
+            getAddress(this.licensingModuleClient.address),
+            toFunctionSelector("function attachLicenseTerms(address,address,uint256)"),
+            1,
+          ],
+        }),
       });
       const object: SpgRegisterIpAndAttachPilTermsRequest = {
         nftContract: getAddress(request.nftContract),
@@ -416,12 +439,23 @@ export class IPAssetClient {
           metadataHash: request.metadata.metadataHash || object.metadata.metadataHash,
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
-        const signature = await this.getPermissionSignatureForSpg({
+        const signature = await getPermissionSignature({
           ipId,
-          moduleAddress: this.coreMetadataModuleClient.address,
           deadline: calculatedDeadline,
-          selector: "function setAll(address,string,bytes32,bytes32)",
-          nonce: BigInt(1),
+          nonce: 1,
+          account: this.wallet.account as LocalAccount,
+          chainId: chain[this.chainId],
+          data: encodeFunctionData({
+            abi: accessControllerAbi,
+            functionName: "setPermission",
+            args: [
+              getAddress(ipId),
+              getAddress(this.spgClient.address),
+              getAddress(this.coreMetadataModuleClient.address),
+              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
+              1,
+            ],
+          }),
         });
         object.sigMetadata = {
           signer: getAddress(this.wallet.account!.address),
@@ -487,13 +521,27 @@ export class IPAssetClient {
           );
         }
       }
-      const calculatedDeadline = this.getDeadline(request.deadline);
-      const sigRegisterSignature = await this.getPermissionSignatureForSpg({
+      const calculatedDeadline = getDeadline(request.deadline);
+
+      const sigRegisterSignature = await getPermissionSignature({
         ipId,
-        moduleAddress: this.licensingModuleClient.address,
         deadline: calculatedDeadline,
-        selector: "function registerDerivative(address,address[],uint256[],address,bytes)",
-        nonce: BigInt(2),
+        nonce: 2,
+        account: this.wallet.account as LocalAccount,
+        chainId: chain[this.chainId],
+        data: encodeFunctionData({
+          abi: accessControllerAbi,
+          functionName: "setPermission",
+          args: [
+            getAddress(ipId),
+            getAddress(this.spgClient.address),
+            getAddress(this.licensingModuleClient.address),
+            toFunctionSelector(
+              "function registerDerivative(address,address[],uint256[],address,bytes)",
+            ),
+            1,
+          ],
+        }),
       });
       const object: SpgRegisterIpAndMakeDerivativeRequest = {
         nftContract: getAddress(request.nftContract),
@@ -533,12 +581,23 @@ export class IPAssetClient {
           metadataHash: request.metadata.metadataHash || object.metadata.metadataHash,
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
-        const signature = await this.getPermissionSignatureForSpg({
+        const signature = await getPermissionSignature({
           ipId,
-          moduleAddress: this.coreMetadataModuleClient.address,
           deadline: calculatedDeadline,
-          selector: "function setAll(address,string,bytes32,bytes32)",
-          nonce: BigInt(1),
+          nonce: 1,
+          account: this.wallet.account as LocalAccount,
+          chainId: chain[this.chainId],
+          data: encodeFunctionData({
+            abi: accessControllerAbi,
+            functionName: "setPermission",
+            args: [
+              getAddress(ipId),
+              getAddress(this.spgClient.address),
+              getAddress(this.coreMetadataModuleClient.address),
+              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
+              1,
+            ],
+          }),
         });
         object.sigMetadata = {
           signer: getAddress(this.wallet.account!.address),
@@ -577,62 +636,4 @@ export class IPAssetClient {
   private async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId) });
   }
-
-  private getPermissionSignatureForSpg = async (params: {
-    ipId: Address;
-    moduleAddress: Address;
-    deadline: bigint;
-    selector: string;
-    nonce: bigint;
-  }): Promise<Hex> => {
-    const { ipId, moduleAddress, deadline, selector, nonce } = params;
-    const account = this.wallet.account as LocalAccount;
-
-    if (!account.signTypedData) {
-      throw new Error("The account does not support signTypedData, Please use a local account.");
-    }
-    return await account.signTypedData({
-      domain: {
-        name: "Story Protocol IP Account",
-        version: "1",
-        chainId: Number(chain[this.chainId]),
-        verifyingContract: ipId,
-      },
-      types: {
-        Execute: [
-          { name: "to", type: "address" },
-          { name: "value", type: "uint256" },
-          { name: "data", type: "bytes" },
-          { name: "nonce", type: "uint256" },
-          { name: "deadline", type: "uint256" },
-        ],
-      },
-      primaryType: "Execute",
-      message: {
-        to: getAddress(this.accessControllerClient.address),
-        value: BigInt(0),
-        data: encodeFunctionData({
-          abi: accessControllerAbi,
-          functionName: "setPermission",
-          args: [
-            getAddress(ipId),
-            getAddress(this.spgClient.address),
-            getAddress(moduleAddress),
-            toFunctionSelector(selector),
-            1,
-          ],
-        }),
-        nonce: BigInt(nonce),
-        deadline,
-      },
-    });
-  };
-
-  private getDeadline = (deadline?: bigint | number | string): bigint => {
-    if (deadline && (isNaN(Number(deadline)) || BigInt(deadline) < 0n)) {
-      throw new Error("Invalid deadline value.");
-    }
-    const timestamp = BigInt(Date.now());
-    return deadline ? timestamp + BigInt(deadline) : timestamp + 1000n;
-  };
 }
