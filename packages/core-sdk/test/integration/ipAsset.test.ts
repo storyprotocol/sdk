@@ -115,7 +115,7 @@ describe("IP Asset Functions ", () => {
       const response = await expect(
         client.ipAsset.registerDerivativeWithLicenseTokens({
           childIpId: ipId,
-          licenseTokenIds: [mintLicenseTokensResult.licenseTokenId!],
+          licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
           txOptions: {
             waitForTransaction: true,
           },
