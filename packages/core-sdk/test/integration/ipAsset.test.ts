@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
 import { Hex, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
@@ -10,11 +10,11 @@ const expect = chai.expect;
 
 describe("IP Asset Functions ", () => {
   let client: StoryClient;
-  before(async function () {
+  before(async () => {
     client = getStoryClientInSepolia();
   });
 
-  describe("Create IP Asset", async function () {
+  describe("Create IP Asset", async () => {
     let parentIpId: Hex;
     let childIpId: Hex;
     let noCommercialLicenseTermsId: bigint;
@@ -227,7 +227,6 @@ describe("IP Asset Functions ", () => {
             waitForTransaction: true,
           },
         });
-      const deadline = (await getBlockTimestamp()) + 1000n;
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
         tokenId: tokenChildId!,
@@ -239,7 +238,7 @@ describe("IP Asset Functions ", () => {
           metadataURI: "test-uri",
           metadataHash: toHex("test-metadata-hash", { size: 32 }),
         },
-        deadline: deadline,
+        deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
         },

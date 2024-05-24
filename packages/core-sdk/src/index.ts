@@ -49,8 +49,15 @@ export type {
   RoyaltyVaultAddress,
 } from "./types/resources/royalty";
 
-export type { SetPermissionsRequest, SetPermissionsResponse } from "./types/resources/permission";
-
+export type {
+  SetPermissionsRequest,
+  SetPermissionsResponse,
+  CreateSetPermissionSignatureRequest,
+  SetAllPermissionsRequest,
+  SetBatchPermissionsRequest,
+  CreateBatchPermissionSignatureRequest,
+} from "./types/resources/permission";
+export { AccessPermission } from "./types/resources/permission";
 export type {
   Dispute,
   RaiseDisputeRequest,

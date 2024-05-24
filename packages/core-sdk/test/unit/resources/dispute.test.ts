@@ -8,7 +8,7 @@ import { DisputeModuleClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 
-describe("Test DisputeClient", function () {
+describe("Test DisputeClient", () => {
   let disputeClient: DisputeClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
@@ -17,17 +17,17 @@ describe("Test DisputeClient", function () {
     txHash: "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb",
   };
 
-  beforeEach(function () {
+  beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     disputeClient = new DisputeClient(rpcMock, walletMock);
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sinon.restore();
   });
 
-  describe("Should be able to", async function () {
+  describe("Should be able to", async () => {
     const targetIpId =
       "0xa3028b46ff4aeba585ebfa1c241ad4a453b6f10dc7bc3d3ebaa9cecc680a6f71" as `0x${string}`;
     const arbitrationPolicy = "0xC6A1c49BCeeE2E512167d5c03e4753776477730b" as `0x${string}`;

@@ -7446,6 +7446,34 @@ export type AccessControllerPermissionSetEvent = {
 };
 
 /**
+ * AccessControllerSetAllPermissionsRequest
+ *
+ * @param ipAccount address
+ * @param signer address
+ * @param permission uint8
+ */
+export type AccessControllerSetAllPermissionsRequest = {
+  ipAccount: Address;
+  signer: Address;
+  permission: number;
+};
+
+/**
+ * AccessControllerSetBatchPermissionsRequest
+ *
+ * @param permissions tuple[]
+ */
+export type AccessControllerSetBatchPermissionsRequest = {
+  permissions: {
+    ipAccount: Address;
+    signer: Address;
+    to: Address;
+    func: Hex;
+    permission: number;
+  }[];
+};
+
+/**
  * AccessControllerSetPermissionRequest
  *
  * @param ipAccount address
@@ -7525,6 +7553,44 @@ export class AccessControllerClient extends AccessControllerEventClient {
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
     super(rpcClient, address);
     this.wallet = wallet;
+  }
+
+  /**
+   * method setAllPermissions for contract AccessController
+   *
+   * @param request AccessControllerSetAllPermissionsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAllPermissions(
+    request: AccessControllerSetAllPermissionsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: accessControllerAbi,
+      address: this.address,
+      functionName: "setAllPermissions",
+      account: this.wallet.account,
+      args: [request.ipAccount, request.signer, request.permission],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setBatchPermissions for contract AccessController
+   *
+   * @param request AccessControllerSetBatchPermissionsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setBatchPermissions(
+    request: AccessControllerSetBatchPermissionsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: accessControllerAbi,
+      address: this.address,
+      functionName: "setBatchPermissions",
+      account: this.wallet.account,
+      args: [request.permissions],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**

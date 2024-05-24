@@ -16,7 +16,7 @@ describe("Dispute Functions", () => {
   let disputeId: number;
   let ipIdB: Address;
 
-  before(async function () {
+  before(async () => {
     clientA = getStoryClientInSepolia();
     clientB = getStoryClientInSepolia(process.env.SEPOLIA_WALLET_PRIVATE_KEY2 as Address);
     const mockERC20 = new MockERC20();

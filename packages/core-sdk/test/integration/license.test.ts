@@ -11,11 +11,11 @@ const expect = chai.expect;
 describe("License Functions", () => {
   let client: StoryClient;
 
-  before(function () {
+  before(() => {
     client = getStoryClientInSepolia();
   });
-  describe("registering license with different types", async function () {
-    it("should not throw error when registering license with non commercial social remixing PIL", async function () {
+  describe("registering license with different types", async () => {
+    it("should not throw error when registering license with non commercial social remixing PIL", async () => {
       const result = await client.license.registerNonComSocialRemixingPIL({
         txOptions: {
           waitForTransaction: true,
@@ -24,7 +24,7 @@ describe("License Functions", () => {
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
-    it("should not throw error when registering license with commercial use", async function () {
+    it("should not throw error when registering license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         mintingFee: "1",
         currency: MockERC20.address,
@@ -35,7 +35,7 @@ describe("License Functions", () => {
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
-    it("should not throw error when registering license with commercial Remix use", async function () {
+    it("should not throw error when registering license with commercial Remix use", async () => {
       const result = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
         commercialRevShare: 100,
@@ -48,11 +48,11 @@ describe("License Functions", () => {
     });
   });
 
-  describe("attach License Terms and mint license tokens", async function () {
+  describe("attach License Terms and mint license tokens", async () => {
     let ipId: Hex;
     let licenseId: bigint;
     let tokenId;
-    before(async function () {
+    before(async () => {
       tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
         nftContract: MockERC721,
@@ -71,7 +71,7 @@ describe("License Functions", () => {
       licenseId = registerLicenseResult.licenseTermsId!;
     });
 
-    it("should not throw error when attach License Terms", async function () {
+    it("should not throw error when attach License Terms", async () => {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseId,
@@ -82,7 +82,7 @@ describe("License Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
 
-    it("should not throw error when minting license tokens", async function () {
+    it("should not throw error when minting license tokens", async () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
@@ -94,7 +94,7 @@ describe("License Functions", () => {
       expect(result.licenseTokenId).to.be.a("bigint");
     });
 
-    it("should not throw error when get license terms", async function () {
+    it("should not throw error when get license terms", async () => {
       const result = await client.license.getLicenseTerms(licenseId);
       expect(result).not.empty;
     });
