@@ -1,4 +1,4 @@
-import { PublicClient, getAddress, isAddress, maxUint32, zeroAddress } from "viem";
+import { PublicClient, isAddress, maxUint32, zeroAddress } from "viem";
 
 import { SimpleWalletClient, SpgClient } from "../abi/generated";
 import {
@@ -6,6 +6,7 @@ import {
   CreateNFTCollectionResponse,
 } from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
+import { getAddress } from "../utils/utils";
 
 export class NftClient {
   public spgClient: SpgClient;
@@ -49,7 +50,9 @@ export class NftClient {
         maxSupply: request.maxSupply ?? Number(maxUint32),
         mintFee: request.mintFee ?? 0n,
         mintFeeToken: request.mintFeeToken ?? zeroAddress,
-        owner: (request.owner && getAddress(request.owner)) || this.wallet.account!.address,
+        owner:
+          (request.owner && getAddress(request.owner, "request.owner")) ||
+          this.wallet.account!.address,
       });
 
       if (request.txOptions?.waitForTransaction) {

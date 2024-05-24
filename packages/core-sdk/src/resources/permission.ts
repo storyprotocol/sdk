@@ -1,11 +1,4 @@
-import {
-  PublicClient,
-  getAddress,
-  encodeFunctionData,
-  Address,
-  LocalAccount,
-  toFunctionSelector,
-} from "viem";
+import { PublicClient, encodeFunctionData, Address, LocalAccount, toFunctionSelector } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -25,7 +18,7 @@ import {
   SimpleWalletClient,
   SpgClient,
 } from "../abi/generated";
-import { chain } from "../utils/utils";
+import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { defaultFunctionSelector } from "../constants/common";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
@@ -115,8 +108,8 @@ export class PermissionClient {
         functionName: "setPermission",
         args: [
           ipId,
-          getAddress(signer),
-          getAddress(to),
+          getAddress(signer, "request.signer"),
+          getAddress(to, "request.to"),
           func ? toFunctionSelector(func) : defaultFunctionSelector,
           permission,
         ],
@@ -131,7 +124,7 @@ export class PermissionClient {
         account: this.wallet.account as LocalAccount,
       });
       const txHash = await ipAccountClient.executeWithSig({
-        to: getAddress(this.accessControllerClient.address),
+        to: getAddress(this.accessControllerClient.address, "accessControllerClientAddress"),
         value: BigInt(0),
         data,
         signer: signer,
@@ -267,10 +260,10 @@ export class PermissionClient {
         account: this.wallet.account as LocalAccount,
       });
       const txHash = await ipAccountClient.executeWithSig({
-        to: getAddress(this.accessControllerClient.address),
+        to: getAddress(this.accessControllerClient.address, "accessControllerAddress"),
         value: BigInt(0),
         data,
-        signer: getAddress(this.wallet.account!.address),
+        signer: getAddress(this.wallet.account!.address, "walletAccountAddress"),
         deadline: calculatedDeadline,
         signature,
       });
@@ -285,7 +278,9 @@ export class PermissionClient {
     }
   }
   private async checkIsRegistered(ipId: Address): Promise<void> {
-    const isRegistered = await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId) });
+    const isRegistered = await this.ipAssetRegistryClient.isRegistered({
+      id: getAddress(ipId, "ipId"),
+    });
     if (!isRegistered) {
       throw new Error(`IP id with ${ipId} is not registered.`);
     }

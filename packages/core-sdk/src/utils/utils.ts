@@ -9,6 +9,9 @@ import {
   Chain,
   ContractEventName,
   Hex,
+  isAddress,
+  checksumAddress,
+  Address,
 } from "viem";
 import { sepolia } from "viem/chains";
 
@@ -153,4 +156,13 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
 export const chain: { [key in SupportedChainIds]: bigint } = {
   sepolia: 11155111n,
   11155111: 11155111n,
+};
+
+export const getAddress = (address: string, name: string, chainId?: number): Address => {
+  if (!isAddress(address, { strict: false })) {
+    throw Error(
+      `${name} address is invalid: ${address}, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+    );
+  }
+  return checksumAddress(address, chainId);
 };
