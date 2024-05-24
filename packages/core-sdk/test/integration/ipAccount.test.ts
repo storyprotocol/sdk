@@ -57,7 +57,7 @@ describe("Ip Account functions", () => {
     const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
     const state = await client.ipAccount.getIpAccountNonce(ipId);
     const expectedState = state + 1n;
-    const deadline = getDeadline(1000n);
+    const deadline = getDeadline(60000n);
     const signature = await getPermissionSignature({
       ipId,
       data,

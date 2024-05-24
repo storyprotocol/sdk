@@ -61,6 +61,7 @@ describe("Permission Functions", () => {
       to: coreMetadataModule,
       func: "function setAll(address,string,bytes32,bytes32)",
       permission: AccessPermission.ALLOW,
+      deadline: 60000n,
       txOptions: {
         waitForTransaction: true,
       },
@@ -116,6 +117,7 @@ describe("Permission Functions", () => {
           func: "function freezeMetadata(address)",
         },
       ],
+      deadline: 60000n,
       txOptions: {
         waitForTransaction: true,
       },
