@@ -72,7 +72,7 @@ export type MintLicenseTokensRequest = {
 };
 
 export type MintLicenseTokensResponse = {
-  licenseTokenId?: bigint;
+  licenseTokenIds?: bigint[];
   txHash?: string;
 };
 

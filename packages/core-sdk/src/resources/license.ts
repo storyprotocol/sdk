@@ -219,7 +219,7 @@ export class LicenseClient {
    *   @param request.amount The amount of license tokens to mint.
    *   @param request.receiver The address of the receiver.
    *   @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional license token ID if waitForTxn is set to true.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional license token IDs if waitForTxn is set to true.
    * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
    */
   public async mintLicenseTokens(
@@ -252,11 +252,12 @@ export class LicenseClient {
           `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}.`,
         );
       }
+      const amount = BigInt(request.amount || 1);
       const txHash = await this.licensingModuleClient.mintLicenseTokens({
         licensorIpId: request.licensorIpId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: request.licenseTermsId,
-        amount: BigInt(request.amount || 1),
+        amount,
         receiver:
           (request.receiver && getAddress(request.receiver)) || this.wallet.account!.address,
         royaltyContext: zeroAddress,
@@ -264,11 +265,12 @@ export class LicenseClient {
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
-
-        return {
-          txHash: txHash,
-          licenseTokenId: targetLogs[0].startLicenseTokenId,
-        };
+        const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
+        const licenseTokenIds = [];
+        for (let i = 0; i < amount; i++) {
+          licenseTokenIds.push(startLicenseTokenId + BigInt(i));
+        }
+        return { txHash: txHash, licenseTokenIds: licenseTokenIds };
       } else {
         return { txHash: txHash };
       }
