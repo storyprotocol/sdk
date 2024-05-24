@@ -110,12 +110,6 @@ export class PermissionClient {
       await this.checkIsRegistered(ipId);
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const nonce = (await ipAccountClient.state()) + 1n;
-      console.log(`-------------------------permission-------------------------`);
-      console.log(`ipAccount:${ipId},
-      signer: ${getAddress(signer)},
-      to: ${getAddress(to)},
-      func:${func ? toFunctionSelector(func) : defaultFunctionSelector},
-      permission:${permission},`);
       const data = encodeFunctionData({
         abi: accessControllerAbi,
         functionName: "setPermission",
@@ -136,12 +130,6 @@ export class PermissionClient {
         chainId: chain[this.chainId],
         account: this.wallet.account as LocalAccount,
       });
-      console.log(`executeWithSig to: ${getAddress(this.accessControllerClient.address)},
-      value: BigInt(0),
-      data:${data},
-      signer: ${signer},
-      deadline: ${calculatedDeadline},
-      signature:${signature},`);
       const txHash = await ipAccountClient.executeWithSig({
         to: getAddress(this.accessControllerClient.address),
         value: BigInt(0),

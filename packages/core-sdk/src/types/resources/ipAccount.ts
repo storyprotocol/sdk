@@ -15,7 +15,7 @@ export type IPAccountExecuteResponse = {
 };
 
 export type IPAccountExecuteWithSigRequest = {
-  accountAddress: Address;
+  ipId: Address;
   to: Address;
   value: number;
   data: Address;

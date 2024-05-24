@@ -134,7 +134,7 @@ describe("Test IPAccountClient", () => {
   describe("Test executeWithSig", () => {
     it("should throw invalid address error when accountAddress is invalid", async () => {
       const request: IPAccountExecuteWithSigRequest = {
-        accountAddress: "0x123", // invalid address
+        ipId: "0x123", // invalid address
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -152,7 +152,7 @@ describe("Test IPAccountClient", () => {
     it("should throw simulateContract error when simulateContract throws an error", async () => {
       rpcMock.simulateContract = sinon.stub().rejects(new Error("simulateContract error"));
       const request: IPAccountExecuteWithSigRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -171,7 +171,7 @@ describe("Test IPAccountClient", () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("writeContract error"));
       const request: IPAccountExecuteWithSigRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -193,7 +193,7 @@ describe("Test IPAccountClient", () => {
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
       const request: IPAccountExecuteWithSigRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -218,7 +218,7 @@ describe("Test IPAccountClient", () => {
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const request: IPAccountExecuteWithSigRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -239,7 +239,7 @@ describe("Test IPAccountClient", () => {
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
       const request: IPAccountExecuteWithSigRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",

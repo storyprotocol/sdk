@@ -24,6 +24,7 @@ export class IPAccountClient {
 
   /** Executes a transaction from the IP Account.
    * @param request - The request object containing necessary data to execute IP Account a transaction.
+   *   @param request.ipId The Ip Id to get ip account.
    *   @param request.to The recipient of the transaction.
    *   @param request.value The amount of Ether to send.
    *   @param request.accountAddress The ipId to send.
@@ -55,6 +56,7 @@ export class IPAccountClient {
 
   /** Executes a transaction from the IP Account.
    * @param request - The request object containing necessary data to execute IP Account a transaction.
+   *   @param request.ipId The Ip Id to get ip account.
    *   @param request.to The recipient of the transaction.
    *   @param request.value The amount of Ether to send.
    *   @param request.data The data to send along with the transaction.
@@ -70,7 +72,7 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getAddress(request.accountAddress),
+        getAddress(request.ipId),
       );
 
       const txHash = await ipAccountClient.executeWithSig({
@@ -93,7 +95,7 @@ export class IPAccountClient {
 
   /** Returns the IPAccount's internal nonce for transaction ordering.
    * @param ipId The IP ID
-   * @returns The IPAccount's internal nonce for transaction ordering.
+   * @returns The nonce for transaction ordering.
    */
   public async getIpAccountNonce(ipId: string): Promise<IpAccountImplStateResponse> {
     const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, getAddress(ipId));

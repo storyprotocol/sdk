@@ -30,12 +30,6 @@ describe("Ip Account functions", () => {
       },
     });
     ipId = registerResult.ipId!;
-    console.log("-------------------------ipAccount-------------------------");
-    console.log(`data  ipAccount${ipId}
-    signer: ${process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex};
-    to: ${coreMetadataModule};
-    func:${toFunctionSelector("function setAll(address,string,bytes32,bytes32)")};
-    permission: ${AccessPermission.ALLOW}`);
     data = encodeFunctionData({
       abi: accessControllerAbi,
       functionName: "setPermission",
@@ -72,15 +66,8 @@ describe("Ip Account functions", () => {
       chainId: BigInt(sepoliaChainId),
       deadline: deadline,
     });
-    console.log(` accountAddress: ${ipId},
-    value: 0,
-    to: ${permissionAddress},
-    data: ${data},
-    deadline: ${deadline},
-    signer: ${process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex},
-    signature: ${signature},`);
     const response = await client.ipAccount.executeWithSig({
-      accountAddress: ipId,
+      ipId: ipId,
       value: 0,
       to: permissionAddress,
       data: data,
