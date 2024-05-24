@@ -133,7 +133,7 @@ describe("Test royalty Functions", () => {
       await client.ipAccount.execute({
         to: proxyAddress,
         value: 0,
-        accountAddress: ipId1,
+        ipId: ipId1,
         txOptions: {
           waitForTransaction: true,
         },
