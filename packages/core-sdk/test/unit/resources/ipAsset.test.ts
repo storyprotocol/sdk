@@ -460,8 +460,8 @@ describe("Test IpAssetClient", () => {
           pilType: 0,
         });
       } catch (err) {
-        expect((err as Error).message).equal(
-          `Failed to mint and register IP and attach PIL terms: request.nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+        expect((err as Error).message).contains(
+          `Failed to mint and register IP and attach PIL terms: Address "0x" is invalid.`,
         );
       }
     });

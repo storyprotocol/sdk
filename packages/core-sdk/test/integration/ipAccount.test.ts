@@ -48,7 +48,7 @@ describe("Ip Account functions", () => {
       to: permissionAddress,
       value: 0,
       data,
-      ipId: ipId,
+      accountAddress: ipId,
     });
     expect(response.txHash).to.be.a("string").and.not.empty;
   });

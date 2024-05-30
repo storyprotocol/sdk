@@ -1,4 +1,4 @@
-import { PublicClient } from "viem";
+import { PublicClient, getAddress } from "viem";
 
 import {
   IPAccountExecuteRequest,
@@ -12,7 +12,6 @@ import {
   IpAccountImplStateResponse,
   SimpleWalletClient,
 } from "../abi/generated";
-import { getCustomAddress } from "../utils/utils";
 
 export class IPAccountClient {
   private readonly wallet: SimpleWalletClient;
@@ -37,7 +36,7 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getCustomAddress(request.ipId, "request.ipId"),
+        getAddress(request.accountAddress),
       );
 
       const txHash = await ipAccountClient.execute({
@@ -73,7 +72,7 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getCustomAddress(request.ipId, "request.ipId"),
+        getAddress(request.ipId),
       );
 
       const txHash = await ipAccountClient.executeWithSig({
@@ -99,11 +98,7 @@ export class IPAccountClient {
    * @returns The nonce for transaction ordering.
    */
   public async getIpAccountNonce(ipId: string): Promise<IpAccountImplStateResponse> {
-    const ipAccount = new IpAccountImplClient(
-      this.rpcClient,
-      this.wallet,
-      getCustomAddress(ipId, "ipId"),
-    );
+    const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, getAddress(ipId));
     return await ipAccount.state();
   }
 }

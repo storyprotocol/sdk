@@ -1,6 +1,7 @@
 import {
   Hex,
   PublicClient,
+  getAddress,
   zeroAddress,
   Address,
   encodeFunctionData,
@@ -9,7 +10,7 @@ import {
   zeroHash,
 } from "viem";
 
-import { chain, getCustomAddress } from "../utils/utils";
+import { chain } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
@@ -99,7 +100,7 @@ export class IPAssetClient {
       }
       const object: SpgRegisterIpRequest = {
         tokenId,
-        nftContract: getCustomAddress(request.nftContract, "request.nftContract"),
+        nftContract: getAddress(request.nftContract),
         metadata: {
           metadataURI: "",
           metadataHash: zeroHash,
@@ -133,16 +134,16 @@ export class IPAssetClient {
             abi: accessControllerAbi,
             functionName: "setPermission",
             args: [
-              getCustomAddress(ipIdAddress, "ipIdAddress"),
-              getCustomAddress(this.spgClient.address, "spgAddress"),
-              getCustomAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              getAddress(ipIdAddress),
+              getAddress(this.spgClient.address),
+              getAddress(this.coreMetadataModuleClient.address),
               toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
               1,
             ],
           }),
         });
         object.sigMetadata = {
-          signer: getCustomAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: getAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature,
         };
@@ -191,9 +192,7 @@ export class IPAssetClient {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
       for (const parentId of request.parentIpIds) {
-        const isParentIpIdRegistered = await this.isRegistered(
-          getCustomAddress(parentId, "request.parentIpIds"),
-        );
+        const isParentIpIdRegistered = await this.isRegistered(getAddress(parentId));
         if (!isParentIpIdRegistered) {
           throw new Error(`The parent IP with id ${parentId} is not registered.`);
         }
@@ -204,10 +203,9 @@ export class IPAssetClient {
       for (let i = 0; i < request.parentIpIds.length; i++) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
-            ipId: getCustomAddress(request.parentIpIds[i], "request.parentIpIds"),
+            ipId: getAddress(request.parentIpIds[i]),
             licenseTemplate:
-              (request.licenseTemplate &&
-                getCustomAddress(request.licenseTemplate, "request.licenseTemplate")) ||
+              (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
               this.licenseTemplateClient.address,
             licenseTermsId: BigInt(request.licenseTermsIds[i]),
           });
@@ -265,7 +263,7 @@ export class IPAssetClient {
         }
       }
       const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
-        childIpId: getCustomAddress(request.childIpId, "request.childIpId"),
+        childIpId: getAddress(request.childIpId),
         licenseTokenIds: request.licenseTokenIds,
         royaltyContext: zeroAddress,
       });
@@ -312,10 +310,9 @@ export class IPAssetClient {
         commercialRevShare: request.commercialRevShare,
       });
       const object: SpgMintAndRegisterIpAndAttachPilTermsRequest = {
-        nftContract: getCustomAddress(request.nftContract, "request.nftContract"),
+        nftContract: getAddress(request.nftContract),
         recipient:
-          (request.recipient && getCustomAddress(request.recipient, "request.recipient")) ||
-          this.wallet.account!.address,
+          (request.recipient && getAddress(request.recipient)) || this.wallet.account!.address,
 
         terms: licenseTerm,
         metadata: {
@@ -380,8 +377,8 @@ export class IPAssetClient {
         throw new Error("PIL type is required.");
       }
       request.tokenId = BigInt(request.tokenId);
-      const ipIdAddress = await this.getIpIdAddress(request.nftContract, request.tokenId);
-      const isRegistered = await this.isNftRegistered(ipIdAddress);
+      const ipId = await this.getIpIdAddress(request.nftContract, request.tokenId);
+      const isRegistered = await this.isNftRegistered(ipId);
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
@@ -393,7 +390,7 @@ export class IPAssetClient {
       });
       const calculatedDeadline = getDeadline(request.deadline);
       const sigAttachSignature = await getPermissionSignature({
-        ipId: ipIdAddress,
+        ipId,
         deadline: calculatedDeadline,
         nonce: 2,
         account: this.wallet.account as LocalAccount,
@@ -402,16 +399,16 @@ export class IPAssetClient {
           abi: accessControllerAbi,
           functionName: "setPermission",
           args: [
-            getCustomAddress(ipIdAddress, "ipIdAddress"),
-            getCustomAddress(this.spgClient.address, "spgAddress"),
-            getCustomAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            getAddress(ipId),
+            getAddress(this.spgClient.address),
+            getAddress(this.licensingModuleClient.address),
             toFunctionSelector("function attachLicenseTerms(address,address,uint256)"),
             1,
           ],
         }),
       });
       const object: SpgRegisterIpAndAttachPilTermsRequest = {
-        nftContract: getCustomAddress(request.nftContract, "request.nftContract"),
+        nftContract: getAddress(request.nftContract),
         tokenId: request.tokenId,
         terms: licenseTerm,
         metadata: {
@@ -425,7 +422,7 @@ export class IPAssetClient {
           signature: zeroHash,
         },
         sigAttach: {
-          signer: getCustomAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: getAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature: sigAttachSignature,
         },
@@ -443,7 +440,7 @@ export class IPAssetClient {
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
         const signature = await getPermissionSignature({
-          ipId: ipIdAddress,
+          ipId,
           deadline: calculatedDeadline,
           nonce: 1,
           account: this.wallet.account as LocalAccount,
@@ -452,16 +449,16 @@ export class IPAssetClient {
             abi: accessControllerAbi,
             functionName: "setPermission",
             args: [
-              getCustomAddress(ipIdAddress, "ipIdAddress"),
-              getCustomAddress(this.spgClient.address, "spgAddress"),
-              getCustomAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              getAddress(ipId),
+              getAddress(this.spgClient.address),
+              getAddress(this.coreMetadataModuleClient.address),
               toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
               1,
             ],
           }),
         });
         object.sigMetadata = {
-          signer: getCustomAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: getAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature,
         };
@@ -500,8 +497,8 @@ export class IPAssetClient {
   ): Promise<RegisterIpAndMakeDerivativeResponse> {
     try {
       const tokenId = BigInt(request.tokenId);
-      const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
-      const isRegistered = await this.isNftRegistered(ipIdAddress);
+      const ipId = await this.getIpIdAddress(request.nftContract, tokenId);
+      const isRegistered = await this.isNftRegistered(ipId);
       if (isRegistered) {
         throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
       }
@@ -511,16 +508,10 @@ export class IPAssetClient {
       for (let i = 0; i < request.derivData.parentIpIds.length; i++) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
-            ipId: getCustomAddress(
-              request.derivData.parentIpIds[i],
-              "request.derivData.parentIpIds",
-            ),
+            ipId: getAddress(request.derivData.parentIpIds[i]),
             licenseTemplate:
               (request.derivData.licenseTemplate &&
-                getCustomAddress(
-                  request.derivData.licenseTemplate,
-                  "request.derivData.licenseTemplate",
-                )) ||
+                getAddress(request.derivData.licenseTemplate)) ||
               this.licenseTemplateClient.address,
             licenseTermsId: BigInt(request.derivData.licenseTermsIds[i]),
           });
@@ -533,7 +524,7 @@ export class IPAssetClient {
       const calculatedDeadline = getDeadline(request.deadline);
 
       const sigRegisterSignature = await getPermissionSignature({
-        ipId: ipIdAddress,
+        ipId,
         deadline: calculatedDeadline,
         nonce: 2,
         account: this.wallet.account as LocalAccount,
@@ -542,9 +533,9 @@ export class IPAssetClient {
           abi: accessControllerAbi,
           functionName: "setPermission",
           args: [
-            getCustomAddress(ipIdAddress, "ipIdAddress"),
-            getCustomAddress(this.spgClient.address, "spgAddress"),
-            getCustomAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            getAddress(ipId),
+            getAddress(this.spgClient.address),
+            getAddress(this.licensingModuleClient.address),
             toFunctionSelector(
               "function registerDerivative(address,address[],uint256[],address,bytes)",
             ),
@@ -553,24 +544,18 @@ export class IPAssetClient {
         }),
       });
       const object: SpgRegisterIpAndMakeDerivativeRequest = {
-        nftContract: getCustomAddress(request.nftContract, "request.nftContract"),
+        nftContract: getAddress(request.nftContract),
         tokenId: BigInt(request.tokenId),
         derivData: {
-          parentIpIds: request.derivData.parentIpIds.map((id) =>
-            getCustomAddress(id, "request.derivData.parentIpIds"),
-          ),
+          parentIpIds: request.derivData.parentIpIds.map((id) => getAddress(id)),
           licenseTermsIds: request.derivData.licenseTermsIds.map((id) => BigInt(id)),
           licenseTemplate:
-            (request.derivData.licenseTemplate &&
-              getCustomAddress(
-                request.derivData.licenseTemplate,
-                "request.derivData.licenseTemplate",
-              )) ||
+            (request.derivData.licenseTemplate && getAddress(request.derivData.licenseTemplate)) ||
             this.licenseTemplateClient.address,
           royaltyContext: zeroAddress,
         },
         sigRegister: {
-          signer: getCustomAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: getAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature: sigRegisterSignature,
         },
@@ -597,7 +582,7 @@ export class IPAssetClient {
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
         const signature = await getPermissionSignature({
-          ipId: ipIdAddress,
+          ipId,
           deadline: calculatedDeadline,
           nonce: 1,
           account: this.wallet.account as LocalAccount,
@@ -606,16 +591,16 @@ export class IPAssetClient {
             abi: accessControllerAbi,
             functionName: "setPermission",
             args: [
-              getCustomAddress(ipIdAddress, "ipIdAddress"),
-              getCustomAddress(this.spgClient.address, "spgAddress"),
-              getCustomAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              getAddress(ipId),
+              getAddress(this.spgClient.address),
+              getAddress(this.coreMetadataModuleClient.address),
               toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
               1,
             ],
           }),
         });
         object.sigMetadata = {
-          signer: getCustomAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: getAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature,
         };
@@ -638,7 +623,7 @@ export class IPAssetClient {
   ): Promise<Address> {
     const ipId = await this.ipAssetRegistryClient.ipId({
       chainId: chain[this.chainId],
-      tokenContract: getCustomAddress(nftContract, "nftContract"),
+      tokenContract: getAddress(nftContract),
       tokenId: BigInt(tokenId),
     });
     return ipId;
@@ -649,6 +634,6 @@ export class IPAssetClient {
   }
 
   private async isRegistered(ipId: Hex): Promise<boolean> {
-    return await this.ipAssetRegistryClient.isRegistered({ id: getCustomAddress(ipId, "ipId") });
+    return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId) });
   }
 }

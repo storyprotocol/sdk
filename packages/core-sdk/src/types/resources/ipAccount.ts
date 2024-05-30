@@ -3,7 +3,7 @@ import { Address } from "viem";
 import { TxOptions } from "../options";
 
 export type IPAccountExecuteRequest = {
-  ipId: Address;
+  accountAddress: Address;
   to: Address;
   value: number;
   data: Address;

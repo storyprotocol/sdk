@@ -1,4 +1,4 @@
-import { Hex, PublicClient, encodeFunctionData } from "viem";
+import { Hex, PublicClient, encodeFunctionData, getAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -23,7 +23,6 @@ import {
   ipRoyaltyVaultImplAbi,
 } from "../abi/generated";
 import { IPAccountClient } from "./ipAccount";
-import { getCustomAddress } from "../utils/utils";
 
 export class RoyaltyClient {
   public royaltyPolicyLapClient: RoyaltyPolicyLapClient;
@@ -56,14 +55,12 @@ export class RoyaltyClient {
   ): Promise<CollectRoyaltyTokensResponse> {
     try {
       const isParentIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getCustomAddress(request.parentIpId, "request.parentIpId"),
+        id: getAddress(request.parentIpId),
       });
       if (!isParentIpIdRegistered) {
         throw new Error(`The parent IP with id ${request.parentIpId} is not registered.`);
       }
-      const proxyAddress = await this.getRoyaltyVaultAddress(
-        getCustomAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
-      );
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
@@ -102,13 +99,13 @@ export class RoyaltyClient {
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
       const isReceiverRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getCustomAddress(request.receiverIpId, "request.receiverIpId"),
+        id: getAddress(request.receiverIpId),
       });
       if (!isReceiverRegistered) {
         throw new Error(`The receiver IP with id ${request.receiverIpId} is not registered.`);
       }
       const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getCustomAddress(request.payerIpId, "request.payerIpId"),
+        id: getAddress(request.payerIpId),
       });
       if (!isPayerRegistered) {
         throw new Error(`The payer IP with id ${request.payerIpId} is not registered.`);
@@ -116,7 +113,7 @@ export class RoyaltyClient {
       const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf({
         receiverIpId: request.receiverIpId,
         payerIpId: request.payerIpId,
-        token: getCustomAddress(request.token, "request.token"),
+        token: getAddress(request.token),
         amount: BigInt(request.amount),
       });
       if (request.txOptions?.waitForTransaction) {
@@ -144,18 +141,16 @@ export class RoyaltyClient {
     request: ClaimableRevenueRequest,
   ): Promise<ClaimableRevenueResponse> {
     try {
-      const proxyAddress = await this.getRoyaltyVaultAddress(
-        getCustomAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
-      );
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
         proxyAddress,
       );
       return await ipRoyaltyVault.claimableRevenue({
-        account: getCustomAddress(request.account, "request.account"),
+        account: getAddress(request.account),
         snapshotId: BigInt(request.snapshotId),
-        token: getCustomAddress(request.token, "request.token"),
+        token: getAddress(request.token),
       });
     } catch (error) {
       handleError(error, "Failed to calculate claimable revenue");
@@ -175,9 +170,7 @@ export class RoyaltyClient {
    */
   public async claimRevenue(request: ClaimRevenueRequest): Promise<ClaimRevenueResponse> {
     try {
-      const proxyAddress = await this.getRoyaltyVaultAddress(
-        getCustomAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
-      );
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
@@ -189,7 +182,7 @@ export class RoyaltyClient {
         const iPAccountExecuteResponse = await this.ipAccountClient.execute({
           to: proxyAddress,
           value: 0,
-          ipId: getCustomAddress(request.account, "request.account"),
+          accountAddress: getAddress(request.account),
           txOptions: {
             waitForTransaction: true,
           },
@@ -203,7 +196,7 @@ export class RoyaltyClient {
       } else {
         txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch({
           snapshotIds: request.snapshotIds,
-          token: getCustomAddress(request.token, "request.token"),
+          token: getAddress(request.token),
         });
       }
       if (request.txOptions?.waitForTransaction) {
@@ -229,9 +222,7 @@ export class RoyaltyClient {
    */
   public async snapshot(request: SnapshotRequest): Promise<SnapshotResponse> {
     try {
-      const proxyAddress = await this.getRoyaltyVaultAddress(
-        getCustomAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
-      );
+      const proxyAddress = await this.getRoyaltyVaultAddress(getAddress(request.royaltyVaultIpId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
         this.rpcClient,
         this.wallet,
@@ -257,7 +248,7 @@ export class RoyaltyClient {
    */
   public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<RoyaltyVaultAddress> {
     const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-      id: getCustomAddress(royaltyVaultIpId, "royaltyVaultIpId"),
+      id: getAddress(royaltyVaultIpId),
     });
     if (!isRoyaltyVaultIpIdRegistered) {
       throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
