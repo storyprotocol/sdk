@@ -1,5 +1,3 @@
-import { Hash } from "viem/types/misc";
-import { DecodeEventLogReturnType } from "viem/_types/utils/abi/decodeEventLog";
 import {
   Abi,
   decodeEventLog,
@@ -12,6 +10,8 @@ import {
   isAddress,
   checksumAddress,
   Address,
+  DecodeEventLogReturnType,
+  Hash,
 } from "viem";
 import { sepolia } from "viem/chains";
 
