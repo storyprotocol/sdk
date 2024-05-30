@@ -6,7 +6,7 @@ import {
   CreateNFTCollectionResponse,
 } from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
-import { getAddress } from "../utils/utils";
+import { getCustomAddress } from "../utils/utils";
 
 export class NftClient {
   public spgClient: SpgClient;
@@ -51,7 +51,7 @@ export class NftClient {
         mintFee: request.mintFee ?? 0n,
         mintFeeToken: request.mintFeeToken ?? zeroAddress,
         owner:
-          (request.owner && getAddress(request.owner, "request.owner")) ||
+          (request.owner && getCustomAddress(request.owner, "request.owner")) ||
           this.wallet.account!.address,
       });
 

@@ -25,7 +25,7 @@ import {
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
-import { getAddress } from "../utils/utils";
+import { getCustomAddress } from "../utils/utils";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -161,7 +161,7 @@ export class LicenseClient {
     try {
       request.licenseTermsId = BigInt(request.licenseTermsId);
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.ipId, "request.ipId"),
+        id: getCustomAddress(request.ipId, "request.ipId"),
       });
       if (!isRegistered) {
         throw new Error(`The IP with id ${request.ipId} is not registered.`);
@@ -177,7 +177,7 @@ export class LicenseClient {
           ipId: request.ipId,
           licenseTemplate:
             (request.licenseTemplate &&
-              getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
+              getCustomAddress(request.licenseTemplate, "request.licenseTemplate")) ||
             this.licenseTemplateClient.address,
           licenseTermsId: request.licenseTermsId,
         });
@@ -230,7 +230,7 @@ export class LicenseClient {
     try {
       request.licenseTermsId = BigInt(request.licenseTermsId);
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.licensorIpId, "request.licensorIpId"),
+        id: getCustomAddress(request.licensorIpId, "request.licensorIpId"),
       });
       if (!isLicenseIpIdRegistered) {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
@@ -246,7 +246,7 @@ export class LicenseClient {
           ipId: request.licensorIpId,
           licenseTemplate:
             (request.licenseTemplate &&
-              getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
+              getCustomAddress(request.licenseTemplate, "request.licenseTemplate")) ||
             this.licenseTemplateClient.address,
           licenseTermsId: request.licenseTermsId,
         });
@@ -262,7 +262,7 @@ export class LicenseClient {
         licenseTermsId: request.licenseTermsId,
         amount,
         receiver:
-          (request.receiver && getAddress(request.receiver, "request.receiver")) ||
+          (request.receiver && getCustomAddress(request.receiver, "request.receiver")) ||
           this.wallet.account!.address,
         royaltyContext: zeroAddress,
       });

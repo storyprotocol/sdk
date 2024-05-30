@@ -1,7 +1,7 @@
 import { Hex, zeroAddress } from "viem";
 
 import { PIL_TYPE, LicenseTerms } from "../types/resources/license";
-import { getAddress } from "./utils";
+import { getCustomAddress } from "./utils";
 
 export function getLicenseTermByType(
   type: PIL_TYPE,
@@ -37,7 +37,7 @@ export function getLicenseTermByType(
     if (!term || term.mintingFee === undefined || term.currency === undefined) {
       throw new Error("mintingFee currency are required for commercial use PIL.");
     }
-    licenseTerms.royaltyPolicy = getAddress(
+    licenseTerms.royaltyPolicy = getCustomAddress(
       term.royaltyPolicyLAPAddress,
       "term.royaltyPolicyLAPAddress",
     );
@@ -45,7 +45,7 @@ export function getLicenseTermByType(
     licenseTerms.commercialUse = true;
     licenseTerms.commercialAttribution = true;
     licenseTerms.derivativesReciprocal = false;
-    licenseTerms.currency = getAddress(term.currency, "term.currency");
+    licenseTerms.currency = getCustomAddress(term.currency, "term.currency");
     return licenseTerms;
   } else {
     if (
@@ -61,7 +61,7 @@ export function getLicenseTermByType(
     if (term.commercialRevShare < 0 || term.commercialRevShare > 100) {
       throw new Error("commercialRevShare should be between 0 and 100.");
     }
-    licenseTerms.royaltyPolicy = getAddress(
+    licenseTerms.royaltyPolicy = getCustomAddress(
       term.royaltyPolicyLAPAddress,
       "term.royaltyPolicyLAPAddress",
     );
@@ -71,7 +71,7 @@ export function getLicenseTermByType(
 
     licenseTerms.commercialRevShare = (term.commercialRevShare / 100) * 100000000;
     licenseTerms.derivativesReciprocal = true;
-    licenseTerms.currency = getAddress(term.currency, "term.currency");
+    licenseTerms.currency = getCustomAddress(term.currency, "term.currency");
     return licenseTerms;
   }
 }

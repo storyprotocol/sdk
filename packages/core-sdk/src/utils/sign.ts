@@ -1,7 +1,7 @@
 import { Address, Hex, LocalAccount, PrivateKeyAccount } from "viem";
 
 import { accessControllerAddress } from "../abi/generated";
-import { getAddress } from "./utils";
+import { getCustomAddress } from "./utils";
 
 export const getPermissionSignature = async (params: {
   ipId: Address;
@@ -33,7 +33,7 @@ export const getPermissionSignature = async (params: {
     },
     primaryType: "Execute",
     message: {
-      to: getAddress(
+      to: getCustomAddress(
         accessControllerAddress[Number(chainId) as keyof typeof accessControllerAddress],
         "accessControllerAddress",
       ),

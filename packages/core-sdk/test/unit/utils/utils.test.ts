@@ -13,7 +13,7 @@ import {
   typedDataArrayToBytesArray,
   chainStringToViemChain,
   waitTx,
-  getAddress,
+  getCustomAddress,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
@@ -279,10 +279,10 @@ describe("Test waitTx", () => {
   });
 });
 
-describe("Test getAddress", () => {
-  it("should throw inValid address error when call getAddress given invalid address", () => {
+describe("Test getCustomAddress", () => {
+  it("should throw inValid address error when call getCustomAddress given invalid address", () => {
     try {
-      getAddress("invalid address", "address");
+      getCustomAddress("invalid address", "address");
     } catch (e) {
       expect((e as Error).message).to.equal(
         "address address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
@@ -290,8 +290,8 @@ describe("Test getAddress", () => {
     }
   });
 
-  it("should return address when call getAddress given valid address", () => {
-    const address = getAddress("0x176d33cc80ed3390256033bbf7fd651c9c5a364f", "address");
+  it("should return address when call getCustomAddress given valid address", () => {
+    const address = getCustomAddress("0x176d33cc80ed3390256033bbf7fd651c9c5a364f", "address");
     expect(address).to.equal("0x176d33Cc80ed3390256033bbf7Fd651c9C5A364F");
   });
 });

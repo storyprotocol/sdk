@@ -12,7 +12,7 @@ import {
   IpAccountImplStateResponse,
   SimpleWalletClient,
 } from "../abi/generated";
-import { getAddress } from "../utils/utils";
+import { getCustomAddress } from "../utils/utils";
 
 export class IPAccountClient {
   private readonly wallet: SimpleWalletClient;
@@ -37,7 +37,7 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getAddress(request.ipId, "request.ipId"),
+        getCustomAddress(request.ipId, "request.ipId"),
       );
 
       const txHash = await ipAccountClient.execute({
@@ -73,7 +73,7 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getAddress(request.ipId, "request.ipId"),
+        getCustomAddress(request.ipId, "request.ipId"),
       );
 
       const txHash = await ipAccountClient.executeWithSig({
@@ -102,7 +102,7 @@ export class IPAccountClient {
     const ipAccount = new IpAccountImplClient(
       this.rpcClient,
       this.wallet,
-      getAddress(ipId, "ipId"),
+      getCustomAddress(ipId, "ipId"),
     );
     return await ipAccount.state();
   }
