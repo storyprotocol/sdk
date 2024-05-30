@@ -59,7 +59,9 @@ describe("Get License Terms By Type", () => {
           mintingFee: "1",
           currency: zeroAddress,
         }),
-      ).to.throw(`Address "wrong" is invalid.`);
+      ).to.throw(
+        `term.royaltyPolicyLAPAddress address is invalid: wrong, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+      );
     });
 
     it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_USE and correct args", async () => {
@@ -129,7 +131,9 @@ describe("Get License Terms By Type", () => {
           currency: zeroAddress,
           commercialRevShare: 100,
         }),
-      ).to.throw(`Address "wrong" is invalid.`);
+      ).to.throw(
+        `term.royaltyPolicyLAPAddress address is invalid: wrong, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+      );
     });
 
     it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without commercialRevShare ", async () => {
