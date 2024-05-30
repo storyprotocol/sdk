@@ -2,7 +2,7 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { AccessPermission, StoryClient } from "../../src";
 import { MockERC721, getStoryClientInSepolia, getTokenId, sepoliaChainId } from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
+import { Hex, encodeFunctionData, toFunctionSelector } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
@@ -34,9 +34,9 @@ describe("Ip Account functions", () => {
       abi: accessControllerAbi,
       functionName: "setPermission",
       args: [
-        getAddress(ipId),
-        getAddress(process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex),
-        getAddress(coreMetadataModule),
+        ipId,
+        process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
+        coreMetadataModule,
         toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         AccessPermission.ALLOW,
       ],
