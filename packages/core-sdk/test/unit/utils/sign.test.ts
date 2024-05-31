@@ -13,7 +13,7 @@ describe("Sign", () => {
           ipId: zeroAddress,
           nonce: 1,
           deadline: 1000n,
-          data: "0x",
+          permissions: [],
           account: {} as LocalAccount,
           chainId: BigInt(sepoliaChainId),
         });
@@ -30,7 +30,7 @@ describe("Sign", () => {
         ipId: zeroAddress,
         nonce: 1,
         deadline: 1000n,
-        data: "0x",
+        permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
         account,
         chainId: BigInt(sepoliaChainId),
       });

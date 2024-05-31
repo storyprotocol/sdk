@@ -119,7 +119,15 @@ export class PermissionClient {
         ipId,
         deadline: calculatedDeadline,
         nonce,
-        data,
+        permissions: [
+          {
+            ipId,
+            signer,
+            to,
+            permission,
+            func,
+          },
+        ],
         chainId: chain[this.chainId],
         account: this.wallet.account as LocalAccount,
       });
@@ -255,9 +263,10 @@ export class PermissionClient {
         ipId,
         deadline: calculatedDeadline,
         nonce,
-        data,
+        permissions,
         chainId: chain[this.chainId],
         account: this.wallet.account as LocalAccount,
+        permissionFunc: "setBatchPermissions",
       });
       const txHash = await ipAccountClient.executeWithSig({
         to: getAddress(this.accessControllerClient.address, "accessControllerAddress"),

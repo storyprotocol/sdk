@@ -1,13 +1,4 @@
-import {
-  Hex,
-  PublicClient,
-  zeroAddress,
-  Address,
-  encodeFunctionData,
-  LocalAccount,
-  toFunctionSelector,
-  zeroHash,
-} from "viem";
+import { Hex, PublicClient, zeroAddress, Address, LocalAccount, zeroHash } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -41,10 +32,10 @@ import {
   SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
   SpgRegisterIpRequest,
-  accessControllerAbi,
 } from "../abi/generated";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
+import { AccessPermission } from "../types/resources/permission";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -129,17 +120,15 @@ export class IPAssetClient {
           nonce: 1,
           account: this.wallet.account as LocalAccount,
           chainId: chain[this.chainId],
-          data: encodeFunctionData({
-            abi: accessControllerAbi,
-            functionName: "setPermission",
-            args: [
-              getAddress(ipIdAddress, "ipIdAddress"),
-              getAddress(this.spgClient.address, "spgAddress"),
-              getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
-              1,
-            ],
-          }),
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(this.spgClient.address, "spgAddress"),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
         });
         object.sigMetadata = {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
@@ -398,17 +387,15 @@ export class IPAssetClient {
         nonce: 2,
         account: this.wallet.account as LocalAccount,
         chainId: chain[this.chainId],
-        data: encodeFunctionData({
-          abi: accessControllerAbi,
-          functionName: "setPermission",
-          args: [
-            getAddress(ipIdAddress, "ipIdAddress"),
-            getAddress(this.spgClient.address, "spgAddress"),
-            getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
-            toFunctionSelector("function attachLicenseTerms(address,address,uint256)"),
-            1,
-          ],
-        }),
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(this.spgClient.address, "spgAddress"),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: "function attachLicenseTerms(address,address,uint256)",
+          },
+        ],
       });
       const object: SpgRegisterIpAndAttachPilTermsRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
@@ -448,17 +435,15 @@ export class IPAssetClient {
           nonce: 1,
           account: this.wallet.account as LocalAccount,
           chainId: chain[this.chainId],
-          data: encodeFunctionData({
-            abi: accessControllerAbi,
-            functionName: "setPermission",
-            args: [
-              getAddress(ipIdAddress, "ipIdAddress"),
-              getAddress(this.spgClient.address, "spgAddress"),
-              getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
-              1,
-            ],
-          }),
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(this.spgClient.address, "spgAddress"),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
         });
         object.sigMetadata = {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
@@ -535,19 +520,15 @@ export class IPAssetClient {
         nonce: 2,
         account: this.wallet.account as LocalAccount,
         chainId: chain[this.chainId],
-        data: encodeFunctionData({
-          abi: accessControllerAbi,
-          functionName: "setPermission",
-          args: [
-            getAddress(ipIdAddress, "ipIdAddress"),
-            getAddress(this.spgClient.address, "spgAddress"),
-            getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
-            toFunctionSelector(
-              "function registerDerivative(address,address[],uint256[],address,bytes)",
-            ),
-            1,
-          ],
-        }),
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(this.spgClient.address, "spgAddress"),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: "function registerDerivative(address,address[],uint256[],address,bytes)",
+          },
+        ],
       });
       const object: SpgRegisterIpAndMakeDerivativeRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
@@ -596,17 +577,15 @@ export class IPAssetClient {
           nonce: 1,
           account: this.wallet.account as LocalAccount,
           chainId: chain[this.chainId],
-          data: encodeFunctionData({
-            abi: accessControllerAbi,
-            functionName: "setPermission",
-            args: [
-              getAddress(ipIdAddress, "ipIdAddress"),
-              getAddress(this.spgClient.address, "spgAddress"),
-              getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-              toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
-              1,
-            ],
-          }),
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(this.spgClient.address, "spgAddress"),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
         });
         object.sigMetadata = {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
