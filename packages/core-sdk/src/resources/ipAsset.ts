@@ -93,7 +93,7 @@ export class IPAssetClient {
     try {
       const tokenId = BigInt(request.tokenId);
       const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
-      const isRegistered = await this.isNftRegistered(ipIdAddress);
+      const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         return { ipId: ipIdAddress };
       }
@@ -381,7 +381,7 @@ export class IPAssetClient {
       }
       request.tokenId = BigInt(request.tokenId);
       const ipIdAddress = await this.getIpIdAddress(request.nftContract, request.tokenId);
-      const isRegistered = await this.isNftRegistered(ipIdAddress);
+      const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
@@ -501,7 +501,7 @@ export class IPAssetClient {
     try {
       const tokenId = BigInt(request.tokenId);
       const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
-      const isRegistered = await this.isNftRegistered(ipIdAddress);
+      const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
       }
@@ -636,10 +636,6 @@ export class IPAssetClient {
       tokenId: BigInt(tokenId),
     });
     return ipId;
-  }
-
-  private async isNftRegistered(ipId: Address): Promise<boolean> {
-    return await this.ipAssetRegistryClient.isRegistered({ id: ipId });
   }
 
   private async isRegistered(ipId: Hex): Promise<boolean> {
