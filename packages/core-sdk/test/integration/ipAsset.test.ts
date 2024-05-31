@@ -194,11 +194,6 @@ describe("IP Asset Functions ", () => {
           commercialRevShare: 10,
           mintingFee: "100",
           currency: MockERC20.address,
-          metadata: {
-            metadataURI: "test-uri",
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
           txOptions: {
             waitForTransaction: true,
           },
@@ -219,10 +214,6 @@ describe("IP Asset Functions ", () => {
           commercialRevShare: 10,
           mintingFee: "100",
           currency: MockERC20.address,
-          metadata: {
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
           txOptions: {
             waitForTransaction: true,
           },
@@ -233,10 +224,6 @@ describe("IP Asset Functions ", () => {
         derivData: {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],
-        },
-        metadata: {
-          metadataURI: "test-uri",
-          metadataHash: toHex("test-metadata-hash", { size: 32 }),
         },
         deadline: 1000n,
         txOptions: {
@@ -253,10 +240,6 @@ describe("IP Asset Functions ", () => {
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
         nftContract: nftContract,
         tokenId: tokenId!,
-        metadata: {
-          metadataURI: "test-uri",
-          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-        },
         deadline,
         pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
         txOptions: {
