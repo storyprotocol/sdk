@@ -8,7 +8,7 @@ import { createMock } from "../testUtils";
 
 chai.use(chaiAsPromised);
 
-describe("Test NftClient", function () {
+describe("Test NftClient", () => {
   let nftClient: NftClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
@@ -18,13 +18,13 @@ describe("Test NftClient", function () {
     nftContract: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
   };
 
-  beforeEach(function () {
+  beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>({ account: { address: "0x" } });
     nftClient = new NftClient(rpcMock, walletMock);
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sinon.restore();
   });
 

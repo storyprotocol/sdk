@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { handleError } from "../../../src/utils/errors";
 
-describe("Test handleError", function () {
-  it("should throw unknown error message when passing in a non-Error error", function () {
+describe("Test handleError", () => {
+  it("should throw unknown error message when passing in a non-Error error", () => {
     try {
       handleError({}, "abc");
     } catch (error) {
@@ -10,7 +10,7 @@ describe("Test handleError", function () {
     }
   });
 
-  it("should throw normal error message when passing in aError", function () {
+  it("should throw normal error message when passing in aError", () => {
     try {
       handleError(new Error("cde"), "abc");
     } catch (error) {

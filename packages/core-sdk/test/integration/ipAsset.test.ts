@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
 import { Hex, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getBlockTimestamp, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
@@ -10,11 +10,11 @@ const expect = chai.expect;
 
 describe("IP Asset Functions ", () => {
   let client: StoryClient;
-  before(async function () {
+  before(async () => {
     client = getStoryClientInSepolia();
   });
 
-  describe("Create IP Asset", async function () {
+  describe("Create IP Asset", async () => {
     let parentIpId: Hex;
     let childIpId: Hex;
     let noCommercialLicenseTermsId: bigint;
@@ -115,7 +115,7 @@ describe("IP Asset Functions ", () => {
       const response = await expect(
         client.ipAsset.registerDerivativeWithLicenseTokens({
           childIpId: ipId,
-          licenseTokenIds: [mintLicenseTokensResult.licenseTokenId!],
+          licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
           txOptions: {
             waitForTransaction: true,
           },
@@ -194,11 +194,6 @@ describe("IP Asset Functions ", () => {
           commercialRevShare: 10,
           mintingFee: "100",
           currency: MockERC20.address,
-          metadata: {
-            metadataURI: "test-uri",
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
           txOptions: {
             waitForTransaction: true,
           },
@@ -219,15 +214,10 @@ describe("IP Asset Functions ", () => {
           commercialRevShare: 10,
           mintingFee: "100",
           currency: MockERC20.address,
-          metadata: {
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
           txOptions: {
             waitForTransaction: true,
           },
         });
-      const deadline = (await getBlockTimestamp()) + 1000n;
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
         tokenId: tokenChildId!,
@@ -235,11 +225,7 @@ describe("IP Asset Functions ", () => {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],
         },
-        metadata: {
-          metadataURI: "test-uri",
-          metadataHash: toHex("test-metadata-hash", { size: 32 }),
-        },
-        deadline: deadline,
+        deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
         },
@@ -254,10 +240,6 @@ describe("IP Asset Functions ", () => {
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
         nftContract: nftContract,
         tokenId: tokenId!,
-        metadata: {
-          metadataURI: "test-uri",
-          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-        },
         deadline,
         pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
         txOptions: {

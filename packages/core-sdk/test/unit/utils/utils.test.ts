@@ -13,28 +13,29 @@ import {
   typedDataArrayToBytesArray,
   chainStringToViemChain,
   waitTx,
+  getAddress,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
 
-describe("Test isIntegerString", function () {
-  it("should return true when passing in an integer string", function () {
+describe("Test isIntegerString", () => {
+  it("should return true when passing in an integer string", () => {
     expect(isIntegerString("7")).to.be.true;
   });
 
-  it("should return false when passing in a non-integer string", function () {
+  it("should return false when passing in a non-integer string", () => {
     expect(isIntegerString("a")).to.be.false;
   });
 });
 
-describe("Test decodeShortstring", function () {
-  it("should decode a short string", function () {
+describe("Test decodeShortstring", () => {
+  it("should decode a short string", () => {
     const encodedString = "0x4368616e6e656c732d4f662d446973747269627574696f6e0000000000000018"; // "Hello World" in hex
     const decodedString = decodeShortstring(encodedString);
     expect(decodedString).to.equal("Channels-Of-Distribution");
   });
 
-  it("should return an empty string for an empty input", function () {
+  it("should return an empty string for an empty input", () => {
     const encodedString = "0x";
     const decodedString = decodeShortstring(encodedString);
     expect(decodedString).to.equal("");
@@ -275,5 +276,22 @@ describe("Test waitTx", () => {
     await waitTx(rpcMock, txHash);
 
     expect(spyWaitForTransactionReceipt.called);
+  });
+});
+
+describe("Test getAddress", () => {
+  it("should throw inValid address error when call getAddress given invalid address", () => {
+    try {
+      getAddress("invalid address", "address");
+    } catch (e) {
+      expect((e as Error).message).to.equal(
+        "address address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+      );
+    }
+  });
+
+  it("should return address when call getAddress given valid address", () => {
+    const address = getAddress("0x176d33cc80ed3390256033bbf7fd651c9c5a364f", "address");
+    expect(address).to.equal("0x176d33Cc80ed3390256033bbf7Fd651c9C5A364F");
   });
 });

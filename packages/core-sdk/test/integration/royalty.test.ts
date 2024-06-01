@@ -11,10 +11,10 @@ let snapshotId: bigint;
 describe("Test royalty Functions", () => {
   let client: StoryClient;
 
-  before(function () {
+  before(() => {
     client = getStoryClientInSepolia();
   });
-  describe("Royalty Functions", async function () {
+  describe("Royalty Functions", async () => {
     let ipId1: Hex;
     let ipId2: Hex;
     const getIpId = async (): Promise<Hex> => {
@@ -133,7 +133,7 @@ describe("Test royalty Functions", () => {
       await client.ipAccount.execute({
         to: proxyAddress,
         value: 0,
-        accountAddress: ipId1,
+        ipId: ipId1,
         txOptions: {
           waitForTransaction: true,
         },

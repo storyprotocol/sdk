@@ -59,7 +59,7 @@ jobs:
     # and the event triggering the workflow is a push
     if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
     runs-on: ubuntu-latest
-    environment: 'beta-sepolia'
+    environment: "beta-sepolia"
     env:
       RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
@@ -93,13 +93,13 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-      
+
       - name: Fix
         run: pnpm fix
 
       - name: Run Anvil
         id: run_anvil
-        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL} --block-time 1 --silent &
+        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL}  --silent &
 
       - name: Check on Run Anvil
         if: steps.run_anvil.outcome != 'success'
@@ -107,7 +107,7 @@ jobs:
 
       - name: Test
         run: pnpm test
-      
+
       - name: Build
         run: pnpm build
 

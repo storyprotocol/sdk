@@ -127,7 +127,7 @@ export class StoryClient {
    */
   public get permission(): PermissionClient {
     if (this._permission === null) {
-      this._permission = new PermissionClient(this.rpcClient, this.wallet);
+      this._permission = new PermissionClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._permission;

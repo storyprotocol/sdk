@@ -8,16 +8,15 @@ import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe("Test IpAssetClient", function () {
+describe("Test IpAssetClient", () => {
   let ipAssetClient: IPAssetClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
 
-  beforeEach(function () {
+  beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
-    accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     walletMock.account.signTypedData = sinon
       .stub()
@@ -32,12 +31,12 @@ describe("Test IpAssetClient", function () {
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sinon.restore();
   });
 
-  describe("Test ipAssetClient.register", async function () {
-    it("should return ipId when register given tokenId have registered", async function () {
+  describe("Test ipAssetClient.register", async () => {
+    it("should return ipId when register given tokenId have registered", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -52,7 +51,7 @@ describe("Test IpAssetClient", function () {
       expect(res.txHash).to.be.undefined;
     });
 
-    it("should throw invalid address error when register given deadline is string", async function () {
+    it("should throw invalid address error when register given deadline is string", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -73,10 +72,13 @@ describe("Test IpAssetClient", function () {
       }
     });
 
-    it("should throw account error when register given account is not local account ", async function () {
+    it("should throw account error when register given account is not local account ", async () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
       ipAssetClient = new IPAssetClient(rpcMock, walletMock, "sepolia");
+      (ipAssetClient.spgClient as any).address = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+      (ipAssetClient.coreMetadataModuleClient as any).address =
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -98,7 +100,7 @@ describe("Test IpAssetClient", function () {
       }
     });
 
-    it("should return txHash when register given tokenId have no registered", async function () {
+    it("should return txHash when register given tokenId have no registered", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -117,7 +119,7 @@ describe("Test IpAssetClient", function () {
       );
     });
 
-    it("should return ipId and txHash when register a IP and given waitForTransaction of true and tokenId is not registered ", async function () {
+    it("should return ipId and txHash when register a IP and given waitForTransaction of true and tokenId is not registered ", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -151,7 +153,7 @@ describe("Test IpAssetClient", function () {
       expect(response.ipId).equals("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
     });
 
-    it("should return ipId and txHash when register a IP given correct args, waitForTransaction is true and metadata", async function () {
+    it("should return ipId and txHash when register a IP given correct args, waitForTransaction is true and metadata", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -189,7 +191,7 @@ describe("Test IpAssetClient", function () {
       expect(response.ipId).equals("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
     });
 
-    it("should throw error when request fails", async function () {
+    it("should throw error when request fails", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -209,7 +211,7 @@ describe("Test IpAssetClient", function () {
     });
   });
 
-  describe("Test ipAssetClient.registerDerivative", async function () {
+  describe("Test ipAssetClient.registerDerivative", async () => {
     it("should throw childIpId error when registerDerivative given childIpId is not registered", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
@@ -347,7 +349,7 @@ describe("Test IpAssetClient", function () {
     });
   });
 
-  describe("Test ipAssetClient.registerDerivativeWithLicenseTokens", async function () {
+  describe("Test ipAssetClient.registerDerivativeWithLicenseTokens", async () => {
     it("should throw childIpId error when registerDerivativeWithLicenseTokens given childIpId is not registered", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -436,7 +438,7 @@ describe("Test IpAssetClient", function () {
     });
   });
 
-  describe("Test ipAssetClient.createIpAssetWithPilTerms", async function () {
+  describe("Test ipAssetClient.createIpAssetWithPilTerms", async () => {
     it("throw PIL_TYPE error when createIpAssetWithPilTerms given PIL_TYPE is not match", async () => {
       try {
         await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
@@ -458,8 +460,8 @@ describe("Test IpAssetClient", function () {
           pilType: 0,
         });
       } catch (err) {
-        expect((err as Error).message).contains(
-          `Failed to mint and register IP and attach PIL terms: Address "0x" is invalid.`,
+        expect((err as Error).message).equal(
+          `Failed to mint and register IP and attach PIL terms: request.nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
         );
       }
     });
@@ -519,7 +521,7 @@ describe("Test IpAssetClient", function () {
     });
   });
 
-  describe("Test ipAssetClient.registerDerivativeIp", async function () {
+  describe("Test ipAssetClient.registerDerivativeIp", async () => {
     it("should throw ipId have registered error when registerDerivativeIp given tokenId have registered", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
@@ -695,7 +697,7 @@ describe("Test IpAssetClient", function () {
     });
   });
 
-  describe("Test ipAssetClient.registerIpAndAttachPilTerms", async function () {
+  describe("Test ipAssetClient.registerIpAndAttachPilTerms", async () => {
     it("should throw ipId have registered error when registerIpAndAttachPilTerms given tokenId have registered", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
