@@ -1,4 +1,4 @@
-import { PublicClient, getAddress, zeroAddress } from "viem";
+import { PublicClient, zeroAddress } from "viem";
 
 import {
   IpAssetRegistryClient,
@@ -25,6 +25,7 @@ import {
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
+import { getAddress } from "../utils/utils";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -160,7 +161,7 @@ export class LicenseClient {
     try {
       request.licenseTermsId = BigInt(request.licenseTermsId);
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.ipId),
+        id: getAddress(request.ipId, "request.ipId"),
       });
       if (!isRegistered) {
         throw new Error(`The IP with id ${request.ipId} is not registered.`);
@@ -175,7 +176,8 @@ export class LicenseClient {
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.ipId,
           licenseTemplate:
-            (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
+            (request.licenseTemplate &&
+              getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
             this.licenseTemplateClient.address,
           licenseTermsId: request.licenseTermsId,
         });
@@ -219,7 +221,7 @@ export class LicenseClient {
    *   @param request.amount The amount of license tokens to mint.
    *   @param request.receiver The address of the receiver.
    *   @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional license token ID if waitForTxn is set to true.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional license token IDs if waitForTxn is set to true.
    * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
    */
   public async mintLicenseTokens(
@@ -228,7 +230,7 @@ export class LicenseClient {
     try {
       request.licenseTermsId = BigInt(request.licenseTermsId);
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.licensorIpId),
+        id: getAddress(request.licensorIpId, "request.licensorIpId"),
       });
       if (!isLicenseIpIdRegistered) {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
@@ -243,7 +245,8 @@ export class LicenseClient {
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.licensorIpId,
           licenseTemplate:
-            (request.licenseTemplate && getAddress(request.licenseTemplate)) ||
+            (request.licenseTemplate &&
+              getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
             this.licenseTemplateClient.address,
           licenseTermsId: request.licenseTermsId,
         });
@@ -252,23 +255,26 @@ export class LicenseClient {
           `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}.`,
         );
       }
+      const amount = BigInt(request.amount || 1);
       const txHash = await this.licensingModuleClient.mintLicenseTokens({
         licensorIpId: request.licensorIpId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: request.licenseTermsId,
-        amount: BigInt(request.amount || 1),
+        amount,
         receiver:
-          (request.receiver && getAddress(request.receiver)) || this.wallet.account!.address,
+          (request.receiver && getAddress(request.receiver, "request.receiver")) ||
+          this.wallet.account!.address,
         royaltyContext: zeroAddress,
       });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
         const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
-
-        return {
-          txHash: txHash,
-          licenseTokenId: targetLogs[0].startLicenseTokenId,
-        };
+        const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
+        const licenseTokenIds = [];
+        for (let i = 0; i < amount; i++) {
+          licenseTokenIds.push(startLicenseTokenId + BigInt(i));
+        }
+        return { txHash: txHash, licenseTokenIds: licenseTokenIds };
       } else {
         return { txHash: txHash };
       }

@@ -27,7 +27,7 @@ describe("Test IPAccountClient", () => {
   describe("Test execute", async () => {
     it("should throw invalid address error when accountAddress is invalid", async () => {
       const request: IPAccountExecuteRequest = {
-        accountAddress: "0x123", // invalid address
+        ipId: "0x123", // invalid address
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -35,13 +35,15 @@ describe("Test IPAccountClient", () => {
       try {
         await ipAccountClient.execute(request);
       } catch (err) {
-        expect((err as Error).message).includes('Address "0x123" is invalid');
+        expect((err as Error).message).equal(
+          "Failed to execute the IP Account transaction: request.ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+        );
       }
     });
     it("should throw simulateContract error when simulateContract throws an error", async () => {
       rpcMock.simulateContract = sinon.stub().rejects(new Error("simulateContract error"));
       const request: IPAccountExecuteRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -57,7 +59,7 @@ describe("Test IPAccountClient", () => {
       rpcMock.simulateContract = sinon.stub().resolves({ request: null });
       walletMock.writeContract = sinon.stub().rejects(new Error("writeContract error"));
       const request: IPAccountExecuteRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -76,7 +78,7 @@ describe("Test IPAccountClient", () => {
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
       const request: IPAccountExecuteRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -98,7 +100,7 @@ describe("Test IPAccountClient", () => {
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const request: IPAccountExecuteRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -117,7 +119,7 @@ describe("Test IPAccountClient", () => {
       walletMock.writeContract = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
       const request: IPAccountExecuteRequest = {
-        accountAddress: zeroAddress,
+        ipId: zeroAddress,
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -145,7 +147,9 @@ describe("Test IPAccountClient", () => {
       try {
         await ipAccountClient.executeWithSig(request);
       } catch (err) {
-        expect((err as Error).message).includes('Address "0x123" is invalid');
+        expect((err as Error).message).equal(
+          "Failed to execute with signature for the IP Account transaction: request.ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+        );
       }
     });
 

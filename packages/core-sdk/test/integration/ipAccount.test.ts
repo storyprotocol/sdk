@@ -48,7 +48,7 @@ describe("Ip Account functions", () => {
       to: permissionAddress,
       value: 0,
       data,
-      accountAddress: ipId,
+      ipId: ipId,
     });
     expect(response.txHash).to.be.a("string").and.not.empty;
   });
@@ -60,7 +60,15 @@ describe("Ip Account functions", () => {
     const deadline = getDeadline(60000n);
     const signature = await getPermissionSignature({
       ipId,
-      data,
+      permissions: [
+        {
+          ipId: ipId,
+          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
+          to: coreMetadataModule,
+          permission: AccessPermission.ALLOW,
+          func: "function setAll(address,string,bytes32,bytes32)",
+        },
+      ],
       nonce: expectedState,
       account,
       chainId: BigInt(sepoliaChainId),

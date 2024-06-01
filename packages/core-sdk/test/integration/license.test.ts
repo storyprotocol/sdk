@@ -91,7 +91,7 @@ describe("License Functions", () => {
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseTokenId).to.be.a("bigint");
+      expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
     });
 
     it("should not throw error when get license terms", async () => {

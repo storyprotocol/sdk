@@ -340,8 +340,8 @@ describe("Test LicenseClient", () => {
           licenseTemplate: "invalid address" as Hex,
         });
       } catch (error) {
-        expect((error as Error).message).contain(
-          `Failed to attach license terms: Address "invalid address" is invalid`,
+        expect((error as Error).message).equal(
+          `Failed to attach license terms: request.licenseTemplate address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
         );
       }
     });
@@ -392,8 +392,8 @@ describe("Test LicenseClient", () => {
           licenseTemplate: "invalid address" as Hex,
         });
       } catch (error) {
-        expect((error as Error).message).contain(
-          `Failed to mint license tokens: Address "invalid address" is invalid`,
+        expect((error as Error).message).equal(
+          `Failed to mint license tokens: request.licenseTemplate address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
         );
       }
     });
@@ -412,8 +412,8 @@ describe("Test LicenseClient", () => {
           receiver: "invalid address" as Hex,
         });
       } catch (error) {
-        expect((error as Error).message).contain(
-          `Failed to mint license tokens: Address "invalid address" is invalid`,
+        expect((error as Error).message).equal(
+          `Failed to mint license tokens: request.receiver address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
         );
       }
     });
@@ -497,7 +497,39 @@ describe("Test LicenseClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTokenId).to.equal(1n);
+      expect(result.licenseTokenIds).to.deep.equal([1n]);
+    });
+
+    it("should return txHash when call mintLicenseTokens given args is correct and waitForTransaction of true, amount of 5", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
+        {
+          caller: zeroAddress,
+          licensorIpId: zeroAddress,
+          licenseTemplate: zeroAddress,
+          licenseTermsId: BigInt(1),
+          amount: BigInt(1),
+          receiver: zeroAddress,
+          startLicenseTokenId: BigInt(1),
+        },
+      ]);
+
+      const result = await licenseClient.mintLicenseTokens({
+        licensorIpId: zeroAddress,
+        licenseTermsId: "1",
+        amount: 5,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTokenIds).to.deep.equal([1n, 2n, 3n, 4n, 5n]);
     });
   });
 
