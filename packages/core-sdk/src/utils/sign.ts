@@ -1,28 +1,24 @@
-import {
-  Address,
-  ContractFunctionName,
-  Hex,
-  LocalAccount,
-  PrivateKeyAccount,
-  encodeFunctionData,
-  toFunctionSelector,
-} from "viem";
+import { Hex, encodeFunctionData, toFunctionSelector } from "viem";
 
 import { accessControllerAbi, accessControllerAddress } from "../abi/generated";
 import { getAddress } from "./utils";
-import { SetPermissionsRequest } from "../types/resources/permission";
 import { defaultFunctionSelector } from "../constants/common";
+import { SignatureHelpParameter } from "../types/common";
 
-export const getPermissionSignature = async (params: {
-  ipId: Address;
-  nonce: number | bigint;
-  deadline: bigint;
-  account: LocalAccount | PrivateKeyAccount;
-  chainId: bigint;
-  permissions: Omit<SetPermissionsRequest, "txOptions">[];
-  permissionFunc?: ContractFunctionName<typeof accessControllerAbi>;
-}): Promise<Hex> => {
-  const { ipId, deadline, nonce, account, chainId, permissions, permissionFunc } = params;
+/**
+ * Get the signature for setting permissions.
+ * @param param - The parameter object containing necessary data to get the signature.
+ * @param param.ipId - The IP ID.
+ * @param param.deadline - The deadline.
+ * @param param.nonce - The nonce.
+ * @param param.account - The account.
+ * @param param.chainId - The chain ID.
+ * @param param.permissions - The permissions.
+ * @param param.permissionFunc - The permission function,default function is setPermission.
+ * @returns A Promise that resolves to the signature.
+ */
+export const getPermissionSignature = async (param: SignatureHelpParameter): Promise<Hex> => {
+  const { ipId, deadline, nonce, account, chainId, permissions, permissionFunc } = param;
   if (!account.signTypedData) {
     throw new Error("The account does not support signTypedData, Please use a local account.");
   }

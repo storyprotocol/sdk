@@ -62,6 +62,11 @@ export type AttachLicenseTermsRequest = {
   txOptions?: TxOptions;
 };
 
+export type AttachLicenseTermsResponse = {
+  txHash: string;
+  success?: boolean;
+};
+
 export type MintLicenseTokensRequest = {
   licensorIpId: Address;
   licenseTermsId: string | number | bigint;
