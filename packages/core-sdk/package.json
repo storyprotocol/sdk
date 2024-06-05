@@ -29,6 +29,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@story-protocol/core-sdk": "1.0.0-rc.13",
     "abitype": "^0.10.2",
     "axios": "^1.5.1",
     "dotenv": "^16.3.1",
