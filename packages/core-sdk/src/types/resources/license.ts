@@ -86,3 +86,5 @@ export enum PIL_TYPE {
   COMMERCIAL_USE,
   COMMERCIAL_REMIX,
 }
+
+export type LicenseTermsId = string | number | bigint;

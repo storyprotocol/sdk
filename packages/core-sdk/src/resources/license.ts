@@ -23,6 +23,7 @@ import {
   MintLicenseTokensResponse,
   PIL_TYPE,
   AttachLicenseTermsResponse,
+  LicenseTermsId,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
@@ -292,7 +293,7 @@ export class LicenseClient {
    * @returns A Promise that resolves to an object containing the PILTerms associate with the given ID.
    */
   public async getLicenseTerms(
-    selectedLicenseTermsId: string | number | bigint,
+    selectedLicenseTermsId: LicenseTermsId,
   ): Promise<PiLicenseTemplateGetLicenseTermsResponse> {
     try {
       return await this.piLicenseTemplateReadOnlyClient.getLicenseTerms({

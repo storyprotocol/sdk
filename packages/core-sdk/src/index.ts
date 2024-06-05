@@ -37,6 +37,7 @@ export type {
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
+  LicenseTermsId,
 } from "./types/resources/license";
 export { PIL_TYPE } from "./types/resources/license";
 
@@ -49,6 +50,8 @@ export type {
   SnapshotResponse,
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
+  ClaimRevenueRequest,
+  ClaimRevenueResponse,
 } from "./types/resources/royalty";
 
 export type {
