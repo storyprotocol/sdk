@@ -129,35 +129,12 @@ jobs:
 
   send_slack_notif:
     needs: [build-test-publish, create_release]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Push Slack Notification
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
-          payload: |
-            {
-              "text": "${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}",
-              "blocks": [
-                { "type": "divider" },
-                {
-                  "type": "image",
-                  "title": {
-                    "type": "plain_text",
-                    "text": "Published to Registry"
-                  },
-                  "image_url": "https://imgur.com/a/6P1xFvE",
-                  "alt_text": "Published to Registry"
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text":"${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}" 
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-    
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
+    with:
+      short-desc: '${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}'
+      title: 'Published to Registry'
+      img-url: 'https://imgur.com/a/6P1xFvE'
+      img-alt-text: 'Published to Registry'
+    secrets:
+      channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
+      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
