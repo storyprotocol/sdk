@@ -1,4 +1,4 @@
-import { Address, LocalAccount, PrivateKeyAccount } from "viem";
+import { Address, WalletClient } from "viem";
 
 import { SetPermissionsRequest } from "./resources/permission";
 
@@ -11,7 +11,7 @@ export type SignatureHelpParameter = {
   ipId: Address;
   nonce: number | bigint;
   deadline: bigint;
-  account: LocalAccount | PrivateKeyAccount;
+  wallet: WalletClient;
   chainId: bigint;
   permissions: Omit<SetPermissionsRequest, "txOptions">[];
   permissionFunc?: "setPermission" | "setBatchPermissions";

@@ -17,6 +17,9 @@ describe("Test Permission", () => {
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
+    walletMock.signTypedData = sinon
+      .stub()
+      .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
     permissionClient = new PermissionClient(rpcMock, walletMock, "sepolia");
     IpAccountImplClient.prototype.state = sinon.stub().resolves(1n);
     walletMock.account.signTypedData = sinon
@@ -185,8 +188,8 @@ describe("Test Permission", () => {
       }
     });
 
-    it("should account error when call createSetPermissionSignature given account is not instance of local account", async () => {
-      walletMock.account = createMock<Account>();
+    it("should account error when call createSetPermissionSignature given wallet has no signTypedData method", async () => {
+      walletMock = createMock<WalletClient>();
       permissionClient = new PermissionClient(rpcMock, walletMock, "11155111");
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
@@ -200,7 +203,7 @@ describe("Test Permission", () => {
         });
       } catch (error) {
         expect((error as Error).message).to.equal(
-          "Failed to create set permission signature: The account does not support signTypedData, Please use a local account.",
+          "Failed to create set permission signature: The wallet client does not support signTypedData, please try again.",
         );
       }
     });

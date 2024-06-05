@@ -49,7 +49,7 @@ export type RegisterCommercialUsePILRequest = {
 };
 
 export type RegisterCommercialRemixPILRequest = {
-  mintingFee: string;
+  mintingFee: string| number | bigint;
   commercialRevShare: number;
   currency: Address;
   txOptions?: TxOptions;

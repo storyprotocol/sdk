@@ -1,37 +1,59 @@
 import { expect } from "chai";
 import { getDeadline, getPermissionSignature } from "../../../src/utils/sign";
-import { Hex, LocalAccount, zeroAddress } from "viem";
+import { Hex, WalletClient, createWalletClient, http, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { sepoliaChainId } from "../../integration/utils/util";
 import sinon from "sinon";
+import { chainStringToViemChain } from "../../../src/utils/utils";
 
 describe("Sign", () => {
   describe("Get Permission Signature", () => {
-    it("should throw sign error when call getPermissionSignature given account does not support signTypedData", async () => {
+    it("should throw sign error when call getPermissionSignature given wallet does not support signTypedData", async () => {
       try {
         await getPermissionSignature({
           ipId: zeroAddress,
           nonce: 1,
           deadline: 1000n,
           permissions: [],
-          account: {} as LocalAccount,
+          wallet: {} as WalletClient,
           chainId: BigInt(sepoliaChainId),
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
-          "The account does not support signTypedData, Please use a local account.",
+          "The wallet client does not support signTypedData, please try again.",
+        );
+      }
+    });
+
+    it("should throw sign error when call getPermissionSignature given wallet does not have an account", async () => {
+      try {
+        await getPermissionSignature({
+          ipId: zeroAddress,
+          nonce: 1,
+          deadline: 1000n,
+          permissions: [],
+          wallet: { signTypedData: () => Promise.resolve("") } as unknown as WalletClient,
+          chainId: BigInt(sepoliaChainId),
+        });
+      } catch (e) {
+        expect((e as Error).message).to.equal(
+          "The wallet client does not have an account, please try again.",
         );
       }
     });
 
     it("should return signature when call getPermissionSignature given account support signTypedData", async () => {
-      const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
+      const walletClient = createWalletClient({
+        chain: chainStringToViemChain("sepolia"),
+        transport: http(),
+        account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+      });
       const result = await getPermissionSignature({
         ipId: zeroAddress,
         nonce: 1,
         deadline: 1000n,
         permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
-        account,
+        wallet: walletClient,
         chainId: BigInt(sepoliaChainId),
       });
       expect(result).is.a("string").and.not.empty;

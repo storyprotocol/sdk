@@ -11,16 +11,19 @@ import { SignatureHelpParameter } from "../types/common";
  * @param param.ipId - The IP ID.
  * @param param.deadline - The deadline.
  * @param param.nonce - The nonce.
- * @param param.account - The account.
+ * @param param.wallet - The wallet client.
  * @param param.chainId - The chain ID.
  * @param param.permissions - The permissions.
  * @param param.permissionFunc - The permission function,default function is setPermission.
  * @returns A Promise that resolves to the signature.
  */
 export const getPermissionSignature = async (param: SignatureHelpParameter): Promise<Hex> => {
-  const { ipId, deadline, nonce, account, chainId, permissions, permissionFunc } = param;
-  if (!account.signTypedData) {
-    throw new Error("The account does not support signTypedData, Please use a local account.");
+  const { ipId, deadline, nonce, wallet, chainId, permissions, permissionFunc } = param;
+  if (!wallet.signTypedData) {
+    throw new Error("The wallet client does not support signTypedData, please try again.");
+  }
+  if (!wallet.account) {
+    throw new Error("The wallet client does not have an account, please try again.");
   }
   const permissionFunction = permissionFunc ? permissionFunc : "setPermission";
   const data = encodeFunctionData({
@@ -45,7 +48,8 @@ export const getPermissionSignature = async (param: SignatureHelpParameter): Pro
             })),
           ],
   });
-  return await account.signTypedData({
+  return await wallet.signTypedData({
+    account: wallet.account,
     domain: {
       name: "Story Protocol IP Account",
       version: "1",

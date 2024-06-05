@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/core-sdk",
-  "version": "1.0.0-rc.13",
+  "version": "1.0.0-rc.14",
   "description": "Story Protocol Core SDK",
   "main": "dist/story-protocol-core-sdk.cjs.js",
   "module": "dist/story-protocol-core-sdk.esm.js",
@@ -29,6 +29,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@story-protocol/core-sdk": "1.0.0-rc.13",
     "abitype": "^0.10.2",
     "axios": "^1.5.1",
     "dotenv": "^16.3.1",
