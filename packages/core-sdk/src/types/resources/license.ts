@@ -49,7 +49,7 @@ export type RegisterCommercialUsePILRequest = {
 };
 
 export type RegisterCommercialRemixPILRequest = {
-  mintingFee: string;
+  mintingFee: string | number | bigint;
   commercialRevShare: number;
   currency: Address;
   txOptions?: TxOptions;
@@ -60,6 +60,11 @@ export type AttachLicenseTermsRequest = {
   licenseTermsId: string | number | bigint;
   licenseTemplate?: Address;
   txOptions?: TxOptions;
+};
+
+export type AttachLicenseTermsResponse = {
+  txHash: string;
+  success?: boolean;
 };
 
 export type MintLicenseTokensRequest = {
@@ -81,3 +86,5 @@ export enum PIL_TYPE {
   COMMERCIAL_USE,
   COMMERCIAL_REMIX,
 }
+
+export type LicenseTermsId = string | number | bigint;

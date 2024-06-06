@@ -22,6 +22,8 @@ import {
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
   PIL_TYPE,
+  AttachLicenseTermsResponse,
+  LicenseTermsId,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
@@ -157,7 +159,9 @@ export class LicenseClient {
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  public async attachLicenseTerms(request: AttachLicenseTermsRequest) {
+  public async attachLicenseTerms(
+    request: AttachLicenseTermsRequest,
+  ): Promise<AttachLicenseTermsResponse> {
     try {
       request.licenseTermsId = BigInt(request.licenseTermsId);
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
@@ -193,7 +197,7 @@ export class LicenseClient {
       });
       if (request.txOptions?.waitForTransaction) {
         await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash };
+        return { txHash: txHash, success: true };
       } else {
         return { txHash: txHash };
       }
@@ -289,7 +293,7 @@ export class LicenseClient {
    * @returns A Promise that resolves to an object containing the PILTerms associate with the given ID.
    */
   public async getLicenseTerms(
-    selectedLicenseTermsId: string | number | bigint,
+    selectedLicenseTermsId: LicenseTermsId,
   ): Promise<PiLicenseTemplateGetLicenseTermsResponse> {
     try {
       return await this.piLicenseTemplateReadOnlyClient.getLicenseTerms({

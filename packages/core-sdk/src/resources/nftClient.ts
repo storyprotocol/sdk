@@ -32,10 +32,9 @@ export class NftClient {
    * @returns A Promise that resolves to a CreateNFTCollectionResponse containing the transaction hash and collection address.
    * @emits CollectionCreated (nftContract);
    */
-  public async createNFTCollection<
-    TReq extends CreateNFTCollectionRequest,
-    TRes = CreateNFTCollectionResponse<TReq>,
-  >(request: TReq): Promise<TRes> {
+  public async createNFTCollection(
+    request: CreateNFTCollectionRequest,
+  ): Promise<CreateNFTCollectionResponse> {
     try {
       if (
         request.mintFee !== undefined &&
@@ -61,9 +60,9 @@ export class NftClient {
         return {
           txHash: txHash,
           nftContract: targetLogs[0].nftContract,
-        } as TRes;
+        };
       }
-      return { txHash: txHash } as TRes;
+      return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to create a SPG NFT collection");
     }

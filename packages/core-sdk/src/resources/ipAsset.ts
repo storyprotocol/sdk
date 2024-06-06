@@ -1,4 +1,4 @@
-import { Hex, PublicClient, zeroAddress, Address, LocalAccount, zeroHash } from "viem";
+import { Hex, PublicClient, zeroAddress, Address, zeroHash, WalletClient } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -119,7 +119,7 @@ export class IPAssetClient {
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
         nonce: 1,
-        account: this.wallet.account as LocalAccount,
+        wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
           {
@@ -385,7 +385,7 @@ export class IPAssetClient {
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
         nonce: 2,
-        account: this.wallet.account as LocalAccount,
+        wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
           {
@@ -434,7 +434,7 @@ export class IPAssetClient {
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
         nonce: 1,
-        account: this.wallet.account as LocalAccount,
+        wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
           {
@@ -518,7 +518,7 @@ export class IPAssetClient {
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
         nonce: 2,
-        account: this.wallet.account as LocalAccount,
+        wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
           {
@@ -576,7 +576,7 @@ export class IPAssetClient {
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
         nonce: 1,
-        account: this.wallet.account as LocalAccount,
+        wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
           {

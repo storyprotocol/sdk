@@ -83,5 +83,3 @@ export type SnapshotResponse = {
   txHash: string;
   snapshotId?: bigint;
 };
-
-export type RoyaltyVaultAddress = Address;

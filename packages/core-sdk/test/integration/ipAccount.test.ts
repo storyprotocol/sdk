@@ -1,7 +1,13 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { AccessPermission, StoryClient } from "../../src";
-import { MockERC721, getStoryClientInSepolia, getTokenId, sepoliaChainId } from "./utils/util";
+import { AccessPermission, StoryClient, getPermissionSignature } from "../../src";
+import {
+  MockERC721,
+  getStoryClientInSepolia,
+  getTokenId,
+  sepoliaChainId,
+  walletClient,
+} from "./utils/util";
 import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import {
   accessControllerAbi,
@@ -9,7 +15,8 @@ import {
   coreMetadataModuleAddress,
 } from "../../src/abi/generated";
 import { privateKeyToAccount } from "viem/accounts";
-import { getDeadline, getPermissionSignature } from "../../src/utils/sign";
+import { getDeadline } from "../../src/utils/sign";
+
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const coreMetadataModule = coreMetadataModuleAddress[sepoliaChainId];
@@ -60,6 +67,7 @@ describe("Ip Account functions", () => {
     const deadline = getDeadline(60000n);
     const signature = await getPermissionSignature({
       ipId,
+      wallet: walletClient,
       permissions: [
         {
           ipId: ipId,
@@ -70,7 +78,7 @@ describe("Ip Account functions", () => {
         },
       ],
       nonce: expectedState,
-      account,
+
       chainId: BigInt(sepoliaChainId),
       deadline: deadline,
     });

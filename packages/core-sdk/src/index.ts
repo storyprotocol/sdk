@@ -6,6 +6,8 @@ export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
 export { DisputeClient } from "./resources/dispute";
 export { NftClient } from "./resources/nftClient";
+export { IPAccountClient } from "./resources/ipAccount";
+export { RoyaltyClient } from "./resources/royalty";
 
 export type { StoryConfig, SupportedChainIds } from "./types/config";
 export type { TypedData } from "./types/common";
@@ -31,9 +33,11 @@ export type {
   RegisterCommercialRemixPILRequest,
   RegisterPILResponse,
   AttachLicenseTermsRequest,
+  AttachLicenseTermsResponse,
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
+  LicenseTermsId,
 } from "./types/resources/license";
 export { PIL_TYPE } from "./types/resources/license";
 
@@ -46,7 +50,8 @@ export type {
   SnapshotResponse,
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
-  RoyaltyVaultAddress,
+  ClaimRevenueRequest,
+  ClaimRevenueResponse,
 } from "./types/resources/royalty";
 
 export type {
@@ -86,3 +91,6 @@ export type {
   PiLicenseTemplateGetLicenseTermsResponse,
   IpAccountImplStateResponse,
 } from "./abi/generated";
+
+export { getPermissionSignature } from "./utils/sign";
+export type { PermissionSignatureRequest } from "./types/common";
