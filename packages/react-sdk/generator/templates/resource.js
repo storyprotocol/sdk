@@ -14,7 +14,7 @@ const methodTemplate = `const <%=method.name %> = async (<% method.requests.forE
         setErrors((prev) => ({ ...prev, <%=method.name %>: e.message }));
         setLoadings((prev) => ({ ...prev, <%=method.name %>: false }));
       }
-      throw new Error(\`Unknown error type:\${e}\`);
+      throw new Error(\`unhandled error type\`);
     }
   };
   `;
@@ -33,7 +33,7 @@ const startTemplate = `import { <% types.forEach((type,index)=>{%>\n<%=type %><%
     const [loadings,setLoadings] = useState<Record<string,boolean>>({<% methodNames.forEach((name,index)=>{%><%=name %>: false<%=index === methodNames.length - 1 ? '' : ',' %> <%})%>});
     const [errors,setErrors] = useState<Record<string,string|null>>({ <% methodNames.forEach((name,index)=>{%><%=name %>: null<%=index === methodNames.length - 1 ? '' : ',' %><%})%> });
   `;
-  
+
 const endTemplate = `return {
     loadings,
     errors,

@@ -1,107 +1,147 @@
-import { 
-RegisterRequest,
-RegisterIpResponse,
-RegisterDerivativeRequest,
-RegisterDerivativeResponse,
-RegisterDerivativeWithLicenseTokensRequest,
-RegisterDerivativeWithLicenseTokensResponse,
-CreateIpAssetWithPilTermsRequest,
-CreateIpAssetWithPilTermsResponse,
-RegisterIpAndAttachPilTermsRequest,
-RegisterIpAndAttachPilTermsResponse,
-RegisterIpAndMakeDerivativeRequest,
-RegisterIpAndMakeDerivativeResponse 
-  } from "@story-protocol/core-sdk";
-  
-  
-  import { useState } from "react";
-  import { useStoryContext } from "../storyProtocolContext";
-  const useIpAsset = () => {
-    const client = useStoryContext();
-    const [loadings,setLoadings] = useState<Record<string,boolean>>({register: false, registerDerivative: false, registerDerivativeWithLicenseTokens: false, mintAndRegisterIpAssetWithPilTerms: false, registerIpAndAttachPilTerms: false, registerDerivativeIp: false });
-    const [errors,setErrors] = useState<Record<string,string|null>>({ register: null,registerDerivative: null,registerDerivativeWithLicenseTokens: null,mintAndRegisterIpAssetWithPilTerms: null,registerIpAndAttachPilTerms: null,registerDerivativeIp: null });
-  
-const register = async (
+import {
+  RegisterRequest,
+  RegisterIpResponse,
+  RegisterDerivativeRequest,
+  RegisterDerivativeResponse,
+  RegisterDerivativeWithLicenseTokensRequest,
+  RegisterDerivativeWithLicenseTokensResponse,
+  CreateIpAssetWithPilTermsRequest,
+  CreateIpAssetWithPilTermsResponse,
+  RegisterIpAndAttachPilTermsRequest,
+  RegisterIpAndAttachPilTermsResponse,
+  RegisterIpAndMakeDerivativeRequest,
+  RegisterIpAndMakeDerivativeResponse,
+} from "@story-protocol/core-sdk";
+import { useState } from "react";
+
+import { useStoryContext } from "../storyProtocolContext";
+
+const useIpAsset = () => {
+  const client = useStoryContext();
+  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+    register: false,
+    registerDerivative: false,
+    registerDerivativeWithLicenseTokens: false,
+    mintAndRegisterIpAssetWithPilTerms: false,
+    registerIpAndAttachPilTerms: false,
+    registerDerivativeIp: false,
+  });
+  const [errors, setErrors] = useState<Record<string, string | null>>({
+    register: null,
+    registerDerivative: null,
+    registerDerivativeWithLicenseTokens: null,
+    mintAndRegisterIpAssetWithPilTerms: null,
+    registerIpAndAttachPilTerms: null,
+    registerDerivativeIp: null,
+  });
+
+  const register = async (
     request: RegisterRequest
   ): Promise<RegisterIpResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, register: true }));
       setErrors((prev) => ({ ...prev, register: null }));
-      const response = await client.ipAsset.register(
-        request
-     );
-      setLoadings((prev ) => ({ ...prev, register: false }));
+      const response = await client.ipAsset.register(request);
+      setLoadings((prev) => ({ ...prev, register: false }));
       return response;
-    }catch(e){
-      if(e instanceof Error){
+    } catch (e) {
+      if (e instanceof Error) {
         setErrors((prev) => ({ ...prev, register: e.message }));
         setLoadings((prev) => ({ ...prev, register: false }));
       }
-      throw new Error(`Unknown error type:${e}`);
+      throw new Error(`unhandled error type`);
     }
   };
-  
-const registerDerivative = async (
+
+  const registerDerivative = async (
     request: RegisterDerivativeRequest
   ): Promise<RegisterDerivativeResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, registerDerivative: true }));
       setErrors((prev) => ({ ...prev, registerDerivative: null }));
-      const response = await client.ipAsset.registerDerivative(
-        request
-     );
-      setLoadings((prev ) => ({ ...prev, registerDerivative: false }));
+      const response = await client.ipAsset.registerDerivative(request);
+      setLoadings((prev) => ({ ...prev, registerDerivative: false }));
       return response;
-    }catch(e){
-      if(e instanceof Error){
+    } catch (e) {
+      if (e instanceof Error) {
         setErrors((prev) => ({ ...prev, registerDerivative: e.message }));
         setLoadings((prev) => ({ ...prev, registerDerivative: false }));
       }
-      throw new Error(`Unknown error type:${e}`);
+      throw new Error(`unhandled error type`);
     }
   };
-  
-const registerDerivativeWithLicenseTokens = async (
+
+  const registerDerivativeWithLicenseTokens = async (
     request: RegisterDerivativeWithLicenseTokensRequest
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, registerDerivativeWithLicenseTokens: true }));
-      setErrors((prev) => ({ ...prev, registerDerivativeWithLicenseTokens: null }));
+      setLoadings((prev) => ({
+        ...prev,
+        registerDerivativeWithLicenseTokens: true,
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        registerDerivativeWithLicenseTokens: null,
+      }));
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens(
         request
-     );
-      setLoadings((prev ) => ({ ...prev, registerDerivativeWithLicenseTokens: false }));
+      );
+      setLoadings((prev) => ({
+        ...prev,
+        registerDerivativeWithLicenseTokens: false,
+      }));
       return response;
-    }catch(e){
-      if(e instanceof Error){
-        setErrors((prev) => ({ ...prev, registerDerivativeWithLicenseTokens: e.message }));
-        setLoadings((prev) => ({ ...prev, registerDerivativeWithLicenseTokens: false }));
+    } catch (e) {
+      if (e instanceof Error) {
+        setErrors((prev) => ({
+          ...prev,
+          registerDerivativeWithLicenseTokens: e.message,
+        }));
+        setLoadings((prev) => ({
+          ...prev,
+          registerDerivativeWithLicenseTokens: false,
+        }));
       }
-      throw new Error(`Unknown error type:${e}`);
+      throw new Error(`unhandled error type`);
     }
   };
-  
-const mintAndRegisterIpAssetWithPilTerms = async (
+
+  const mintAndRegisterIpAssetWithPilTerms = async (
     request: CreateIpAssetWithPilTermsRequest
   ): Promise<CreateIpAssetWithPilTermsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, mintAndRegisterIpAssetWithPilTerms: true }));
-      setErrors((prev) => ({ ...prev, mintAndRegisterIpAssetWithPilTerms: null }));
+      setLoadings((prev) => ({
+        ...prev,
+        mintAndRegisterIpAssetWithPilTerms: true,
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        mintAndRegisterIpAssetWithPilTerms: null,
+      }));
       const response = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms(
         request
-     );
-      setLoadings((prev ) => ({ ...prev, mintAndRegisterIpAssetWithPilTerms: false }));
+      );
+      setLoadings((prev) => ({
+        ...prev,
+        mintAndRegisterIpAssetWithPilTerms: false,
+      }));
       return response;
-    }catch(e){
-      if(e instanceof Error){
-        setErrors((prev) => ({ ...prev, mintAndRegisterIpAssetWithPilTerms: e.message }));
-        setLoadings((prev) => ({ ...prev, mintAndRegisterIpAssetWithPilTerms: false }));
+    } catch (e) {
+      if (e instanceof Error) {
+        setErrors((prev) => ({
+          ...prev,
+          mintAndRegisterIpAssetWithPilTerms: e.message,
+        }));
+        setLoadings((prev) => ({
+          ...prev,
+          mintAndRegisterIpAssetWithPilTerms: false,
+        }));
       }
-      throw new Error(`Unknown error type:${e}`);
+      throw new Error(`unhandled error type`);
     }
   };
-  
-const registerIpAndAttachPilTerms = async (
+
+  const registerIpAndAttachPilTerms = async (
     request: RegisterIpAndAttachPilTermsRequest
   ): Promise<RegisterIpAndAttachPilTermsResponse> => {
     try {
@@ -109,39 +149,43 @@ const registerIpAndAttachPilTerms = async (
       setErrors((prev) => ({ ...prev, registerIpAndAttachPilTerms: null }));
       const response = await client.ipAsset.registerIpAndAttachPilTerms(
         request
-     );
-      setLoadings((prev ) => ({ ...prev, registerIpAndAttachPilTerms: false }));
+      );
+      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
       return response;
-    }catch(e){
-      if(e instanceof Error){
-        setErrors((prev) => ({ ...prev, registerIpAndAttachPilTerms: e.message }));
-        setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
+    } catch (e) {
+      if (e instanceof Error) {
+        setErrors((prev) => ({
+          ...prev,
+          registerIpAndAttachPilTerms: e.message,
+        }));
+        setLoadings((prev) => ({
+          ...prev,
+          registerIpAndAttachPilTerms: false,
+        }));
       }
-      throw new Error(`Unknown error type:${e}`);
+      throw new Error(`unhandled error type`);
     }
   };
-  
-const registerDerivativeIp = async (
+
+  const registerDerivativeIp = async (
     request: RegisterIpAndMakeDerivativeRequest
   ): Promise<RegisterIpAndMakeDerivativeResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, registerDerivativeIp: true }));
       setErrors((prev) => ({ ...prev, registerDerivativeIp: null }));
-      const response = await client.ipAsset.registerDerivativeIp(
-        request
-     );
-      setLoadings((prev ) => ({ ...prev, registerDerivativeIp: false }));
+      const response = await client.ipAsset.registerDerivativeIp(request);
+      setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
       return response;
-    }catch(e){
-      if(e instanceof Error){
+    } catch (e) {
+      if (e instanceof Error) {
         setErrors((prev) => ({ ...prev, registerDerivativeIp: e.message }));
         setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
       }
-      throw new Error(`Unknown error type:${e}`);
+      throw new Error(`unhandled error type`);
     }
   };
-  
-return {
+
+  return {
     loadings,
     errors,
     register,
@@ -149,7 +193,7 @@ return {
     registerDerivativeWithLicenseTokens,
     mintAndRegisterIpAssetWithPilTerms,
     registerIpAndAttachPilTerms,
-    registerDerivativeIp
-    
-  };}
+    registerDerivativeIp,
+  };
+};
 export default useIpAsset;

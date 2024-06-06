@@ -2,20 +2,60 @@
   "name": "react",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "generator": "node ./generator/index.js "
+  "main": "dist/react.cjs.js",
+  "module": "dist/react.esm.js",
+  "exports": {
+    ".": {
+      "module": "./dist/react.esm.js",
+      "default": "./dist/react.cjs.js"
+    },
+    "./package.json": "./package.json"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "generator": "node ./generator/index.js && npm run fix",
+    "build": "pnpm run fix && preconstruct build",
+    "fix": "pnpm run format:fix && pnpm run lint:fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint:fix": "pnpm run lint --fix",
+    "lint": "eslint ./src",
+    "tsc": "tsc --noEmit"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/**/*"
+  ],
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts"
+    ],
+    "exports": true
+  },
+  "keywords": [
+    "story-protocol",
+    "react",
+    "sdk",
+    "react hooks"
+  ],
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-typescript"
+    ]
+  },
+  "license": "MIT",
   "dependencies": {
-    "@story-protocol/core-sdk": "1.0.0-rc.13",
+    "@story-protocol/core-sdk": "1.0.0-rc.14",
     "ejs": "^3.1.10",
     "react": "^18.3.1",
     "viem": "1.21.4"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-typescript": "^7.23.0",
+    "@preconstruct/cli": "^2.8.1",
+    "@story-protocol/eslint-config": "workspace:*",
+    "@story-protocol/prettier-config": "workspace:*",
     "@story-protocol/tsconfig": "workspace:*",
     "@types/react": "^18.3.3",
     "ts-node": "^10.9.1",

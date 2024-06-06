@@ -21,7 +21,7 @@ const isPrimitiveType = (type) => {
   ].includes(type);
 };
 const isViemType = (type) => {
-  return ["`0x${string}`", "Hex"].includes(type);
+  return ["Hex", "Address"].includes(type);
 };
 const visit = (file) => {
   let program = ts.createProgram([file], { allowJs: true });
@@ -44,22 +44,19 @@ const visit = (file) => {
           const methodSignature = program
             .getTypeChecker()
             .getSignatureFromDeclaration(member);
-          //TODO: how to get Address or Hex not `0x${string}`
-          const returnType = checker
-            .typeToString(methodSignature.getReturnType())
-            .replace("Promise<", "")
-            .replace(">", "");
           member.parameters.forEach((parameter) => {
             requests.push({
               name: parameter.name.escapedText,
-              type:
-                parameter.type.typeName && parameter.type.typeName.escapedText,
+              type: parameter.type.getText(),
             });
           });
           const method = {
             name: member.name.text,
             requests,
-            responseType: returnType,
+            responseType: member.type
+              ?.getText()
+              .replace("Promise<", "")
+              .replace(">", ""),
             comments:
               ts
                 .getLeadingCommentRanges(sourceFile.text, member.pos)
@@ -103,13 +100,7 @@ fs.readdirSync(resourcesFolder).forEach((file) => {
       ],
       name: fileName,
       methodNames,
-      viemTypes: [
-        ...new Set(
-          types
-            .filter((type) => isViemType(type))
-            .map((item) => (item == "`0x${string}`" ? "Hex" : item))
-        ),
-      ],
+      viemTypes: [...new Set(types.filter((type) => isViemType(type)))],
     })
   );
   const methodTemplates = methods.map((method) => {
