@@ -107,6 +107,7 @@ fs.readdirSync(resourcesFolder).forEach((file) => {
     return ejs.render(resourceTemplate.methodTemplate, {
       method: method,
       fileName: file.replace(".ts", ""),
+      comments: method.comments,
     });
   });
 

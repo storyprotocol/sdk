@@ -1,4 +1,4 @@
-const methodTemplate = `const <%=method.name %> = async (<% method.requests.forEach((item, index)=> { %>
+const methodTemplate = `<%=comments%>\nconst <%=method.name %> = async (<% method.requests.forEach((item, index)=> { %>
     <%= item.name %>: <%= item.type %><%= index === method.requests.length - 1 ? '' : ',' %>
   <% }); %>): Promise<<%- method.responseType %>> => {
     try {

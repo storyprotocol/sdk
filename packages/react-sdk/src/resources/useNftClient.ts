@@ -15,6 +15,19 @@ const useNftClient = () => {
     createNFTCollection: null,
   });
 
+  /**
+   * Creates a new SPG NFT Collection.
+   * @param request - The request object containing necessary data to create a SPG NFT Collection.
+   *   @param request.name - The name of the collection.
+   * 	 @param request.symbol - The symbol of the collection.
+   * 	 @param request.maxSupply - The maximum supply of the collection.
+   * 	 @param request.mintFee - The cost to mint a token.
+   * 	 @param request.mintFeeToken - The token to mint.
+   * 	 @param request.owner - The owner of the collection.
+   *   @param request.txOptions - Optional transaction options.
+   * @returns A Promise that resolves to a CreateNFTCollectionResponse containing the transaction hash and collection address.
+   * @emits CollectionCreated (nftContract);
+   */
   const createNFTCollection = async (
     request: CreateNFTCollectionRequest
   ): Promise<CreateNFTCollectionResponse> => {

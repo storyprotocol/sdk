@@ -22,6 +22,15 @@ const useIpAccount = () => {
     getIpAccountNonce: null,
   });
 
+  /** Executes a transaction from the IP Account.
+   * @param request - The request object containing necessary data to execute IP Account a transaction.
+   *   @param request.ipId The Ip Id to get ip account.
+   *   @param request.to The recipient of the transaction.
+   *   @param request.value The amount of Ether to send.
+   *   @param request.accountAddress The ipId to send.
+   *   @param request.data The data to send along with the transaction.
+   * @returns Tx hash for the transaction.
+   */
   const execute = async (
     request: IPAccountExecuteRequest
   ): Promise<IPAccountExecuteResponse> => {
@@ -40,6 +49,17 @@ const useIpAccount = () => {
     }
   };
 
+  /** Executes a transaction from the IP Account.
+   * @param request - The request object containing necessary data to execute IP Account a transaction.
+   *   @param request.ipId The Ip Id to get ip account.
+   *   @param request.to The recipient of the transaction.
+   *   @param request.value The amount of Ether to send.
+   *   @param request.data The data to send along with the transaction.
+   *   @param request.signer The signer of the transaction.
+   *   @param request.deadline The deadline of the transaction signature.
+   *   @param request.signature The signature of the transaction, EIP-712 encoded.
+   * @returns Tx hash for the transaction.
+   */
   const executeWithSig = async (
     request: IPAccountExecuteWithSigRequest
   ): Promise<IPAccountExecuteWithSigResponse> => {
@@ -58,6 +78,10 @@ const useIpAccount = () => {
     }
   };
 
+  /** Returns the IPAccount&#39;s internal nonce for transaction ordering.
+   * @param ipId The IP ID
+   * @returns The nonce for transaction ordering.
+   */
   const getIpAccountNonce = async (
     ipId: string
   ): Promise<IpAccountImplStateResponse> => {
