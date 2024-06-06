@@ -93,4 +93,4 @@ export type {
 } from "./abi/generated";
 
 export { getPermissionSignature } from "./utils/sign";
-export type { SignatureHelpParameter } from "./types/common";
+export type { PermissionSignatureRequest } from "./types/common";

@@ -7,7 +7,7 @@ export type TypedData = {
   data: unknown[];
 };
 
-export type SignatureHelpParameter = {
+export type PermissionSignatureRequest = {
   ipId: Address;
   nonce: number | bigint;
   deadline: bigint;

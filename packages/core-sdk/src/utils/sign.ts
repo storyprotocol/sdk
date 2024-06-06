@@ -3,7 +3,7 @@ import { Hex, encodeFunctionData, toFunctionSelector } from "viem";
 import { accessControllerAbi, accessControllerAddress } from "../abi/generated";
 import { getAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
-import { SignatureHelpParameter } from "../types/common";
+import { PermissionSignatureRequest } from "../types/common";
 
 /**
  * Get the signature for setting permissions.
@@ -17,7 +17,7 @@ import { SignatureHelpParameter } from "../types/common";
  * @param param.permissionFunc - The permission function,default function is setPermission.
  * @returns A Promise that resolves to the signature.
  */
-export const getPermissionSignature = async (param: SignatureHelpParameter): Promise<Hex> => {
+export const getPermissionSignature = async (param: PermissionSignatureRequest): Promise<Hex> => {
   const { ipId, deadline, nonce, wallet, chainId, permissions, permissionFunc } = param;
   if (!wallet.signTypedData) {
     throw new Error("The wallet client does not support signTypedData, please try again.");
