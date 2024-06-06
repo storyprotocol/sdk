@@ -40,7 +40,8 @@
   "babel": {
     "presets": [
       "@babel/preset-env",
-      "@babel/preset-typescript"
+      "@babel/preset-typescript",
+      "@babel/preset-react"
     ]
   },
   "license": "MIT",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.23.0",
     "@preconstruct/cli": "^2.8.1",
     "@story-protocol/eslint-config": "workspace:*",
