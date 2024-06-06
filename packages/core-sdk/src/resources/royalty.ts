@@ -1,4 +1,4 @@
-import { Hex, PublicClient, encodeFunctionData } from "viem";
+import { Address, Hex, PublicClient, encodeFunctionData } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -8,7 +8,6 @@ import {
   CollectRoyaltyTokensResponse,
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
-  RoyaltyVaultAddress,
   SnapshotRequest,
   SnapshotResponse,
   ClaimRevenueRequest,
@@ -255,7 +254,7 @@ export class RoyaltyClient {
    * @param royaltyVaultIpId the id of the royalty vault.
    * @returns A Promise that resolves to an object containing the royalty vault address.
    */
-  public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<RoyaltyVaultAddress> {
+  public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<Address> {
     const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
       id: getAddress(royaltyVaultIpId, "royaltyVaultIpId"),
     });

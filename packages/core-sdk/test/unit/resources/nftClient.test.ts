@@ -102,8 +102,8 @@ describe("Test NftClient", () => {
       const result = await nftClient.createNFTCollection({
         ...reqBody,
         maxSupply: undefined,
-        mintCost: undefined,
-        mintToken: undefined,
+        mintFee: undefined,
+        mintFeeToken: undefined,
       });
       expect(result.txHash).to.equal(mock.txHash);
     });

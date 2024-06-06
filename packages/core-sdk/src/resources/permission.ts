@@ -1,4 +1,4 @@
-import { PublicClient, encodeFunctionData, Address, LocalAccount, toFunctionSelector } from "viem";
+import { PublicClient, encodeFunctionData, Address, toFunctionSelector, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -129,7 +129,7 @@ export class PermissionClient {
           },
         ],
         chainId: chain[this.chainId],
-        account: this.wallet.account as LocalAccount,
+        wallet: this.wallet as WalletClient,
       });
       const txHash = await ipAccountClient.executeWithSig({
         to: getAddress(this.accessControllerClient.address, "accessControllerClientAddress"),
@@ -265,7 +265,7 @@ export class PermissionClient {
         nonce,
         permissions,
         chainId: chain[this.chainId],
-        account: this.wallet.account as LocalAccount,
+        wallet: this.wallet as WalletClient,
         permissionFunc: "setBatchPermissions",
       });
       const txHash = await ipAccountClient.executeWithSig({

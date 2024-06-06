@@ -133,13 +133,12 @@ describe("IP Asset Functions ", () => {
         name: "test-collection",
         symbol: "TEST",
         maxSupply: 100,
-        mintCost: 0n,
         txOptions: {
           waitForTransaction: true,
         },
       });
       expect(txData.nftContract).to.be.a("string").and.not.empty;
-      nftContract = txData.nftContract;
+      nftContract = txData.nftContract!;
     });
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {

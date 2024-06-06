@@ -12,7 +12,4 @@ export type CreateNFTCollectionRequest = {
   txOptions?: TxOptions;
 };
 
-export type CreateNFTCollectionResponse<TReq extends CreateNFTCollectionRequest> =
-  TReq["txOptions"] extends { waitForTransaction: true }
-    ? { txHash: string; nftContract: Hex }
-    : { txHash: string; nftContract?: Hex };
+export type CreateNFTCollectionResponse = { txHash: string; nftContract?: Hex };
