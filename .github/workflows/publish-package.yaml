@@ -133,7 +133,7 @@ jobs:
     with:
       short-desc: '${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}'
       title: 'Published to Registry'
-      img-url: 'https://imgur.com/a/6P1xFvE'
+      img-url: 'https://i.imgur.com/JHmKB0s.png'
       img-alt-text: 'Published to Registry'
     secrets:
       channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
