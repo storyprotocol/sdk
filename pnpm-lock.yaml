@@ -141,7 +141,7 @@ importers:
     dependencies:
       '@story-protocol/core-sdk':
         specifier: 1.0.0-rc.14
-        version: link:../core-sdk
+        version: 1.0.0-rc.14(typescript@5.4.5)
       ejs:
         specifier: ^3.1.10
         version: 3.1.10
@@ -3798,6 +3798,21 @@ packages:
       '@stablelib/random': 1.0.2
       '@stablelib/wipe': 1.0.1
     dev: true
+
+  /@story-protocol/core-sdk@1.0.0-rc.14(typescript@5.4.5):
+    resolution: {integrity: sha512-7/CLt12G/HHdJazWTg5wDjYUb5oxbVJW2EUEmelP32rhVAHVbR+RhqgDtuM+4ISX+Eg1nbUHGG/dbhwbgBV4+A==}
+    dependencies:
+      abitype: 0.10.3(typescript@5.4.5)
+      axios: 1.6.8
+      dotenv: 16.4.5
+      viem: 2.9.16(typescript@5.4.5)(zod@3.22.4)
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - typescript
+      - utf-8-validate
+      - zod
+    dev: false
 
   /@tanstack/query-core@5.29.0:
     resolution: {integrity: sha512-WgPTRs58hm9CMzEr5jpISe8HXa3qKQ8CxewdYZeVnA54JrPY9B1CZiwsCoLpLkf0dGRZq+LcX5OiJb0bEsOFww==}

@@ -46,7 +46,6 @@ describe("IP Asset Functions ", () => {
 
     it("should not throw error when registering a IP Asset given metadata", async () => {
       const tokenId = await getTokenId();
-      console.log(tokenId);
       const waitForTransaction: boolean = true;
       const response = await client.ipAsset.register({
         nftContract: MockERC721,
