@@ -1,7 +1,7 @@
 const indexTemplate = `
-export { StoryProvider, useStoryContext } from "./storyProtocolContext";
+export { StoryProvider } from "./StoryProtocolContext";
 <% resources.forEach((resource) => {%>
-export * from "./resources/use<%=resource %>";
+export { default as use<%=resource %> }  from "./resources/use<%=resource %>";
 <%})%>
 `;
 module.exports = indexTemplate;

@@ -1,15 +1,15 @@
-export { StoryProvider, useStoryContext } from "./storyProtocolContext";
+export { StoryProvider } from "./StoryProtocolContext";
 
-export * from "./resources/useDispute";
+export { default as useDispute } from "./resources/useDispute";
 
-export * from "./resources/useIpAccount";
+export { default as useIpAccount } from "./resources/useIpAccount";
 
-export * from "./resources/useIpAsset";
+export { default as useIpAsset } from "./resources/useIpAsset";
 
-export * from "./resources/useLicense";
+export { default as useLicense } from "./resources/useLicense";
 
-export * from "./resources/useNftClient";
+export { default as useNftClient } from "./resources/useNftClient";
 
-export * from "./resources/usePermission";
+export { default as usePermission } from "./resources/usePermission";
 
-export * from "./resources/useRoyalty";
+export { default as useRoyalty } from "./resources/useRoyalty";

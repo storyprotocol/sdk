@@ -13,7 +13,7 @@ import {
 import { Hex, Address } from "viem";
 import { useState } from "react";
 
-import { useStoryContext } from "../storyProtocolContext";
+import { useStoryContext } from "../StoryProtocolContext";
 
 const useRoyalty = () => {
   const client = useStoryContext();

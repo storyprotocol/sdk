@@ -1,13 +1,13 @@
 {
-  "name": "react",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/react.cjs.js",
-  "module": "dist/react.esm.js",
+  "name": "@story-protocol/react-sdk",
+  "version": "1.0.0-rc.14",
+  "description": "The Story Protocol React SDK",
+  "main": "dist/story-protocol-react-sdk.cjs.js",
+  "module": "dist/story-protocol-react-sdk.esm.js",
   "exports": {
     ".": {
-      "module": "./dist/react.esm.js",
-      "default": "./dist/react.cjs.js"
+      "module": "./dist/story-protocol-react-sdk.esm.js",
+      "default": "./dist/story-protocol-react-sdk.cjs.js"
     },
     "./package.json": "./package.json"
   },
@@ -29,7 +29,11 @@
     "entrypoints": [
       "index.ts"
     ],
-    "exports": true
+    "exports": true,
+    "externals": [
+      "react",
+      "@story-protocol/core-sdk"
+    ]
   },
   "keywords": [
     "story-protocol",
@@ -41,15 +45,20 @@
     "presets": [
       "@babel/preset-env",
       "@babel/preset-typescript",
-      "@babel/preset-react"
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ]
     ]
   },
   "license": "MIT",
   "dependencies": {
-    "@story-protocol/core-sdk": "1.0.0-rc.14",
     "ejs": "^3.1.10",
     "react": "^18.3.1",
-    "viem": "1.21.4"
+    "viem": "^2.8.12",
+    "@story-protocol/core-sdk": "1.0.0-rc.14"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",

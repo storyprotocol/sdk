@@ -27,7 +27,7 @@ const startTemplate = `import { <% types.forEach((type,index)=>{%>\n<%=type %><%
   <% } %>
   
   import { useState } from "react";
-  import { useStoryContext } from "../storyProtocolContext";
+  import { useStoryContext } from "../StoryProtocolContext";
   const use<%=name %> = () => {
     const client = useStoryContext();
     const [loadings,setLoadings] = useState<Record<string,boolean>>({<% methodNames.forEach((name,index)=>{%><%=name %>: false<%=index === methodNames.length - 1 ? '' : ',' %> <%})%>});

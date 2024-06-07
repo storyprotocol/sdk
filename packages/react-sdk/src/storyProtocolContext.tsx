@@ -1,20 +1,20 @@
 import { createContext, useContext, ReactNode } from "react";
-import { StoryClient } from "@story-protocol/core-sdk";
+import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
 
 type Props = {
-  client: StoryClient;
+  config: StoryConfig;
   children: ReactNode;
 };
 
 const StoryContext = createContext<StoryClient>({} as StoryClient);
 
-const StoryProvider = ({ client, children }: Props) => {
+const StoryProvider = ({ config, children }: Props) => {
+  const client = StoryClient.newClient(config);
   return (
     <StoryContext.Provider value={client}>{children}</StoryContext.Provider>
   );
 };
 const useStoryContext = (): StoryClient => {
-  const context = useContext(StoryContext);
-  return context;
+  return useContext(StoryContext);
 };
 export { useStoryContext, StoryProvider };

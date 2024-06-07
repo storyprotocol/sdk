@@ -8,7 +8,7 @@ import {
 } from "@story-protocol/core-sdk";
 import { useState } from "react";
 
-import { useStoryContext } from "../storyProtocolContext";
+import { useStoryContext } from "../StoryProtocolContext";
 
 const usePermission = () => {
   const client = useStoryContext();
