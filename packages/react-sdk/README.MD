@@ -1,83 +1,49 @@
-## Why we need to react version for sdk?
+# Story Protocol React SDK
 
-1. community lifecycle, and follow react best practice, such as react hook, combine life cycle
-2. reduce some template code
+The react-sdk is a library that provides a set of hooks to interact with the SDK. It is designed to be used in a React application.
 
-## Scope
+## How to use Story Protocol SDK in Your Project
 
-- Every module have a hook file
-- Only export public method in a module
-- Including states
+### Generate React SDK
 
-**Expected result**
+1. Install the dependencies
 
-```ts
-// useIpAsset
-const [loadings, setLoadings] = useState(false);
-const [errors, setErrors] = useState(false);
-const registerRootIp = (request) => {
-  try {
-    setLoadings({
-      ...loadings,
-      registerRootIp: true,
-    });
-    const result = await client.ipAsset.registerRootIp(request);
-    setLoadings({
-      ...loadings,
-      registerRootIp: false,
-    });
-    return result;
-  } catch {
-    setErrors({
-      ...errors,
-      registerRootIp: true,
-    });
-  }
-};
-const registerDerivativeIp = (request) => {
-  try {
-    setLoadings({
-      ...loadings,
-      registerDerivativeIp: true,
-    });
-    const result = await client.ipAsset.registerDerivativeIp(request);
-    setLoadings({
-      ...loadings,
-      registerDerivativeIp: false,
-    });
-    return result;
-  } catch {
-    setErrors({
-      ...errors,
-      registerDerivativeIp: true,
-    });
-  }
-};
-return {
-  registerRootIp,
-  registerDerivativeIp,
-  loadings,
-  errors,
-};
+```bash
+pnpm install
 ```
 
-Usage
+2. Update the `@story-protocol/core-sdk` package version in the `packages/react-sdk/package.json` file to the latest version.
 
-```ts
-import { useIpAsset } from "./ipAsset";
-const { registerRootIp, registerDerivativeIp, loadings, errors } = useIpAsset;
-const result = await registerRootIp();
+3. Generate the SDK
+
+```bash
+pnpm run generate
 ```
 
-## Technical Stack
+This SDK is generated using the command `pnpm run generate`. The source code resides in the `packages/sdk` directory and the generated SDK can be found in the `packages/react-sdk` folder.
 
-- ejs
+### How to use Story Protocol React SDK in Your Project
 
-## Issue
+- Install Story Protocol React SDK
 
-1. Do we need states like `loadings`, or `errors`
-2. Do we need config client param or just keep the same as sdk
-3. how to interact with wallet
-- provider client, and every module capture by use Context ?
-4. use source code or publish package
-Recommend publish package
+```bash
+pnpm install
+```
+
+- Import the provider in your React application
+
+```typescript
+import { StoryProvider } from "@story-protocol/react-sdk";
+const client = StoryClient.newClient(config);
+<StoryProvider client={client}>
+  <App />
+</StoryProvider>;
+```
+
+- Use the hooks in your components
+
+```typescript
+import { useIpAsset } from "@story-protocol/react-sdk";
+const { data, error, loading, register } = useIpAsset();
+register({ nftContract: "0x1234", tokenId: "1" });
+```
