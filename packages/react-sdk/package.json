@@ -13,7 +13,13 @@
   },
   "scripts": {
     "generator": "node ./generator/index.js && npm run fix",
-    "build": "pnpm run fix && preconstruct build"
+    "build": "pnpm run fix && preconstruct build",
+    "fix": "pnpm run format:fix && pnpm run lint:fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint:fix": "pnpm run lint --fix",
+    "lint": "eslint ./src",
+    "tsc": "tsc --noEmit"
   },
   "sideEffects": false,
   "files": [
@@ -49,7 +55,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@story-protocol/core-sdk": "workspace:1.0.0-rc.14",
+    "@story-protocol/core-sdk": "1.0.0-rc.14",
     "ejs": "^3.1.10",
     "react": "^18.3.1",
     "viem": "^2.8.12"
