@@ -140,7 +140,7 @@ importers:
   packages/react-sdk:
     dependencies:
       '@story-protocol/core-sdk':
-        specifier: 1.0.0-rc.14
+        specifier: workspace:1.0.0-rc.14
         version: link:../core-sdk
       ejs:
         specifier: ^3.1.10

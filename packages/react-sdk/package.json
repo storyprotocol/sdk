@@ -55,10 +55,10 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@story-protocol/core-sdk": "workspace:1.0.0-rc.14",
     "ejs": "^3.1.10",
     "react": "^18.3.1",
-    "viem": "^2.8.12",
-    "@story-protocol/core-sdk": "1.0.0-rc.14"
+    "viem": "^2.8.12"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",
