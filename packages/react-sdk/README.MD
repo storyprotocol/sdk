@@ -1,4 +1,4 @@
-# Story Protocol React SDK
+# Story Protocol React SDKq
 
 The react-sdk is a library that provides a set of hooks to interact with the SDK. It is designed to be used in a React application.
 
