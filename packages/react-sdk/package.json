@@ -13,13 +13,7 @@
   },
   "scripts": {
     "generator": "node ./generator/index.js && npm run fix",
-    "build": "pnpm run fix && preconstruct build",
-    "fix": "pnpm run format:fix && pnpm run lint:fix",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write .",
-    "lint:fix": "pnpm run lint --fix",
-    "lint": "eslint ./src",
-    "tsc": "tsc --noEmit"
+    "build": "pnpm run fix && preconstruct build"
   },
   "sideEffects": false,
   "files": [
