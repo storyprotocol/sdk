@@ -56,9 +56,9 @@
   "license": "MIT",
   "dependencies": {
     "@story-protocol/core-sdk": "1.0.0-rc.14",
-    "ejs": "^3.1.10",
     "react": "^18.3.1",
-    "viem": "^2.8.12"
+    "viem": "^2.8.12",
+    "@types/react": "^18.3.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",
@@ -68,8 +68,8 @@
     "@story-protocol/eslint-config": "workspace:*",
     "@story-protocol/prettier-config": "workspace:*",
     "@story-protocol/tsconfig": "workspace:*",
-    "@types/react": "^18.3.3",
     "ts-node": "^10.9.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "ejs": "^3.1.10"
   }
 }
