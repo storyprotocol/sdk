@@ -14,6 +14,8 @@ pnpm install
 
 2. Update the `@story-protocol/core-sdk` package version in the `packages/react-sdk/package.json` file to the latest version.
 
+Important: Once publish core-sdk, you need to update the core-sdk version in the react-sdk package.json file.
+
 3. Generate the SDK
 
 ```bash
@@ -27,7 +29,7 @@ This SDK is generated using the command `pnpm run generate`. The source code res
 - Install Story Protocol React SDK
 
 ```bash
-pnpm install
+pnpm install @story-protocol/react-sdk
 ```
 
 - Import the provider in your React application
@@ -35,12 +37,16 @@ pnpm install
 ```typescript
 import { StoryProvider } from "@story-protocol/react-sdk";
 const client = StoryClient.newClient(config);
-<StoryProvider client={client}>
-  <App />
-</StoryProvider>;
+ <StoryProvider
+  config={{
+    chainId: "sepolia",
+    transport: http("RPC_URL"),
+    wallet: walletClient,
+  }}
+  </StoryProvider>
 ```
 
-- Use the hooks in your components
+- Use the hooks in your component
 
 ```typescript
 import { useIpAsset } from "@story-protocol/react-sdk";
