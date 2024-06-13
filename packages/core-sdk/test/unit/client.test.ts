@@ -10,9 +10,7 @@ import {
   StoryClient,
   StoryConfig,
 } from "../../src";
-import { StoryAPIClient } from "../../src/clients/storyAPI";
 import { RoyaltyClient } from "../../src/resources/royalty";
-import { sepoliaChainId } from "../integration/utils/util";
 const rpc = "http://127.0.0.1:8545";
 
 describe("Test StoryClient", () => {
@@ -95,7 +93,6 @@ describe("Test StoryClient", () => {
     });
 
     const client: StoryClient = StoryClient.newClient(config);
-    const storyAPIClient = new StoryAPIClient();
     it("client ipAsset should not be empty", () => {
       expect(client.ipAsset).to.not.equal(null);
       expect(client.ipAsset).to.not.equal(undefined);
