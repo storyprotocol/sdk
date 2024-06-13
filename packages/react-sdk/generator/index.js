@@ -6,8 +6,7 @@ const resourcesFolder = path.resolve(__dirname, "../../core-sdk/src/resources");
 const resourceTemplate = require("./templates/resource");
 const indexTemplate = require("./templates/index");
 
-console.log("🚀🚀 React SDK generator started!");
-console.log();
+console.log("🚀🚀 React SDK generator started!\n");
 const isPrimitiveType = (type) => {
   return [
     "string",
@@ -26,7 +25,7 @@ const isViemType = (type) => {
 const visit = (file) => {
   let program = ts.createProgram([file], { allowJs: true });
   const sourceFile = program.getSourceFile(file);
-  const checker = ts.createProgram([sourceFile.fileName], {}).getTypeChecker();
+  ts.createProgram([sourceFile.fileName], {}).getTypeChecker();
   const publicMethods = [];
   ts.forEachChild(sourceFile, (node) => {
     if (ts.isClassDeclaration(node)) {
@@ -41,9 +40,7 @@ const visit = (file) => {
           ts.isIdentifier(member.name)
         ) {
           const requests = [];
-          const methodSignature = program
-            .getTypeChecker()
-            .getSignatureFromDeclaration(member);
+          program.getTypeChecker().getSignatureFromDeclaration(member);
           member.parameters.forEach((parameter) => {
             requests.push({
               name: parameter.name.escapedText,
@@ -72,6 +69,7 @@ const visit = (file) => {
   return publicMethods;
 };
 let fileNames = [];
+let exportTypes = [];
 fs.readdirSync(resourcesFolder).forEach((file) => {
   let sources = [];
   const fileName =
@@ -88,16 +86,17 @@ fs.readdirSync(resourcesFolder).forEach((file) => {
       ),
     []
   );
-
+  const filteredTypes = [
+    ...new Set(
+      types
+        .filter((type) => !isPrimitiveType(type))
+        .filter((type) => !isViemType(type))
+    ),
+  ];
+  exportTypes.push(...filteredTypes);
   sources.push(
     ejs.render(resourceTemplate.startTemplate, {
-      types: [
-        ...new Set(
-          types
-            .filter((type) => !isPrimitiveType(type))
-            .filter((type) => !isViemType(type))
-        ),
-      ],
+      types: [filteredTypes],
       name: fileName,
       methodNames,
       viemTypes: [...new Set(types.filter((type) => isViemType(type)))],
@@ -117,8 +116,10 @@ fs.readdirSync(resourcesFolder).forEach((file) => {
   );
   fs.writeFileSync(`src/resources/use${fileName}.ts`, sources.join("\n"));
 });
-
-const indexSource = ejs.render(indexTemplate, { resources: fileNames });
+const indexSource = ejs.render(indexTemplate, {
+  resources: fileNames,
+  types: exportTypes,
+});
 fs.writeFileSync("src/index.ts", indexSource);
 
 console.log("👍👍 React SDK templates generated successfully!");
