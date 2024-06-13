@@ -10,11 +10,10 @@ export { IPAccountClient } from "./resources/ipAccount";
 export { RoyaltyClient } from "./resources/royalty";
 
 export type { StoryConfig, SupportedChainIds } from "./types/config";
-export type { TypedData } from "./types/common";
 
 export type {
-  RegisterIpResponse,
   RegisterRequest,
+  RegisterIpResponse,
   RegisterDerivativeResponse,
   RegisterDerivativeRequest,
   RegisterDerivativeWithLicenseTokensRequest,
@@ -34,7 +33,6 @@ export type {
   RegisterPILResponse,
   AttachLicenseTermsRequest,
   AttachLicenseTermsResponse,
-  LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
   LicenseTermsId,
@@ -64,11 +62,8 @@ export type {
 } from "./types/resources/permission";
 export { AccessPermission } from "./types/resources/permission";
 export type {
-  Dispute,
   RaiseDisputeRequest,
   RaiseDisputeResponse,
-  SetDisputeJudgementRequest,
-  SetDisputeJudgementResponse,
   CancelDisputeRequest,
   CancelDisputeResponse,
   ResolveDisputeRequest,
