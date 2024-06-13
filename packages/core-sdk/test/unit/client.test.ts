@@ -2,15 +2,7 @@ import { expect } from "chai";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import { createPublicClient, createWalletClient, http, Transport } from "viem";
-import {
-  DisputeClient,
-  LicenseClient,
-  NftClient,
-  PermissionClient,
-  StoryClient,
-  StoryConfig,
-} from "../../src";
-import { RoyaltyClient } from "../../src/resources/royalty";
+import { StoryClient, StoryConfig } from "../../src";
 const rpc = "http://127.0.0.1:8545";
 
 describe("Test StoryClient", () => {
@@ -93,44 +85,14 @@ describe("Test StoryClient", () => {
     });
 
     const client: StoryClient = StoryClient.newClient(config);
-    it("client ipAsset should not be empty", () => {
-      expect(client.ipAsset).to.not.equal(null);
-      expect(client.ipAsset).to.not.equal(undefined);
-    });
-
-    it("should return client permission", () => {
-      const permission = new PermissionClient(rpcClient, wallet, "sepolia");
-      expect(client.permission).to.not.equal(null);
-      expect(client.permission).to.not.equal(undefined);
-    });
-
-    it("should return client license", () => {
-      const license = new LicenseClient(rpcClient, wallet);
-      expect(client.license).to.not.equal(null);
-      expect(client.license).to.not.equal(undefined);
-    });
-
-    it("should return client account", () => {
-      expect(client.ipAccount).to.not.equal(null);
-      expect(client.ipAccount).to.not.equal(undefined);
-    });
-
-    it("should return client dispute", () => {
-      const dispute = new DisputeClient(rpcClient, wallet);
-      expect(client.dispute).to.not.equal(null);
-      expect(client.dispute).to.not.equal(undefined);
-    });
-
-    it("should return client royalty", () => {
-      const royalty = new RoyaltyClient(rpcClient, wallet);
-      expect(client.royalty).to.not.equal(null);
-      expect(client.royalty).to.not.equal(undefined);
-    });
-
-    it("should return client nft", () => {
-      const royalty = new NftClient(rpcClient, wallet);
-      expect(client.nftClient).to.not.equal(null);
-      expect(client.nftClient).to.not.equal(undefined);
+    it("client modules should not be empty", () => {
+      expect(client.ipAsset).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.permission).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.license).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.ipAccount).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.dispute).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.royalty).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.nftClient).to.not.equal(null).and.to.not.equal(undefined);
     });
   });
 });
