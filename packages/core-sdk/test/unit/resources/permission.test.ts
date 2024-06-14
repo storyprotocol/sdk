@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { PermissionClient, AddressZero } from "../../../src";
-import { PublicClient, WalletClient, Account, LocalAccount } from "viem";
+import { PublicClient, WalletClient, LocalAccount } from "viem";
 import { AccessPermission } from "../../../src/types/resources/permission";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
