@@ -88,4 +88,4 @@ export type {
 } from "./abi/generated";
 
 export { getPermissionSignature } from "./utils/sign";
-export type { PermissionSignatureRequest } from "./types/common";
+export type { PermissionSignatureRequest, PermissionSignatureResponse } from "./types/common";
