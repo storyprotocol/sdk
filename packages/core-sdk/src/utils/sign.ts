@@ -1,9 +1,9 @@
-import { Hex, encodeFunctionData, toFunctionSelector } from "viem";
+import { encodeFunctionData, toFunctionSelector } from "viem";
 
 import { accessControllerAbi, accessControllerAddress } from "../abi/generated";
 import { getAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
-import { PermissionSignatureRequest } from "../types/common";
+import { PermissionSignatureRequest, PermissionSignatureResponse } from "../types/common";
 
 /**
  * Get the signature for setting permissions.
@@ -17,7 +17,9 @@ import { PermissionSignatureRequest } from "../types/common";
  * @param param.permissionFunc - The permission function,default function is setPermission.
  * @returns A Promise that resolves to the signature.
  */
-export const getPermissionSignature = async (param: PermissionSignatureRequest): Promise<Hex> => {
+export const getPermissionSignature = async (
+  param: PermissionSignatureRequest,
+): Promise<PermissionSignatureResponse> => {
   const { ipId, deadline, nonce, wallet, chainId, permissions, permissionFunc } = param;
   if (!wallet.signTypedData) {
     throw new Error("The wallet client does not support signTypedData, please try again.");
@@ -32,17 +34,17 @@ export const getPermissionSignature = async (param: PermissionSignatureRequest):
     args:
       permissionFunction === "setPermission"
         ? [
-            permissions[0].ipId,
-            permissions[0].signer,
-            permissions[0].to,
+            getAddress(permissions[0].ipId, "permissions[0].ipId"),
+            getAddress(permissions[0].signer, "permissions[0].signer"),
+            getAddress(permissions[0].to, "permissions[0].to"),
             permissions[0].func ? toFunctionSelector(permissions[0].func) : defaultFunctionSelector,
             permissions[0].permission,
           ]
         : [
-            permissions.map((item) => ({
-              ipAccount: item.ipId,
-              signer: item.signer,
-              to: item.to,
+            permissions.map((item, index) => ({
+              ipAccount: getAddress(item.ipId, `permissions[${index}].ipId`),
+              signer: getAddress(item.signer, `permissions[${index}].signer`),
+              to: getAddress(item.to, `permissions[${index}].to`),
               func: item.func ? toFunctionSelector(item.func) : defaultFunctionSelector,
               permission: item.permission,
             })),
@@ -54,7 +56,7 @@ export const getPermissionSignature = async (param: PermissionSignatureRequest):
       name: "Story Protocol IP Account",
       version: "1",
       chainId: Number(chainId),
-      verifyingContract: ipId,
+      verifyingContract: getAddress(ipId, "ipId"),
     },
     types: {
       Execute: [
@@ -74,7 +76,7 @@ export const getPermissionSignature = async (param: PermissionSignatureRequest):
       value: BigInt(0),
       data,
       nonce: BigInt(nonce),
-      deadline,
+      deadline: BigInt(deadline),
     },
   });
 };

@@ -1,4 +1,4 @@
-import { Address, WalletClient } from "viem";
+import { Address, Hex, WalletClient } from "viem";
 
 import { SetPermissionsRequest } from "./resources/permission";
 
@@ -9,10 +9,12 @@ export type TypedData = {
 
 export type PermissionSignatureRequest = {
   ipId: Address;
-  nonce: number | bigint;
-  deadline: bigint;
+  nonce: string | number | bigint;
+  deadline: string | number | bigint;
   wallet: WalletClient;
-  chainId: bigint;
+  chainId: string | number | bigint;
   permissions: Omit<SetPermissionsRequest, "txOptions">[];
   permissionFunc?: "setPermission" | "setBatchPermissions";
 };
+
+export type PermissionSignatureResponse = Hex;
