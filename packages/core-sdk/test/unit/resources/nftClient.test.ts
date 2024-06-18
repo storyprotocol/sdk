@@ -12,11 +12,8 @@ describe("Test NftClient", () => {
   let nftClient: NftClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-
-  const mock = {
-    txHash: "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb",
-    nftContract: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-  };
+  const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
+  const mintFeeToken = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -29,83 +26,64 @@ describe("Test NftClient", () => {
   });
 
   describe("test for CreateNFTCollection", () => {
-    const reqBody: CreateNFTCollectionRequest = {
-      name: "test-collection",
-      symbol: "TEST",
-      maxSupply: 100,
-      owner: "0x0000000000000000000000000000000000000001" as Hex,
-      txOptions: {
-        waitForTransaction: false,
-      },
-    };
-
-    it("should throw simulateContract error if simulateContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().throws(new Error("simulateContract error"));
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-
+    it("should throw mint fee error when call createNFTCollection given mintFee less than 0", async () => {
       try {
-        await nftClient.createNFTCollection(reqBody);
-      } catch (err) {
-        expect((err as Error).message.includes("simulateContract error"));
-      }
-    });
-
-    it("should throw writeContract error if writeContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().throws(new Error("writeContract error"));
-
-      try {
-        await nftClient.createNFTCollection(reqBody);
-      } catch (err) {
-        expect((err as Error).message.includes("writeContract error"));
-      }
-    });
-
-    it("should throw Invalid mintFee and mintFeeToken error if mintFee is 0", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      try {
-        await nftClient.createNFTCollection({ ...reqBody, mintFee: 0n });
-      } catch (err) {
-        expect((err as Error).message).equal(
+        await nftClient.createNFTCollection({
+          name: "name",
+          symbol: "symbol",
+          maxSupply: 1,
+          mintFee: -1n,
+        });
+      } catch (e) {
+        expect((e as Error).message).equal(
           "Failed to create a SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
         );
       }
     });
 
-    it("should return txHash and nftContract if txOptions.waitForTransaction is truthy", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
+    it("should throw mint fee error when call createNFTCollection given mintFeeToken is invalid", async () => {
+      try {
+        await nftClient.createNFTCollection({
+          name: "name",
+          symbol: "symbol",
+          maxSupply: 1,
+          mintFee: 1n,
+        });
+      } catch (e) {
+        expect((e as Error).message).equal(
+          "Failed to create a SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
+        );
+      }
+    });
 
-      sinon.stub(nftClient.spgClient, "parseTxCollectionCreatedEvent").returns([
-        {
-          nftContract: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        },
-      ]);
-
+    it("should return txHash when call createNFTCollection successfully", async () => {
+      sinon.stub(nftClient.spgClient, "createCollection").resolves(txHash);
       const result = await nftClient.createNFTCollection({
-        ...reqBody,
-        owner: undefined,
+        name: "name",
+        symbol: "symbol",
+        maxSupply: 1,
+        mintFee: 1n,
+        mintFeeToken: mintFeeToken,
+      });
+
+      expect(result.txHash).equal(txHash);
+    });
+
+    it("should return txHash when call createNFTCollection successfully with waitForTransaction", async () => {
+      const nftContract = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
+      sinon.stub(nftClient.spgClient, "createCollection").resolves(txHash);
+      sinon.stub(nftClient.spgClient, "parseTxCollectionCreatedEvent").returns([{ nftContract }]);
+      const result = await nftClient.createNFTCollection({
+        name: "name",
+        symbol: "symbol",
+        owner: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         txOptions: {
           waitForTransaction: true,
         },
       });
-      expect(result.txHash).to.equal(mock.txHash);
-      expect(result.nftContract).to.equal(mock.nftContract);
-    });
 
-    it("should return txHash if txOptions.waitForTransaction is falsy", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-
-      const result = await nftClient.createNFTCollection({
-        ...reqBody,
-        maxSupply: undefined,
-        mintFee: undefined,
-        mintFeeToken: undefined,
-      });
-      expect(result.txHash).to.equal(mock.txHash);
+      expect(result.txHash).equal(txHash);
+      expect(result.nftContract).equal(nftContract);
     });
   });
 });

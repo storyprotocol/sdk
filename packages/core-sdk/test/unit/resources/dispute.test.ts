@@ -3,8 +3,7 @@ import { createMock } from "../testUtils";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient } from "viem";
-import { CancelDisputeRequest, DisputeClient, ResolveDisputeRequest } from "../../../src";
-import { DisputeModuleClient } from "../../../src/abi/generated";
+import { DisputeClient } from "../../../src";
 
 chai.use(chaiAsPromised);
 
@@ -13,9 +12,7 @@ describe("Test DisputeClient", () => {
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
 
-  const mock = {
-    txHash: "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb",
-  };
+  const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -27,228 +24,125 @@ describe("Test DisputeClient", () => {
     sinon.restore();
   });
 
-  describe("Should be able to", async () => {
-    const targetIpId =
-      "0xa3028b46ff4aeba585ebfa1c241ad4a453b6f10dc7bc3d3ebaa9cecc680a6f71" as `0x${string}`;
-    const arbitrationPolicy = "0xC6A1c49BCeeE2E512167d5c03e4753776477730b" as `0x${string}`;
-    const linkToDisputeEvidence = "foo";
-    const targetTag = "bar";
-
-    it("should throw simulateContract error if simulateContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().throws(new Error("simulateContract error"));
-      const raiseDisputeRequest = {
-        targetIpId,
-        arbitrationPolicy,
-        linkToDisputeEvidence,
-        targetTag,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
+  describe("Test raiseDispute", () => {
+    it("throw address error when call raiseDispute with invalid targetIpId", async () => {
       try {
-        await disputeClient.raiseDispute(raiseDisputeRequest);
-      } catch (err) {
-        expect((err as Error).message).includes("simulateContract error");
+        await disputeClient.raiseDispute({
+          targetIpId: "0x",
+          arbitrationPolicy: "0x",
+          linkToDisputeEvidence: "link",
+          targetTag: "tag",
+        });
+      } catch (e) {
+        expect((e as Error).message).equal(
+          "Failed to raise dispute: request.targetIpId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+        );
       }
     });
 
-    it("should throw writeContract error if writeContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().throws(new Error("writeContract error"));
-      const raiseDisputeRequest = {
-        targetIpId,
-        arbitrationPolicy,
-        linkToDisputeEvidence,
-        targetTag,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      try {
-        await disputeClient.raiseDispute(raiseDisputeRequest);
-      } catch (err) {
-        expect((err as Error).message).includes("writeContract error");
-      }
+    it("should return txHash when call raiseDispute successfully", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
+      const result = await disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        arbitrationPolicy: "0x",
+        linkToDisputeEvidence: "link",
+        targetTag: "tag",
+      });
+
+      expect(result.txHash).equal(txHash);
     });
 
-    it("should return txHash only if request.txOptions is missing", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      disputeClient.disputeModuleClient.parseTxDisputeRaisedEvent = sinon.stub().resolves([
+    it("should return txHash and disputeId when call raiseDispute successfully with waitForTransaction", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
+      sinon.stub(disputeClient.disputeModuleClient, "parseTxDisputeRaisedEvent").returns([
         {
-          disputeId: "7",
+          disputeId: 1n,
+          targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          disputeInitiator: "0x",
+          arbitrationPolicy: "0x",
+          linkToDisputeEvidence: "0x",
+          targetTag: "0x",
+          data: "0x",
         },
       ]);
-      const raiseDisputeRequest = {
-        targetIpId,
-        arbitrationPolicy,
-        linkToDisputeEvidence,
-        targetTag,
-      };
+      const result = await disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        arbitrationPolicy: "0x",
+        linkToDisputeEvidence: "link",
+        targetTag: "tag",
+        txOptions: { waitForTransaction: true },
+      });
 
-      const result = await disputeClient.raiseDispute(raiseDisputeRequest);
-      expect(Object.keys(result).length).to.equal(1);
-      expect(Object.keys(result)[0]).to.equal("txHash");
-      expect(result.txHash).to.equal(mock.txHash);
-    });
-
-    it("should return txHash and disputeId if request.txOptions is present", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
-
-      disputeClient.disputeModuleClient = createMock<DisputeModuleClient>();
-      disputeClient.disputeModuleClient.raiseDispute = sinon.stub().resolves(mock.txHash);
-      disputeClient.disputeModuleClient.parseTxDisputeRaisedEvent = sinon.stub().returns([
-        {
-          disputeId: "7",
-        },
-      ]);
-      const raiseDisputeRequest = {
-        targetIpId,
-        arbitrationPolicy,
-        linkToDisputeEvidence,
-        targetTag,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-
-      const result = await disputeClient.raiseDispute(raiseDisputeRequest);
-      expect(result.txHash).to.equal(mock.txHash);
-      expect(result.disputeId).to.equal(BigInt(7).toString());
+      expect(result.txHash).equal(txHash);
+      expect(result.disputeId).equal(1n);
     });
   });
 
-  describe("test for cancelDispute", () => {
-    it("should throw simulateContract error if simulateContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().throws(new Error("simulateContract error"));
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-
-      const cancelDisputeRequest: CancelDisputeRequest = {
-        disputeId: 1,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
+  describe("Test cancelDispute", () => {
+    it("should throw error when call cancelDispute failed", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").rejects(new Error("500"));
       try {
-        await disputeClient.cancelDispute(cancelDisputeRequest);
-      } catch (err) {
-        expect((err as Error).message.includes("simulateContract error"));
+        await disputeClient.cancelDispute({
+          disputeId: 1,
+        });
+      } catch (e) {
+        expect((e as Error).message).equal("Failed to cancel dispute: 500");
       }
     });
 
-    it("should throw writeContract error if writeContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().throws(new Error("writeContract error"));
-      const cancelDisputeRequest: CancelDisputeRequest = {
+    it("should return txHash when call cancelDispute successfully", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").resolves(txHash);
+      const result = await disputeClient.cancelDispute({
         disputeId: 1,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      try {
-        await disputeClient.cancelDispute(cancelDisputeRequest);
-      } catch (err) {
-        expect((err as Error).message.includes("writeContract error"));
-      }
+        calldata: "0x",
+      });
+
+      expect(result.txHash).equal(txHash);
     });
 
-    it("should return txHash", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      const cancelDisputeRequest: CancelDisputeRequest = {
+    it("should return txHash when call cancelDispute successfully with waitForTransaction", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").resolves(txHash);
+      const result = await disputeClient.cancelDispute({
         disputeId: 1,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
+        txOptions: { waitForTransaction: true },
+      });
 
-      const result = await disputeClient.cancelDispute(cancelDisputeRequest);
-      expect(result.txHash).to.equal(mock.txHash);
-    });
-    it("should return txHash if txOptions.waitForTransaction is falsy", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      const cancelDisputeRequest: CancelDisputeRequest = {
-        disputeId: 1,
-        calldata: "0x1111",
-        txOptions: {
-          waitForTransaction: false,
-        },
-      };
-
-      const result = await disputeClient.cancelDispute(cancelDisputeRequest);
-      expect(result.txHash).to.equal(mock.txHash);
+      expect(result.txHash).equal(txHash);
     });
   });
 
-  describe("test for resolveDispute", () => {
-    it("should throw simulateContract error if simulateContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().throws(new Error("simulateContract error"));
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-
-      const resolveDisputeRequest: ResolveDisputeRequest = {
-        disputeId: 1,
-        data: "0x1111",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
+  describe("Test resolveDispute", () => {
+    it("should throw error when call resolveDispute failed", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").rejects(new Error("500"));
       try {
-        await disputeClient.resolveDispute(resolveDisputeRequest);
-      } catch (err) {
-        expect((err as Error).message.includes("simulateContract error"));
+        await disputeClient.resolveDispute({
+          disputeId: 1,
+          data: "0x",
+        });
+      } catch (e) {
+        expect((e as Error).message).equal("Failed to resolve dispute: 500");
       }
     });
 
-    it("should throw writeContract error if writeContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().throws(new Error("writeContract error"));
-      const resolveDisputeRequest: ResolveDisputeRequest = {
+    it("should return txHash when call resolveDispute successfully", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").resolves(txHash);
+      const result = await disputeClient.resolveDispute({
         disputeId: 1,
-        data: "0x1111",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      try {
-        await disputeClient.resolveDispute(resolveDisputeRequest);
-      } catch (err) {
-        expect((err as Error).message.includes("writeContract error"));
-      }
+        data: "0x",
+      });
+
+      expect(result.txHash).equal(txHash);
     });
 
-    it("should return txHash", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves();
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      const resolveDisputeRequest: ResolveDisputeRequest = {
+    it("should return txHash when call resolveDispute successfully with waitForTransaction", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").resolves(txHash);
+      const result = await disputeClient.resolveDispute({
         disputeId: 1,
-        data: "0x1111",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
+        data: "0x",
+        txOptions: { waitForTransaction: true },
+      });
 
-      const result = await disputeClient.resolveDispute(resolveDisputeRequest);
-      expect(result.txHash).to.equal(mock.txHash);
-    });
-    it("should return txHash if txOptions.waitForTransaction is falsy", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(mock.txHash);
-      const resolveDisputeRequest: ResolveDisputeRequest = {
-        disputeId: 1,
-        data: "0x1111",
-        txOptions: {
-          waitForTransaction: false,
-        },
-      };
-
-      const result = await disputeClient.resolveDispute(resolveDisputeRequest);
-      expect(result.txHash).to.equal(mock.txHash);
+      expect(result.txHash).equal(txHash);
     });
   });
 });

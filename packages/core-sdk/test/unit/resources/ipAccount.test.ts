@@ -11,7 +11,7 @@ describe("Test IPAccountClient", () => {
   let ipAccountClient: IPAccountClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-
+  const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
@@ -40,95 +40,32 @@ describe("Test IPAccountClient", () => {
         );
       }
     });
-    it("should throw simulateContract error when simulateContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().rejects(new Error("simulateContract error"));
-      const request: IPAccountExecuteRequest = {
-        ipId: zeroAddress,
+
+    it("should return txHash when call execute successfully", async () => {
+      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      const result = await ipAccountClient.execute({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
-      };
-      try {
-        await ipAccountClient.execute(request);
-      } catch (err) {
-        expect((err as Error).message).includes("simulateContract error");
-      }
-    });
+      });
 
-    it("should throw writeContract error when writeContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().rejects(new Error("writeContract error"));
-      const request: IPAccountExecuteRequest = {
-        ipId: zeroAddress,
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-      };
-      try {
-        await ipAccountClient.execute(request);
-      } catch (err) {
-        expect((err as Error).message).includes("writeContract error");
-      }
-    });
-
-    it("should throw waitTx error when waitTx throws an error", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
-      walletMock.writeContract = sinon.stub().resolves(txHash);
-      sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
-      const request: IPAccountExecuteRequest = {
-        ipId: zeroAddress,
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      try {
-        await ipAccountClient.execute(request);
-      } catch (err) {
-        expect((err as Error).message).includes("waitTx error");
-      }
-    });
-
-    it("should return txHash if waitTx succeeds", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
-      walletMock.writeContract = sinon.stub().resolves(txHash);
-      sinon.stub(utils, "waitTx").resolves();
-      const request: IPAccountExecuteRequest = {
-        ipId: zeroAddress,
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-
-      const result = await ipAccountClient.execute(request);
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash if txOptions is falsy", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(txHash);
-      sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
-      const request: IPAccountExecuteRequest = {
-        ipId: zeroAddress,
+    it("should return txHash when call execute successfully with waitForTransaction", async () => {
+      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      sinon.stub(utils, "waitTx").resolves();
+      const result = await ipAccountClient.execute({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
         txOptions: {
-          waitForTransaction: false,
+          waitForTransaction: true,
         },
-      };
+      });
 
-      const result = await ipAccountClient.execute(request);
       expect(result.txHash).to.equal(txHash);
     });
   });
@@ -153,97 +90,26 @@ describe("Test IPAccountClient", () => {
       }
     });
 
-    it("should throw simulateContract error when simulateContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().rejects(new Error("simulateContract error"));
-      const request: IPAccountExecuteWithSigRequest = {
-        ipId: zeroAddress,
+    it("should return txHash when call executeWithSig successfully", async () => {
+      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+      const result = await ipAccountClient.executeWithSig({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
         signer: zeroAddress,
         deadline: 20,
         signature: zeroAddress,
-      };
-      try {
-        await ipAccountClient.executeWithSig(request);
-      } catch (err) {
-        expect((err as Error).message).includes("simulateContract error");
-      }
-    });
+      });
 
-    it("should throw writeContract error when writeContract throws an error", async () => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().rejects(new Error("writeContract error"));
-      const request: IPAccountExecuteWithSigRequest = {
-        ipId: zeroAddress,
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-        signer: zeroAddress,
-        deadline: 20,
-        signature: zeroAddress,
-      };
-      try {
-        await ipAccountClient.executeWithSig(request);
-      } catch (err) {
-        expect((err as Error).message).includes("writeContract error");
-      }
-    });
-
-    it("should throw waitTx error when waitTx throws an error", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
-      walletMock.writeContract = sinon.stub().resolves(txHash);
-      sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
-      const request: IPAccountExecuteWithSigRequest = {
-        ipId: zeroAddress,
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-        signer: zeroAddress,
-        deadline: 20,
-        signature: zeroAddress,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      try {
-        await ipAccountClient.executeWithSig(request);
-      } catch (err) {
-        expect((err as Error).message).includes("waitTx error");
-      }
-    });
-
-    it("should return txHash when waitTx succeeds", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      rpcMock.waitForTransactionReceipt = sinon.stub().resolves({});
-      walletMock.writeContract = sinon.stub().resolves(txHash);
-      sinon.stub(utils, "waitTx").resolves();
-      const request: IPAccountExecuteWithSigRequest = {
-        ipId: zeroAddress,
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-        signer: zeroAddress,
-        deadline: 20,
-        signature: zeroAddress,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      const result = await ipAccountClient.executeWithSig(request);
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash if txOptions is falsy", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      rpcMock.simulateContract = sinon.stub().resolves({ request: null });
-      walletMock.writeContract = sinon.stub().resolves(txHash);
-      sinon.stub(utils, "waitTx").rejects(new Error("waitTx error"));
-      const request: IPAccountExecuteWithSigRequest = {
-        ipId: zeroAddress,
+    it("should return txHash when call executeWithSig successfully with waitForTransaction", async () => {
+      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+      sinon.stub(utils, "waitTx").resolves();
+      const result = await ipAccountClient.executeWithSig({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
@@ -251,11 +117,10 @@ describe("Test IPAccountClient", () => {
         deadline: 20,
         signature: zeroAddress,
         txOptions: {
-          waitForTransaction: false,
+          waitForTransaction: true,
         },
-      };
+      });
 
-      const result = await ipAccountClient.executeWithSig(request);
       expect(result.txHash).to.equal(txHash);
     });
   });

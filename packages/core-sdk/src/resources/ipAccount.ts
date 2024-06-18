@@ -77,10 +77,10 @@ export class IPAccountClient {
       );
 
       const txHash = await ipAccountClient.executeWithSig({
-        to: request.to,
+        to: getAddress(request.to, "request.to"),
         value: BigInt(0),
         data: request.data,
-        signer: request.signer,
+        signer: getAddress(request.signer, "request.signer"),
         deadline: BigInt(request.deadline),
         signature: request.signature,
       });
