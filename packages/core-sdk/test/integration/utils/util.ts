@@ -41,15 +41,11 @@ export const getTokenId = async (nftContract?: Address): Promise<number | undefi
   }
 };
 
-export const getStoryClientInSepolia = (privateKey?: Address): StoryClient => {
+export const getStoryClientInSepolia = (): StoryClient => {
   const config: StoryConfig = {
     chainId: "sepolia",
     transport: http(RPC),
-    account: privateKeyToAccount(privateKey || (process.env.SEPOLIA_WALLET_PRIVATE_KEY as Address)),
+    account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Address),
   };
   return StoryClient.newClient(config);
-};
-
-export const getBlockTimestamp = async (): Promise<bigint> => {
-  return (await publicClient.getBlock()).timestamp;
 };

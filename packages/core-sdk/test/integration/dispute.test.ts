@@ -18,7 +18,7 @@ describe("Dispute Functions", () => {
 
   before(async () => {
     clientA = getStoryClientInSepolia();
-    clientB = getStoryClientInSepolia(process.env.SEPOLIA_WALLET_PRIVATE_KEY2 as Address);
+    clientB = getStoryClientInSepolia();
     const mockERC20 = new MockERC20();
     await mockERC20.approve(arbitrationPolicyAddress);
     const tokenId = await getTokenId();
