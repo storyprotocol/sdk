@@ -3,7 +3,7 @@ import { Address } from "viem";
 import { RaiseDisputeResponse, useDispute } from "../../src";
 import { useIpAsset } from "../../src";
 import Wrapper from "./utils/Wrapper";
-import { MockERC721, getTokenId } from "./utils/util";
+import { mockERC721Address, getTokenId } from "./utils/util";
 
 const arbitrationPolicyAddress = "0xc07Bc791CF55E718BA7D70cE650B3152BbE3325e";
 describe("useDispute Functions", () => {
@@ -21,7 +21,7 @@ describe("useDispute Functions", () => {
     await act(async () => {
       ipId = (
         await ipAssetHook.register({
-          nftContract: MockERC721,
+          nftContract: mockERC721Address,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
@@ -31,7 +31,7 @@ describe("useDispute Functions", () => {
     });
   });
 
-  it("raise a dispute", async () => {
+  it("should success when call raise dispute", async () => {
     let result: RaiseDisputeResponse;
     await act(async () => {
       result = await disputeHook.raiseDispute({
@@ -55,7 +55,7 @@ describe("useDispute Functions", () => {
     });
   });
 
-  it("cancel a dispute", async () => {
+  it("should success when cancel dispute", async () => {
     await act(async () => {
       await expect(
         disputeHook.cancelDispute({ disputeId: disputedId })

@@ -11,7 +11,8 @@ import { sepolia } from "viem/chains";
 
 import { SupportedChainIds } from "@story-protocol/core-sdk";
 export const RPC = "http://127.0.0.1:8545";
-export const MockERC721 = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
+export const mockERC721Address = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
+export const mockERC20Address = "0xB132A6B7AE652c974EE1557A3521D53d18F6739f";
 
 function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
@@ -47,7 +48,7 @@ export const getTokenId = async (
         type: "function",
       },
     ],
-    address: nftContract || MockERC721,
+    address: nftContract || mockERC721Address,
     functionName: "mint",
     args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex],
     account: walletClient.account,
