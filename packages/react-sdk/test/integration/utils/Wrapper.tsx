@@ -1,6 +1,5 @@
 import { Address, http } from "viem";
 import { StoryProvider } from "../../../src";
-import "dotenv/config";
 import { privateKeyToAccount } from "viem/accounts";
 import { ReactNode } from "react";
 type Props = { children: ReactNode };
