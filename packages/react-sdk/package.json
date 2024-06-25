@@ -14,7 +14,7 @@
   "scripts": {
     "generate": "node ./generator/index.js && npm run fix",
     "build": "pnpm run fix && preconstruct build",
-    "test": "jest",
+    "test": "jest -i",
     "fix": "pnpm run format:fix && pnpm run lint:fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
