@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
+import { handleError } from "../util";
 
 const useLicense = () => {
   const client = useStoryContext();
@@ -58,17 +59,16 @@ const useLicense = () => {
       }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({
-          ...prev,
-          registerNonComSocialRemixingPIL: e.message,
-        }));
-        setLoadings((prev) => ({
-          ...prev,
-          registerNonComSocialRemixingPIL: false,
-        }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        registerNonComSocialRemixingPIL: errorMessage,
+      }));
+      setLoadings((prev) => ({
+        ...prev,
+        registerNonComSocialRemixingPIL: false,
+      }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -91,11 +91,13 @@ const useLicense = () => {
       setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, registerCommercialUsePIL: e.message }));
-        setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        registerCommercialUsePIL: errorMessage,
+      }));
+      setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -119,14 +121,13 @@ const useLicense = () => {
       setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({
-          ...prev,
-          registerCommercialRemixPIL: e.message,
-        }));
-        setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        registerCommercialRemixPIL: errorMessage,
+      }));
+      setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -149,11 +150,10 @@ const useLicense = () => {
       setLoadings((prev) => ({ ...prev, attachLicenseTerms: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, attachLicenseTerms: e.message }));
-        setLoadings((prev) => ({ ...prev, attachLicenseTerms: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, attachLicenseTerms: errorMessage }));
+      setLoadings((prev) => ({ ...prev, attachLicenseTerms: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -189,11 +189,10 @@ const useLicense = () => {
       setLoadings((prev) => ({ ...prev, mintLicenseTokens: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, mintLicenseTokens: e.message }));
-        setLoadings((prev) => ({ ...prev, mintLicenseTokens: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, mintLicenseTokens: errorMessage }));
+      setLoadings((prev) => ({ ...prev, mintLicenseTokens: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -214,11 +213,10 @@ const useLicense = () => {
       setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, getLicenseTerms: e.message }));
-        setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, getLicenseTerms: errorMessage }));
+      setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
+      throw new Error(errorMessage);
     }
   };
 

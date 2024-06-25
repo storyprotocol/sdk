@@ -5,6 +5,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
+import { handleError } from "../util";
 
 const useNftClient = () => {
   const client = useStoryContext();
@@ -38,11 +39,10 @@ const useNftClient = () => {
       setLoadings((prev) => ({ ...prev, createNFTCollection: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, createNFTCollection: e.message }));
-        setLoadings((prev) => ({ ...prev, createNFTCollection: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, createNFTCollection: errorMessage }));
+      setLoadings((prev) => ({ ...prev, createNFTCollection: false }));
+      throw new Error(errorMessage);
     }
   };
 

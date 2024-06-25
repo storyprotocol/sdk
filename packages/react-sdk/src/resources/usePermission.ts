@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
+import { handleError } from "../util";
 
 const usePermission = () => {
   const client = useStoryContext();
@@ -57,11 +58,10 @@ const usePermission = () => {
       setLoadings((prev) => ({ ...prev, setPermission: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, setPermission: e.message }));
-        setLoadings((prev) => ({ ...prev, setPermission: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, setPermission: errorMessage }));
+      setLoadings((prev) => ({ ...prev, setPermission: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -90,17 +90,13 @@ const usePermission = () => {
       setLoadings((prev) => ({ ...prev, createSetPermissionSignature: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({
-          ...prev,
-          createSetPermissionSignature: e.message,
-        }));
-        setLoadings((prev) => ({
-          ...prev,
-          createSetPermissionSignature: false,
-        }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        createSetPermissionSignature: errorMessage,
+      }));
+      setLoadings((prev) => ({ ...prev, createSetPermissionSignature: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -124,11 +120,10 @@ const usePermission = () => {
       setLoadings((prev) => ({ ...prev, setAllPermissions: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, setAllPermissions: e.message }));
-        setLoadings((prev) => ({ ...prev, setAllPermissions: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, setAllPermissions: errorMessage }));
+      setLoadings((prev) => ({ ...prev, setAllPermissions: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -156,11 +151,10 @@ const usePermission = () => {
       setLoadings((prev) => ({ ...prev, setBatchPermissions: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, setBatchPermissions: e.message }));
-        setLoadings((prev) => ({ ...prev, setBatchPermissions: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, setBatchPermissions: errorMessage }));
+      setLoadings((prev) => ({ ...prev, setBatchPermissions: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -196,17 +190,16 @@ const usePermission = () => {
       }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({
-          ...prev,
-          createBatchPermissionSignature: e.message,
-        }));
-        setLoadings((prev) => ({
-          ...prev,
-          createBatchPermissionSignature: false,
-        }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        createBatchPermissionSignature: errorMessage,
+      }));
+      setLoadings((prev) => ({
+        ...prev,
+        createBatchPermissionSignature: false,
+      }));
+      throw new Error(errorMessage);
     }
   };
 

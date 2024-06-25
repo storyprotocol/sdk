@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
+import { handleError } from "../util";
 
 const useDispute = () => {
   const client = useStoryContext();
@@ -49,11 +50,10 @@ const useDispute = () => {
       setLoadings((prev) => ({ ...prev, raiseDispute: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, raiseDispute: e.message }));
-        setLoadings((prev) => ({ ...prev, raiseDispute: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, raiseDispute: errorMessage }));
+      setLoadings((prev) => ({ ...prev, raiseDispute: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -79,11 +79,10 @@ const useDispute = () => {
       setLoadings((prev) => ({ ...prev, cancelDispute: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, cancelDispute: e.message }));
-        setLoadings((prev) => ({ ...prev, cancelDispute: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, cancelDispute: errorMessage }));
+      setLoadings((prev) => ({ ...prev, cancelDispute: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -107,11 +106,10 @@ const useDispute = () => {
       setLoadings((prev) => ({ ...prev, resolveDispute: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, resolveDispute: e.message }));
-        setLoadings((prev) => ({ ...prev, resolveDispute: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, resolveDispute: errorMessage }));
+      setLoadings((prev) => ({ ...prev, resolveDispute: false }));
+      throw new Error(errorMessage);
     }
   };
 

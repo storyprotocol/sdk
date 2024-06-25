@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
+import { handleError } from "../util";
 
 const useIpAccount = () => {
   const client = useStoryContext();
@@ -41,11 +42,10 @@ const useIpAccount = () => {
       setLoadings((prev) => ({ ...prev, execute: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, execute: e.message }));
-        setLoadings((prev) => ({ ...prev, execute: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, execute: errorMessage }));
+      setLoadings((prev) => ({ ...prev, execute: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -70,11 +70,10 @@ const useIpAccount = () => {
       setLoadings((prev) => ({ ...prev, executeWithSig: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, executeWithSig: e.message }));
-        setLoadings((prev) => ({ ...prev, executeWithSig: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, executeWithSig: errorMessage }));
+      setLoadings((prev) => ({ ...prev, executeWithSig: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -92,11 +91,10 @@ const useIpAccount = () => {
       setLoadings((prev) => ({ ...prev, getIpAccountNonce: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, getIpAccountNonce: e.message }));
-        setLoadings((prev) => ({ ...prev, getIpAccountNonce: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, getIpAccountNonce: errorMessage }));
+      setLoadings((prev) => ({ ...prev, getIpAccountNonce: false }));
+      throw new Error(errorMessage);
     }
   };
 
