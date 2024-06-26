@@ -4,7 +4,6 @@ const config = {
   testEnvironment: "./test/jest-environment-jsdom.ts",
   setupFiles: ["./test/jest-setup.ts"],
   testTimeout: 1000 * 60,
-  testMatch: ["**/useIpAccount.test.ts"],
 };
 
 module.exports = config;
