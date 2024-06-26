@@ -13,7 +13,7 @@ describe("useLicense Functions", () => {
     result: { current: ipAssetHook },
   } = renderHook(() => useIpAsset(), { wrapper: Wrapper });
   describe("registering license with different types", () => {
-    it("should not throw error when registering license with non commercial social remixing PIL", async () => {
+    it("should success when register license with non commercial social remixing PIL", async () => {
       await act(async () => {
         await expect(
           licenseHook.registerNonComSocialRemixingPIL({
@@ -29,7 +29,7 @@ describe("useLicense Functions", () => {
       });
     });
 
-    it("should not throw error when registering license with commercial use", async () => {
+    it("should success when register license with commercial use", async () => {
       await act(async () => {
         await expect(
           licenseHook.registerCommercialUsePIL({
@@ -47,7 +47,7 @@ describe("useLicense Functions", () => {
       });
     });
 
-    it("should not throw error when registering license with commercial Remix use", async () => {
+    it("should success when register license with commercial Remix use", async () => {
       await act(async () => {
         await expect(
           licenseHook.registerCommercialRemixPIL({
@@ -95,7 +95,7 @@ describe("useLicense Functions", () => {
       });
     });
 
-    it("should not throw error when attach License Terms", async () => {
+    it("should success when attach License Terms", async () => {
       await act(async () => {
         await expect(
           licenseHook.attachLicenseTerms({
@@ -114,7 +114,7 @@ describe("useLicense Functions", () => {
       });
     });
 
-    it("should not throw error when minting license tokens", async () => {
+    it("should success when minting license tokens", async () => {
       await act(async () => {
         await expect(
           licenseHook.mintLicenseTokens({
@@ -133,7 +133,7 @@ describe("useLicense Functions", () => {
       });
     });
 
-    it("should not throw error when get license terms", async () => {
+    it("should success when get license terms", async () => {
       await act(async () => {
         await expect(licenseHook.getLicenseTerms(licenseId)).resolves.toEqual(
           expect.any(Object)

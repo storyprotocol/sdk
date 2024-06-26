@@ -123,24 +123,30 @@ describe("useIpAsset Functions", () => {
 
   it("should success when registering derivative with license tokens", async () => {
     const tokenId = await getTokenId();
-    const ipId = (
-      await ipAssetHook.register({
-        nftContract: mockERC721Address,
-        tokenId: tokenId!,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      })
-    ).ipId!;
-    const licenseTokenId = (
-      await licenseHook.mintLicenseTokens({
-        licenseTermsId: noCommercialLicenseTermsId,
-        licensorIpId: parentIpId,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      })
-    ).licenseTokenIds![0]!;
+    let ipId: Address;
+    let licenseTokenId: bigint;
+    await act(async () => {
+      ipId = (
+        await ipAssetHook.register({
+          nftContract: mockERC721Address,
+          tokenId: tokenId!,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        })
+      ).ipId!;
+    });
+    await act(async () => {
+      licenseTokenId = (
+        await licenseHook.mintLicenseTokens({
+          licenseTermsId: noCommercialLicenseTermsId,
+          licensorIpId: parentIpId,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        })
+      ).licenseTokenIds![0]!;
+    });
     await act(async () => {
       await expect(
         ipAssetHook.registerDerivativeWithLicenseTokens({
@@ -161,16 +167,18 @@ describe("useIpAsset Functions", () => {
   describe("NFT Client (SPG)", () => {
     let nftContract: Address;
     beforeAll(async () => {
-      nftContract = (
-        await nftClientHook.createNFTCollection({
-          name: "test-collection",
-          symbol: "TEST",
-          maxSupply: 100,
-          txOptions: {
-            waitForTransaction: true,
-          },
-        })
-      ).nftContract!;
+      await act(async () => {
+        nftContract = (
+          await nftClientHook.createNFTCollection({
+            name: "test-collection",
+            symbol: "TEST",
+            maxSupply: 100,
+            txOptions: {
+              waitForTransaction: true,
+            },
+          })
+        ).nftContract!;
+      });
     });
     describe("should success when mint and register ip and attach pil terms", () => {
       it("Non-Commercial Remix", async () => {
