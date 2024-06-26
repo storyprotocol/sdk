@@ -33,7 +33,7 @@ describe("Dispute Functions", () => {
     ).ipId!;
   });
 
-  it("raise a dispute", async () => {
+  it("should not throw error when raise a dispute", async () => {
     const raiseDisputeRequest: RaiseDisputeRequest = {
       targetIpId: ipIdB,
       arbitrationPolicy: arbitrationPolicyAddress,
@@ -50,7 +50,7 @@ describe("Dispute Functions", () => {
     expect(response.disputeId).to.be.a("bigint");
   });
 
-  it("cancel a dispute", async () => {
+  it("should not throw error when cancel a dispute", async () => {
     const cancelDispute: CancelDisputeRequest = {
       disputeId: disputeId,
       txOptions: {
