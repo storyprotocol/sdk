@@ -186,9 +186,7 @@ export class LicenseClient {
           licenseTermsId: request.licenseTermsId,
         });
       if (isAttachedLicenseTerms) {
-        throw new Error(
-          `License terms id ${request.licenseTermsId} is already attached to the IP with id ${request.ipId}.`,
-        );
+        return { txHash: "", success: false };
       }
       const txHash = await this.licensingModuleClient.attachLicenseTerms({
         ipId: request.ipId,
