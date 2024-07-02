@@ -42,7 +42,7 @@ jobs:
         id: get_latest_version
         run: |
           CORE_SDK_LATEST_VERSION=$(npm view @story-protocol/core-sdk version --silent)
-          REACT_SDK_LATEST_VERSION=$(npm view @story-protocol/react-sdk version --silent)
+          REACT_SDK_LATEST_VERSION=$(npm view @story-protocol/react-sdk version --silent || true)
           if [ -z "$REACT_SDK_LATEST_VERSION" ]; then
             echo "@story-protocol/react-sdk package not found on NPMJS"
             REACT_SDK_LATEST_VERSION="Not_Published"
