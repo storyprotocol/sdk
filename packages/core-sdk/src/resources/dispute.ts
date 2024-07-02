@@ -10,6 +10,7 @@ import {
   ResolveDisputeResponse,
 } from "../types/resources/dispute";
 import { DisputeModuleClient, SimpleWalletClient } from "../abi/generated";
+import { getAddress } from "../utils/utils";
 
 export class DisputeClient {
   private readonly rpcClient: PublicClient;
@@ -39,7 +40,7 @@ export class DisputeClient {
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
       const txHash = await this.disputeModuleClient.raiseDispute({
-        targetIpId: request.targetIpId,
+        targetIpId: getAddress(request.targetIpId, "request.targetIpId"),
         linkToDisputeEvidence: request.linkToDisputeEvidence,
         targetTag: stringToHex(request.targetTag, { size: 32 }),
         data: request.calldata || "0x",
@@ -104,14 +105,13 @@ export class DisputeClient {
         disputeId: BigInt(request.disputeId),
         data: request.data,
       });
-
       if (request.txOptions?.waitForTransaction) {
         await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       }
 
       return { txHash: txHash };
     } catch (error) {
-      handleError(error, "Failed to cancel dispute");
+      handleError(error, "Failed to resolve dispute");
     }
   }
 }

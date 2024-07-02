@@ -1,0 +1,9 @@
+{
+  "extends": "@story-protocol/tsconfig/base.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "module": "ESNext",
+    "lib": ["dom", "es2015"],
+    "jsx": "react-jsx"
+  }
+}

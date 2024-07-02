@@ -291,23 +291,20 @@ describe("Test LicenseClient", () => {
       }
     });
 
-    it("should throw attached error when call attachLicenseTerms given licenseTermsId is already attached", async () => {
+    it("should return txHash of empty and success of false when call attachLicenseTerms given licenseTermsId is already attached", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
       sinon
         .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
-
-      try {
-        await licenseClient.attachLicenseTerms({
-          ipId: zeroAddress,
-          licenseTermsId: "1",
-        });
-      } catch (error) {
-        expect((error as Error).message).equal(
-          "Failed to attach license terms: License terms id 1 is already attached to the IP with id 0x0000000000000000000000000000000000000000.",
-        );
-      }
+      const result = await licenseClient.attachLicenseTerms({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+      });
+      expect(result).to.deep.equal({
+        txHash: "",
+        success: false,
+      });
     });
 
     it("should return txHash when call attachLicenseTerms given args is correct", async () => {

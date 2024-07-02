@@ -1,0 +1,93 @@
+{
+  "name": "@story-protocol/react-sdk",
+  "version": "1.0.0-rc.14",
+  "description": "The Story Protocol React SDK",
+  "main": "dist/story-protocol-react-sdk.cjs.js",
+  "module": "dist/story-protocol-react-sdk.esm.js",
+  "exports": {
+    ".": {
+      "module": "./dist/story-protocol-react-sdk.esm.js",
+      "default": "./dist/story-protocol-react-sdk.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "generate": "node ./generator/index.js && npm run fix",
+    "build": "pnpm run fix && preconstruct build",
+    "test": "jest -i",
+    "fix": "pnpm run format:fix && pnpm run lint:fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint:fix": "pnpm run lint --fix",
+    "lint": "eslint ./src",
+    "tsc": "tsc --noEmit"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist/**/*"
+  ],
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts"
+    ],
+    "exports": true,
+    "externals": [
+      "react",
+      "@story-protocol/core-sdk"
+    ]
+  },
+  "keywords": [
+    "story-protocol",
+    "react",
+    "sdk",
+    "react hooks"
+  ],
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      "@babel/preset-typescript",
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ]
+    ]
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@story-protocol/core-sdk": "1.0.0-rc.14",
+    "react": "^18.3.1",
+    "viem": "^2.8.12"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.1",
+    "@preconstruct/cli": "^2.8.1",
+    "@story-protocol/eslint-config": "workspace:*",
+    "@story-protocol/prettier-config": "workspace:*",
+    "@story-protocol/tsconfig": "workspace:*",
+    "@testing-library/react": "^16.0.0",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.8.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "babel-jest": "^29.7.0",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.10",
+    "eslint-plugin-jest-dom": "^5.4.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.4.5"
+  }
+}
