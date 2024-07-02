@@ -43,6 +43,10 @@ jobs:
         run: |
           CORE_SDK_LATEST_VERSION=$(npm view @story-protocol/core-sdk version --silent)
           REACT_SDK_LATEST_VERSION=$(npm view @story-protocol/react-sdk version --silent)
+          if [ -z "$REACT_SDK_LATEST_VERSION" ]; then
+            echo "@story-protocol/react-sdk package not found on NPMJS"
+            REACT_SDK_LATEST_VERSION="Not_Published"
+          fi
           echo "Latest version of @story-protocol/core-sdk on NPMJS is $CORE_SDK_LATEST_VERSION"
           echo "CORE_SDK_LATEST_VERSION=$CORE_SDK_LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "Latest version of @story-protocol/react-sdk on NPMJS is $REACT_SDK_LATEST_VERSION"
@@ -60,6 +64,9 @@ jobs:
           fi
           if [ "${{ needs.fetch_latest_version.outputs.react_sdk_latest_version }}" == "${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}" ]; then
             echo "The version to be published is the same as the latest version on NPM. "
+          fi
+          if [ "${{ needs.fetch_latest_version.outputs.core_sdk_latest_version }}" == "${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}" ] && [ "${{ needs.fetch_latest_version.outputs.react_sdk_latest_version }}" == "${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}" ]; then
+            exit 1
           fi
 
   build-test:
@@ -150,13 +157,13 @@ jobs:
     needs: [build-test, create_release-core-sdk]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
     with:
-        short-desc: "${{ github.repository }}: Core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}"
-        title: "Published to Registry"
-        img-url: "https://i.imgur.com/JHmKB0s.png"
-        img-alt-text: "Published to Registry"
+      short-desc: "${{ github.repository }}: Core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}"
+      title: "Published to Registry"
+      img-url: "https://i.imgur.com/JHmKB0s.png"
+      img-alt-text: "Published to Registry"
     secrets:
-        channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
-        slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+      channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
+      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
 
   publish-react-sdk:
     needs:
@@ -182,7 +189,7 @@ jobs:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
     with:
       version_to_publish: ${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}
-  
+
   send_slack_notif-react-sdk:
     needs: [build-test, create_release-react-sdk]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
