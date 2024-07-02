@@ -5,12 +5,6 @@ on:
     workflows: ["Publish core-sdk to npm, Tag and create GH Release"]
     types:
       - completed
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   Timestamp:
@@ -41,7 +35,7 @@ jobs:
       - name: Get latest package version
         id: get_latest_version
         run: |
-          LATEST_VERSION=$(npm view @story-protocol/react-sdk version)
+          LATEST_VERSION=$(npm view @story-protocol/react-sdk version --silent)
           if [ -z "$LATEST_VERSION" ]; then
             echo "Latest version of @story-protocol/react-sdk is not available on NPMJS"
           fi
@@ -96,7 +90,7 @@ jobs:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
     with:
       version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-      
+
   send_slack_notif:
     needs: [build-test-publish, create_release]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
