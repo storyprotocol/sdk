@@ -1,4 +1,4 @@
-name: Publish to npm, Tag and create GH Release
+name: Publish core-sdk to npm, Tag and create GH Release
 
 on:
   push:

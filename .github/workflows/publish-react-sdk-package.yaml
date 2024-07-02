@@ -1,6 +1,10 @@
-name: Publish to npm, Tag and create GH Release
+name: Publish react-sdk to npm, Tag and create GH Release
 
 on:
+  workflow_run:
+    workflows: ["Publish core-sdk to npm, Tag and create GH Release"]
+    types:
+      - completed
   push:
     branches:
       - main
@@ -38,6 +42,9 @@ jobs:
         id: get_latest_version
         run: |
           LATEST_VERSION=$(npm view @story-protocol/react-sdk version)
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "Latest version of @story-protocol/react-sdk is not available on NPMJS"
+          fi
           echo "Latest version of @story-protocol/react-sdk on NPMJS is $LATEST_VERSION"
           echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_OUTPUT
 
@@ -73,45 +80,6 @@ jobs:
       STORY_TEST_NET_WALLET_PRIVATE_KEY: ${{ secrets.STORY_TEST_NET_WALLET_PRIVATE_KEY }}
       STORY_TEST_NET_TEST_WALLET_ADDRESS: ${{ secrets.STORY_TEST_NET_TEST_WALLET_ADDRESS }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-      - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
-        with:
-          version: 8.8.0
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
-        with:
-          node-version: 20.0.0
-          cache: pnpm
-          registry-url: https://registry.npmjs.org/
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Fix
-        run: pnpm fix
-
-      - name: Run Anvil
-        id: run_anvil
-        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL}  --silent &
-
-      - name: Check on Run Anvil
-        if: steps.run_anvil.outcome != 'success'
-        run: exit 1
-
-      - name: Test
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
-
       - name: Publish to npm
         run: |
           cd packages/react-sdk
@@ -128,3 +96,15 @@ jobs:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
     with:
       version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
+      
+  send_slack_notif:
+    needs: [build-test-publish, create_release]
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
+    with:
+      short-desc: "${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}"
+      title: "Published to Registry"
+      img-url: "https://i.imgur.com/JHmKB0s.png"
+      img-alt-text: "Published to Registry"
+    secrets:
+      channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
+      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
