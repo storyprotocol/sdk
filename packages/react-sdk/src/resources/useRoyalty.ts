@@ -14,6 +14,7 @@ import { Hex, Address } from "viem";
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
+import { handleError } from "../util";
 
 const useRoyalty = () => {
   const client = useStoryContext();
@@ -53,11 +54,10 @@ const useRoyalty = () => {
       setLoadings((prev) => ({ ...prev, collectRoyaltyTokens: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, collectRoyaltyTokens: e.message }));
-        setLoadings((prev) => ({ ...prev, collectRoyaltyTokens: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, collectRoyaltyTokens: errorMessage }));
+      setLoadings((prev) => ({ ...prev, collectRoyaltyTokens: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -81,11 +81,10 @@ const useRoyalty = () => {
       setLoadings((prev) => ({ ...prev, payRoyaltyOnBehalf: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, payRoyaltyOnBehalf: e.message }));
-        setLoadings((prev) => ({ ...prev, payRoyaltyOnBehalf: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, payRoyaltyOnBehalf: errorMessage }));
+      setLoadings((prev) => ({ ...prev, payRoyaltyOnBehalf: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -109,11 +108,10 @@ const useRoyalty = () => {
       setLoadings((prev) => ({ ...prev, claimableRevenue: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, claimableRevenue: e.message }));
-        setLoadings((prev) => ({ ...prev, claimableRevenue: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, claimableRevenue: errorMessage }));
+      setLoadings((prev) => ({ ...prev, claimableRevenue: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -138,11 +136,10 @@ const useRoyalty = () => {
       setLoadings((prev) => ({ ...prev, claimRevenue: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, claimRevenue: e.message }));
-        setLoadings((prev) => ({ ...prev, claimRevenue: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, claimRevenue: errorMessage }));
+      setLoadings((prev) => ({ ...prev, claimRevenue: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -164,11 +161,10 @@ const useRoyalty = () => {
       setLoadings((prev) => ({ ...prev, snapshot: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, snapshot: e.message }));
-        setLoadings((prev) => ({ ...prev, snapshot: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, snapshot: errorMessage }));
+      setLoadings((prev) => ({ ...prev, snapshot: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -189,11 +185,10 @@ const useRoyalty = () => {
       setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, getRoyaltyVaultAddress: e.message }));
-        setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, getRoyaltyVaultAddress: errorMessage }));
+      setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: false }));
+      throw new Error(errorMessage);
     }
   };
 

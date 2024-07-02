@@ -14,7 +14,6 @@ import {
   accessControllerAddress,
   coreMetadataModuleAddress,
 } from "../../src/abi/generated";
-import { privateKeyToAccount } from "viem/accounts";
 import { getDeadline } from "../../src/utils/sign";
 
 chai.use(chaiAsPromised);
@@ -61,7 +60,6 @@ describe("Ip Account functions", () => {
   });
 
   it("should not throw error when executeWithSig setting permission", async () => {
-    const account = privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex);
     const state = await client.ipAccount.getIpAccountNonce(ipId);
     const expectedState = state + 1n;
     const deadline = getDeadline(60000n);

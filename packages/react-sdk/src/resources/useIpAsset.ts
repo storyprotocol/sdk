@@ -15,6 +15,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
+import { handleError } from "../util";
 
 const useIpAsset = () => {
   const client = useStoryContext();
@@ -59,11 +60,10 @@ const useIpAsset = () => {
       setLoadings((prev) => ({ ...prev, register: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, register: e.message }));
-        setLoadings((prev) => ({ ...prev, register: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, register: errorMessage }));
+      setLoadings((prev) => ({ ...prev, register: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -90,11 +90,10 @@ const useIpAsset = () => {
       setLoadings((prev) => ({ ...prev, registerDerivative: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, registerDerivative: e.message }));
-        setLoadings((prev) => ({ ...prev, registerDerivative: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, registerDerivative: errorMessage }));
+      setLoadings((prev) => ({ ...prev, registerDerivative: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -130,17 +129,16 @@ const useIpAsset = () => {
       }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({
-          ...prev,
-          registerDerivativeWithLicenseTokens: e.message,
-        }));
-        setLoadings((prev) => ({
-          ...prev,
-          registerDerivativeWithLicenseTokens: false,
-        }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        registerDerivativeWithLicenseTokens: errorMessage,
+      }));
+      setLoadings((prev) => ({
+        ...prev,
+        registerDerivativeWithLicenseTokens: false,
+      }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -183,17 +181,16 @@ const useIpAsset = () => {
       }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({
-          ...prev,
-          mintAndRegisterIpAssetWithPilTerms: e.message,
-        }));
-        setLoadings((prev) => ({
-          ...prev,
-          mintAndRegisterIpAssetWithPilTerms: false,
-        }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        mintAndRegisterIpAssetWithPilTerms: errorMessage,
+      }));
+      setLoadings((prev) => ({
+        ...prev,
+        mintAndRegisterIpAssetWithPilTerms: false,
+      }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -227,17 +224,13 @@ const useIpAsset = () => {
       setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({
-          ...prev,
-          registerIpAndAttachPilTerms: e.message,
-        }));
-        setLoadings((prev) => ({
-          ...prev,
-          registerIpAndAttachPilTerms: false,
-        }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({
+        ...prev,
+        registerIpAndAttachPilTerms: errorMessage,
+      }));
+      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
+      throw new Error(errorMessage);
     }
   };
 
@@ -269,11 +262,10 @@ const useIpAsset = () => {
       setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
       return response;
     } catch (e) {
-      if (e instanceof Error) {
-        setErrors((prev) => ({ ...prev, registerDerivativeIp: e.message }));
-        setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
-      }
-      throw new Error(`unhandled error type`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, registerDerivativeIp: errorMessage }));
+      setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
+      throw new Error(errorMessage);
     }
   };
 

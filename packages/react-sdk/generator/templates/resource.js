@@ -10,11 +10,10 @@ const methodTemplate = `<%=comments%>\nconst <%=method.name %> = async (<% metho
       setLoadings((prev ) => ({ ...prev, <%=method.name %>: false }));
       return response;
     }catch(e){
-      if(e instanceof Error){
-        setErrors((prev) => ({ ...prev, <%=method.name %>: e.message }));
-        setLoadings((prev) => ({ ...prev, <%=method.name %>: false }));
-      }
-      throw new Error(\`unhandled error type\`);
+      const errorMessage = handleError(e);
+      setErrors((prev) => ({ ...prev, <%=method.name %>: errorMessage }));
+      setLoadings((prev) => ({ ...prev, <%=method.name %>: false }));
+      throw new Error(errorMessage);
     }
   };
   `;
@@ -28,6 +27,7 @@ const startTemplate = `import { <% types.forEach((type,index)=>{%>\n<%=type %><%
   
   import { useState } from "react";
   import { useStoryContext } from "../StoryProtocolContext";
+  import { handleError } from "../util";
   const use<%=name %> = () => {
     const client = useStoryContext();
     const [loadings,setLoadings] = useState<Record<string,boolean>>({<% methodNames.forEach((name,index)=>{%><%=name %>: false<%=index === methodNames.length - 1 ? '' : ',' %> <%})%>});

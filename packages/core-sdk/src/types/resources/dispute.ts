@@ -14,7 +14,6 @@ export type RaiseDisputeRequest = {
 export type RaiseDisputeResponse = {
   txHash: string;
   disputeId?: bigint;
-  arbitrationPolicy?: Address;
 };
 
 export type CancelDisputeRequest = {
