@@ -128,7 +128,7 @@ jobs:
       version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
 
   send_slack_notif:
-    needs: [build-test-publish, create_release]
+    needs: [print_version_to_publish, build-test-publish, create_release]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
     with:
       short-desc: '${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}'
