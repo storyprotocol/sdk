@@ -140,8 +140,8 @@ importers:
   packages/react-sdk:
     dependencies:
       '@story-protocol/core-sdk':
-        specifier: 1.0.0-rc.14
-        version: 1.0.0-rc.14(typescript@5.4.5)
+        specifier: 1.0.0-rc.15
+        version: 1.0.0-rc.15(typescript@5.4.5)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -4022,8 +4022,8 @@ packages:
       '@stablelib/wipe': 1.0.1
     dev: true
 
-  /@story-protocol/core-sdk@1.0.0-rc.14(typescript@5.4.5):
-    resolution: {integrity: sha512-7/CLt12G/HHdJazWTg5wDjYUb5oxbVJW2EUEmelP32rhVAHVbR+RhqgDtuM+4ISX+Eg1nbUHGG/dbhwbgBV4+A==}
+  /@story-protocol/core-sdk@1.0.0-rc.15(typescript@5.4.5):
+    resolution: {integrity: sha512-m0LFg4hv0A7tjaaK6jTopRUPSM4hNwt5yMUiICuODGPYPJ8igZdTQK/IJxI1k1fB2WMvOQcMKo+cC2jUXzky+g==}
     dependencies:
       abitype: 0.10.3(typescript@5.4.5)
       axios: 1.6.8
