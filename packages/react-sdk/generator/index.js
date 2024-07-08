@@ -2,11 +2,15 @@ const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
 const ts = require("typescript");
+const cliProgress = require("cli-progress");
+const { exec } = require("child_process");
 const resourcesFolder = path.resolve(__dirname, "../../core-sdk/src/resources");
 const resourceTemplate = require("./templates/resource");
 const indexTemplate = require("./templates/index");
 
 console.log("🚀🚀 React SDK generator started!\n");
+const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
 const isPrimitiveType = (type) => {
   return [
     "string",
@@ -70,7 +74,10 @@ const visit = (file) => {
 };
 let fileNames = [];
 let exportTypes = [];
-fs.readdirSync(resourcesFolder).forEach((file) => {
+const files = fs.readdirSync(resourcesFolder);
+bar.start(files.length + 1, 0);
+files.forEach((file, index) => {
+  bar.update(index + 1);
   let sources = [];
   const fileName =
     file.replace(".ts", "").charAt(0).toUpperCase() +
@@ -121,5 +128,19 @@ const indexSource = ejs.render(indexTemplate, {
   types: exportTypes,
 });
 fs.writeFileSync("src/index.ts", indexSource);
-
-console.log("👍👍 React SDK templates generated successfully!");
+exec("npm run fix", (error) => {
+  if (error) {
+    console.log(
+      "\x1b[31m%s\x1b[0m",
+      "\nError occurred while running npm run fix command. Please run `npm run fix` manually."
+    );
+    bar.stop();
+    return;
+  }
+  bar.update(files.length + 1);
+  bar.stop();
+  console.log(
+    "\x1b[32m%s\x1b[0m",
+    "React SDK templates generated successfully!"
+  );
+});
