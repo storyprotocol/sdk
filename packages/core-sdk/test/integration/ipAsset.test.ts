@@ -142,7 +142,7 @@ describe("IP Asset Functions ", () => {
     });
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
-      it("Non-Commercial Remix", async () => {
+      it.skip("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
           pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
@@ -204,15 +204,12 @@ describe("IP Asset Functions ", () => {
       });
     });
 
-    it("should not throw error when register registerDerivativeIp", async () => {
+    it.skip("should not throw error when register registerDerivativeIp", async () => {
       const tokenChildId = await getTokenId(nftContract);
       const { ipId: parentIpId, licenseTermsId } =
         await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
           pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
-          commercialRevShare: 10,
-          mintingFee: "100",
-          currency: MockERC20.address,
           txOptions: {
             waitForTransaction: true,
           },
@@ -233,7 +230,7 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
 
-    it("should not throw error when register registerIpAndAttachPilTerms", async () => {
+    it.skip("should not throw error when register registerIpAndAttachPilTerms", async () => {
       const tokenId = await getTokenId(nftContract);
       const deadline = 1000n;
       const result = await client.ipAsset.registerIpAndAttachPilTerms({

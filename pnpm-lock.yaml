@@ -140,8 +140,8 @@ importers:
   packages/react-sdk:
     dependencies:
       '@story-protocol/core-sdk':
-        specifier: 1.0.0-rc.14
-        version: 1.0.0-rc.14(typescript@5.4.5)
+        specifier: 1.0.0-rc.15
+        version: 1.0.0-rc.15(typescript@5.4.5)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -191,6 +191,9 @@ importers:
       babel-jest:
         specifier: ^29.7.0
         version: 29.7.0(@babel/core@7.24.4)
+      cli-progress:
+        specifier: ^3.12.0
+        version: 3.12.0
       dotenv:
         specifier: ^16.3.1
         version: 16.4.5
@@ -216,11 +219,10 @@ importers:
   packages/tsconfig: {}
 
   packages/wagmi-generator:
-    dependencies:
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.4.5
     devDependencies:
+      '@types/node':
+        specifier: ^20.8.2
+        version: 20.12.7
       '@wagmi/cli':
         specifier: 0.0.0-canary-20240313013119
         version: 0.0.0-canary-20240313013119(typescript@5.4.5)
@@ -236,6 +238,9 @@ importers:
       change-case:
         specifier: ^5.4.3
         version: 5.4.4
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.4.5
       typescript:
         specifier: ^5.4.2
         version: 5.4.5
@@ -4022,8 +4027,8 @@ packages:
       '@stablelib/wipe': 1.0.1
     dev: true
 
-  /@story-protocol/core-sdk@1.0.0-rc.14(typescript@5.4.5):
-    resolution: {integrity: sha512-7/CLt12G/HHdJazWTg5wDjYUb5oxbVJW2EUEmelP32rhVAHVbR+RhqgDtuM+4ISX+Eg1nbUHGG/dbhwbgBV4+A==}
+  /@story-protocol/core-sdk@1.0.0-rc.15(typescript@5.4.5):
+    resolution: {integrity: sha512-m0LFg4hv0A7tjaaK6jTopRUPSM4hNwt5yMUiICuODGPYPJ8igZdTQK/IJxI1k1fB2WMvOQcMKo+cC2jUXzky+g==}
     dependencies:
       abitype: 0.10.3(typescript@5.4.5)
       axios: 1.6.8
@@ -5858,6 +5863,13 @@ packages:
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dependencies:
       restore-cursor: 4.0.0
+    dev: true
+
+  /cli-progress@3.12.0:
+    resolution: {integrity: sha512-tRkV3HJ1ASwm19THiiLIXLO7Im7wlTuKnvkYaTkyoAPefqjNg7W7DHKUlGRxy9vxDvbyCYQkQozvptuMkGCg8A==}
+    engines: {node: '>=4'}
+    dependencies:
+      string-width: 4.2.3
     dev: true
 
   /cli-spinners@2.9.2:
