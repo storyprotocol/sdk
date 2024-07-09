@@ -219,11 +219,10 @@ importers:
   packages/tsconfig: {}
 
   packages/wagmi-generator:
-    dependencies:
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.4.5
     devDependencies:
+      '@types/node':
+        specifier: ^20.8.2
+        version: 20.12.7
       '@wagmi/cli':
         specifier: 0.0.0-canary-20240313013119
         version: 0.0.0-canary-20240313013119(typescript@5.4.5)
@@ -239,6 +238,9 @@ importers:
       change-case:
         specifier: ^5.4.3
         version: 5.4.4
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.4.5
       typescript:
         specifier: ^5.4.2
         version: 5.4.5

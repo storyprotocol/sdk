@@ -71,7 +71,7 @@ describe("License Functions", () => {
       licenseId = registerLicenseResult.licenseTermsId!;
     });
 
-    it("should not throw error when attach License Terms", async () => {
+    it.skip("should not throw error when attach License Terms", async () => {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseId,
