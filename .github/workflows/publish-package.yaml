@@ -16,7 +16,8 @@ jobs:
     needs: [Timestamp]
     runs-on: ubuntu-latest
     outputs:
-      version_to_be_published: ${{ steps.get_version_to_publish.outputs.VERSION_TO_BE_PUBLISHED }}
+      core_sdk_version_to_be_published: ${{ steps.get_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}
+      react_sdk_version_to_be_published: ${{ steps.get_version_to_publish.outputs.REACT_SDK_VERSION_TO_BE_PUBLISHED }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -25,22 +26,31 @@ jobs:
         id: get_version_to_publish
         run: |
           content=$(cat packages/core-sdk/package.json)
-          echo "VERSION_TO_BE_PUBLISHED=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
+          echo "CORE_SDK_VERSION_TO_BE_PUBLISHED=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
+          content=$(cat packages/react-sdk/package.json)
+          echo "REACT_SDK_VERSION_TO_BE_PUBLISHED=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
 
   # Fetch the latest version from NPM
   fetch_latest_version:
     needs: [Timestamp]
     runs-on: ubuntu-latest
     outputs:
-      LATEST_VERSION: ${{ steps.get_latest_version.outputs.LATEST_VERSION }}
+      core_sdk_latest_version: ${{ steps.get_latest_version.outputs.CORE_SDK_LATEST_VERSION }}
+      react_sdk_latest_version: ${{ steps.get_latest_version.outputs.REACT_SDK_LATEST_VERSION }}
     steps:
       - name: Get latest package version
         id: get_latest_version
         run: |
-          LATEST_VERSION=$(npm view @story-protocol/core-sdk version)
-          echo "Latest version of @story-protocol/core-sdk on NPMJS is $LATEST_VERSION"
-          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_OUTPUT
-
+          CORE_SDK_LATEST_VERSION=$(npm view @story-protocol/core-sdk version --silent)
+          REACT_SDK_LATEST_VERSION=$(npm view @story-protocol/react-sdk version --silent || true)
+          if [ -z "$REACT_SDK_LATEST_VERSION" ]; then
+            echo "@story-protocol/react-sdk package not found on NPMJS"
+            REACT_SDK_LATEST_VERSION="Not_Published"
+          fi
+          echo "Latest version of @story-protocol/core-sdk on NPMJS is $CORE_SDK_LATEST_VERSION"
+          echo "CORE_SDK_LATEST_VERSION=$CORE_SDK_LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "Latest version of @story-protocol/react-sdk on NPMJS is $REACT_SDK_LATEST_VERSION"
+          echo "REACT_SDK_LATEST_VERSION=$REACT_SDK_LATEST_VERSION" >> $GITHUB_OUTPUT
   # Fail the PR if the version to be published is the same as the latest version on NPM
   fail_if_version_is_same:
     needs: [print_version_to_publish, fetch_latest_version]
@@ -48,16 +58,23 @@ jobs:
     steps:
       - name: Fail if version is the same
         run: |
-          if [ "${{ needs.fetch_latest_version.outputs.LATEST_VERSION }}" == "${{ needs.print_version_to_publish.outputs.version_to_be_published }}" ]; then
-            echo "The version to be published is the same as the latest version on NPM. Exiting..."
+          if [ "${{ needs.fetch_latest_version.outputs.core_sdk_latest_version }}" == "${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}" ]; then
+            echo "The core-sdk version to be published is the same as the latest version on NPM. "
+          fi
+          if [ "${{ needs.fetch_latest_version.outputs.react_sdk_latest_version }}" == "${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}" ]; then
+            echo "The react-sdk version to be published is the same as the latest version on NPM. "
+          fi
+          if [ "${{ needs.fetch_latest_version.outputs.core_sdk_latest_version }}" == "${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}" ] && [ "${{ needs.fetch_latest_version.outputs.react_sdk_latest_version }}" == "${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}" ]; then
+            echo "The core-sdk and react-sdk versions to be published are the same as the latest versions on NPM. "
             exit 1
           fi
 
   build-test-publish:
-    needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
+    needs:
+      [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
     # Skip this job if the version to be published is the same as the latest version on NPM
     # and the event triggering the workflow is a push
-    if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
+    if: ${{ ((needs.fetch_latest_version.outputs.core_sdk_latest_version != needs.print_version_to_publish.outputs.core_sdk_version_to_be_published) || (needs.fetch_latest_version.outputs.react_sdk_latest_version != needs.print_version_to_publish.outputs.react_sdk_version_to_be_published)) && github.event_name == 'push'}}
     runs-on: ubuntu-latest
     environment: "beta-sepolia"
     env:
@@ -75,7 +92,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
+      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
         with:
           version: 8.8.0
 
@@ -110,31 +127,60 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Publish to npm
+      - name: Publish core-sdk package to npm
+        if: ${{ needs.fetch_latest_version.outputs.core_sdk_latest_version != needs.print_version_to_publish.outputs.core_sdk_version_to_be_published && github.event_name == 'push'}}
         run: |
           cd packages/core-sdk
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  create_release:
-    needs: [print_version_to_publish, fetch_latest_version, fail_if_version_is_same]
+      - name: Publish react-sdk package to npm
+        if: ${{ needs.fetch_latest_version.outputs.react_sdk_latest_version != needs.print_version_to_publish.outputs.react_sdk_version_to_be_published && github.event_name == 'push'}}
+        run: |
+          cd packages/react-sdk
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  create-release-core-sdk:
+    needs: [build-test-publish, print_version_to_publish, fetch_latest_version]
     # Skip this job if the version to be published is the same as the latest version on NPM
     # and the event triggering the workflow is a push
-    if: needs.fetch_latest_version.outputs.LATEST_VERSION != needs.print_version_to_publish.outputs.version_to_be_published && github.event_name == 'push'
+    if: ${{ needs.fetch_latest_version.outputs.core_sdk_latest_version != needs.print_version_to_publish.outputs.core_sdk_version_to_be_published && github.event_name == 'push'}}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
     with:
-      version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
+      tag_name: core-sdk@${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}
 
-  send_slack_notif:
-    needs: [print_version_to_publish, build-test-publish, create_release]
+  send_slack_notif-core-sdk:
+    needs: [print_version_to_publish, create-release-core-sdk]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
     with:
-      short-desc: '${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}'
-      title: 'Published to Registry'
-      img-url: 'https://i.imgur.com/JHmKB0s.png'
-      img-alt-text: 'Published to Registry'
+      short-desc: "${{ github.repository }}: core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published}}"
+      title: "Published to Registry"
+      img-url: "https://i.imgur.com/JHmKB0s.png"
+      img-alt-text: "Published to Registry"
+    secrets:
+      channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
+      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  create-release-react-sdk:
+    needs: [build-test-publish, print_version_to_publish, fetch_latest_version]
+    # Skip this job if the version to be published is the same as the latest version on NPM
+    # and the event triggering the workflow is a push
+    if: ${{ needs.fetch_latest_version.outputs.react_sdk_latest_version != needs.print_version_to_publish.outputs.react_sdk_version_to_be_published && github.event_name == 'push' }}
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
+    with:
+      tag_name: react-sdk@${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}
+
+  send_slack_notif-react-sdk:
+    needs: [print_version_to_publish, create-release-react-sdk]
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
+    with:
+      short-desc: "${{ github.repository }}: react-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}"
+      title: "Published to Registry"
+      img-url: "https://i.imgur.com/JHmKB0s.png"
+      img-alt-text: "Published to Registry"
     secrets:
       channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
       slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
