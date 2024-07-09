@@ -150,7 +150,6 @@ jobs:
     if: ${{ needs.fetch_latest_version.outputs.core_sdk_latest_version != needs.print_version_to_publish.outputs.core_sdk_version_to_be_published && github.event_name == 'push'}}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
     with:
-<<<<<<< HEAD
       tag_name: core-sdk@${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}
 
   send_slack_notif-core-sdk:
@@ -182,18 +181,6 @@ jobs:
       title: "Published to Registry"
       img-url: "https://i.imgur.com/JHmKB0s.png"
       img-alt-text: "Published to Registry"
-=======
-      version_to_publish: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}
-
-  send_slack_notif:
-    needs: [print_version_to_publish, build-test-publish, create_release]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
-    with:
-      short-desc: '${{ github.repository }}: Package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.version_to_be_published }}'
-      title: 'Published to Registry'
-      img-url: 'https://i.imgur.com/JHmKB0s.png'
-      img-alt-text: 'Published to Registry'
->>>>>>> main
     secrets:
       channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
       slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
