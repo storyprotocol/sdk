@@ -27,7 +27,6 @@ export type {
 } from "./types/resources/ipAsset";
 
 export type {
-  RegisterNonComSocialRemixingPILRequest,
   RegisterCommercialUsePILRequest,
   RegisterCommercialRemixPILRequest,
   RegisterPILResponse,

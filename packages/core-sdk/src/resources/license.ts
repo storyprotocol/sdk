@@ -13,7 +13,6 @@ import {
 } from "../abi/generated";
 import {
   LicenseTerms,
-  RegisterNonComSocialRemixingPILRequest,
   RegisterPILResponse,
   RegisterCommercialUsePILRequest,
   RegisterCommercialRemixPILRequest,
@@ -50,45 +49,6 @@ export class LicenseClient {
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-  }
-  /**
-   * Convenient function to register a PIL non commercial social remix license to the registry
-   * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
-   *   @param request.txOptions [Optional] The transaction options.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
-   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
-   */
-  public async registerNonComSocialRemixingPIL(
-    request?: RegisterNonComSocialRemixingPILRequest,
-  ): Promise<RegisterPILResponse> {
-    try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      if (request?.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: licenseTerms,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: licenseTerms,
-        });
-        if (request?.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
-    } catch (error) {
-      handleError(error, "Failed to register non commercial social remixing PIL");
-    }
   }
   /**
    * Convenient function to register a PIL commercial use license to the registry.

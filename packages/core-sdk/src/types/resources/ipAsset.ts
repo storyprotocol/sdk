@@ -53,9 +53,9 @@ export type RegisterDerivativeResponse = {
 export type CreateIpAssetWithPilTermsRequest = {
   nftContract: Address;
   pilType: PIL_TYPE;
+  currency: Address;
+  mintingFee: string | number | bigint;
   recipient?: Address;
-  mintingFee?: string;
-  currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
 } & Metadata;
@@ -90,9 +90,9 @@ export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   pilType: PIL_TYPE;
+  mintingFee: string | number | bigint;
+  currency: Address;
   deadline?: bigint | number | string;
-  mintingFee?: string;
-  currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
 } & Metadata;
