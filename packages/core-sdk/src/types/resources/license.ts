@@ -13,10 +13,6 @@ export type License = {
   licensorIpId: Address;
 };
 
-export type RegisterNonComSocialRemixingPILRequest = {
-  txOptions?: TxOptions;
-};
-
 export type LicenseTerms = {
   mintingFee: bigint;
   expiration: bigint;
@@ -86,7 +82,6 @@ export type MintLicenseTokensResponse = {
 };
 
 export enum PIL_TYPE {
-  NON_COMMERCIAL_REMIX,
   COMMERCIAL_USE,
   COMMERCIAL_REMIX,
 }

@@ -4,9 +4,9 @@ import { PIL_TYPE, LicenseTerms } from "../types/resources/license";
 
 export function getLicenseTermByType(
   type: PIL_TYPE,
-  term?: {
-    mintingFee?: string | number | bigint;
-    currency?: Hex;
+  term: {
+    mintingFee: string | number | bigint;
+    currency: Hex;
     royaltyPolicyLAPAddress: Hex;
     commercialRevShare?: number;
   },
@@ -30,12 +30,7 @@ export function getLicenseTermByType(
     currency: zeroAddress,
     uri: "",
   };
-  if (type === PIL_TYPE.NON_COMMERCIAL_REMIX) {
-    return licenseTerms;
-  } else if (type === PIL_TYPE.COMMERCIAL_USE) {
-    if (!term || term.mintingFee === undefined || term.currency === undefined) {
-      throw new Error("mintingFee currency are required for commercial use PIL.");
-    }
+  if (type === PIL_TYPE.COMMERCIAL_USE) {
     licenseTerms.royaltyPolicy = getAddress(term.royaltyPolicyLAPAddress);
     licenseTerms.mintingFee = BigInt(term.mintingFee);
     licenseTerms.commercialUse = true;
@@ -44,12 +39,7 @@ export function getLicenseTermByType(
     licenseTerms.currency = getAddress(term.currency);
     return licenseTerms;
   } else {
-    if (
-      !term ||
-      term.mintingFee === undefined ||
-      term.currency === undefined ||
-      term.commercialRevShare === undefined
-    ) {
+    if (term.commercialRevShare === undefined) {
       throw new Error(
         "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );

@@ -15,15 +15,6 @@ describe("License Functions", () => {
     client = getStoryClientInSepolia();
   });
   describe("registering license with different types", async () => {
-    it("should not throw error when registering license with non commercial social remixing PIL", async () => {
-      const result = await client.license.registerNonComSocialRemixingPIL({
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
-
     it("should not throw error when registering license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         mintingFee: "1",
@@ -63,7 +54,10 @@ describe("License Functions", () => {
       });
       ipId = registerResult.ipId!;
 
-      const registerLicenseResult = await client.license.registerNonComSocialRemixingPIL({
+      const registerLicenseResult = await client.license.registerCommercialRemixPIL({
+        mintingFee: "1",
+        commercialRevShare: 100,
+        currency: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
         },

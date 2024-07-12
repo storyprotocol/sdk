@@ -4,54 +4,7 @@ import { getLicenseTermByType } from "../../../src/utils/getLicenseTermsByType";
 import { expect } from "chai";
 
 describe("Get License Terms By Type", () => {
-  it("it should return no commercial license terms when call getLicenseTermByType given NON_COMMERCIAL_REMIX", async () => {
-    const result = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
-    expect(result).to.deep.include({
-      transferable: true,
-      commercialAttribution: false,
-      commercialRevCelling: 0n,
-      commercialRevShare: 0,
-      commercialUse: false,
-      commercializerChecker: "0x0000000000000000000000000000000000000000",
-      commercializerCheckerData: "0x0000000000000000000000000000000000000000",
-      currency: "0x0000000000000000000000000000000000000000",
-      derivativeRevCelling: 0n,
-      derivativesAllowed: true,
-      derivativesApproval: false,
-      derivativesAttribution: true,
-      derivativesReciprocal: true,
-      expiration: 0n,
-      mintingFee: 0n,
-      royaltyPolicy: "0x0000000000000000000000000000000000000000",
-      uri: "",
-    });
-  });
-
   describe("Get Commercial License Terms", () => {
-    it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without terms", async () => {
-      expect(() => getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE)).to.throw(
-        "mintingFee currency are required for commercial use PIL.",
-      );
-    });
-
-    it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without mintFee", async () => {
-      expect(() =>
-        getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-          currency: zeroAddress,
-          royaltyPolicyLAPAddress: zeroAddress,
-        }),
-      ).to.throw("mintingFee currency are required for commercial use PIL.");
-    });
-
-    it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without currency", async () => {
-      expect(() =>
-        getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-          royaltyPolicyLAPAddress: zeroAddress,
-          mintingFee: "1",
-        }),
-      ).to.throw("mintingFee currency are required for commercial use PIL.");
-    });
-
     it("it should throw when call getLicenseTermByType given COMMERCIAL_USE and wrong royaltyAddress", async () => {
       expect(() =>
         getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
@@ -91,36 +44,6 @@ describe("Get License Terms By Type", () => {
   });
 
   describe("Get Commercial remix License Terms", () => {
-    it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without terms", async () => {
-      expect(() => getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX)).to.throw(
-        "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
-      );
-    });
-
-    it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without mintFee", async () => {
-      expect(() =>
-        getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-          currency: zeroAddress,
-          royaltyPolicyLAPAddress: zeroAddress,
-          commercialRevShare: 100,
-        }),
-      ).to.throw(
-        "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
-      );
-    });
-
-    it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without currency", async () => {
-      expect(() =>
-        getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-          royaltyPolicyLAPAddress: zeroAddress,
-          mintingFee: "1",
-          commercialRevShare: 100,
-        }),
-      ).to.throw(
-        "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
-      );
-    });
-
     it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX and wrong royaltyAddress", async () => {
       expect(() =>
         getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
