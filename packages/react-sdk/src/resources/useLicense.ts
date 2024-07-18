@@ -10,14 +10,15 @@ import {
   LicenseTermsId,
   PiLicenseTemplateGetLicenseTermsResponse,
 } from "@story-protocol/core-sdk";
-import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
 import { handleError } from "../util";
+import { useLoading } from "../hooks/useLoading";
+import { useErrors } from "../hooks/useError";
 
 const useLicense = () => {
   const client = useStoryContext();
-  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+  const [loadings, setLoadings] = useLoading({
     registerNonComSocialRemixingPIL: false,
     registerCommercialUsePIL: false,
     registerCommercialRemixPIL: false,
@@ -25,7 +26,7 @@ const useLicense = () => {
     mintLicenseTokens: false,
     getLicenseTerms: false,
   });
-  const [errors, setErrors] = useState<Record<string, string | null>>({
+  const [errors, setErrors] = useErrors({
     registerNonComSocialRemixingPIL: null,
     registerCommercialUsePIL: null,
     registerCommercialRemixPIL: null,
@@ -45,29 +46,17 @@ const useLicense = () => {
     request: RegisterNonComSocialRemixingPILRequest
   ): Promise<RegisterPILResponse> => {
     try {
-      setLoadings((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: true,
-      }));
-      setErrors((prev) => ({ ...prev, registerNonComSocialRemixingPIL: null }));
+      setLoadings("registerNonComSocialRemixingPIL", true);
+      setErrors("registerNonComSocialRemixingPIL", null);
       const response = await client.license.registerNonComSocialRemixingPIL(
         request
       );
-      setLoadings((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: false,
-      }));
+      setLoadings("registerNonComSocialRemixingPIL", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: false,
-      }));
+      setErrors("registerNonComSocialRemixingPIL", errorMessage);
+      setLoadings("registerNonComSocialRemixingPIL", false);
       throw new Error(errorMessage);
     }
   };
@@ -85,18 +74,15 @@ const useLicense = () => {
     request: RegisterCommercialUsePILRequest
   ): Promise<RegisterPILResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: true }));
-      setErrors((prev) => ({ ...prev, registerCommercialUsePIL: null }));
+      setLoadings("registerCommercialUsePIL", true);
+      setErrors("registerCommercialUsePIL", null);
       const response = await client.license.registerCommercialUsePIL(request);
-      setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: false }));
+      setLoadings("registerCommercialUsePIL", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerCommercialUsePIL: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: false }));
+      setErrors("registerCommercialUsePIL", errorMessage);
+      setLoadings("registerCommercialUsePIL", false);
       throw new Error(errorMessage);
     }
   };
@@ -115,18 +101,15 @@ const useLicense = () => {
     request: RegisterCommercialRemixPILRequest
   ): Promise<RegisterPILResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: true }));
-      setErrors((prev) => ({ ...prev, registerCommercialRemixPIL: null }));
+      setLoadings("registerCommercialRemixPIL", true);
+      setErrors("registerCommercialRemixPIL", null);
       const response = await client.license.registerCommercialRemixPIL(request);
-      setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: false }));
+      setLoadings("registerCommercialRemixPIL", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerCommercialRemixPIL: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: false }));
+      setErrors("registerCommercialRemixPIL", errorMessage);
+      setLoadings("registerCommercialRemixPIL", false);
       throw new Error(errorMessage);
     }
   };
@@ -144,15 +127,15 @@ const useLicense = () => {
     request: AttachLicenseTermsRequest
   ): Promise<AttachLicenseTermsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, attachLicenseTerms: true }));
-      setErrors((prev) => ({ ...prev, attachLicenseTerms: null }));
+      setLoadings("attachLicenseTerms", true);
+      setErrors("attachLicenseTerms", null);
       const response = await client.license.attachLicenseTerms(request);
-      setLoadings((prev) => ({ ...prev, attachLicenseTerms: false }));
+      setLoadings("attachLicenseTerms", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, attachLicenseTerms: errorMessage }));
-      setLoadings((prev) => ({ ...prev, attachLicenseTerms: false }));
+      setErrors("attachLicenseTerms", errorMessage);
+      setLoadings("attachLicenseTerms", false);
       throw new Error(errorMessage);
     }
   };
@@ -183,15 +166,15 @@ const useLicense = () => {
     request: MintLicenseTokensRequest
   ): Promise<MintLicenseTokensResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, mintLicenseTokens: true }));
-      setErrors((prev) => ({ ...prev, mintLicenseTokens: null }));
+      setLoadings("mintLicenseTokens", true);
+      setErrors("mintLicenseTokens", null);
       const response = await client.license.mintLicenseTokens(request);
-      setLoadings((prev) => ({ ...prev, mintLicenseTokens: false }));
+      setLoadings("mintLicenseTokens", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, mintLicenseTokens: errorMessage }));
-      setLoadings((prev) => ({ ...prev, mintLicenseTokens: false }));
+      setErrors("mintLicenseTokens", errorMessage);
+      setLoadings("mintLicenseTokens", false);
       throw new Error(errorMessage);
     }
   };
@@ -205,17 +188,17 @@ const useLicense = () => {
     selectedLicenseTermsId: LicenseTermsId
   ): Promise<PiLicenseTemplateGetLicenseTermsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, getLicenseTerms: true }));
-      setErrors((prev) => ({ ...prev, getLicenseTerms: null }));
+      setLoadings("getLicenseTerms", true);
+      setErrors("getLicenseTerms", null);
       const response = await client.license.getLicenseTerms(
         selectedLicenseTermsId
       );
-      setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
+      setLoadings("getLicenseTerms", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, getLicenseTerms: errorMessage }));
-      setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
+      setErrors("getLicenseTerms", errorMessage);
+      setLoadings("getLicenseTerms", false);
       throw new Error(errorMessage);
     }
   };

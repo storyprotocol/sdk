@@ -12,14 +12,15 @@ import {
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
 } from "@story-protocol/core-sdk";
-import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
 import { handleError } from "../util";
+import { useLoading } from "../hooks/useLoading";
+import { useErrors } from "../hooks/useError";
 
 const useIpAsset = () => {
   const client = useStoryContext();
-  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+  const [loadings, setLoadings] = useLoading({
     register: false,
     registerDerivative: false,
     registerDerivativeWithLicenseTokens: false,
@@ -27,7 +28,7 @@ const useIpAsset = () => {
     registerIpAndAttachPilTerms: false,
     registerDerivativeIp: false,
   });
-  const [errors, setErrors] = useState<Record<string, string | null>>({
+  const [errors, setErrors] = useErrors({
     register: null,
     registerDerivative: null,
     registerDerivativeWithLicenseTokens: null,
@@ -54,15 +55,15 @@ const useIpAsset = () => {
     request: RegisterRequest
   ): Promise<RegisterIpResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, register: true }));
-      setErrors((prev) => ({ ...prev, register: null }));
+      setLoadings("register", true);
+      setErrors("register", null);
       const response = await client.ipAsset.register(request);
-      setLoadings((prev) => ({ ...prev, register: false }));
+      setLoadings("register", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, register: errorMessage }));
-      setLoadings((prev) => ({ ...prev, register: false }));
+      setErrors("register", errorMessage);
+      setLoadings("register", false);
       throw new Error(errorMessage);
     }
   };
@@ -84,15 +85,15 @@ const useIpAsset = () => {
     request: RegisterDerivativeRequest
   ): Promise<RegisterDerivativeResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, registerDerivative: true }));
-      setErrors((prev) => ({ ...prev, registerDerivative: null }));
+      setLoadings("registerDerivative", true);
+      setErrors("registerDerivative", null);
       const response = await client.ipAsset.registerDerivative(request);
-      setLoadings((prev) => ({ ...prev, registerDerivative: false }));
+      setLoadings("registerDerivative", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, registerDerivative: errorMessage }));
-      setLoadings((prev) => ({ ...prev, registerDerivative: false }));
+      setErrors("registerDerivative", errorMessage);
+      setLoadings("registerDerivative", false);
       throw new Error(errorMessage);
     }
   };
@@ -112,32 +113,17 @@ const useIpAsset = () => {
     request: RegisterDerivativeWithLicenseTokensRequest
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> => {
     try {
-      setLoadings((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: true,
-      }));
-      setErrors((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: null,
-      }));
+      setLoadings("registerDerivativeWithLicenseTokens", true);
+      setErrors("registerDerivativeWithLicenseTokens", null);
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens(
         request
       );
-      setLoadings((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: false,
-      }));
+      setLoadings("registerDerivativeWithLicenseTokens", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: false,
-      }));
+      setErrors("registerDerivativeWithLicenseTokens", errorMessage);
+      setLoadings("registerDerivativeWithLicenseTokens", false);
       throw new Error(errorMessage);
     }
   };
@@ -164,32 +150,17 @@ const useIpAsset = () => {
     request: CreateIpAssetWithPilTermsRequest
   ): Promise<CreateIpAssetWithPilTermsResponse> => {
     try {
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: true,
-      }));
-      setErrors((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: null,
-      }));
+      setLoadings("mintAndRegisterIpAssetWithPilTerms", true);
+      setErrors("mintAndRegisterIpAssetWithPilTerms", null);
       const response = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms(
         request
       );
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: false,
-      }));
+      setLoadings("mintAndRegisterIpAssetWithPilTerms", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: false,
-      }));
+      setErrors("mintAndRegisterIpAssetWithPilTerms", errorMessage);
+      setLoadings("mintAndRegisterIpAssetWithPilTerms", false);
       throw new Error(errorMessage);
     }
   };
@@ -216,20 +187,17 @@ const useIpAsset = () => {
     request: RegisterIpAndAttachPilTermsRequest
   ): Promise<RegisterIpAndAttachPilTermsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: true }));
-      setErrors((prev) => ({ ...prev, registerIpAndAttachPilTerms: null }));
+      setLoadings("registerIpAndAttachPilTerms", true);
+      setErrors("registerIpAndAttachPilTerms", null);
       const response = await client.ipAsset.registerIpAndAttachPilTerms(
         request
       );
-      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
+      setLoadings("registerIpAndAttachPilTerms", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerIpAndAttachPilTerms: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
+      setErrors("registerIpAndAttachPilTerms", errorMessage);
+      setLoadings("registerIpAndAttachPilTerms", false);
       throw new Error(errorMessage);
     }
   };
@@ -256,15 +224,15 @@ const useIpAsset = () => {
     request: RegisterIpAndMakeDerivativeRequest
   ): Promise<RegisterIpAndMakeDerivativeResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, registerDerivativeIp: true }));
-      setErrors((prev) => ({ ...prev, registerDerivativeIp: null }));
+      setLoadings("registerDerivativeIp", true);
+      setErrors("registerDerivativeIp", null);
       const response = await client.ipAsset.registerDerivativeIp(request);
-      setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
+      setLoadings("registerDerivativeIp", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, registerDerivativeIp: errorMessage }));
-      setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
+      setErrors("registerDerivativeIp", errorMessage);
+      setLoadings("registerDerivativeIp", false);
       throw new Error(errorMessage);
     }
   };

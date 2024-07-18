@@ -5,19 +5,20 @@ import {
   IPAccountExecuteWithSigResponse,
   IpAccountImplStateResponse,
 } from "@story-protocol/core-sdk";
-import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
 import { handleError } from "../util";
+import { useLoading } from "../hooks/useLoading";
+import { useErrors } from "../hooks/useError";
 
 const useIpAccount = () => {
   const client = useStoryContext();
-  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+  const [loadings, setLoadings] = useLoading({
     execute: false,
     executeWithSig: false,
     getIpAccountNonce: false,
   });
-  const [errors, setErrors] = useState<Record<string, string | null>>({
+  const [errors, setErrors] = useErrors({
     execute: null,
     executeWithSig: null,
     getIpAccountNonce: null,
@@ -36,15 +37,15 @@ const useIpAccount = () => {
     request: IPAccountExecuteRequest
   ): Promise<IPAccountExecuteResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, execute: true }));
-      setErrors((prev) => ({ ...prev, execute: null }));
+      setLoadings("execute", true);
+      setErrors("execute", null);
       const response = await client.ipAccount.execute(request);
-      setLoadings((prev) => ({ ...prev, execute: false }));
+      setLoadings("execute", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, execute: errorMessage }));
-      setLoadings((prev) => ({ ...prev, execute: false }));
+      setErrors("execute", errorMessage);
+      setLoadings("execute", false);
       throw new Error(errorMessage);
     }
   };
@@ -64,15 +65,15 @@ const useIpAccount = () => {
     request: IPAccountExecuteWithSigRequest
   ): Promise<IPAccountExecuteWithSigResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, executeWithSig: true }));
-      setErrors((prev) => ({ ...prev, executeWithSig: null }));
+      setLoadings("executeWithSig", true);
+      setErrors("executeWithSig", null);
       const response = await client.ipAccount.executeWithSig(request);
-      setLoadings((prev) => ({ ...prev, executeWithSig: false }));
+      setLoadings("executeWithSig", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, executeWithSig: errorMessage }));
-      setLoadings((prev) => ({ ...prev, executeWithSig: false }));
+      setErrors("executeWithSig", errorMessage);
+      setLoadings("executeWithSig", false);
       throw new Error(errorMessage);
     }
   };
@@ -85,15 +86,15 @@ const useIpAccount = () => {
     ipId: string
   ): Promise<IpAccountImplStateResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, getIpAccountNonce: true }));
-      setErrors((prev) => ({ ...prev, getIpAccountNonce: null }));
+      setLoadings("getIpAccountNonce", true);
+      setErrors("getIpAccountNonce", null);
       const response = await client.ipAccount.getIpAccountNonce(ipId);
-      setLoadings((prev) => ({ ...prev, getIpAccountNonce: false }));
+      setLoadings("getIpAccountNonce", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, getIpAccountNonce: errorMessage }));
-      setLoadings((prev) => ({ ...prev, getIpAccountNonce: false }));
+      setErrors("getIpAccountNonce", errorMessage);
+      setLoadings("getIpAccountNonce", false);
       throw new Error(errorMessage);
     }
   };
