@@ -28,7 +28,8 @@ export type CollectRoyaltyTokensRequest = {
 };
 
 export type CollectRoyaltyTokensResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
   royaltyTokensCollected?: bigint;
 };
 
@@ -58,7 +59,8 @@ export type PayRoyaltyOnBehalfRequest = {
 };
 
 export type PayRoyaltyOnBehalfResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
 };
 
 export type SnapshotRequest = {
@@ -75,11 +77,13 @@ export type ClaimRevenueRequest = {
 };
 
 export type ClaimRevenueResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
   claimableToken?: bigint;
 };
 
 export type SnapshotResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
   snapshotId?: bigint;
 };

@@ -12,7 +12,8 @@ export type RaiseDisputeRequest = {
 };
 
 export type RaiseDisputeResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
   disputeId?: bigint;
 };
 
@@ -23,7 +24,8 @@ export type CancelDisputeRequest = {
 };
 
 export type CancelDisputeResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
 };
 
 export type ResolveDisputeRequest = {
@@ -33,5 +35,6 @@ export type ResolveDisputeRequest = {
 };
 
 export type ResolveDisputeResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
 };

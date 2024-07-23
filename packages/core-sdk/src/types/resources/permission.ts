@@ -12,7 +12,8 @@ export type SetPermissionsRequest = {
 };
 
 export type SetPermissionsResponse = {
-  txHash: string;
+  txHash?: string;
+  encodedTx?: string;
   success?: boolean;
 };
 

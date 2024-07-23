@@ -65,18 +65,25 @@ export class PermissionClient {
   public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
       await this.checkIsRegistered(request.ipId);
-      const txHash = await this.accessControllerClient.setPermission({
+
+      const req = {
         ipAccount: request.ipId,
         signer: request.signer,
         to: request.to,
         func: request.func ? toFunctionSelector(request.func) : defaultFunctionSelector,
         permission: request.permission,
-      });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash, success: true };
+      };
+
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: this.accessControllerClient.setPermissionEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.accessControllerClient.setPermission(req);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash: txHash, success: true };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to set permissions");
@@ -131,20 +138,25 @@ export class PermissionClient {
         chainId: chain[this.chainId],
         wallet: this.wallet as WalletClient,
       });
-      const txHash = await ipAccountClient.executeWithSig({
+      const req = {
         to: getAddress(this.accessControllerClient.address, "accessControllerClientAddress"),
         value: BigInt(0),
         data,
         signer: signer,
         deadline: calculatedDeadline,
         signature,
-      });
-
-      if (txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash, success: true };
+      };
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: ipAccountClient.executeWithSigEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await ipAccountClient.executeWithSig(req);
+
+        if (txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash: txHash, success: true };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to create set permission signature");
@@ -165,16 +177,21 @@ export class PermissionClient {
   ): Promise<SetPermissionsResponse> {
     try {
       await this.checkIsRegistered(request.ipId);
-      const txHash = await this.accessControllerClient.setAllPermissions({
+      const req = {
         ipAccount: request.ipId,
         signer: request.signer,
         permission: request.permission,
-      });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash, success: true };
+      };
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: this.accessControllerClient.setAllPermissionsEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.accessControllerClient.setAllPermissions(req);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash: txHash, success: true };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to set all permissions");
@@ -202,7 +219,7 @@ export class PermissionClient {
       for (const permission of permissions) {
         await this.checkIsRegistered(permission.ipId);
       }
-      const txHash = await this.accessControllerClient.setBatchPermissions({
+      const req = {
         permissions: permissions.map((permission) => ({
           ipAccount: permission.ipId,
           signer: permission.signer,
@@ -210,12 +227,17 @@ export class PermissionClient {
           func: permission.func ? toFunctionSelector(permission.func) : defaultFunctionSelector,
           permission: permission.permission,
         })),
-      });
-      if (txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash, success: true };
+      };
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: this.accessControllerClient.setBatchPermissionsEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.accessControllerClient.setBatchPermissions(req);
+        if (txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash: txHash, success: true };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to set batch permissions");
@@ -268,24 +290,30 @@ export class PermissionClient {
         wallet: this.wallet as WalletClient,
         permissionFunc: "setBatchPermissions",
       });
-      const txHash = await ipAccountClient.executeWithSig({
+      const req = {
         to: getAddress(this.accessControllerClient.address, "accessControllerAddress"),
         value: BigInt(0),
         data,
         signer: getAddress(this.wallet.account!.address, "walletAccountAddress"),
         deadline: calculatedDeadline,
         signature,
-      });
-      if (txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash, success: true };
+      };
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: ipAccountClient.executeWithSigEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await ipAccountClient.executeWithSig(req);
+        if (txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash: txHash, success: true };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to create batch permission signature");
     }
   }
+
   private async checkIsRegistered(ipId: Address): Promise<void> {
     const isRegistered = await this.ipAssetRegistryClient.isRegistered({
       id: getAddress(ipId, "ipId"),

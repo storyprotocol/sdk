@@ -12,4 +12,8 @@ export type CreateNFTCollectionRequest = {
   txOptions?: TxOptions;
 };
 
-export type CreateNFTCollectionResponse = { txHash: string; nftContract?: Hex };
+export type CreateNFTCollectionResponse = {
+  txHash?: string;
+  encodedTx?: string;
+  nftContract?: Hex;
+};

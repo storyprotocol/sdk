@@ -68,18 +68,23 @@ export class RoyaltyClient {
         this.wallet,
         proxyAddress,
       );
-      const txHash = await ipRoyaltyVault.collectRoyaltyTokens({
+      const req = {
         ancestorIpId: request.parentIpId,
-      });
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = ipRoyaltyVault.parseTxRoyaltyTokensCollectedEvent(txReceipt);
-        return {
-          txHash: txHash,
-          royaltyTokensCollected: targetLogs[0].royaltyTokensCollected,
-        };
+      };
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: ipRoyaltyVault.collectRoyaltyTokensEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await ipRoyaltyVault.collectRoyaltyTokens(req);
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs = ipRoyaltyVault.parseTxRoyaltyTokensCollectedEvent(txReceipt);
+          return {
+            txHash: txHash,
+            royaltyTokensCollected: targetLogs[0].royaltyTokensCollected,
+          };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to collect royalty tokens");
@@ -112,17 +117,22 @@ export class RoyaltyClient {
       if (!isPayerRegistered) {
         throw new Error(`The payer IP with id ${request.payerIpId} is not registered.`);
       }
-      const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf({
+      const req = {
         receiverIpId: request.receiverIpId,
         payerIpId: request.payerIpId,
         token: getAddress(request.token, "request.token"),
         amount: BigInt(request.amount),
-      });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash };
+      };
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: this.royaltyModuleClient.payRoyaltyOnBehalfEncode(req) };
       } else {
-        return { txHash };
+        const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf(req);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash };
+        } else {
+          return { txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to pay royalty on behalf");
@@ -189,21 +199,27 @@ export class RoyaltyClient {
           to: proxyAddress,
           value: 0,
           ipId: getAddress(request.account, "request.account"),
-          txOptions: {
-            waitForTransaction: true,
-          },
+          txOptions: request.txOptions,
           data: encodeFunctionData({
             abi: ipRoyaltyVaultImplAbi,
             functionName: "claimRevenueBySnapshotBatch",
             args: [request.snapshotIds, request.token],
           }),
         });
+        if (request.txOptions?.onlyEncodeTransactions) {
+          return { encodedTx: iPAccountExecuteResponse.encodedTx };
+        }
         txHash = iPAccountExecuteResponse.txHash as Hex;
       } else {
-        txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch({
+        const req = {
           snapshotIds: request.snapshotIds,
           token: getAddress(request.token, "request.token"),
-        });
+        };
+        if (request.txOptions?.onlyEncodeTransactions) {
+          return { encodedTx: ipRoyaltyVault.claimRevenueBySnapshotBatchEncode(req) };
+        } else {
+          txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch(req);
+        }
       }
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({
@@ -236,13 +252,17 @@ export class RoyaltyClient {
         this.wallet,
         proxyAddress,
       );
-      const txHash = await ipRoyaltyVault.snapshot();
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = ipRoyaltyVault.parseTxSnapshotCompletedEvent(txReceipt);
-        return { txHash, snapshotId: targetLogs[0].snapshotId };
+      if (request.txOptions?.onlyEncodeTransactions) {
+        return { encodedTx: ipRoyaltyVault.snapshotEncode() };
       } else {
-        return { txHash };
+        const txHash = await ipRoyaltyVault.snapshot();
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs = ipRoyaltyVault.parseTxSnapshotCompletedEvent(txReceipt);
+          return { txHash, snapshotId: targetLogs[0].snapshotId };
+        } else {
+          return { txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to snapshot");
