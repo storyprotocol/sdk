@@ -1,6 +1,7 @@
 import { Address } from "viem";
 
 import { TxOptions } from "../options";
+import { MethodEncode } from "../../abi/generated";
 
 export type IPAccountExecuteRequest = {
   ipId: Address;
@@ -12,7 +13,7 @@ export type IPAccountExecuteRequest = {
 
 export type IPAccountExecuteResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
 };
 
 export type IPAccountExecuteWithSigRequest = {
@@ -28,5 +29,5 @@ export type IPAccountExecuteWithSigRequest = {
 
 export type IPAccountExecuteWithSigResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
 };

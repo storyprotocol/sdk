@@ -1,6 +1,7 @@
 import { Hex } from "viem";
 
 import { TxOptions } from "../options";
+import { MethodEncode } from "../../abi/generated";
 
 export type CreateNFTCollectionRequest = {
   name: string;
@@ -14,6 +15,6 @@ export type CreateNFTCollectionRequest = {
 
 export type CreateNFTCollectionResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
   nftContract?: Hex;
 };

@@ -252,25 +252,28 @@ function generateContractDataFunction(contractName: string, func: AbiFunction) {
 
     if (inType.valid) types.push(`${inType.comment}\n${inType.type}`)
 
-    addImport('viem', 'encodeFunctionData', 'Hex')
+    addImport('viem', 'encodeFunctionData')
 
     funcLine.push(``)
     funcLine.push(`/**`)
     funcLine.push(` * method ${func.name} for contract ${contractName} with only encode`)
     funcLine.push(` *`)
     funcLine.push(` * @param request ${inName}`)
-    funcLine.push(` * @return Promise<Hex>`)
+    funcLine.push(` * @return MethodEncode`)
     funcLine.push(`*/`)
-    funcLine.push(`  public ${camelCase(indexFuncName)}Encode(${inParams}): Hex {`)
-    funcLine.push(`      return encodeFunctionData({`)
-    funcLine.push(`        abi: ${abiName},`)
-    funcLine.push(`        functionName: "${func.name}",`)
+    funcLine.push(`  public ${camelCase(indexFuncName)}Encode(${inParams}): MethodEncode {`)
+    funcLine.push(`      return {`)
+    funcLine.push(`        to: this.address,`)
+    funcLine.push(`        data:encodeFunctionData({`)
+    funcLine.push(`          abi: ${abiName},`)
+    funcLine.push(`          functionName: "${func.name}",`)
     if (inType.valid) {
-        funcLine.push(`        args: [`)
+        funcLine.push(`          args: [`)
         funcLine.push(inType.args)
-        funcLine.push(`        ],`)
+        funcLine.push(`          ],`)
     }
-    funcLine.push(`      });`)
+    funcLine.push(`        }),`)
+    funcLine.push(`      };`)
     funcLine.push(`  }`)
 
     return {func: funcLine.join("\n"), types: ""}
@@ -473,7 +476,9 @@ function generateCommon(config: SDKConfig) {
     file.push(`   return address[chainId || 0] || '0x'`)
     file.push(`}`)
     file.push(``)
-    addImport('viem', 'Address')
+    file.push(`export type MethodEncode = {to: Address, data: Hex}`)
+    file.push(``)
+    addImport('viem', 'Address', 'Hex')
 
     if (config.permissionLessSDK) {
         file.push(``)

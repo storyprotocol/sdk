@@ -1,5 +1,6 @@
 import {
   Address,
+  Hex,
   Abi,
   Account,
   Chain,
@@ -8,7 +9,6 @@ import {
   WriteContractParameters,
   WriteContractReturnType,
   PublicClient,
-  Hex,
   decodeEventLog,
   WatchContractEventReturnType,
   TransactionReceipt,
@@ -7410,6 +7410,8 @@ function getAddress(address: Record<number, Address>, chainId?: number): Address
   return address[chainId || 0] || "0x";
 }
 
+export type MethodEncode = { to: Address; data: Hex };
+
 export type SimpleWalletClient<
   TChain extends Chain | undefined = Chain | undefined,
   TAccount extends Account | undefined = Account | undefined,
@@ -7579,14 +7581,17 @@ export class AccessControllerClient extends AccessControllerEventClient {
    * method setAllPermissions for contract AccessController with only encode
    *
    * @param request AccessControllerSetAllPermissionsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setAllPermissionsEncode(request: AccessControllerSetAllPermissionsRequest): Hex {
-    return encodeFunctionData({
-      abi: accessControllerAbi,
-      functionName: "setAllPermissions",
-      args: [request.ipAccount, request.signer, request.permission],
-    });
+  public setAllPermissionsEncode(request: AccessControllerSetAllPermissionsRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: accessControllerAbi,
+        functionName: "setAllPermissions",
+        args: [request.ipAccount, request.signer, request.permission],
+      }),
+    };
   }
 
   /**
@@ -7612,14 +7617,19 @@ export class AccessControllerClient extends AccessControllerEventClient {
    * method setBatchPermissions for contract AccessController with only encode
    *
    * @param request AccessControllerSetBatchPermissionsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setBatchPermissionsEncode(request: AccessControllerSetBatchPermissionsRequest): Hex {
-    return encodeFunctionData({
-      abi: accessControllerAbi,
-      functionName: "setBatchPermissions",
-      args: [request.permissions],
-    });
+  public setBatchPermissionsEncode(
+    request: AccessControllerSetBatchPermissionsRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: accessControllerAbi,
+        functionName: "setBatchPermissions",
+        args: [request.permissions],
+      }),
+    };
   }
 
   /**
@@ -7645,14 +7655,17 @@ export class AccessControllerClient extends AccessControllerEventClient {
    * method setPermission for contract AccessController with only encode
    *
    * @param request AccessControllerSetPermissionRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setPermissionEncode(request: AccessControllerSetPermissionRequest): Hex {
-    return encodeFunctionData({
-      abi: accessControllerAbi,
-      functionName: "setPermission",
-      args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
-    });
+  public setPermissionEncode(request: AccessControllerSetPermissionRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: accessControllerAbi,
+        functionName: "setPermission",
+        args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
+      }),
+    };
   }
 }
 
@@ -8024,14 +8037,17 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method freezeMetadata for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleFreezeMetadataRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public freezeMetadataEncode(request: CoreMetadataModuleFreezeMetadataRequest): Hex {
-    return encodeFunctionData({
-      abi: coreMetadataModuleAbi,
-      functionName: "freezeMetadata",
-      args: [request.ipId],
-    });
+  public freezeMetadataEncode(request: CoreMetadataModuleFreezeMetadataRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "freezeMetadata",
+        args: [request.ipId],
+      }),
+    };
   }
 
   /**
@@ -8055,14 +8071,17 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method setAll for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleSetAllRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setAllEncode(request: CoreMetadataModuleSetAllRequest): Hex {
-    return encodeFunctionData({
-      abi: coreMetadataModuleAbi,
-      functionName: "setAll",
-      args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
-    });
+  public setAllEncode(request: CoreMetadataModuleSetAllRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "setAll",
+        args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
+      }),
+    };
   }
 
   /**
@@ -8088,14 +8107,17 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method setMetadataURI for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleSetMetadataUriRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setMetadataUriEncode(request: CoreMetadataModuleSetMetadataUriRequest): Hex {
-    return encodeFunctionData({
-      abi: coreMetadataModuleAbi,
-      functionName: "setMetadataURI",
-      args: [request.ipId, request.metadataURI, request.metadataHash],
-    });
+  public setMetadataUriEncode(request: CoreMetadataModuleSetMetadataUriRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "setMetadataURI",
+        args: [request.ipId, request.metadataURI, request.metadataHash],
+      }),
+    };
   }
 
   /**
@@ -8121,14 +8143,19 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method updateNftTokenURI for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleUpdateNftTokenUriRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public updateNftTokenUriEncode(request: CoreMetadataModuleUpdateNftTokenUriRequest): Hex {
-    return encodeFunctionData({
-      abi: coreMetadataModuleAbi,
-      functionName: "updateNftTokenURI",
-      args: [request.ipId, request.nftMetadataHash],
-    });
+  public updateNftTokenUriEncode(
+    request: CoreMetadataModuleUpdateNftTokenUriRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "updateNftTokenURI",
+        args: [request.ipId, request.nftMetadataHash],
+      }),
+    };
   }
 }
 
@@ -8382,14 +8409,17 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
    * method cancelDispute for contract DisputeModule with only encode
    *
    * @param request DisputeModuleCancelDisputeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public cancelDisputeEncode(request: DisputeModuleCancelDisputeRequest): Hex {
-    return encodeFunctionData({
-      abi: disputeModuleAbi,
-      functionName: "cancelDispute",
-      args: [request.disputeId, request.data],
-    });
+  public cancelDisputeEncode(request: DisputeModuleCancelDisputeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "cancelDispute",
+        args: [request.disputeId, request.data],
+      }),
+    };
   }
 
   /**
@@ -8415,14 +8445,17 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
    * method raiseDispute for contract DisputeModule with only encode
    *
    * @param request DisputeModuleRaiseDisputeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public raiseDisputeEncode(request: DisputeModuleRaiseDisputeRequest): Hex {
-    return encodeFunctionData({
-      abi: disputeModuleAbi,
-      functionName: "raiseDispute",
-      args: [request.targetIpId, request.linkToDisputeEvidence, request.targetTag, request.data],
-    });
+  public raiseDisputeEncode(request: DisputeModuleRaiseDisputeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "raiseDispute",
+        args: [request.targetIpId, request.linkToDisputeEvidence, request.targetTag, request.data],
+      }),
+    };
   }
 
   /**
@@ -8448,14 +8481,17 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
    * method resolveDispute for contract DisputeModule with only encode
    *
    * @param request DisputeModuleResolveDisputeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public resolveDisputeEncode(request: DisputeModuleResolveDisputeRequest): Hex {
-    return encodeFunctionData({
-      abi: disputeModuleAbi,
-      functionName: "resolveDispute",
-      args: [request.disputeId, request.data],
-    });
+  public resolveDisputeEncode(request: DisputeModuleResolveDisputeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "resolveDispute",
+        args: [request.disputeId, request.data],
+      }),
+    };
   }
 }
 
@@ -8554,14 +8590,17 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
    * method execute for contract IPAccountImpl with only encode
    *
    * @param request IpAccountImplExecuteRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public executeEncode(request: IpAccountImplExecuteRequest): Hex {
-    return encodeFunctionData({
-      abi: ipAccountImplAbi,
-      functionName: "execute",
-      args: [request.to, request.value, request.data],
-    });
+  public executeEncode(request: IpAccountImplExecuteRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAccountImplAbi,
+        functionName: "execute",
+        args: [request.to, request.value, request.data],
+      }),
+    };
   }
 
   /**
@@ -8594,21 +8633,24 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
    * method executeWithSig for contract IPAccountImpl with only encode
    *
    * @param request IpAccountImplExecuteWithSigRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public executeWithSigEncode(request: IpAccountImplExecuteWithSigRequest): Hex {
-    return encodeFunctionData({
-      abi: ipAccountImplAbi,
-      functionName: "executeWithSig",
-      args: [
-        request.to,
-        request.value,
-        request.data,
-        request.signer,
-        request.deadline,
-        request.signature,
-      ],
-    });
+  public executeWithSigEncode(request: IpAccountImplExecuteWithSigRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAccountImplAbi,
+        functionName: "executeWithSig",
+        args: [
+          request.to,
+          request.value,
+          request.data,
+          request.signer,
+          request.deadline,
+          request.signature,
+        ],
+      }),
+    };
   }
 }
 
@@ -8859,14 +8901,17 @@ export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
    * method register for contract IPAssetRegistry with only encode
    *
    * @param request IpAssetRegistryRegisterRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerEncode(request: IpAssetRegistryRegisterRequest): Hex {
-    return encodeFunctionData({
-      abi: ipAssetRegistryAbi,
-      functionName: "register",
-      args: [request.chainid, request.tokenContract, request.tokenId],
-    });
+  public registerEncode(request: IpAssetRegistryRegisterRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAssetRegistryAbi,
+        functionName: "register",
+        args: [request.chainid, request.tokenContract, request.tokenId],
+      }),
+    };
   }
 }
 
@@ -9167,16 +9212,19 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method claimRevenueBySnapshotBatch for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public claimRevenueBySnapshotBatchEncode(
     request: IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: ipRoyaltyVaultImplAbi,
-      functionName: "claimRevenueBySnapshotBatch",
-      args: [request.snapshotIds, request.token],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "claimRevenueBySnapshotBatch",
+        args: [request.snapshotIds, request.token],
+      }),
+    };
   }
 
   /**
@@ -9202,16 +9250,19 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method claimRevenueByTokenBatch for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public claimRevenueByTokenBatchEncode(
     request: IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: ipRoyaltyVaultImplAbi,
-      functionName: "claimRevenueByTokenBatch",
-      args: [request.snapshotId, request.tokenList],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "claimRevenueByTokenBatch",
+        args: [request.snapshotId, request.tokenList],
+      }),
+    };
   }
 
   /**
@@ -9237,14 +9288,19 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method collectRoyaltyTokens for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplCollectRoyaltyTokensRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public collectRoyaltyTokensEncode(request: IpRoyaltyVaultImplCollectRoyaltyTokensRequest): Hex {
-    return encodeFunctionData({
-      abi: ipRoyaltyVaultImplAbi,
-      functionName: "collectRoyaltyTokens",
-      args: [request.ancestorIpId],
-    });
+  public collectRoyaltyTokensEncode(
+    request: IpRoyaltyVaultImplCollectRoyaltyTokensRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "collectRoyaltyTokens",
+        args: [request.ancestorIpId],
+      }),
+    };
   }
 
   /**
@@ -9267,13 +9323,16 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method snapshot for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplSnapshotRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public snapshotEncode(): Hex {
-    return encodeFunctionData({
-      abi: ipRoyaltyVaultImplAbi,
-      functionName: "snapshot",
-    });
+  public snapshotEncode(): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "snapshot",
+      }),
+    };
   }
 }
 
@@ -10481,14 +10540,19 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method attachLicenseTermsToIp for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryAttachLicenseTermsToIpRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public attachLicenseTermsToIpEncode(request: LicenseRegistryAttachLicenseTermsToIpRequest): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "attachLicenseTermsToIp",
-      args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
-    });
+  public attachLicenseTermsToIpEncode(
+    request: LicenseRegistryAttachLicenseTermsToIpRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "attachLicenseTermsToIp",
+        args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
   }
 
   /**
@@ -10514,14 +10578,17 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method initialize for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryInitializeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public initializeEncode(request: LicenseRegistryInitializeRequest): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "initialize",
-      args: [request.accessManager],
-    });
+  public initializeEncode(request: LicenseRegistryInitializeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
   }
 
   /**
@@ -10552,19 +10619,24 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method registerDerivativeIp for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryRegisterDerivativeIpRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerDerivativeIpEncode(request: LicenseRegistryRegisterDerivativeIpRequest): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "registerDerivativeIp",
-      args: [
-        request.childIpId,
-        request.parentIpIds,
-        request.licenseTemplate,
-        request.licenseTermsIds,
-      ],
-    });
+  public registerDerivativeIpEncode(
+    request: LicenseRegistryRegisterDerivativeIpRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "registerDerivativeIp",
+        args: [
+          request.childIpId,
+          request.parentIpIds,
+          request.licenseTemplate,
+          request.licenseTermsIds,
+        ],
+      }),
+    };
   }
 
   /**
@@ -10590,16 +10662,19 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method registerLicenseTemplate for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryRegisterLicenseTemplateRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public registerLicenseTemplateEncode(
     request: LicenseRegistryRegisterLicenseTemplateRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "registerLicenseTemplate",
-      args: [request.licenseTemplate],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "registerLicenseTemplate",
+        args: [request.licenseTemplate],
+      }),
+    };
   }
 
   /**
@@ -10625,14 +10700,17 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setAuthority for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetAuthorityRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setAuthorityEncode(request: LicenseRegistrySetAuthorityRequest): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "setAuthority",
-      args: [request.newAuthority],
-    });
+  public setAuthorityEncode(request: LicenseRegistrySetAuthorityRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
   }
 
   /**
@@ -10658,14 +10736,19 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setDefaultLicenseTerms for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetDefaultLicenseTermsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setDefaultLicenseTermsEncode(request: LicenseRegistrySetDefaultLicenseTermsRequest): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "setDefaultLicenseTerms",
-      args: [request.newLicenseTemplate, request.newLicenseTermsId],
-    });
+  public setDefaultLicenseTermsEncode(
+    request: LicenseRegistrySetDefaultLicenseTermsRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setDefaultLicenseTerms",
+        args: [request.newLicenseTemplate, request.newLicenseTermsId],
+      }),
+    };
   }
 
   /**
@@ -10691,14 +10774,17 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setExpireTime for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetExpireTimeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setExpireTimeEncode(request: LicenseRegistrySetExpireTimeRequest): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "setExpireTime",
-      args: [request.ipId, request.expireTime],
-    });
+  public setExpireTimeEncode(request: LicenseRegistrySetExpireTimeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setExpireTime",
+        args: [request.ipId, request.expireTime],
+      }),
+    };
   }
 
   /**
@@ -10724,16 +10810,19 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setLicensingConfigForIp for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetLicensingConfigForIpRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public setLicensingConfigForIpEncode(
     request: LicenseRegistrySetLicensingConfigForIpRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "setLicensingConfigForIp",
-      args: [request.ipId, request.licensingConfig],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setLicensingConfigForIp",
+        args: [request.ipId, request.licensingConfig],
+      }),
+    };
   }
 
   /**
@@ -10764,21 +10853,24 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setLicensingConfigForLicense for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetLicensingConfigForLicenseRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public setLicensingConfigForLicenseEncode(
     request: LicenseRegistrySetLicensingConfigForLicenseRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "setLicensingConfigForLicense",
-      args: [
-        request.ipId,
-        request.licenseTemplate,
-        request.licenseTermsId,
-        request.licensingConfig,
-      ],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setLicensingConfigForLicense",
+        args: [
+          request.ipId,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.licensingConfig,
+        ],
+      }),
+    };
   }
 
   /**
@@ -10804,14 +10896,17 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method upgradeToAndCall for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryUpgradeToAndCallRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public upgradeToAndCallEncode(request: LicenseRegistryUpgradeToAndCallRequest): Hex {
-    return encodeFunctionData({
-      abi: licenseRegistryAbi,
-      functionName: "upgradeToAndCall",
-      args: [request.newImplementation, request.data],
-    });
+  public upgradeToAndCallEncode(request: LicenseRegistryUpgradeToAndCallRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
   }
 }
 
@@ -11085,14 +11180,17 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method attachLicenseTerms for contract LicensingModule with only encode
    *
    * @param request LicensingModuleAttachLicenseTermsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public attachLicenseTermsEncode(request: LicensingModuleAttachLicenseTermsRequest): Hex {
-    return encodeFunctionData({
-      abi: licensingModuleAbi,
-      functionName: "attachLicenseTerms",
-      args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
-    });
+  public attachLicenseTermsEncode(request: LicensingModuleAttachLicenseTermsRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "attachLicenseTerms",
+        args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
   }
 
   /**
@@ -11125,21 +11223,24 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method mintLicenseTokens for contract LicensingModule with only encode
    *
    * @param request LicensingModuleMintLicenseTokensRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public mintLicenseTokensEncode(request: LicensingModuleMintLicenseTokensRequest): Hex {
-    return encodeFunctionData({
-      abi: licensingModuleAbi,
-      functionName: "mintLicenseTokens",
-      args: [
-        request.licensorIpId,
-        request.licenseTemplate,
-        request.licenseTermsId,
-        request.amount,
-        request.receiver,
-        request.royaltyContext,
-      ],
-    });
+  public mintLicenseTokensEncode(request: LicensingModuleMintLicenseTokensRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "mintLicenseTokens",
+        args: [
+          request.licensorIpId,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.amount,
+          request.receiver,
+          request.royaltyContext,
+        ],
+      }),
+    };
   }
 
   /**
@@ -11171,20 +11272,23 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method registerDerivative for contract LicensingModule with only encode
    *
    * @param request LicensingModuleRegisterDerivativeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerDerivativeEncode(request: LicensingModuleRegisterDerivativeRequest): Hex {
-    return encodeFunctionData({
-      abi: licensingModuleAbi,
-      functionName: "registerDerivative",
-      args: [
-        request.childIpId,
-        request.parentIpIds,
-        request.licenseTermsIds,
-        request.licenseTemplate,
-        request.royaltyContext,
-      ],
-    });
+  public registerDerivativeEncode(request: LicensingModuleRegisterDerivativeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "registerDerivative",
+        args: [
+          request.childIpId,
+          request.parentIpIds,
+          request.licenseTermsIds,
+          request.licenseTemplate,
+          request.royaltyContext,
+        ],
+      }),
+    };
   }
 
   /**
@@ -11210,16 +11314,19 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method registerDerivativeWithLicenseTokens for contract LicensingModule with only encode
    *
    * @param request LicensingModuleRegisterDerivativeWithLicenseTokensRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public registerDerivativeWithLicenseTokensEncode(
     request: LicensingModuleRegisterDerivativeWithLicenseTokensRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: licensingModuleAbi,
-      functionName: "registerDerivativeWithLicenseTokens",
-      args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "registerDerivativeWithLicenseTokens",
+        args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
+      }),
+    };
   }
 }
 
@@ -12299,14 +12406,17 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method initialize for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateInitializeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public initializeEncode(request: PiLicenseTemplateInitializeRequest): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "initialize",
-      args: [request.accessManager, request.name, request.metadataURI],
-    });
+  public initializeEncode(request: PiLicenseTemplateInitializeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "initialize",
+        args: [request.accessManager, request.name, request.metadataURI],
+      }),
+    };
   }
 
   /**
@@ -12332,14 +12442,19 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method registerLicenseTerms for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateRegisterLicenseTermsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerLicenseTermsEncode(request: PiLicenseTemplateRegisterLicenseTermsRequest): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "registerLicenseTerms",
-      args: [request.terms],
-    });
+  public registerLicenseTermsEncode(
+    request: PiLicenseTemplateRegisterLicenseTermsRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "registerLicenseTerms",
+        args: [request.terms],
+      }),
+    };
   }
 
   /**
@@ -12365,14 +12480,17 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method setApproval for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateSetApprovalRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setApprovalEncode(request: PiLicenseTemplateSetApprovalRequest): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "setApproval",
-      args: [request.parentIpId, request.licenseTermsId, request.childIpId, request.approved],
-    });
+  public setApprovalEncode(request: PiLicenseTemplateSetApprovalRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "setApproval",
+        args: [request.parentIpId, request.licenseTermsId, request.childIpId, request.approved],
+      }),
+    };
   }
 
   /**
@@ -12398,14 +12516,17 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method setAuthority for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateSetAuthorityRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setAuthorityEncode(request: PiLicenseTemplateSetAuthorityRequest): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "setAuthority",
-      args: [request.newAuthority],
-    });
+  public setAuthorityEncode(request: PiLicenseTemplateSetAuthorityRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
   }
 
   /**
@@ -12431,14 +12552,17 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method upgradeToAndCall for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateUpgradeToAndCallRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public upgradeToAndCallEncode(request: PiLicenseTemplateUpgradeToAndCallRequest): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "upgradeToAndCall",
-      args: [request.newImplementation, request.data],
-    });
+  public upgradeToAndCallEncode(request: PiLicenseTemplateUpgradeToAndCallRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
   }
 
   /**
@@ -12464,16 +12588,19 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method verifyMintLicenseToken for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateVerifyMintLicenseTokenRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public verifyMintLicenseTokenEncode(
     request: PiLicenseTemplateVerifyMintLicenseTokenRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "verifyMintLicenseToken",
-      args: [request[0], request[1], request[2], request[3]],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "verifyMintLicenseToken",
+        args: [request[0], request[1], request[2], request[3]],
+      }),
+    };
   }
 
   /**
@@ -12499,16 +12626,19 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method verifyRegisterDerivative for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateVerifyRegisterDerivativeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public verifyRegisterDerivativeEncode(
     request: PiLicenseTemplateVerifyRegisterDerivativeRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "verifyRegisterDerivative",
-      args: [request.childIpId, request.parentIpId, request.licenseTermsId, request.licensee],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "verifyRegisterDerivative",
+        args: [request.childIpId, request.parentIpId, request.licenseTermsId, request.licensee],
+      }),
+    };
   }
 
   /**
@@ -12534,16 +12664,24 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method verifyRegisterDerivativeForAllParents for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public verifyRegisterDerivativeForAllParentsEncode(
     request: PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: piLicenseTemplateAbi,
-      functionName: "verifyRegisterDerivativeForAllParents",
-      args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.childIpOwner],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "verifyRegisterDerivativeForAllParents",
+        args: [
+          request.childIpId,
+          request.parentIpIds,
+          request.licenseTermsIds,
+          request.childIpOwner,
+        ],
+      }),
+    };
   }
 }
 
@@ -12601,14 +12739,17 @@ export class RoyaltyModuleClient {
    * method payRoyaltyOnBehalf for contract RoyaltyModule with only encode
    *
    * @param request RoyaltyModulePayRoyaltyOnBehalfRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public payRoyaltyOnBehalfEncode(request: RoyaltyModulePayRoyaltyOnBehalfRequest): Hex {
-    return encodeFunctionData({
-      abi: royaltyModuleAbi,
-      functionName: "payRoyaltyOnBehalf",
-      args: [request.receiverIpId, request.payerIpId, request.token, request.amount],
-    });
+  public payRoyaltyOnBehalfEncode(request: RoyaltyModulePayRoyaltyOnBehalfRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyModuleAbi,
+        functionName: "payRoyaltyOnBehalf",
+        args: [request.receiverIpId, request.payerIpId, request.token, request.amount],
+      }),
+    };
   }
 }
 
@@ -12719,14 +12860,17 @@ export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
    * method onRoyaltyPayment for contract RoyaltyPolicyLAP with only encode
    *
    * @param request RoyaltyPolicyLapOnRoyaltyPaymentRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public onRoyaltyPaymentEncode(request: RoyaltyPolicyLapOnRoyaltyPaymentRequest): Hex {
-    return encodeFunctionData({
-      abi: royaltyPolicyLapAbi,
-      functionName: "onRoyaltyPayment",
-      args: [request.caller, request.ipId, request.token, request.amount],
-    });
+  public onRoyaltyPaymentEncode(request: RoyaltyPolicyLapOnRoyaltyPaymentRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLapAbi,
+        functionName: "onRoyaltyPayment",
+        args: [request.caller, request.ipId, request.token, request.amount],
+      }),
+    };
   }
 }
 
@@ -13124,21 +13268,24 @@ export class SpgClient extends SpgEventClient {
    * method createCollection for contract SPG with only encode
    *
    * @param request SpgCreateCollectionRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public createCollectionEncode(request: SpgCreateCollectionRequest): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "createCollection",
-      args: [
-        request.name,
-        request.symbol,
-        request.maxSupply,
-        request.mintFee,
-        request.mintFeeToken,
-        request.owner,
-      ],
-    });
+  public createCollectionEncode(request: SpgCreateCollectionRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "createCollection",
+        args: [
+          request.name,
+          request.symbol,
+          request.maxSupply,
+          request.mintFee,
+          request.mintFeeToken,
+          request.owner,
+        ],
+      }),
+    };
   }
 
   /**
@@ -13164,14 +13311,17 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIp for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public mintAndRegisterIpEncode(request: SpgMintAndRegisterIpRequest): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "mintAndRegisterIp",
-      args: [request.nftContract, request.recipient, request.metadata],
-    });
+  public mintAndRegisterIpEncode(request: SpgMintAndRegisterIpRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIp",
+        args: [request.nftContract, request.recipient, request.metadata],
+      }),
+    };
   }
 
   /**
@@ -13197,16 +13347,19 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIpAndAttachPILTerms for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpAndAttachPilTermsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public mintAndRegisterIpAndAttachPilTermsEncode(
     request: SpgMintAndRegisterIpAndAttachPilTermsRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "mintAndRegisterIpAndAttachPILTerms",
-      args: [request.nftContract, request.recipient, request.metadata, request.terms],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIpAndAttachPILTerms",
+        args: [request.nftContract, request.recipient, request.metadata, request.terms],
+      }),
+    };
   }
 
   /**
@@ -13232,16 +13385,19 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIpAndMakeDerivative for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpAndMakeDerivativeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public mintAndRegisterIpAndMakeDerivativeEncode(
     request: SpgMintAndRegisterIpAndMakeDerivativeRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "mintAndRegisterIpAndMakeDerivative",
-      args: [request.nftContract, request.derivData, request.metadata, request.recipient],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivative",
+        args: [request.nftContract, request.derivData, request.metadata, request.recipient],
+      }),
+    };
   }
 
   /**
@@ -13273,22 +13429,25 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
     request: SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
-      args: [
-        request.nftContract,
-        request.licenseTokenIds,
-        request.royaltyContext,
-        request.metadata,
-        request.recipient,
-      ],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+        args: [
+          request.nftContract,
+          request.licenseTokenIds,
+          request.royaltyContext,
+          request.metadata,
+          request.recipient,
+        ],
+      }),
+    };
   }
 
   /**
@@ -13312,14 +13471,17 @@ export class SpgClient extends SpgEventClient {
    * method registerIp for contract SPG with only encode
    *
    * @param request SpgRegisterIpRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerIpEncode(request: SpgRegisterIpRequest): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "registerIp",
-      args: [request.nftContract, request.tokenId, request.metadata, request.sigMetadata],
-    });
+  public registerIpEncode(request: SpgRegisterIpRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIp",
+        args: [request.nftContract, request.tokenId, request.metadata, request.sigMetadata],
+      }),
+    };
   }
 
   /**
@@ -13352,21 +13514,26 @@ export class SpgClient extends SpgEventClient {
    * method registerIpAndAttachPILTerms for contract SPG with only encode
    *
    * @param request SpgRegisterIpAndAttachPilTermsRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerIpAndAttachPilTermsEncode(request: SpgRegisterIpAndAttachPilTermsRequest): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "registerIpAndAttachPILTerms",
-      args: [
-        request.nftContract,
-        request.tokenId,
-        request.metadata,
-        request.terms,
-        request.sigMetadata,
-        request.sigAttach,
-      ],
-    });
+  public registerIpAndAttachPilTermsEncode(
+    request: SpgRegisterIpAndAttachPilTermsRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIpAndAttachPILTerms",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.metadata,
+          request.terms,
+          request.sigMetadata,
+          request.sigAttach,
+        ],
+      }),
+    };
   }
 
   /**
@@ -13399,21 +13566,26 @@ export class SpgClient extends SpgEventClient {
    * method registerIpAndMakeDerivative for contract SPG with only encode
    *
    * @param request SpgRegisterIpAndMakeDerivativeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerIpAndMakeDerivativeEncode(request: SpgRegisterIpAndMakeDerivativeRequest): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "registerIpAndMakeDerivative",
-      args: [
-        request.nftContract,
-        request.tokenId,
-        request.derivData,
-        request.metadata,
-        request.sigMetadata,
-        request.sigRegister,
-      ],
-    });
+  public registerIpAndMakeDerivativeEncode(
+    request: SpgRegisterIpAndMakeDerivativeRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIpAndMakeDerivative",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.derivData,
+          request.metadata,
+          request.sigMetadata,
+          request.sigRegister,
+        ],
+      }),
+    };
   }
 
   /**
@@ -13447,24 +13619,27 @@ export class SpgClient extends SpgEventClient {
    * method registerIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
    *
    * @param request SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
   public registerIpAndMakeDerivativeWithLicenseTokensEncode(
     request: SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
-      args: [
-        request.nftContract,
-        request.tokenId,
-        request.licenseTokenIds,
-        request.royaltyContext,
-        request.metadata,
-        request.sigMetadata,
-        request.sigRegister,
-      ],
-    });
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.licenseTokenIds,
+          request.royaltyContext,
+          request.metadata,
+          request.sigMetadata,
+          request.sigRegister,
+        ],
+      }),
+    };
   }
 
   /**
@@ -13490,14 +13665,19 @@ export class SpgClient extends SpgEventClient {
    * method registerPILTermsAndAttach for contract SPG with only encode
    *
    * @param request SpgRegisterPilTermsAndAttachRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public registerPilTermsAndAttachEncode(request: SpgRegisterPilTermsAndAttachRequest): Hex {
-    return encodeFunctionData({
-      abi: spgAbi,
-      functionName: "registerPILTermsAndAttach",
-      args: [request.ipId, request.terms],
-    });
+  public registerPilTermsAndAttachEncode(
+    request: SpgRegisterPilTermsAndAttachRequest,
+  ): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerPILTermsAndAttach",
+        args: [request.ipId, request.terms],
+      }),
+    };
   }
 }
 
@@ -13706,13 +13886,16 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
    * method renounceOwnership for contract SPGNFTBeacon with only encode
    *
    * @param request SpgnftBeaconRenounceOwnershipRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public renounceOwnershipEncode(): Hex {
-    return encodeFunctionData({
-      abi: spgnftBeaconAbi,
-      functionName: "renounceOwnership",
-    });
+  public renounceOwnershipEncode(): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "renounceOwnership",
+      }),
+    };
   }
 
   /**
@@ -13738,14 +13921,17 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
    * method transferOwnership for contract SPGNFTBeacon with only encode
    *
    * @param request SpgnftBeaconTransferOwnershipRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftBeaconAbi,
-      functionName: "transferOwnership",
-      args: [request.newOwner],
-    });
+  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "transferOwnership",
+        args: [request.newOwner],
+      }),
+    };
   }
 
   /**
@@ -13769,14 +13955,17 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
    * method upgradeTo for contract SPGNFTBeacon with only encode
    *
    * @param request SpgnftBeaconUpgradeToRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftBeaconAbi,
-      functionName: "upgradeTo",
-      args: [request.newImplementation],
-    });
+  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "upgradeTo",
+        args: [request.newImplementation],
+      }),
+    };
   }
 }
 
@@ -14698,14 +14887,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method approve for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplApproveRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public approveEncode(request: SpgnftImplApproveRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "approve",
-      args: [request.to, request.tokenId],
-    });
+  public approveEncode(request: SpgnftImplApproveRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "approve",
+        args: [request.to, request.tokenId],
+      }),
+    };
   }
 
   /**
@@ -14729,14 +14921,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method grantRole for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplGrantRoleRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public grantRoleEncode(request: SpgnftImplGrantRoleRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "grantRole",
-      args: [request.role, request.account],
-    });
+  public grantRoleEncode(request: SpgnftImplGrantRoleRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "grantRole",
+        args: [request.role, request.account],
+      }),
+    };
   }
 
   /**
@@ -14767,21 +14962,24 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method initialize for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplInitializeRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public initializeEncode(request: SpgnftImplInitializeRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "initialize",
-      args: [
-        request.name,
-        request.symbol,
-        request.maxSupply,
-        request.mintCost,
-        request.mintToken,
-        request.owner,
-      ],
-    });
+  public initializeEncode(request: SpgnftImplInitializeRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "initialize",
+        args: [
+          request.name,
+          request.symbol,
+          request.maxSupply,
+          request.mintCost,
+          request.mintToken,
+          request.owner,
+        ],
+      }),
+    };
   }
 
   /**
@@ -14805,14 +15003,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method mint for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplMintRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public mintEncode(request: SpgnftImplMintRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "mint",
-      args: [request.to],
-    });
+  public mintEncode(request: SpgnftImplMintRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "mint",
+        args: [request.to],
+      }),
+    };
   }
 
   /**
@@ -14836,14 +15037,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method mintBySPG for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplMintBySpgRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public mintBySpgEncode(request: SpgnftImplMintBySpgRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "mintBySPG",
-      args: [request.to, request.payer],
-    });
+  public mintBySpgEncode(request: SpgnftImplMintBySpgRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "mintBySPG",
+        args: [request.to, request.payer],
+      }),
+    };
   }
 
   /**
@@ -14869,14 +15073,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method renounceRole for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplRenounceRoleRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public renounceRoleEncode(request: SpgnftImplRenounceRoleRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "renounceRole",
-      args: [request.role, request.callerConfirmation],
-    });
+  public renounceRoleEncode(request: SpgnftImplRenounceRoleRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "renounceRole",
+        args: [request.role, request.callerConfirmation],
+      }),
+    };
   }
 
   /**
@@ -14900,14 +15107,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method revokeRole for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplRevokeRoleRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public revokeRoleEncode(request: SpgnftImplRevokeRoleRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "revokeRole",
-      args: [request.role, request.account],
-    });
+  public revokeRoleEncode(request: SpgnftImplRevokeRoleRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "revokeRole",
+        args: [request.role, request.account],
+      }),
+    };
   }
 
   /**
@@ -14933,14 +15143,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method safeTransferFrom for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSafeTransferFromRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public safeTransferFromEncode(request: SpgnftImplSafeTransferFromRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "safeTransferFrom",
-      args: [request.from, request.to, request.tokenId],
-    });
+  public safeTransferFromEncode(request: SpgnftImplSafeTransferFromRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "safeTransferFrom",
+        args: [request.from, request.to, request.tokenId],
+      }),
+    };
   }
 
   /**
@@ -14966,14 +15179,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method safeTransferFrom for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSafeTransferFrom2Request
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public safeTransferFrom2Encode(request: SpgnftImplSafeTransferFrom2Request): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "safeTransferFrom",
-      args: [request.from, request.to, request.tokenId, request.data],
-    });
+  public safeTransferFrom2Encode(request: SpgnftImplSafeTransferFrom2Request): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "safeTransferFrom",
+        args: [request.from, request.to, request.tokenId, request.data],
+      }),
+    };
   }
 
   /**
@@ -14999,14 +15215,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method setApprovalForAll for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSetApprovalForAllRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setApprovalForAllEncode(request: SpgnftImplSetApprovalForAllRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "setApprovalForAll",
-      args: [request.operator, request.approved],
-    });
+  public setApprovalForAllEncode(request: SpgnftImplSetApprovalForAllRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setApprovalForAll",
+        args: [request.operator, request.approved],
+      }),
+    };
   }
 
   /**
@@ -15032,14 +15251,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method setMintCost for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSetMintCostRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setMintCostEncode(request: SpgnftImplSetMintCostRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "setMintCost",
-      args: [request.cost],
-    });
+  public setMintCostEncode(request: SpgnftImplSetMintCostRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setMintCost",
+        args: [request.cost],
+      }),
+    };
   }
 
   /**
@@ -15065,14 +15287,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method setMintToken for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSetMintTokenRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public setMintTokenEncode(request: SpgnftImplSetMintTokenRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "setMintToken",
-      args: [request.token],
-    });
+  public setMintTokenEncode(request: SpgnftImplSetMintTokenRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setMintToken",
+        args: [request.token],
+      }),
+    };
   }
 
   /**
@@ -15098,14 +15323,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method transferFrom for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplTransferFromRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public transferFromEncode(request: SpgnftImplTransferFromRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "transferFrom",
-      args: [request.from, request.to, request.tokenId],
-    });
+  public transferFromEncode(request: SpgnftImplTransferFromRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "transferFrom",
+        args: [request.from, request.to, request.tokenId],
+      }),
+    };
   }
 
   /**
@@ -15131,13 +15359,16 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method withdrawToken for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplWithdrawTokenRequest
-   * @return Promise<Hex>
+   * @return MethodEncode
    */
-  public withdrawTokenEncode(request: SpgnftImplWithdrawTokenRequest): Hex {
-    return encodeFunctionData({
-      abi: spgnftImplAbi,
-      functionName: "withdrawToken",
-      args: [request.token, request.recipient],
-    });
+  public withdrawTokenEncode(request: SpgnftImplWithdrawTokenRequest): MethodEncode {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "withdrawToken",
+        args: [request.token, request.recipient],
+      }),
+    };
   }
 }

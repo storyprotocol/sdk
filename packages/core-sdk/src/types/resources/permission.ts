@@ -1,6 +1,7 @@
 import { Address } from "viem";
 
 import { TxOptions } from "../options";
+import { MethodEncode } from "../../abi/generated";
 
 export type SetPermissionsRequest = {
   ipId: Address;
@@ -13,7 +14,7 @@ export type SetPermissionsRequest = {
 
 export type SetPermissionsResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
   success?: boolean;
 };
 

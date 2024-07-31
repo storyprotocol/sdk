@@ -1,6 +1,7 @@
 import { Address } from "viem";
 
 import { TxOptions } from "../options";
+import { MethodEncode } from "../../abi/generated";
 
 export type LicenseApiResponse = {
   data: License;
@@ -40,7 +41,7 @@ export type LicenseTermsIdResponse = bigint;
 export type RegisterPILResponse = {
   licenseTermsId?: bigint;
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
 };
 
 export type RegisterCommercialUsePILRequest = {
@@ -65,7 +66,7 @@ export type AttachLicenseTermsRequest = {
 
 export type AttachLicenseTermsResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
   success?: boolean;
 };
 
@@ -81,7 +82,7 @@ export type MintLicenseTokensRequest = {
 export type MintLicenseTokensResponse = {
   licenseTokenIds?: bigint[];
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
 };
 
 export enum PIL_TYPE {

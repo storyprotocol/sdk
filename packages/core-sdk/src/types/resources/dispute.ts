@@ -1,6 +1,7 @@
 import { Address } from "viem";
 
 import { TxOptions } from "../options";
+import { MethodEncode } from "../../abi/generated";
 
 export type RaiseDisputeRequest = {
   targetIpId: Address;
@@ -13,7 +14,7 @@ export type RaiseDisputeRequest = {
 
 export type RaiseDisputeResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
   disputeId?: bigint;
 };
 
@@ -25,7 +26,7 @@ export type CancelDisputeRequest = {
 
 export type CancelDisputeResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
 };
 
 export type ResolveDisputeRequest = {
@@ -36,5 +37,5 @@ export type ResolveDisputeRequest = {
 
 export type ResolveDisputeResponse = {
   txHash?: string;
-  encodedTx?: string;
+  encodedTx?: MethodEncode;
 };
