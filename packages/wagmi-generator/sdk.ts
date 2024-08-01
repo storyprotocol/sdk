@@ -239,6 +239,46 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
     return {func: funcLine.join("\n"), types: types.join("\n")}
 }
 
+function generateContractDataFunction(contractName: string, func: AbiFunction) {
+    const abiName = `${camelCase(contractName)}Abi`
+    const indexFuncName = ('index' in func) ? `${func.name}${func.index}` : func.name
+    const inName = `${pascalCase(contractName)}${pascalCase(indexFuncName)}Request`
+    const inType = generateContractTypes(inName, func.inputs)
+    const inParams = inType.valid ? `request: ${inName}` : ``
+    let method = 'readContract'
+
+    let funcLine: Array<string> = [];
+    let types: Array<string> = [];
+
+    if (inType.valid) types.push(`${inType.comment}\n${inType.type}`)
+
+    addImport('viem', 'encodeFunctionData')
+
+    funcLine.push(``)
+    funcLine.push(`/**`)
+    funcLine.push(` * method ${func.name} for contract ${contractName} with only encode`)
+    funcLine.push(` *`)
+    funcLine.push(` * @param request ${inName}`)
+    funcLine.push(` * @return EncodedTxData`)
+    funcLine.push(`*/`)
+    funcLine.push(`  public ${camelCase(indexFuncName)}Encode(${inParams}): EncodedTxData {`)
+    funcLine.push(`      return {`)
+    funcLine.push(`        to: this.address,`)
+    funcLine.push(`        data:encodeFunctionData({`)
+    funcLine.push(`          abi: ${abiName},`)
+    funcLine.push(`          functionName: "${func.name}",`)
+    if (inType.valid) {
+        funcLine.push(`          args: [`)
+        funcLine.push(inType.args)
+        funcLine.push(`          ],`)
+    }
+    funcLine.push(`        }),`)
+    funcLine.push(`      };`)
+    funcLine.push(`  }`)
+
+    return {func: funcLine.join("\n"), types: ""}
+}
+
 function generateEventFunction(contractName: any, event: AbiEvent) {
     const abiName = `${camelCase(contractName)}Abi`
     const typeName = `${pascalCase(contractName)}${pascalCase(event.name)}Event`
@@ -414,6 +454,10 @@ function generateContract(config: SDKConfig, contract: Contract): string {
             const data = generateContractFunction(contract.name, it)
             file.push(data.func)
             types.push(data.types)
+
+            const dataFunc = generateContractDataFunction(contract.name, it)
+            file.push(dataFunc.func)
+            types.push(dataFunc.types)
         })
         file.push(`}`)
     }
@@ -432,7 +476,9 @@ function generateCommon(config: SDKConfig) {
     file.push(`   return address[chainId || 0] || '0x'`)
     file.push(`}`)
     file.push(``)
-    addImport('viem', 'Address')
+    file.push(`export type EncodedTxData = {to: Address, data: Hex}`)
+    file.push(``)
+    addImport('viem', 'Address', 'Hex')
 
     if (config.permissionLessSDK) {
         file.push(``)

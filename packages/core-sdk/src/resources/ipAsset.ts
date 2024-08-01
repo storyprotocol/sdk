@@ -136,22 +136,36 @@ export class IPAssetClient {
         deadline: calculatedDeadline,
         signature,
       };
-      let txHash: Hex;
-      if (request.metadata) {
-        txHash = await this.spgClient.registerIp(object);
+      if (request.txOptions?.encodedTxDataOnly) {
+        if (request.metadata) {
+          return { encodedTxData: this.spgClient.registerIpEncode(object) };
+        } else {
+          return {
+            encodedTxData: this.ipAssetRegistryClient.registerEncode({
+              tokenContract: object.nftContract,
+              tokenId: object.tokenId,
+              chainid: chain[this.chainId],
+            }),
+          };
+        }
       } else {
-        txHash = await this.ipAssetRegistryClient.register({
-          tokenContract: object.nftContract,
-          tokenId: object.tokenId,
-          chainid: chain[this.chainId],
-        });
-      }
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
-        return { txHash: txHash, ipId: targetLogs[0].ipId };
-      } else {
-        return { txHash: txHash };
+        let txHash: Hex;
+        if (request.metadata) {
+          txHash = await this.spgClient.registerIp(object);
+        } else {
+          txHash = await this.ipAssetRegistryClient.register({
+            tokenContract: object.nftContract,
+            tokenId: object.tokenId,
+            chainid: chain[this.chainId],
+          });
+        }
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
+          return { txHash: txHash, ipId: targetLogs[0].ipId };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to register IP");
@@ -207,18 +221,23 @@ export class IPAssetClient {
         }
       }
 
-      const txHash = await this.licensingModuleClient.registerDerivative({
+      const req = {
         childIpId: request.childIpId,
         parentIpIds: request.parentIpIds,
         licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         royaltyContext: zeroAddress,
-      });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash };
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.licensingModuleClient.registerDerivativeEncode(req) };
       } else {
-        return { txHash };
+        const txHash = await this.licensingModuleClient.registerDerivative(req);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash };
+        } else {
+          return { txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to register derivative");
@@ -253,16 +272,23 @@ export class IPAssetClient {
           throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
         }
       }
-      const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens({
+      const req = {
         childIpId: getAddress(request.childIpId, "request.childIpId"),
         licenseTokenIds: request.licenseTokenIds,
         royaltyContext: zeroAddress,
-      });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash };
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.licensingModuleClient.registerDerivativeWithLicenseTokensEncode(req),
+        };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens(req);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash: txHash };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to register derivative with license tokens");
@@ -325,20 +351,25 @@ export class IPAssetClient {
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
       }
-      const txHash = await this.spgClient.mintAndRegisterIpAndAttachPilTerms(object);
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0];
-        const licenseTermsId =
-          this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0].licenseTermsId;
-        return {
-          txHash: txHash,
-          ipId: iPRegisteredLog.ipId,
-          licenseTermsId,
-          tokenId: iPRegisteredLog.tokenId,
-        };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.mintAndRegisterIpAndAttachPilTermsEncode(object) };
+      } else {
+        const txHash = await this.spgClient.mintAndRegisterIpAndAttachPilTerms(object);
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0];
+          const licenseTermsId =
+            this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0]
+              .licenseTermsId;
+          return {
+            txHash: txHash,
+            ipId: iPRegisteredLog.ipId,
+            licenseTermsId,
+            tokenId: iPRegisteredLog.tokenId,
+          };
+        }
+        return { txHash };
       }
-      return { txHash };
     } catch (error) {
       handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
@@ -451,13 +482,17 @@ export class IPAssetClient {
         deadline: calculatedDeadline,
         signature,
       };
-      const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const log = this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0];
-        return { txHash, licenseTermsId: log.licenseTermsId, ipId: log.ipId };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.registerIpAndAttachPilTermsEncode(object) };
+      } else {
+        const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const log = this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0];
+          return { txHash, licenseTermsId: log.licenseTermsId, ipId: log.ipId };
+        }
+        return { txHash };
       }
-      return { txHash };
     } catch (error) {
       handleError(error, "Failed to register IP and attach PIL terms");
     }
@@ -593,13 +628,17 @@ export class IPAssetClient {
         deadline: calculatedDeadline,
         signature,
       };
-      const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
-      if (request.txOptions?.waitForTransaction) {
-        const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
-        return { txHash, ipId: log.ipId };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.registerIpAndMakeDerivativeEncode(object) };
+      } else {
+        const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
+        if (request.txOptions?.waitForTransaction) {
+          const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+          return { txHash, ipId: log.ipId };
+        }
+        return { txHash };
       }
-      return { txHash };
     } catch (error) {
       handleError(error, "Failed to register derivative IP");
     }

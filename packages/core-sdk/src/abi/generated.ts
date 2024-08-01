@@ -1,5 +1,6 @@
 import {
   Address,
+  Hex,
   Abi,
   Account,
   Chain,
@@ -8,10 +9,10 @@ import {
   WriteContractParameters,
   WriteContractReturnType,
   PublicClient,
-  Hex,
   decodeEventLog,
   WatchContractEventReturnType,
   TransactionReceipt,
+  encodeFunctionData,
 } from "viem";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7409,6 +7410,8 @@ function getAddress(address: Record<number, Address>, chainId?: number): Address
   return address[chainId || 0] || "0x";
 }
 
+export type EncodedTxData = { to: Address; data: Hex };
+
 export type SimpleWalletClient<
   TChain extends Chain | undefined = Chain | undefined,
   TAccount extends Account | undefined = Account | undefined,
@@ -7575,6 +7578,23 @@ export class AccessControllerClient extends AccessControllerEventClient {
   }
 
   /**
+   * method setAllPermissions for contract AccessController with only encode
+   *
+   * @param request AccessControllerSetAllPermissionsRequest
+   * @return EncodedTxData
+   */
+  public setAllPermissionsEncode(request: AccessControllerSetAllPermissionsRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: accessControllerAbi,
+        functionName: "setAllPermissions",
+        args: [request.ipAccount, request.signer, request.permission],
+      }),
+    };
+  }
+
+  /**
    * method setBatchPermissions for contract AccessController
    *
    * @param request AccessControllerSetBatchPermissionsRequest
@@ -7594,6 +7614,25 @@ export class AccessControllerClient extends AccessControllerEventClient {
   }
 
   /**
+   * method setBatchPermissions for contract AccessController with only encode
+   *
+   * @param request AccessControllerSetBatchPermissionsRequest
+   * @return EncodedTxData
+   */
+  public setBatchPermissionsEncode(
+    request: AccessControllerSetBatchPermissionsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: accessControllerAbi,
+        functionName: "setBatchPermissions",
+        args: [request.permissions],
+      }),
+    };
+  }
+
+  /**
    * method setPermission for contract AccessController
    *
    * @param request AccessControllerSetPermissionRequest
@@ -7610,6 +7649,23 @@ export class AccessControllerClient extends AccessControllerEventClient {
       args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setPermission for contract AccessController with only encode
+   *
+   * @param request AccessControllerSetPermissionRequest
+   * @return EncodedTxData
+   */
+  public setPermissionEncode(request: AccessControllerSetPermissionRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: accessControllerAbi,
+        functionName: "setPermission",
+        args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
+      }),
+    };
   }
 }
 
@@ -7978,6 +8034,23 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
   }
 
   /**
+   * method freezeMetadata for contract CoreMetadataModule with only encode
+   *
+   * @param request CoreMetadataModuleFreezeMetadataRequest
+   * @return EncodedTxData
+   */
+  public freezeMetadataEncode(request: CoreMetadataModuleFreezeMetadataRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "freezeMetadata",
+        args: [request.ipId],
+      }),
+    };
+  }
+
+  /**
    * method setAll for contract CoreMetadataModule
    *
    * @param request CoreMetadataModuleSetAllRequest
@@ -7992,6 +8065,23 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
       args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAll for contract CoreMetadataModule with only encode
+   *
+   * @param request CoreMetadataModuleSetAllRequest
+   * @return EncodedTxData
+   */
+  public setAllEncode(request: CoreMetadataModuleSetAllRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "setAll",
+        args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
+      }),
+    };
   }
 
   /**
@@ -8014,6 +8104,23 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
   }
 
   /**
+   * method setMetadataURI for contract CoreMetadataModule with only encode
+   *
+   * @param request CoreMetadataModuleSetMetadataUriRequest
+   * @return EncodedTxData
+   */
+  public setMetadataUriEncode(request: CoreMetadataModuleSetMetadataUriRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "setMetadataURI",
+        args: [request.ipId, request.metadataURI, request.metadataHash],
+      }),
+    };
+  }
+
+  /**
    * method updateNftTokenURI for contract CoreMetadataModule
    *
    * @param request CoreMetadataModuleUpdateNftTokenUriRequest
@@ -8030,6 +8137,25 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
       args: [request.ipId, request.nftMetadataHash],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method updateNftTokenURI for contract CoreMetadataModule with only encode
+   *
+   * @param request CoreMetadataModuleUpdateNftTokenUriRequest
+   * @return EncodedTxData
+   */
+  public updateNftTokenUriEncode(
+    request: CoreMetadataModuleUpdateNftTokenUriRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "updateNftTokenURI",
+        args: [request.ipId, request.nftMetadataHash],
+      }),
+    };
   }
 }
 
@@ -8280,6 +8406,23 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
   }
 
   /**
+   * method cancelDispute for contract DisputeModule with only encode
+   *
+   * @param request DisputeModuleCancelDisputeRequest
+   * @return EncodedTxData
+   */
+  public cancelDisputeEncode(request: DisputeModuleCancelDisputeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "cancelDispute",
+        args: [request.disputeId, request.data],
+      }),
+    };
+  }
+
+  /**
    * method raiseDispute for contract DisputeModule
    *
    * @param request DisputeModuleRaiseDisputeRequest
@@ -8299,6 +8442,23 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
   }
 
   /**
+   * method raiseDispute for contract DisputeModule with only encode
+   *
+   * @param request DisputeModuleRaiseDisputeRequest
+   * @return EncodedTxData
+   */
+  public raiseDisputeEncode(request: DisputeModuleRaiseDisputeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "raiseDispute",
+        args: [request.targetIpId, request.linkToDisputeEvidence, request.targetTag, request.data],
+      }),
+    };
+  }
+
+  /**
    * method resolveDispute for contract DisputeModule
    *
    * @param request DisputeModuleResolveDisputeRequest
@@ -8315,6 +8475,23 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
       args: [request.disputeId, request.data],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method resolveDispute for contract DisputeModule with only encode
+   *
+   * @param request DisputeModuleResolveDisputeRequest
+   * @return EncodedTxData
+   */
+  public resolveDisputeEncode(request: DisputeModuleResolveDisputeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "resolveDispute",
+        args: [request.disputeId, request.data],
+      }),
+    };
   }
 }
 
@@ -8410,6 +8587,23 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
   }
 
   /**
+   * method execute for contract IPAccountImpl with only encode
+   *
+   * @param request IpAccountImplExecuteRequest
+   * @return EncodedTxData
+   */
+  public executeEncode(request: IpAccountImplExecuteRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAccountImplAbi,
+        functionName: "execute",
+        args: [request.to, request.value, request.data],
+      }),
+    };
+  }
+
+  /**
    * method executeWithSig for contract IPAccountImpl
    *
    * @param request IpAccountImplExecuteWithSigRequest
@@ -8433,6 +8627,30 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method executeWithSig for contract IPAccountImpl with only encode
+   *
+   * @param request IpAccountImplExecuteWithSigRequest
+   * @return EncodedTxData
+   */
+  public executeWithSigEncode(request: IpAccountImplExecuteWithSigRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAccountImplAbi,
+        functionName: "executeWithSig",
+        args: [
+          request.to,
+          request.value,
+          request.data,
+          request.signer,
+          request.deadline,
+          request.signature,
+        ],
+      }),
+    };
   }
 }
 
@@ -8677,6 +8895,23 @@ export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
       args: [request.chainid, request.tokenContract, request.tokenId],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method register for contract IPAssetRegistry with only encode
+   *
+   * @param request IpAssetRegistryRegisterRequest
+   * @return EncodedTxData
+   */
+  public registerEncode(request: IpAssetRegistryRegisterRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAssetRegistryAbi,
+        functionName: "register",
+        args: [request.chainid, request.tokenContract, request.tokenId],
+      }),
+    };
   }
 }
 
@@ -8974,6 +9209,25 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
   }
 
   /**
+   * method claimRevenueBySnapshotBatch for contract IpRoyaltyVaultImpl with only encode
+   *
+   * @param request IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
+   * @return EncodedTxData
+   */
+  public claimRevenueBySnapshotBatchEncode(
+    request: IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "claimRevenueBySnapshotBatch",
+        args: [request.snapshotIds, request.token],
+      }),
+    };
+  }
+
+  /**
    * method claimRevenueByTokenBatch for contract IpRoyaltyVaultImpl
    *
    * @param request IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
@@ -8990,6 +9244,25 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
       args: [request.snapshotId, request.tokenList],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method claimRevenueByTokenBatch for contract IpRoyaltyVaultImpl with only encode
+   *
+   * @param request IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
+   * @return EncodedTxData
+   */
+  public claimRevenueByTokenBatchEncode(
+    request: IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "claimRevenueByTokenBatch",
+        args: [request.snapshotId, request.tokenList],
+      }),
+    };
   }
 
   /**
@@ -9012,6 +9285,25 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
   }
 
   /**
+   * method collectRoyaltyTokens for contract IpRoyaltyVaultImpl with only encode
+   *
+   * @param request IpRoyaltyVaultImplCollectRoyaltyTokensRequest
+   * @return EncodedTxData
+   */
+  public collectRoyaltyTokensEncode(
+    request: IpRoyaltyVaultImplCollectRoyaltyTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "collectRoyaltyTokens",
+        args: [request.ancestorIpId],
+      }),
+    };
+  }
+
+  /**
    * method snapshot for contract IpRoyaltyVaultImpl
    *
    * @param request IpRoyaltyVaultImplSnapshotRequest
@@ -9025,6 +9317,22 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
       account: this.wallet.account,
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method snapshot for contract IpRoyaltyVaultImpl with only encode
+   *
+   * @param request IpRoyaltyVaultImplSnapshotRequest
+   * @return EncodedTxData
+   */
+  public snapshotEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "snapshot",
+      }),
+    };
   }
 }
 
@@ -10229,6 +10537,25 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
   }
 
   /**
+   * method attachLicenseTermsToIp for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistryAttachLicenseTermsToIpRequest
+   * @return EncodedTxData
+   */
+  public attachLicenseTermsToIpEncode(
+    request: LicenseRegistryAttachLicenseTermsToIpRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "attachLicenseTermsToIp",
+        args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
+  }
+
+  /**
    * method initialize for contract LicenseRegistry
    *
    * @param request LicenseRegistryInitializeRequest
@@ -10245,6 +10572,23 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       args: [request.accessManager],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistryInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: LicenseRegistryInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
   }
 
   /**
@@ -10272,6 +10616,30 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
   }
 
   /**
+   * method registerDerivativeIp for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistryRegisterDerivativeIpRequest
+   * @return EncodedTxData
+   */
+  public registerDerivativeIpEncode(
+    request: LicenseRegistryRegisterDerivativeIpRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "registerDerivativeIp",
+        args: [
+          request.childIpId,
+          request.parentIpIds,
+          request.licenseTemplate,
+          request.licenseTermsIds,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method registerLicenseTemplate for contract LicenseRegistry
    *
    * @param request LicenseRegistryRegisterLicenseTemplateRequest
@@ -10288,6 +10656,25 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       args: [request.licenseTemplate],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerLicenseTemplate for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistryRegisterLicenseTemplateRequest
+   * @return EncodedTxData
+   */
+  public registerLicenseTemplateEncode(
+    request: LicenseRegistryRegisterLicenseTemplateRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "registerLicenseTemplate",
+        args: [request.licenseTemplate],
+      }),
+    };
   }
 
   /**
@@ -10310,6 +10697,23 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
   }
 
   /**
+   * method setAuthority for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistrySetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: LicenseRegistrySetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
+  }
+
+  /**
    * method setDefaultLicenseTerms for contract LicenseRegistry
    *
    * @param request LicenseRegistrySetDefaultLicenseTermsRequest
@@ -10326,6 +10730,25 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       args: [request.newLicenseTemplate, request.newLicenseTermsId],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setDefaultLicenseTerms for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistrySetDefaultLicenseTermsRequest
+   * @return EncodedTxData
+   */
+  public setDefaultLicenseTermsEncode(
+    request: LicenseRegistrySetDefaultLicenseTermsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setDefaultLicenseTerms",
+        args: [request.newLicenseTemplate, request.newLicenseTermsId],
+      }),
+    };
   }
 
   /**
@@ -10348,6 +10771,23 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
   }
 
   /**
+   * method setExpireTime for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistrySetExpireTimeRequest
+   * @return EncodedTxData
+   */
+  public setExpireTimeEncode(request: LicenseRegistrySetExpireTimeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setExpireTime",
+        args: [request.ipId, request.expireTime],
+      }),
+    };
+  }
+
+  /**
    * method setLicensingConfigForIp for contract LicenseRegistry
    *
    * @param request LicenseRegistrySetLicensingConfigForIpRequest
@@ -10364,6 +10804,25 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       args: [request.ipId, request.licensingConfig],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setLicensingConfigForIp for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistrySetLicensingConfigForIpRequest
+   * @return EncodedTxData
+   */
+  public setLicensingConfigForIpEncode(
+    request: LicenseRegistrySetLicensingConfigForIpRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setLicensingConfigForIp",
+        args: [request.ipId, request.licensingConfig],
+      }),
+    };
   }
 
   /**
@@ -10391,6 +10850,30 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
   }
 
   /**
+   * method setLicensingConfigForLicense for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistrySetLicensingConfigForLicenseRequest
+   * @return EncodedTxData
+   */
+  public setLicensingConfigForLicenseEncode(
+    request: LicenseRegistrySetLicensingConfigForLicenseRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "setLicensingConfigForLicense",
+        args: [
+          request.ipId,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.licensingConfig,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method upgradeToAndCall for contract LicenseRegistry
    *
    * @param request LicenseRegistryUpgradeToAndCallRequest
@@ -10407,6 +10890,23 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
       args: [request.newImplementation, request.data],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistryUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: LicenseRegistryUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
   }
 }
 
@@ -10677,6 +11177,25 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
   }
 
   /**
+   * method attachLicenseTerms for contract LicensingModule with only encode
+   *
+   * @param request LicensingModuleAttachLicenseTermsRequest
+   * @return EncodedTxData
+   */
+  public attachLicenseTermsEncode(
+    request: LicensingModuleAttachLicenseTermsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "attachLicenseTerms",
+        args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
+  }
+
+  /**
    * method mintLicenseTokens for contract LicensingModule
    *
    * @param request LicensingModuleMintLicenseTokensRequest
@@ -10700,6 +11219,30 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintLicenseTokens for contract LicensingModule with only encode
+   *
+   * @param request LicensingModuleMintLicenseTokensRequest
+   * @return EncodedTxData
+   */
+  public mintLicenseTokensEncode(request: LicensingModuleMintLicenseTokensRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "mintLicenseTokens",
+        args: [
+          request.licensorIpId,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.amount,
+          request.receiver,
+          request.royaltyContext,
+        ],
+      }),
+    };
   }
 
   /**
@@ -10728,6 +11271,31 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
   }
 
   /**
+   * method registerDerivative for contract LicensingModule with only encode
+   *
+   * @param request LicensingModuleRegisterDerivativeRequest
+   * @return EncodedTxData
+   */
+  public registerDerivativeEncode(
+    request: LicensingModuleRegisterDerivativeRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "registerDerivative",
+        args: [
+          request.childIpId,
+          request.parentIpIds,
+          request.licenseTermsIds,
+          request.licenseTemplate,
+          request.royaltyContext,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method registerDerivativeWithLicenseTokens for contract LicensingModule
    *
    * @param request LicensingModuleRegisterDerivativeWithLicenseTokensRequest
@@ -10744,6 +11312,25 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
       args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerDerivativeWithLicenseTokens for contract LicensingModule with only encode
+   *
+   * @param request LicensingModuleRegisterDerivativeWithLicenseTokensRequest
+   * @return EncodedTxData
+   */
+  public registerDerivativeWithLicenseTokensEncode(
+    request: LicensingModuleRegisterDerivativeWithLicenseTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "registerDerivativeWithLicenseTokens",
+        args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
+      }),
+    };
   }
 }
 
@@ -11820,6 +12407,23 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
   }
 
   /**
+   * method initialize for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: PiLicenseTemplateInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "initialize",
+        args: [request.accessManager, request.name, request.metadataURI],
+      }),
+    };
+  }
+
+  /**
    * method registerLicenseTerms for contract PILicenseTemplate
    *
    * @param request PiLicenseTemplateRegisterLicenseTermsRequest
@@ -11836,6 +12440,25 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       args: [request.terms],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerLicenseTerms for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateRegisterLicenseTermsRequest
+   * @return EncodedTxData
+   */
+  public registerLicenseTermsEncode(
+    request: PiLicenseTemplateRegisterLicenseTermsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "registerLicenseTerms",
+        args: [request.terms],
+      }),
+    };
   }
 
   /**
@@ -11858,6 +12481,23 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
   }
 
   /**
+   * method setApproval for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateSetApprovalRequest
+   * @return EncodedTxData
+   */
+  public setApprovalEncode(request: PiLicenseTemplateSetApprovalRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "setApproval",
+        args: [request.parentIpId, request.licenseTermsId, request.childIpId, request.approved],
+      }),
+    };
+  }
+
+  /**
    * method setAuthority for contract PILicenseTemplate
    *
    * @param request PiLicenseTemplateSetAuthorityRequest
@@ -11874,6 +12514,23 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       args: [request.newAuthority],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: PiLicenseTemplateSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
   }
 
   /**
@@ -11896,6 +12553,23 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
   }
 
   /**
+   * method upgradeToAndCall for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: PiLicenseTemplateUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
+  }
+
+  /**
    * method verifyMintLicenseToken for contract PILicenseTemplate
    *
    * @param request PiLicenseTemplateVerifyMintLicenseTokenRequest
@@ -11912,6 +12586,25 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       args: [request[0], request[1], request[2], request[3]],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method verifyMintLicenseToken for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateVerifyMintLicenseTokenRequest
+   * @return EncodedTxData
+   */
+  public verifyMintLicenseTokenEncode(
+    request: PiLicenseTemplateVerifyMintLicenseTokenRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "verifyMintLicenseToken",
+        args: [request[0], request[1], request[2], request[3]],
+      }),
+    };
   }
 
   /**
@@ -11934,6 +12627,25 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
   }
 
   /**
+   * method verifyRegisterDerivative for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateVerifyRegisterDerivativeRequest
+   * @return EncodedTxData
+   */
+  public verifyRegisterDerivativeEncode(
+    request: PiLicenseTemplateVerifyRegisterDerivativeRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "verifyRegisterDerivative",
+        args: [request.childIpId, request.parentIpId, request.licenseTermsId, request.licensee],
+      }),
+    };
+  }
+
+  /**
    * method verifyRegisterDerivativeForAllParents for contract PILicenseTemplate
    *
    * @param request PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest
@@ -11950,6 +12662,30 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.childIpOwner],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method verifyRegisterDerivativeForAllParents for contract PILicenseTemplate with only encode
+   *
+   * @param request PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest
+   * @return EncodedTxData
+   */
+  public verifyRegisterDerivativeForAllParentsEncode(
+    request: PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: piLicenseTemplateAbi,
+        functionName: "verifyRegisterDerivativeForAllParents",
+        args: [
+          request.childIpId,
+          request.parentIpIds,
+          request.licenseTermsIds,
+          request.childIpOwner,
+        ],
+      }),
+    };
   }
 }
 
@@ -12001,6 +12737,23 @@ export class RoyaltyModuleClient {
       args: [request.receiverIpId, request.payerIpId, request.token, request.amount],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method payRoyaltyOnBehalf for contract RoyaltyModule with only encode
+   *
+   * @param request RoyaltyModulePayRoyaltyOnBehalfRequest
+   * @return EncodedTxData
+   */
+  public payRoyaltyOnBehalfEncode(request: RoyaltyModulePayRoyaltyOnBehalfRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyModuleAbi,
+        functionName: "payRoyaltyOnBehalf",
+        args: [request.receiverIpId, request.payerIpId, request.token, request.amount],
+      }),
+    };
   }
 }
 
@@ -12105,6 +12858,23 @@ export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
       args: [request.caller, request.ipId, request.token, request.amount],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onRoyaltyPayment for contract RoyaltyPolicyLAP with only encode
+   *
+   * @param request RoyaltyPolicyLapOnRoyaltyPaymentRequest
+   * @return EncodedTxData
+   */
+  public onRoyaltyPaymentEncode(request: RoyaltyPolicyLapOnRoyaltyPaymentRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLapAbi,
+        functionName: "onRoyaltyPayment",
+        args: [request.caller, request.ipId, request.token, request.amount],
+      }),
+    };
   }
 }
 
@@ -12499,6 +13269,30 @@ export class SpgClient extends SpgEventClient {
   }
 
   /**
+   * method createCollection for contract SPG with only encode
+   *
+   * @param request SpgCreateCollectionRequest
+   * @return EncodedTxData
+   */
+  public createCollectionEncode(request: SpgCreateCollectionRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "createCollection",
+        args: [
+          request.name,
+          request.symbol,
+          request.maxSupply,
+          request.mintFee,
+          request.mintFeeToken,
+          request.owner,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method mintAndRegisterIp for contract SPG
    *
    * @param request SpgMintAndRegisterIpRequest
@@ -12515,6 +13309,23 @@ export class SpgClient extends SpgEventClient {
       args: [request.nftContract, request.recipient, request.metadata],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIp for contract SPG with only encode
+   *
+   * @param request SpgMintAndRegisterIpRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpEncode(request: SpgMintAndRegisterIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIp",
+        args: [request.nftContract, request.recipient, request.metadata],
+      }),
+    };
   }
 
   /**
@@ -12537,6 +13348,25 @@ export class SpgClient extends SpgEventClient {
   }
 
   /**
+   * method mintAndRegisterIpAndAttachPILTerms for contract SPG with only encode
+   *
+   * @param request SpgMintAndRegisterIpAndAttachPilTermsRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndAttachPilTermsEncode(
+    request: SpgMintAndRegisterIpAndAttachPilTermsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIpAndAttachPILTerms",
+        args: [request.nftContract, request.recipient, request.metadata, request.terms],
+      }),
+    };
+  }
+
+  /**
    * method mintAndRegisterIpAndMakeDerivative for contract SPG
    *
    * @param request SpgMintAndRegisterIpAndMakeDerivativeRequest
@@ -12553,6 +13383,25 @@ export class SpgClient extends SpgEventClient {
       args: [request.nftContract, request.derivData, request.metadata, request.recipient],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivative for contract SPG with only encode
+   *
+   * @param request SpgMintAndRegisterIpAndMakeDerivativeRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndMakeDerivativeEncode(
+    request: SpgMintAndRegisterIpAndMakeDerivativeRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivative",
+        args: [request.nftContract, request.derivData, request.metadata, request.recipient],
+      }),
+    };
   }
 
   /**
@@ -12581,6 +13430,31 @@ export class SpgClient extends SpgEventClient {
   }
 
   /**
+   * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
+   *
+   * @param request SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
+    request: SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+        args: [
+          request.nftContract,
+          request.licenseTokenIds,
+          request.royaltyContext,
+          request.metadata,
+          request.recipient,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method registerIp for contract SPG
    *
    * @param request SpgRegisterIpRequest
@@ -12595,6 +13469,23 @@ export class SpgClient extends SpgEventClient {
       args: [request.nftContract, request.tokenId, request.metadata, request.sigMetadata],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIp for contract SPG with only encode
+   *
+   * @param request SpgRegisterIpRequest
+   * @return EncodedTxData
+   */
+  public registerIpEncode(request: SpgRegisterIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIp",
+        args: [request.nftContract, request.tokenId, request.metadata, request.sigMetadata],
+      }),
+    };
   }
 
   /**
@@ -12624,6 +13515,32 @@ export class SpgClient extends SpgEventClient {
   }
 
   /**
+   * method registerIpAndAttachPILTerms for contract SPG with only encode
+   *
+   * @param request SpgRegisterIpAndAttachPilTermsRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndAttachPilTermsEncode(
+    request: SpgRegisterIpAndAttachPilTermsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIpAndAttachPILTerms",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.metadata,
+          request.terms,
+          request.sigMetadata,
+          request.sigAttach,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method registerIpAndMakeDerivative for contract SPG
    *
    * @param request SpgRegisterIpAndMakeDerivativeRequest
@@ -12647,6 +13564,32 @@ export class SpgClient extends SpgEventClient {
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndMakeDerivative for contract SPG with only encode
+   *
+   * @param request SpgRegisterIpAndMakeDerivativeRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndMakeDerivativeEncode(
+    request: SpgRegisterIpAndMakeDerivativeRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIpAndMakeDerivative",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.derivData,
+          request.metadata,
+          request.sigMetadata,
+          request.sigRegister,
+        ],
+      }),
+    };
   }
 
   /**
@@ -12677,6 +13620,33 @@ export class SpgClient extends SpgEventClient {
   }
 
   /**
+   * method registerIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
+   *
+   * @param request SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndMakeDerivativeWithLicenseTokensEncode(
+    request: SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.licenseTokenIds,
+          request.royaltyContext,
+          request.metadata,
+          request.sigMetadata,
+          request.sigRegister,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method registerPILTermsAndAttach for contract SPG
    *
    * @param request SpgRegisterPilTermsAndAttachRequest
@@ -12693,6 +13663,25 @@ export class SpgClient extends SpgEventClient {
       args: [request.ipId, request.terms],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerPILTermsAndAttach for contract SPG with only encode
+   *
+   * @param request SpgRegisterPilTermsAndAttachRequest
+   * @return EncodedTxData
+   */
+  public registerPilTermsAndAttachEncode(
+    request: SpgRegisterPilTermsAndAttachRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgAbi,
+        functionName: "registerPILTermsAndAttach",
+        args: [request.ipId, request.terms],
+      }),
+    };
   }
 }
 
@@ -12898,6 +13887,22 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
   }
 
   /**
+   * method renounceOwnership for contract SPGNFTBeacon with only encode
+   *
+   * @param request SpgnftBeaconRenounceOwnershipRequest
+   * @return EncodedTxData
+   */
+  public renounceOwnershipEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "renounceOwnership",
+      }),
+    };
+  }
+
+  /**
    * method transferOwnership for contract SPGNFTBeacon
    *
    * @param request SpgnftBeaconTransferOwnershipRequest
@@ -12917,6 +13922,23 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
   }
 
   /**
+   * method transferOwnership for contract SPGNFTBeacon with only encode
+   *
+   * @param request SpgnftBeaconTransferOwnershipRequest
+   * @return EncodedTxData
+   */
+  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "transferOwnership",
+        args: [request.newOwner],
+      }),
+    };
+  }
+
+  /**
    * method upgradeTo for contract SPGNFTBeacon
    *
    * @param request SpgnftBeaconUpgradeToRequest
@@ -12931,6 +13953,23 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
       args: [request.newImplementation],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeTo for contract SPGNFTBeacon with only encode
+   *
+   * @param request SpgnftBeaconUpgradeToRequest
+   * @return EncodedTxData
+   */
+  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "upgradeTo",
+        args: [request.newImplementation],
+      }),
+    };
   }
 }
 
@@ -13849,6 +14888,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method approve for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplApproveRequest
+   * @return EncodedTxData
+   */
+  public approveEncode(request: SpgnftImplApproveRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "approve",
+        args: [request.to, request.tokenId],
+      }),
+    };
+  }
+
+  /**
    * method grantRole for contract SPGNFTImpl
    *
    * @param request SpgnftImplGrantRoleRequest
@@ -13863,6 +14919,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       args: [request.role, request.account],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method grantRole for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplGrantRoleRequest
+   * @return EncodedTxData
+   */
+  public grantRoleEncode(request: SpgnftImplGrantRoleRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "grantRole",
+        args: [request.role, request.account],
+      }),
+    };
   }
 
   /**
@@ -13890,6 +14963,30 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method initialize for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: SpgnftImplInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "initialize",
+        args: [
+          request.name,
+          request.symbol,
+          request.maxSupply,
+          request.mintCost,
+          request.mintToken,
+          request.owner,
+        ],
+      }),
+    };
+  }
+
+  /**
    * method mint for contract SPGNFTImpl
    *
    * @param request SpgnftImplMintRequest
@@ -13907,6 +15004,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method mint for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplMintRequest
+   * @return EncodedTxData
+   */
+  public mintEncode(request: SpgnftImplMintRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "mint",
+        args: [request.to],
+      }),
+    };
+  }
+
+  /**
    * method mintBySPG for contract SPGNFTImpl
    *
    * @param request SpgnftImplMintBySpgRequest
@@ -13921,6 +15035,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       args: [request.to, request.payer],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintBySPG for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplMintBySpgRequest
+   * @return EncodedTxData
+   */
+  public mintBySpgEncode(request: SpgnftImplMintBySpgRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "mintBySPG",
+        args: [request.to, request.payer],
+      }),
+    };
   }
 
   /**
@@ -13943,6 +15074,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method renounceRole for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplRenounceRoleRequest
+   * @return EncodedTxData
+   */
+  public renounceRoleEncode(request: SpgnftImplRenounceRoleRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "renounceRole",
+        args: [request.role, request.callerConfirmation],
+      }),
+    };
+  }
+
+  /**
    * method revokeRole for contract SPGNFTImpl
    *
    * @param request SpgnftImplRevokeRoleRequest
@@ -13957,6 +15105,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       args: [request.role, request.account],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method revokeRole for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplRevokeRoleRequest
+   * @return EncodedTxData
+   */
+  public revokeRoleEncode(request: SpgnftImplRevokeRoleRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "revokeRole",
+        args: [request.role, request.account],
+      }),
+    };
   }
 
   /**
@@ -13979,6 +15144,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method safeTransferFrom for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSafeTransferFromRequest
+   * @return EncodedTxData
+   */
+  public safeTransferFromEncode(request: SpgnftImplSafeTransferFromRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "safeTransferFrom",
+        args: [request.from, request.to, request.tokenId],
+      }),
+    };
+  }
+
+  /**
    * method safeTransferFrom for contract SPGNFTImpl
    *
    * @param request SpgnftImplSafeTransferFrom2Request
@@ -13995,6 +15177,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       args: [request.from, request.to, request.tokenId, request.data],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method safeTransferFrom for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSafeTransferFrom2Request
+   * @return EncodedTxData
+   */
+  public safeTransferFrom2Encode(request: SpgnftImplSafeTransferFrom2Request): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "safeTransferFrom",
+        args: [request.from, request.to, request.tokenId, request.data],
+      }),
+    };
   }
 
   /**
@@ -14017,6 +15216,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method setApprovalForAll for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetApprovalForAllRequest
+   * @return EncodedTxData
+   */
+  public setApprovalForAllEncode(request: SpgnftImplSetApprovalForAllRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setApprovalForAll",
+        args: [request.operator, request.approved],
+      }),
+    };
+  }
+
+  /**
    * method setMintCost for contract SPGNFTImpl
    *
    * @param request SpgnftImplSetMintCostRequest
@@ -14033,6 +15249,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       args: [request.cost],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setMintCost for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetMintCostRequest
+   * @return EncodedTxData
+   */
+  public setMintCostEncode(request: SpgnftImplSetMintCostRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setMintCost",
+        args: [request.cost],
+      }),
+    };
   }
 
   /**
@@ -14055,6 +15288,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method setMintToken for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetMintTokenRequest
+   * @return EncodedTxData
+   */
+  public setMintTokenEncode(request: SpgnftImplSetMintTokenRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setMintToken",
+        args: [request.token],
+      }),
+    };
+  }
+
+  /**
    * method transferFrom for contract SPGNFTImpl
    *
    * @param request SpgnftImplTransferFromRequest
@@ -14074,6 +15324,23 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method transferFrom for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplTransferFromRequest
+   * @return EncodedTxData
+   */
+  public transferFromEncode(request: SpgnftImplTransferFromRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "transferFrom",
+        args: [request.from, request.to, request.tokenId],
+      }),
+    };
+  }
+
+  /**
    * method withdrawToken for contract SPGNFTImpl
    *
    * @param request SpgnftImplWithdrawTokenRequest
@@ -14090,5 +15357,22 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       args: [request.token, request.recipient],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method withdrawToken for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplWithdrawTokenRequest
+   * @return EncodedTxData
+   */
+  public withdrawTokenEncode(request: SpgnftImplWithdrawTokenRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "withdrawToken",
+        args: [request.token, request.recipient],
+      }),
+    };
   }
 }

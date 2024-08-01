@@ -3,6 +3,10 @@ export type TxOptions = {
   // can receive a transaction receipt in return (which
   // contains data about the transaction and return values).
   waitForTransaction?: boolean;
+  // When the time of setting this option, the transaction will
+  // not submit and execute, it will only encode the abi and
+  // function data and return.
+  encodedTxDataOnly?: boolean;
   // The price (in wei) to pay per gas.
   gasPrice?: bigint;
   // Total fee per gas (in wei).

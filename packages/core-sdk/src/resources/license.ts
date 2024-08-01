@@ -67,13 +67,24 @@ export class LicenseClient {
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
-      if (request?.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+      if (request?.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+            terms: licenseTerms,
+          }),
+        };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
+          terms: licenseTerms,
+        });
+        if (request?.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs =
+            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
+          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to register non commercial social remixing PIL");
@@ -101,13 +112,24 @@ export class LicenseClient {
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+            terms: licenseTerms,
+          }),
+        };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
+          terms: licenseTerms,
+        });
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs =
+            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
+          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to register commercial use PIL");
@@ -137,13 +159,24 @@ export class LicenseClient {
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      const txHash = await this.licenseTemplateClient.registerLicenseTerms({ terms: licenseTerms });
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-        return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+            terms: licenseTerms,
+          }),
+        };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
+          terms: licenseTerms,
+        });
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs =
+            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
+          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to register commercial remix PIL");
@@ -188,16 +221,21 @@ export class LicenseClient {
       if (isAttachedLicenseTerms) {
         return { txHash: "", success: false };
       }
-      const txHash = await this.licensingModuleClient.attachLicenseTerms({
+      const req = {
         ipId: request.ipId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: request.licenseTermsId,
-      });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        return { txHash: txHash, success: true };
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.licensingModuleClient.attachLicenseTermsEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          return { txHash: txHash, success: true };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to attach license terms");
@@ -258,7 +296,7 @@ export class LicenseClient {
         );
       }
       const amount = BigInt(request.amount || 1);
-      const txHash = await this.licensingModuleClient.mintLicenseTokens({
+      const req = {
         licensorIpId: request.licensorIpId,
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: request.licenseTermsId,
@@ -267,18 +305,23 @@ export class LicenseClient {
           (request.receiver && getAddress(request.receiver, "request.receiver")) ||
           this.wallet.account!.address,
         royaltyContext: zeroAddress,
-      });
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
-        const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
-        const licenseTokenIds = [];
-        for (let i = 0; i < amount; i++) {
-          licenseTokenIds.push(startLicenseTokenId + BigInt(i));
-        }
-        return { txHash: txHash, licenseTokenIds: licenseTokenIds };
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.licensingModuleClient.mintLicenseTokensEncode(req) };
       } else {
-        return { txHash: txHash };
+        const txHash = await this.licensingModuleClient.mintLicenseTokens(req);
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
+          const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
+          const licenseTokenIds = [];
+          for (let i = 0; i < amount; i++) {
+            licenseTokenIds.push(startLicenseTokenId + BigInt(i));
+          }
+          return { txHash: txHash, licenseTokenIds: licenseTokenIds };
+        } else {
+          return { txHash: txHash };
+        }
       }
     } catch (error) {
       handleError(error, "Failed to mint license tokens");

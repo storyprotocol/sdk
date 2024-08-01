@@ -40,16 +40,22 @@ export class IPAccountClient {
         getAddress(request.ipId, "request.ipId"),
       );
 
-      const txHash = await ipAccountClient.execute({
+      const req = {
         to: request.to,
         value: BigInt(0),
         data: request.data,
-      });
+      };
 
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipAccountClient.executeEncode(req) };
+      } else {
+        const txHash = await ipAccountClient.execute(req);
+
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        }
+        return { txHash: txHash };
       }
-      return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to execute the IP Account transaction");
     }
@@ -76,19 +82,25 @@ export class IPAccountClient {
         getAddress(request.ipId, "request.ipId"),
       );
 
-      const txHash = await ipAccountClient.executeWithSig({
+      const req = {
         to: getAddress(request.to, "request.to"),
         value: BigInt(0),
         data: request.data,
         signer: getAddress(request.signer, "request.signer"),
         deadline: BigInt(request.deadline),
         signature: request.signature,
-      });
+      };
 
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
+      } else {
+        const txHash = await ipAccountClient.executeWithSig(req);
+
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        }
+        return { txHash: txHash };
       }
-      return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to execute with signature for the IP Account transaction");
     }
