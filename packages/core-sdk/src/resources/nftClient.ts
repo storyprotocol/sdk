@@ -43,7 +43,7 @@ export class NftClient {
         throw new Error("Invalid mint fee token address, mint fee is greater than 0.");
       }
 
-      const txHash = await this.spgClient.createCollection({
+      const req = {
         name: request.name,
         symbol: request.symbol,
         maxSupply: request.maxSupply ?? Number(maxUint32),
@@ -52,17 +52,23 @@ export class NftClient {
         owner:
           (request.owner && getAddress(request.owner, "request.owner")) ||
           this.wallet.account!.address,
-      });
+      };
 
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-        const targetLogs = this.spgClient.parseTxCollectionCreatedEvent(txReceipt);
-        return {
-          txHash: txHash,
-          nftContract: targetLogs[0].nftContract,
-        };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.createCollectionEncode(req) };
+      } else {
+        const txHash = await this.spgClient.createCollection(req);
+
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const targetLogs = this.spgClient.parseTxCollectionCreatedEvent(txReceipt);
+          return {
+            txHash: txHash,
+            nftContract: targetLogs[0].nftContract,
+          };
+        }
+        return { txHash: txHash };
       }
-      return { txHash: txHash };
     } catch (error) {
       handleError(error, "Failed to create a SPG NFT collection");
     }
