@@ -1,7 +1,7 @@
 import { Address } from "viem";
 
 import { TxOptions } from "../options";
-import { MethodEncode } from "../../abi/generated";
+import { EncodedTxData } from "../../abi/generated";
 
 export type RoyaltyPolicyApiResponse = {
   data: RoyaltyPolicy;
@@ -30,7 +30,7 @@ export type CollectRoyaltyTokensRequest = {
 
 export type CollectRoyaltyTokensResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   royaltyTokensCollected?: bigint;
 };
 
@@ -61,7 +61,7 @@ export type PayRoyaltyOnBehalfRequest = {
 
 export type PayRoyaltyOnBehalfResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
 };
 
 export type SnapshotRequest = {
@@ -79,12 +79,12 @@ export type ClaimRevenueRequest = {
 
 export type ClaimRevenueResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   claimableToken?: bigint;
 };
 
 export type SnapshotResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   snapshotId?: bigint;
 };

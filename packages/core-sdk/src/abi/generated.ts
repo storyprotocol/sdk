@@ -7410,7 +7410,7 @@ function getAddress(address: Record<number, Address>, chainId?: number): Address
   return address[chainId || 0] || "0x";
 }
 
-export type MethodEncode = { to: Address; data: Hex };
+export type EncodedTxData = { to: Address; data: Hex };
 
 export type SimpleWalletClient<
   TChain extends Chain | undefined = Chain | undefined,
@@ -7581,9 +7581,9 @@ export class AccessControllerClient extends AccessControllerEventClient {
    * method setAllPermissions for contract AccessController with only encode
    *
    * @param request AccessControllerSetAllPermissionsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setAllPermissionsEncode(request: AccessControllerSetAllPermissionsRequest): MethodEncode {
+  public setAllPermissionsEncode(request: AccessControllerSetAllPermissionsRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -7617,11 +7617,11 @@ export class AccessControllerClient extends AccessControllerEventClient {
    * method setBatchPermissions for contract AccessController with only encode
    *
    * @param request AccessControllerSetBatchPermissionsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public setBatchPermissionsEncode(
     request: AccessControllerSetBatchPermissionsRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -7655,9 +7655,9 @@ export class AccessControllerClient extends AccessControllerEventClient {
    * method setPermission for contract AccessController with only encode
    *
    * @param request AccessControllerSetPermissionRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setPermissionEncode(request: AccessControllerSetPermissionRequest): MethodEncode {
+  public setPermissionEncode(request: AccessControllerSetPermissionRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8037,9 +8037,9 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method freezeMetadata for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleFreezeMetadataRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public freezeMetadataEncode(request: CoreMetadataModuleFreezeMetadataRequest): MethodEncode {
+  public freezeMetadataEncode(request: CoreMetadataModuleFreezeMetadataRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8071,9 +8071,9 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method setAll for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleSetAllRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setAllEncode(request: CoreMetadataModuleSetAllRequest): MethodEncode {
+  public setAllEncode(request: CoreMetadataModuleSetAllRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8107,9 +8107,9 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method setMetadataURI for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleSetMetadataUriRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setMetadataUriEncode(request: CoreMetadataModuleSetMetadataUriRequest): MethodEncode {
+  public setMetadataUriEncode(request: CoreMetadataModuleSetMetadataUriRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8143,11 +8143,11 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
    * method updateNftTokenURI for contract CoreMetadataModule with only encode
    *
    * @param request CoreMetadataModuleUpdateNftTokenUriRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public updateNftTokenUriEncode(
     request: CoreMetadataModuleUpdateNftTokenUriRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8409,9 +8409,9 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
    * method cancelDispute for contract DisputeModule with only encode
    *
    * @param request DisputeModuleCancelDisputeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public cancelDisputeEncode(request: DisputeModuleCancelDisputeRequest): MethodEncode {
+  public cancelDisputeEncode(request: DisputeModuleCancelDisputeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8445,9 +8445,9 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
    * method raiseDispute for contract DisputeModule with only encode
    *
    * @param request DisputeModuleRaiseDisputeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public raiseDisputeEncode(request: DisputeModuleRaiseDisputeRequest): MethodEncode {
+  public raiseDisputeEncode(request: DisputeModuleRaiseDisputeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8481,9 +8481,9 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
    * method resolveDispute for contract DisputeModule with only encode
    *
    * @param request DisputeModuleResolveDisputeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public resolveDisputeEncode(request: DisputeModuleResolveDisputeRequest): MethodEncode {
+  public resolveDisputeEncode(request: DisputeModuleResolveDisputeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8590,9 +8590,9 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
    * method execute for contract IPAccountImpl with only encode
    *
    * @param request IpAccountImplExecuteRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public executeEncode(request: IpAccountImplExecuteRequest): MethodEncode {
+  public executeEncode(request: IpAccountImplExecuteRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8633,9 +8633,9 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
    * method executeWithSig for contract IPAccountImpl with only encode
    *
    * @param request IpAccountImplExecuteWithSigRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public executeWithSigEncode(request: IpAccountImplExecuteWithSigRequest): MethodEncode {
+  public executeWithSigEncode(request: IpAccountImplExecuteWithSigRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -8901,9 +8901,9 @@ export class IpAssetRegistryClient extends IpAssetRegistryReadOnlyClient {
    * method register for contract IPAssetRegistry with only encode
    *
    * @param request IpAssetRegistryRegisterRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public registerEncode(request: IpAssetRegistryRegisterRequest): MethodEncode {
+  public registerEncode(request: IpAssetRegistryRegisterRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -9212,11 +9212,11 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method claimRevenueBySnapshotBatch for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public claimRevenueBySnapshotBatchEncode(
     request: IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -9250,11 +9250,11 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method claimRevenueByTokenBatch for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public claimRevenueByTokenBatchEncode(
     request: IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -9288,11 +9288,11 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method collectRoyaltyTokens for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplCollectRoyaltyTokensRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public collectRoyaltyTokensEncode(
     request: IpRoyaltyVaultImplCollectRoyaltyTokensRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -9323,9 +9323,9 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
    * method snapshot for contract IpRoyaltyVaultImpl with only encode
    *
    * @param request IpRoyaltyVaultImplSnapshotRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public snapshotEncode(): MethodEncode {
+  public snapshotEncode(): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10540,11 +10540,11 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method attachLicenseTermsToIp for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryAttachLicenseTermsToIpRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public attachLicenseTermsToIpEncode(
     request: LicenseRegistryAttachLicenseTermsToIpRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10578,9 +10578,9 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method initialize for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryInitializeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public initializeEncode(request: LicenseRegistryInitializeRequest): MethodEncode {
+  public initializeEncode(request: LicenseRegistryInitializeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10619,11 +10619,11 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method registerDerivativeIp for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryRegisterDerivativeIpRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerDerivativeIpEncode(
     request: LicenseRegistryRegisterDerivativeIpRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10662,11 +10662,11 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method registerLicenseTemplate for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryRegisterLicenseTemplateRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerLicenseTemplateEncode(
     request: LicenseRegistryRegisterLicenseTemplateRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10700,9 +10700,9 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setAuthority for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetAuthorityRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setAuthorityEncode(request: LicenseRegistrySetAuthorityRequest): MethodEncode {
+  public setAuthorityEncode(request: LicenseRegistrySetAuthorityRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10736,11 +10736,11 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setDefaultLicenseTerms for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetDefaultLicenseTermsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public setDefaultLicenseTermsEncode(
     request: LicenseRegistrySetDefaultLicenseTermsRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10774,9 +10774,9 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setExpireTime for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetExpireTimeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setExpireTimeEncode(request: LicenseRegistrySetExpireTimeRequest): MethodEncode {
+  public setExpireTimeEncode(request: LicenseRegistrySetExpireTimeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10810,11 +10810,11 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setLicensingConfigForIp for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetLicensingConfigForIpRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public setLicensingConfigForIpEncode(
     request: LicenseRegistrySetLicensingConfigForIpRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10853,11 +10853,11 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method setLicensingConfigForLicense for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistrySetLicensingConfigForLicenseRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public setLicensingConfigForLicenseEncode(
     request: LicenseRegistrySetLicensingConfigForLicenseRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -10896,9 +10896,9 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
    * method upgradeToAndCall for contract LicenseRegistry with only encode
    *
    * @param request LicenseRegistryUpgradeToAndCallRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public upgradeToAndCallEncode(request: LicenseRegistryUpgradeToAndCallRequest): MethodEncode {
+  public upgradeToAndCallEncode(request: LicenseRegistryUpgradeToAndCallRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -11180,9 +11180,11 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method attachLicenseTerms for contract LicensingModule with only encode
    *
    * @param request LicensingModuleAttachLicenseTermsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public attachLicenseTermsEncode(request: LicensingModuleAttachLicenseTermsRequest): MethodEncode {
+  public attachLicenseTermsEncode(
+    request: LicensingModuleAttachLicenseTermsRequest,
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -11223,9 +11225,9 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method mintLicenseTokens for contract LicensingModule with only encode
    *
    * @param request LicensingModuleMintLicenseTokensRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public mintLicenseTokensEncode(request: LicensingModuleMintLicenseTokensRequest): MethodEncode {
+  public mintLicenseTokensEncode(request: LicensingModuleMintLicenseTokensRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -11272,9 +11274,11 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method registerDerivative for contract LicensingModule with only encode
    *
    * @param request LicensingModuleRegisterDerivativeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public registerDerivativeEncode(request: LicensingModuleRegisterDerivativeRequest): MethodEncode {
+  public registerDerivativeEncode(
+    request: LicensingModuleRegisterDerivativeRequest,
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -11314,11 +11318,11 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
    * method registerDerivativeWithLicenseTokens for contract LicensingModule with only encode
    *
    * @param request LicensingModuleRegisterDerivativeWithLicenseTokensRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerDerivativeWithLicenseTokensEncode(
     request: LicensingModuleRegisterDerivativeWithLicenseTokensRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12406,9 +12410,9 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method initialize for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateInitializeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public initializeEncode(request: PiLicenseTemplateInitializeRequest): MethodEncode {
+  public initializeEncode(request: PiLicenseTemplateInitializeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12442,11 +12446,11 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method registerLicenseTerms for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateRegisterLicenseTermsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerLicenseTermsEncode(
     request: PiLicenseTemplateRegisterLicenseTermsRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12480,9 +12484,9 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method setApproval for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateSetApprovalRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setApprovalEncode(request: PiLicenseTemplateSetApprovalRequest): MethodEncode {
+  public setApprovalEncode(request: PiLicenseTemplateSetApprovalRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12516,9 +12520,9 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method setAuthority for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateSetAuthorityRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setAuthorityEncode(request: PiLicenseTemplateSetAuthorityRequest): MethodEncode {
+  public setAuthorityEncode(request: PiLicenseTemplateSetAuthorityRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12552,9 +12556,9 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method upgradeToAndCall for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateUpgradeToAndCallRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public upgradeToAndCallEncode(request: PiLicenseTemplateUpgradeToAndCallRequest): MethodEncode {
+  public upgradeToAndCallEncode(request: PiLicenseTemplateUpgradeToAndCallRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12588,11 +12592,11 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method verifyMintLicenseToken for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateVerifyMintLicenseTokenRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public verifyMintLicenseTokenEncode(
     request: PiLicenseTemplateVerifyMintLicenseTokenRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12626,11 +12630,11 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method verifyRegisterDerivative for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateVerifyRegisterDerivativeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public verifyRegisterDerivativeEncode(
     request: PiLicenseTemplateVerifyRegisterDerivativeRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12664,11 +12668,11 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
    * method verifyRegisterDerivativeForAllParents for contract PILicenseTemplate with only encode
    *
    * @param request PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public verifyRegisterDerivativeForAllParentsEncode(
     request: PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12739,9 +12743,9 @@ export class RoyaltyModuleClient {
    * method payRoyaltyOnBehalf for contract RoyaltyModule with only encode
    *
    * @param request RoyaltyModulePayRoyaltyOnBehalfRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public payRoyaltyOnBehalfEncode(request: RoyaltyModulePayRoyaltyOnBehalfRequest): MethodEncode {
+  public payRoyaltyOnBehalfEncode(request: RoyaltyModulePayRoyaltyOnBehalfRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -12860,9 +12864,9 @@ export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
    * method onRoyaltyPayment for contract RoyaltyPolicyLAP with only encode
    *
    * @param request RoyaltyPolicyLapOnRoyaltyPaymentRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public onRoyaltyPaymentEncode(request: RoyaltyPolicyLapOnRoyaltyPaymentRequest): MethodEncode {
+  public onRoyaltyPaymentEncode(request: RoyaltyPolicyLapOnRoyaltyPaymentRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13268,9 +13272,9 @@ export class SpgClient extends SpgEventClient {
    * method createCollection for contract SPG with only encode
    *
    * @param request SpgCreateCollectionRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public createCollectionEncode(request: SpgCreateCollectionRequest): MethodEncode {
+  public createCollectionEncode(request: SpgCreateCollectionRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13311,9 +13315,9 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIp for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public mintAndRegisterIpEncode(request: SpgMintAndRegisterIpRequest): MethodEncode {
+  public mintAndRegisterIpEncode(request: SpgMintAndRegisterIpRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13347,11 +13351,11 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIpAndAttachPILTerms for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpAndAttachPilTermsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public mintAndRegisterIpAndAttachPilTermsEncode(
     request: SpgMintAndRegisterIpAndAttachPilTermsRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13385,11 +13389,11 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIpAndMakeDerivative for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpAndMakeDerivativeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public mintAndRegisterIpAndMakeDerivativeEncode(
     request: SpgMintAndRegisterIpAndMakeDerivativeRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13429,11 +13433,11 @@ export class SpgClient extends SpgEventClient {
    * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
    *
    * @param request SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
     request: SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13471,9 +13475,9 @@ export class SpgClient extends SpgEventClient {
    * method registerIp for contract SPG with only encode
    *
    * @param request SpgRegisterIpRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public registerIpEncode(request: SpgRegisterIpRequest): MethodEncode {
+  public registerIpEncode(request: SpgRegisterIpRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13514,11 +13518,11 @@ export class SpgClient extends SpgEventClient {
    * method registerIpAndAttachPILTerms for contract SPG with only encode
    *
    * @param request SpgRegisterIpAndAttachPilTermsRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerIpAndAttachPilTermsEncode(
     request: SpgRegisterIpAndAttachPilTermsRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13566,11 +13570,11 @@ export class SpgClient extends SpgEventClient {
    * method registerIpAndMakeDerivative for contract SPG with only encode
    *
    * @param request SpgRegisterIpAndMakeDerivativeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerIpAndMakeDerivativeEncode(
     request: SpgRegisterIpAndMakeDerivativeRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13619,11 +13623,11 @@ export class SpgClient extends SpgEventClient {
    * method registerIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
    *
    * @param request SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerIpAndMakeDerivativeWithLicenseTokensEncode(
     request: SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13665,11 +13669,11 @@ export class SpgClient extends SpgEventClient {
    * method registerPILTermsAndAttach for contract SPG with only encode
    *
    * @param request SpgRegisterPilTermsAndAttachRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
   public registerPilTermsAndAttachEncode(
     request: SpgRegisterPilTermsAndAttachRequest,
-  ): MethodEncode {
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13886,9 +13890,9 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
    * method renounceOwnership for contract SPGNFTBeacon with only encode
    *
    * @param request SpgnftBeaconRenounceOwnershipRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public renounceOwnershipEncode(): MethodEncode {
+  public renounceOwnershipEncode(): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13921,9 +13925,9 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
    * method transferOwnership for contract SPGNFTBeacon with only encode
    *
    * @param request SpgnftBeaconTransferOwnershipRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): MethodEncode {
+  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -13955,9 +13959,9 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
    * method upgradeTo for contract SPGNFTBeacon with only encode
    *
    * @param request SpgnftBeaconUpgradeToRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): MethodEncode {
+  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -14887,9 +14891,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method approve for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplApproveRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public approveEncode(request: SpgnftImplApproveRequest): MethodEncode {
+  public approveEncode(request: SpgnftImplApproveRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -14921,9 +14925,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method grantRole for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplGrantRoleRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public grantRoleEncode(request: SpgnftImplGrantRoleRequest): MethodEncode {
+  public grantRoleEncode(request: SpgnftImplGrantRoleRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -14962,9 +14966,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method initialize for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplInitializeRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public initializeEncode(request: SpgnftImplInitializeRequest): MethodEncode {
+  public initializeEncode(request: SpgnftImplInitializeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15003,9 +15007,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method mint for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplMintRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public mintEncode(request: SpgnftImplMintRequest): MethodEncode {
+  public mintEncode(request: SpgnftImplMintRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15037,9 +15041,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method mintBySPG for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplMintBySpgRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public mintBySpgEncode(request: SpgnftImplMintBySpgRequest): MethodEncode {
+  public mintBySpgEncode(request: SpgnftImplMintBySpgRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15073,9 +15077,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method renounceRole for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplRenounceRoleRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public renounceRoleEncode(request: SpgnftImplRenounceRoleRequest): MethodEncode {
+  public renounceRoleEncode(request: SpgnftImplRenounceRoleRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15107,9 +15111,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method revokeRole for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplRevokeRoleRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public revokeRoleEncode(request: SpgnftImplRevokeRoleRequest): MethodEncode {
+  public revokeRoleEncode(request: SpgnftImplRevokeRoleRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15143,9 +15147,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method safeTransferFrom for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSafeTransferFromRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public safeTransferFromEncode(request: SpgnftImplSafeTransferFromRequest): MethodEncode {
+  public safeTransferFromEncode(request: SpgnftImplSafeTransferFromRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15179,9 +15183,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method safeTransferFrom for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSafeTransferFrom2Request
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public safeTransferFrom2Encode(request: SpgnftImplSafeTransferFrom2Request): MethodEncode {
+  public safeTransferFrom2Encode(request: SpgnftImplSafeTransferFrom2Request): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15215,9 +15219,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method setApprovalForAll for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSetApprovalForAllRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setApprovalForAllEncode(request: SpgnftImplSetApprovalForAllRequest): MethodEncode {
+  public setApprovalForAllEncode(request: SpgnftImplSetApprovalForAllRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15251,9 +15255,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method setMintCost for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSetMintCostRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setMintCostEncode(request: SpgnftImplSetMintCostRequest): MethodEncode {
+  public setMintCostEncode(request: SpgnftImplSetMintCostRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15287,9 +15291,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method setMintToken for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplSetMintTokenRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public setMintTokenEncode(request: SpgnftImplSetMintTokenRequest): MethodEncode {
+  public setMintTokenEncode(request: SpgnftImplSetMintTokenRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15323,9 +15327,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method transferFrom for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplTransferFromRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public transferFromEncode(request: SpgnftImplTransferFromRequest): MethodEncode {
+  public transferFromEncode(request: SpgnftImplTransferFromRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -15359,9 +15363,9 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
    * method withdrawToken for contract SPGNFTImpl with only encode
    *
    * @param request SpgnftImplWithdrawTokenRequest
-   * @return MethodEncode
+   * @return EncodedTxData
    */
-  public withdrawTokenEncode(request: SpgnftImplWithdrawTokenRequest): MethodEncode {
+  public withdrawTokenEncode(request: SpgnftImplWithdrawTokenRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({

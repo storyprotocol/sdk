@@ -2,7 +2,7 @@ import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { PIL_TYPE } from "./license";
-import { MethodEncode } from "../../abi/generated";
+import { EncodedTxData } from "../../abi/generated";
 
 type Metadata = {
   metadata?: {
@@ -14,7 +14,7 @@ type Metadata = {
 
 export type RegisterIpResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   ipId?: Address;
 };
 
@@ -33,7 +33,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
 
 export type RegisterDerivativeWithLicenseTokensResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
 };
 
 export type RegisterDerivativeRequest = {
@@ -46,7 +46,7 @@ export type RegisterDerivativeRequest = {
 
 export type RegisterDerivativeResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   childIpId?: Address;
 };
 
@@ -62,7 +62,7 @@ export type CreateIpAssetWithPilTermsRequest = {
 
 export type CreateIpAssetWithPilTermsResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
   licenseTermsId?: bigint;
@@ -82,7 +82,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   ipId?: Address;
 };
 
@@ -99,7 +99,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
 
 export type RegisterIpAndAttachPilTermsResponse = {
   txHash?: string;
-  encodedTxData?: MethodEncode;
+  encodedTxData?: EncodedTxData;
   ipId?: Address;
   licenseTermsId?: bigint;
 };
