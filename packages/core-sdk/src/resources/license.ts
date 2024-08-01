@@ -67,9 +67,11 @@ export class LicenseClient {
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      if (request?.txOptions?.onlyEncodeTransactions) {
+      if (request?.txOptions?.encodedTxDataOnly) {
         return {
-          encodedTx: this.licenseTemplateClient.registerLicenseTermsEncode({ terms: licenseTerms }),
+          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+            terms: licenseTerms,
+          }),
         };
       } else {
         const txHash = await this.licenseTemplateClient.registerLicenseTerms({
@@ -110,9 +112,11 @@ export class LicenseClient {
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      if (request.txOptions?.onlyEncodeTransactions) {
+      if (request.txOptions?.encodedTxDataOnly) {
         return {
-          encodedTx: this.licenseTemplateClient.registerLicenseTermsEncode({ terms: licenseTerms }),
+          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+            terms: licenseTerms,
+          }),
         };
       } else {
         const txHash = await this.licenseTemplateClient.registerLicenseTerms({
@@ -155,9 +159,11 @@ export class LicenseClient {
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      if (request.txOptions?.onlyEncodeTransactions) {
+      if (request.txOptions?.encodedTxDataOnly) {
         return {
-          encodedTx: this.licenseTemplateClient.registerLicenseTermsEncode({ terms: licenseTerms }),
+          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+            terms: licenseTerms,
+          }),
         };
       } else {
         const txHash = await this.licenseTemplateClient.registerLicenseTerms({
@@ -220,8 +226,8 @@ export class LicenseClient {
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: request.licenseTermsId,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.licensingModuleClient.attachLicenseTermsEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.licensingModuleClient.attachLicenseTermsEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
         if (request.txOptions?.waitForTransaction) {
@@ -300,8 +306,8 @@ export class LicenseClient {
           this.wallet.account!.address,
         royaltyContext: zeroAddress,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.licensingModuleClient.mintLicenseTokensEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.licensingModuleClient.mintLicenseTokensEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.mintLicenseTokens(req);
         if (request.txOptions?.waitForTransaction) {

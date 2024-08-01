@@ -74,8 +74,8 @@ export class PermissionClient {
         permission: request.permission,
       };
 
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.accessControllerClient.setPermissionEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.accessControllerClient.setPermissionEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setPermission(req);
         if (request.txOptions?.waitForTransaction) {
@@ -146,8 +146,8 @@ export class PermissionClient {
         deadline: calculatedDeadline,
         signature,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: ipAccountClient.executeWithSigEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
 
@@ -182,8 +182,8 @@ export class PermissionClient {
         signer: request.signer,
         permission: request.permission,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.accessControllerClient.setAllPermissionsEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.accessControllerClient.setAllPermissionsEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setAllPermissions(req);
         if (request.txOptions?.waitForTransaction) {
@@ -228,8 +228,8 @@ export class PermissionClient {
           permission: permission.permission,
         })),
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.accessControllerClient.setBatchPermissionsEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.accessControllerClient.setBatchPermissionsEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setBatchPermissions(req);
         if (txOptions?.waitForTransaction) {
@@ -298,8 +298,8 @@ export class PermissionClient {
         deadline: calculatedDeadline,
         signature,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: ipAccountClient.executeWithSigEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
         if (txOptions?.waitForTransaction) {

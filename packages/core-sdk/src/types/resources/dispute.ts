@@ -14,7 +14,7 @@ export type RaiseDisputeRequest = {
 
 export type RaiseDisputeResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   disputeId?: bigint;
 };
 
@@ -26,7 +26,7 @@ export type CancelDisputeRequest = {
 
 export type CancelDisputeResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };
 
 export type ResolveDisputeRequest = {
@@ -37,5 +37,5 @@ export type ResolveDisputeRequest = {
 
 export type ResolveDisputeResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };

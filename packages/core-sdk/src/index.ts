@@ -85,6 +85,7 @@ export type {
 export type {
   PiLicenseTemplateGetLicenseTermsResponse,
   IpAccountImplStateResponse,
+  MethodEncode,
 } from "./abi/generated";
 
 export { getPermissionSignature } from "./utils/sign";

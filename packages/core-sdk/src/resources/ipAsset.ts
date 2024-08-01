@@ -136,12 +136,12 @@ export class IPAssetClient {
         deadline: calculatedDeadline,
         signature,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
+      if (request.txOptions?.encodedTxDataOnly) {
         if (request.metadata) {
-          return { encodedTx: this.spgClient.registerIpEncode(object) };
+          return { encodedTxData: this.spgClient.registerIpEncode(object) };
         } else {
           return {
-            encodedTx: this.ipAssetRegistryClient.registerEncode({
+            encodedTxData: this.ipAssetRegistryClient.registerEncode({
               tokenContract: object.nftContract,
               tokenId: object.tokenId,
               chainid: chain[this.chainId],
@@ -228,8 +228,8 @@ export class IPAssetClient {
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         royaltyContext: zeroAddress,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.licensingModuleClient.registerDerivativeEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.licensingModuleClient.registerDerivativeEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.registerDerivative(req);
         if (request.txOptions?.waitForTransaction) {
@@ -277,9 +277,9 @@ export class IPAssetClient {
         licenseTokenIds: request.licenseTokenIds,
         royaltyContext: zeroAddress,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
+      if (request.txOptions?.encodedTxDataOnly) {
         return {
-          encodedTx: this.licensingModuleClient.registerDerivativeWithLicenseTokensEncode(req),
+          encodedTxData: this.licensingModuleClient.registerDerivativeWithLicenseTokensEncode(req),
         };
       } else {
         const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens(req);
@@ -351,8 +351,8 @@ export class IPAssetClient {
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
       }
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.spgClient.mintAndRegisterIpAndAttachPilTermsEncode(object) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.mintAndRegisterIpAndAttachPilTermsEncode(object) };
       } else {
         const txHash = await this.spgClient.mintAndRegisterIpAndAttachPilTerms(object);
         if (request.txOptions?.waitForTransaction) {
@@ -482,8 +482,8 @@ export class IPAssetClient {
         deadline: calculatedDeadline,
         signature,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.spgClient.registerIpAndAttachPilTermsEncode(object) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.registerIpAndAttachPilTermsEncode(object) };
       } else {
         const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
         if (request.txOptions?.waitForTransaction) {
@@ -628,8 +628,8 @@ export class IPAssetClient {
         deadline: calculatedDeadline,
         signature,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.spgClient.registerIpAndMakeDerivativeEncode(object) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.registerIpAndMakeDerivativeEncode(object) };
       } else {
         const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
         if (request.txOptions?.waitForTransaction) {

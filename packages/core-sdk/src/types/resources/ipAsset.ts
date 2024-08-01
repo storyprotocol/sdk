@@ -14,7 +14,7 @@ type Metadata = {
 
 export type RegisterIpResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   ipId?: Address;
 };
 
@@ -33,7 +33,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
 
 export type RegisterDerivativeWithLicenseTokensResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };
 
 export type RegisterDerivativeRequest = {
@@ -46,7 +46,7 @@ export type RegisterDerivativeRequest = {
 
 export type RegisterDerivativeResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   childIpId?: Address;
 };
 
@@ -62,7 +62,7 @@ export type CreateIpAssetWithPilTermsRequest = {
 
 export type CreateIpAssetWithPilTermsResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   ipId?: Address;
   tokenId?: bigint;
   licenseTermsId?: bigint;
@@ -82,7 +82,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   ipId?: Address;
 };
 
@@ -99,7 +99,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
 
 export type RegisterIpAndAttachPilTermsResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   ipId?: Address;
   licenseTermsId?: bigint;
 };

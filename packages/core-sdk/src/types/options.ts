@@ -6,7 +6,7 @@ export type TxOptions = {
   // When the time of setting this option, the transaction will
   // not submit and execute, it will only encode the abi and
   // function data and return.
-  onlyEncodeTransactions?: boolean;
+  encodedTxDataOnly?: boolean;
   // The price (in wei) to pay per gas.
   gasPrice?: bigint;
   // Total fee per gas (in wei).

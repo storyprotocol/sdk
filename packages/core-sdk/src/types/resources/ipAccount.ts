@@ -13,7 +13,7 @@ export type IPAccountExecuteRequest = {
 
 export type IPAccountExecuteResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };
 
 export type IPAccountExecuteWithSigRequest = {
@@ -29,5 +29,5 @@ export type IPAccountExecuteWithSigRequest = {
 
 export type IPAccountExecuteWithSigResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };

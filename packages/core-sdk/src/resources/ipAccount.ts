@@ -46,8 +46,8 @@ export class IPAccountClient {
         data: request.data,
       };
 
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: ipAccountClient.executeEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipAccountClient.executeEncode(req) };
       } else {
         const txHash = await ipAccountClient.execute(req);
 
@@ -91,8 +91,8 @@ export class IPAccountClient {
         signature: request.signature,
       };
 
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: ipAccountClient.executeWithSigEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
 

@@ -46,8 +46,8 @@ export class DisputeClient {
         data: request.calldata || "0x",
       };
 
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.disputeModuleClient.raiseDisputeEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.disputeModuleClient.raiseDisputeEncode(req) };
       } else {
         const txHash = await this.disputeModuleClient.raiseDispute(req);
 
@@ -84,8 +84,8 @@ export class DisputeClient {
         disputeId: BigInt(request.disputeId),
         data: request.calldata ? request.calldata : "0x",
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.disputeModuleClient.cancelDisputeEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.disputeModuleClient.cancelDisputeEncode(req) };
       } else {
         const txHash = await this.disputeModuleClient.cancelDispute(req);
 
@@ -117,8 +117,8 @@ export class DisputeClient {
         data: request.data,
       };
 
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.disputeModuleClient.resolveDisputeEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.disputeModuleClient.resolveDisputeEncode(req) };
       } else {
         const txHash = await this.disputeModuleClient.resolveDispute(req);
         if (request.txOptions?.waitForTransaction) {

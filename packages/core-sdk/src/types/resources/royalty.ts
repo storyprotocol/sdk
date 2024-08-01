@@ -30,7 +30,7 @@ export type CollectRoyaltyTokensRequest = {
 
 export type CollectRoyaltyTokensResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   royaltyTokensCollected?: bigint;
 };
 
@@ -61,7 +61,7 @@ export type PayRoyaltyOnBehalfRequest = {
 
 export type PayRoyaltyOnBehalfResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };
 
 export type SnapshotRequest = {
@@ -79,12 +79,12 @@ export type ClaimRevenueRequest = {
 
 export type ClaimRevenueResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   claimableToken?: bigint;
 };
 
 export type SnapshotResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   snapshotId?: bigint;
 };

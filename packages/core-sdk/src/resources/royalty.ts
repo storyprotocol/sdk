@@ -71,8 +71,8 @@ export class RoyaltyClient {
       const req = {
         ancestorIpId: request.parentIpId,
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: ipRoyaltyVault.collectRoyaltyTokensEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipRoyaltyVault.collectRoyaltyTokensEncode(req) };
       } else {
         const txHash = await ipRoyaltyVault.collectRoyaltyTokens(req);
         if (request.txOptions?.waitForTransaction) {
@@ -123,8 +123,8 @@ export class RoyaltyClient {
         token: getAddress(request.token, "request.token"),
         amount: BigInt(request.amount),
       };
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.royaltyModuleClient.payRoyaltyOnBehalfEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.royaltyModuleClient.payRoyaltyOnBehalfEncode(req) };
       } else {
         const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf(req);
         if (request.txOptions?.waitForTransaction) {
@@ -206,8 +206,8 @@ export class RoyaltyClient {
             args: [request.snapshotIds, request.token],
           }),
         });
-        if (request.txOptions?.onlyEncodeTransactions) {
-          return { encodedTx: iPAccountExecuteResponse.encodedTx };
+        if (request.txOptions?.encodedTxDataOnly) {
+          return { encodedTxData: iPAccountExecuteResponse.encodedTxData };
         }
         txHash = iPAccountExecuteResponse.txHash as Hex;
       } else {
@@ -215,8 +215,8 @@ export class RoyaltyClient {
           snapshotIds: request.snapshotIds,
           token: getAddress(request.token, "request.token"),
         };
-        if (request.txOptions?.onlyEncodeTransactions) {
-          return { encodedTx: ipRoyaltyVault.claimRevenueBySnapshotBatchEncode(req) };
+        if (request.txOptions?.encodedTxDataOnly) {
+          return { encodedTxData: ipRoyaltyVault.claimRevenueBySnapshotBatchEncode(req) };
         } else {
           txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch(req);
         }
@@ -252,8 +252,8 @@ export class RoyaltyClient {
         this.wallet,
         proxyAddress,
       );
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: ipRoyaltyVault.snapshotEncode() };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: ipRoyaltyVault.snapshotEncode() };
       } else {
         const txHash = await ipRoyaltyVault.snapshot();
         if (request.txOptions?.waitForTransaction) {

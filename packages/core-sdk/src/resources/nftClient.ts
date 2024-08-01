@@ -54,8 +54,8 @@ export class NftClient {
           this.wallet.account!.address,
       };
 
-      if (request.txOptions?.onlyEncodeTransactions) {
-        return { encodedTx: this.spgClient.createCollectionEncode(req) };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.createCollectionEncode(req) };
       } else {
         const txHash = await this.spgClient.createCollection(req);
 

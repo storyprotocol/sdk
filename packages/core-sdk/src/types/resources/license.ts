@@ -41,7 +41,7 @@ export type LicenseTermsIdResponse = bigint;
 export type RegisterPILResponse = {
   licenseTermsId?: bigint;
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };
 
 export type RegisterCommercialUsePILRequest = {
@@ -66,7 +66,7 @@ export type AttachLicenseTermsRequest = {
 
 export type AttachLicenseTermsResponse = {
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
   success?: boolean;
 };
 
@@ -82,7 +82,7 @@ export type MintLicenseTokensRequest = {
 export type MintLicenseTokensResponse = {
   licenseTokenIds?: bigint[];
   txHash?: string;
-  encodedTx?: MethodEncode;
+  encodedTxData?: MethodEncode;
 };
 
 export enum PIL_TYPE {
