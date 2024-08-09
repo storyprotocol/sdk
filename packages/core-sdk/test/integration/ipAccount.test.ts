@@ -5,7 +5,7 @@ import {
   MockERC721,
   getStoryClientInSepolia,
   getTokenId,
-  sepoliaChainId,
+  storyTestChainId,
   walletClient,
 } from "./utils/util";
 import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
@@ -18,12 +18,12 @@ import { getDeadline } from "../../src/utils/sign";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const coreMetadataModule = coreMetadataModuleAddress[sepoliaChainId];
+const coreMetadataModule = coreMetadataModuleAddress[storyTestChainId];
 describe("Ip Account functions", () => {
   let client: StoryClient;
   let ipId: Hex;
   let data: Hex;
-  const permissionAddress = accessControllerAddress[sepoliaChainId];
+  const permissionAddress = accessControllerAddress[storyTestChainId];
 
   before(async () => {
     client = getStoryClientInSepolia();
@@ -77,7 +77,7 @@ describe("Ip Account functions", () => {
       ],
       nonce: expectedState,
 
-      chainId: BigInt(sepoliaChainId),
+      chainId: BigInt(storyTestChainId),
       deadline: deadline,
     });
     const response = await client.ipAccount.executeWithSig({

@@ -13,7 +13,7 @@ const arbitrationPolicyAddress = "0xc07Bc791CF55E718BA7D70cE650B3152BbE3325e";
 describe("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
-  let disputeId: number;
+  let disputeId: bigint;
   let ipIdB: Address;
 
   before(async () => {
@@ -43,9 +43,8 @@ describe("Dispute Functions", () => {
         waitForTransaction: true,
       },
     };
-    const response = await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.not.be
-      .rejected;
-    disputeId = response.disputeId;
+    const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
+    disputeId = response.disputeId!;
     expect(response.txHash).to.be.a("string").and.not.empty;
     expect(response.disputeId).to.be.a("bigint");
   });
@@ -57,8 +56,7 @@ describe("Dispute Functions", () => {
         waitForTransaction: true,
       },
     };
-    const response = await expect(clientA.dispute.cancelDispute(cancelDispute)).to.not.be.rejected;
-
+    const response = await clientA.dispute.cancelDispute(cancelDispute);
     expect(response.txHash).to.be.a("string").and.not.empty;
   });
 });

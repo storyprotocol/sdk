@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { MockERC721, getStoryClientInSepolia, getTokenId, sepoliaChainId } from "./utils/util";
+import { MockERC721, getStoryClientInSepolia, getTokenId, storyTestChainId } from "./utils/util";
 import { Address } from "viem";
 import { AccessPermission } from "../../src/types/resources/permission";
 import chaiAsPromised from "chai-as-promised";
@@ -11,7 +11,7 @@ const expect = chai.expect;
 describe("Permission Functions", () => {
   let client: StoryClient;
   let ipId: Address;
-  const coreMetadataModule = coreMetadataModuleAddress[sepoliaChainId];
+  const coreMetadataModule = coreMetadataModuleAddress[storyTestChainId];
 
   before(async () => {
     client = getStoryClientInSepolia();
