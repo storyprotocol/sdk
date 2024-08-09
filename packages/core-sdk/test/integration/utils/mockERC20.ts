@@ -14,11 +14,11 @@ import { RPC } from "./util";
 export class MockERC20 {
   private publicClient: PublicClient;
   private walletClient: WalletClient;
-  static address: Hex = "0xB132A6B7AE652c974EE1557A3521D53d18F6739f";
+  static address: Hex = "0xDE51BB12D5cef80ff2334fe1019089363F80b46e";
 
   constructor() {
     const baseConfig = {
-      chain: chainStringToViemChain("sepolia"),
+      chain: chainStringToViemChain("storyTestnet"),
       transport: http(RPC),
     } as const;
     this.publicClient = createPublicClient(baseConfig);
