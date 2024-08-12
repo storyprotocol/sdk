@@ -3,7 +3,7 @@ import { chainStringToViemChain } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 export const RPC = "https://rpc.partner.testnet.storyprotocol.net";
-export const MockERC721 = "0xCa1D199b6F53Af7387ac543Af8e8a34455BBe5E0";
+export const MockERC721 = "0x30062557fd9f1bf0be03fe3782d97edea24295c9";
 
 const baseConfig = {
   chain: chainStringToViemChain("storyTestnet"),

@@ -239,7 +239,7 @@ describe("IP Asset Functions ", () => {
         nftContract: nftContract,
         tokenId: tokenId!,
         deadline,
-        pilType: PIL_TYPE.COMMERCIAL_REMIX,
+        pilType: PIL_TYPE.COMMERCIAL_USE,
         mintingFee: "100",
         currency: MockERC20.address,
         txOptions: {

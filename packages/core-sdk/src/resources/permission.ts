@@ -1,4 +1,13 @@
-import { PublicClient, encodeFunctionData, Address, toFunctionSelector, WalletClient } from "viem";
+import {
+  PublicClient,
+  encodeFunctionData,
+  Address,
+  toFunctionSelector,
+  WalletClient,
+  keccak256,
+  encodeAbiParameters,
+  Hex,
+} from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -13,6 +22,7 @@ import {
   accessControllerAbi,
   AccessControllerClient,
   CoreMetadataModuleClient,
+  ipAccountImplAbi,
   IpAccountImplClient,
   IpAssetRegistryClient,
   SimpleWalletClient,
@@ -109,7 +119,6 @@ export class PermissionClient {
       const { ipId, signer, to, txOptions, func, permission, deadline } = request;
       await this.checkIsRegistered(ipId);
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
-      const nonce = (await ipAccountClient.state()) + 1n;
       const data = encodeFunctionData({
         abi: accessControllerAbi,
         functionName: "setPermission",
@@ -121,6 +130,8 @@ export class PermissionClient {
           permission,
         ],
       });
+      const state = await ipAccountClient.state();
+      const nonce = this.getNonce(state, data);
       const calculatedDeadline = getDeadline(deadline);
       const signature = await getPermissionSignature({
         ipId,
@@ -266,7 +277,6 @@ export class PermissionClient {
         await this.checkIsRegistered(permission.ipId);
       }
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
-      const nonce = (await ipAccountClient.state()) + 1n;
       const data = encodeFunctionData({
         abi: accessControllerAbi,
         functionName: "setBatchPermissions",
@@ -280,6 +290,8 @@ export class PermissionClient {
           })),
         ],
       });
+      const state = await ipAccountClient.state();
+      const nonce = this.getNonce(state, data);
       const calculatedDeadline = getDeadline(deadline);
       const signature = await getPermissionSignature({
         ipId,
@@ -321,5 +333,24 @@ export class PermissionClient {
     if (!isRegistered) {
       throw new Error(`IP id with ${ipId} is not registered.`);
     }
+  }
+
+  private getNonce(state: bigint, data: Hex): Hex {
+    return keccak256(
+      encodeAbiParameters(
+        [
+          { name: "", type: "uint256" },
+          { name: "", type: "bytes" },
+        ],
+        [
+          state,
+          encodeFunctionData({
+            abi: ipAccountImplAbi,
+            functionName: "execute",
+            args: [this.accessControllerClient.address, 0n, data],
+          }),
+        ],
+      ),
+    );
   }
 }
