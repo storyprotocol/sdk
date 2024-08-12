@@ -8,11 +8,19 @@ import {
   storyTestChainId,
   walletClient,
 } from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
+import {
+  Hex,
+  encodeAbiParameters,
+  encodeFunctionData,
+  getAddress,
+  keccak256,
+  toFunctionSelector,
+} from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
   coreMetadataModuleAddress,
+  ipAccountImplAbi,
 } from "../../src/abi/generated";
 import { getDeadline } from "../../src/utils/sign";
 
@@ -61,7 +69,22 @@ describe("Ip Account functions", () => {
 
   it("should not throw error when executeWithSig setting permission", async () => {
     const state = await client.ipAccount.getIpAccountNonce(ipId);
-    const expectedState = state + 1n;
+    const expectedState = keccak256(
+      encodeAbiParameters(
+        [
+          { name: "", type: "uint256" },
+          { name: "", type: "bytes" },
+        ],
+        [
+          state,
+          encodeFunctionData({
+            abi: ipAccountImplAbi,
+            functionName: "execute",
+            args: [permissionAddress, 0n, data],
+          }),
+        ],
+      ),
+    );
     const deadline = getDeadline(60000n);
     const signature = await getPermissionSignature({
       ipId,

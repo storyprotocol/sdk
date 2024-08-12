@@ -1,4 +1,4 @@
-import { encodeFunctionData, toFunctionSelector } from "viem";
+import { Hex, encodeFunctionData, isHex, toFunctionSelector } from "viem";
 
 import { accessControllerAbi, accessControllerAddress } from "../abi/generated";
 import { getAddress } from "./utils";
@@ -28,6 +28,19 @@ export const getPermissionSignature = async (
     throw new Error("The wallet client does not have an account, please try again.");
   }
   const permissionFunction = permissionFunc ? permissionFunc : "setPermission";
+  const execute = [
+    { name: "to", type: "address" },
+    { name: "value", type: "uint256" },
+    { name: "data", type: "bytes" },
+    { name: "deadline", type: "uint256" },
+  ];
+  let newNonce = nonce;
+  if (isHex(nonce)) {
+    execute.push({ name: "nonce", type: "bytes32" });
+  } else {
+    newNonce = BigInt(nonce);
+    execute.push({ name: "nonce", type: "uint256" });
+  }
   const data = encodeFunctionData({
     abi: accessControllerAbi,
     functionName: permissionFunc ? permissionFunc : "setPermission",
@@ -75,7 +88,7 @@ export const getPermissionSignature = async (
       ),
       value: BigInt(0),
       data,
-      nonce: BigInt(nonce),
+      nonce: newNonce,
       deadline: BigInt(deadline),
     },
   });
