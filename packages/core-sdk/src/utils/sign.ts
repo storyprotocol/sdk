@@ -1,4 +1,4 @@
-import { Hex, encodeFunctionData, isHex, toFunctionSelector } from "viem";
+import { encodeFunctionData, isHex, toFunctionSelector } from "viem";
 
 import { accessControllerAbi, accessControllerAddress } from "../abi/generated";
 import { getAddress } from "./utils";
@@ -72,13 +72,7 @@ export const getPermissionSignature = async (
       verifyingContract: getAddress(ipId, "ipId"),
     },
     types: {
-      Execute: [
-        { name: "to", type: "address" },
-        { name: "value", type: "uint256" },
-        { name: "data", type: "bytes" },
-        { name: "nonce", type: "uint256" },
-        { name: "deadline", type: "uint256" },
-      ],
+      Execute: execute,
     },
     primaryType: "Execute",
     message: {

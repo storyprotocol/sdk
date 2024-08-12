@@ -631,6 +631,8 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         pilType: 0,
+        mintingFee: "1",
+        currency: zeroAddress,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         metadata: {
           metadataURI: "",
@@ -1006,6 +1008,8 @@ describe("Test IpAssetClient", () => {
           metadataURI: "https://",
         },
         pilType: 0,
+        mintingFee: 1,
+        currency: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },

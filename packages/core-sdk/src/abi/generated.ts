@@ -7552,7 +7552,9 @@ export class AccessControllerEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "PermissionSet") {targetLogs.push(event.args);}
+        if (event.eventName === "PermissionSet") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7839,7 +7841,9 @@ export class CoreMetadataModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "MetadataFrozen") {targetLogs.push(event.args);}
+        if (event.eventName === "MetadataFrozen") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7878,7 +7882,9 @@ export class CoreMetadataModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "MetadataURISet") {targetLogs.push(event.args);}
+        if (event.eventName === "MetadataURISet") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -7917,7 +7923,9 @@ export class CoreMetadataModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "NFTTokenURISet") {targetLogs.push(event.args);}
+        if (event.eventName === "NFTTokenURISet") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -8290,7 +8298,9 @@ export class DisputeModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DisputeCancelled") {targetLogs.push(event.args);}
+        if (event.eventName === "DisputeCancelled") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -8329,7 +8339,9 @@ export class DisputeModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DisputeRaised") {targetLogs.push(event.args);}
+        if (event.eventName === "DisputeRaised") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -8368,7 +8380,9 @@ export class DisputeModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DisputeResolved") {targetLogs.push(event.args);}
+        if (event.eventName === "DisputeResolved") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -8778,7 +8792,9 @@ export class IpAssetRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "IPAccountRegistered") {targetLogs.push(event.args);}
+        if (event.eventName === "IPAccountRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -8817,7 +8833,9 @@ export class IpAssetRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "IPRegistered") {targetLogs.push(event.args);}
+        if (event.eventName === "IPRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9043,7 +9061,9 @@ export class IpRoyaltyVaultImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "RevenueTokenClaimed") {targetLogs.push(event.args);}
+        if (event.eventName === "RevenueTokenClaimed") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9082,7 +9102,9 @@ export class IpRoyaltyVaultImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "RoyaltyTokensCollected") {targetLogs.push(event.args);}
+        if (event.eventName === "RoyaltyTokensCollected") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9121,7 +9143,9 @@ export class IpRoyaltyVaultImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "SnapshotCompleted") {targetLogs.push(event.args);}
+        if (event.eventName === "SnapshotCompleted") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9831,7 +9855,9 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "AuthorityUpdated") {targetLogs.push(event.args);}
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9870,7 +9896,9 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "ExpirationTimeSet") {targetLogs.push(event.args);}
+        if (event.eventName === "ExpirationTimeSet") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9909,7 +9937,9 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Initialized") {targetLogs.push(event.args);}
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9948,7 +9978,9 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicenseTemplateRegistered") {targetLogs.push(event.args);}
+        if (event.eventName === "LicenseTemplateRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -9987,7 +10019,9 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicensingConfigSetForIP") {targetLogs.push(event.args);}
+        if (event.eventName === "LicensingConfigSetForIP") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -10026,7 +10060,9 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicensingConfigSetForLicense") {targetLogs.push(event.args);}
+        if (event.eventName === "LicensingConfigSetForLicense") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -10063,7 +10099,9 @@ export class LicenseRegistryEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Upgraded") {targetLogs.push(event.args);}
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -11072,7 +11110,9 @@ export class LicensingModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicenseTermsAttached") {targetLogs.push(event.args);}
+        if (event.eventName === "LicenseTermsAttached") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -11111,7 +11151,9 @@ export class LicensingModuleEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicenseTokensMinted") {targetLogs.push(event.args);}
+        if (event.eventName === "LicenseTokensMinted") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -11796,7 +11838,9 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "AuthorityUpdated") {targetLogs.push(event.args);}
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -11835,7 +11879,9 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "DerivativeApproved") {targetLogs.push(event.args);}
+        if (event.eventName === "DerivativeApproved") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -11874,7 +11920,9 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Initialized") {targetLogs.push(event.args);}
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -11913,7 +11961,9 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "LicenseTermsRegistered") {targetLogs.push(event.args);}
+        if (event.eventName === "LicenseTermsRegistered") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -11952,7 +12002,9 @@ export class PiLicenseTemplateEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Upgraded") {targetLogs.push(event.args);}
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -13184,7 +13236,9 @@ export class SpgEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "CollectionCreated") {targetLogs.push(event.args);}
+        if (event.eventName === "CollectionCreated") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -13734,7 +13788,9 @@ export class SpgnftBeaconEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "OwnershipTransferred") {targetLogs.push(event.args);}
+        if (event.eventName === "OwnershipTransferred") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -13771,7 +13827,9 @@ export class SpgnftBeaconEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Upgraded") {targetLogs.push(event.args);}
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -14331,7 +14389,9 @@ export class SpgnftImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Approval") {targetLogs.push(event.args);}
+        if (event.eventName === "Approval") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -14370,7 +14430,9 @@ export class SpgnftImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "ApprovalForAll") {targetLogs.push(event.args);}
+        if (event.eventName === "ApprovalForAll") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -14407,7 +14469,9 @@ export class SpgnftImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Initialized") {targetLogs.push(event.args);}
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -14446,7 +14510,9 @@ export class SpgnftImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "RoleAdminChanged") {targetLogs.push(event.args);}
+        if (event.eventName === "RoleAdminChanged") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -14483,7 +14549,9 @@ export class SpgnftImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "RoleGranted") {targetLogs.push(event.args);}
+        if (event.eventName === "RoleGranted") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -14520,7 +14588,9 @@ export class SpgnftImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "RoleRevoked") {targetLogs.push(event.args);}
+        if (event.eventName === "RoleRevoked") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }
@@ -14557,7 +14627,9 @@ export class SpgnftImplEventClient {
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "Transfer") {targetLogs.push(event.args);}
+        if (event.eventName === "Transfer") {
+          targetLogs.push(event.args);
+        }
       } catch (e) {
         /* empty */
       }

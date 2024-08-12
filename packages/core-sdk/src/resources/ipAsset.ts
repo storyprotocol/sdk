@@ -114,28 +114,6 @@ export class IPAssetClient {
           nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
         };
       }
-      const calculatedDeadline = getDeadline(request.deadline);
-      const signature = await getPermissionSignature({
-        ipId: ipIdAddress,
-        deadline: calculatedDeadline,
-        nonce: 1,
-        wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
-        permissions: [
-          {
-            ipId: ipIdAddress,
-            signer: getAddress(this.spgClient.address, "spgAddress"),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-            permission: AccessPermission.ALLOW,
-            func: "function setAll(address,string,bytes32,bytes32)",
-          },
-        ],
-      });
-      object.sigMetadata = {
-        signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-        deadline: calculatedDeadline,
-        signature,
-      };
       if (request.txOptions?.encodedTxDataOnly) {
         if (request.metadata) {
           return { encodedTxData: this.spgClient.registerIpEncode(object) };
@@ -151,6 +129,28 @@ export class IPAssetClient {
       } else {
         let txHash: Hex;
         if (request.metadata) {
+          const calculatedDeadline = getDeadline(request.deadline);
+          const signature = await getPermissionSignature({
+            ipId: ipIdAddress,
+            deadline: calculatedDeadline,
+            nonce: 1,
+            wallet: this.wallet as WalletClient,
+            chainId: chain[this.chainId],
+            permissions: [
+              {
+                ipId: ipIdAddress,
+                signer: getAddress(this.spgClient.address, "spgAddress"),
+                to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+                permission: AccessPermission.ALLOW,
+                func: "function setAll(address,string,bytes32,bytes32)",
+              },
+            ],
+          });
+          object.sigMetadata = {
+            signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+            deadline: calculatedDeadline,
+            signature,
+          };
           txHash = await this.spgClient.registerIp(object);
         } else {
           txHash = await this.ipAssetRegistryClient.register({
