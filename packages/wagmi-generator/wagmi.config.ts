@@ -1,9 +1,9 @@
 import { defineConfig } from "@wagmi/cli";
-import { blockExplorer } from "@wagmi/cli/plugins";
 import { sdk } from "./sdk";
 import type { Evaluate } from "@wagmi/cli/src/types";
 import type { ContractConfig } from "@wagmi/cli/src/config";
 import { resolveProxyContracts } from "./resolveProxyContracts";
+import {optimizedBlockExplorer} from "./optimizedBlockExplorer";
 const sepoliaChainId = 11155111;
 import "dotenv/config";
 
@@ -126,7 +126,7 @@ export default defineConfig(async () => {
     out: "../core-sdk/src/abi/generated.ts",
     contracts: [],
     plugins: [
-      blockExplorer({
+      optimizedBlockExplorer({
         baseUrl: "https://api-sepolia.etherscan.io/api",
         name: "Etherscan",
         getAddress: await resolveProxyContracts({
