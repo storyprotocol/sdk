@@ -21,7 +21,6 @@ describe("License Functions", () => {
           waitForTransaction: true,
         },
       });
-      console.log("non commercial social", result);
       expect(result.licenseTermsId).to.be.a("bigint");
     });
     it("should not throw error when registering license with commercial use", async () => {

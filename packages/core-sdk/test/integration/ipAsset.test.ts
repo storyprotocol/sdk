@@ -17,7 +17,15 @@ describe("IP Asset Functions ", () => {
   describe("Create IP Asset", async () => {
     let parentIpId: Hex;
     let childIpId: Hex;
-    const noCommercialLicenseTermsId: bigint = 2n;
+    let noCommercialLicenseTermsId: bigint;
+    before(async () => {
+      const res = await client.license.registerNonComSocialRemixingPIL({
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      noCommercialLicenseTermsId = res.licenseTermsId!;
+    });
     it("should not throw error when registering a IP Asset", async () => {
       const tokenId = await getTokenId();
       const waitForTransaction: boolean = true;
@@ -36,26 +44,7 @@ describe("IP Asset Functions ", () => {
       }
     });
 
-    it("should not throw error when registering a IP Asset given metadata", async () => {
-      const tokenId = await getTokenId();
-      const waitForTransaction: boolean = true;
-      const response = await client.ipAsset.register({
-        nftContract: mockERC721,
-        tokenId: tokenId!,
-        ipMetadata: {
-          metadataURI: "test-uri",
-          metadataHash: toHex("test-metadata-hash", { size: 32 }),
-          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-        },
-        deadline: 1000n,
-        txOptions: {
-          waitForTransaction: waitForTransaction,
-        },
-      });
-      expect(response.ipId).to.be.a("string").and.not.empty;
-    });
-
-    it.skip("should not throw error when registering derivative", async () => {
+    it("should not throw error when registering derivative", async () => {
       const tokenId = await getTokenId();
       parentIpId = (
         await client.ipAsset.register({
@@ -66,7 +55,13 @@ describe("IP Asset Functions ", () => {
           },
         })
       ).ipId!;
-
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
       const response = await client.ipAsset.registerDerivative({
         childIpId: childIpId,
         parentIpIds: [parentIpId],
@@ -78,7 +73,7 @@ describe("IP Asset Functions ", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
-    it.skip("should not throw error when registering derivative with license tokens", async () => {
+    it("should not throw error when registering derivative with license tokens", async () => {
       const tokenId = await getTokenId();
       const ipId = (
         await client.ipAsset.register({
@@ -96,15 +91,13 @@ describe("IP Asset Functions ", () => {
           waitForTransaction: true,
         },
       });
-      const response = await expect(
-        client.ipAsset.registerDerivativeWithLicenseTokens({
-          childIpId: ipId,
-          licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-          txOptions: {
-            waitForTransaction: true,
-          },
-        }),
-      ).to.not.be.rejected;
+      const response = await client.ipAsset.registerDerivativeWithLicenseTokens({
+        childIpId: ipId,
+        licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
       expect(response.txHash).to.be.a("string").not.empty;
     });
   });
@@ -126,6 +119,18 @@ describe("IP Asset Functions ", () => {
     });
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
+      it("Non-Commercial Remix", async () => {
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          nftContract,
+          pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+          ipMetadata: {
+            metadataURI: "test-uri",
+            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+        });
+        expect(result.txHash).to.be.a("string").and.not.empty;
+      });
       it("Commercial Use", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
@@ -174,7 +179,23 @@ describe("IP Asset Functions ", () => {
         expect(result.licenseTermsId).to.be.a("bigint");
       });
     });
-
+    it("should not throw error when registering a IP Asset given metadata", async () => {
+      const tokenId = await getTokenId(nftContract);
+      const response = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        ipMetadata: {
+          metadataURI: "test-uri",
+          metadataHash: toHex("test-metadata-hash", { size: 32 }),
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
+        deadline: 1000n,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(response.ipId).to.be.a("string").and.not.empty;
+    });
     it("should not throw error when register registerDerivativeIp", async () => {
       const tokenChildId = await getTokenId(nftContract);
       const { ipId: parentIpId, licenseTermsId } =

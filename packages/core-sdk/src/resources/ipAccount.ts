@@ -5,13 +5,10 @@ import {
   IPAccountExecuteResponse,
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
+  IpAccountStateResponse,
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
-import {
-  IpAccountImplClient,
-  IpAccountImplStateResponse,
-  SimpleWalletClient,
-} from "../abi/generated";
+import { IpAccountImplClient, SimpleWalletClient } from "../abi/generated";
 import { getAddress } from "../utils/utils";
 
 export class IPAccountClient {
@@ -110,12 +107,13 @@ export class IPAccountClient {
    * @param ipId The IP ID
    * @returns The nonce for transaction ordering.
    */
-  public async getIpAccountNonce(ipId: string): Promise<IpAccountImplStateResponse> {
+  public async getIpAccountNonce(ipId: string): Promise<IpAccountStateResponse> {
     const ipAccount = new IpAccountImplClient(
       this.rpcClient,
       this.wallet,
       getAddress(ipId, "ipId"),
     );
-    return await ipAccount.state();
+    const result = await ipAccount.state();
+    return result.result;
   }
 }

@@ -12,7 +12,7 @@ describe("Sign", () => {
       try {
         await getPermissionSignature({
           ipId: zeroAddress,
-          nonce: 1,
+          state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
           deadline: 1000n,
           permissions: [],
           wallet: {} as WalletClient,
@@ -29,7 +29,7 @@ describe("Sign", () => {
       try {
         await getPermissionSignature({
           ipId: zeroAddress,
-          nonce: 1,
+          state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
           deadline: 1000n,
           permissions: [],
           wallet: { signTypedData: () => Promise.resolve("") } as unknown as WalletClient,
@@ -50,7 +50,7 @@ describe("Sign", () => {
       });
       const result = await getPermissionSignature({
         ipId: zeroAddress,
-        nonce: 1,
+        state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
         deadline: 1000n,
         permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
         wallet: walletClient,

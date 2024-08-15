@@ -9,7 +9,7 @@ export type TypedData = {
 
 export type PermissionSignatureRequest = {
   ipId: Address;
-  nonce: string | number | bigint;
+  state: Hex;
   deadline: string | number | bigint;
   wallet: WalletClient;
   chainId: string | number | bigint;
