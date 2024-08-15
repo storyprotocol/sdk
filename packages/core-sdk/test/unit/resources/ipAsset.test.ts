@@ -27,7 +27,7 @@ describe("Test IpAssetClient", () => {
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
-    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "sepolia");
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "storyTestnet");
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
@@ -73,7 +73,7 @@ describe("Test IpAssetClient", () => {
           nftContract,
           tokenId: "3",
           deadline: "error",
-          metadata: {
+          ipMetadata: {
             metadataURI: "1",
             metadataHash: zeroHash,
           },
@@ -100,7 +100,7 @@ describe("Test IpAssetClient", () => {
           nftContract,
           tokenId: "3",
           deadline: "12321",
-          metadata: {
+          ipMetadata: {
             metadataURI: "",
           },
         });
@@ -186,7 +186,7 @@ describe("Test IpAssetClient", () => {
       const response = await ipAssetClient.register({
         nftContract,
         tokenId: "3",
-        metadata: {
+        ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
           nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -224,7 +224,7 @@ describe("Test IpAssetClient", () => {
       const response = await ipAssetClient.register({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
-        metadata: {
+        ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
           nftMetadataHash: zeroHash,
@@ -575,7 +575,7 @@ describe("Test IpAssetClient", () => {
         mintingFee: "1",
         currency: zeroAddress,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        metadata: {
+        ipMetadata: {
           metadataURI: "",
           metadataHash: toHex(0, { size: 32 }),
         },
@@ -611,7 +611,7 @@ describe("Test IpAssetClient", () => {
         pilType: PIL_TYPE.COMMERCIAL_USE,
         mintingFee: "1",
         currency: zeroAddress,
-        metadata: {
+        ipMetadata: {
           nftMetadataHash: toHex(0, { size: 32 }),
         },
         txOptions: {
@@ -634,7 +634,7 @@ describe("Test IpAssetClient", () => {
         mintingFee: "1",
         currency: zeroAddress,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        metadata: {
+        ipMetadata: {
           metadataURI: "",
           metadataHash: toHex(0, { size: 32 }),
         },
@@ -737,7 +737,7 @@ describe("Test IpAssetClient", () => {
           licenseTermsIds: ["1"],
           licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         },
-        metadata: {
+        ipMetadata: {
           metadataHash: toHex(0, { size: 32 }),
         },
       });
@@ -766,7 +766,7 @@ describe("Test IpAssetClient", () => {
           licenseTermsIds: ["1"],
           licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         },
-        metadata: {
+        ipMetadata: {
           metadataHash: toHex(0, { size: 32 }),
           metadataURI: "",
         },
@@ -807,7 +807,7 @@ describe("Test IpAssetClient", () => {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
           licenseTermsIds: ["1"],
         },
-        metadata: {
+        ipMetadata: {
           metadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
         },
@@ -853,7 +853,7 @@ describe("Test IpAssetClient", () => {
           licenseTermsIds: ["1"],
           licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         },
-        metadata: {
+        ipMetadata: {
           metadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
         },
@@ -877,7 +877,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIpAndAttachPilTerms({
           nftContract,
           tokenId: "3",
-          metadata: {
+          ipMetadata: {
             metadataURI: "https://",
             metadataHash: toHex("metadata", { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -915,7 +915,7 @@ describe("Test IpAssetClient", () => {
       await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract,
         tokenId: "3",
-        metadata: {
+        ipMetadata: {
           metadataHash: toHex(0, { size: 32 }),
           metadataURI: "",
         },
@@ -923,7 +923,7 @@ describe("Test IpAssetClient", () => {
         mintingFee: "1",
         currency: zeroAddress,
       });
-      expect(stub.args[0][0].metadata).to.deep.equal({
+      expect(stub.args[0][0].ipMetadata).to.deep.equal({
         metadataURI: "",
         metadataHash: toHex(0, { size: 32 }),
         nftMetadataHash: toHex(0, { size: 32 }),
@@ -940,7 +940,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract,
         tokenId: "3",
-        metadata: {
+        ipMetadata: {
           metadataHash: toHex(0, { size: 32 }),
         },
         pilType: PIL_TYPE.COMMERCIAL_USE,
@@ -970,7 +970,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract,
         tokenId: "3",
-        metadata: {
+        ipMetadata: {
           metadataURI: "https://",
         },
         pilType: PIL_TYPE.COMMERCIAL_USE,
@@ -1004,7 +1004,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c662ac",
         tokenId: "3",
-        metadata: {
+        ipMetadata: {
           metadataURI: "https://",
         },
         pilType: 0,

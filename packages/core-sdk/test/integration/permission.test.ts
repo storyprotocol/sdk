@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { MockERC721, getStoryClientInSepolia, getTokenId, storyTestChainId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
 import { Address } from "viem";
 import { AccessPermission } from "../../src/types/resources/permission";
 import chaiAsPromised from "chai-as-promised";
@@ -14,11 +14,11 @@ describe("Permission Functions", () => {
   const coreMetadataModule = coreMetadataModuleAddress[storyTestChainId];
 
   before(async () => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
     const tokenId = await getTokenId();
     ipId = (
       await client.ipAsset.register({
-        nftContract: MockERC721,
+        nftContract: mockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,

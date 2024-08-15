@@ -2,8 +2,9 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
+import { licensingModuleAddress, piLicenseTemplateAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -12,7 +13,7 @@ describe("License Functions", () => {
   let client: StoryClient;
 
   before(() => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
   });
   describe("registering license with different types", async () => {
     it("should not throw error when registering license with commercial use", async () => {
@@ -46,7 +47,7 @@ describe("License Functions", () => {
     before(async () => {
       tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
-        nftContract: MockERC721,
+        nftContract: mockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,
@@ -65,7 +66,7 @@ describe("License Functions", () => {
       licenseId = registerLicenseResult.licenseTermsId!;
     });
 
-    it.skip("should not throw error when attach License Terms", async () => {
+    it("should not throw error when attach License Terms", async () => {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseId,

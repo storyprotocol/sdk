@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
 import { Hex, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
@@ -11,7 +11,7 @@ const expect = chai.expect;
 describe("IP Asset Functions ", () => {
   let client: StoryClient;
   before(async () => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
   });
 
   describe("Create IP Asset", async () => {
@@ -23,7 +23,7 @@ describe("IP Asset Functions ", () => {
       const waitForTransaction: boolean = true;
       const response = await expect(
         client.ipAsset.register({
-          nftContract: MockERC721,
+          nftContract: mockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: waitForTransaction,
@@ -40,9 +40,9 @@ describe("IP Asset Functions ", () => {
       const tokenId = await getTokenId();
       const waitForTransaction: boolean = true;
       const response = await client.ipAsset.register({
-        nftContract: MockERC721,
+        nftContract: mockERC721,
         tokenId: tokenId!,
-        metadata: {
+        ipMetadata: {
           metadataURI: "test-uri",
           metadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -59,7 +59,7 @@ describe("IP Asset Functions ", () => {
       const tokenId = await getTokenId();
       parentIpId = (
         await client.ipAsset.register({
-          nftContract: MockERC721,
+          nftContract: mockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
@@ -82,7 +82,7 @@ describe("IP Asset Functions ", () => {
       const tokenId = await getTokenId();
       const ipId = (
         await client.ipAsset.register({
-          nftContract: MockERC721,
+          nftContract: mockERC721,
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
@@ -126,22 +126,6 @@ describe("IP Asset Functions ", () => {
     });
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
-      it("Non-Commercial Remix", async () => {
-        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          nftContract,
-          pilType: PIL_TYPE.COMMERCIAL_REMIX,
-          commercialRevShare: 10,
-          mintingFee: "100",
-          currency: MockERC20.address,
-          metadata: {
-            metadataURI: "test-uri",
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
-        });
-        expect(result.txHash).to.be.a("string").and.not.empty;
-      });
-
       it("Commercial Use", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
@@ -149,7 +133,7 @@ describe("IP Asset Functions ", () => {
           commercialRevShare: 10,
           mintingFee: "100",
           currency: MockERC20.address,
-          metadata: {
+          ipMetadata: {
             metadataURI: "test-uri",
             metadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -165,7 +149,7 @@ describe("IP Asset Functions ", () => {
           commercialRevShare: 10,
           mintingFee: "100",
           currency: MockERC20.address,
-          metadata: {
+          ipMetadata: {
             metadataURI: "test-uri",
             metadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
