@@ -44,7 +44,7 @@ describe("Sign", () => {
 
     it("should return signature when call getPermissionSignature given account support signTypedData", async () => {
       const walletClient = createWalletClient({
-        chain: chainStringToViemChain("sepolia"),
+        chain: chainStringToViemChain("storyTestnet"),
         transport: http(),
         account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
       });

@@ -189,7 +189,7 @@ describe("Test Permission", () => {
 
     it("should wallet error when call createSetPermissionSignature given wallet has no signTypedData method", async () => {
       walletMock = createMock<WalletClient>();
-      permissionClient = new PermissionClient(rpcMock, walletMock, "11155111");
+      permissionClient = new PermissionClient(rpcMock, walletMock, "1513");
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       (permissionClient.accessControllerClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
