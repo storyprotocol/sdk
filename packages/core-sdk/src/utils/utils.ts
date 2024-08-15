@@ -12,7 +12,6 @@ import {
   Address,
   defineChain,
 } from "viem";
-import { sepolia } from "viem/chains";
 
 import { SupportedChainIds } from "../types/config";
 
@@ -78,7 +77,7 @@ export async function waitTx(
   });
 }
 //TODO: Some information is waiting for confirmation about chain
-const storyTestChain = defineChain({
+export const storyTestChain = defineChain({
   id: 15_13,
   name: "story-testnet",
   nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
@@ -104,9 +103,6 @@ const storyTestChain = defineChain({
 });
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
-    case "11155111":
-    case "sepolia":
-      return sepolia;
     case "1513":
     case "storyTestnet":
       return storyTestChain;
@@ -116,8 +112,6 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
 }
 
 export const chain: { [key in SupportedChainIds]: bigint } = {
-  sepolia: 11155111n,
-  11155111: 11155111n,
   storyTestnet: 1513n,
   1513: 1513n,
 };

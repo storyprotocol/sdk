@@ -1,14 +1,13 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import * as viem from "viem";
-import { sepolia } from "viem/chains";
-import { TypedData } from "../../../src/types/common";
 import { SupportedChainIds } from "../../../src/types/config";
 import {
   waitTxAndFilterLog,
   chainStringToViemChain,
   waitTx,
   getAddress,
+  storyTestChain,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
@@ -153,13 +152,13 @@ describe("Test chainStringToViemChain", () => {
     }
   });
 
-  it("should return sepolia if id is 11155111", () => {
-    const chain = chainStringToViemChain("11155111");
-    expect(chain).to.equal(sepolia);
+  it("should return story testnet if id is 1513", () => {
+    const chain = chainStringToViemChain("1513");
+    expect(chain).to.equal(storyTestChain);
   });
-  it("should return sepolia if id is sepolia", () => {
-    const chain = chainStringToViemChain("sepolia");
-    expect(chain).to.equal(sepolia);
+  it("should return story testnet if id is storyTestnet", () => {
+    const chain = chainStringToViemChain("storyTestnet");
+    expect(chain).to.equal(storyTestChain);
   });
 });
 

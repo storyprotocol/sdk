@@ -41,7 +41,7 @@ export class StoryClient {
   private constructor(config: StoryConfig) {
     this.config = {
       ...config,
-      chainId: config.chainId || "sepolia",
+      chainId: config.chainId || "storyTestnet",
     };
     if (!this.config.transport) {
       throw new Error(
