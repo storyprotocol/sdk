@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getTokenId, getStoryClientInSepolia } from "./utils/util";
+import { mockERC721, getTokenId, getStoryClient } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
@@ -12,7 +12,7 @@ describe("Test royalty Functions", () => {
   let client: StoryClient;
 
   before(() => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
   });
   describe("Royalty Functions", async () => {
     let ipId1: Hex;
@@ -20,7 +20,7 @@ describe("Test royalty Functions", () => {
     const getIpId = async (): Promise<Hex> => {
       const tokenId = await getTokenId();
       const response = await client.ipAsset.register({
-        nftContract: MockERC721,
+        nftContract: mockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,
@@ -53,6 +53,9 @@ describe("Test royalty Functions", () => {
     before(async () => {
       ipId1 = await getIpId();
       ipId2 = await getIpId();
+      const mockERC20 = new MockERC20();
+      const address = await client.royalty.getRoyaltyVaultAddress(ipId1);
+      await mockERC20.approve(address);
       const licenseTermsId = await getCommercialPolicyId();
       await attachLicenseTerms(ipId1, licenseTermsId);
       await client.ipAsset.registerDerivative({
@@ -79,7 +82,7 @@ describe("Test royalty Functions", () => {
 
     it("should not throw error when pay royalty on behalf", async () => {
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(MockERC721);
+      await mockERC20.approve(mockERC721);
       await mockERC20.mint();
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: ipId1,

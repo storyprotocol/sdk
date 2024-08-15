@@ -2,8 +2,8 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { AccessPermission, StoryClient, getPermissionSignature } from "../../src";
 import {
-  MockERC721,
-  getStoryClientInSepolia,
+  mockERC721,
+  getStoryClient,
   getTokenId,
   storyTestChainId,
   walletClient,
@@ -34,10 +34,10 @@ describe("Ip Account functions", () => {
   const permissionAddress = accessControllerAddress[storyTestChainId];
 
   before(async () => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
     const tokenId = await getTokenId();
     const registerResult = await client.ipAsset.register({
-      nftContract: MockERC721,
+      nftContract: mockERC721,
       tokenId: tokenId!,
       txOptions: {
         waitForTransaction: true,
@@ -68,11 +68,11 @@ describe("Ip Account functions", () => {
   });
 
   it("should not throw error when executeWithSig setting permission", async () => {
-    const state = await client.ipAccount.getIpAccountNonce(ipId);
+    const { result: state } = await client.ipAccount.getIpAccountNonce(ipId);
     const expectedState = keccak256(
       encodeAbiParameters(
         [
-          { name: "", type: "uint256" },
+          { name: "", type: "bytes32" },
           { name: "", type: "bytes" },
         ],
         [

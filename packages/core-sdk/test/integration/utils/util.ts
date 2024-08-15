@@ -3,7 +3,7 @@ import { chainStringToViemChain } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 export const RPC = "https://rpc.partner.testnet.storyprotocol.net";
-export const MockERC721 = "0x30062557fd9f1bf0be03fe3782d97edea24295c9";
+export const mockERC721 = "0x30062557fd9f1bf0be03fe3782d97edea24295c9";
 
 const baseConfig = {
   chain: chainStringToViemChain("storyTestnet"),
@@ -27,7 +27,7 @@ export const getTokenId = async (nftContract?: Address): Promise<number | undefi
         type: "function",
       },
     ],
-    address: nftContract || MockERC721,
+    address: nftContract || mockERC721,
     functionName: "mint",
     args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex],
     account: walletClient.account,
@@ -41,7 +41,7 @@ export const getTokenId = async (nftContract?: Address): Promise<number | undefi
   }
 };
 
-export const getStoryClientInSepolia = (): StoryClient => {
+export const getStoryClient = (): StoryClient => {
   const config: StoryConfig = {
     chainId: "storyTestnet",
     transport: http(RPC),
