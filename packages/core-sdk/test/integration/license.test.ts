@@ -2,9 +2,8 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
-import { licensingModuleAddress, piLicenseTemplateAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -16,6 +15,15 @@ describe("License Functions", () => {
     client = getStoryClient();
   });
   describe("registering license with different types", async () => {
+    it("should not throw error when registering license with non commercial social remixing PIL", async () => {
+      const result = await client.license.registerNonComSocialRemixingPIL({
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      console.log("non commercial social", result);
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
     it("should not throw error when registering license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         mintingFee: "1",

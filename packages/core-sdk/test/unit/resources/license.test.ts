@@ -34,6 +34,71 @@ describe("Test LicenseClient", () => {
   afterEach(() => {
     sinon.restore();
   });
+  describe("Test licenseClient.registerNonComSocialRemixingPIL", async () => {
+    it("should return licenseTermsId when call registerNonComSocialRemixingPIL given licenseTermsId is registered", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: BigInt(1) });
+
+      const result = await licenseClient.registerNonComSocialRemixingPIL();
+
+      expect(result.licenseTermsId).to.equal(1n);
+    });
+
+    it("should return txhash when call registerNonComSocialRemixingPIL given licenseTermsId is not registered", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      const result = await licenseClient.registerNonComSocialRemixingPIL();
+
+      expect(result.txHash).to.equal(txHash);
+    });
+    it("should return txhash when call registerNonComSocialRemixingPIL given licenseTermsId is not registered and waitForTransaction of true", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
+        .returns([
+          {
+            licenseTermsId: BigInt(1),
+            licenseTemplate: zeroAddress,
+            licenseTerms: zeroAddress,
+          },
+        ]);
+
+      const result = await licenseClient.registerNonComSocialRemixingPIL({
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsId).to.equal(1n);
+    });
+    it("should return throw error when call registerNonComSocialRemixingPIL given request fail", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
+        .throws(new Error("request fail."));
+      try {
+        await licenseClient.registerNonComSocialRemixingPIL({
+          txOptions: {
+            waitForTransaction: true,
+          },
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to register non commercial social remixing PIL: request fail.",
+        );
+      }
+    });
+  });
 
   describe("Test licenseClient.registerCommercialUsePIL", async () => {
     it("should return licenseTermsId when call registerCommercialUsePIL given licenseTermsId is registered", async () => {
