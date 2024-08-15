@@ -64,7 +64,7 @@ export class LicenseClient {
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-        mintingFee: request.mintingFee,
+        defaultMintingFee: request.mintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
       });
@@ -110,7 +110,7 @@ export class LicenseClient {
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-        mintingFee: request.mintingFee,
+        defaultMintingFee: request.mintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,

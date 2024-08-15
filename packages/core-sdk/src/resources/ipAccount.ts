@@ -47,9 +47,9 @@ export class IPAccountClient {
       };
 
       if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: ipAccountClient.executeEncode(req) };
+        return { encodedTxData: ipAccountClient.executeEncode({ ...req, operation: 0 }) };
       } else {
-        const txHash = await ipAccountClient.execute(req);
+        const txHash = await ipAccountClient.execute({ ...req, operation: 0 });
 
         if (request.txOptions?.waitForTransaction) {
           await this.rpcClient.waitForTransactionReceipt({ hash: txHash });

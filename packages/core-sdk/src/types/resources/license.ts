@@ -14,10 +14,10 @@ export type License = {
 };
 
 export type LicenseTerms = {
-  mintingFee: bigint;
+  defaultMintingFee: bigint;
   expiration: bigint;
-  commercialRevCelling: bigint;
-  derivativeRevCelling: bigint;
+  commercialRevCeiling: bigint;
+  derivativeRevCeiling: bigint;
   commercializerCheckerData: Address;
   transferable: boolean;
   royaltyPolicy: Address;

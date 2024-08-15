@@ -130,9 +130,10 @@ export class PermissionClient {
           permission,
         ],
       });
-      const state = await ipAccountClient.state();
+      const { result: state } = await ipAccountClient.state();
       const nonce = this.getNonce(state, data);
       const calculatedDeadline = getDeadline(deadline);
+
       const signature = await getPermissionSignature({
         ipId,
         deadline: calculatedDeadline,
@@ -290,7 +291,7 @@ export class PermissionClient {
           })),
         ],
       });
-      const state = await ipAccountClient.state();
+      const { result: state } = await ipAccountClient.state();
       const nonce = this.getNonce(state, data);
       const calculatedDeadline = getDeadline(deadline);
       const signature = await getPermissionSignature({
@@ -335,11 +336,11 @@ export class PermissionClient {
     }
   }
 
-  private getNonce(state: bigint, data: Hex): Hex {
+  private getNonce(state: Hex, data: Hex): Hex {
     return keccak256(
       encodeAbiParameters(
         [
-          { name: "", type: "uint256" },
+          { name: "", type: "bytes32" },
           { name: "", type: "bytes" },
         ],
         [
