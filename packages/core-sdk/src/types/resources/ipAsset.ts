@@ -5,7 +5,7 @@ import { PIL_TYPE } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 
 type Metadata = {
-  metadata?: {
+  ipMetadata?: {
     metadataURI?: string;
     metadataHash?: Hex;
     nftMetadataHash?: Hex;
@@ -58,6 +58,7 @@ export type CreateIpAssetWithPilTermsRequest = {
   recipient?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
+  nftMetadata?: string;
 } & Metadata;
 
 export type CreateIpAssetWithPilTermsResponse = {
