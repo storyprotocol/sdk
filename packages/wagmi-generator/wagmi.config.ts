@@ -3,8 +3,7 @@ import { sdk } from "./sdk";
 import type { Evaluate } from "@wagmi/cli/src/types";
 import type { ContractConfig } from "@wagmi/cli/src/config";
 import { resolveProxyContracts } from "./resolveProxyContracts";
-import {optimizedBlockExplorer} from "./optimizedBlockExplorer";
-const sepoliaChainId = 11155111;
+import { optimizedBlockExplorer } from "./optimizedBlockExplorer";
 const storyTestnetChainId = 1513;
 import "dotenv/config";
 
@@ -22,24 +21,24 @@ export default defineConfig(async () => {
         [storyTestnetChainId]: "0xDae11663438a0958E7075F604E3a5eEe77FD3878",
       },
     },
-    // {
-    //   name: "IPAccountImpl",
-    //   address: {
-    //     [storyTestnetChainId]: "0x8F763c16753e830a8020c80f9F0131Eb8Ef52879",
-    //   },
-    // },
+    {
+      name: "IPAccountImpl",
+      address: {
+        [storyTestnetChainId]: "0x8F763c16753e830a8020c80f9F0131Eb8Ef52879",
+      },
+    },
     {
       name: "IPAssetRegistry",
       address: {
         [storyTestnetChainId]: "0xe34A78B3d658aF7ad69Ff1EFF9012ECa025a14Be",
       },
     },
-    // {
-    //   name: "IpRoyaltyVaultImpl",
-    //   address: {
-    //     [storyTestnetChainId]: "0xfb5b5B61c9a437E06Ba87367aaBf3766d091E3D1",
-    //   },
-    // },
+    {
+      name: "IpRoyaltyVaultImpl",
+      address: {
+        [storyTestnetChainId]: "0xfb5b5B61c9a437E06Ba87367aaBf3766d091E3D1",
+      },
+    },
     {
       name: "LicenseRegistry",
       address: {
@@ -112,15 +111,14 @@ export default defineConfig(async () => {
     contracts: [],
     plugins: [
       optimizedBlockExplorer({
-        baseUrl: "https://api-sepolia.etherscan.io/api",
-        name: "Etherscan",
+        baseUrl: "https://explorer.testnet.storyprotocol.net/api",
+        name: "story-testnet",
         getAddress: await resolveProxyContracts({
           baseUrl: "https://rpc.partner.testnet.storyprotocol.net",
           contracts: contracts,
           chainId: storyTestnetChainId,
         }),
         contracts: contracts,
-        apiKey: process.env.API_KEY,
       }),
       sdk({
         permissionLessSDK: true,
