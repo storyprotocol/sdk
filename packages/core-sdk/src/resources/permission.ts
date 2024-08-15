@@ -1,13 +1,4 @@
-import {
-  PublicClient,
-  encodeFunctionData,
-  Address,
-  toFunctionSelector,
-  WalletClient,
-  keccak256,
-  encodeAbiParameters,
-  Hex,
-} from "viem";
+import { PublicClient, encodeFunctionData, Address, toFunctionSelector, WalletClient } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -22,7 +13,6 @@ import {
   accessControllerAbi,
   AccessControllerClient,
   CoreMetadataModuleClient,
-  ipAccountImplAbi,
   IpAccountImplClient,
   IpAssetRegistryClient,
   SimpleWalletClient,
@@ -131,13 +121,12 @@ export class PermissionClient {
         ],
       });
       const { result: state } = await ipAccountClient.state();
-      const nonce = this.getNonce(state, data);
       const calculatedDeadline = getDeadline(deadline);
 
       const signature = await getPermissionSignature({
         ipId,
         deadline: calculatedDeadline,
-        nonce,
+        state,
         permissions: [
           {
             ipId,
@@ -292,12 +281,11 @@ export class PermissionClient {
         ],
       });
       const { result: state } = await ipAccountClient.state();
-      const nonce = this.getNonce(state, data);
       const calculatedDeadline = getDeadline(deadline);
       const signature = await getPermissionSignature({
         ipId,
         deadline: calculatedDeadline,
-        nonce,
+        state,
         permissions,
         chainId: chain[this.chainId],
         wallet: this.wallet as WalletClient,
@@ -334,24 +322,5 @@ export class PermissionClient {
     if (!isRegistered) {
       throw new Error(`IP id with ${ipId} is not registered.`);
     }
-  }
-
-  private getNonce(state: Hex, data: Hex): Hex {
-    return keccak256(
-      encodeAbiParameters(
-        [
-          { name: "", type: "bytes32" },
-          { name: "", type: "bytes" },
-        ],
-        [
-          state,
-          encodeFunctionData({
-            abi: ipAccountImplAbi,
-            functionName: "execute",
-            args: [this.accessControllerClient.address, 0n, data],
-          }),
-        ],
-      ),
-    );
   }
 }

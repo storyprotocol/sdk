@@ -53,9 +53,6 @@ describe("Test royalty Functions", () => {
     before(async () => {
       ipId1 = await getIpId();
       ipId2 = await getIpId();
-      const mockERC20 = new MockERC20();
-      const address = await client.royalty.getRoyaltyVaultAddress(ipId1);
-      await mockERC20.approve(address);
       const licenseTermsId = await getCommercialPolicyId();
       await attachLicenseTerms(ipId1, licenseTermsId);
       await client.ipAsset.registerDerivative({

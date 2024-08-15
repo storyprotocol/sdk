@@ -68,23 +68,7 @@ describe("Ip Account functions", () => {
   });
 
   it("should not throw error when executeWithSig setting permission", async () => {
-    const { result: state } = await client.ipAccount.getIpAccountNonce(ipId);
-    const expectedState = keccak256(
-      encodeAbiParameters(
-        [
-          { name: "", type: "bytes32" },
-          { name: "", type: "bytes" },
-        ],
-        [
-          state,
-          encodeFunctionData({
-            abi: ipAccountImplAbi,
-            functionName: "execute",
-            args: [permissionAddress, 0n, data],
-          }),
-        ],
-      ),
-    );
+    const state = await client.ipAccount.getIpAccountNonce(ipId);
     const deadline = getDeadline(60000n);
     const signature = await getPermissionSignature({
       ipId,
@@ -98,7 +82,7 @@ describe("Ip Account functions", () => {
           func: "function setAll(address,string,bytes32,bytes32)",
         },
       ],
-      nonce: expectedState,
+      state: state,
 
       chainId: BigInt(storyTestChainId),
       deadline: deadline,

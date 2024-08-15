@@ -75,6 +75,7 @@ export type {
   IPAccountExecuteResponse,
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
+  IpAccountStateResponse,
 } from "./types/resources/ipAccount";
 
 export type {

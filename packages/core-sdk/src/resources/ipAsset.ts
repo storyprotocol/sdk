@@ -1,4 +1,4 @@
-import { Hex, PublicClient, zeroAddress, Address, zeroHash, WalletClient } from "viem";
+import { Hex, PublicClient, zeroAddress, Address, zeroHash, WalletClient, toHex } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -133,7 +133,7 @@ export class IPAssetClient {
           const signature = await getPermissionSignature({
             ipId: ipIdAddress,
             deadline: calculatedDeadline,
-            nonce: 1,
+            state: toHex(1, { size: 32 }),
             wallet: this.wallet as WalletClient,
             chainId: chain[this.chainId],
             permissions: [
@@ -422,7 +422,7 @@ export class IPAssetClient {
       const sigAttachSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 2,
+        state: toHex(2, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -476,7 +476,7 @@ export class IPAssetClient {
       const signature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 1,
+        state: toHex(1, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -564,7 +564,7 @@ export class IPAssetClient {
       const sigRegisterSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 2,
+        state: toHex(2, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -622,7 +622,7 @@ export class IPAssetClient {
       const signature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 1,
+        state: toHex(1, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
