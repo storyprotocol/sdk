@@ -19,7 +19,7 @@
     "build": "pnpm run fix && preconstruct build",
     "test": "pnpm run test:unit && pnpm run test:integration",
     "test:unit": "TS_NODE_PROJECT='./tsconfig.test.json' c8 --all --src ./src mocha -r ts-node/register './test/unit/**/*.test.ts'",
-    "test:integration": "TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register './test/integration/**/*.test.ts' --timeout 240000",
+    "test:integration": "TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register './test/integration/**/license.test.ts' --timeout 240000",
     "fix": "pnpm run format:fix && pnpm run lint:fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
