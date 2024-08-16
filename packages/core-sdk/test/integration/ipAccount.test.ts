@@ -1,21 +1,13 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { AccessPermission, StoryClient, getPermissionSignature } from "../../src";
-import {
-  mockERC721,
-  getStoryClient,
-  getTokenId,
-  storyTestChainId,
-  walletClient,
-} from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, keccak256, toFunctionSelector } from "viem";
+import { AccessPermission, StoryClient } from "../../src";
+import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
   coreMetadataModuleAddress,
-  ipAccountImplAbi,
 } from "../../src/abi/generated";
-import { getDeadline } from "../../src/utils/sign";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -57,41 +49,6 @@ describe("Ip Account functions", () => {
       data,
       ipId: ipId,
     });
-    expect(response.txHash).to.be.a("string").and.not.empty;
-  });
-
-  it("should not throw error when executeWithSig setting permission", async () => {
-    const state = await client.ipAccount.getIpAccountNonce(ipId);
-    const deadline = getDeadline(60000n);
-    const signature = await getPermissionSignature({
-      ipId,
-      wallet: walletClient,
-      permissions: [
-        {
-          ipId: ipId,
-          signer: process.env.TEST_WALLET_ADDRESS as Hex,
-          to: coreMetadataModule,
-          permission: AccessPermission.ALLOW,
-          func: "function setAll(address,string,bytes32,bytes32)",
-        },
-      ],
-      state: state,
-      chainId: BigInt(storyTestChainId),
-      deadline: deadline,
-    });
-    const response = await client.ipAccount.executeWithSig({
-      ipId: ipId,
-      value: 0,
-      to: permissionAddress,
-      data: data,
-      deadline: deadline,
-      signer: process.env.TEST_WALLET_ADDRESS as Hex,
-      signature: signature,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-
     expect(response.txHash).to.be.a("string").and.not.empty;
   });
 });

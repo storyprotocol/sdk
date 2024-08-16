@@ -21,7 +21,7 @@ export const walletClient = createWalletClient({
   account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
 });
 
-export const getTokenId = async (nftContract?: Address): Promise<number | undefined> => {
+export const getTokenId = async (): Promise<number | undefined> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -32,7 +32,7 @@ export const getTokenId = async (nftContract?: Address): Promise<number | undefi
         type: "function",
       },
     ],
-    address: nftContract || mockERC721,
+    address: mockERC721,
     functionName: "mint",
     args: [process.env.TEST_WALLET_ADDRESS as Hex],
     account: walletClient.account,
@@ -73,7 +73,7 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
         type: "function",
       },
     ],
-    address: spgNftBeacon,
+    address: nftContract,
     functionName: "mint",
     args: [nftContract, nftMetadata],
     account: walletClient.account,

@@ -13,6 +13,7 @@ import {
 } from "../abi/generated";
 import {
   LicenseTerms,
+  RegisterNonComSocialRemixingPILRequest,
   RegisterPILResponse,
   RegisterCommercialUsePILRequest,
   RegisterCommercialRemixPILRequest,
@@ -23,7 +24,6 @@ import {
   PIL_TYPE,
   AttachLicenseTermsResponse,
   LicenseTermsId,
-  RegisterNonComSocialRemixingPILRequest,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";

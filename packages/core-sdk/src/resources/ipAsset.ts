@@ -1,4 +1,4 @@
-import { Hex, PublicClient, zeroAddress, Address, zeroHash, WalletClient, toHex } from "viem";
+import { Hex, PublicClient, zeroAddress, Address, zeroHash, WalletClient } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -36,6 +36,9 @@ import {
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { AccessPermission } from "../types/resources/permission";
+
+const firstState = "0x0000000000000000000000000000000000000000000000000000000000000000";
+const secondState = "0xdf95095879bb3ea8f0088f5a5e99266ef45d79cda0e7ae193c2c5c576afdfcb8";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -133,7 +136,7 @@ export class IPAssetClient {
           const signature = await getPermissionSignature({
             ipId: ipIdAddress,
             deadline: calculatedDeadline,
-            state: toHex(1, { size: 32 }),
+            state: firstState,
             wallet: this.wallet as WalletClient,
             chainId: chain[this.chainId],
             permissions: [
@@ -422,7 +425,7 @@ export class IPAssetClient {
       const sigAttachSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: toHex(2, { size: 32 }),
+        state: secondState,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -476,7 +479,7 @@ export class IPAssetClient {
       const signature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: toHex(1, { size: 32 }),
+        state: firstState,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -560,11 +563,10 @@ export class IPAssetClient {
         }
       }
       const calculatedDeadline = getDeadline(request.deadline);
-
       const sigRegisterSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: toHex(2, { size: 32 }),
+        state: secondState,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -622,7 +624,7 @@ export class IPAssetClient {
       const signature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: toHex(1, { size: 32 }),
+        state: firstState,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [

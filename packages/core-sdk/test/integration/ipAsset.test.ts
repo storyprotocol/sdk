@@ -14,7 +14,7 @@ describe("IP Asset Functions ", () => {
     client = getStoryClient();
   });
 
-  describe.skip("Create IP Asset", async () => {
+  describe("Create IP Asset", async () => {
     let parentIpId: Hex;
     let childIpId: Hex;
     let noCommercialLicenseTermsId: bigint;
@@ -119,7 +119,7 @@ describe("IP Asset Functions ", () => {
       nftContract = txData.nftContract!;
     });
 
-    describe.skip("should not throw error when mint and register ip and attach pil terms", async () => {
+    describe("should not throw error when mint and register ip and attach pil terms", async () => {
       it("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
@@ -183,7 +183,7 @@ describe("IP Asset Functions ", () => {
     it("should not throw error when registering a IP Asset given metadata", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const response = await client.ipAsset.register({
-        nftContract: mockERC721,
+        nftContract,
         tokenId: tokenId!,
         ipMetadata: {
           metadataURI: "test-uri",
