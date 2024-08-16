@@ -46,7 +46,7 @@ describe("Sign", () => {
       const walletClient = createWalletClient({
         chain: chainStringToViemChain("storyTestnet"),
         transport: http(),
-        account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+        account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
       });
       const result = await getPermissionSignature({
         ipId: zeroAddress,

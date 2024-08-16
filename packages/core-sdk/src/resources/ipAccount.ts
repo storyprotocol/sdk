@@ -113,7 +113,7 @@ export class IPAccountClient {
       this.wallet,
       getAddress(ipId, "ipId"),
     );
-    const result = await ipAccount.state();
-    return result.result;
+    const { result: state } = await ipAccount.state();
+    return state;
   }
 }

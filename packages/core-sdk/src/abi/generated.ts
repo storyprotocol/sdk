@@ -24,12 +24,12 @@ import {
  */
 export const accessControllerAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "ipAccountRegistry", internalType: "address", type: "address" },
       { name: "moduleRegistry", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -217,7 +217,6 @@ export const accessControllerAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ACCOUNT_REGISTRY",
@@ -228,37 +227,37 @@ export const accessControllerAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "MODULE_REGISTRY",
     outputs: [{ name: "", internalType: "contract IModuleRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "__ProtocolPausable_init",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "ipAccount", internalType: "address", type: "address" },
@@ -268,9 +267,9 @@ export const accessControllerAbi = [
     ],
     name: "checkPermission",
     outputs: [],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "ipAccount", internalType: "address", type: "address" },
@@ -280,44 +279,44 @@ export const accessControllerAbi = [
     ],
     name: "getPermission",
     outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "pause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "paused",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipAccount", internalType: "address", type: "address" },
@@ -326,16 +325,16 @@ export const accessControllerAbi = [
     ],
     name: "setAllPermissions",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       {
@@ -353,9 +352,9 @@ export const accessControllerAbi = [
     ],
     name: "setBatchPermissions",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipAccount", internalType: "address", type: "address" },
@@ -366,16 +365,16 @@ export const accessControllerAbi = [
     ],
     name: "setPermission",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "unpause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -383,6 +382,7 @@ export const accessControllerAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
 ] as const;
 
@@ -410,12 +410,12 @@ export const accessControllerConfig = {
  */
 export const coreMetadataModuleAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "accessController", internalType: "address", type: "address" },
       { name: "ipAccountRegistry", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -553,14 +553,13 @@ export const coreMetadataModuleAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ACCOUNT_REGISTRY",
@@ -571,65 +570,65 @@ export const coreMetadataModuleAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "freezeMetadata",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "isMetadataFrozen",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "pure",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "pure",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -639,16 +638,16 @@ export const coreMetadataModuleAbi = [
     ],
     name: "setAll",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -657,16 +656,16 @@ export const coreMetadataModuleAbi = [
     ],
     name: "setMetadataURI",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -674,9 +673,9 @@ export const coreMetadataModuleAbi = [
     ],
     name: "updateNftTokenURI",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -684,6 +683,7 @@ export const coreMetadataModuleAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
 ] as const;
 
@@ -711,13 +711,13 @@ export const coreMetadataModuleConfig = {
  */
 export const disputeModuleAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "accessController", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -1064,21 +1064,20 @@ export const disputeModuleAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IN_DISPUTE",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ACCOUNT_REGISTRY",
@@ -1089,58 +1088,58 @@ export const disputeModuleAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ASSET_REGISTRY",
     outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "__ProtocolPausable_init",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "arbitrationPolicies",
     outputs: [{ name: "policy", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "baseArbitrationPolicy",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "disputeId", internalType: "uint256", type: "uint256" },
@@ -1148,16 +1147,16 @@ export const disputeModuleAbi = [
     ],
     name: "cancelDispute",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "disputeCounter",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "disputeId", internalType: "uint256", type: "uint256" }],
     name: "disputes",
@@ -1174,37 +1173,37 @@ export const disputeModuleAbi = [
       { name: "currentTag", internalType: "bytes32", type: "bytes32" },
       { name: "parentDisputeId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "isIpTagged",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
     name: "isWhitelistedArbitrationPolicy",
     outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "arbitrationPolicy", internalType: "address", type: "address" },
@@ -1212,51 +1211,51 @@ export const disputeModuleAbi = [
     ],
     name: "isWhitelistedArbitrationRelayer",
     outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tag", internalType: "bytes32", type: "bytes32" }],
     name: "isWhitelistedDisputeTag",
     outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
     name: "multicall",
     outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "pause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "paused",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "targetIpId", internalType: "address", type: "address" },
@@ -1266,9 +1265,9 @@ export const disputeModuleAbi = [
     ],
     name: "raiseDispute",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "disputeId", internalType: "uint256", type: "uint256" },
@@ -1276,9 +1275,9 @@ export const disputeModuleAbi = [
     ],
     name: "resolveDispute",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -1286,23 +1285,23 @@ export const disputeModuleAbi = [
     ],
     name: "setArbitrationPolicy",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
     name: "setBaseArbitrationPolicy",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "disputeId", internalType: "uint256", type: "uint256" },
@@ -1311,16 +1310,16 @@ export const disputeModuleAbi = [
     ],
     name: "setDisputeJudgement",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "parentIpId", internalType: "address", type: "address" },
@@ -1329,16 +1328,16 @@ export const disputeModuleAbi = [
     ],
     name: "tagDerivativeIfParentInfringed",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "unpause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -1346,9 +1345,9 @@ export const disputeModuleAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "arbitrationPolicy", internalType: "address", type: "address" },
@@ -1356,9 +1355,9 @@ export const disputeModuleAbi = [
     ],
     name: "whitelistArbitrationPolicy",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "arbitrationPolicy", internalType: "address", type: "address" },
@@ -1367,9 +1366,9 @@ export const disputeModuleAbi = [
     ],
     name: "whitelistArbitrationRelayer",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "tag", internalType: "bytes32", type: "bytes32" },
@@ -1377,6 +1376,7 @@ export const disputeModuleAbi = [
     ],
     name: "whitelistDisputeTag",
     outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -1404,7 +1404,6 @@ export const disputeModuleConfig = {
  */
 export const ipAccountImplAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "accessController", internalType: "address", type: "address" },
@@ -1412,6 +1411,7 @@ export const ipAccountImplAbi = [
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "moduleRegistry", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   { type: "error", inputs: [], name: "FnSelectorNotRecognized" },
   { type: "error", inputs: [], name: "IPAccountStorage__InvalidBatchLengths" },
@@ -1507,37 +1507,36 @@ export const ipAccountImplAbi = [
     ],
     name: "Upgraded",
   },
-  { stateMutability: "payable", type: "fallback" },
+  { type: "fallback", stateMutability: "payable" },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ASSET_REGISTRY",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "MODULE_REGISTRY",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "", internalType: "bytes32", type: "bytes32" },
@@ -1545,9 +1544,9 @@ export const ipAccountImplAbi = [
     ],
     name: "bytes32Data",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "", internalType: "bytes32", type: "bytes32" },
@@ -1555,9 +1554,9 @@ export const ipAccountImplAbi = [
     ],
     name: "bytesData",
     outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "eip712Domain",
@@ -1570,9 +1569,9 @@ export const ipAccountImplAbi = [
       { name: "salt", internalType: "bytes32", type: "bytes32" },
       { name: "extensions", internalType: "uint256[]", type: "uint256[]" },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
@@ -1582,9 +1581,9 @@ export const ipAccountImplAbi = [
     ],
     name: "execute",
     outputs: [{ name: "result", internalType: "bytes", type: "bytes" }],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
@@ -1593,9 +1592,9 @@ export const ipAccountImplAbi = [
     ],
     name: "execute",
     outputs: [{ name: "result", internalType: "bytes", type: "bytes" }],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       {
@@ -1612,9 +1611,9 @@ export const ipAccountImplAbi = [
     ],
     name: "executeBatch",
     outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
@@ -1626,16 +1625,16 @@ export const ipAccountImplAbi = [
     ],
     name: "executeWithSig",
     outputs: [{ name: "result", internalType: "bytes", type: "bytes" }],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "key", internalType: "bytes32", type: "bytes32" }],
     name: "getBytes",
     outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "namespace", internalType: "bytes32", type: "bytes32" },
@@ -1643,9 +1642,9 @@ export const ipAccountImplAbi = [
     ],
     name: "getBytes",
     outputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "namespace", internalType: "bytes32", type: "bytes32" },
@@ -1653,16 +1652,16 @@ export const ipAccountImplAbi = [
     ],
     name: "getBytes32",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "key", internalType: "bytes32", type: "bytes32" }],
     name: "getBytes32",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "namespaces", internalType: "bytes32[]", type: "bytes32[]" },
@@ -1670,9 +1669,9 @@ export const ipAccountImplAbi = [
     ],
     name: "getBytes32Batch",
     outputs: [{ name: "values", internalType: "bytes32[]", type: "bytes32[]" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "namespaces", internalType: "bytes32[]", type: "bytes32[]" },
@@ -1680,9 +1679,9 @@ export const ipAccountImplAbi = [
     ],
     name: "getBytesBatch",
     outputs: [{ name: "values", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "hash", internalType: "bytes32", type: "bytes32" },
@@ -1690,9 +1689,9 @@ export const ipAccountImplAbi = [
     ],
     name: "isValidSignature",
     outputs: [{ name: "result", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "signer", internalType: "address", type: "address" },
@@ -1700,9 +1699,9 @@ export const ipAccountImplAbi = [
     ],
     name: "isValidSigner",
     outputs: [{ name: "result", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "signer", internalType: "address", type: "address" },
@@ -1711,23 +1710,23 @@ export const ipAccountImplAbi = [
     ],
     name: "isValidSigner",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "owner",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "key", internalType: "bytes32", type: "bytes32" },
@@ -1735,9 +1734,9 @@ export const ipAccountImplAbi = [
     ],
     name: "setBytes",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "key", internalType: "bytes32", type: "bytes32" },
@@ -1745,9 +1744,9 @@ export const ipAccountImplAbi = [
     ],
     name: "setBytes32",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "keys", internalType: "bytes32[]", type: "bytes32[]" },
@@ -1755,9 +1754,9 @@ export const ipAccountImplAbi = [
     ],
     name: "setBytes32Batch",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "keys", internalType: "bytes32[]", type: "bytes32[]" },
@@ -1765,23 +1764,23 @@ export const ipAccountImplAbi = [
     ],
     name: "setBytesBatch",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "state",
     outputs: [{ name: "result", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "token",
@@ -1790,9 +1789,9 @@ export const ipAccountImplAbi = [
       { name: "", internalType: "address", type: "address" },
       { name: "", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -1800,8 +1799,9 @@ export const ipAccountImplAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
-  { stateMutability: "payable", type: "receive" },
+  { type: "receive", stateMutability: "payable" },
 ] as const;
 
 /**
@@ -1828,12 +1828,12 @@ export const ipAccountImplConfig = {
  */
 export const ipAssetRegistryAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "erc6551Registry", internalType: "address", type: "address" },
       { name: "ipAccountImpl", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -2047,63 +2047,62 @@ export const ipAssetRegistryAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ERC6551_PUBLIC_REGISTRY",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ACCOUNT_IMPL",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ACCOUNT_SALT",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "__ProtocolPausable_init",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "getIPAccountImpl",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "chainId", internalType: "uint256", type: "uint256" },
@@ -2112,9 +2111,9 @@ export const ipAssetRegistryAbi = [
     ],
     name: "ipAccount",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "chainId", internalType: "uint256", type: "uint256" },
@@ -2123,44 +2122,44 @@ export const ipAssetRegistryAbi = [
     ],
     name: "ipId",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "id", internalType: "address", type: "address" }],
     name: "isRegistered",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "pause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "paused",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "chainid", internalType: "uint256", type: "uint256" },
@@ -2169,30 +2168,30 @@ export const ipAssetRegistryAbi = [
     ],
     name: "register",
     outputs: [{ name: "id", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "totalSupply",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "unpause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -2200,6 +2199,7 @@ export const ipAssetRegistryAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
 ] as const;
 
@@ -2227,12 +2227,12 @@ export const ipAssetRegistryConfig = {
  */
 export const ipRoyaltyVaultImplAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "royaltyPolicyLAP", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   { type: "error", inputs: [], name: "IpRoyaltyVault__AlreadyClaimed" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ClaimerNotAnAncestor" },
@@ -2368,35 +2368,34 @@ export const ipRoyaltyVaultImplAbi = [
     name: "Transfer",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "DISPUTE_MODULE",
     outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_GRAPH_CONTRACT",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ROYALTY_POLICY_LAP",
     outputs: [{ name: "", internalType: "contract IRoyaltyPolicyLAP", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "addIpRoyaltyVaultTokens",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "owner", internalType: "address", type: "address" },
@@ -2404,16 +2403,16 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "allowance",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "ancestorsVaultAmount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "spender", internalType: "address", type: "address" },
@@ -2421,16 +2420,16 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "approve",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "account", internalType: "address", type: "address" }],
     name: "balanceOf",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "account", internalType: "address", type: "address" },
@@ -2438,9 +2437,9 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "balanceOfAt",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
@@ -2448,9 +2447,9 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "claimRevenueBySnapshotBatch",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "snapshotId", internalType: "uint256", type: "uint256" },
@@ -2458,16 +2457,16 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "claimRevenueByTokenBatch",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "claimVaultAmount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "snapshotId", internalType: "uint256", type: "uint256" },
@@ -2475,9 +2474,9 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "claimableAtSnapshot",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "account", internalType: "address", type: "address" },
@@ -2486,9 +2485,9 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "claimableRevenue",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ancestorIpId", internalType: "address", type: "address" },
@@ -2496,16 +2495,16 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "collectAccruedTokens",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "ancestorIpId", internalType: "address", type: "address" }],
     name: "collectRoyaltyTokens",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "ancestorIpId", internalType: "address", type: "address" },
@@ -2513,16 +2512,16 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "collectableAmount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "decimals",
     outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "spender", internalType: "address", type: "address" },
@@ -2530,9 +2529,9 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "decreaseAllowance",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "spender", internalType: "address", type: "address" },
@@ -2540,9 +2539,9 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "increaseAllowance",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "name", internalType: "string", type: "string" },
@@ -2553,16 +2552,16 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ipId",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "snapshotId", internalType: "uint256", type: "uint256" },
@@ -2571,65 +2570,65 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "isClaimedAtSnapshot",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ancestorIpId", internalType: "address", type: "address" }],
     name: "isCollectedByAncestor",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "lastSnapshotTimestamp",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "snapshot",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "symbol",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "tokens",
     outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "totalSupply",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "snapshotId", internalType: "uint256", type: "uint256" }],
     name: "totalSupplyAt",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
@@ -2637,9 +2636,9 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "transfer",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "from", internalType: "address", type: "address" },
@@ -2648,20 +2647,21 @@ export const ipRoyaltyVaultImplAbi = [
     ],
     name: "transferFrom",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "snapshotId", internalType: "uint256", type: "uint256" }],
     name: "unclaimedAtSnapshot",
     outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "unclaimedRoyaltyTokens",
     outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
   },
 ] as const;
 
@@ -2689,12 +2689,12 @@ export const ipRoyaltyVaultImplConfig = {
  */
 export const licenseRegistryAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -2996,42 +2996,41 @@ export const licenseRegistryAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "DISPUTE_MODULE",
     outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "EXPIRATION_TIME",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_GRAPH_CONTRACT",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -3040,16 +3039,16 @@ export const licenseRegistryAbi = [
     ],
     name: "attachLicenseTermsToIp",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "licenseTemplate", internalType: "address", type: "address" },
@@ -3057,9 +3056,9 @@ export const licenseRegistryAbi = [
     ],
     name: "exists",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -3070,16 +3069,16 @@ export const licenseRegistryAbi = [
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "getAttachedLicenseTermsCount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "getDefaultLicenseTerms",
@@ -3087,9 +3086,9 @@ export const licenseRegistryAbi = [
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "parentIpId", internalType: "address", type: "address" },
@@ -3097,23 +3096,23 @@ export const licenseRegistryAbi = [
     ],
     name: "getDerivativeIp",
     outputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
     name: "getDerivativeIpCount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "getExpireTime",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -3134,9 +3133,9 @@ export const licenseRegistryAbi = [
         ],
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "childIpId", internalType: "address", type: "address" },
@@ -3144,23 +3143,23 @@ export const licenseRegistryAbi = [
     ],
     name: "getParentIp",
     outputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
     name: "getParentIpCount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
     name: "hasDerivativeIps",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -3169,37 +3168,37 @@ export const licenseRegistryAbi = [
     ],
     name: "hasIpAttachedLicenseTerms",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
     name: "isDerivativeIp",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "isExpiredNow",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "parentIpId", internalType: "address", type: "address" },
@@ -3207,23 +3206,23 @@ export const licenseRegistryAbi = [
     ],
     name: "isParentIp",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
     name: "isRegisteredLicenseTemplate",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "childIpId", internalType: "address", type: "address" },
@@ -3234,23 +3233,23 @@ export const licenseRegistryAbi = [
     ],
     name: "registerDerivativeIp",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
     name: "registerLicenseTemplate",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "newLicenseTemplate", internalType: "address", type: "address" },
@@ -3258,9 +3257,9 @@ export const licenseRegistryAbi = [
     ],
     name: "setDefaultLicenseTerms",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -3278,9 +3277,9 @@ export const licenseRegistryAbi = [
     ],
     name: "setLicensingConfigForIp",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -3300,9 +3299,9 @@ export const licenseRegistryAbi = [
     ],
     name: "setLicensingConfigForLicense",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -3310,9 +3309,9 @@ export const licenseRegistryAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "licensorIpId", internalType: "address", type: "address" },
@@ -3334,6 +3333,7 @@ export const licenseRegistryAbi = [
         ],
       },
     ],
+    stateMutability: "view",
   },
 ] as const;
 
@@ -3361,12 +3361,12 @@ export const licenseRegistryConfig = {
  */
 export const licenseTokenAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -3644,28 +3644,27 @@ export const licenseTokenAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "DISPUTE_MODULE",
     outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
@@ -3673,23 +3672,23 @@ export const licenseTokenAbi = [
     ],
     name: "approve",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "owner", internalType: "address", type: "address" }],
     name: "balanceOf",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "holder", internalType: "address", type: "address" },
@@ -3697,30 +3696,30 @@ export const licenseTokenAbi = [
     ],
     name: "burnLicenseTokens",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "getApproved",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "getLicenseTemplate",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "getLicenseTermsId",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "getLicenseTokenMetadata",
@@ -3737,16 +3736,16 @@ export const licenseTokenAbi = [
         ],
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "getLicensorIpId",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "accessManager", internalType: "address", type: "address" },
@@ -3754,9 +3753,9 @@ export const licenseTokenAbi = [
     ],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "owner", internalType: "address", type: "address" },
@@ -3764,23 +3763,23 @@ export const licenseTokenAbi = [
     ],
     name: "isApprovedForAll",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "isLicenseTokenRevoked",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "licensorIpId", internalType: "address", type: "address" },
@@ -3792,30 +3791,30 @@ export const licenseTokenAbi = [
     ],
     name: "mintLicenseTokens",
     outputs: [{ name: "startLicenseTokenId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "ownerOf",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "from", internalType: "address", type: "address" },
@@ -3824,9 +3823,9 @@ export const licenseTokenAbi = [
     ],
     name: "safeTransferFrom",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "from", internalType: "address", type: "address" },
@@ -3836,9 +3835,9 @@ export const licenseTokenAbi = [
     ],
     name: "safeTransferFrom",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "operator", internalType: "address", type: "address" },
@@ -3846,44 +3845,44 @@ export const licenseTokenAbi = [
     ],
     name: "setApprovalForAll",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "url", internalType: "string", type: "string" }],
     name: "setLicensingImageUrl",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "symbol",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "index", internalType: "uint256", type: "uint256" }],
     name: "tokenByIndex",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "owner", internalType: "address", type: "address" },
@@ -3891,30 +3890,30 @@ export const licenseTokenAbi = [
     ],
     name: "tokenOfOwnerByIndex",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "id", internalType: "uint256", type: "uint256" }],
     name: "tokenURI",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "totalMintedTokens",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "totalSupply",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "from", internalType: "address", type: "address" },
@@ -3923,9 +3922,9 @@ export const licenseTokenAbi = [
     ],
     name: "transferFrom",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -3933,9 +3932,9 @@ export const licenseTokenAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "caller", internalType: "address", type: "address" },
@@ -3948,6 +3947,7 @@ export const licenseTokenAbi = [
       { name: "licensorIpIds", internalType: "address[]", type: "address[]" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
     ],
+    stateMutability: "view",
   },
 ] as const;
 
@@ -3975,7 +3975,6 @@ export const licenseTokenConfig = {
  */
 export const licensingModuleAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "accessController", internalType: "address", type: "address" },
@@ -3986,6 +3985,7 @@ export const licensingModuleAbi = [
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "licenseToken", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -4289,21 +4289,20 @@ export const licensingModuleAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "DISPUTE_MODULE",
     outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ACCOUNT_REGISTRY",
@@ -4314,51 +4313,51 @@ export const licensingModuleAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSE_NFT",
     outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "MODULE_REGISTRY",
     outputs: [{ name: "", internalType: "contract IModuleRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ROYALTY_MODULE",
     outputs: [{ name: "", internalType: "contract RoyaltyModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "__ProtocolPausable_init",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -4367,30 +4366,30 @@ export const licensingModuleAbi = [
     ],
     name: "attachLicenseTerms",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "licensorIpId", internalType: "address", type: "address" },
@@ -4402,37 +4401,37 @@ export const licensingModuleAbi = [
     ],
     name: "mintLicenseTokens",
     outputs: [{ name: "startLicenseTokenId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "pause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "paused",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "childIpId", internalType: "address", type: "address" },
@@ -4443,9 +4442,9 @@ export const licensingModuleAbi = [
     ],
     name: "registerDerivative",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "childIpId", internalType: "address", type: "address" },
@@ -4454,16 +4453,16 @@ export const licensingModuleAbi = [
     ],
     name: "registerDerivativeWithLicenseTokens",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -4483,23 +4482,23 @@ export const licensingModuleAbi = [
     ],
     name: "setLicensingConfig",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "unpause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -4507,6 +4506,7 @@ export const licensingModuleAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
 ] as const;
 
@@ -4533,7 +4533,7 @@ export const licensingModuleConfig = {
  *
  */
 export const moduleRegistryAbi = [
-  { stateMutability: "nonpayable", type: "constructor", inputs: [] },
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
     type: "error",
     inputs: [{ name: "authority", internalType: "address", type: "address" }],
@@ -4689,70 +4689,69 @@ export const moduleRegistryAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "name", internalType: "string", type: "string" }],
     name: "getModule",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "moduleAddress", internalType: "address", type: "address" }],
     name: "getModuleType",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "moduleType", internalType: "string", type: "string" }],
     name: "getModuleTypeInterfaceId",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "moduleAddress", internalType: "address", type: "address" }],
     name: "isRegistered",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "name", internalType: "string", type: "string" },
@@ -4760,9 +4759,9 @@ export const moduleRegistryAbi = [
     ],
     name: "registerModule",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "name", internalType: "string", type: "string" },
@@ -4771,9 +4770,9 @@ export const moduleRegistryAbi = [
     ],
     name: "registerModule",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "name", internalType: "string", type: "string" },
@@ -4781,30 +4780,30 @@ export const moduleRegistryAbi = [
     ],
     name: "registerModuleType",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "name", internalType: "string", type: "string" }],
     name: "removeModule",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "name", internalType: "string", type: "string" }],
     name: "removeModuleType",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -4812,6 +4811,7 @@ export const moduleRegistryAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
 ] as const;
 
@@ -4839,7 +4839,6 @@ export const moduleRegistryConfig = {
  */
 export const piLicenseTemplateAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "accessController", internalType: "address", type: "address" },
@@ -4847,6 +4846,7 @@ export const piLicenseTemplateAbi = [
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -5057,14 +5057,13 @@ export const piLicenseTemplateAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ACCOUNT_REGISTRY",
@@ -5075,51 +5074,51 @@ export const piLicenseTemplateAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ROYALTY_MODULE",
     outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "TERMS_RENDERER",
     outputs: [{ name: "", internalType: "contract PILTermsRenderer", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     name: "exists",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
@@ -5127,9 +5126,9 @@ export const piLicenseTemplateAbi = [
     ],
     name: "getEarlierExpireTime",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
@@ -5137,9 +5136,9 @@ export const piLicenseTemplateAbi = [
     ],
     name: "getExpireTime",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       {
@@ -5203,9 +5202,9 @@ export const piLicenseTemplateAbi = [
         ],
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       {
@@ -5269,23 +5268,23 @@ export const piLicenseTemplateAbi = [
         type: "uint256",
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     name: "getLicenseTermsURI",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "getMetadataURI",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     name: "getRoyaltyPolicy",
@@ -5295,9 +5294,9 @@ export const piLicenseTemplateAbi = [
       { name: "mintingFee", internalType: "uint256", type: "uint256" },
       { name: "currency", internalType: "address", type: "address" },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "accessManager", internalType: "address", type: "address" },
@@ -5306,16 +5305,16 @@ export const piLicenseTemplateAbi = [
     ],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "parentIpId", internalType: "address", type: "address" },
@@ -5324,30 +5323,30 @@ export const piLicenseTemplateAbi = [
     ],
     name: "isDerivativeApproved",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     name: "isLicenseTransferable",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       {
@@ -5405,9 +5404,9 @@ export const piLicenseTemplateAbi = [
     ],
     name: "registerLicenseTerms",
     outputs: [{ name: "id", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "parentIpId", internalType: "address", type: "address" },
@@ -5417,37 +5416,37 @@ export const piLicenseTemplateAbi = [
     ],
     name: "setApproval",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     name: "toJson",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "totalRegisteredLicenseTerms",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -5455,16 +5454,16 @@ export const piLicenseTemplateAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" }],
     name: "verifyCompatibleLicenses",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
@@ -5474,9 +5473,9 @@ export const piLicenseTemplateAbi = [
     ],
     name: "verifyMintLicenseToken",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "childIpId", internalType: "address", type: "address" },
@@ -5486,9 +5485,9 @@ export const piLicenseTemplateAbi = [
     ],
     name: "verifyRegisterDerivative",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "childIpId", internalType: "address", type: "address" },
@@ -5498,6 +5497,7 @@ export const piLicenseTemplateAbi = [
     ],
     name: "verifyRegisterDerivativeForAllParents",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -5525,13 +5525,13 @@ export const piLicenseTemplateConfig = {
  */
 export const royaltyModuleAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -5767,84 +5767,83 @@ export const royaltyModuleAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "DISPUTE_MODULE",
     outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "__ProtocolPausable_init",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "royaltyPolicy", internalType: "address", type: "address" }],
     name: "isWhitelistedRoyaltyPolicy",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "isWhitelistedRoyaltyToken",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -5854,9 +5853,9 @@ export const royaltyModuleAbi = [
     ],
     name: "onLicenseMinting",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -5867,23 +5866,23 @@ export const royaltyModuleAbi = [
     ],
     name: "onLinkToParents",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "pause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "paused",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "receiverIpId", internalType: "address", type: "address" },
@@ -5898,9 +5897,9 @@ export const royaltyModuleAbi = [
     ],
     name: "payLicenseMintingFee",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "receiverIpId", internalType: "address", type: "address" },
@@ -5910,44 +5909,44 @@ export const royaltyModuleAbi = [
     ],
     name: "payRoyaltyOnBehalf",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "royaltyPolicies",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "unpause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -5955,9 +5954,9 @@ export const royaltyModuleAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "royaltyPolicy", internalType: "address", type: "address" },
@@ -5965,9 +5964,9 @@ export const royaltyModuleAbi = [
     ],
     name: "whitelistRoyaltyPolicy",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "token", internalType: "address", type: "address" },
@@ -5975,6 +5974,7 @@ export const royaltyModuleAbi = [
     ],
     name: "whitelistRoyaltyToken",
     outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -6002,12 +6002,12 @@ export const royaltyModuleConfig = {
  */
 export const royaltyPolicyLapAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "licensingModule", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -6218,77 +6218,76 @@ export const royaltyPolicyLapAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_GRAPH_CONTRACT",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "MAX_ANCESTORS",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "MAX_PARENTS",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ROYALTY_MODULE",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "TOTAL_RT_SUPPLY",
     outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "__ProtocolPausable_init",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "getIpRoyaltyVaultBeacon",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "getRoyaltyData",
@@ -6297,30 +6296,30 @@ export const royaltyPolicyLapAbi = [
       { name: "", internalType: "address", type: "address" },
       { name: "", internalType: "uint32", type: "uint32" },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "getSnapshotInterval",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -6329,9 +6328,9 @@ export const royaltyPolicyLapAbi = [
     ],
     name: "onLicenseMinting",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -6341,9 +6340,9 @@ export const royaltyPolicyLapAbi = [
     ],
     name: "onLinkToParents",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "caller", internalType: "address", type: "address" },
@@ -6353,58 +6352,58 @@ export const royaltyPolicyLapAbi = [
     ],
     name: "onRoyaltyPayment",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "pause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "paused",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "beacon", internalType: "address", type: "address" }],
     name: "setIpRoyaltyVaultBeacon",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "timestampInterval", internalType: "uint256", type: "uint256" }],
     name: "setSnapshotInterval",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "unpause",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -6412,13 +6411,14 @@ export const royaltyPolicyLapAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newVault", internalType: "address", type: "address" }],
     name: "upgradeVaults",
     outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -6446,16 +6446,18 @@ export const royaltyPolicyLapConfig = {
  */
 export const spgAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "accessController", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
       { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "coreMetadataModule", internalType: "address", type: "address" },
       { name: "pilTemplate", internalType: "address", type: "address" },
       { name: "licenseToken", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -6482,6 +6484,11 @@ export const spgAbi = [
   },
   {
     type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
@@ -6492,6 +6499,11 @@ export const spgAbi = [
   { type: "error", inputs: [], name: "SPG__CallerNotMinterRole" },
   { type: "error", inputs: [], name: "SPG__EmptyLicenseTokens" },
   { type: "error", inputs: [], name: "SPG__ZeroAddressParam" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -6551,14 +6563,13 @@ export const spgAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "CORE_METADATA_MODULE",
@@ -6569,30 +6580,37 @@ export const spgAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "IP_ASSET_REGISTRY",
     outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
   },
   {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
     stateMutability: "view",
+  },
+  {
     type: "function",
     inputs: [],
     name: "LICENSE_TOKEN",
     outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "PIL_TEMPLATE",
@@ -6603,23 +6621,30 @@ export const spgAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
   },
   {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
     stateMutability: "view",
+  },
+  {
     type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "name", internalType: "string", type: "string" },
@@ -6631,23 +6656,23 @@ export const spgAbi = [
     ],
     name: "createCollection",
     outputs: [{ name: "nftContract", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -6669,9 +6694,9 @@ export const spgAbi = [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -6742,9 +6767,9 @@ export const spgAbi = [
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -6781,9 +6806,9 @@ export const spgAbi = [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -6807,16 +6832,16 @@ export const spgAbi = [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -6844,9 +6869,9 @@ export const spgAbi = [
     ],
     name: "registerIp",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -6935,9 +6960,9 @@ export const spgAbi = [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -6990,9 +7015,9 @@ export const spgAbi = [
     ],
     name: "registerIpAndMakeDerivative",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
@@ -7032,9 +7057,9 @@ export const spgAbi = [
     ],
     name: "registerIpAndMakeDerivativeWithLicenseTokens",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
@@ -7089,16 +7114,16 @@ export const spgAbi = [
     ],
     name: "registerPILTermsAndAttach",
     outputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       {
@@ -7109,16 +7134,16 @@ export const spgAbi = [
     ],
     name: "setNftContractBeacon",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newNftContract", internalType: "address", type: "address" }],
     name: "upgradeCollections",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "payable",
     type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
@@ -7126,6 +7151,7 @@ export const spgAbi = [
     ],
     name: "upgradeToAndCall",
     outputs: [],
+    stateMutability: "payable",
   },
 ] as const;
 
@@ -7150,12 +7176,12 @@ export const spgConfig = { address: spgAddress, abi: spgAbi } as const;
  */
 export const spgnftBeaconAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [
       { name: "implementation_", internalType: "address", type: "address" },
       { name: "initialOwner", internalType: "address", type: "address" },
     ],
+    stateMutability: "nonpayable",
   },
   {
     type: "error",
@@ -7205,39 +7231,39 @@ export const spgnftBeaconAbi = [
     name: "Upgraded",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "implementation",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "owner",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [],
     name: "renounceOwnership",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newOwner", internalType: "address", type: "address" }],
     name: "transferOwnership",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "newImplementation", internalType: "address", type: "address" }],
     name: "upgradeTo",
     outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -7265,9 +7291,9 @@ export const spgnftBeaconConfig = {
  */
 export const spgnftImplAbi = [
   {
-    stateMutability: "nonpayable",
     type: "constructor",
     inputs: [{ name: "spg", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   { type: "error", inputs: [], name: "AccessControlBadConfirmation" },
   {
@@ -7465,21 +7491,20 @@ export const spgnftImplAbi = [
     name: "Transfer",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "DEFAULT_ADMIN_ROLE",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "SPG_ADDRESS",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
@@ -7487,30 +7512,30 @@ export const spgnftImplAbi = [
     ],
     name: "approve",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "owner", internalType: "address", type: "address" }],
     name: "balanceOf",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "getApproved",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "role", internalType: "bytes32", type: "bytes32" }],
     name: "getRoleAdmin",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "role", internalType: "bytes32", type: "bytes32" },
@@ -7518,9 +7543,9 @@ export const spgnftImplAbi = [
     ],
     name: "grantRole",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "role", internalType: "bytes32", type: "bytes32" },
@@ -7528,9 +7553,9 @@ export const spgnftImplAbi = [
     ],
     name: "hasRole",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "name", internalType: "string", type: "string" },
@@ -7542,9 +7567,9 @@ export const spgnftImplAbi = [
     ],
     name: "initialize",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [
       { name: "owner", internalType: "address", type: "address" },
@@ -7552,16 +7577,16 @@ export const spgnftImplAbi = [
     ],
     name: "isApprovedForAll",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "to", internalType: "address", type: "address" }],
     name: "mint",
     outputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
@@ -7569,37 +7594,37 @@ export const spgnftImplAbi = [
     ],
     name: "mintBySPG",
     outputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "mintFee",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "mintFeeToken",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "ownerOf",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "role", internalType: "bytes32", type: "bytes32" },
@@ -7607,9 +7632,9 @@ export const spgnftImplAbi = [
     ],
     name: "renounceRole",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "role", internalType: "bytes32", type: "bytes32" },
@@ -7617,9 +7642,9 @@ export const spgnftImplAbi = [
     ],
     name: "revokeRole",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "from", internalType: "address", type: "address" },
@@ -7628,9 +7653,9 @@ export const spgnftImplAbi = [
     ],
     name: "safeTransferFrom",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "from", internalType: "address", type: "address" },
@@ -7640,9 +7665,9 @@ export const spgnftImplAbi = [
     ],
     name: "safeTransferFrom",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "operator", internalType: "address", type: "address" },
@@ -7650,51 +7675,51 @@ export const spgnftImplAbi = [
     ],
     name: "setApprovalForAll",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "fee", internalType: "uint256", type: "uint256" }],
     name: "setMintFee",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "setMintFeeToken",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "symbol",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "tokenURI",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "view",
     type: "function",
     inputs: [],
     name: "totalSupply",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "from", internalType: "address", type: "address" },
@@ -7703,9 +7728,9 @@ export const spgnftImplAbi = [
     ],
     name: "transferFrom",
     outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    stateMutability: "nonpayable",
     type: "function",
     inputs: [
       { name: "token", internalType: "address", type: "address" },
@@ -7713,6 +7738,7 @@ export const spgnftImplAbi = [
     ],
     name: "withdrawToken",
     outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -14494,292 +14520,6 @@ export class SpgClient extends SpgEventClient {
 }
 
 // Contract SPGNFTBeacon =============================================================
-
-/**
- * SpgnftBeaconOwnershipTransferredEvent
- *
- * @param previousOwner address
- * @param newOwner address
- */
-export type SpgnftBeaconOwnershipTransferredEvent = {
-  previousOwner: Address;
-  newOwner: Address;
-};
-
-/**
- * SpgnftBeaconUpgradedEvent
- *
- * @param implementation address
- */
-export type SpgnftBeaconUpgradedEvent = {
-  implementation: Address;
-};
-
-export type SpgnftBeaconImplementationResponse = Address;
-
-export type SpgnftBeaconOwnerResponse = Address;
-
-/**
- * SpgnftBeaconTransferOwnershipRequest
- *
- * @param newOwner address
- */
-export type SpgnftBeaconTransferOwnershipRequest = {
-  newOwner: Address;
-};
-
-/**
- * SpgnftBeaconUpgradeToRequest
- *
- * @param newImplementation address
- */
-export type SpgnftBeaconUpgradeToRequest = {
-  newImplementation: Address;
-};
-
-/**
- * contract SPGNFTBeacon event
- */
-export class SpgnftBeaconEventClient {
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, address?: Address) {
-    this.address = address || getAddress(spgnftBeaconAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event OwnershipTransferred for contract SPGNFTBeacon
-   */
-  public watchOwnershipTransferredEvent(
-    onLogs: (txHash: Hex, ev: Partial<SpgnftBeaconOwnershipTransferredEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      eventName: "OwnershipTransferred",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event OwnershipTransferred for contract SPGNFTBeacon
-   */
-  public parseTxOwnershipTransferredEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<SpgnftBeaconOwnershipTransferredEvent> {
-    const targetLogs: Array<SpgnftBeaconOwnershipTransferredEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: spgnftBeaconAbi,
-          eventName: "OwnershipTransferred",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "OwnershipTransferred") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Upgraded for contract SPGNFTBeacon
-   */
-  public watchUpgradedEvent(
-    onLogs: (txHash: Hex, ev: Partial<SpgnftBeaconUpgradedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      eventName: "Upgraded",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Upgraded for contract SPGNFTBeacon
-   */
-  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<SpgnftBeaconUpgradedEvent> {
-    const targetLogs: Array<SpgnftBeaconUpgradedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: spgnftBeaconAbi,
-          eventName: "Upgraded",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Upgraded") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract SPGNFTBeacon readonly method
- */
-export class SpgnftBeaconReadOnlyClient extends SpgnftBeaconEventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method implementation for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconImplementationRequest
-   * @return Promise<SpgnftBeaconImplementationResponse>
-   */
-  public async implementation(): Promise<SpgnftBeaconImplementationResponse> {
-    return await this.rpcClient.readContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "implementation",
-    });
-  }
-
-  /**
-   * method owner for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconOwnerRequest
-   * @return Promise<SpgnftBeaconOwnerResponse>
-   */
-  public async owner(): Promise<SpgnftBeaconOwnerResponse> {
-    return await this.rpcClient.readContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "owner",
-    });
-  }
-}
-
-/**
- * contract SPGNFTBeacon write method
- */
-export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method renounceOwnership for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconRenounceOwnershipRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async renounceOwnership(): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "renounceOwnership",
-      account: this.wallet.account,
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method renounceOwnership for contract SPGNFTBeacon with only encode
-   *
-   * @param request SpgnftBeaconRenounceOwnershipRequest
-   * @return EncodedTxData
-   */
-  public renounceOwnershipEncode(): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgnftBeaconAbi,
-        functionName: "renounceOwnership",
-      }),
-    };
-  }
-
-  /**
-   * method transferOwnership for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconTransferOwnershipRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transferOwnership(
-    request: SpgnftBeaconTransferOwnershipRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "transferOwnership",
-      account: this.wallet.account,
-      args: [request.newOwner],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transferOwnership for contract SPGNFTBeacon with only encode
-   *
-   * @param request SpgnftBeaconTransferOwnershipRequest
-   * @return EncodedTxData
-   */
-  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgnftBeaconAbi,
-        functionName: "transferOwnership",
-        args: [request.newOwner],
-      }),
-    };
-  }
-
-  /**
-   * method upgradeTo for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconUpgradeToRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async upgradeTo(request: SpgnftBeaconUpgradeToRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "upgradeTo",
-      account: this.wallet.account,
-      args: [request.newImplementation],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method upgradeTo for contract SPGNFTBeacon with only encode
-   *
-   * @param request SpgnftBeaconUpgradeToRequest
-   * @return EncodedTxData
-   */
-  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgnftBeaconAbi,
-        functionName: "upgradeTo",
-        args: [request.newImplementation],
-      }),
-    };
-  }
-}
 
 // Contract SPGNFTImpl =============================================================
 
