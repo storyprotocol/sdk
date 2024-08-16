@@ -2,8 +2,9 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getTokenId, getStoryClient } from "./utils/util";
+import { mockERC721, getTokenId, getStoryClient, storyTestChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
+import { royaltyPolicyLapAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -55,6 +56,10 @@ describe("Test royalty Functions", () => {
       ipId2 = await getIpId();
       const licenseTermsId = await getCommercialPolicyId();
       await attachLicenseTerms(ipId1, licenseTermsId);
+      const mockERC20 = new MockERC20();
+      await mockERC20.approve(
+        royaltyPolicyLapAddress[Number(storyTestChainId) as keyof typeof royaltyPolicyLapAddress],
+      );
       await client.ipAsset.registerDerivative({
         childIpId: ipId2,
         parentIpIds: [ipId1],
@@ -78,9 +83,6 @@ describe("Test royalty Functions", () => {
     });
 
     it("should not throw error when pay royalty on behalf", async () => {
-      const mockERC20 = new MockERC20();
-      await mockERC20.approve(mockERC721);
-      await mockERC20.mint();
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: ipId1,
         payerIpId: ipId2,

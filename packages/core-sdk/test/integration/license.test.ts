@@ -2,8 +2,9 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
+import { licensingModuleAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -85,6 +86,10 @@ describe("License Functions", () => {
     });
 
     it("should not throw error when minting license tokens", async () => {
+      const mockERC20 = new MockERC20();
+      await mockERC20.approve(
+        licensingModuleAddress[Number(storyTestChainId) as keyof typeof licensingModuleAddress],
+      );
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
