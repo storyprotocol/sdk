@@ -8,9 +8,10 @@ import {
   Chain,
 } from "viem";
 import { sepolia } from "viem/chains";
-
 import { SupportedChainIds } from "@story-protocol/core-sdk";
-export const RPC = "http://127.0.0.1:8545";
+
+export const RPC = "https://rpc.partner.testnet.storyprotocol.net";
+// export const RPC = "http://127.0.0.1:8545";
 export const mockERC721Address = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
 export const mockERC20Address = "0xB132A6B7AE652c974EE1557A3521D53d18F6739f";
 
@@ -30,7 +31,8 @@ const baseConfig = {
 export const publicClient = createPublicClient(baseConfig);
 export const walletClient = createWalletClient({
   ...baseConfig,
-  account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+  // eslint-disable-next-line turbo/no-undeclared-env-vars
+  account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
 });
 
 export const getTokenId = async (
@@ -50,7 +52,8 @@ export const getTokenId = async (
     ],
     address: nftContract || mockERC721Address,
     functionName: "mint",
-    args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex],
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    args: [process.env.WALLET_PRIVATE_KEY as Hex],
     account: walletClient.account,
   });
   const hash = await walletClient.writeContract(request);

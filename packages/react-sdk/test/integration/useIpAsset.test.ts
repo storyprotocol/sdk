@@ -1,5 +1,6 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { Address, toHex } from "viem";
+
 import {
   CreateIpAssetWithPilTermsResponse,
   PIL_TYPE,
@@ -10,6 +11,7 @@ import {
 import { useIpAsset } from "../../src";
 import Wrapper from "./utils/Wrapper";
 import { mockERC721Address, getTokenId, mockERC20Address } from "./utils/util";
+
 describe("useIpAsset Functions", () => {
   const {
     result: { current: ipAssetHook },

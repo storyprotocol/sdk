@@ -1,7 +1,8 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
+import { Address, encodeFunctionData } from "viem";
+
 import { useIpAccount, useIpAsset, useLicense, useRoyalty } from "../../src";
 import Wrapper from "./utils/Wrapper";
-import { Address, encodeFunctionData } from "viem";
 import { getTokenId, mockERC20Address, mockERC721Address } from "./utils/util";
 
 describe("useRoyalty Functions", () => {
