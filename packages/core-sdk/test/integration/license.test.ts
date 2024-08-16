@@ -61,8 +61,11 @@ describe("License Functions", () => {
           waitForTransaction: true,
         },
       });
+      const mockERC20 = new MockERC20();
+      await mockERC20.approve(
+        licensingModuleAddress[Number(storyTestChainId) as keyof typeof licensingModuleAddress],
+      );
       ipId = registerResult.ipId!;
-
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
         mintingFee: "1",
         commercialRevShare: 100,
@@ -86,10 +89,6 @@ describe("License Functions", () => {
     });
 
     it("should not throw error when minting license tokens", async () => {
-      const mockERC20 = new MockERC20();
-      await mockERC20.approve(
-        licensingModuleAddress[Number(storyTestChainId) as keyof typeof licensingModuleAddress],
-      );
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
