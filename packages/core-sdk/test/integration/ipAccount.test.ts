@@ -8,14 +8,7 @@ import {
   storyTestChainId,
   walletClient,
 } from "./utils/util";
-import {
-  Hex,
-  encodeAbiParameters,
-  encodeFunctionData,
-  getAddress,
-  keccak256,
-  toFunctionSelector,
-} from "viem";
+import { Hex, encodeFunctionData, getAddress, keccak256, toFunctionSelector } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
@@ -26,11 +19,11 @@ import { getDeadline } from "../../src/utils/sign";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const coreMetadataModule = coreMetadataModuleAddress[storyTestChainId];
 describe("Ip Account functions", () => {
   let client: StoryClient;
   let ipId: Hex;
   let data: Hex;
+  const coreMetadataModule = coreMetadataModuleAddress[storyTestChainId];
   const permissionAddress = accessControllerAddress[storyTestChainId];
 
   before(async () => {
@@ -49,7 +42,7 @@ describe("Ip Account functions", () => {
       functionName: "setPermission",
       args: [
         getAddress(ipId),
-        getAddress(process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex),
+        getAddress(process.env.TEST_WALLET_ADDRESS as Hex),
         getAddress(coreMetadataModule),
         toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         AccessPermission.ALLOW,
@@ -76,14 +69,13 @@ describe("Ip Account functions", () => {
       permissions: [
         {
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
+          signer: process.env.TEST_WALLET_ADDRESS as Hex,
           to: coreMetadataModule,
           permission: AccessPermission.ALLOW,
           func: "function setAll(address,string,bytes32,bytes32)",
         },
       ],
       state: state,
-
       chainId: BigInt(storyTestChainId),
       deadline: deadline,
     });
@@ -93,7 +85,7 @@ describe("Ip Account functions", () => {
       to: permissionAddress,
       data: data,
       deadline: deadline,
-      signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
+      signer: process.env.TEST_WALLET_ADDRESS as Hex,
       signature: signature,
       txOptions: {
         waitForTransaction: true,

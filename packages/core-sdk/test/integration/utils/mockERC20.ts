@@ -24,7 +24,7 @@ export class MockERC20 {
     this.publicClient = createPublicClient(baseConfig);
     this.walletClient = createWalletClient({
       ...baseConfig,
-      account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
     });
   }
 
@@ -91,7 +91,7 @@ export class MockERC20 {
       address: MockERC20.address,
       functionName: "mint",
       account: this.walletClient.account,
-      args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS! as Address, BigInt(100000 * 10 ** 6)],
+      args: [process.env.TEST_WALLET_ADDRESS! as Address, BigInt(100000 * 10 ** 6)],
     });
     const mintHash = await this.walletClient.writeContract(request);
     await waitTx(this.publicClient, mintHash);

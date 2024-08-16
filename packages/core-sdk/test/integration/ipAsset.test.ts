@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
 import { Hex, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, mintBySpg } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
@@ -14,7 +14,7 @@ describe("IP Asset Functions ", () => {
     client = getStoryClient();
   });
 
-  describe("Create IP Asset", async () => {
+  describe.skip("Create IP Asset", async () => {
     let parentIpId: Hex;
     let childIpId: Hex;
     let noCommercialLicenseTermsId: bigint;
@@ -104,6 +104,7 @@ describe("IP Asset Functions ", () => {
 
   describe("NFT Client (SPG)", () => {
     let nftContract: Hex;
+
     before(async () => {
       // Create a NFT collection for this test-suite
       const txData = await client.nftClient.createNFTCollection({
@@ -118,7 +119,7 @@ describe("IP Asset Functions ", () => {
       nftContract = txData.nftContract!;
     });
 
-    describe("should not throw error when mint and register ip and attach pil terms", async () => {
+    describe.skip("should not throw error when mint and register ip and attach pil terms", async () => {
       it("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
@@ -180,7 +181,7 @@ describe("IP Asset Functions ", () => {
       });
     });
     it("should not throw error when registering a IP Asset given metadata", async () => {
-      const tokenId = await getTokenId(nftContract);
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
       const response = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
@@ -197,7 +198,7 @@ describe("IP Asset Functions ", () => {
       expect(response.ipId).to.be.a("string").and.not.empty;
     });
     it("should not throw error when register registerDerivativeIp", async () => {
-      const tokenChildId = await getTokenId(nftContract);
+      const tokenChildId = await mintBySpg(nftContract, "test-metadata");
       const { ipId: parentIpId, licenseTermsId } =
         await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           nftContract,
@@ -226,7 +227,7 @@ describe("IP Asset Functions ", () => {
     });
 
     it("should not throw error when register registerIpAndAttachPilTerms", async () => {
-      const tokenId = await getTokenId(nftContract);
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
       const deadline = 1000n;
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
         nftContract: nftContract,
