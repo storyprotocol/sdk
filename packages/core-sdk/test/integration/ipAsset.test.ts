@@ -2,8 +2,9 @@ import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
 import { Hex, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, mintBySpg } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, mintBySpg, storyTestChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
+import { spgAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -117,6 +118,8 @@ describe("IP Asset Functions ", () => {
       });
       expect(txData.nftContract).to.be.a("string").and.not.empty;
       nftContract = txData.nftContract!;
+      const mockERC20 = new MockERC20();
+      await mockERC20.approve(spgAddress[storyTestChainId as keyof typeof spgAddress]);
     });
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
