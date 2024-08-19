@@ -75,7 +75,7 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
     ],
     address: nftContract,
     functionName: "mint",
-    args: [nftContract, nftMetadata],
+    args: [process.env.TEST_WALLET_ADDRESS! as Address, nftMetadata],
     account: walletClient.account,
   });
   const hash = await walletClient.writeContract(request);

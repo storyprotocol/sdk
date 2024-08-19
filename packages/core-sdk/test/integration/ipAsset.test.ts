@@ -180,7 +180,7 @@ describe("IP Asset Functions ", () => {
         expect(result.licenseTermsId).to.be.a("bigint");
       });
     });
-    it.skip("should not throw error when registering a IP Asset given metadata", async () => {
+    it("should not throw error when registering a IP Asset given metadata", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const response = await client.ipAsset.register({
         nftContract,
@@ -197,7 +197,7 @@ describe("IP Asset Functions ", () => {
       });
       expect(response.ipId).to.be.a("string").and.not.empty;
     });
-    it.skip("should not throw error when register registerDerivativeIp", async () => {
+    it("should not throw error when register registerDerivativeIp", async () => {
       const tokenChildId = await mintBySpg(nftContract, "test-metadata");
       const { ipId: parentIpId, licenseTermsId } =
         await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
@@ -226,7 +226,7 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
 
-    it.skip("should not throw error when register registerIpAndAttachPilTerms", async () => {
+    it("should not throw error when register registerIpAndAttachPilTerms", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const deadline = 1000n;
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
