@@ -1,4 +1,16 @@
-import { Hex, PublicClient, zeroAddress, Address, zeroHash, WalletClient } from "viem";
+import {
+  Hex,
+  PublicClient,
+  zeroAddress,
+  Address,
+  zeroHash,
+  WalletClient,
+  toHex,
+  encodeAbiParameters,
+  encodeFunctionData,
+  keccak256,
+  toFunctionSelector,
+} from "viem";
 
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -32,13 +44,12 @@ import {
   SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
   SpgRegisterIpRequest,
+  accessControllerAbi,
+  ipAccountImplAbi,
 } from "../abi/generated";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
-import { AccessPermission } from "../types/resources/permission";
-
-const firstState = "0x0000000000000000000000000000000000000000000000000000000000000000";
-const secondState = "0xdf95095879bb3ea8f0088f5a5e99266ef45d79cda0e7ae193c2c5c576afdfcb8";
+import { AccessPermission, SetPermissionsRequest } from "../types/resources/permission";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -136,7 +147,7 @@ export class IPAssetClient {
           const signature = await getPermissionSignature({
             ipId: ipIdAddress,
             deadline: calculatedDeadline,
-            state: firstState,
+            state: toHex(0, { size: 32 }),
             wallet: this.wallet as WalletClient,
             chainId: chain[this.chainId],
             permissions: [
@@ -422,10 +433,17 @@ export class IPAssetClient {
         commercialRevShare: request.commercialRevShare,
       });
       const calculatedDeadline = getDeadline(request.deadline);
+
       const sigAttachSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: secondState,
+        state: this.getSigSignatureState({
+          ipId: ipIdAddress,
+          signer: getAddress(this.spgClient.address, "spgAddress"),
+          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+          permission: AccessPermission.ALLOW,
+          func: "function setAll(address,string,bytes32,bytes32)",
+        }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -476,10 +494,10 @@ export class IPAssetClient {
           nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
         };
       }
-      const signature = await getPermissionSignature({
+      const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: firstState,
+        state: toHex(0, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -495,7 +513,7 @@ export class IPAssetClient {
       object.sigMetadata = {
         signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
         deadline: calculatedDeadline,
-        signature,
+        signature: sigMetadataSignature,
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.spgClient.registerIpAndAttachPilTermsEncode(object) };
@@ -563,10 +581,17 @@ export class IPAssetClient {
         }
       }
       const calculatedDeadline = getDeadline(request.deadline);
+
       const sigRegisterSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: secondState,
+        state: this.getSigSignatureState({
+          ipId: ipIdAddress,
+          signer: getAddress(this.spgClient.address, "spgAddress"),
+          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+          permission: AccessPermission.ALLOW,
+          func: "function setAll(address,string,bytes32,bytes32)",
+        }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -621,10 +646,10 @@ export class IPAssetClient {
           nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
         };
       }
-      const signature = await getPermissionSignature({
+      const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: firstState,
+        state: toHex(0, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -640,7 +665,7 @@ export class IPAssetClient {
       object.sigMetadata = {
         signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
         deadline: calculatedDeadline,
-        signature,
+        signature: sigMetadataSignature,
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.spgClient.registerIpAndMakeDerivativeEncode(object) };
@@ -672,5 +697,36 @@ export class IPAssetClient {
 
   private async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId, "ipId") });
+  }
+
+  private getSigSignatureState(permission: Omit<SetPermissionsRequest, "txOptions">) {
+    const data = encodeFunctionData({
+      abi: accessControllerAbi,
+      functionName: "setPermission",
+      args: [
+        getAddress(permission.ipId, "permission.ipId"),
+        getAddress(permission.signer, "permission.signer"),
+        getAddress(permission.to, "permission.to"),
+        toFunctionSelector(permission.func!),
+        permission.permission,
+      ],
+    });
+    const sigAttachState = keccak256(
+      encodeAbiParameters(
+        [
+          { name: "", type: "bytes32" },
+          { name: "", type: "bytes" },
+        ],
+        [
+          toHex(0, { size: 32 }),
+          encodeFunctionData({
+            abi: ipAccountImplAbi,
+            functionName: "execute",
+            args: [this.accessControllerClient.address, 0n, data],
+          }),
+        ],
+      ),
+    );
+    return sigAttachState;
   }
 }
