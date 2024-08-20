@@ -6,14 +6,14 @@
   },
   "devDependencies": {
     "@types/node": "^20.8.2",
-    "@wagmi/cli": "0.0.0-canary-20240313013119",
+    "@wagmi/cli": "^2.1.15",
     "@wagmi/connectors": "^4.1.14",
     "@wagmi/core": "^2.6.5",
     "abitype": "^1.0.2",
     "change-case": "^5.4.3",
+    "dotenv": "^16.3.1",
     "typescript": "^5.4.2",
     "viem": "^2.8.6",
-    "wagmi": "^2.5.7",
-    "dotenv": "^16.3.1"
+    "wagmi": "^2.5.7"
   }
 }

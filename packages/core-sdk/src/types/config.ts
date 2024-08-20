@@ -7,7 +7,7 @@ import { SimpleWalletClient } from "../abi/generated";
  *
  * @public
  */
-export type SupportedChainIds = "11155111" | "sepolia";
+export type SupportedChainIds = "1513" | "iliad";
 
 /**
  * Configuration for the SDK Client.
@@ -27,8 +27,8 @@ export type UseWalletStoryConfig = {
 };
 
 export type StoryConfig = {
-  readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
+  readonly chainId?: SupportedChainIds;
   readonly wallet?: SimpleWalletClient;
   readonly account?: Account | Address;
 };

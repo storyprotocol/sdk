@@ -1,4 +1,12 @@
 import { renderHook, act } from "@testing-library/react";
+import {
+  Address,
+  Hex,
+  encodeFunctionData,
+  getAddress,
+  toFunctionSelector,
+} from "viem";
+
 import { mockERC721Address, getTokenId, walletClient } from "./utils/util";
 import {
   AccessPermission,
@@ -7,13 +15,7 @@ import {
   useIpAsset,
 } from "../../src";
 import Wrapper from "./utils/Wrapper";
-import {
-  Address,
-  Hex,
-  encodeFunctionData,
-  getAddress,
-  toFunctionSelector,
-} from "viem";
+
 const coreMetadataModuleAddress = "0xDa498A3f7c8a88cb72201138C366bE3778dB9575";
 const permissionAddress = "0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A";
 const accessControllerAbi = [

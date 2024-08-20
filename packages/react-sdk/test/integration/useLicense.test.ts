@@ -1,9 +1,10 @@
 import { renderHook } from "@testing-library/react";
+import { Hex } from "viem";
+import { act } from "react";
+
 import { useIpAsset, useLicense } from "../../src";
 import Wrapper from "./utils/Wrapper";
-import { act } from "react";
 import { getTokenId, mockERC20Address, mockERC721Address } from "./utils/util";
-import { Hex } from "viem";
 
 describe("useLicense Functions", () => {
   const {

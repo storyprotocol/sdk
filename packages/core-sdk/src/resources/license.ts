@@ -51,6 +51,7 @@ export class LicenseClient {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
+
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
    * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
@@ -104,7 +105,7 @@ export class LicenseClient {
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-        mintingFee: request.mintingFee,
+        defaultMintingFee: request.mintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
       });
@@ -150,7 +151,7 @@ export class LicenseClient {
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-        mintingFee: request.mintingFee,
+        defaultMintingFee: request.mintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,

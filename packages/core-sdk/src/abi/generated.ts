@@ -20,7 +20,7 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A)
+ *
  */
 export const accessControllerAbi = [
   {
@@ -387,14 +387,14 @@ export const accessControllerAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A)
+ *
  */
 export const accessControllerAddress = {
-  11155111: "0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A",
+  1513: "0x01d470c28822d3701Db6325333cEE9737524776E",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A)
+ *
  */
 export const accessControllerConfig = {
   address: accessControllerAddress,
@@ -406,7 +406,7 @@ export const accessControllerConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ *
  */
 export const coreMetadataModuleAbi = [
   {
@@ -425,8 +425,73 @@ export const coreMetadataModuleAbi = [
   { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
   {
     type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
     inputs: [],
     name: "CoreMetadataModule__MetadataAlreadyFrozen",
+  },
+  { type: "error", inputs: [], name: "CoreMetadataModule__ZeroAccessManager" },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
   },
   {
     type: "event",
@@ -475,6 +540,19 @@ export const coreMetadataModuleAbi = [
     name: "NFTTokenURISet",
   },
   {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
     type: "function",
     inputs: [],
     name: "ACCESS_CONTROLLER",
@@ -496,10 +574,38 @@ export const coreMetadataModuleAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "freezeMetadata",
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -513,6 +619,13 @@ export const coreMetadataModuleAbi = [
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
   },
   {
@@ -524,6 +637,13 @@ export const coreMetadataModuleAbi = [
       { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
     ],
     name: "setAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -555,17 +675,27 @@ export const coreMetadataModuleAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ *
  */
 export const coreMetadataModuleAddress = {
-  11155111: "0xDa498A3f7c8a88cb72201138C366bE3778dB9575",
+  1513: "0x290F414EA46b361ECFB6b430F98346CB593D02b9",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDa498A3f7c8a88cb72201138C366bE3778dB9575)
+ *
  */
 export const coreMetadataModuleConfig = {
   address: coreMetadataModuleAddress,
@@ -577,7 +707,7 @@ export const coreMetadataModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xEB7B1dd43B81A7be1fA427515a2b173B454A9832)
+ *
  */
 export const disputeModuleAbi = [
   {
@@ -619,6 +749,7 @@ export const disputeModuleAbi = [
     name: "AddressEmptyCode",
   },
   { type: "error", inputs: [], name: "DisputeModule__NotAbleToResolve" },
+  { type: "error", inputs: [], name: "DisputeModule__NotAllowedToWhitelist" },
   { type: "error", inputs: [], name: "DisputeModule__NotDerivative" },
   { type: "error", inputs: [], name: "DisputeModule__NotDisputeInitiator" },
   { type: "error", inputs: [], name: "DisputeModule__NotInDisputeState" },
@@ -1250,14 +1381,14 @@ export const disputeModuleAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xEB7B1dd43B81A7be1fA427515a2b173B454A9832)
+ *
  */
 export const disputeModuleAddress = {
-  11155111: "0xEB7B1dd43B81A7be1fA427515a2b173B454A9832",
+  1513: "0xDae11663438a0958E7075F604E3a5eEe77FD3878",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xEB7B1dd43B81A7be1fA427515a2b173B454A9832)
+ *
  */
 export const disputeModuleConfig = {
   address: disputeModuleAddress,
@@ -1269,7 +1400,7 @@ export const disputeModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d)
+ *
  */
 export const ipAccountImplAbi = [
   {
@@ -1282,16 +1413,27 @@ export const ipAccountImplAbi = [
     ],
     stateMutability: "nonpayable",
   },
+  { type: "error", inputs: [], name: "FnSelectorNotRecognized" },
+  { type: "error", inputs: [], name: "IPAccountStorage__InvalidBatchLengths" },
   {
     type: "error",
     inputs: [{ name: "module", internalType: "address", type: "address" }],
     name: "IPAccountStorage__NotRegisteredModule",
   },
+  { type: "error", inputs: [], name: "IPAccountStorage__ZeroIpAssetRegistry" },
+  { type: "error", inputs: [], name: "IPAccountStorage__ZeroLicenseRegistry" },
+  { type: "error", inputs: [], name: "IPAccountStorage__ZeroModuleRegistry" },
   { type: "error", inputs: [], name: "IPAccount__ExpiredSignature" },
   { type: "error", inputs: [], name: "IPAccount__InvalidCalldata" },
+  { type: "error", inputs: [], name: "IPAccount__InvalidOperation" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSignature" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSigner" },
   { type: "error", inputs: [], name: "IPAccount__ZeroAccessController" },
+  { type: "error", inputs: [], name: "OperationNotSupported" },
+  { type: "error", inputs: [], name: "SelfOwnDetected" },
+  { type: "error", inputs: [], name: "Unauthorized" },
+  { type: "error", inputs: [], name: "UnauthorizedCallContext" },
+  { type: "error", inputs: [], name: "UpgradeFailed" },
   {
     type: "event",
     anonymous: false,
@@ -1306,8 +1448,8 @@ export const ipAccountImplAbi = [
       { name: "data", internalType: "bytes", type: "bytes", indexed: false },
       {
         name: "nonce",
-        internalType: "uint256",
-        type: "uint256",
+        internalType: "bytes32",
+        type: "bytes32",
         indexed: false,
       },
     ],
@@ -1327,8 +1469,8 @@ export const ipAccountImplAbi = [
       { name: "data", internalType: "bytes", type: "bytes", indexed: false },
       {
         name: "nonce",
-        internalType: "uint256",
-        type: "uint256",
+        internalType: "bytes32",
+        type: "bytes32",
         indexed: false,
       },
       {
@@ -1352,6 +1494,20 @@ export const ipAccountImplAbi = [
     ],
     name: "ExecutedWithSig",
   },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  { type: "fallback", stateMutability: "payable" },
   {
     type: "function",
     inputs: [],
@@ -1402,6 +1558,33 @@ export const ipAccountImplAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "eip712Domain",
+    outputs: [
+      { name: "fields", internalType: "bytes1", type: "bytes1" },
+      { name: "name", internalType: "string", type: "string" },
+      { name: "version", internalType: "string", type: "string" },
+      { name: "chainId", internalType: "uint256", type: "uint256" },
+      { name: "verifyingContract", internalType: "address", type: "address" },
+      { name: "salt", internalType: "bytes32", type: "bytes32" },
+      { name: "extensions", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+      { name: "operation", internalType: "uint8", type: "uint8" },
+    ],
+    name: "execute",
+    outputs: [{ name: "result", internalType: "bytes", type: "bytes" }],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
       { name: "value", internalType: "uint256", type: "uint256" },
@@ -1409,6 +1592,25 @@ export const ipAccountImplAbi = [
     ],
     name: "execute",
     outputs: [{ name: "result", internalType: "bytes", type: "bytes" }],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "calls",
+        internalType: "struct ERC6551.Call[]",
+        type: "tuple[]",
+        components: [
+          { name: "target", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+          { name: "data", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      { name: "operation", internalType: "uint8", type: "uint8" },
+    ],
+    name: "executeBatch",
+    outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
     stateMutability: "payable",
   },
   {
@@ -1462,56 +1664,66 @@ export const ipAccountImplAbi = [
   {
     type: "function",
     inputs: [
-      { name: "signer", internalType: "address", type: "address" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      { name: "namespaces", internalType: "bytes32[]", type: "bytes32[]" },
+      { name: "keys", internalType: "bytes32[]", type: "bytes32[]" },
     ],
-    name: "isValidSigner",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    name: "getBytes32Batch",
+    outputs: [{ name: "values", internalType: "bytes32[]", type: "bytes32[]" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "uint256[]", type: "uint256[]" },
-      { name: "", internalType: "uint256[]", type: "uint256[]" },
-      { name: "", internalType: "bytes", type: "bytes" },
+      { name: "namespaces", internalType: "bytes32[]", type: "bytes32[]" },
+      { name: "keys", internalType: "bytes32[]", type: "bytes32[]" },
     ],
-    name: "onERC1155BatchReceived",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
-    stateMutability: "pure",
+    name: "getBytesBatch",
+    outputs: [{ name: "values", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "uint256", type: "uint256" },
-      { name: "", internalType: "uint256", type: "uint256" },
-      { name: "", internalType: "bytes", type: "bytes" },
+      { name: "hash", internalType: "bytes32", type: "bytes32" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
     ],
-    name: "onERC1155Received",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
-    stateMutability: "pure",
+    name: "isValidSignature",
+    outputs: [{ name: "result", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
   },
   {
     type: "function",
     inputs: [
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "uint256", type: "uint256" },
-      { name: "", internalType: "bytes", type: "bytes" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
     ],
-    name: "onERC721Received",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
-    stateMutability: "pure",
+    name: "isValidSigner",
+    outputs: [{ name: "result", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "isValidSigner",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
   },
   {
     type: "function",
     inputs: [],
     name: "owner",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
   },
   {
@@ -1536,9 +1748,29 @@ export const ipAccountImplAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "keys", internalType: "bytes32[]", type: "bytes32[]" },
+      { name: "values", internalType: "bytes32[]", type: "bytes32[]" },
+    ],
+    name: "setBytes32Batch",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "keys", internalType: "bytes32[]", type: "bytes32[]" },
+      { name: "values", internalType: "bytes[]", type: "bytes[]" },
+    ],
+    name: "setBytesBatch",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "state",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    outputs: [{ name: "result", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
   },
   {
@@ -1559,18 +1791,28 @@ export const ipAccountImplAbi = [
     ],
     stateMutability: "view",
   },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
   { type: "receive", stateMutability: "payable" },
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d)
+ *
  */
 export const ipAccountImplAddress = {
-  11155111: "0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d",
+  1513: "0x8F763c16753e830a8020c80f9F0131Eb8Ef52879",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x36a5f0D61f6Bab3C6Dde211E5a6762Cb18a8060d)
+ *
  */
 export const ipAccountImplConfig = {
   address: ipAccountImplAddress,
@@ -1582,7 +1824,7 @@ export const ipAccountImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xd43fE0d865cb5C26b1351d3eAf2E3064BE3276F6)
+ *
  */
 export const ipAssetRegistryAbi = [
   {
@@ -1625,6 +1867,7 @@ export const ipAssetRegistryAbi = [
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
   { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "IPAccountRegistry_ZeroERC6551Registry" },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroIpAccountImpl" },
   { type: "error", inputs: [], name: "IPAssetRegistry__AlreadyRegistered" },
   {
@@ -1929,17 +2172,6 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "chainId", internalType: "uint256", type: "uint256" },
-      { name: "tokenContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "registerIpAccount",
-    outputs: [{ name: "ipAccountAddress", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
@@ -1972,14 +2204,14 @@ export const ipAssetRegistryAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xd43fE0d865cb5C26b1351d3eAf2E3064BE3276F6)
+ *
  */
 export const ipAssetRegistryAddress = {
-  11155111: "0xd43fE0d865cb5C26b1351d3eAf2E3064BE3276F6",
+  1513: "0xe34A78B3d658aF7ad69Ff1EFF9012ECa025a14Be",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xd43fE0d865cb5C26b1351d3eAf2E3064BE3276F6)
+ *
  */
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
@@ -1991,7 +2223,7 @@ export const ipAssetRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xD6c2AfB61085f1359d47159f2271BDD0EeBf19C2)
+ *
  */
 export const ipRoyaltyVaultImplAbi = [
   {
@@ -2145,6 +2377,13 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "function",
     inputs: [],
+    name: "IP_GRAPH_CONTRACT",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "ROYALTY_POLICY_LAP",
     outputs: [{ name: "", internalType: "contract IRoyaltyPolicyLAP", type: "address" }],
     stateMutability: "view",
@@ -2250,10 +2489,30 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "_tokens", internalType: "address[]", type: "address[]" },
+    ],
+    name: "collectAccruedTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "ancestorIpId", internalType: "address", type: "address" }],
     name: "collectRoyaltyTokens",
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "collectableAmount",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -2407,14 +2666,14 @@ export const ipRoyaltyVaultImplAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xD6c2AfB61085f1359d47159f2271BDD0EeBf19C2)
+ *
  */
 export const ipRoyaltyVaultImplAddress = {
-  11155111: "0xD6c2AfB61085f1359d47159f2271BDD0EeBf19C2",
+  1513: "0xfb5b5B61c9a437E06Ba87367aaBf3766d091E3D1",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xD6c2AfB61085f1359d47159f2271BDD0EeBf19C2)
+ *
  */
 export const ipRoyaltyVaultImplConfig = {
   address: ipRoyaltyVaultImplAddress,
@@ -2426,7 +2685,7 @@ export const ipRoyaltyVaultImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x4f4b1bf7135C7ff1462826CCA81B048Ed19562ed)
+ *
  */
 export const licenseRegistryAbi = [
   {
@@ -2477,6 +2736,11 @@ export const licenseRegistryAbi = [
     type: "error",
     inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
     name: "LicenseRegistry__DerivativeAlreadyRegistered",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__DerivativeIpAlreadyHasChild",
   },
   {
     type: "error",
@@ -2537,7 +2801,6 @@ export const licenseRegistryAbi = [
     ],
     name: "LicenseRegistry__LicensorIpHasNoLicenseTerms",
   },
-  { type: "error", inputs: [], name: "LicenseRegistry__NoParentIp" },
   {
     type: "error",
     inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
@@ -2585,6 +2848,7 @@ export const licenseRegistryAbi = [
   },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroAccessManager" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicenseTemplate" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
   {
     type: "error",
@@ -2618,6 +2882,25 @@ export const licenseRegistryAbi = [
       },
     ],
     name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "licenseTemplate",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "licenseTermsId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "DefaultLicenseTermsSet",
   },
   {
     type: "event",
@@ -2724,6 +3007,13 @@ export const licenseRegistryAbi = [
     inputs: [],
     name: "EXPIRATION_TIME",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_CONTRACT",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -2939,6 +3229,7 @@ export const licenseRegistryAbi = [
       { name: "parentIpIds", internalType: "address[]", type: "address[]" },
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "isUsingLicenseToken", internalType: "bool", type: "bool" },
     ],
     name: "registerDerivativeIp",
     outputs: [],
@@ -2965,16 +3256,6 @@ export const licenseRegistryAbi = [
       { name: "newLicenseTermsId", internalType: "uint256", type: "uint256" },
     ],
     name: "setDefaultLicenseTerms",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "expireTime", internalType: "uint256", type: "uint256" },
-    ],
-    name: "setExpireTime",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -3057,14 +3338,14 @@ export const licenseRegistryAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x4f4b1bf7135C7ff1462826CCA81B048Ed19562ed)
+ *
  */
 export const licenseRegistryAddress = {
-  11155111: "0x4f4b1bf7135C7ff1462826CCA81B048Ed19562ed",
+  1513: "0xF542AF9a5A6E4A85a4f084D38B322516ec336097",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x4f4b1bf7135C7ff1462826CCA81B048Ed19562ed)
+ *
  */
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
@@ -3076,7 +3357,7 @@ export const licenseRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x1333c78A821c9a576209B01a16dDCEF881cAb6f2)
+ *
  */
 export const licenseTokenAbi = [
   {
@@ -3186,16 +3467,17 @@ export const licenseTokenAbi = [
     ],
     name: "LicenseToken__AllLicenseTokensMustFromSameLicenseTemplate",
   },
-  { type: "error", inputs: [], name: "LicenseToken__CallerNotLicensingModule" },
   {
     type: "error",
     inputs: [
       { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "iPowner", internalType: "address", type: "address" },
-      { name: "tokenOwner", internalType: "address", type: "address" },
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "childIpIp", internalType: "address", type: "address" },
+      { name: "actualTokenOwner", internalType: "address", type: "address" },
     ],
-    name: "LicenseToken__NotLicenseTokenOwner",
+    name: "LicenseToken__CallerAndChildIPNotTokenOwner",
   },
+  { type: "error", inputs: [], name: "LicenseToken__CallerNotLicensingModule" },
   { type: "error", inputs: [], name: "LicenseToken__NotTransferable" },
   {
     type: "error",
@@ -3655,8 +3937,8 @@ export const licenseTokenAbi = [
   {
     type: "function",
     inputs: [
+      { name: "caller", internalType: "address", type: "address" },
       { name: "childIpId", internalType: "address", type: "address" },
-      { name: "childIpOwner", internalType: "address", type: "address" },
       { name: "tokenIds", internalType: "uint256[]", type: "uint256[]" },
     ],
     name: "validateLicenseTokensForDerivative",
@@ -3670,14 +3952,14 @@ export const licenseTokenAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x1333c78A821c9a576209B01a16dDCEF881cAb6f2)
+ *
  */
 export const licenseTokenAddress = {
-  11155111: "0x1333c78A821c9a576209B01a16dDCEF881cAb6f2",
+  1513: "0xB31FE33De46A1FA5d4Ec669EDB049892E0A1EB4C",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x1333c78A821c9a576209B01a16dDCEF881cAb6f2)
+ *
  */
 export const licenseTokenConfig = {
   address: licenseTokenAddress,
@@ -3689,7 +3971,7 @@ export const licenseTokenConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xe89b0EaA8a0949738efA80bB531a165FB3456CBe)
+ *
  */
 export const licensingModuleAbi = [
   {
@@ -3799,6 +4081,11 @@ export const licensingModuleAbi = [
       { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
     ],
     name: "LicensingModule__LicenseTokenNotCompatibleForDerivative",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicensingModule__LicensorIpNotRegistered",
   },
   { type: "error", inputs: [], name: "LicensingModule__MintAmountZero" },
   { type: "error", inputs: [], name: "LicensingModule__NoLicenseToken" },
@@ -4224,14 +4511,14 @@ export const licensingModuleAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xe89b0EaA8a0949738efA80bB531a165FB3456CBe)
+ *
  */
 export const licensingModuleAddress = {
-  11155111: "0xe89b0EaA8a0949738efA80bB531a165FB3456CBe",
+  1513: "0xf49da534215DA7b48E57A41d41dac25C912FCC60",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xe89b0EaA8a0949738efA80bB531a165FB3456CBe)
+ *
  */
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
@@ -4243,7 +4530,7 @@ export const licensingModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x2E0a668289D5C4Da6a2264aC8DF03cd600c7aAB8)
+ *
  */
 export const moduleRegistryAbi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
@@ -4529,14 +4816,14 @@ export const moduleRegistryAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x2E0a668289D5C4Da6a2264aC8DF03cd600c7aAB8)
+ *
  */
 export const moduleRegistryAddress = {
-  11155111: "0x2E0a668289D5C4Da6a2264aC8DF03cd600c7aAB8",
+  1513: "0x008ac202A8545D10f25707439bE4c139Be4Df75F",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x2E0a668289D5C4Da6a2264aC8DF03cd600c7aAB8)
+ *
  */
 export const moduleRegistryConfig = {
   address: moduleRegistryAddress,
@@ -4548,7 +4835,7 @@ export const moduleRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x260B6CB6284c89dbE660c0004233f7bB99B5edE7)
+ *
  */
 export const piLicenseTemplateAbi = [
   {
@@ -4612,6 +4899,16 @@ export const piLicenseTemplateAbi = [
   {
     type: "error",
     inputs: [],
+    name: "PILicenseTemplate__CommercialDisabled_CantAddDerivativeRevCeiling",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__CommercialDisabled_CantAddRevCeiling",
+  },
+  {
+    type: "error",
+    inputs: [],
     name: "PILicenseTemplate__CommercialDisabled_CantAddRevShare",
   },
   {
@@ -4647,6 +4944,11 @@ export const piLicenseTemplateAbi = [
   {
     type: "error",
     inputs: [],
+    name: "PILicenseTemplate__DerivativesDisabled_CantAddDerivativeRevCeiling",
+  },
+  {
+    type: "error",
+    inputs: [],
     name: "PILicenseTemplate__DerivativesDisabled_CantAddReciprocal",
   },
   {
@@ -4663,14 +4965,6 @@ export const piLicenseTemplateAbi = [
   { type: "error", inputs: [], name: "PILicenseTemplate__ZeroLicenseRegistry" },
   { type: "error", inputs: [], name: "PILicenseTemplate__ZeroRoyaltyModule" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-  {
-    type: "error",
-    inputs: [
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "length", internalType: "uint256", type: "uint256" },
-    ],
-    name: "StringsInsufficientHexLength",
-  },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -4799,6 +5093,13 @@ export const piLicenseTemplateAbi = [
   {
     type: "function",
     inputs: [],
+    name: "TERMS_RENDERER",
+    outputs: [{ name: "", internalType: "contract PILTermsRenderer", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
@@ -4855,7 +5156,11 @@ export const piLicenseTemplateAbi = [
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
           { name: "expiration", internalType: "uint256", type: "uint256" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
@@ -4875,7 +5180,7 @@ export const piLicenseTemplateAbi = [
             type: "uint32",
           },
           {
-            name: "commercialRevCelling",
+            name: "commercialRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -4888,7 +5193,7 @@ export const piLicenseTemplateAbi = [
           { name: "derivativesApproval", internalType: "bool", type: "bool" },
           { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
           {
-            name: "derivativeRevCelling",
+            name: "derivativeRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -4909,7 +5214,11 @@ export const piLicenseTemplateAbi = [
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
           { name: "expiration", internalType: "uint256", type: "uint256" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
@@ -4929,7 +5238,7 @@ export const piLicenseTemplateAbi = [
             type: "uint32",
           },
           {
-            name: "commercialRevCelling",
+            name: "commercialRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -4942,7 +5251,7 @@ export const piLicenseTemplateAbi = [
           { name: "derivativesApproval", internalType: "bool", type: "bool" },
           { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
           {
-            name: "derivativeRevCelling",
+            name: "derivativeRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -5047,7 +5356,11 @@ export const piLicenseTemplateAbi = [
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
           { name: "expiration", internalType: "uint256", type: "uint256" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
@@ -5067,7 +5380,7 @@ export const piLicenseTemplateAbi = [
             type: "uint32",
           },
           {
-            name: "commercialRevCelling",
+            name: "commercialRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -5080,7 +5393,7 @@ export const piLicenseTemplateAbi = [
           { name: "derivativesApproval", internalType: "bool", type: "bool" },
           { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
           {
-            name: "derivativeRevCelling",
+            name: "derivativeRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -5189,14 +5502,14 @@ export const piLicenseTemplateAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x260B6CB6284c89dbE660c0004233f7bB99B5edE7)
+ *
  */
 export const piLicenseTemplateAddress = {
-  11155111: "0x260B6CB6284c89dbE660c0004233f7bB99B5edE7",
+  1513: "0x8BB1ADE72E21090Fc891e1d4b88AC5E57b27cB31",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x260B6CB6284c89dbE660c0004233f7bB99B5edE7)
+ *
  */
 export const piLicenseTemplateConfig = {
   address: piLicenseTemplateAddress,
@@ -5208,7 +5521,7 @@ export const piLicenseTemplateConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xFAE961dd2b87CD5818dbCDc2591e6AB0b50E96b0)
+ *
  */
 export const royaltyModuleAbi = [
   {
@@ -5666,14 +5979,14 @@ export const royaltyModuleAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xFAE961dd2b87CD5818dbCDc2591e6AB0b50E96b0)
+ *
  */
 export const royaltyModuleAddress = {
-  11155111: "0xFAE961dd2b87CD5818dbCDc2591e6AB0b50E96b0",
+  1513: "0x968beb5432c362c12b5Be6967a5d6F1ED5A63F01",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xFAE961dd2b87CD5818dbCDc2591e6AB0b50E96b0)
+ *
  */
 export const royaltyModuleConfig = {
   address: royaltyModuleAddress,
@@ -5685,7 +5998,7 @@ export const royaltyModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xAAbaf349C7a2A84564F9CC4Ac130B3f19A718E86)
+ *
  */
 export const royaltyPolicyLapAbi = [
   {
@@ -5746,11 +6059,6 @@ export const royaltyPolicyLapAbi = [
   {
     type: "error",
     inputs: [],
-    name: "RoyaltyPolicyLAP__InvalidParentRoyaltiesLength",
-  },
-  {
-    type: "error",
-    inputs: [],
     name: "RoyaltyPolicyLAP__LastPositionNotAbleToMintLicense",
   },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
@@ -5805,6 +6113,19 @@ export const royaltyPolicyLapAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "beacon",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "IpRoyaltyVaultBeaconSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "account",
         internalType: "address",
         type: "address",
@@ -5835,18 +6156,6 @@ export const royaltyPolicyLapAbi = [
         type: "uint32",
         indexed: false,
       },
-      {
-        name: "targetAncestors",
-        internalType: "address[]",
-        type: "address[]",
-        indexed: false,
-      },
-      {
-        name: "targetRoyaltyAmount",
-        internalType: "uint32[]",
-        type: "uint32[]",
-        indexed: false,
-      },
     ],
     name: "PolicyInitialized",
   },
@@ -5874,6 +6183,19 @@ export const royaltyPolicyLapAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "interval",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "SnapshotIntervalSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "account",
         internalType: "address",
         type: "address",
@@ -5894,6 +6216,13 @@ export const royaltyPolicyLapAbi = [
       },
     ],
     name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_CONTRACT",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -5966,8 +6295,6 @@ export const royaltyPolicyLapAbi = [
       { name: "", internalType: "bool", type: "bool" },
       { name: "", internalType: "address", type: "address" },
       { name: "", internalType: "uint32", type: "uint32" },
-      { name: "", internalType: "address[]", type: "address[]" },
-      { name: "", internalType: "uint32[]", type: "uint32[]" },
     ],
     stateMutability: "view",
   },
@@ -6096,14 +6423,14 @@ export const royaltyPolicyLapAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xAAbaf349C7a2A84564F9CC4Ac130B3f19A718E86)
+ *
  */
 export const royaltyPolicyLapAddress = {
-  11155111: "0xAAbaf349C7a2A84564F9CC4Ac130B3f19A718E86",
+  1513: "0x61A5c7570f5bDB118D65053Ba60DE87e050E664e",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xAAbaf349C7a2A84564F9CC4Ac130B3f19A718E86)
+ *
  */
 export const royaltyPolicyLapConfig = {
   address: royaltyPolicyLapAddress,
@@ -6115,7 +6442,7 @@ export const royaltyPolicyLapConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x69415CE984A79a3Cfbe3F51024C63b6C107331e3)
+ *
  */
 export const spgAbi = [
   {
@@ -6124,6 +6451,8 @@ export const spgAbi = [
       { name: "accessController", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
       { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "coreMetadataModule", internalType: "address", type: "address" },
       { name: "pilTemplate", internalType: "address", type: "address" },
       { name: "licenseToken", internalType: "address", type: "address" },
@@ -6155,6 +6484,11 @@ export const spgAbi = [
   },
   {
     type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
@@ -6165,6 +6499,11 @@ export const spgAbi = [
   { type: "error", inputs: [], name: "SPG__CallerNotMinterRole" },
   { type: "error", inputs: [], name: "SPG__EmptyLicenseTokens" },
   { type: "error", inputs: [], name: "SPG__ZeroAddressParam" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -6253,6 +6592,13 @@ export const spgAbi = [
   {
     type: "function",
     inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "LICENSE_TOKEN",
     outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
     stateMutability: "view",
@@ -6275,6 +6621,13 @@ export const spgAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -6324,8 +6677,9 @@ export const spgAbi = [
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "recipient", internalType: "address", type: "address" },
+      { name: "nftMetadata", internalType: "string", type: "string" },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6347,8 +6701,9 @@ export const spgAbi = [
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "recipient", internalType: "address", type: "address" },
+      { name: "nftMetadata", internalType: "string", type: "string" },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6433,8 +6788,9 @@ export const spgAbi = [
           { name: "royaltyContext", internalType: "bytes", type: "bytes" },
         ],
       },
+      { name: "nftMetadata", internalType: "string", type: "string" },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6458,8 +6814,9 @@ export const spgAbi = [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: "nftMetadata", internalType: "string", type: "string" },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6490,7 +6847,7 @@ export const spgAbi = [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6520,7 +6877,7 @@ export const spgAbi = [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6626,7 +6983,7 @@ export const spgAbi = [
         ],
       },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6668,7 +7025,7 @@ export const spgAbi = [
       { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "royaltyContext", internalType: "bytes", type: "bytes" },
       {
-        name: "metadata",
+        name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
@@ -6799,14 +7156,14 @@ export const spgAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x69415CE984A79a3Cfbe3F51024C63b6C107331e3)
+ *
  */
 export const spgAddress = {
-  11155111: "0x69415CE984A79a3Cfbe3F51024C63b6C107331e3",
+  1513: "0x69415CE984A79a3Cfbe3F51024C63b6C107331e3",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x69415CE984A79a3Cfbe3F51024C63b6C107331e3)
+ *
  */
 export const spgConfig = { address: spgAddress, abi: spgAbi } as const;
 
@@ -6815,7 +7172,7 @@ export const spgConfig = { address: spgAddress, abi: spgAbi } as const;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x027D258659FBdda9033f9c008AF166239EBa67c1)
+ *
  */
 export const spgnftBeaconAbi = [
   {
@@ -6911,14 +7268,14 @@ export const spgnftBeaconAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x027D258659FBdda9033f9c008AF166239EBa67c1)
+ *
  */
 export const spgnftBeaconAddress = {
-  11155111: "0x027D258659FBdda9033f9c008AF166239EBa67c1",
+  1513: "0x027D258659FBdda9033f9c008AF166239EBa67c1",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x027D258659FBdda9033f9c008AF166239EBa67c1)
+ *
  */
 export const spgnftBeaconConfig = {
   address: spgnftBeaconAddress,
@@ -6930,7 +7287,7 @@ export const spgnftBeaconConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDb6480C00B570324A122A6B35F9CAC0F87BDb3e6)
+ *
  */
 export const spgnftImplAbi = [
   {
@@ -7204,8 +7561,8 @@ export const spgnftImplAbi = [
       { name: "name", internalType: "string", type: "string" },
       { name: "symbol", internalType: "string", type: "string" },
       { name: "maxSupply", internalType: "uint32", type: "uint32" },
-      { name: "mintCost", internalType: "uint256", type: "uint256" },
-      { name: "mintToken", internalType: "address", type: "address" },
+      { name: "mintFee", internalType: "uint256", type: "uint256" },
+      { name: "mintFeeToken", internalType: "address", type: "address" },
       { name: "owner", internalType: "address", type: "address" },
     ],
     name: "initialize",
@@ -7242,14 +7599,14 @@ export const spgnftImplAbi = [
   {
     type: "function",
     inputs: [],
-    name: "mintCost",
+    name: "mintFee",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [],
-    name: "mintToken",
+    name: "mintFeeToken",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
@@ -7322,15 +7679,15 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "cost", internalType: "uint256", type: "uint256" }],
-    name: "setMintCost",
+    inputs: [{ name: "fee", internalType: "uint256", type: "uint256" }],
+    name: "setMintFee",
     outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "setMintToken",
+    name: "setMintFeeToken",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -7386,14 +7743,14 @@ export const spgnftImplAbi = [
 ] as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDb6480C00B570324A122A6B35F9CAC0F87BDb3e6)
+ *
  */
 export const spgnftImplAddress = {
-  11155111: "0xDb6480C00B570324A122A6B35F9CAC0F87BDb3e6",
+  1513: "0xDb6480C00B570324A122A6B35F9CAC0F87BDb3e6",
 } as const;
 
 /**
- * [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xDb6480C00B570324A122A6B35F9CAC0F87BDb3e6)
+ *
  */
 export const spgnftImplConfig = {
   address: spgnftImplAddress,
@@ -7672,6 +8029,24 @@ export class AccessControllerClient extends AccessControllerEventClient {
 // Contract CoreMetadataModule =============================================================
 
 /**
+ * CoreMetadataModuleAuthorityUpdatedEvent
+ *
+ * @param authority address
+ */
+export type CoreMetadataModuleAuthorityUpdatedEvent = {
+  authority: Address;
+};
+
+/**
+ * CoreMetadataModuleInitializedEvent
+ *
+ * @param version uint64
+ */
+export type CoreMetadataModuleInitializedEvent = {
+  version: bigint;
+};
+
+/**
  * CoreMetadataModuleMetadataFrozenEvent
  *
  * @param ipId address
@@ -7706,9 +8081,24 @@ export type CoreMetadataModuleNftTokenUriSetEvent = {
   nftMetadataHash: Hex;
 };
 
+/**
+ * CoreMetadataModuleUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type CoreMetadataModuleUpgradedEvent = {
+  implementation: Address;
+};
+
 export type CoreMetadataModuleAccessControllerResponse = Address;
 
 export type CoreMetadataModuleIpAccountRegistryResponse = Address;
+
+export type CoreMetadataModuleUpgradeInterfaceVersionResponse = string;
+
+export type CoreMetadataModuleAuthorityResponse = Address;
+
+export type CoreMetadataModuleIsConsumingScheduledOpResponse = Hex;
 
 /**
  * CoreMetadataModuleIsMetadataFrozenRequest
@@ -7722,6 +8112,8 @@ export type CoreMetadataModuleIsMetadataFrozenRequest = {
 export type CoreMetadataModuleIsMetadataFrozenResponse = boolean;
 
 export type CoreMetadataModuleNameResponse = string;
+
+export type CoreMetadataModuleProxiableUuidResponse = Hex;
 
 /**
  * CoreMetadataModuleSupportsInterfaceRequest
@@ -7744,6 +8136,15 @@ export type CoreMetadataModuleFreezeMetadataRequest = {
 };
 
 /**
+ * CoreMetadataModuleInitializeRequest
+ *
+ * @param accessManager address
+ */
+export type CoreMetadataModuleInitializeRequest = {
+  accessManager: Address;
+};
+
+/**
  * CoreMetadataModuleSetAllRequest
  *
  * @param ipId address
@@ -7756,6 +8157,15 @@ export type CoreMetadataModuleSetAllRequest = {
   metadataURI: string;
   metadataHash: Hex;
   nftMetadataHash: Hex;
+};
+
+/**
+ * CoreMetadataModuleSetAuthorityRequest
+ *
+ * @param newAuthority address
+ */
+export type CoreMetadataModuleSetAuthorityRequest = {
+  newAuthority: Address;
 };
 
 /**
@@ -7783,6 +8193,17 @@ export type CoreMetadataModuleUpdateNftTokenUriRequest = {
 };
 
 /**
+ * CoreMetadataModuleUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type CoreMetadataModuleUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
+};
+
+/**
  * contract CoreMetadataModule event
  */
 export class CoreMetadataModuleEventClient {
@@ -7792,6 +8213,88 @@ export class CoreMetadataModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(coreMetadataModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AuthorityUpdated for contract CoreMetadataModule
+   */
+  public watchAuthorityUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<CoreMetadataModuleAuthorityUpdatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      eventName: "AuthorityUpdated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AuthorityUpdated for contract CoreMetadataModule
+   */
+  public parseTxAuthorityUpdatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<CoreMetadataModuleAuthorityUpdatedEvent> {
+    const targetLogs: Array<CoreMetadataModuleAuthorityUpdatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: coreMetadataModuleAbi,
+          eventName: "AuthorityUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract CoreMetadataModule
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<CoreMetadataModuleInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract CoreMetadataModule
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<CoreMetadataModuleInitializedEvent> {
+    const targetLogs: Array<CoreMetadataModuleInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: coreMetadataModuleAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**
@@ -7916,6 +8419,47 @@ export class CoreMetadataModuleEventClient {
     }
     return targetLogs;
   }
+
+  /**
+   * event Upgraded for contract CoreMetadataModule
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<CoreMetadataModuleUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract CoreMetadataModule
+   */
+  public parseTxUpgradedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<CoreMetadataModuleUpgradedEvent> {
+    const targetLogs: Array<CoreMetadataModuleUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: coreMetadataModuleAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
 }
 
 /**
@@ -7955,6 +8499,48 @@ export class CoreMetadataModuleReadOnlyClient extends CoreMetadataModuleEventCli
   }
 
   /**
+   * method UPGRADE_INTERFACE_VERSION for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleUpgradeInterfaceVersionRequest
+   * @return Promise<CoreMetadataModuleUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<CoreMetadataModuleUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method authority for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleAuthorityRequest
+   * @return Promise<CoreMetadataModuleAuthorityResponse>
+   */
+  public async authority(): Promise<CoreMetadataModuleAuthorityResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "authority",
+    });
+  }
+
+  /**
+   * method isConsumingScheduledOp for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleIsConsumingScheduledOpRequest
+   * @return Promise<CoreMetadataModuleIsConsumingScheduledOpResponse>
+   */
+  public async isConsumingScheduledOp(): Promise<CoreMetadataModuleIsConsumingScheduledOpResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
    * method isMetadataFrozen for contract CoreMetadataModule
    *
    * @param request CoreMetadataModuleIsMetadataFrozenRequest
@@ -7982,6 +8568,20 @@ export class CoreMetadataModuleReadOnlyClient extends CoreMetadataModuleEventCli
       abi: coreMetadataModuleAbi,
       address: this.address,
       functionName: "name",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleProxiableUuidRequest
+   * @return Promise<CoreMetadataModuleProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<CoreMetadataModuleProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
     });
   }
 
@@ -8051,6 +8651,42 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
   }
 
   /**
+   * method initialize for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: CoreMetadataModuleInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract CoreMetadataModule with only encode
+   *
+   * @param request CoreMetadataModuleInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: CoreMetadataModuleInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
    * method setAll for contract CoreMetadataModule
    *
    * @param request CoreMetadataModuleSetAllRequest
@@ -8080,6 +8716,42 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
         abi: coreMetadataModuleAbi,
         functionName: "setAll",
         args: [request.ipId, request.metadataURI, request.metadataHash, request.nftMetadataHash],
+      }),
+    };
+  }
+
+  /**
+   * method setAuthority for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleSetAuthorityRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAuthority(
+    request: CoreMetadataModuleSetAuthorityRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "setAuthority",
+      account: this.wallet.account,
+      args: [request.newAuthority],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract CoreMetadataModule with only encode
+   *
+   * @param request CoreMetadataModuleSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: CoreMetadataModuleSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
       }),
     };
   }
@@ -8154,6 +8826,42 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
         abi: coreMetadataModuleAbi,
         functionName: "updateNftTokenURI",
         args: [request.ipId, request.nftMetadataHash],
+      }),
+    };
+  }
+
+  /**
+   * method upgradeToAndCall for contract CoreMetadataModule
+   *
+   * @param request CoreMetadataModuleUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: CoreMetadataModuleUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: coreMetadataModuleAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract CoreMetadataModule with only encode
+   *
+   * @param request CoreMetadataModuleUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: CoreMetadataModuleUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
       }),
     };
   }
@@ -8497,7 +9205,14 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
 
 // Contract IPAccountImpl =============================================================
 
-export type IpAccountImplStateResponse = bigint;
+/**
+ * IpAccountImplStateResponse
+ *
+ * @param result bytes32
+ */
+export type IpAccountImplStateResponse = {
+  result: Hex;
+};
 
 /**
  * IpAccountImplExecuteRequest
@@ -8505,8 +9220,23 @@ export type IpAccountImplStateResponse = bigint;
  * @param to address
  * @param value uint256
  * @param data bytes
+ * @param operation uint8
  */
 export type IpAccountImplExecuteRequest = {
+  to: Address;
+  value: bigint;
+  data: Hex;
+  operation: number;
+};
+
+/**
+ * IpAccountImplExecute2Request
+ *
+ * @param to address
+ * @param value uint256
+ * @param data bytes
+ */
+export type IpAccountImplExecute2Request = {
   to: Address;
   value: bigint;
   data: Hex;
@@ -8550,11 +9280,14 @@ export class IpAccountImplReadOnlyClient {
    * @return Promise<IpAccountImplStateResponse>
    */
   public async state(): Promise<IpAccountImplStateResponse> {
-    return await this.rpcClient.readContract({
+    const result = await this.rpcClient.readContract({
       abi: ipAccountImplAbi,
       address: this.address,
       functionName: "state",
     });
+    return {
+      result: result,
+    };
   }
 }
 
@@ -8581,7 +9314,7 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
       address: this.address,
       functionName: "execute",
       account: this.wallet.account,
-      args: [request.to, request.value, request.data],
+      args: [request.to, request.value, request.data, request.operation],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -8593,6 +9326,40 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
    * @return EncodedTxData
    */
   public executeEncode(request: IpAccountImplExecuteRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAccountImplAbi,
+        functionName: "execute",
+        args: [request.to, request.value, request.data, request.operation],
+      }),
+    };
+  }
+
+  /**
+   * method execute for contract IPAccountImpl
+   *
+   * @param request IpAccountImplExecute2Request
+   * @return Promise<WriteContractReturnType>
+   */
+  public async execute2(request: IpAccountImplExecute2Request): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: ipAccountImplAbi,
+      address: this.address,
+      functionName: "execute",
+      account: this.wallet.account,
+      args: [request.to, request.value, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method execute for contract IPAccountImpl with only encode
+   *
+   * @param request IpAccountImplExecute2Request
+   * @return EncodedTxData
+   */
+  public execute2Encode(request: IpAccountImplExecute2Request): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
@@ -9348,6 +10115,17 @@ export type LicenseRegistryAuthorityUpdatedEvent = {
 };
 
 /**
+ * LicenseRegistryDefaultLicenseTermsSetEvent
+ *
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryDefaultLicenseTermsSetEvent = {
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
  * LicenseRegistryExpirationTimeSetEvent
  *
  * @param ipId address
@@ -9417,6 +10195,8 @@ export type LicenseRegistryUpgradedEvent = {
 export type LicenseRegistryDisputeModuleResponse = Address;
 
 export type LicenseRegistryExpirationTimeResponse = Hex;
+
+export type LicenseRegistryIpGraphContractResponse = Address;
 
 export type LicenseRegistryLicensingModuleResponse = Address;
 
@@ -9701,12 +10481,14 @@ export type LicenseRegistryInitializeRequest = {
  * @param parentIpIds address[]
  * @param licenseTemplate address
  * @param licenseTermsIds uint256[]
+ * @param isUsingLicenseToken bool
  */
 export type LicenseRegistryRegisterDerivativeIpRequest = {
   childIpId: Address;
   parentIpIds: readonly Address[];
   licenseTemplate: Address;
   licenseTermsIds: readonly bigint[];
+  isUsingLicenseToken: boolean;
 };
 
 /**
@@ -9736,17 +10518,6 @@ export type LicenseRegistrySetAuthorityRequest = {
 export type LicenseRegistrySetDefaultLicenseTermsRequest = {
   newLicenseTemplate: Address;
   newLicenseTermsId: bigint;
-};
-
-/**
- * LicenseRegistrySetExpireTimeRequest
- *
- * @param ipId address
- * @param expireTime uint256
- */
-export type LicenseRegistrySetExpireTimeRequest = {
-  ipId: Address;
-  expireTime: bigint;
 };
 
 /**
@@ -9840,6 +10611,47 @@ export class LicenseRegistryEventClient {
           topics: log.topics,
         });
         if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event DefaultLicenseTermsSet for contract LicenseRegistry
+   */
+  public watchDefaultLicenseTermsSetEvent(
+    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryDefaultLicenseTermsSetEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      eventName: "DefaultLicenseTermsSet",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event DefaultLicenseTermsSet for contract LicenseRegistry
+   */
+  public parseTxDefaultLicenseTermsSetEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<LicenseRegistryDefaultLicenseTermsSetEvent> {
+    const targetLogs: Array<LicenseRegistryDefaultLicenseTermsSetEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: licenseRegistryAbi,
+          eventName: "DefaultLicenseTermsSet",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "DefaultLicenseTermsSet") {
           targetLogs.push(event.args);
         }
       } catch (e) {
@@ -10127,6 +10939,20 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
       abi: licenseRegistryAbi,
       address: this.address,
       functionName: "EXPIRATION_TIME",
+    });
+  }
+
+  /**
+   * method IP_GRAPH_CONTRACT for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryIpGraphContractRequest
+   * @return Promise<LicenseRegistryIpGraphContractResponse>
+   */
+  public async ipGraphContract(): Promise<LicenseRegistryIpGraphContractResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "IP_GRAPH_CONTRACT",
     });
   }
 
@@ -10610,6 +11436,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
         request.parentIpIds,
         request.licenseTemplate,
         request.licenseTermsIds,
+        request.isUsingLicenseToken,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -10634,6 +11461,7 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
           request.parentIpIds,
           request.licenseTemplate,
           request.licenseTermsIds,
+          request.isUsingLicenseToken,
         ],
       }),
     };
@@ -10747,42 +11575,6 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
         abi: licenseRegistryAbi,
         functionName: "setDefaultLicenseTerms",
         args: [request.newLicenseTemplate, request.newLicenseTermsId],
-      }),
-    };
-  }
-
-  /**
-   * method setExpireTime for contract LicenseRegistry
-   *
-   * @param request LicenseRegistrySetExpireTimeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async setExpireTime(
-    request: LicenseRegistrySetExpireTimeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licenseRegistryAbi,
-      address: this.address,
-      functionName: "setExpireTime",
-      account: this.wallet.account,
-      args: [request.ipId, request.expireTime],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method setExpireTime for contract LicenseRegistry with only encode
-   *
-   * @param request LicenseRegistrySetExpireTimeRequest
-   * @return EncodedTxData
-   */
-  public setExpireTimeEncode(request: LicenseRegistrySetExpireTimeRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: licenseRegistryAbi,
-        functionName: "setExpireTime",
-        args: [request.ipId, request.expireTime],
       }),
     };
   }
@@ -11442,6 +12234,8 @@ export type PiLicenseTemplateLicenseRegistryResponse = Address;
 
 export type PiLicenseTemplateRoyaltyModuleResponse = Address;
 
+export type PiLicenseTemplateTermsRendererResponse = Address;
+
 export type PiLicenseTemplateUpgradeInterfaceVersionResponse = string;
 
 export type PiLicenseTemplateAuthorityResponse = Address;
@@ -11501,19 +12295,19 @@ export type PiLicenseTemplateGetLicenseTermsResponse = {
   terms: {
     transferable: boolean;
     royaltyPolicy: Address;
-    mintingFee: bigint;
+    defaultMintingFee: bigint;
     expiration: bigint;
     commercialUse: boolean;
     commercialAttribution: boolean;
     commercializerChecker: Address;
     commercializerCheckerData: Hex;
     commercialRevShare: number;
-    commercialRevCelling: bigint;
+    commercialRevCeiling: bigint;
     derivativesAllowed: boolean;
     derivativesAttribution: boolean;
     derivativesApproval: boolean;
     derivativesReciprocal: boolean;
-    derivativeRevCelling: bigint;
+    derivativeRevCeiling: bigint;
     currency: Address;
     uri: string;
   };
@@ -11528,19 +12322,19 @@ export type PiLicenseTemplateGetLicenseTermsIdRequest = {
   terms: {
     transferable: boolean;
     royaltyPolicy: Address;
-    mintingFee: bigint;
+    defaultMintingFee: bigint;
     expiration: bigint;
     commercialUse: boolean;
     commercialAttribution: boolean;
     commercializerChecker: Address;
     commercializerCheckerData: Hex;
     commercialRevShare: number;
-    commercialRevCelling: bigint;
+    commercialRevCeiling: bigint;
     derivativesAllowed: boolean;
     derivativesAttribution: boolean;
     derivativesApproval: boolean;
     derivativesReciprocal: boolean;
-    derivativeRevCelling: bigint;
+    derivativeRevCeiling: bigint;
     currency: Address;
     uri: string;
   };
@@ -11681,19 +12475,19 @@ export type PiLicenseTemplateRegisterLicenseTermsRequest = {
   terms: {
     transferable: boolean;
     royaltyPolicy: Address;
-    mintingFee: bigint;
+    defaultMintingFee: bigint;
     expiration: bigint;
     commercialUse: boolean;
     commercialAttribution: boolean;
     commercializerChecker: Address;
     commercializerCheckerData: Hex;
     commercialRevShare: number;
-    commercialRevCelling: bigint;
+    commercialRevCeiling: bigint;
     derivativesAllowed: boolean;
     derivativesAttribution: boolean;
     derivativesApproval: boolean;
     derivativesReciprocal: boolean;
-    derivativeRevCelling: bigint;
+    derivativeRevCeiling: bigint;
     currency: Address;
     uri: string;
   };
@@ -12058,6 +12852,20 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
       abi: piLicenseTemplateAbi,
       address: this.address,
       functionName: "ROYALTY_MODULE",
+    });
+  }
+
+  /**
+   * method TERMS_RENDERER for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateTermsRendererRequest
+   * @return Promise<PiLicenseTemplateTermsRendererResponse>
+   */
+  public async termsRenderer(): Promise<PiLicenseTemplateTermsRendererResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "TERMS_RENDERER",
     });
   }
 
@@ -12774,16 +13582,8 @@ export type RoyaltyPolicyLapGetRoyaltyDataRequest = {
  * @param 0 bool
  * @param 1 address
  * @param 2 uint32
- * @param 3 address[]
- * @param 4 uint32[]
  */
-export type RoyaltyPolicyLapGetRoyaltyDataResponse = readonly [
-  boolean,
-  Address,
-  number,
-  readonly Address[],
-  readonly number[],
-];
+export type RoyaltyPolicyLapGetRoyaltyDataResponse = readonly [boolean, Address, number];
 
 /**
  * RoyaltyPolicyLapOnRoyaltyPaymentRequest
@@ -12913,12 +13713,14 @@ export type SpgCreateCollectionRequest = {
  *
  * @param nftContract address
  * @param recipient address
- * @param metadata tuple
+ * @param nftMetadata string
+ * @param ipMetadata tuple
  */
 export type SpgMintAndRegisterIpRequest = {
   nftContract: Address;
   recipient: Address;
-  metadata: {
+  nftMetadata: string;
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -12930,13 +13732,15 @@ export type SpgMintAndRegisterIpRequest = {
  *
  * @param nftContract address
  * @param recipient address
- * @param metadata tuple
+ * @param nftMetadata string
+ * @param ipMetadata tuple
  * @param terms tuple
  */
 export type SpgMintAndRegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   recipient: Address;
-  metadata: {
+  nftMetadata: string;
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -12967,7 +13771,8 @@ export type SpgMintAndRegisterIpAndAttachPilTermsRequest = {
  *
  * @param nftContract address
  * @param derivData tuple
- * @param metadata tuple
+ * @param nftMetadata string
+ * @param ipMetadata tuple
  * @param recipient address
  */
 export type SpgMintAndRegisterIpAndMakeDerivativeRequest = {
@@ -12978,7 +13783,8 @@ export type SpgMintAndRegisterIpAndMakeDerivativeRequest = {
     licenseTermsIds: readonly bigint[];
     royaltyContext: Hex;
   };
-  metadata: {
+  nftMetadata: string;
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -12992,14 +13798,16 @@ export type SpgMintAndRegisterIpAndMakeDerivativeRequest = {
  * @param nftContract address
  * @param licenseTokenIds uint256[]
  * @param royaltyContext bytes
- * @param metadata tuple
+ * @param nftMetadata string
+ * @param ipMetadata tuple
  * @param recipient address
  */
 export type SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
   licenseTokenIds: readonly bigint[];
   royaltyContext: Hex;
-  metadata: {
+  nftMetadata: string;
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -13012,13 +13820,13 @@ export type SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
  *
  * @param nftContract address
  * @param tokenId uint256
- * @param metadata tuple
+ * @param ipMetadata tuple
  * @param sigMetadata tuple
  */
 export type SpgRegisterIpRequest = {
   nftContract: Address;
   tokenId: bigint;
-  metadata: {
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -13035,7 +13843,7 @@ export type SpgRegisterIpRequest = {
  *
  * @param nftContract address
  * @param tokenId uint256
- * @param metadata tuple
+ * @param ipMetadata tuple
  * @param terms tuple
  * @param sigMetadata tuple
  * @param sigAttach tuple
@@ -13043,7 +13851,7 @@ export type SpgRegisterIpRequest = {
 export type SpgRegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint;
-  metadata: {
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -13085,7 +13893,7 @@ export type SpgRegisterIpAndAttachPilTermsRequest = {
  * @param nftContract address
  * @param tokenId uint256
  * @param derivData tuple
- * @param metadata tuple
+ * @param ipMetadata tuple
  * @param sigMetadata tuple
  * @param sigRegister tuple
  */
@@ -13098,7 +13906,7 @@ export type SpgRegisterIpAndMakeDerivativeRequest = {
     licenseTermsIds: readonly bigint[];
     royaltyContext: Hex;
   };
-  metadata: {
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -13122,7 +13930,7 @@ export type SpgRegisterIpAndMakeDerivativeRequest = {
  * @param tokenId uint256
  * @param licenseTokenIds uint256[]
  * @param royaltyContext bytes
- * @param metadata tuple
+ * @param ipMetadata tuple
  * @param sigMetadata tuple
  * @param sigRegister tuple
  */
@@ -13131,7 +13939,7 @@ export type SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   tokenId: bigint;
   licenseTokenIds: readonly bigint[];
   royaltyContext: Hex;
-  metadata: {
+  ipMetadata: {
     metadataURI: string;
     metadataHash: Hex;
     nftMetadataHash: Hex;
@@ -13306,7 +14114,7 @@ export class SpgClient extends SpgEventClient {
       address: this.address,
       functionName: "mintAndRegisterIp",
       account: this.wallet.account,
-      args: [request.nftContract, request.recipient, request.metadata],
+      args: [request.nftContract, request.recipient, request.nftMetadata, request.ipMetadata],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -13323,7 +14131,7 @@ export class SpgClient extends SpgEventClient {
       data: encodeFunctionData({
         abi: spgAbi,
         functionName: "mintAndRegisterIp",
-        args: [request.nftContract, request.recipient, request.metadata],
+        args: [request.nftContract, request.recipient, request.nftMetadata, request.ipMetadata],
       }),
     };
   }
@@ -13342,7 +14150,13 @@ export class SpgClient extends SpgEventClient {
       address: this.address,
       functionName: "mintAndRegisterIpAndAttachPILTerms",
       account: this.wallet.account,
-      args: [request.nftContract, request.recipient, request.metadata, request.terms],
+      args: [
+        request.nftContract,
+        request.recipient,
+        request.nftMetadata,
+        request.ipMetadata,
+        request.terms,
+      ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -13361,7 +14175,13 @@ export class SpgClient extends SpgEventClient {
       data: encodeFunctionData({
         abi: spgAbi,
         functionName: "mintAndRegisterIpAndAttachPILTerms",
-        args: [request.nftContract, request.recipient, request.metadata, request.terms],
+        args: [
+          request.nftContract,
+          request.recipient,
+          request.nftMetadata,
+          request.ipMetadata,
+          request.terms,
+        ],
       }),
     };
   }
@@ -13380,7 +14200,13 @@ export class SpgClient extends SpgEventClient {
       address: this.address,
       functionName: "mintAndRegisterIpAndMakeDerivative",
       account: this.wallet.account,
-      args: [request.nftContract, request.derivData, request.metadata, request.recipient],
+      args: [
+        request.nftContract,
+        request.derivData,
+        request.nftMetadata,
+        request.ipMetadata,
+        request.recipient,
+      ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -13399,7 +14225,13 @@ export class SpgClient extends SpgEventClient {
       data: encodeFunctionData({
         abi: spgAbi,
         functionName: "mintAndRegisterIpAndMakeDerivative",
-        args: [request.nftContract, request.derivData, request.metadata, request.recipient],
+        args: [
+          request.nftContract,
+          request.derivData,
+          request.nftMetadata,
+          request.ipMetadata,
+          request.recipient,
+        ],
       }),
     };
   }
@@ -13422,7 +14254,8 @@ export class SpgClient extends SpgEventClient {
         request.nftContract,
         request.licenseTokenIds,
         request.royaltyContext,
-        request.metadata,
+        request.nftMetadata,
+        request.ipMetadata,
         request.recipient,
       ],
     });
@@ -13447,7 +14280,8 @@ export class SpgClient extends SpgEventClient {
           request.nftContract,
           request.licenseTokenIds,
           request.royaltyContext,
-          request.metadata,
+          request.nftMetadata,
+          request.ipMetadata,
           request.recipient,
         ],
       }),
@@ -13466,7 +14300,7 @@ export class SpgClient extends SpgEventClient {
       address: this.address,
       functionName: "registerIp",
       account: this.wallet.account,
-      args: [request.nftContract, request.tokenId, request.metadata, request.sigMetadata],
+      args: [request.nftContract, request.tokenId, request.ipMetadata, request.sigMetadata],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -13483,7 +14317,7 @@ export class SpgClient extends SpgEventClient {
       data: encodeFunctionData({
         abi: spgAbi,
         functionName: "registerIp",
-        args: [request.nftContract, request.tokenId, request.metadata, request.sigMetadata],
+        args: [request.nftContract, request.tokenId, request.ipMetadata, request.sigMetadata],
       }),
     };
   }
@@ -13505,7 +14339,7 @@ export class SpgClient extends SpgEventClient {
       args: [
         request.nftContract,
         request.tokenId,
-        request.metadata,
+        request.ipMetadata,
         request.terms,
         request.sigMetadata,
         request.sigAttach,
@@ -13531,7 +14365,7 @@ export class SpgClient extends SpgEventClient {
         args: [
           request.nftContract,
           request.tokenId,
-          request.metadata,
+          request.ipMetadata,
           request.terms,
           request.sigMetadata,
           request.sigAttach,
@@ -13558,7 +14392,7 @@ export class SpgClient extends SpgEventClient {
         request.nftContract,
         request.tokenId,
         request.derivData,
-        request.metadata,
+        request.ipMetadata,
         request.sigMetadata,
         request.sigRegister,
       ],
@@ -13584,7 +14418,7 @@ export class SpgClient extends SpgEventClient {
           request.nftContract,
           request.tokenId,
           request.derivData,
-          request.metadata,
+          request.ipMetadata,
           request.sigMetadata,
           request.sigRegister,
         ],
@@ -13611,7 +14445,7 @@ export class SpgClient extends SpgEventClient {
         request.tokenId,
         request.licenseTokenIds,
         request.royaltyContext,
-        request.metadata,
+        request.ipMetadata,
         request.sigMetadata,
         request.sigRegister,
       ],
@@ -13638,7 +14472,7 @@ export class SpgClient extends SpgEventClient {
           request.tokenId,
           request.licenseTokenIds,
           request.royaltyContext,
-          request.metadata,
+          request.ipMetadata,
           request.sigMetadata,
           request.sigRegister,
         ],
@@ -13686,292 +14520,6 @@ export class SpgClient extends SpgEventClient {
 }
 
 // Contract SPGNFTBeacon =============================================================
-
-/**
- * SpgnftBeaconOwnershipTransferredEvent
- *
- * @param previousOwner address
- * @param newOwner address
- */
-export type SpgnftBeaconOwnershipTransferredEvent = {
-  previousOwner: Address;
-  newOwner: Address;
-};
-
-/**
- * SpgnftBeaconUpgradedEvent
- *
- * @param implementation address
- */
-export type SpgnftBeaconUpgradedEvent = {
-  implementation: Address;
-};
-
-export type SpgnftBeaconImplementationResponse = Address;
-
-export type SpgnftBeaconOwnerResponse = Address;
-
-/**
- * SpgnftBeaconTransferOwnershipRequest
- *
- * @param newOwner address
- */
-export type SpgnftBeaconTransferOwnershipRequest = {
-  newOwner: Address;
-};
-
-/**
- * SpgnftBeaconUpgradeToRequest
- *
- * @param newImplementation address
- */
-export type SpgnftBeaconUpgradeToRequest = {
-  newImplementation: Address;
-};
-
-/**
- * contract SPGNFTBeacon event
- */
-export class SpgnftBeaconEventClient {
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, address?: Address) {
-    this.address = address || getAddress(spgnftBeaconAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event OwnershipTransferred for contract SPGNFTBeacon
-   */
-  public watchOwnershipTransferredEvent(
-    onLogs: (txHash: Hex, ev: Partial<SpgnftBeaconOwnershipTransferredEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      eventName: "OwnershipTransferred",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event OwnershipTransferred for contract SPGNFTBeacon
-   */
-  public parseTxOwnershipTransferredEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<SpgnftBeaconOwnershipTransferredEvent> {
-    const targetLogs: Array<SpgnftBeaconOwnershipTransferredEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: spgnftBeaconAbi,
-          eventName: "OwnershipTransferred",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "OwnershipTransferred") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Upgraded for contract SPGNFTBeacon
-   */
-  public watchUpgradedEvent(
-    onLogs: (txHash: Hex, ev: Partial<SpgnftBeaconUpgradedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      eventName: "Upgraded",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Upgraded for contract SPGNFTBeacon
-   */
-  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<SpgnftBeaconUpgradedEvent> {
-    const targetLogs: Array<SpgnftBeaconUpgradedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: spgnftBeaconAbi,
-          eventName: "Upgraded",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Upgraded") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract SPGNFTBeacon readonly method
- */
-export class SpgnftBeaconReadOnlyClient extends SpgnftBeaconEventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method implementation for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconImplementationRequest
-   * @return Promise<SpgnftBeaconImplementationResponse>
-   */
-  public async implementation(): Promise<SpgnftBeaconImplementationResponse> {
-    return await this.rpcClient.readContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "implementation",
-    });
-  }
-
-  /**
-   * method owner for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconOwnerRequest
-   * @return Promise<SpgnftBeaconOwnerResponse>
-   */
-  public async owner(): Promise<SpgnftBeaconOwnerResponse> {
-    return await this.rpcClient.readContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "owner",
-    });
-  }
-}
-
-/**
- * contract SPGNFTBeacon write method
- */
-export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method renounceOwnership for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconRenounceOwnershipRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async renounceOwnership(): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "renounceOwnership",
-      account: this.wallet.account,
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method renounceOwnership for contract SPGNFTBeacon with only encode
-   *
-   * @param request SpgnftBeaconRenounceOwnershipRequest
-   * @return EncodedTxData
-   */
-  public renounceOwnershipEncode(): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgnftBeaconAbi,
-        functionName: "renounceOwnership",
-      }),
-    };
-  }
-
-  /**
-   * method transferOwnership for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconTransferOwnershipRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transferOwnership(
-    request: SpgnftBeaconTransferOwnershipRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "transferOwnership",
-      account: this.wallet.account,
-      args: [request.newOwner],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transferOwnership for contract SPGNFTBeacon with only encode
-   *
-   * @param request SpgnftBeaconTransferOwnershipRequest
-   * @return EncodedTxData
-   */
-  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgnftBeaconAbi,
-        functionName: "transferOwnership",
-        args: [request.newOwner],
-      }),
-    };
-  }
-
-  /**
-   * method upgradeTo for contract SPGNFTBeacon
-   *
-   * @param request SpgnftBeaconUpgradeToRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async upgradeTo(request: SpgnftBeaconUpgradeToRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgnftBeaconAbi,
-      address: this.address,
-      functionName: "upgradeTo",
-      account: this.wallet.account,
-      args: [request.newImplementation],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method upgradeTo for contract SPGNFTBeacon with only encode
-   *
-   * @param request SpgnftBeaconUpgradeToRequest
-   * @return EncodedTxData
-   */
-  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgnftBeaconAbi,
-        functionName: "upgradeTo",
-        args: [request.newImplementation],
-      }),
-    };
-  }
-}
 
 // Contract SPGNFTImpl =============================================================
 
@@ -14125,9 +14673,9 @@ export type SpgnftImplIsApprovedForAllRequest = {
 
 export type SpgnftImplIsApprovedForAllResponse = boolean;
 
-export type SpgnftImplMintCostResponse = bigint;
+export type SpgnftImplMintFeeResponse = bigint;
 
-export type SpgnftImplMintTokenResponse = Address;
+export type SpgnftImplMintFeeTokenResponse = Address;
 
 export type SpgnftImplNameResponse = string;
 
@@ -14196,16 +14744,16 @@ export type SpgnftImplGrantRoleRequest = {
  * @param name string
  * @param symbol string
  * @param maxSupply uint32
- * @param mintCost uint256
- * @param mintToken address
+ * @param mintFee uint256
+ * @param mintFeeToken address
  * @param owner address
  */
 export type SpgnftImplInitializeRequest = {
   name: string;
   symbol: string;
   maxSupply: number;
-  mintCost: bigint;
-  mintToken: Address;
+  mintFee: bigint;
+  mintFeeToken: Address;
   owner: Address;
 };
 
@@ -14291,20 +14839,20 @@ export type SpgnftImplSetApprovalForAllRequest = {
 };
 
 /**
- * SpgnftImplSetMintCostRequest
+ * SpgnftImplSetMintFeeRequest
  *
- * @param cost uint256
+ * @param fee uint256
  */
-export type SpgnftImplSetMintCostRequest = {
-  cost: bigint;
+export type SpgnftImplSetMintFeeRequest = {
+  fee: bigint;
 };
 
 /**
- * SpgnftImplSetMintTokenRequest
+ * SpgnftImplSetMintFeeTokenRequest
  *
  * @param token address
  */
-export type SpgnftImplSetMintTokenRequest = {
+export type SpgnftImplSetMintFeeTokenRequest = {
   token: Address;
 };
 
@@ -14742,30 +15290,30 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
   }
 
   /**
-   * method mintCost for contract SPGNFTImpl
+   * method mintFee for contract SPGNFTImpl
    *
-   * @param request SpgnftImplMintCostRequest
-   * @return Promise<SpgnftImplMintCostResponse>
+   * @param request SpgnftImplMintFeeRequest
+   * @return Promise<SpgnftImplMintFeeResponse>
    */
-  public async mintCost(): Promise<SpgnftImplMintCostResponse> {
+  public async mintFee(): Promise<SpgnftImplMintFeeResponse> {
     return await this.rpcClient.readContract({
       abi: spgnftImplAbi,
       address: this.address,
-      functionName: "mintCost",
+      functionName: "mintFee",
     });
   }
 
   /**
-   * method mintToken for contract SPGNFTImpl
+   * method mintFeeToken for contract SPGNFTImpl
    *
-   * @param request SpgnftImplMintTokenRequest
-   * @return Promise<SpgnftImplMintTokenResponse>
+   * @param request SpgnftImplMintFeeTokenRequest
+   * @return Promise<SpgnftImplMintFeeTokenResponse>
    */
-  public async mintToken(): Promise<SpgnftImplMintTokenResponse> {
+  public async mintFeeToken(): Promise<SpgnftImplMintFeeTokenResponse> {
     return await this.rpcClient.readContract({
       abi: spgnftImplAbi,
       address: this.address,
-      functionName: "mintToken",
+      functionName: "mintFeeToken",
     });
   }
 
@@ -14954,8 +15502,8 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
         request.name,
         request.symbol,
         request.maxSupply,
-        request.mintCost,
-        request.mintToken,
+        request.mintFee,
+        request.mintFeeToken,
         request.owner,
       ],
     });
@@ -14978,8 +15526,8 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
           request.name,
           request.symbol,
           request.maxSupply,
-          request.mintCost,
-          request.mintToken,
+          request.mintFee,
+          request.mintFeeToken,
           request.owner,
         ],
       }),
@@ -15233,54 +15781,52 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
-   * method setMintCost for contract SPGNFTImpl
+   * method setMintFee for contract SPGNFTImpl
    *
-   * @param request SpgnftImplSetMintCostRequest
+   * @param request SpgnftImplSetMintFeeRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async setMintCost(
-    request: SpgnftImplSetMintCostRequest,
-  ): Promise<WriteContractReturnType> {
+  public async setMintFee(request: SpgnftImplSetMintFeeRequest): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: spgnftImplAbi,
       address: this.address,
-      functionName: "setMintCost",
+      functionName: "setMintFee",
       account: this.wallet.account,
-      args: [request.cost],
+      args: [request.fee],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
-   * method setMintCost for contract SPGNFTImpl with only encode
+   * method setMintFee for contract SPGNFTImpl with only encode
    *
-   * @param request SpgnftImplSetMintCostRequest
+   * @param request SpgnftImplSetMintFeeRequest
    * @return EncodedTxData
    */
-  public setMintCostEncode(request: SpgnftImplSetMintCostRequest): EncodedTxData {
+  public setMintFeeEncode(request: SpgnftImplSetMintFeeRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
         abi: spgnftImplAbi,
-        functionName: "setMintCost",
-        args: [request.cost],
+        functionName: "setMintFee",
+        args: [request.fee],
       }),
     };
   }
 
   /**
-   * method setMintToken for contract SPGNFTImpl
+   * method setMintFeeToken for contract SPGNFTImpl
    *
-   * @param request SpgnftImplSetMintTokenRequest
+   * @param request SpgnftImplSetMintFeeTokenRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async setMintToken(
-    request: SpgnftImplSetMintTokenRequest,
+  public async setMintFeeToken(
+    request: SpgnftImplSetMintFeeTokenRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: spgnftImplAbi,
       address: this.address,
-      functionName: "setMintToken",
+      functionName: "setMintFeeToken",
       account: this.wallet.account,
       args: [request.token],
     });
@@ -15288,17 +15834,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
-   * method setMintToken for contract SPGNFTImpl with only encode
+   * method setMintFeeToken for contract SPGNFTImpl with only encode
    *
-   * @param request SpgnftImplSetMintTokenRequest
+   * @param request SpgnftImplSetMintFeeTokenRequest
    * @return EncodedTxData
    */
-  public setMintTokenEncode(request: SpgnftImplSetMintTokenRequest): EncodedTxData {
+  public setMintFeeTokenEncode(request: SpgnftImplSetMintFeeTokenRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
         abi: spgnftImplAbi,
-        functionName: "setMintToken",
+        functionName: "setMintFeeToken",
         args: [request.token],
       }),
     };

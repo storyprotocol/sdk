@@ -14,17 +14,17 @@ import { RPC } from "./util";
 export class MockERC20 {
   private publicClient: PublicClient;
   private walletClient: WalletClient;
-  static address: Hex = "0xB132A6B7AE652c974EE1557A3521D53d18F6739f";
+  static address: Hex = "0xDE51BB12D5cef80ff2334fe1019089363F80b46e";
 
   constructor() {
     const baseConfig = {
-      chain: chainStringToViemChain("sepolia"),
+      chain: chainStringToViemChain("iliad"),
       transport: http(RPC),
     } as const;
     this.publicClient = createPublicClient(baseConfig);
     this.walletClient = createWalletClient({
       ...baseConfig,
-      account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
     });
   }
 
@@ -91,7 +91,7 @@ export class MockERC20 {
       address: MockERC20.address,
       functionName: "mint",
       account: this.walletClient.account,
-      args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS! as Address, BigInt(100000 * 10 ** 6)],
+      args: [process.env.TEST_WALLET_ADDRESS! as Address, BigInt(100000 * 10 ** 6)],
     });
     const mintHash = await this.walletClient.writeContract(request);
     await waitTx(this.publicClient, mintHash);

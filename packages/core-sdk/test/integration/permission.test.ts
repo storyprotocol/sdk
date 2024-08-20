@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { MockERC721, getStoryClientInSepolia, getTokenId, sepoliaChainId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
 import { Address } from "viem";
 import { AccessPermission } from "../../src/types/resources/permission";
 import chaiAsPromised from "chai-as-promised";
@@ -11,14 +11,14 @@ const expect = chai.expect;
 describe("Permission Functions", () => {
   let client: StoryClient;
   let ipId: Address;
-  const coreMetadataModule = coreMetadataModuleAddress[sepoliaChainId];
+  const coreMetadataModule = coreMetadataModuleAddress[storyTestChainId];
 
   before(async () => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
     const tokenId = await getTokenId();
     ipId = (
       await client.ipAsset.register({
-        nftContract: MockERC721,
+        nftContract: mockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,
@@ -29,7 +29,7 @@ describe("Permission Functions", () => {
   it("should not throw error when call setPermission", async () => {
     const response = await client.permission.setPermission({
       ipId: ipId,
-      signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+      signer: process.env.TEST_WALLET_ADDRESS as Address,
       to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
       permission: 1,
       txOptions: {
@@ -43,7 +43,7 @@ describe("Permission Functions", () => {
   it("should not throw error when call setAllPermissions", async () => {
     const response = await client.permission.setAllPermissions({
       ipId: ipId,
-      signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+      signer: process.env.TEST_WALLET_ADDRESS as Address,
       permission: AccessPermission.ALLOW,
       txOptions: {
         waitForTransaction: true,
@@ -57,7 +57,7 @@ describe("Permission Functions", () => {
   it("should not throw error when call createSetPermissionSignature", async () => {
     const response = await client.permission.createSetPermissionSignature({
       ipId,
-      signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+      signer: process.env.TEST_WALLET_ADDRESS as Address,
       to: coreMetadataModule,
       func: "function setAll(address,string,bytes32,bytes32)",
       permission: AccessPermission.ALLOW,
@@ -76,14 +76,14 @@ describe("Permission Functions", () => {
       permissions: [
         {
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          signer: process.env.TEST_WALLET_ADDRESS as Address,
           to: coreMetadataModule,
           permission: AccessPermission.DENY,
           func: "function setAll(address,string,bytes32,bytes32)",
         },
         {
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          signer: process.env.TEST_WALLET_ADDRESS as Address,
           to: coreMetadataModule,
           permission: AccessPermission.DENY,
           func: "function freezeMetadata(address)",
@@ -104,14 +104,14 @@ describe("Permission Functions", () => {
       permissions: [
         {
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          signer: process.env.TEST_WALLET_ADDRESS as Address,
           to: coreMetadataModule,
           permission: AccessPermission.DENY,
           func: "function setAll(address,string,bytes32,bytes32)",
         },
         {
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          signer: process.env.TEST_WALLET_ADDRESS as Address,
           to: coreMetadataModule,
           permission: AccessPermission.DENY,
           func: "function freezeMetadata(address)",

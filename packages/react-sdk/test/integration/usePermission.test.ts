@@ -1,7 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
+import { Address } from "viem";
+
 import { useIpAsset, usePermission } from "../../src";
 import Wrapper from "./utils/Wrapper";
-import { Address } from "viem";
 import { getTokenId, mockERC721Address } from "./utils/util";
 
 describe("usePermission Functions", () => {

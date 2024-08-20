@@ -1,4 +1,16 @@
-import { Hex, PublicClient, zeroAddress, Address, zeroHash, WalletClient } from "viem";
+import {
+  Hex,
+  PublicClient,
+  zeroAddress,
+  Address,
+  zeroHash,
+  WalletClient,
+  toHex,
+  encodeAbiParameters,
+  encodeFunctionData,
+  keccak256,
+  toFunctionSelector,
+} from "viem";
 
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -32,10 +44,12 @@ import {
   SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
   SpgRegisterIpRequest,
+  accessControllerAbi,
+  ipAccountImplAbi,
 } from "../abi/generated";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
-import { AccessPermission } from "../types/resources/permission";
+import { AccessPermission, SetPermissionsRequest } from "../types/resources/permission";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -71,10 +85,10 @@ export class IPAssetClient {
    * @param request - The request object that contains all data needed to register IP.
    *   @param request.nftContract The address of the NFT.
    *   @param request.tokenId The token identifier of the NFT.
-   *   @param request.metadata - [Optional] The metadata for the IP.
-   *   @param request.metadata.metadataURI [Optional] The URI of the metadata for the IP.
-   *   @param request.metadata.metadataHash [Optional] The metadata for the IP.
-   *   @param request.metadata.nftMetadataHash [Optional] The metadata for the IP NFT.
+   *   @param request.ipMetadata - [Optional] The ipMetadata for the IP.
+   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
+   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The ipMetadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
@@ -91,7 +105,7 @@ export class IPAssetClient {
       const object: SpgRegisterIpRequest = {
         tokenId,
         nftContract: getAddress(request.nftContract, "request.nftContract"),
-        metadata: {
+        ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
           nftMetadataHash: zeroHash,
@@ -103,41 +117,19 @@ export class IPAssetClient {
         },
       };
       if (
-        request.metadata &&
-        (request.metadata.metadataHash !== zeroHash ||
-          request.metadata.metadataURI !== "" ||
-          request.metadata.nftMetadataHash !== zeroHash)
+        request.ipMetadata &&
+        (request.ipMetadata.metadataHash !== zeroHash ||
+          request.ipMetadata.metadataURI !== "" ||
+          request.ipMetadata.nftMetadataHash !== zeroHash)
       ) {
-        object.metadata = {
-          metadataURI: request.metadata.metadataURI || object.metadata.metadataURI,
-          metadataHash: request.metadata.metadataHash || object.metadata.metadataHash,
-          nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
+        object.ipMetadata = {
+          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
+          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
+          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
         };
       }
-      const calculatedDeadline = getDeadline(request.deadline);
-      const signature = await getPermissionSignature({
-        ipId: ipIdAddress,
-        deadline: calculatedDeadline,
-        nonce: 1,
-        wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
-        permissions: [
-          {
-            ipId: ipIdAddress,
-            signer: getAddress(this.spgClient.address, "spgAddress"),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-            permission: AccessPermission.ALLOW,
-            func: "function setAll(address,string,bytes32,bytes32)",
-          },
-        ],
-      });
-      object.sigMetadata = {
-        signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-        deadline: calculatedDeadline,
-        signature,
-      };
       if (request.txOptions?.encodedTxDataOnly) {
-        if (request.metadata) {
+        if (request.ipMetadata) {
           return { encodedTxData: this.spgClient.registerIpEncode(object) };
         } else {
           return {
@@ -150,7 +142,29 @@ export class IPAssetClient {
         }
       } else {
         let txHash: Hex;
-        if (request.metadata) {
+        if (request.ipMetadata) {
+          const calculatedDeadline = getDeadline(request.deadline);
+          const signature = await getPermissionSignature({
+            ipId: ipIdAddress,
+            deadline: calculatedDeadline,
+            state: toHex(0, { size: 32 }),
+            wallet: this.wallet as WalletClient,
+            chainId: chain[this.chainId],
+            permissions: [
+              {
+                ipId: ipIdAddress,
+                signer: getAddress(this.spgClient.address, "spgAddress"),
+                to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+                permission: AccessPermission.ALLOW,
+                func: "function setAll(address,string,bytes32,bytes32)",
+              },
+            ],
+          });
+          object.sigMetadata = {
+            signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+            deadline: calculatedDeadline,
+            signature,
+          };
           txHash = await this.spgClient.registerIp(object);
         } else {
           txHash = await this.ipAssetRegistryClient.register({
@@ -300,10 +314,11 @@ export class IPAssetClient {
    * @param request - The request object that contains all data needed to mint and register ip.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.pilType The type of the PIL.
-   *   @param request.metadata - [Optional] The metadata for the IP.
-   *   @param request.metadata.metadataURI [Optional] The URI of the metadata for the IP.
-   *   @param request.metadata.metadataHash [Optional] The metadata for the IP.
-   *   @param request.metadata.nftMetadataHash [Optional] The metadata for the IP NFT.
+   *   @param request.ipMetadata - [Optional] The ipMetadata for the IP.
+   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
+   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The ipMetadata for the IP NFT.
+   *   @param request.nftMetadata [Optional] The desired metadata for the newly minted NFT.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -321,7 +336,7 @@ export class IPAssetClient {
         throw new Error("PIL type is required.");
       }
       const licenseTerm = getLicenseTermByType(request.pilType, {
-        mintingFee: request.mintingFee,
+        defaultMintingFee: request.mintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
@@ -332,23 +347,29 @@ export class IPAssetClient {
           (request.recipient && getAddress(request.recipient, "request.recipient")) ||
           this.wallet.account!.address,
 
-        terms: licenseTerm,
-        metadata: {
+        terms: {
+          ...licenseTerm,
+          mintingFee: BigInt(licenseTerm.defaultMintingFee),
+          derivativeRevCelling: licenseTerm.commercialRevCeiling,
+          commercialRevCelling: licenseTerm.commercialRevCeiling,
+        },
+        ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
           nftMetadataHash: zeroHash,
         },
+        nftMetadata: request.nftMetadata || "",
       };
       if (
-        request.metadata &&
-        (request.metadata.metadataHash !== zeroHash ||
-          request.metadata.metadataURI !== "" ||
-          request.metadata.nftMetadataHash !== zeroHash)
+        request.ipMetadata &&
+        (request.ipMetadata.metadataHash !== zeroHash ||
+          request.ipMetadata.metadataURI !== "" ||
+          request.ipMetadata.nftMetadataHash !== zeroHash)
       ) {
-        object.metadata = {
-          metadataURI: request.metadata.metadataURI || object.metadata.metadataURI,
-          metadataHash: request.metadata.metadataHash || object.metadata.metadataHash,
-          nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
+        object.ipMetadata = {
+          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
+          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
+          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
         };
       }
       if (request.txOptions?.encodedTxDataOnly) {
@@ -380,10 +401,10 @@ export class IPAssetClient {
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.tokenId The ID of the NFT.
    *   @param request.pilType The type of the PIL.
-   *   @param request.metadata - [Optional] The desired metadata for the newly registered IP.
-   *   @param request.metadata.metadataURI [Optional] The the metadata for the IP hash.
-   *   @param request.metadata.metadataHash [Optional] The metadata for the IP.
-   *   @param request.metadata.nftMetadataHash [Optional] The metadata for the IP NFT.
+   *   @param request.ipMetadata - [Optional] The desired ipMetadata for the newly registered IP.
+   *   @param request.ipMetadata.metadataURI [Optional] The the ipMetadata for the IP hash.
+   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The ipMetadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -406,16 +427,23 @@ export class IPAssetClient {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
       const licenseTerm = getLicenseTermByType(request.pilType, {
-        mintingFee: request.mintingFee,
+        defaultMintingFee: request.mintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
       });
       const calculatedDeadline = getDeadline(request.deadline);
+
       const sigAttachSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 2,
+        state: this.getSigSignatureState({
+          ipId: ipIdAddress,
+          signer: getAddress(this.spgClient.address, "spgAddress"),
+          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+          permission: AccessPermission.ALLOW,
+          func: "function setAll(address,string,bytes32,bytes32)",
+        }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -431,8 +459,13 @@ export class IPAssetClient {
       const object: SpgRegisterIpAndAttachPilTermsRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         tokenId: request.tokenId,
-        terms: licenseTerm,
-        metadata: {
+        terms: {
+          ...licenseTerm,
+          mintingFee: BigInt(licenseTerm.defaultMintingFee),
+          derivativeRevCelling: licenseTerm.commercialRevCeiling,
+          commercialRevCelling: licenseTerm.commercialRevCeiling,
+        },
+        ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
           nftMetadataHash: zeroHash,
@@ -450,21 +483,21 @@ export class IPAssetClient {
       };
 
       if (
-        request.metadata &&
-        (request.metadata.metadataHash !== zeroHash ||
-          request.metadata.metadataURI !== "" ||
-          request.metadata.nftMetadataHash !== zeroHash)
+        request.ipMetadata &&
+        (request.ipMetadata.metadataHash !== zeroHash ||
+          request.ipMetadata.metadataURI !== "" ||
+          request.ipMetadata.nftMetadataHash !== zeroHash)
       ) {
-        object.metadata = {
-          metadataURI: request.metadata.metadataURI || object.metadata.metadataURI,
-          metadataHash: request.metadata.metadataHash || object.metadata.metadataHash,
-          nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
+        object.ipMetadata = {
+          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
+          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
+          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
         };
       }
-      const signature = await getPermissionSignature({
+      const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 1,
+        state: toHex(0, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -480,7 +513,7 @@ export class IPAssetClient {
       object.sigMetadata = {
         signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
         deadline: calculatedDeadline,
-        signature,
+        signature: sigMetadataSignature,
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.spgClient.registerIpAndAttachPilTermsEncode(object) };
@@ -506,10 +539,10 @@ export class IPAssetClient {
    *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
    *   @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
    *   @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *   @param request.metadata - [Optional] The desired metadata for the newly registered IP.
-   *   @param request.metadata.metadataURI [Optional] The URI of the metadata for the IP.
-   *   @param request.metadata.metadataHash [Optional] The metadata for the IP.
-   *   @param request.metadata.nftMetadataHash [Optional] The the metadata for the IP NFT.
+   *   @param request.ipMetadata - [Optional] The desired ipMetadata for the newly registered IP.
+   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
+   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The the ipMetadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
@@ -552,7 +585,13 @@ export class IPAssetClient {
       const sigRegisterSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 2,
+        state: this.getSigSignatureState({
+          ipId: ipIdAddress,
+          signer: getAddress(this.spgClient.address, "spgAddress"),
+          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+          permission: AccessPermission.ALLOW,
+          func: "function setAll(address,string,bytes32,bytes32)",
+        }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -584,7 +623,7 @@ export class IPAssetClient {
           deadline: calculatedDeadline,
           signature: sigRegisterSignature,
         },
-        metadata: {
+        ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
           nftMetadataHash: zeroHash,
@@ -596,21 +635,21 @@ export class IPAssetClient {
         },
       };
       if (
-        request.metadata &&
-        (request.metadata.metadataHash !== zeroHash ||
-          request.metadata.metadataURI !== "" ||
-          request.metadata.nftMetadataHash !== zeroHash)
+        request.ipMetadata &&
+        (request.ipMetadata.metadataHash !== zeroHash ||
+          request.ipMetadata.metadataURI !== "" ||
+          request.ipMetadata.nftMetadataHash !== zeroHash)
       ) {
-        object.metadata = {
-          metadataURI: request.metadata.metadataURI || object.metadata.metadataURI,
-          metadataHash: request.metadata.metadataHash || object.metadata.metadataHash,
-          nftMetadataHash: request.metadata.nftMetadataHash || object.metadata.nftMetadataHash,
+        object.ipMetadata = {
+          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
+          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
+          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
         };
       }
-      const signature = await getPermissionSignature({
+      const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        nonce: 1,
+        state: toHex(0, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -626,7 +665,7 @@ export class IPAssetClient {
       object.sigMetadata = {
         signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
         deadline: calculatedDeadline,
-        signature,
+        signature: sigMetadataSignature,
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.spgClient.registerIpAndMakeDerivativeEncode(object) };
@@ -658,5 +697,36 @@ export class IPAssetClient {
 
   private async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId, "ipId") });
+  }
+
+  private getSigSignatureState(permission: Omit<SetPermissionsRequest, "txOptions">) {
+    const data = encodeFunctionData({
+      abi: accessControllerAbi,
+      functionName: "setPermission",
+      args: [
+        getAddress(permission.ipId, "permission.ipId"),
+        getAddress(permission.signer, "permission.signer"),
+        getAddress(permission.to, "permission.to"),
+        toFunctionSelector(permission.func!),
+        permission.permission,
+      ],
+    });
+    const sigAttachState = keccak256(
+      encodeAbiParameters(
+        [
+          { name: "", type: "bytes32" },
+          { name: "", type: "bytes" },
+        ],
+        [
+          toHex(0, { size: 32 }),
+          encodeFunctionData({
+            abi: ipAccountImplAbi,
+            functionName: "execute",
+            args: [this.accessControllerClient.address, 0n, data],
+          }),
+        ],
+      ),
+    );
+    return sigAttachState;
   }
 }
