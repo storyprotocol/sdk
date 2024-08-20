@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
 import { Hex, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, mintBySpg, storyTestChainId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, mintBySpg, iliadChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import { spgAddress } from "../../src/abi/generated";
 
@@ -120,7 +120,7 @@ describe("IP Asset Functions ", () => {
       expect(txData.nftContract).to.be.a("string").and.not.empty;
       nftContract = txData.nftContract!;
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(spgAddress[storyTestChainId as keyof typeof spgAddress]);
+      await mockERC20.approve(spgAddress[iliadChainId as keyof typeof spgAddress]);
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         nftContract,
         pilType: PIL_TYPE.COMMERCIAL_REMIX,

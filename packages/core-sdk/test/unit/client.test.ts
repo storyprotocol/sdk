@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
-import { createPublicClient, createWalletClient, http, Transport } from "viem";
+import { createWalletClient, http, Transport } from "viem";
 import { StoryClient, StoryConfig } from "../../src";
+import { iliad } from "../../src/utils/utils";
 const rpc = "http://127.0.0.1:8545";
 
 describe("Test StoryClient", () => {
@@ -37,7 +37,7 @@ describe("Test StoryClient", () => {
         transport: http(rpc),
         wallet: createWalletClient({
           account: privateKeyToAccount(generatePrivateKey()),
-          chain: sepolia,
+          chain: iliad,
           transport: http(rpc),
         }),
       });
@@ -50,7 +50,7 @@ describe("Test StoryClient", () => {
         transport: http(rpc),
         wallet: createWalletClient({
           account: privateKeyToAccount(generatePrivateKey()),
-          chain: sepolia,
+          chain: iliad,
           transport: http(rpc),
         }),
       });
