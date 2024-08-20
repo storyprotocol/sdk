@@ -27,7 +27,7 @@ describe("Test IpAssetClient", () => {
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
-    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "storyTestnet");
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "iliad");
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
@@ -86,7 +86,7 @@ describe("Test IpAssetClient", () => {
     it("should throw account error when register given wallet have no signTypedData ", async () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
-      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "storyTestnet");
+      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "iliad");
       (ipAssetClient.spgClient as any).address = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       (ipAssetClient.coreMetadataModuleClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";

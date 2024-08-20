@@ -104,7 +104,7 @@ export const storyTestChain = defineChain({
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
     case "1513":
-    case "storyTestnet":
+    case "iliad":
       return storyTestChain;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
@@ -112,7 +112,7 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
 }
 
 export const chain: { [key in SupportedChainIds]: bigint } = {
-  storyTestnet: 1513n,
+  iliad: 1513n,
   1513: 1513n,
 };
 

@@ -70,7 +70,7 @@ describe("Test StoryClient", () => {
     const account = privateKeyToAccount(generatePrivateKey());
     const transport = http(rpc);
     const config: StoryConfig = {
-      chainId: "storyTestnet",
+      chainId: "iliad",
       transport,
       account,
     };
