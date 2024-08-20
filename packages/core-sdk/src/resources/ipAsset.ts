@@ -18,6 +18,7 @@ import { handleError } from "../utils/errors";
 import {
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
+  MintAndRegisterIpAndMakeDerivativeRequest,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
@@ -41,6 +42,7 @@ import {
   SimpleWalletClient,
   SpgClient,
   SpgMintAndRegisterIpAndAttachPilTermsRequest,
+  SpgMintAndRegisterIpAndMakeDerivativeRequest,
   SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
   SpgRegisterIpRequest,
@@ -347,12 +349,7 @@ export class IPAssetClient {
           (request.recipient && getAddress(request.recipient, "request.recipient")) ||
           this.wallet.account!.address,
 
-        terms: {
-          ...licenseTerm,
-          mintingFee: BigInt(licenseTerm.defaultMintingFee),
-          derivativeRevCelling: licenseTerm.commercialRevCeiling,
-          commercialRevCelling: licenseTerm.commercialRevCeiling,
-        },
+        terms: licenseTerm,
         ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
@@ -459,12 +456,7 @@ export class IPAssetClient {
       const object: SpgRegisterIpAndAttachPilTermsRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         tokenId: request.tokenId,
-        terms: {
-          ...licenseTerm,
-          mintingFee: BigInt(licenseTerm.defaultMintingFee),
-          derivativeRevCelling: licenseTerm.commercialRevCeiling,
-          commercialRevCelling: licenseTerm.commercialRevCeiling,
-        },
+        terms: licenseTerm,
         ipMetadata: {
           metadataURI: "",
           metadataHash: zeroHash,
@@ -683,6 +675,91 @@ export class IPAssetClient {
     }
   }
 
+  /**
+   * Mint an NFT from a collection and register it as a derivative IP without license tokens.
+   * @param request - The request object that contains all data needed to mint and register ip and make derivative.
+   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.derivData The derivative data to be used for registerDerivative.
+   *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
+   *   @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
+   *   @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
+   *   @param request.ipMetadata - [Optional] The desired ipMetadata for the newly registered IP.
+   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
+   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The the ipMetadata for the IP NFT.
+   *   @param request.txOptions [Optional] The transaction options.
+   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   */
+  public async mintAndRegisterIpAndMakeDerivative(
+    request: MintAndRegisterIpAndMakeDerivativeRequest,
+  ): Promise<RegisterDerivativeResponse> {
+    try {
+      if (request.derivData.parentIpIds.length !== request.derivData.licenseTermsIds.length) {
+        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");
+      }
+      for (let i = 0; i < request.derivData.parentIpIds.length; i++) {
+        const isAttachedLicenseTerms =
+          await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+            ipId: getAddress(request.derivData.parentIpIds[i], "request.derivData.parentIpIds"),
+            licenseTemplate:
+              (request.derivData.licenseTemplate &&
+                getAddress(
+                  request.derivData.licenseTemplate,
+                  "request.derivData.licenseTemplate",
+                )) ||
+              this.licenseTemplateClient.address,
+            licenseTermsId: BigInt(request.derivData.licenseTermsIds[i]),
+          });
+        if (!isAttachedLicenseTerms) {
+          throw new Error(
+            `License terms id ${request.derivData.licenseTermsIds[i]} must be attached to the parent ipId ${request.derivData.parentIpIds[i]} before registering derivative.`,
+          );
+        }
+      }
+      const object: SpgMintAndRegisterIpAndMakeDerivativeRequest = {
+        ...request,
+        derivData: {
+          ...request.derivData,
+          royaltyContext: zeroAddress,
+          licenseTemplate: request.derivData.licenseTemplate || this.licenseTemplateClient.address,
+          licenseTermsIds: request.derivData.licenseTermsIds.map((id) => BigInt(id)),
+        },
+        nftMetadata: request.nftMetadata || "",
+        ipMetadata: {
+          metadataURI: "",
+          metadataHash: zeroHash,
+          nftMetadataHash: zeroHash,
+        },
+        recipient: this.wallet.account!.address,
+      };
+      if (
+        request.ipMetadata &&
+        (request.ipMetadata.metadataHash !== zeroHash ||
+          request.ipMetadata.metadataURI !== "" ||
+          request.ipMetadata.nftMetadataHash !== zeroHash)
+      ) {
+        object.ipMetadata = {
+          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
+          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
+          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
+        };
+      }
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.mintAndRegisterIpAndMakeDerivativeEncode(object) };
+      } else {
+        const txHash = await this.spgClient.mintAndRegisterIpAndMakeDerivative(object);
+        if (request.txOptions?.waitForTransaction) {
+          const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+          return { txHash, childIpId: log.ipId };
+        }
+        return { txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to mint and register IP and make derivative");
+    }
+  }
   private async getIpIdAddress(
     nftContract: Address,
     tokenId: bigint | string | number,
