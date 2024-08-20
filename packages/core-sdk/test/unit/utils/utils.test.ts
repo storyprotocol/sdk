@@ -7,7 +7,7 @@ import {
   chainStringToViemChain,
   waitTx,
   getAddress,
-  storyTestChain,
+  iliad,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
@@ -152,13 +152,13 @@ describe("Test chainStringToViemChain", () => {
     }
   });
 
-  it("should return story testnet if id is 1513", () => {
+  it("should return iliad testnet if id is 1513", () => {
     const chain = chainStringToViemChain("1513");
-    expect(chain).to.equal(storyTestChain);
+    expect(chain).to.equal(iliad);
   });
-  it("should return story testnet if id is iliad", () => {
+  it("should return iliad testnet if id is iliad", () => {
     const chain = chainStringToViemChain("iliad");
-    expect(chain).to.equal(storyTestChain);
+    expect(chain).to.equal(iliad);
   });
 });
 

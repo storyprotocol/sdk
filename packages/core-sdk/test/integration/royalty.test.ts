@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getTokenId, getStoryClient, storyTestChainId } from "./utils/util";
+import { mockERC721, getTokenId, getStoryClient, iliadChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import { royaltyPolicyLapAddress } from "../../src/abi/generated";
 
@@ -58,7 +58,7 @@ describe("Test royalty Functions", () => {
       await attachLicenseTerms(ipId1, licenseTermsId);
       const mockERC20 = new MockERC20();
       await mockERC20.approve(
-        royaltyPolicyLapAddress[Number(storyTestChainId) as keyof typeof royaltyPolicyLapAddress],
+        royaltyPolicyLapAddress[Number(iliadChainId) as keyof typeof royaltyPolicyLapAddress],
       );
       await client.ipAsset.registerDerivative({
         childIpId: ipId2,
@@ -167,7 +167,7 @@ describe("Test royalty Functions", () => {
             },
           ],
           functionName: "transfer",
-          args: [process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex, BigInt(10 * 10 ** 6)],
+          args: [process.env.TEST_WALLET_ADDRESS as Hex, BigInt(10 * 10 ** 6)],
         }),
       });
       //2. transfer token to royaltyVault，revenue token

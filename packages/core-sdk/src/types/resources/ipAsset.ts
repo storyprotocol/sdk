@@ -110,4 +110,5 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
     licenseTemplate?: Address;
   };
   nftMetadata?: string;
+  recipient?: Address;
 } & IpMetadataAndTxOption;

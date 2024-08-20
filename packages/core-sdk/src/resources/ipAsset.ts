@@ -687,6 +687,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
    *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The the ipMetadata for the IP NFT.
+   *   @param request.recipient [Optional] The address of the recipient of the minted NFT.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
@@ -731,7 +732,9 @@ export class IPAssetClient {
           metadataHash: zeroHash,
           nftMetadataHash: zeroHash,
         },
-        recipient: this.wallet.account!.address,
+        recipient:
+          (request.recipient && getAddress(request.recipient, "request.recipient")) ||
+          this.wallet.account!.address,
       };
       if (
         request.ipMetadata &&
