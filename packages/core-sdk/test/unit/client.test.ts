@@ -70,19 +70,10 @@ describe("Test StoryClient", () => {
     const account = privateKeyToAccount(generatePrivateKey());
     const transport = http(rpc);
     const config: StoryConfig = {
-      chainId: "sepolia",
+      chainId: "iliad",
       transport,
       account,
     };
-    const clientConfig = {
-      chain: sepolia,
-      transport: config.transport,
-    };
-    const rpcClient = createPublicClient(clientConfig);
-    const wallet = createWalletClient({
-      ...clientConfig,
-      account: account,
-    });
 
     const client: StoryClient = StoryClient.newClient(config);
     it("client modules should not be empty", () => {

@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { StoryClient } from "../../src";
-import { getStoryClientInSepolia } from "./utils/util";
+import { getStoryClient } from "./utils/util";
 
 describe("nftClient Functions", () => {
   let client: StoryClient;
   before(async () => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
   });
   it("should success when create nft collection", async () => {
     const txData = await client.nftClient.createNFTCollection({

@@ -10,8 +10,8 @@ import {
   isAddress,
   checksumAddress,
   Address,
+  defineChain,
 } from "viem";
-import { sepolia } from "viem/chains";
 
 import { SupportedChainIds } from "../types/config";
 
@@ -76,20 +76,44 @@ export async function waitTx(
     ...params,
   });
 }
-
+//TODO: Some information is waiting for confirmation about chain
+export const storyTestChain = defineChain({
+  id: 15_13,
+  name: "story-testnet",
+  nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.partner.testnet.storyprotocol.net"],
+      webSocket: ["wss://story-network.rpc.caldera.xyz/ws"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Explorer",
+      url: "https://explorer.testnet.storyprotocol.net",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 5882,
+    },
+  },
+  testnet: true,
+});
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
-    case "11155111":
-    case "sepolia":
-      return sepolia;
+    case "1513":
+    case "iliad":
+      return storyTestChain;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }
 }
 
 export const chain: { [key in SupportedChainIds]: bigint } = {
-  sepolia: 11155111n,
-  11155111: 11155111n,
+  iliad: 1513n,
+  1513: 1513n,
 };
 
 export const getAddress = (address: string, name: string, chainId?: number): Address => {

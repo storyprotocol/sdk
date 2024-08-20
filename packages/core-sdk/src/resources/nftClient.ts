@@ -58,7 +58,6 @@ export class NftClient {
         return { encodedTxData: this.spgClient.createCollectionEncode(req) };
       } else {
         const txHash = await this.spgClient.createCollection(req);
-
         if (request.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
           const targetLogs = this.spgClient.parseTxCollectionCreatedEvent(txReceipt);

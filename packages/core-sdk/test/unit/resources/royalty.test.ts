@@ -85,9 +85,7 @@ describe("Test RoyaltyClient", () => {
 
     it("should throw royaltyVaultAddress error when call collectRoyaltyTokens given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([true, "0x", 1, ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"], [1]]);
+      sinon.stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData").resolves([true, "0x", 1]);
 
       try {
         await royaltyClient.collectRoyaltyTokens({
@@ -105,13 +103,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "collectRoyaltyTokens").resolves(txHash);
 
       const result = await royaltyClient.collectRoyaltyTokens({
@@ -126,13 +118,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "collectRoyaltyTokens").resolves(txHash);
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "parseTxRoyaltyTokensCollectedEvent").returns([
         {
@@ -241,10 +227,7 @@ describe("Test RoyaltyClient", () => {
 
     it("should throw royaltyVaultAddress error when call claimableRevenue given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([true, "0x", 1, ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"], [1]]);
-
+      sinon.stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData").resolves([true, "0x", 1]);
       try {
         await royaltyClient.claimableRevenue({
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -263,13 +246,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "claimableRevenue").resolves(1);
 
       const result = await royaltyClient.claimableRevenue({
@@ -304,8 +281,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([true, "0x", 1, ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"], [1]]);
-
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       try {
         await royaltyClient.claimRevenue({
           account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -324,13 +300,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
       const result = await royaltyClient.claimRevenue({
         account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -345,13 +315,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon
         .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
         .resolves(txHash);
@@ -380,13 +344,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon
         .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
         .resolves(txHash);
@@ -428,10 +386,7 @@ describe("Test RoyaltyClient", () => {
 
     it("should throw royaltyVaultAddress error when call snapshot given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([true, "0x", 1, ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"], [1]]);
-
+      sinon.stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData").resolves([true, "0x", 1]);
       try {
         await royaltyClient.snapshot({
           royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -447,13 +402,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "snapshot").resolves(txHash);
 
       const result = await royaltyClient.snapshot({
@@ -466,13 +415,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([
-          true,
-          "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          1,
-          ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
-          [1],
-        ]);
+        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "snapshot").resolves(txHash);
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "parseTxSnapshotCompletedEvent").returns([
         {

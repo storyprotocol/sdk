@@ -127,11 +127,13 @@ describe("Test IPAccountClient", () => {
 
   describe("Test getIpAccountNonce", () => {
     it("should return the state of the IP Account", async () => {
-      sinon.stub(IpAccountImplClient.prototype, "state").resolves(1n);
+      sinon
+        .stub(IpAccountImplClient.prototype, "state")
+        .resolves({ result: "0x73fcb515cee99e4991465ef586cfe2b072ebb512" });
       const state = await ipAccountClient.getIpAccountNonce(
         "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       );
-      expect(state).to.equal(1n);
+      expect(state).to.equal("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
     });
   });
 });

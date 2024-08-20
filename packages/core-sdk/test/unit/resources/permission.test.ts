@@ -20,11 +20,10 @@ describe("Test Permission", () => {
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-    permissionClient = new PermissionClient(rpcMock, walletMock, "sepolia");
-    IpAccountImplClient.prototype.state = sinon.stub().resolves(1n);
-    walletMock.account.signTypedData = sinon
+    permissionClient = new PermissionClient(rpcMock, walletMock, "iliad");
+    IpAccountImplClient.prototype.state = sinon
       .stub()
-      .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
     (permissionClient.accessControllerClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
@@ -188,10 +187,12 @@ describe("Test Permission", () => {
       }
     });
 
-    it("should account error when call createSetPermissionSignature given wallet has no signTypedData method", async () => {
+    it("should wallet error when call createSetPermissionSignature given wallet has no signTypedData method", async () => {
       walletMock = createMock<WalletClient>();
-      permissionClient = new PermissionClient(rpcMock, walletMock, "11155111");
+      permissionClient = new PermissionClient(rpcMock, walletMock, "1513");
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      (permissionClient.accessControllerClient as any).address =
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
 
       try {
         await permissionClient.createSetPermissionSignature({

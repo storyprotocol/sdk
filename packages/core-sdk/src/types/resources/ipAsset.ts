@@ -5,7 +5,7 @@ import { PIL_TYPE } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 
 type Metadata = {
-  metadata?: {
+  ipMetadata?: {
     metadataURI?: string;
     metadataHash?: Hex;
     nftMetadataHash?: Hex;
@@ -53,11 +53,12 @@ export type RegisterDerivativeResponse = {
 export type CreateIpAssetWithPilTermsRequest = {
   nftContract: Address;
   pilType: PIL_TYPE;
-  recipient?: Address;
-  mintingFee?: string;
   currency?: Address;
+  mintingFee?: string | number | bigint;
+  recipient?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
+  nftMetadata?: string;
 } & Metadata;
 
 export type CreateIpAssetWithPilTermsResponse = {
@@ -90,9 +91,9 @@ export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   pilType: PIL_TYPE;
+  mintingFee: string | number | bigint;
+  currency: Address;
   deadline?: bigint | number | string;
-  mintingFee?: string;
-  currency?: Address;
   commercialRevShare?: number;
   txOptions?: TxOptions;
 } & Metadata;

@@ -2,8 +2,9 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC721, getStoryClientInSepolia, getTokenId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
+import { licensingModuleAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -12,7 +13,7 @@ describe("License Functions", () => {
   let client: StoryClient;
 
   before(() => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
   });
   describe("registering license with different types", async () => {
     it("should not throw error when registering license with non commercial social remixing PIL", async () => {
@@ -23,7 +24,6 @@ describe("License Functions", () => {
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
-
     it("should not throw error when registering license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         mintingFee: "1",
@@ -55,15 +55,21 @@ describe("License Functions", () => {
     before(async () => {
       tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
-        nftContract: MockERC721,
+        nftContract: mockERC721,
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,
         },
       });
+      const mockERC20 = new MockERC20();
+      await mockERC20.approve(
+        licensingModuleAddress[Number(storyTestChainId) as keyof typeof licensingModuleAddress],
+      );
       ipId = registerResult.ipId!;
-
-      const registerLicenseResult = await client.license.registerNonComSocialRemixingPIL({
+      const registerLicenseResult = await client.license.registerCommercialRemixPIL({
+        mintingFee: "1",
+        commercialRevShare: 100,
+        currency: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
         },
@@ -71,7 +77,7 @@ describe("License Functions", () => {
       licenseId = registerLicenseResult.licenseTermsId!;
     });
 
-    it.skip("should not throw error when attach License Terms", async () => {
+    it("should not throw error when attach License Terms", async () => {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseId,

@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
@@ -31,3 +31,5 @@ export type IPAccountExecuteWithSigResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
 };
+
+export type IpAccountStateResponse = Hex;

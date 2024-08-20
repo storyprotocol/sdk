@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { getDeadline, getPermissionSignature } from "../../../src/utils/sign";
 import { Hex, WalletClient, createWalletClient, http, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { sepoliaChainId } from "../../integration/utils/util";
+import { storyTestChainId } from "../../integration/utils/util";
 import sinon from "sinon";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 
@@ -12,11 +12,11 @@ describe("Sign", () => {
       try {
         await getPermissionSignature({
           ipId: zeroAddress,
-          nonce: 1,
+          state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
           deadline: 1000n,
           permissions: [],
           wallet: {} as WalletClient,
-          chainId: BigInt(sepoliaChainId),
+          chainId: BigInt(storyTestChainId),
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -29,11 +29,11 @@ describe("Sign", () => {
       try {
         await getPermissionSignature({
           ipId: zeroAddress,
-          nonce: 1,
+          state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
           deadline: 1000n,
           permissions: [],
           wallet: { signTypedData: () => Promise.resolve("") } as unknown as WalletClient,
-          chainId: BigInt(sepoliaChainId),
+          chainId: BigInt(storyTestChainId),
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -44,17 +44,17 @@ describe("Sign", () => {
 
     it("should return signature when call getPermissionSignature given account support signTypedData", async () => {
       const walletClient = createWalletClient({
-        chain: chainStringToViemChain("sepolia"),
+        chain: chainStringToViemChain("iliad"),
         transport: http(),
-        account: privateKeyToAccount(process.env.SEPOLIA_WALLET_PRIVATE_KEY as Hex),
+        account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
       });
       const result = await getPermissionSignature({
         ipId: zeroAddress,
-        nonce: 1,
+        state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
         deadline: 1000n,
         permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
         wallet: walletClient,
-        chainId: BigInt(sepoliaChainId),
+        chainId: BigInt(storyTestChainId),
       });
       expect(result).is.a("string").and.not.empty;
     });

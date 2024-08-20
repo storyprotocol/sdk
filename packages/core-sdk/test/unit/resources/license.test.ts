@@ -34,7 +34,6 @@ describe("Test LicenseClient", () => {
   afterEach(() => {
     sinon.restore();
   });
-
   describe("Test licenseClient.registerNonComSocialRemixingPIL", async () => {
     it("should return licenseTermsId when call registerNonComSocialRemixingPIL given licenseTermsId is registered", async () => {
       sinon
@@ -56,7 +55,6 @@ describe("Test LicenseClient", () => {
 
       expect(result.txHash).to.equal(txHash);
     });
-
     it("should return txhash when call registerNonComSocialRemixingPIL given licenseTermsId is not registered and waitForTransaction of true", async () => {
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
@@ -81,7 +79,6 @@ describe("Test LicenseClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsId).to.equal(1n);
     });
-
     it("should return throw error when call registerNonComSocialRemixingPIL given request fail", async () => {
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
@@ -536,19 +533,19 @@ describe("Test LicenseClient", () => {
         terms: {
           transferable: true,
           royaltyPolicy: zeroAddress,
-          mintingFee: BigInt(1),
+          defaultMintingFee: BigInt(1),
           expiration: BigInt(1),
           commercialUse: true,
           commercialAttribution: true,
           commercializerChecker: zeroAddress,
           commercializerCheckerData: zeroAddress,
           commercialRevShare: 100,
-          commercialRevCelling: BigInt(1),
+          commercialRevCeiling: BigInt(1),
           derivativesAllowed: true,
           derivativesAttribution: true,
           derivativesApproval: true,
           derivativesReciprocal: true,
-          derivativeRevCelling: BigInt(1),
+          derivativeRevCeiling: BigInt(1),
           currency: zeroAddress,
           uri: "string",
         },

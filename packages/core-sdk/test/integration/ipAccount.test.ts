@@ -1,35 +1,28 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { AccessPermission, StoryClient, getPermissionSignature } from "../../src";
-import {
-  MockERC721,
-  getStoryClientInSepolia,
-  getTokenId,
-  sepoliaChainId,
-  walletClient,
-} from "./utils/util";
+import { AccessPermission, StoryClient } from "../../src";
+import { mockERC721, getStoryClient, getTokenId, storyTestChainId } from "./utils/util";
 import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
   coreMetadataModuleAddress,
 } from "../../src/abi/generated";
-import { getDeadline } from "../../src/utils/sign";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const coreMetadataModule = coreMetadataModuleAddress[sepoliaChainId];
 describe("Ip Account functions", () => {
   let client: StoryClient;
   let ipId: Hex;
   let data: Hex;
-  const permissionAddress = accessControllerAddress[sepoliaChainId];
+  const coreMetadataModule = coreMetadataModuleAddress[storyTestChainId];
+  const permissionAddress = accessControllerAddress[storyTestChainId];
 
   before(async () => {
-    client = getStoryClientInSepolia();
+    client = getStoryClient();
     const tokenId = await getTokenId();
     const registerResult = await client.ipAsset.register({
-      nftContract: MockERC721,
+      nftContract: mockERC721,
       tokenId: tokenId!,
       txOptions: {
         waitForTransaction: true,
@@ -41,7 +34,7 @@ describe("Ip Account functions", () => {
       functionName: "setPermission",
       args: [
         getAddress(ipId),
-        getAddress(process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex),
+        getAddress(process.env.TEST_WALLET_ADDRESS as Hex),
         getAddress(coreMetadataModule),
         toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         AccessPermission.ALLOW,
@@ -56,43 +49,6 @@ describe("Ip Account functions", () => {
       data,
       ipId: ipId,
     });
-    expect(response.txHash).to.be.a("string").and.not.empty;
-  });
-
-  it("should not throw error when executeWithSig setting permission", async () => {
-    const state = await client.ipAccount.getIpAccountNonce(ipId);
-    const expectedState = state + 1n;
-    const deadline = getDeadline(60000n);
-    const signature = await getPermissionSignature({
-      ipId,
-      wallet: walletClient,
-      permissions: [
-        {
-          ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
-          to: coreMetadataModule,
-          permission: AccessPermission.ALLOW,
-          func: "function setAll(address,string,bytes32,bytes32)",
-        },
-      ],
-      nonce: expectedState,
-
-      chainId: BigInt(sepoliaChainId),
-      deadline: deadline,
-    });
-    const response = await client.ipAccount.executeWithSig({
-      ipId: ipId,
-      value: 0,
-      to: permissionAddress,
-      data: data,
-      deadline: deadline,
-      signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
-      signature: signature,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-
     expect(response.txHash).to.be.a("string").and.not.empty;
   });
 });

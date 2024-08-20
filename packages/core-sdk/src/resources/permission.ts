@@ -109,7 +109,6 @@ export class PermissionClient {
       const { ipId, signer, to, txOptions, func, permission, deadline } = request;
       await this.checkIsRegistered(ipId);
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
-      const nonce = (await ipAccountClient.state()) + 1n;
       const data = encodeFunctionData({
         abi: accessControllerAbi,
         functionName: "setPermission",
@@ -121,11 +120,13 @@ export class PermissionClient {
           permission,
         ],
       });
+      const { result: state } = await ipAccountClient.state();
       const calculatedDeadline = getDeadline(deadline);
+
       const signature = await getPermissionSignature({
         ipId,
         deadline: calculatedDeadline,
-        nonce,
+        state,
         permissions: [
           {
             ipId,
@@ -266,7 +267,6 @@ export class PermissionClient {
         await this.checkIsRegistered(permission.ipId);
       }
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
-      const nonce = (await ipAccountClient.state()) + 1n;
       const data = encodeFunctionData({
         abi: accessControllerAbi,
         functionName: "setBatchPermissions",
@@ -280,11 +280,12 @@ export class PermissionClient {
           })),
         ],
       });
+      const { result: state } = await ipAccountClient.state();
       const calculatedDeadline = getDeadline(deadline);
       const signature = await getPermissionSignature({
         ipId,
         deadline: calculatedDeadline,
-        nonce,
+        state,
         permissions,
         chainId: chain[this.chainId],
         wallet: this.wallet as WalletClient,

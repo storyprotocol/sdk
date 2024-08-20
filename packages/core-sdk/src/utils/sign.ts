@@ -1,6 +1,6 @@
-import { encodeFunctionData, toFunctionSelector } from "viem";
+import { encodeAbiParameters, encodeFunctionData, keccak256, toFunctionSelector } from "viem";
 
-import { accessControllerAbi, accessControllerAddress } from "../abi/generated";
+import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
 import { getAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
 import { PermissionSignatureRequest, PermissionSignatureResponse } from "../types/common";
@@ -20,7 +20,7 @@ import { PermissionSignatureRequest, PermissionSignatureResponse } from "../type
 export const getPermissionSignature = async (
   param: PermissionSignatureRequest,
 ): Promise<PermissionSignatureResponse> => {
-  const { ipId, deadline, nonce, wallet, chainId, permissions, permissionFunc } = param;
+  const { ipId, deadline, state, wallet, chainId, permissions, permissionFunc } = param;
   if (!wallet.signTypedData) {
     throw new Error("The wallet client does not support signTypedData, please try again.");
   }
@@ -28,6 +28,8 @@ export const getPermissionSignature = async (
     throw new Error("The wallet client does not have an account, please try again.");
   }
   const permissionFunction = permissionFunc ? permissionFunc : "setPermission";
+  const accessAddress =
+    accessControllerAddress[Number(chainId) as keyof typeof accessControllerAddress];
   const data = encodeFunctionData({
     abi: accessControllerAbi,
     functionName: permissionFunc ? permissionFunc : "setPermission",
@@ -50,6 +52,22 @@ export const getPermissionSignature = async (
             })),
           ],
   });
+  const nonce = keccak256(
+    encodeAbiParameters(
+      [
+        { name: "", type: "bytes32" },
+        { name: "", type: "bytes" },
+      ],
+      [
+        state,
+        encodeFunctionData({
+          abi: ipAccountImplAbi,
+          functionName: "execute",
+          args: [accessAddress, 0n, data],
+        }),
+      ],
+    ),
+  );
   return await wallet.signTypedData({
     account: wallet.account,
     domain: {
@@ -63,7 +81,7 @@ export const getPermissionSignature = async (
         { name: "to", type: "address" },
         { name: "value", type: "uint256" },
         { name: "data", type: "bytes" },
-        { name: "nonce", type: "uint256" },
+        { name: "nonce", type: "bytes32" },
         { name: "deadline", type: "uint256" },
       ],
     },
@@ -75,7 +93,7 @@ export const getPermissionSignature = async (
       ),
       value: BigInt(0),
       data,
-      nonce: BigInt(nonce),
+      nonce,
       deadline: BigInt(deadline),
     },
   });
