@@ -6496,6 +6496,15 @@ export const spgAbi = [
   { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "actualTokenOwner", internalType: "address", type: "address" },
+    ],
+    name: "SPG__CallerAndNotTokenOwner",
+  },
   { type: "error", inputs: [], name: "SPG__CallerNotMinterRole" },
   { type: "error", inputs: [], name: "SPG__EmptyLicenseTokens" },
   { type: "error", inputs: [], name: "SPG__ZeroAddressParam" },
@@ -6719,7 +6728,11 @@ export const spgAbi = [
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
           { name: "expiration", internalType: "uint256", type: "uint256" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
@@ -6739,7 +6752,7 @@ export const spgAbi = [
             type: "uint32",
           },
           {
-            name: "commercialRevCelling",
+            name: "commercialRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -6752,7 +6765,7 @@ export const spgAbi = [
           { name: "derivativesApproval", internalType: "bool", type: "bool" },
           { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
           {
-            name: "derivativeRevCelling",
+            name: "derivativeRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -6836,6 +6849,18 @@ export const spgAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onERC721Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
@@ -6893,7 +6918,11 @@ export const spgAbi = [
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
           { name: "expiration", internalType: "uint256", type: "uint256" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
@@ -6913,7 +6942,7 @@ export const spgAbi = [
             type: "uint32",
           },
           {
-            name: "commercialRevCelling",
+            name: "commercialRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -6926,7 +6955,7 @@ export const spgAbi = [
           { name: "derivativesApproval", internalType: "bool", type: "bool" },
           { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
           {
-            name: "derivativeRevCelling",
+            name: "derivativeRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -7070,7 +7099,11 @@ export const spgAbi = [
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
           { name: "expiration", internalType: "uint256", type: "uint256" },
           { name: "commercialUse", internalType: "bool", type: "bool" },
           { name: "commercialAttribution", internalType: "bool", type: "bool" },
@@ -7090,7 +7123,7 @@ export const spgAbi = [
             type: "uint32",
           },
           {
-            name: "commercialRevCelling",
+            name: "commercialRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -7103,7 +7136,7 @@ export const spgAbi = [
           { name: "derivativesApproval", internalType: "bool", type: "bool" },
           { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
           {
-            name: "derivativeRevCelling",
+            name: "derivativeRevCeiling",
             internalType: "uint256",
             type: "uint256",
           },
@@ -13748,19 +13781,19 @@ export type SpgMintAndRegisterIpAndAttachPilTermsRequest = {
   terms: {
     transferable: boolean;
     royaltyPolicy: Address;
-    mintingFee: bigint;
+    defaultMintingFee: bigint;
     expiration: bigint;
     commercialUse: boolean;
     commercialAttribution: boolean;
     commercializerChecker: Address;
     commercializerCheckerData: Hex;
     commercialRevShare: number;
-    commercialRevCelling: bigint;
+    commercialRevCeiling: bigint;
     derivativesAllowed: boolean;
     derivativesAttribution: boolean;
     derivativesApproval: boolean;
     derivativesReciprocal: boolean;
-    derivativeRevCelling: bigint;
+    derivativeRevCeiling: bigint;
     currency: Address;
     uri: string;
   };
@@ -13859,19 +13892,19 @@ export type SpgRegisterIpAndAttachPilTermsRequest = {
   terms: {
     transferable: boolean;
     royaltyPolicy: Address;
-    mintingFee: bigint;
+    defaultMintingFee: bigint;
     expiration: bigint;
     commercialUse: boolean;
     commercialAttribution: boolean;
     commercializerChecker: Address;
     commercializerCheckerData: Hex;
     commercialRevShare: number;
-    commercialRevCelling: bigint;
+    commercialRevCeiling: bigint;
     derivativesAllowed: boolean;
     derivativesAttribution: boolean;
     derivativesApproval: boolean;
     derivativesReciprocal: boolean;
-    derivativeRevCelling: bigint;
+    derivativeRevCeiling: bigint;
     currency: Address;
     uri: string;
   };
@@ -13967,19 +14000,19 @@ export type SpgRegisterPilTermsAndAttachRequest = {
   terms: {
     transferable: boolean;
     royaltyPolicy: Address;
-    mintingFee: bigint;
+    defaultMintingFee: bigint;
     expiration: bigint;
     commercialUse: boolean;
     commercialAttribution: boolean;
     commercializerChecker: Address;
     commercializerCheckerData: Hex;
     commercialRevShare: number;
-    commercialRevCelling: bigint;
+    commercialRevCeiling: bigint;
     derivativesAllowed: boolean;
     derivativesAttribution: boolean;
     derivativesApproval: boolean;
     derivativesReciprocal: boolean;
-    derivativeRevCelling: bigint;
+    derivativeRevCeiling: bigint;
     currency: Address;
     uri: string;
   };
@@ -14520,6 +14553,292 @@ export class SpgClient extends SpgEventClient {
 }
 
 // Contract SPGNFTBeacon =============================================================
+
+/**
+ * SpgnftBeaconOwnershipTransferredEvent
+ *
+ * @param previousOwner address
+ * @param newOwner address
+ */
+export type SpgnftBeaconOwnershipTransferredEvent = {
+  previousOwner: Address;
+  newOwner: Address;
+};
+
+/**
+ * SpgnftBeaconUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type SpgnftBeaconUpgradedEvent = {
+  implementation: Address;
+};
+
+export type SpgnftBeaconImplementationResponse = Address;
+
+export type SpgnftBeaconOwnerResponse = Address;
+
+/**
+ * SpgnftBeaconTransferOwnershipRequest
+ *
+ * @param newOwner address
+ */
+export type SpgnftBeaconTransferOwnershipRequest = {
+  newOwner: Address;
+};
+
+/**
+ * SpgnftBeaconUpgradeToRequest
+ *
+ * @param newImplementation address
+ */
+export type SpgnftBeaconUpgradeToRequest = {
+  newImplementation: Address;
+};
+
+/**
+ * contract SPGNFTBeacon event
+ */
+export class SpgnftBeaconEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(spgnftBeaconAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event OwnershipTransferred for contract SPGNFTBeacon
+   */
+  public watchOwnershipTransferredEvent(
+    onLogs: (txHash: Hex, ev: Partial<SpgnftBeaconOwnershipTransferredEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: spgnftBeaconAbi,
+      address: this.address,
+      eventName: "OwnershipTransferred",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event OwnershipTransferred for contract SPGNFTBeacon
+   */
+  public parseTxOwnershipTransferredEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<SpgnftBeaconOwnershipTransferredEvent> {
+    const targetLogs: Array<SpgnftBeaconOwnershipTransferredEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: spgnftBeaconAbi,
+          eventName: "OwnershipTransferred",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "OwnershipTransferred") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract SPGNFTBeacon
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<SpgnftBeaconUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: spgnftBeaconAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract SPGNFTBeacon
+   */
+  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<SpgnftBeaconUpgradedEvent> {
+    const targetLogs: Array<SpgnftBeaconUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: spgnftBeaconAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract SPGNFTBeacon readonly method
+ */
+export class SpgnftBeaconReadOnlyClient extends SpgnftBeaconEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method implementation for contract SPGNFTBeacon
+   *
+   * @param request SpgnftBeaconImplementationRequest
+   * @return Promise<SpgnftBeaconImplementationResponse>
+   */
+  public async implementation(): Promise<SpgnftBeaconImplementationResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftBeaconAbi,
+      address: this.address,
+      functionName: "implementation",
+    });
+  }
+
+  /**
+   * method owner for contract SPGNFTBeacon
+   *
+   * @param request SpgnftBeaconOwnerRequest
+   * @return Promise<SpgnftBeaconOwnerResponse>
+   */
+  public async owner(): Promise<SpgnftBeaconOwnerResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftBeaconAbi,
+      address: this.address,
+      functionName: "owner",
+    });
+  }
+}
+
+/**
+ * contract SPGNFTBeacon write method
+ */
+export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method renounceOwnership for contract SPGNFTBeacon
+   *
+   * @param request SpgnftBeaconRenounceOwnershipRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async renounceOwnership(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftBeaconAbi,
+      address: this.address,
+      functionName: "renounceOwnership",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method renounceOwnership for contract SPGNFTBeacon with only encode
+   *
+   * @param request SpgnftBeaconRenounceOwnershipRequest
+   * @return EncodedTxData
+   */
+  public renounceOwnershipEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "renounceOwnership",
+      }),
+    };
+  }
+
+  /**
+   * method transferOwnership for contract SPGNFTBeacon
+   *
+   * @param request SpgnftBeaconTransferOwnershipRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferOwnership(
+    request: SpgnftBeaconTransferOwnershipRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftBeaconAbi,
+      address: this.address,
+      functionName: "transferOwnership",
+      account: this.wallet.account,
+      args: [request.newOwner],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferOwnership for contract SPGNFTBeacon with only encode
+   *
+   * @param request SpgnftBeaconTransferOwnershipRequest
+   * @return EncodedTxData
+   */
+  public transferOwnershipEncode(request: SpgnftBeaconTransferOwnershipRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "transferOwnership",
+        args: [request.newOwner],
+      }),
+    };
+  }
+
+  /**
+   * method upgradeTo for contract SPGNFTBeacon
+   *
+   * @param request SpgnftBeaconUpgradeToRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeTo(request: SpgnftBeaconUpgradeToRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftBeaconAbi,
+      address: this.address,
+      functionName: "upgradeTo",
+      account: this.wallet.account,
+      args: [request.newImplementation],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeTo for contract SPGNFTBeacon with only encode
+   *
+   * @param request SpgnftBeaconUpgradeToRequest
+   * @return EncodedTxData
+   */
+  public upgradeToEncode(request: SpgnftBeaconUpgradeToRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftBeaconAbi,
+        functionName: "upgradeTo",
+        args: [request.newImplementation],
+      }),
+    };
+  }
+}
 
 // Contract SPGNFTImpl =============================================================
 
