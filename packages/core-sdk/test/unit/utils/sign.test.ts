@@ -44,7 +44,7 @@ describe("Sign", () => {
 
     it("should return signature when call getPermissionSignature given account support signTypedData", async () => {
       const walletClient = createWalletClient({
-        chain: chainStringToViemChain("storyTestnet"),
+        chain: chainStringToViemChain("iliad"),
         transport: http(),
         account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
       });

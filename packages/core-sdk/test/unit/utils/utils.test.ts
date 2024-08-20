@@ -156,8 +156,8 @@ describe("Test chainStringToViemChain", () => {
     const chain = chainStringToViemChain("1513");
     expect(chain).to.equal(storyTestChain);
   });
-  it("should return story testnet if id is storyTestnet", () => {
-    const chain = chainStringToViemChain("storyTestnet");
+  it("should return story testnet if id is iliad", () => {
+    const chain = chainStringToViemChain("iliad");
     expect(chain).to.equal(storyTestChain);
   });
 });

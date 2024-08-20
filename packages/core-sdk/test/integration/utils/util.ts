@@ -12,7 +12,7 @@ export const spgNftBeacon =
   spgnftBeaconAddress[Number(storyTestChainId) as keyof typeof spgnftBeaconAddress];
 
 const baseConfig = {
-  chain: chainStringToViemChain("storyTestnet"),
+  chain: chainStringToViemChain("iliad"),
   transport: http(RPC),
 } as const;
 export const publicClient = createPublicClient(baseConfig);
@@ -88,7 +88,7 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
 };
 export const getStoryClient = (): StoryClient => {
   const config: StoryConfig = {
-    chainId: "storyTestnet",
+    chainId: "iliad",
     transport: http(RPC),
     account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
   };

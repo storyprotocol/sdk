@@ -18,7 +18,7 @@ export class MockERC20 {
 
   constructor() {
     const baseConfig = {
-      chain: chainStringToViemChain("storyTestnet"),
+      chain: chainStringToViemChain("iliad"),
       transport: http(RPC),
     } as const;
     this.publicClient = createPublicClient(baseConfig);
