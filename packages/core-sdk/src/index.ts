@@ -24,6 +24,7 @@ export type {
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpAndAttachPilTermsRequest,
   RegisterIpAndAttachPilTermsResponse,
+  MintAndRegisterIpAndMakeDerivativeRequest,
 } from "./types/resources/ipAsset";
 
 export type {

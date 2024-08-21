@@ -77,9 +77,9 @@ export async function waitTx(
   });
 }
 //TODO: Some information is waiting for confirmation about chain
-export const storyTestChain = defineChain({
+export const iliad = defineChain({
   id: 15_13,
-  name: "story-testnet",
+  name: "iliad",
   nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
   rpcUrls: {
     default: {
@@ -105,7 +105,7 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
     case "1513":
     case "iliad":
-      return storyTestChain;
+      return iliad;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }

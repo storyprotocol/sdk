@@ -4,12 +4,13 @@ import { TxOptions } from "../options";
 import { PIL_TYPE } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 
-type Metadata = {
+type IpMetadataAndTxOption = {
   ipMetadata?: {
     metadataURI?: string;
     metadataHash?: Hex;
     nftMetadataHash?: Hex;
   };
+  txOptions?: TxOptions;
 };
 
 export type RegisterIpResponse = {
@@ -21,9 +22,8 @@ export type RegisterIpResponse = {
 export type RegisterRequest = {
   nftContract: Address;
   tokenId: string | number | bigint;
-  txOptions?: TxOptions;
   deadline?: string | number | bigint;
-} & Metadata;
+} & IpMetadataAndTxOption;
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
   childIpId: Address;
@@ -57,9 +57,8 @@ export type CreateIpAssetWithPilTermsRequest = {
   mintingFee?: string | number | bigint;
   recipient?: Address;
   commercialRevShare?: number;
-  txOptions?: TxOptions;
   nftMetadata?: string;
-} & Metadata;
+} & IpMetadataAndTxOption;
 
 export type CreateIpAssetWithPilTermsResponse = {
   txHash?: string;
@@ -78,8 +77,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
     licenseTermsIds: string[] | bigint[] | number[];
     licenseTemplate?: Address;
   };
-  txOptions?: TxOptions;
-} & Metadata;
+} & IpMetadataAndTxOption;
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: string;
@@ -95,8 +93,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
   currency: Address;
   deadline?: bigint | number | string;
   commercialRevShare?: number;
-  txOptions?: TxOptions;
-} & Metadata;
+} & IpMetadataAndTxOption;
 
 export type RegisterIpAndAttachPilTermsResponse = {
   txHash?: string;
@@ -104,3 +101,14 @@ export type RegisterIpAndAttachPilTermsResponse = {
   ipId?: Address;
   licenseTermsId?: bigint;
 };
+
+export type MintAndRegisterIpAndMakeDerivativeRequest = {
+  nftContract: Address;
+  derivData: {
+    parentIpIds: Address[];
+    licenseTermsIds: string[] | bigint[] | number[];
+    licenseTemplate?: Address;
+  };
+  nftMetadata?: string;
+  recipient?: Address;
+} & IpMetadataAndTxOption;
