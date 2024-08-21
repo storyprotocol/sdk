@@ -112,7 +112,7 @@ export default defineConfig(async () => {
     plugins: [
       optimizedBlockExplorer({
         baseUrl: "https://explorer.testnet.storyprotocol.net/api",
-        name: "story-testnet",
+        name: "iliad",
         getAddress: await resolveProxyContracts({
           baseUrl: "https://rpc.partner.testnet.storyprotocol.net",
           contracts: contracts,

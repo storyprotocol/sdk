@@ -51,7 +51,7 @@ The preceding code created the `account` object for creating the SDK client.
 
 To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, utilizing the `account` we created previously.
 
-> :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Sepolia network with `RPC_PROVIDER_URL=https://rpc.ankr.com/eth_sepolia`.
+> :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Iliad network with `RPC_PROVIDER_URL=https://rpc.partner.testnet.storyprotocol.net`.
 
 ```typescript index.ts
 import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
@@ -98,15 +98,16 @@ In your testing environment:
 
 - Run `yalc update` to pull the latest changes.
 
-## Steps to pull and compile latest smart contract ABIs (Currently pulls from the protocol-contracts `dev` branch)
+## Steps to pull and compile latest Protocol Core & Periphery v1 Smart Contract ABIs (Currently pulls from the protocol-core-v1 and protocol-periphery-v1 `release-v1.x.x` branch)
 
 - run `cd packages/wagmi-generator && npm run generate`
 
 ## Release
 
-| Package                         | Description                                    |
-| :------------------------------ | :--------------------------------------------- |
-| [core-sdk](./packages/core-sdk) | The core sdk for interacting with the protocol |
+| Package                           | Description                                     |
+| :-------------------------------- | :---------------------------------------------- |
+| [core-sdk](./packages/core-sdk)   | The core sdk for interacting with the protocol  |
+| [react-sdk](./packages/react-sdk) | The react sdk for interacting with the protocol |
 
 ## Contributing
 
