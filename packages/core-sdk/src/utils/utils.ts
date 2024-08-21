@@ -117,10 +117,12 @@ export const chain: { [key in SupportedChainIds]: bigint } = {
 };
 
 export const getAddress = (address: string, name: string, chainId?: number): Address => {
-  if (!isAddress(address, { strict: false })) {
-    throw Error(
-      `${name} address is invalid: ${address}, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
-    );
+  if (isAddress(address, { strict: false })) {
+    return checksumAddress(address, chainId);
   }
-  return checksumAddress(address, chainId);
+
+  throw new Error(
+    `${name} address is invalid: ${address}. Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`
+  );
 };
+
