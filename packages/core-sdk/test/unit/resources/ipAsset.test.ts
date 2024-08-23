@@ -10,6 +10,7 @@ import {
   zeroHash,
   LocalAccount,
   zeroAddress,
+  Address,
 } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
@@ -1178,6 +1179,112 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    describe("IP Metadata Functions", () => {
+      const sampleCreatorData = {
+        name: "Jane Doe",
+        address: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" as Address,
+        description: "Author",
+        image: "https://example.com/jane.jpg",
+        socialMedia: [{ platform: "Twitter", url: "https://twitter.com/janedoe" }],
+        contributionPercent: 100,
+      };
+
+      const sampleMetadataData = {
+        title: "The Great Adventure",
+        description: "A thrilling adventure story",
+        ipType: "Book",
+        relationships: [
+          {
+            parentIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512" as Address,
+            type: "APPEARS_IN",
+          },
+        ],
+        createdAt: "2024-08-22T10:20:30Z",
+        watermarkImg: "https://example.com/watermark.png",
+        creators: [sampleCreatorData],
+        media: [
+          { name: "Cover Image", url: "https://example.com/cover.jpg", mimeType: "image/jpeg" },
+        ],
+        attributes: [
+          { key: "Genre", value: "Adventure" },
+          { key: "Pages", value: 350 },
+        ],
+        app: { id: "app_001", name: "Story Protocol", website: "https://story.foundation" },
+        tags: ["Adventure", "Thriller"],
+        robotTerms: { userAgent: "*", allow: "/" },
+        customField1: "Custom Value 1",
+        customField2: 42,
+      };
+
+      describe("generateCreatorMetadata", function () {
+        it("should create an IpCreator object with the provided details", function () {
+          const creator = ipAssetClient.generateCreatorMetadata(sampleCreatorData);
+
+          expect(creator).to.be.an("object");
+          expect(creator).to.have.property("name", "Jane Doe");
+          expect(creator).to.have.property("address", "0x123...");
+          expect(creator).to.have.property("description", "Author");
+          expect(creator).to.have.property("image", "https://example.com/jane.jpg");
+          expect(creator)
+            .to.have.property("socialMedia")
+            .that.is.an("array")
+            .that.deep.equals([{ platform: "Twitter", url: "https://twitter.com/janedoe" }]);
+          expect(creator).to.have.property("contributionPercent", 100);
+          expect(creator).to.have.property("role").that.is.undefined;
+        });
+      });
+
+      describe("generateIpMetadata", function () {
+        it("should create an IpMetadata object with the provided details", function () {
+          const metadata = ipAssetClient.generateIpMetadata(sampleMetadataData);
+
+          expect(metadata).to.be.an("object");
+          expect(metadata).to.have.property("title", "The Great Adventure");
+          expect(metadata).to.have.property("description", "A thrilling adventure story");
+          expect(metadata).to.have.property("ipType", "Book");
+          expect(metadata)
+            .to.have.property("relationships")
+            .that.is.an("array")
+            .that.deep.equals([{ ipId: "0x123...", type: "APPEARS_IN" }]);
+          expect(metadata).to.have.property("createdAt", "2024-08-22T10:20:30Z");
+          expect(metadata).to.have.property("watermarkImg", "https://example.com/watermark.png");
+          expect(metadata)
+            .to.have.property("creators")
+            .that.is.an("array")
+            .that.deep.equals([sampleCreatorData]);
+          expect(metadata)
+            .to.have.property("media")
+            .that.is.an("array")
+            .that.deep.equals([
+              { name: "Cover Image", url: "https://example.com/cover.jpg", mimeType: "image/jpeg" },
+            ]);
+          expect(metadata)
+            .to.have.property("attributes")
+            .that.is.an("array")
+            .that.deep.equals([
+              { key: "Genre", value: "Adventure" },
+              { key: "Pages", value: 350 },
+            ]);
+          expect(metadata)
+            .to.have.property("app")
+            .that.deep.equals({
+              id: "app_001",
+              name: "Story Protocol",
+              website: "https://storyprotocol.com",
+            });
+          expect(metadata)
+            .to.have.property("tags")
+            .that.is.an("array")
+            .that.deep.equals(["Adventure", "Thriller"]);
+          expect(metadata)
+            .to.have.property("robotTerms")
+            .that.deep.equals({ userAgent: "*", allow: "/" });
+          expect(metadata).to.have.property("customField1", "Custom Value 1");
+          expect(metadata).to.have.property("customField2", 42);
+        });
+      });
     });
   });
 });

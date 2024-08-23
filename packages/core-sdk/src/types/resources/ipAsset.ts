@@ -113,3 +113,62 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   nftMetadata?: string;
   recipient?: Address;
 } & IpMetadataAndTxOption;
+
+export type IpRelationship = {
+  parentIpId: Address;
+  type: string;
+};
+
+export type IpCreator = {
+  name: string;
+  address: Address;
+  description: string;
+  image: string;
+  socialMedia: IpCreatorSocial[];
+  role?: string;
+  contributionPercent: number; // add up to 100
+};
+
+export type IpCreatorSocial = {
+  platform: string;
+  url: string;
+};
+
+export type IpMedia = {
+  name: string;
+  url: string;
+  mimeType: string;
+};
+
+export type IpAttribute = {
+  key: string;
+  value: string | number;
+};
+
+export type StoryProtocolApp = {
+  id: string;
+  name: string;
+  website: string;
+  action?: string;
+};
+
+export type IPRobotTerms = {
+  userAgent: string;
+  allow: string;
+};
+
+export type IpMetadata = {
+  title?: string;
+  description?: string;
+  ipType?: string;
+  relationships?: IpRelationship[];
+  createdAt?: string;
+  watermarkImg?: string;
+  creators?: IpCreator[];
+  media?: IpMedia[];
+  attributes?: IpAttribute[];
+  appInfo?: StoryProtocolApp[];
+  tags?: string[];
+  robotTerms?: IPRobotTerms;
+  [key: string]: unknown;
+};
