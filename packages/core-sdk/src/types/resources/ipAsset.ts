@@ -122,9 +122,9 @@ export type IpRelationship = {
 export type IpCreator = {
   name: string;
   address: Address;
-  description: string;
-  image: string;
-  socialMedia: IpCreatorSocial[];
+  description?: string;
+  image?: string;
+  socialMedia?: IpCreatorSocial[];
   role?: string;
   contributionPercent: number; // add up to 100
 };
