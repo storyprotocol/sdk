@@ -1224,7 +1224,7 @@ describe("Test IpAssetClient", () => {
 
           expect(creator).to.be.an("object");
           expect(creator).to.have.property("name", "Jane Doe");
-          expect(creator).to.have.property("address", "0x123...");
+          expect(creator).to.have.property("address", "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
           expect(creator).to.have.property("description", "Author");
           expect(creator).to.have.property("image", "https://example.com/jane.jpg");
           expect(creator)
@@ -1247,7 +1247,9 @@ describe("Test IpAssetClient", () => {
           expect(metadata)
             .to.have.property("relationships")
             .that.is.an("array")
-            .that.deep.equals([{ ipId: "0x123...", type: "APPEARS_IN" }]);
+            .that.deep.equals([
+              { ipId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", type: "APPEARS_IN" },
+            ]);
           expect(metadata).to.have.property("createdAt", "2024-08-22T10:20:30Z");
           expect(metadata).to.have.property("watermarkImg", "https://example.com/watermark.png");
           expect(metadata)
@@ -1267,13 +1269,11 @@ describe("Test IpAssetClient", () => {
               { key: "Genre", value: "Adventure" },
               { key: "Pages", value: 350 },
             ]);
-          expect(metadata)
-            .to.have.property("app")
-            .that.deep.equals({
-              id: "app_001",
-              name: "Story Protocol",
-              website: "https://storyprotocol.com",
-            });
+          expect(metadata).to.have.property("app").that.deep.equals({
+            id: "app_001",
+            name: "Story Protocol",
+            website: "https://storyprotocol.com",
+          });
           expect(metadata)
             .to.have.property("tags")
             .that.is.an("array")
