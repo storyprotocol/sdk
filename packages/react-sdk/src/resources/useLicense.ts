@@ -42,7 +42,7 @@ const useLicense = () => {
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   const registerNonComSocialRemixingPIL = async (
-    request: RegisterNonComSocialRemixingPILRequest
+    request: RegisterNonComSocialRemixingPILRequest,
   ): Promise<RegisterPILResponse> => {
     try {
       setLoadings((prev) => ({
@@ -50,9 +50,8 @@ const useLicense = () => {
         registerNonComSocialRemixingPIL: true,
       }));
       setErrors((prev) => ({ ...prev, registerNonComSocialRemixingPIL: null }));
-      const response = await client.license.registerNonComSocialRemixingPIL(
-        request
-      );
+      const response =
+        await client.license.registerNonComSocialRemixingPIL(request);
       setLoadings((prev) => ({
         ...prev,
         registerNonComSocialRemixingPIL: false,
@@ -82,7 +81,7 @@ const useLicense = () => {
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   const registerCommercialUsePIL = async (
-    request: RegisterCommercialUsePILRequest
+    request: RegisterCommercialUsePILRequest,
   ): Promise<RegisterPILResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: true }));
@@ -112,7 +111,7 @@ const useLicense = () => {
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   const registerCommercialRemixPIL = async (
-    request: RegisterCommercialRemixPILRequest
+    request: RegisterCommercialRemixPILRequest,
   ): Promise<RegisterPILResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: true }));
@@ -141,7 +140,7 @@ const useLicense = () => {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   const attachLicenseTerms = async (
-    request: AttachLicenseTermsRequest
+    request: AttachLicenseTermsRequest,
   ): Promise<AttachLicenseTermsResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, attachLicenseTerms: true }));
@@ -180,7 +179,7 @@ const useLicense = () => {
    * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
    */
   const mintLicenseTokens = async (
-    request: MintLicenseTokensRequest
+    request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, mintLicenseTokens: true }));
@@ -202,13 +201,13 @@ const useLicense = () => {
    * @returns A Promise that resolves to an object containing the PILTerms associate with the given ID.
    */
   const getLicenseTerms = async (
-    selectedLicenseTermsId: LicenseTermsId
+    selectedLicenseTermsId: LicenseTermsId,
   ): Promise<PiLicenseTemplateGetLicenseTermsResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, getLicenseTerms: true }));
       setErrors((prev) => ({ ...prev, getLicenseTerms: null }));
       const response = await client.license.getLicenseTerms(
-        selectedLicenseTermsId
+        selectedLicenseTermsId,
       );
       setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
       return response;

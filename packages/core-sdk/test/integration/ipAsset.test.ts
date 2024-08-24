@@ -141,9 +141,10 @@ describe("IP Asset Functions ", () => {
           nftContract,
           pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
           ipMetadata: {
-            metadataURI: "test-uri",
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+            nftMetadataURI: "test-nft-uri",
           },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
@@ -156,8 +157,8 @@ describe("IP Asset Functions ", () => {
           mintingFee: "100",
           currency: MockERC20.address,
           ipMetadata: {
-            metadataURI: "test-uri",
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
         });
@@ -172,8 +173,8 @@ describe("IP Asset Functions ", () => {
           mintingFee: "100",
           currency: MockERC20.address,
           ipMetadata: {
-            metadataURI: "test-uri",
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
         });
@@ -202,8 +203,8 @@ describe("IP Asset Functions ", () => {
         nftContract,
         tokenId: tokenId!,
         ipMetadata: {
-          metadataURI: "test-uri",
-          metadataHash: toHex("test-metadata-hash", { size: 32 }),
+          ipMetadataURI: "test-uri",
+          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
         deadline: 1000n,

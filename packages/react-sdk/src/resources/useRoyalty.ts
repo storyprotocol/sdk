@@ -45,7 +45,7 @@ const useRoyalty = () => {
    * @emits RoyaltyTokensCollected (ancestorIpId, royaltyTokensCollected)
    */
   const collectRoyaltyTokens = async (
-    request: CollectRoyaltyTokensRequest
+    request: CollectRoyaltyTokensRequest,
   ): Promise<CollectRoyaltyTokensResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, collectRoyaltyTokens: true }));
@@ -72,7 +72,7 @@ const useRoyalty = () => {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   const payRoyaltyOnBehalf = async (
-    request: PayRoyaltyOnBehalfRequest
+    request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, payRoyaltyOnBehalf: true }));
@@ -99,7 +99,7 @@ const useRoyalty = () => {
    * @returns A Promise that contains the amount of revenue token claimable
    */
   const claimableRevenue = async (
-    request: ClaimableRevenueRequest
+    request: ClaimableRevenueRequest,
   ): Promise<ClaimableRevenueResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, claimableRevenue: true }));
@@ -127,7 +127,7 @@ const useRoyalty = () => {
    * @emits RevenueTokenClaimed (claimer, token, amount).
    */
   const claimRevenue = async (
-    request: ClaimRevenueRequest
+    request: ClaimRevenueRequest,
   ): Promise<ClaimRevenueResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, claimRevenue: true }));
@@ -152,7 +152,7 @@ const useRoyalty = () => {
    * @emits SnapshotCompleted (snapshotId, snapshotTimestamp, unclaimedTokens).
    */
   const snapshot = async (
-    request: SnapshotRequest
+    request: SnapshotRequest,
   ): Promise<SnapshotResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, snapshot: true }));
@@ -174,14 +174,13 @@ const useRoyalty = () => {
    * @returns A Promise that resolves to an object containing the royalty vault address.
    */
   const getRoyaltyVaultAddress = async (
-    royaltyVaultIpId: Hex
+    royaltyVaultIpId: Hex,
   ): Promise<Address> => {
     try {
       setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: true }));
       setErrors((prev) => ({ ...prev, getRoyaltyVaultAddress: null }));
-      const response = await client.royalty.getRoyaltyVaultAddress(
-        royaltyVaultIpId
-      );
+      const response =
+        await client.royalty.getRoyaltyVaultAddress(royaltyVaultIpId);
       setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: false }));
       return response;
     } catch (e) {

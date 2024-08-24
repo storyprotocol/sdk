@@ -87,10 +87,11 @@ export class IPAssetClient {
    * @param request - The request object that contains all data needed to register IP.
    *   @param request.nftContract The address of the NFT.
    *   @param request.tokenId The token identifier of the NFT.
-   *   @param request.ipMetadata - [Optional] The ipMetadata for the IP.
-   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
-   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The ipMetadata for the IP NFT.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
@@ -108,9 +109,10 @@ export class IPAssetClient {
         tokenId,
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         ipMetadata: {
-          metadataURI: "",
-          metadataHash: zeroHash,
-          nftMetadataHash: zeroHash,
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
         },
         sigMetadata: {
           signer: zeroAddress,
@@ -118,18 +120,6 @@ export class IPAssetClient {
           signature: zeroHash,
         },
       };
-      if (
-        request.ipMetadata &&
-        (request.ipMetadata.metadataHash !== zeroHash ||
-          request.ipMetadata.metadataURI !== "" ||
-          request.ipMetadata.nftMetadataHash !== zeroHash)
-      ) {
-        object.ipMetadata = {
-          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
-          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
-          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
-        };
-      }
       if (request.txOptions?.encodedTxDataOnly) {
         if (request.ipMetadata) {
           return { encodedTxData: this.spgClient.registerIpEncode(object) };
@@ -316,11 +306,11 @@ export class IPAssetClient {
    * @param request - The request object that contains all data needed to mint and register ip.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.pilType The type of the PIL.
-   *   @param request.ipMetadata - [Optional] The ipMetadata for the IP.
-   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
-   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The ipMetadata for the IP NFT.
-   *   @param request.nftMetadata [Optional] The desired metadata for the newly minted NFT.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -351,24 +341,12 @@ export class IPAssetClient {
 
         terms: licenseTerm,
         ipMetadata: {
-          metadataURI: "",
-          metadataHash: zeroHash,
-          nftMetadataHash: zeroHash,
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
         },
-        nftMetadata: request.nftMetadata || "",
       };
-      if (
-        request.ipMetadata &&
-        (request.ipMetadata.metadataHash !== zeroHash ||
-          request.ipMetadata.metadataURI !== "" ||
-          request.ipMetadata.nftMetadataHash !== zeroHash)
-      ) {
-        object.ipMetadata = {
-          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
-          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
-          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
-        };
-      }
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.spgClient.mintAndRegisterIpAndAttachPilTermsEncode(object) };
       } else {
@@ -398,10 +376,11 @@ export class IPAssetClient {
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.tokenId The ID of the NFT.
    *   @param request.pilType The type of the PIL.
-   *   @param request.ipMetadata - [Optional] The desired ipMetadata for the newly registered IP.
-   *   @param request.ipMetadata.metadataURI [Optional] The the ipMetadata for the IP hash.
-   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The ipMetadata for the IP NFT.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -458,9 +437,10 @@ export class IPAssetClient {
         tokenId: request.tokenId,
         terms: licenseTerm,
         ipMetadata: {
-          metadataURI: "",
-          metadataHash: zeroHash,
-          nftMetadataHash: zeroHash,
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
         },
         sigMetadata: {
           signer: zeroAddress,
@@ -473,19 +453,6 @@ export class IPAssetClient {
           signature: sigAttachSignature,
         },
       };
-
-      if (
-        request.ipMetadata &&
-        (request.ipMetadata.metadataHash !== zeroHash ||
-          request.ipMetadata.metadataURI !== "" ||
-          request.ipMetadata.nftMetadataHash !== zeroHash)
-      ) {
-        object.ipMetadata = {
-          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
-          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
-          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
-        };
-      }
       const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
@@ -531,10 +498,11 @@ export class IPAssetClient {
    *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
    *   @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
    *   @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *   @param request.ipMetadata - [Optional] The desired ipMetadata for the newly registered IP.
-   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
-   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The the ipMetadata for the IP NFT.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
@@ -616,9 +584,10 @@ export class IPAssetClient {
           signature: sigRegisterSignature,
         },
         ipMetadata: {
-          metadataURI: "",
-          metadataHash: zeroHash,
-          nftMetadataHash: zeroHash,
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
         },
         sigMetadata: {
           signer: zeroAddress,
@@ -626,18 +595,6 @@ export class IPAssetClient {
           signature: zeroHash,
         },
       };
-      if (
-        request.ipMetadata &&
-        (request.ipMetadata.metadataHash !== zeroHash ||
-          request.ipMetadata.metadataURI !== "" ||
-          request.ipMetadata.nftMetadataHash !== zeroHash)
-      ) {
-        object.ipMetadata = {
-          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
-          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
-          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
-        };
-      }
       const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
@@ -683,11 +640,11 @@ export class IPAssetClient {
    *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
    *   @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
    *   @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
-   *   @param request.ipMetadata - [Optional] The desired ipMetadata for the newly registered IP.
-   *   @param request.ipMetadata.metadataURI [Optional] The URI of the ipMetadata for the IP.
-   *   @param request.ipMetadata.metadataHash [Optional] The ipMetadata for the IP.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The the ipMetadata for the IP NFT.
-   *   @param request.recipient [Optional] The address of the recipient of the minted NFT.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.*   @param request.recipient [Optional] The address of the recipient of the minted NFT.
    *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
@@ -726,28 +683,16 @@ export class IPAssetClient {
           licenseTemplate: request.derivData.licenseTemplate || this.licenseTemplateClient.address,
           licenseTermsIds: request.derivData.licenseTermsIds.map((id) => BigInt(id)),
         },
-        nftMetadata: request.nftMetadata || "",
         ipMetadata: {
-          metadataURI: "",
-          metadataHash: zeroHash,
-          nftMetadataHash: zeroHash,
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
         },
         recipient:
           (request.recipient && getAddress(request.recipient, "request.recipient")) ||
           this.wallet.account!.address,
       };
-      if (
-        request.ipMetadata &&
-        (request.ipMetadata.metadataHash !== zeroHash ||
-          request.ipMetadata.metadataURI !== "" ||
-          request.ipMetadata.nftMetadataHash !== zeroHash)
-      ) {
-        object.ipMetadata = {
-          metadataURI: request.ipMetadata.metadataURI || object.ipMetadata.metadataURI,
-          metadataHash: request.ipMetadata.metadataHash || object.ipMetadata.metadataHash,
-          nftMetadataHash: request.ipMetadata.nftMetadataHash || object.ipMetadata.nftMetadataHash,
-        };
-      }
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.spgClient.mintAndRegisterIpAndMakeDerivativeEncode(object) };
       } else {

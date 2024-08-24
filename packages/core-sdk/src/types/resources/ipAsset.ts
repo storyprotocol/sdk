@@ -6,8 +6,9 @@ import { EncodedTxData } from "../../abi/generated";
 
 type IpMetadataAndTxOption = {
   ipMetadata?: {
-    metadataURI?: string;
-    metadataHash?: Hex;
+    ipMetadataURI?: string;
+    ipMetadataHash?: Hex;
+    nftMetadataURI?: string;
     nftMetadataHash?: Hex;
   };
   txOptions?: TxOptions;
