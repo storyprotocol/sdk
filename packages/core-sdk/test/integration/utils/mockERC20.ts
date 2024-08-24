@@ -14,7 +14,7 @@ import { RPC } from "./util";
 export class MockERC20 {
   private publicClient: PublicClient;
   private walletClient: WalletClient;
-  static address: Hex = "0xDE51BB12D5cef80ff2334fe1019089363F80b46e";
+  static address: Hex = "0x91f6F05B08c16769d3c85867548615d270C42fC7";
 
   constructor() {
     const baseConfig = {
