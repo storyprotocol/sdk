@@ -6686,14 +6686,14 @@ export const spgAbi = [
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "recipient", internalType: "address", type: "address" },
-      { name: "nftMetadata", internalType: "string", type: "string" },
       {
         name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -6710,14 +6710,14 @@ export const spgAbi = [
     inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "recipient", internalType: "address", type: "address" },
-      { name: "nftMetadata", internalType: "string", type: "string" },
       {
         name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -6801,14 +6801,14 @@ export const spgAbi = [
           { name: "royaltyContext", internalType: "bytes", type: "bytes" },
         ],
       },
-      { name: "nftMetadata", internalType: "string", type: "string" },
       {
         name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -6827,14 +6827,14 @@ export const spgAbi = [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-      { name: "nftMetadata", internalType: "string", type: "string" },
       {
         name: "ipMetadata",
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -6876,8 +6876,9 @@ export const spgAbi = [
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -6906,8 +6907,9 @@ export const spgAbi = [
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -7016,8 +7018,9 @@ export const spgAbi = [
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -7058,8 +7061,9 @@ export const spgAbi = [
         internalType: "struct IStoryProtocolGateway.IPMetadata",
         type: "tuple",
         components: [
-          { name: "metadataURI", internalType: "string", type: "string" },
-          { name: "metadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
@@ -13746,16 +13750,15 @@ export type SpgCreateCollectionRequest = {
  *
  * @param nftContract address
  * @param recipient address
- * @param nftMetadata string
  * @param ipMetadata tuple
  */
 export type SpgMintAndRegisterIpRequest = {
   nftContract: Address;
   recipient: Address;
-  nftMetadata: string;
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
 };
@@ -13765,17 +13768,16 @@ export type SpgMintAndRegisterIpRequest = {
  *
  * @param nftContract address
  * @param recipient address
- * @param nftMetadata string
  * @param ipMetadata tuple
  * @param terms tuple
  */
 export type SpgMintAndRegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   recipient: Address;
-  nftMetadata: string;
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
   terms: {
@@ -13804,7 +13806,6 @@ export type SpgMintAndRegisterIpAndAttachPilTermsRequest = {
  *
  * @param nftContract address
  * @param derivData tuple
- * @param nftMetadata string
  * @param ipMetadata tuple
  * @param recipient address
  */
@@ -13816,10 +13817,10 @@ export type SpgMintAndRegisterIpAndMakeDerivativeRequest = {
     licenseTermsIds: readonly bigint[];
     royaltyContext: Hex;
   };
-  nftMetadata: string;
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
   recipient: Address;
@@ -13831,7 +13832,6 @@ export type SpgMintAndRegisterIpAndMakeDerivativeRequest = {
  * @param nftContract address
  * @param licenseTokenIds uint256[]
  * @param royaltyContext bytes
- * @param nftMetadata string
  * @param ipMetadata tuple
  * @param recipient address
  */
@@ -13839,10 +13839,10 @@ export type SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
   licenseTokenIds: readonly bigint[];
   royaltyContext: Hex;
-  nftMetadata: string;
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
   recipient: Address;
@@ -13860,8 +13860,9 @@ export type SpgRegisterIpRequest = {
   nftContract: Address;
   tokenId: bigint;
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
   sigMetadata: {
@@ -13885,8 +13886,9 @@ export type SpgRegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint;
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
   terms: {
@@ -13940,8 +13942,9 @@ export type SpgRegisterIpAndMakeDerivativeRequest = {
     royaltyContext: Hex;
   };
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
   sigMetadata: {
@@ -13973,8 +13976,9 @@ export type SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   licenseTokenIds: readonly bigint[];
   royaltyContext: Hex;
   ipMetadata: {
-    metadataURI: string;
-    metadataHash: Hex;
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
   sigMetadata: {
@@ -14147,7 +14151,7 @@ export class SpgClient extends SpgEventClient {
       address: this.address,
       functionName: "mintAndRegisterIp",
       account: this.wallet.account,
-      args: [request.nftContract, request.recipient, request.nftMetadata, request.ipMetadata],
+      args: [request.nftContract, request.recipient, request.ipMetadata],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -14164,7 +14168,7 @@ export class SpgClient extends SpgEventClient {
       data: encodeFunctionData({
         abi: spgAbi,
         functionName: "mintAndRegisterIp",
-        args: [request.nftContract, request.recipient, request.nftMetadata, request.ipMetadata],
+        args: [request.nftContract, request.recipient, request.ipMetadata],
       }),
     };
   }
@@ -14183,13 +14187,7 @@ export class SpgClient extends SpgEventClient {
       address: this.address,
       functionName: "mintAndRegisterIpAndAttachPILTerms",
       account: this.wallet.account,
-      args: [
-        request.nftContract,
-        request.recipient,
-        request.nftMetadata,
-        request.ipMetadata,
-        request.terms,
-      ],
+      args: [request.nftContract, request.recipient, request.ipMetadata, request.terms],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -14208,13 +14206,7 @@ export class SpgClient extends SpgEventClient {
       data: encodeFunctionData({
         abi: spgAbi,
         functionName: "mintAndRegisterIpAndAttachPILTerms",
-        args: [
-          request.nftContract,
-          request.recipient,
-          request.nftMetadata,
-          request.ipMetadata,
-          request.terms,
-        ],
+        args: [request.nftContract, request.recipient, request.ipMetadata, request.terms],
       }),
     };
   }
@@ -14233,13 +14225,7 @@ export class SpgClient extends SpgEventClient {
       address: this.address,
       functionName: "mintAndRegisterIpAndMakeDerivative",
       account: this.wallet.account,
-      args: [
-        request.nftContract,
-        request.derivData,
-        request.nftMetadata,
-        request.ipMetadata,
-        request.recipient,
-      ],
+      args: [request.nftContract, request.derivData, request.ipMetadata, request.recipient],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -14258,13 +14244,7 @@ export class SpgClient extends SpgEventClient {
       data: encodeFunctionData({
         abi: spgAbi,
         functionName: "mintAndRegisterIpAndMakeDerivative",
-        args: [
-          request.nftContract,
-          request.derivData,
-          request.nftMetadata,
-          request.ipMetadata,
-          request.recipient,
-        ],
+        args: [request.nftContract, request.derivData, request.ipMetadata, request.recipient],
       }),
     };
   }
@@ -14287,7 +14267,6 @@ export class SpgClient extends SpgEventClient {
         request.nftContract,
         request.licenseTokenIds,
         request.royaltyContext,
-        request.nftMetadata,
         request.ipMetadata,
         request.recipient,
       ],
@@ -14313,7 +14292,6 @@ export class SpgClient extends SpgEventClient {
           request.nftContract,
           request.licenseTokenIds,
           request.royaltyContext,
-          request.nftMetadata,
           request.ipMetadata,
           request.recipient,
         ],

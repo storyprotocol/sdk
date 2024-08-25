@@ -3,10 +3,10 @@ import { chainStringToViemChain } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import { spgnftBeaconAddress } from "../../../src/abi/generated";
-export const RPC = "https://rpc.partner.testnet.storyprotocol.net";
+export const RPC = "https://testnet.storyrpc.io";
 export const iliadChainId = 1513;
 
-export const mockERC721 = "0x30062557fd9f1bf0be03fe3782d97edea24295c9";
+export const mockERC721 = "0x67baff31318638f497f4c4894cd73918563942c8";
 export const spgNftBeacon =
   spgnftBeaconAddress[Number(iliadChainId) as keyof typeof spgnftBeaconAddress];
 

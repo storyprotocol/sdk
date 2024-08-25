@@ -51,7 +51,7 @@ const useIpAsset = () => {
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
   const register = async (
-    request: RegisterRequest
+    request: RegisterRequest,
   ): Promise<RegisterIpResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, register: true }));
@@ -81,7 +81,7 @@ const useIpAsset = () => {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   const registerDerivative = async (
-    request: RegisterDerivativeRequest
+    request: RegisterDerivativeRequest,
   ): Promise<RegisterDerivativeResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, registerDerivative: true }));
@@ -109,7 +109,7 @@ const useIpAsset = () => {
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   const registerDerivativeWithLicenseTokens = async (
-    request: RegisterDerivativeWithLicenseTokensRequest
+    request: RegisterDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> => {
     try {
       setLoadings((prev) => ({
@@ -120,9 +120,8 @@ const useIpAsset = () => {
         ...prev,
         registerDerivativeWithLicenseTokens: null,
       }));
-      const response = await client.ipAsset.registerDerivativeWithLicenseTokens(
-        request
-      );
+      const response =
+        await client.ipAsset.registerDerivativeWithLicenseTokens(request);
       setLoadings((prev) => ({
         ...prev,
         registerDerivativeWithLicenseTokens: false,
@@ -161,7 +160,7 @@ const useIpAsset = () => {
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   const mintAndRegisterIpAssetWithPilTerms = async (
-    request: CreateIpAssetWithPilTermsRequest
+    request: CreateIpAssetWithPilTermsRequest,
   ): Promise<CreateIpAssetWithPilTermsResponse> => {
     try {
       setLoadings((prev) => ({
@@ -172,9 +171,8 @@ const useIpAsset = () => {
         ...prev,
         mintAndRegisterIpAssetWithPilTerms: null,
       }));
-      const response = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms(
-        request
-      );
+      const response =
+        await client.ipAsset.mintAndRegisterIpAssetWithPilTerms(request);
       setLoadings((prev) => ({
         ...prev,
         mintAndRegisterIpAssetWithPilTerms: false,
@@ -213,14 +211,13 @@ const useIpAsset = () => {
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   const registerIpAndAttachPilTerms = async (
-    request: RegisterIpAndAttachPilTermsRequest
+    request: RegisterIpAndAttachPilTermsRequest,
   ): Promise<RegisterIpAndAttachPilTermsResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: true }));
       setErrors((prev) => ({ ...prev, registerIpAndAttachPilTerms: null }));
-      const response = await client.ipAsset.registerIpAndAttachPilTerms(
-        request
-      );
+      const response =
+        await client.ipAsset.registerIpAndAttachPilTerms(request);
       setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
       return response;
     } catch (e) {
@@ -253,7 +250,7 @@ const useIpAsset = () => {
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
   const registerDerivativeIp = async (
-    request: RegisterIpAndMakeDerivativeRequest
+    request: RegisterIpAndMakeDerivativeRequest,
   ): Promise<RegisterIpAndMakeDerivativeResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, registerDerivativeIp: true }));

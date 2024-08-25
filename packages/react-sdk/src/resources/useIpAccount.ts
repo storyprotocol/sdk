@@ -33,7 +33,7 @@ const useIpAccount = () => {
    * @returns Tx hash for the transaction.
    */
   const execute = async (
-    request: IPAccountExecuteRequest
+    request: IPAccountExecuteRequest,
   ): Promise<IPAccountExecuteResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, execute: true }));
@@ -61,7 +61,7 @@ const useIpAccount = () => {
    * @returns Tx hash for the transaction.
    */
   const executeWithSig = async (
-    request: IPAccountExecuteWithSigRequest
+    request: IPAccountExecuteWithSigRequest,
   ): Promise<IPAccountExecuteWithSigResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, executeWithSig: true }));
@@ -82,7 +82,7 @@ const useIpAccount = () => {
    * @returns The nonce for transaction ordering.
    */
   const getIpAccountNonce = async (
-    ipId: string
+    ipId: string,
   ): Promise<IpAccountImplStateResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, getIpAccountNonce: true }));
