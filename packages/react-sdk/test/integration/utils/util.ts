@@ -36,7 +36,7 @@ export const walletClient = createWalletClient({
 });
 
 export const getTokenId = async (
-  nftContract?: Address
+  nftContract?: Address,
 ): Promise<number | undefined> => {
   const { request } = await publicClient.simulateContract({
     abi: [

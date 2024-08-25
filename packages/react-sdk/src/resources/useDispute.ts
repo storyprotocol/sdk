@@ -41,7 +41,7 @@ const useDispute = () => {
    * @emits DisputeRaised (disputeId_, targetIpId, msg.sender, arbitrationPolicy, linkToDisputeEvidence, targetTag, calldata);
    */
   const raiseDispute = async (
-    request: RaiseDisputeRequest
+    request: RaiseDisputeRequest,
   ): Promise<RaiseDisputeResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, raiseDispute: true }));
@@ -70,7 +70,7 @@ const useDispute = () => {
    * @emits DisputeCancelled (_disputeId, _data);
    */
   const cancelDispute = async (
-    request: CancelDisputeRequest
+    request: CancelDisputeRequest,
   ): Promise<CancelDisputeResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, cancelDispute: true }));
@@ -97,7 +97,7 @@ const useDispute = () => {
    * @emits DisputeResolved (_disputeId)
    */
   const resolveDispute = async (
-    request: ResolveDisputeRequest
+    request: ResolveDisputeRequest,
   ): Promise<ResolveDisputeResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, resolveDispute: true }));

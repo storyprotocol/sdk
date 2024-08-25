@@ -83,14 +83,14 @@ export const iliad = defineChain({
   nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ["https://rpc.partner.testnet.storyprotocol.net"],
+      http: ["https://testnet.storyrpc.io"],
       webSocket: ["wss://story-network.rpc.caldera.xyz/ws"],
     },
   },
   blockExplorers: {
     default: {
       name: "Explorer",
-      url: "https://explorer.testnet.storyprotocol.net",
+      url: "https://testnet.storyscan.xyz",
     },
   },
   contracts: {
