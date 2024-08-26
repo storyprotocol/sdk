@@ -36,6 +36,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: waitForTransaction,
+            maxFeePerGas: parseUnits("100", 18),
           },
         }),
       ).to.not.be.rejected;
@@ -53,6 +54,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
+            maxFeePerGas: parseUnits("100", 18),
           },
         })
       ).ipId!;
