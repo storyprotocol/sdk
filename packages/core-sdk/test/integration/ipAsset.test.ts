@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
-import { Hex, toHex } from "viem";
+import { Hex, toHex, parseUnits } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { mockERC721, getStoryClient, getTokenId, mintBySpg, iliadChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
@@ -146,7 +146,7 @@ describe("IP Asset Functions ", () => {
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
             nftMetadataURI: "test-nft-uri",
           },
-          txOptions: { waitForTransaction: true },
+          txOptions: { waitForTransaction: true, maxFeePerGas: parseUnits("100", 18) },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
@@ -161,6 +161,10 @@ describe("IP Asset Functions ", () => {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          txOptions: {
+            waitForTransaction: true,
+            maxFeePerGas: parseUnits("100", 18),
           },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
@@ -177,6 +181,10 @@ describe("IP Asset Functions ", () => {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          txOptions: {
+            waitForTransaction: true,
+            maxFeePerGas: parseUnits("100", 18),
           },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;

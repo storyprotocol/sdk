@@ -664,7 +664,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
           nftContract: "0x",
           pilType: PIL_TYPE.COMMERCIAL_USE,
-          mintingFee: "1",
+          mintingFee: "100",
           currency: zeroAddress,
         });
       } catch (err) {
@@ -680,7 +680,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
         nftContract,
         pilType: PIL_TYPE.COMMERCIAL_USE,
-        mintingFee: "1",
+        mintingFee: "100",
         currency: zeroAddress,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         ipMetadata: {
@@ -717,7 +717,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
         nftContract,
         pilType: PIL_TYPE.COMMERCIAL_USE,
-        mintingFee: "1",
+        mintingFee: "100",
         currency: zeroAddress,
         ipMetadata: {
           nftMetadataHash: toHex(0, { size: 32 }),
@@ -739,7 +739,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         pilType: 0,
-        mintingFee: "1",
+        mintingFee: "100",
         currency: zeroAddress,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         ipMetadata: {
@@ -991,7 +991,7 @@ describe("Test IpAssetClient", () => {
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
           },
           pilType: PIL_TYPE.COMMERCIAL_USE,
-          mintingFee: "1",
+          mintingFee: "100",
           currency: zeroAddress,
         });
       } catch (err) {
@@ -1028,7 +1028,7 @@ describe("Test IpAssetClient", () => {
           ipMetadataURI: "",
         },
         pilType: PIL_TYPE.COMMERCIAL_USE,
-        mintingFee: "1",
+        mintingFee: "100",
         currency: zeroAddress,
       });
       expect(stub.args[0][0].ipMetadata).to.deep.equal({
@@ -1053,7 +1053,7 @@ describe("Test IpAssetClient", () => {
           ipMetadataHash: toHex(0, { size: 32 }),
         },
         pilType: PIL_TYPE.COMMERCIAL_USE,
-        mintingFee: "1",
+        mintingFee: "100",
         currency: zeroAddress,
       });
 

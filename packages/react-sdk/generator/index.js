@@ -37,7 +37,7 @@ const visit = (file) => {
         if (
           ts.isMethodDeclaration(member) &&
           (member.modifiers?.some(
-            (m) => m.kind === ts.SyntaxKind.PublicKeyword,
+            (m) => m.kind === ts.SyntaxKind.PublicKeyword
           ) ??
             true) &&
           member.name &&
@@ -62,7 +62,7 @@ const visit = (file) => {
               ts
                 .getLeadingCommentRanges(sourceFile.text, member.pos)
                 ?.map((range) =>
-                  sourceFile.text.substring(range.pos, range.end).trim(),
+                  sourceFile.text.substring(range.pos, range.end).trim()
                 ) || [],
           };
           publicMethods.push(method);
@@ -89,15 +89,15 @@ files.forEach((file, index) => {
     (acc, curr) =>
       acc.concat(
         curr.requests.map((item) => item.type),
-        curr.responseType,
+        curr.responseType
       ),
-    [],
+    []
   );
   const filteredTypes = [
     ...new Set(
       types
         .filter((type) => !isPrimitiveType(type))
-        .filter((type) => !isViemType(type)),
+        .filter((type) => !isViemType(type))
     ),
   ];
   exportTypes.push(...filteredTypes);
@@ -107,7 +107,7 @@ files.forEach((file, index) => {
       name: fileName,
       methodNames,
       viemTypes: [...new Set(types.filter((type) => isViemType(type)))],
-    }),
+    })
   );
   const methodTemplates = methods.map((method) => {
     return ejs.render(resourceTemplate.methodTemplate, {
@@ -119,7 +119,7 @@ files.forEach((file, index) => {
 
   sources = sources.concat(
     methodTemplates,
-    ejs.render(resourceTemplate.endTemplate, { methodNames, name: fileName }),
+    ejs.render(resourceTemplate.endTemplate, { methodNames, name: fileName })
   );
   fs.writeFileSync(`src/resources/use${fileName}.ts`, sources.join("\n"));
 });
@@ -132,7 +132,7 @@ exec("npm run fix", (error) => {
   if (error) {
     console.log(
       "\x1b[31m%s\x1b[0m",
-      "\nError occurred while running npm run fix command. Please run `npm run fix` manually.",
+      "\nError occurred while running npm run fix command. Please run `npm run fix` manually."
     );
     bar.stop();
     return;
@@ -141,6 +141,6 @@ exec("npm run fix", (error) => {
   bar.stop();
   console.log(
     "\x1b[32m%s\x1b[0m",
-    "React SDK templates generated successfully!",
+    "React SDK templates generated successfully!"
   );
 });

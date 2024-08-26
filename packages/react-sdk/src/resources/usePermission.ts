@@ -49,7 +49,7 @@ const usePermission = () => {
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
   const setPermission = async (
-    request: SetPermissionsRequest,
+    request: SetPermissionsRequest
   ): Promise<SetPermissionsResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, setPermission: true }));
@@ -79,13 +79,14 @@ const usePermission = () => {
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
   const createSetPermissionSignature = async (
-    request: CreateSetPermissionSignatureRequest,
+    request: CreateSetPermissionSignatureRequest
   ): Promise<SetPermissionsResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, createSetPermissionSignature: true }));
       setErrors((prev) => ({ ...prev, createSetPermissionSignature: null }));
-      const response =
-        await client.permission.createSetPermissionSignature(request);
+      const response = await client.permission.createSetPermissionSignature(
+        request
+      );
       setLoadings((prev) => ({ ...prev, createSetPermissionSignature: false }));
       return response;
     } catch (e) {
@@ -110,7 +111,7 @@ const usePermission = () => {
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
   const setAllPermissions = async (
-    request: SetAllPermissionsRequest,
+    request: SetAllPermissionsRequest
   ): Promise<SetPermissionsResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, setAllPermissions: true }));
@@ -141,7 +142,7 @@ const usePermission = () => {
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
   const setBatchPermissions = async (
-    request: SetBatchPermissionsRequest,
+    request: SetBatchPermissionsRequest
   ): Promise<SetPermissionsResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, setBatchPermissions: true }));
@@ -172,7 +173,7 @@ const usePermission = () => {
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
   const createBatchPermissionSignature = async (
-    request: CreateBatchPermissionSignatureRequest,
+    request: CreateBatchPermissionSignatureRequest
   ): Promise<SetPermissionsResponse> => {
     try {
       setLoadings((prev) => ({
@@ -180,8 +181,9 @@ const usePermission = () => {
         createBatchPermissionSignature: true,
       }));
       setErrors((prev) => ({ ...prev, createBatchPermissionSignature: null }));
-      const response =
-        await client.permission.createBatchPermissionSignature(request);
+      const response = await client.permission.createBatchPermissionSignature(
+        request
+      );
       setLoadings((prev) => ({
         ...prev,
         createBatchPermissionSignature: false,
