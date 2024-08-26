@@ -23,6 +23,7 @@ describe("IP Asset Functions ", () => {
       const res = await client.license.registerNonComSocialRemixingPIL({
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       noCommercialLicenseTermsId = res.licenseTermsId!;
@@ -63,6 +64,7 @@ describe("IP Asset Functions ", () => {
         licenseTermsId: noCommercialLicenseTermsId,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       const response = await client.ipAsset.registerDerivative({
@@ -71,6 +73,7 @@ describe("IP Asset Functions ", () => {
         licenseTermsIds: [noCommercialLicenseTermsId],
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -84,6 +87,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
+            maxFeePerGas: parseUnits("100", 18),
           },
         })
       ).ipId!;
@@ -92,6 +96,7 @@ describe("IP Asset Functions ", () => {
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens({
@@ -99,6 +104,7 @@ describe("IP Asset Functions ", () => {
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
@@ -117,6 +123,7 @@ describe("IP Asset Functions ", () => {
         maxSupply: 100,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       expect(txData.nftContract).to.be.a("string").and.not.empty;
@@ -131,6 +138,7 @@ describe("IP Asset Functions ", () => {
         currency: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       parentIpId = result.ipId!;
@@ -200,6 +208,7 @@ describe("IP Asset Functions ", () => {
           currency: MockERC20.address,
           txOptions: {
             waitForTransaction: true,
+            maxFeePerGas: parseUnits("100", 18),
           },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
@@ -221,6 +230,7 @@ describe("IP Asset Functions ", () => {
         deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       expect(response.ipId).to.be.a("string").and.not.empty;
@@ -237,6 +247,7 @@ describe("IP Asset Functions ", () => {
         deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -255,6 +266,7 @@ describe("IP Asset Functions ", () => {
         currency: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -271,6 +283,7 @@ describe("IP Asset Functions ", () => {
         },
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
