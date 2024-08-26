@@ -44,7 +44,7 @@ describe("useIpAsset Functions", () => {
         expect.objectContaining({
           ipId: expect.any(String),
           txHash: expect.any(String),
-        }),
+        })
       );
     });
   });
@@ -64,12 +64,12 @@ describe("useIpAsset Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           ipId: expect.any(String),
           txHash: expect.any(String),
-        }),
+        })
       );
     });
   });
@@ -114,11 +114,11 @@ describe("useIpAsset Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
-        }),
+        })
       );
     });
   });
@@ -157,11 +157,11 @@ describe("useIpAsset Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
-        }),
+        })
       );
     });
   });
@@ -197,12 +197,12 @@ describe("useIpAsset Functions", () => {
               txOptions: {
                 waitForTransaction: true,
               },
-            }),
+            })
           ).resolves.toEqual(
             expect.objectContaining({
               ipId: expect.any(String),
               txHash: expect.any(String),
-            }),
+            })
           );
         });
       });
@@ -224,12 +224,12 @@ describe("useIpAsset Functions", () => {
               txOptions: {
                 waitForTransaction: true,
               },
-            }),
+            })
           ).resolves.toEqual(
             expect.objectContaining({
               ipId: expect.any(String),
               txHash: expect.any(String),
-            }),
+            })
           );
         });
       });
@@ -251,12 +251,12 @@ describe("useIpAsset Functions", () => {
               txOptions: {
                 waitForTransaction: true,
               },
-            }),
+            })
           ).resolves.toEqual(
             expect.objectContaining({
               ipId: expect.any(String),
               txHash: expect.any(String),
-            }),
+            })
           );
         });
       });
@@ -290,12 +290,12 @@ describe("useIpAsset Functions", () => {
             txOptions: {
               waitForTransaction: true,
             },
-          }),
+          })
         ).resolves.toEqual(
           expect.objectContaining({
             txHash: expect.any(String),
             ipId: expect.any(String),
-          }),
+          })
         );
       });
     });
@@ -313,12 +313,12 @@ describe("useIpAsset Functions", () => {
             txOptions: {
               waitForTransaction: true,
             },
-          }),
+          })
         ).resolves.toEqual(
           expect.objectContaining({
             ipId: expect.any(String),
             txHash: expect.any(String),
-          }),
+          })
         );
       });
     });

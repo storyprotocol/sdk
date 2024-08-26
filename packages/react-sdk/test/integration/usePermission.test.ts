@@ -39,12 +39,12 @@ describe("usePermission Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           success: true,
-        }),
+        })
       );
     });
   });
@@ -59,12 +59,12 @@ describe("usePermission Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           success: true,
-        }),
+        })
       );
     });
   });
@@ -81,12 +81,12 @@ describe("usePermission Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           success: true,
-        }),
+        })
       );
     });
   });
@@ -114,12 +114,12 @@ describe("usePermission Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           success: true,
-        }),
+        })
       );
     });
   });
@@ -149,12 +149,12 @@ describe("usePermission Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           success: true,
-        }),
+        })
       );
     });
   });

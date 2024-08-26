@@ -97,11 +97,11 @@ describe("useIpAccount Functions", () => {
           value: 0,
           data,
           ipId: ipId,
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
-        }),
+        })
       );
     });
   });
@@ -140,11 +140,11 @@ describe("useIpAccount Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
-        }),
+        })
       );
     });
   });

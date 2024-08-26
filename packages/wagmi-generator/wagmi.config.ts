@@ -170,7 +170,7 @@ export default defineConfig(async () => {
             "getLicenseTerms",
             "LicenseTermsAttached",
           ],
-          ModuleRegistry: ["isRegistered"],
+          ModuleRegistry: ["isRegistered", "getDefaultLicenseTerms"],
           RoyaltyModule: ["payRoyaltyOnBehalf"],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],

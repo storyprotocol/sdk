@@ -30,7 +30,7 @@ const useNftClient = () => {
    * @emits CollectionCreated (nftContract);
    */
   const createNFTCollection = async (
-    request: CreateNFTCollectionRequest,
+    request: CreateNFTCollectionRequest
   ): Promise<CreateNFTCollectionResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, createNFTCollection: true }));

@@ -6,7 +6,7 @@ import { spgnftBeaconAddress } from "../../../src/abi/generated";
 export const RPC = "https://testnet.storyrpc.io";
 export const iliadChainId = 1513;
 
-export const mockERC721 = "0x67baff31318638f497f4c4894cd73918563942c8";
+export const mockERC721 = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
 export const spgNftBeacon =
   spgnftBeaconAddress[Number(iliadChainId) as keyof typeof spgnftBeaconAddress];
 
