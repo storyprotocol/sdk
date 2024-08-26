@@ -1068,14 +1068,24 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       sinon.stub(ipAssetClient.spgClient, "registerIpAndAttachPilTerms").resolves(hash);
-      sinon.stub(ipAssetClient.licensingModuleClient, "parseTxLicenseTermsAttachedEvent").returns([
+      sinon
+        .stub(ipAssetClient.licensingModuleClient, "parseTxLicenseTermsAttachedEvent")
+        .returns([]);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          caller: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          licenseTermsId: 0n,
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
         },
       ]);
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getDefaultLicenseTerms").resolves({
+        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsId: 5n,
+      });
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract,
         tokenId: "3",
@@ -1092,6 +1102,7 @@ describe("Test IpAssetClient", () => {
 
       expect(result.txHash).to.equal(hash);
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      expect(result.licenseTermsId).to.equal(5n);
     });
 
     it("should return encoded tx data when registerIpAndAttachPilTerms given correct args and encodedTxDataOnly of true", async () => {

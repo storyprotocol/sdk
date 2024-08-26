@@ -146,6 +146,7 @@ describe("IP Asset Functions ", () => {
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
             nftMetadataURI: "test-nft-uri",
           },
+          txOptions: { waitForTransaction: true },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });

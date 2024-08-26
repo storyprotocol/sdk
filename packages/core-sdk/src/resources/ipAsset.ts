@@ -10,6 +10,7 @@ import {
   encodeFunctionData,
   keccak256,
   toFunctionSelector,
+  TransactionReceipt,
 } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
@@ -489,9 +490,7 @@ export class IPAssetClient {
         if (request.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
           const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0];
-          const licenseTermsId =
-            this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0]
-              .licenseTermsId;
+          const licenseTermsId = await this.getLicenseTermsId(txReceipt);
           return {
             txHash: txHash,
             ipId: iPRegisteredLog.ipId,
@@ -615,8 +614,9 @@ export class IPAssetClient {
         const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
         if (request.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-          const log = this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0];
-          return { txHash, licenseTermsId: log.licenseTermsId, ipId: log.ipId };
+          const ipRegisterEvent = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
+          const licenseTermsId = await this.getLicenseTermsId(txReceipt);
+          return { txHash, licenseTermsId: licenseTermsId, ipId: ipRegisterEvent[0].ipId };
         }
         return { txHash };
       }
@@ -888,5 +888,17 @@ export class IPAssetClient {
       ),
     );
     return sigAttachState;
+  }
+  private async getLicenseTermsId(txReceipt: TransactionReceipt): Promise<bigint> {
+    const licensingModuleLicenseTermsAttachedEvent =
+      this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt);
+    let licenseTermsId =
+      licensingModuleLicenseTermsAttachedEvent.length >= 1 &&
+      licensingModuleLicenseTermsAttachedEvent[0].licenseTermsId;
+    if (licenseTermsId === false) {
+      const defaultLicenseTerms = await this.licenseRegistryReadOnlyClient.getDefaultLicenseTerms();
+      licenseTermsId = defaultLicenseTerms.licenseTermsId;
+    }
+    return licenseTermsId;
   }
 }
