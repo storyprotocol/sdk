@@ -2,7 +2,7 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { AccessPermission, StoryClient } from "../../src";
 import { mockERC721, getStoryClient, getTokenId, iliadChainId } from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector, parseUnits } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
@@ -26,6 +26,7 @@ describe("Ip Account functions", () => {
       tokenId: tokenId!,
       txOptions: {
         waitForTransaction: true,
+        maxFeePerGas: parseUnits("100", 9),
       },
     });
     ipId = registerResult.ipId!;
@@ -48,6 +49,10 @@ describe("Ip Account functions", () => {
       value: 0,
       data,
       ipId: ipId,
+      txOptions: {
+        waitForTransaction: true,
+        maxFeePerGas: parseUnits("100", 9),
+      },
     });
     expect(response.txHash).to.be.a("string").and.not.empty;
   });

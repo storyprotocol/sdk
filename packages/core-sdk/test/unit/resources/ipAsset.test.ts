@@ -11,6 +11,7 @@ import {
   LocalAccount,
   zeroAddress,
   Address,
+  parseUnits,
 } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
@@ -202,7 +203,7 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-
+      const waitForTransaction: boolean = true;
       try {
         await ipAssetClient.register({
           nftContract,
@@ -210,6 +211,10 @@ describe("Test IpAssetClient", () => {
           deadline: "12321",
           ipMetadata: {
             ipMetadataURI: "",
+          },
+          txOptions: {
+            waitForTransaction: waitForTransaction,
+            maxFeePerGas: parseUnits("100", 9),
           },
         });
       } catch (err) {
