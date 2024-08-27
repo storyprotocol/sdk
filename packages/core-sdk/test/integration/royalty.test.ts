@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Hex, encodeFunctionData } from "viem";
+import { Hex, encodeFunctionData, parseUnits } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { mockERC721, getTokenId, getStoryClient, iliadChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
@@ -25,6 +25,7 @@ describe("Test royalty Functions", () => {
         tokenId: tokenId!,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       return response.ipId! as Hex;
@@ -36,6 +37,7 @@ describe("Test royalty Functions", () => {
         commercialRevShare: 100,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       return response.licenseTermsId!;
@@ -47,6 +49,7 @@ describe("Test royalty Functions", () => {
         licenseTermsId: licenseTermsId,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
     };
@@ -66,6 +69,7 @@ describe("Test royalty Functions", () => {
         licenseTermsIds: [licenseTermsId],
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
     });
@@ -76,6 +80,7 @@ describe("Test royalty Functions", () => {
         royaltyVaultIpId: ipId2,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
@@ -90,6 +95,7 @@ describe("Test royalty Functions", () => {
         amount: "10",
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
@@ -100,6 +106,7 @@ describe("Test royalty Functions", () => {
         royaltyVaultIpId: ipId1,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
@@ -124,6 +131,7 @@ describe("Test royalty Functions", () => {
         token: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       expect(response.claimableToken).to.be.a("bigint");
@@ -138,6 +146,7 @@ describe("Test royalty Functions", () => {
         ipId: ipId1,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
         data: encodeFunctionData({
           abi: [
@@ -178,11 +187,12 @@ describe("Test royalty Functions", () => {
         amount: "10",
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       const snapshotId = await client.royalty.snapshot({
         royaltyVaultIpId: ipId1,
-        txOptions: { waitForTransaction: true },
+        txOptions: { waitForTransaction: true, maxFeePerGas: parseUnits("100", 9) },
       });
 
       const response = await client.royalty.claimRevenue({
@@ -191,6 +201,7 @@ describe("Test royalty Functions", () => {
         token: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 9),
         },
       });
       expect(response.claimableToken).to.be.a("bigint");
