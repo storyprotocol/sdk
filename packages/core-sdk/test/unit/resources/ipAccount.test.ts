@@ -4,7 +4,7 @@ import * as sinon from "sinon";
 import { IPAccountClient } from "../../../src/resources/ipAccount";
 import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
 import * as utils from "../../../src/utils/utils";
-import { Account, PublicClient, WalletClient, zeroAddress } from "viem";
+import { Account, PublicClient, WalletClient, zeroAddress, parseUnits } from "viem";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 describe("Test IPAccountClient", () => {
@@ -31,6 +31,10 @@ describe("Test IPAccountClient", () => {
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
+        txOptions: {
+          waitForTransaction: true,
+          maxFeePerGas: parseUnits("100", 18),
+        },
       };
       try {
         await ipAccountClient.execute(request);
