@@ -13,7 +13,7 @@ describe("Get License Terms By Type", () => {
       commercialRevShare: 0,
       commercialUse: false,
       commercializerChecker: "0x0000000000000000000000000000000000000000",
-      commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+      commercializerCheckerData: "0x",
       currency: "0x0000000000000000000000000000000000000000",
       derivativeRevCeiling: 0n,
       derivativesAllowed: true,
