@@ -34,7 +34,7 @@ describe("Dispute Functions", () => {
     ).ipId!;
   });
 
-  it("should not throw error when raise a dispute", async () => {
+  it.only("should not throw error when raise a dispute", async () => {
     const raiseDisputeRequest: RaiseDisputeRequest = {
       targetIpId: ipIdB,
       arbitrationPolicy: arbitrationPolicyAddress,
