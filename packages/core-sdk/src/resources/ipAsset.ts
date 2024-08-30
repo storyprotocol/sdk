@@ -19,13 +19,10 @@ import { handleError } from "../utils/errors";
 import {
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
-  IpAttribute,
+  GenerateCreatorMetadataParam,
+  GenerateIpMetadataParam,
   IpCreator,
-  IpCreatorSocial,
-  IpMedia,
   IpMetadata,
-  IpRelationship,
-  IPRobotTerms,
   MintAndRegisterIpAndMakeDerivativeRequest,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
@@ -37,7 +34,6 @@ import {
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpResponse,
   RegisterRequest,
-  StoryProtocolApp,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -94,34 +90,27 @@ export class IPAssetClient {
   /**
    * Create a new `IpCreator` object with the specified details.
    * @param params - The parameters required to create the `IpCreator` object.
-   *   @param params.name The name of the creator.
-   *   @param params.address The wallet address of the creator.
-   *   @param params.description [Optional] A description of the creator.
-   *   @param params.image [Optional] The URL or path to an image representing the creator.
-   *   @param params.socialMedia [Optional] An array of social media profiles associated with the creator.
-   *     @param params.socialMedia[].platform The name of the social media platform.
-   *     @param params.socialMedia[].url The URL to the creator's profile on the platform.
-   *   @param params.contributionPercent The percentage of contribution by the creator, must add up to 100.
-   *   @param params.role [Optional] The role of the creator in relation to the IP.
+   * @param params.name The name of the creator.
+   * @param params.address The wallet address of the creator.
+   * @param params.description [Optional] A description of the creator.
+   * @param params.image [Optional] The URL or path to an image representing the creator.
+   * @param params.socialMedia [Optional] An array of social media profiles associated with the creator.
+   * @param params.socialMedia[].platform The name of the social media platform.
+   * @param params.socialMedia[].url The URL to the creator's profile on the platform.
+   * @param params.contributionPercent The percentage of contribution by the creator, must add up to 100.
+   * @param params.role [Optional] The role of the creator in relation to the IP.
    * @returns An `IpCreator` object containing the provided details.
    */
-  public generateCreatorMetadata({
-    name,
-    address,
-    description = "",
-    image = "",
-    socialMedia = [],
-    contributionPercent,
-    role = "",
-  }: {
-    name: string;
-    address: Address;
-    contributionPercent: number;
-    description?: string;
-    image?: string;
-    socialMedia?: IpCreatorSocial[];
-    role?: string;
-  }): IpCreator {
+  public generateCreatorMetadata(param: GenerateCreatorMetadataParam): IpCreator {
+    const {
+      name,
+      address,
+      description = "",
+      image = "",
+      socialMedia = [],
+      contributionPercent,
+      role = "",
+    } = param;
     return {
       name,
       address,
@@ -136,71 +125,58 @@ export class IPAssetClient {
   /**
    * Create a new `IpMetadata` object with the specified details.
    * @param params - The parameters required to create the `IpMetadata` object.
-   *   @param params.title [Optional] The title of the IP.
-   *   @param params.description [Optional] A description of the IP.
-   *   @param params.ipType [Optional] The type of the IP asset (e.g., "character", "chapter").
-   *   @param params.relationships [Optional] An array of relationships between this IP and its parent IPs.
-   *     @param params.relationships[].ipId The ID of the parent IP.
-   *     @param params.relationships[].type The type of relationship (e.g., "APPEARS_IN").
-   *   @param params.createdAt [Optional] The creation date and time of the IP in ISO 8601 format.
-   *   @param params.watermarkImg [Optional] The URL or path to an image used as a watermark for the IP.
-   *   @param params.creators [Optional] An array of creators associated with the IP.
-   *     @param params.creators[].name The name of the creator.
-   *     @param params.creators[].address The address of the creator.
-   *     @param params.creators[].description [Optional] A description of the creator.
-   *     @param params.creators[].image [Optional] The URL or path to an image representing the creator.
-   *     @param params.creators[].socialMedia [Optional] An array of social media profiles for the creator.
-   *       @param params.creators[].socialMedia[].platform The social media platform name.
-   *       @param params.creators[].socialMedia[].url The URL to the creator's profile.
-   *     @param params.creators[].role [Optional] The role of the creator in relation to the IP.
-   *     @param params.creators[].contributionPercent The percentage of contribution by the creator.
-   *   @param params.media [Optional] An array of media related to the IP.
-   *     @param params.media[].name The name of the media.
-   *     @param params.media[].url The URL to the media.
-   *     @param params.media[].mimeType The MIME type of the media.
-   *   @param params.attributes [Optional] An array of key-value pairs providing additional metadata.
-   *     @param params.attributes[].key The key for the attribute.
-   *     @param params.attributes[].value The value for the attribute, can be a string or number.
-   *   @param params.app [Optional] Information about the application associated with the IP.
-   *     @param params.app.id The ID of the application.
-   *     @param params.app.name The name of the application.
-   *     @param params.app.website The website URL of the application.
-   *   @param params.tags [Optional] An array of tags associated with the IP.
-   *   @param params.robotTerms [Optional] Robot terms for the IP, specifying access rules.
-   *     @param params.robotTerms.userAgent The user agent for which the rules apply.
-   *     @param params.robotTerms.allow The rules allowing access.
-   *   @param params.additionalProperties [Optional] Any additional key-value pairs to include in the metadata.
+   * @param params.title [Optional] The title of the IP.
+   * @param params.description [Optional] A description of the IP.
+   * @param params.ipType [Optional] The type of the IP asset (e.g., "character", "chapter").
+   * @param params.relationships [Optional] An array of relationships between this IP and its parent IPs.
+   * @param params.relationships[].ipId The ID of the parent IP.
+   * @param params.relationships[].type The type of relationship (e.g., "APPEARS_IN").
+   * @param params.createdAt [Optional] The creation date and time of the IP in ISO 8601 format.
+   * @param params.watermarkImg [Optional] The URL or path to an image used as a watermark for the IP.
+   * @param params.creators [Optional] An array of creators associated with the IP.
+   * @param params.creators[].name The name of the creator.
+   * @param params.creators[].address The address of the creator.
+   * @param params.creators[].description [Optional] A description of the creator.
+   * @param params.creators[].image [Optional] The URL or path to an image representing the creator.
+   * @param params.creators[].socialMedia [Optional] An array of social media profiles for the creator.
+   * @param params.creators[].socialMedia[].platform The social media platform name.
+   * @param params.creators[].socialMedia[].url The URL to the creator's profile.
+   * @param params.creators[].role [Optional] The role of the creator in relation to the IP.
+   * @param params.creators[].contributionPercent The percentage of contribution by the creator.
+   * @param params.media [Optional] An array of media related to the IP.
+   * @param params.media[].name The name of the media.
+   * @param params.media[].url The URL to the media.
+   * @param params.media[].mimeType The MIME type of the media.
+   * @param params.attributes [Optional] An array of key-value pairs providing additional metadata.
+   * @param params.attributes[].key The key for the attribute.
+   * @param params.attributes[].value The value for the attribute, can be a string or number.
+   * @param params.app [Optional] Information about the application associated with the IP.
+   * @param params.app.id The ID of the application.
+   * @param params.app.name The name of the application.
+   * @param params.app.website The website URL of the application.
+   * @param params.tags [Optional] An array of tags associated with the IP.
+   * @param params.robotTerms [Optional] Robot terms for the IP, specifying access rules.
+   * @param params.robotTerms.userAgent The user agent for which the rules apply.
+   * @param params.robotTerms.allow The rules allowing access.
+   * @param params.additionalProperties [Optional] Any additional key-value pairs to include in the metadata.
    * @returns An `IpMetadata` object containing the provided details and any additional properties.
    */
-  public generateIpMetadata({
-    title = "",
-    description = "",
-    ipType = "",
-    relationships = [],
-    createdAt = "",
-    watermarkImg = "",
-    creators = [],
-    media = [],
-    attributes = [],
-    app,
-    tags = [],
-    robotTerms,
-    ...additionalProperties
-  }: {
-    title?: string;
-    description?: string;
-    ipType?: string;
-    relationships?: IpRelationship[];
-    createdAt?: string;
-    watermarkImg?: string;
-    creators?: IpCreator[];
-    media?: IpMedia[];
-    attributes?: IpAttribute[];
-    app?: StoryProtocolApp;
-    tags?: string[];
-    robotTerms?: IPRobotTerms;
-    additionalProperties?: { [key: string]: unknown };
-  }): IpMetadata {
+  public generateIpMetadata(param: GenerateIpMetadataParam): IpMetadata {
+    const {
+      title = "",
+      description = "",
+      ipType = "",
+      relationships = [],
+      createdAt = "",
+      watermarkImg = "",
+      creators = [],
+      media = [],
+      attributes = [],
+      app,
+      tags = [],
+      robotTerms,
+      ...additionalProperties
+    } = param;
     return {
       title,
       description,
