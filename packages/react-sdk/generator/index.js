@@ -1,9 +1,18 @@
-const ejs = require("ejs");
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require("fs");
 const path = require("path");
+const { exec } = require("child_process");
+
+const ejs = require("ejs");
 const ts = require("typescript");
 const cliProgress = require("cli-progress");
-const { exec } = require("child_process");
+
 const resourcesFolder = path.resolve(__dirname, "../../core-sdk/src/resources");
 const resourceTemplate = require("./templates/resource");
 const indexTemplate = require("./templates/index");
@@ -26,6 +35,10 @@ const isPrimitiveType = (type) => {
 const isViemType = (type) => {
   return ["Hex", "Address"].includes(type);
 };
+
+const isEnclosedInCurlyBraces = (type) => {
+  return type.slice(0, 1) === "{" && type.slice(-1) === "}";
+};
 const visit = (file) => {
   let program = ts.createProgram([file], { allowJs: true });
   const sourceFile = program.getSourceFile(file);
@@ -44,6 +57,9 @@ const visit = (file) => {
           ts.isIdentifier(member.name)
         ) {
           const requests = [];
+          const isAsync = member.modifiers?.some(
+            (modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword
+          );
           program.getTypeChecker().getSignatureFromDeclaration(member);
           member.parameters.forEach((parameter) => {
             requests.push({
@@ -58,12 +74,14 @@ const visit = (file) => {
               ?.getText()
               .replace("Promise<", "")
               .replace(">", ""),
+            isAsync,
             comments:
               ts
                 .getLeadingCommentRanges(sourceFile.text, member.pos)
                 ?.map((range) =>
                   sourceFile.text.substring(range.pos, range.end).trim()
                 ) || [],
+            defaultValues: undefined, // Get default value,
           };
           publicMethods.push(method);
         }
@@ -72,6 +90,7 @@ const visit = (file) => {
   });
   return publicMethods;
 };
+
 let fileNames = [];
 let exportTypes = [];
 const files = fs.readdirSync(resourcesFolder);
@@ -98,6 +117,7 @@ files.forEach((file, index) => {
       types
         .filter((type) => !isPrimitiveType(type))
         .filter((type) => !isViemType(type))
+        .filter((type) => !isEnclosedInCurlyBraces(type))
     ),
   ];
   exportTypes.push(...filteredTypes);
