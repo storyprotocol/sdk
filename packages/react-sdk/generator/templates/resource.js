@@ -1,19 +1,23 @@
-const methodTemplate = `<%=comments%>\nconst <%=method.name %> = async (<% method.requests.forEach((item, index)=> { %>
-    <%= item.name %>: <%= item.type %><%= index === method.requests.length - 1 ? '' : ',' %>
-  <% }); %>): Promise<<%- method.responseType %>> => {
+/* eslint-disable no-undef */
+const methodTemplate = `<%=comments%>\nconst <%=method.name %> = <% if (method.isAsync) { %>
+  async<% } %> (<% method.requests.forEach((item, index)=> { %>
+    <%= item.name||"request" %>: <%= item.type %><%= index === method.requests.length - 1 ? '' : ',' %>
+  <% }); %>): <% if (method.isAsync) { %> Promise<<%- method.responseType %>><% } else { %> <%- method.responseType %> <% } %>=> {
     try {
+      <% if (method.isAsync) { %>
       setLoadings((prev) => ({ ...prev, <%=method.name %>: true }));
       setErrors((prev) => ({ ...prev, <%=method.name %>: null }));
-      const response = await client.<%= fileName%>.<%=method.name %>(<% method.requests.forEach((item,index)=>{%>
-        <%=item.name %><%=index === method.requests.length - 1 ? '' : ',' %>
-     <% })%>);
+      <% } %> <% if (method.isAsync) { %> const response = await <% } else { %> return <% } %>client.<%= fileName%>.<%=method.name %>(<% method.requests.forEach((item,index)=>{%>
+        <%=item.name||"request" %><%=index === method.requests.length - 1 ? '' : ',' %>
+     <% })%>); <% if (method.isAsync) { %>
       setLoadings((prev ) => ({ ...prev, <%=method.name %>: false }));
-      return response;
+      <% } %><% if (method.isAsync) { %> return response;
+      <% } %>
     }catch(e){
-      const errorMessage = handleError(e);
+      const errorMessage = handleError(e);<% if (method.isAsync) { %>
       setErrors((prev) => ({ ...prev, <%=method.name %>: errorMessage }));
       setLoadings((prev) => ({ ...prev, <%=method.name %>: false }));
-      throw new Error(errorMessage);
+      <% } %> throw new Error(errorMessage);
     }
   };
   `;

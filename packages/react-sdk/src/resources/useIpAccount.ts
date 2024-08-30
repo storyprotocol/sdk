@@ -3,7 +3,7 @@ import {
   IPAccountExecuteResponse,
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
-  IpAccountImplStateResponse,
+  IpAccountStateResponse,
 } from "@story-protocol/core-sdk";
 import { useState } from "react";
 
@@ -30,6 +30,7 @@ const useIpAccount = () => {
    *   @param request.value The amount of Ether to send.
    *   @param request.accountAddress The ipId to send.
    *   @param request.data The data to send along with the transaction.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns Tx hash for the transaction.
    */
   const execute = async (
@@ -58,6 +59,7 @@ const useIpAccount = () => {
    *   @param request.signer The signer of the transaction.
    *   @param request.deadline The deadline of the transaction signature.
    *   @param request.signature The signature of the transaction, EIP-712 encoded.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns Tx hash for the transaction.
    */
   const executeWithSig = async (
@@ -83,7 +85,7 @@ const useIpAccount = () => {
    */
   const getIpAccountNonce = async (
     ipId: string
-  ): Promise<IpAccountImplStateResponse> => {
+  ): Promise<IpAccountStateResponse> => {
     try {
       setLoadings((prev) => ({ ...prev, getIpAccountNonce: true }));
       setErrors((prev) => ({ ...prev, getIpAccountNonce: null }));
