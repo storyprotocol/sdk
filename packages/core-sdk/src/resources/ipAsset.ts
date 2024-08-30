@@ -94,7 +94,7 @@ export class IPAssetClient {
    *   @param params.address The wallet address of the creator.
    *   @param params.description [Optional] A description of the creator.
    *   @param params.image [Optional] The URL or path to an image representing the creator.
-   *   @param params.socialMedia [Optional] An array of social media profiles associated with the creator.
+   *   @param params.socilMedia [Optional] An array of social media profiles associated with the creator.
    *     @param params.socialMedia[].platform The name of the social media platform.
    *     @param params.socialMedia[].url The URL to the creator's profile on the platform.
    *  @param params.contributionPercent The percentage of contribution by the creator, must add up to 100.
