@@ -25,7 +25,7 @@ const useNftClient = () => {
    * 	 @param request.mintFee - The cost to mint a token.
    * 	 @param request.mintFeeToken - The token to mint.
    * 	 @param request.owner - The owner of the collection.
-   *   @param request.txOptions - Optional transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a CreateNFTCollectionResponse containing the transaction hash and collection address.
    * @emits CollectionCreated (nftContract);
    */
