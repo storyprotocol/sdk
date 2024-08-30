@@ -31,6 +31,7 @@ export function getLicenseTermByType(
     uri: "",
   };
   if (type === PIL_TYPE.NON_COMMERCIAL_REMIX) {
+    licenseTerms.commercializerCheckerData = "0x";
     return licenseTerms;
   } else if (type === PIL_TYPE.COMMERCIAL_USE) {
     if (!term || term.defaultMintingFee === undefined || term.currency === undefined) {
