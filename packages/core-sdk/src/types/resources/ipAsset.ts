@@ -58,7 +58,6 @@ export type CreateIpAssetWithPilTermsRequest = {
   mintingFee?: string | number | bigint;
   recipient?: Address;
   commercialRevShare?: number;
-  nftMetadata?: string;
 } & IpMetadataAndTxOption;
 
 export type CreateIpAssetWithPilTermsResponse = {
@@ -110,7 +109,6 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
     licenseTermsIds: string[] | bigint[] | number[];
     licenseTemplate?: Address;
   };
-  nftMetadata?: string;
   recipient?: Address;
 } & IpMetadataAndTxOption;
 
