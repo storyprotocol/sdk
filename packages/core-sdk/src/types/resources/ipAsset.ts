@@ -150,11 +150,35 @@ export type StoryProtocolApp = {
   action?: string;
 };
 
+export type GenerateCreatorMetadataParam = {
+  name: string;
+  address: Address;
+  contributionPercent: number;
+  description?: string;
+  image?: string;
+  socialMedia?: IpCreatorSocial[];
+  role?: string;
+};
 export type IPRobotTerms = {
   userAgent: string;
   allow: string;
 };
 
+export type GenerateIpMetadataParam = {
+  title?: string;
+  description?: string;
+  ipType?: string;
+  relationships?: IpRelationship[];
+  createdAt?: string;
+  watermarkImg?: string;
+  creators?: IpCreator[];
+  media?: IpMedia[];
+  attributes?: IpAttribute[];
+  app?: StoryProtocolApp;
+  tags?: string[];
+  robotTerms?: IPRobotTerms;
+  additionalProperties?: { [key: string]: unknown };
+};
 export type IpMetadata = {
   title?: string;
   description?: string;
