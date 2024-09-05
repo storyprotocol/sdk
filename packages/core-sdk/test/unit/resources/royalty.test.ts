@@ -376,15 +376,13 @@ describe("Test RoyaltyClient", () => {
 
     it("should throw royaltyVaultAddress error when call claimRevenue given royalty vault address is 0x", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(royaltyClient.royaltyPolicyLapClient, "getRoyaltyData")
-        .resolves([true, "0x73fcb515cee99e4991465ef586cfe2b072ebb512", 1]);
+      sinon.stub(royaltyClient, "claimRevenue").resolves({ txHash: txHash });
       try {
         await royaltyClient.claimRevenue({
           account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           snapshotIds: [1],
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          royaltyVaultIpId: "0x",
         });
       } catch (err) {
         expect((err as Error).message).equals(

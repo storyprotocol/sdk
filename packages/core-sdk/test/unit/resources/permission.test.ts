@@ -366,7 +366,7 @@ describe("Test Permission", () => {
     it("should handle timeout error when createSetPermissionSignature transaction exceeds the timeout", async () => {
       const clock = sinon.useFakeTimers();
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").callsFake(async () => {
+      sinon.stub(permissionClient, "createSetPermissionSignature").callsFake(async () => {
         await new Promise((resolve) => setTimeout(resolve, 3000));
         throw new Error("Timeout");
       });
@@ -391,9 +391,9 @@ describe("Test Permission", () => {
     it("should not raise a timeout error when createSetPermissionSignature completes within the timeout transaction", async () => {
       const clock = sinon.useFakeTimers();
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").callsFake(async () => {
+      sinon.stub(permissionClient, "createSetPermissionSignature").callsFake(async () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        return txHash;
+        return {};
       });
 
       const executePromise = permissionClient.createSetPermissionSignature({
