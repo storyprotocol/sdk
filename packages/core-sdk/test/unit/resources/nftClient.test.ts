@@ -85,5 +85,57 @@ describe("Test NftClient", () => {
       expect(result.txHash).equal(txHash);
       expect(result.nftContract).equal(nftContract);
     });
+
+    it("should handle timeout error when the collection creation exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(nftClient.spgClient, "createCollection").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = nftClient.createNFTCollection({
+        name: "name",
+        symbol: "symbol",
+        maxSupply: 1,
+        mintFee: 1n,
+        mintFeeToken: mintFeeToken,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when create collection transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(nftClient.spgClient, "createCollection").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return "0x123";
+      });
+
+      const executePromise = nftClient.createNFTCollection({
+        name: "name",
+        symbol: "symbol",
+        maxSupply: 1,
+        mintFee: 1n,
+        mintFeeToken: mintFeeToken,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
   });
 });

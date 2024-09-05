@@ -14,6 +14,8 @@ export type TxOptions = {
   // The number of confirmations (blocks that have passed)
   // to wait before resolving.
   numBlockConfirmations?: number;
+  // set timeout for waitForTransaction
+  timeout?: number;
 };
 
 export type WithTxOptions<T> = T & {

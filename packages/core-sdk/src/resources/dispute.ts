@@ -52,13 +52,18 @@ export class DisputeClient {
         const txHash = await this.disputeModuleClient.raiseDispute(req);
 
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs = this.disputeModuleClient.parseTxDisputeRaisedEvent(txReceipt);
           return {
             txHash: txHash,
             disputeId: targetLogs[0].disputeId,
           };
         }
+
         return { txHash: txHash };
       }
     } catch (error) {
@@ -90,7 +95,11 @@ export class DisputeClient {
         const txHash = await this.disputeModuleClient.cancelDispute(req);
 
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
         }
 
         return { txHash: txHash };
@@ -122,7 +131,11 @@ export class DisputeClient {
       } else {
         const txHash = await this.disputeModuleClient.resolveDispute(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
         }
 
         return { txHash: txHash };

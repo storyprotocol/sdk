@@ -76,7 +76,11 @@ export class RoyaltyClient {
       } else {
         const txHash = await ipRoyaltyVault.collectRoyaltyTokens(req);
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs = ipRoyaltyVault.parseTxRoyaltyTokensCollectedEvent(txReceipt);
           return {
             txHash: txHash,
@@ -128,7 +132,11 @@ export class RoyaltyClient {
       } else {
         const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash };
         } else {
           return { txHash };
@@ -222,9 +230,11 @@ export class RoyaltyClient {
         }
       }
       if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          hash: txHash,
-        });
+        let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+        if (request.txOptions?.timeout) {
+          txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+        }
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
         const targetLogs = ipRoyaltyVault.parseTxRevenueTokenClaimedEvent(txReceipt);
         return { txHash, claimableToken: targetLogs[0].amount };
       } else {
@@ -257,7 +267,11 @@ export class RoyaltyClient {
       } else {
         const txHash = await ipRoyaltyVault.snapshot();
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs = ipRoyaltyVault.parseTxSnapshotCompletedEvent(txReceipt);
           return { txHash, snapshotId: targetLogs[0].snapshotId };
         } else {

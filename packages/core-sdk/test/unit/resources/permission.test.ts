@@ -84,6 +84,56 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
+
+    it("should handle timeout error when setPermission transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(permissionClient.accessControllerClient, "setPermission").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = permissionClient.setPermission({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when setPermission completes within the timeout transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(permissionClient.accessControllerClient, "setPermission").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return txHash;
+      });
+
+      const executePromise = permissionClient.setPermission({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
+    });
   });
 
   describe("Test permission.setAllPermissions", async () => {
@@ -132,6 +182,58 @@ describe("Test Permission", () => {
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
+    });
+
+    it("should handle timeout error when setAllPermissions transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(permissionClient.accessControllerClient, "setAllPermissions")
+        .callsFake(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          throw new Error("Timeout");
+        });
+
+      const executePromise = permissionClient.setAllPermissions({
+        ipId: AddressZero,
+        signer: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when setAllPermissions completes within the timeout transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(permissionClient.accessControllerClient, "setAllPermissions")
+        .callsFake(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          return txHash;
+        });
+
+      const executePromise = permissionClient.setAllPermissions({
+        ipId: AddressZero,
+        signer: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
     });
   });
 
@@ -242,6 +344,74 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
+
+    it("should return txHash and success when call setPermission given correct args and waitForTransaction of true", async () => {
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
+
+      const res = await permissionClient.setPermission({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(res.txHash).to.equal(txHash);
+      expect(res.success).to.equal(true);
+    });
+
+    it("should handle timeout error when createSetPermissionSignature transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = permissionClient.createSetPermissionSignature({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when createSetPermissionSignature completes within the timeout transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return txHash;
+      });
+
+      const executePromise = permissionClient.createSetPermissionSignature({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
+    });
   });
 
   describe("Test permission.setBatchPermissions", async () => {
@@ -303,6 +473,70 @@ describe("Test Permission", () => {
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
+    });
+
+    it("should handle timeout error when setBatchPermissions transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(permissionClient.accessControllerClient, "setBatchPermissions")
+        .callsFake(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          throw new Error("Timeout");
+        });
+
+      const executePromise = permissionClient.setBatchPermissions({
+        permissions: [
+          {
+            ipId: AddressZero,
+            signer: AddressZero,
+            to: AddressZero,
+            permission: AccessPermission.ALLOW,
+            func: "function setAll(address,string,bytes32,bytes32)",
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when setBatchPermissions completes within the timeout transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(permissionClient.accessControllerClient, "setBatchPermissions")
+        .callsFake(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          return txHash;
+        });
+
+      const executePromise = permissionClient.setBatchPermissions({
+        permissions: [
+          {
+            ipId: AddressZero,
+            signer: AddressZero,
+            to: AddressZero,
+            permission: AccessPermission.ALLOW,
+            func: "function setAll(address,string,bytes32,bytes32)",
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
     });
   });
 
@@ -371,5 +605,65 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
+  });
+
+  it("should handle timeout error when createBatchPermissionSignature transaction exceeds the timeout", async () => {
+    const clock = sinon.useFakeTimers();
+    sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+    sinon.stub(permissionClient, "createBatchPermissionSignature").callsFake(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      throw new Error("Timeout");
+    });
+
+    const executePromise = permissionClient.createBatchPermissionSignature({
+      ipId: AddressZero,
+      permissions: [
+        {
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+        },
+      ],
+      txOptions: {
+        waitForTransaction: true,
+        timeout: 2000,
+      },
+    });
+
+    clock.tick(3000);
+    await clock.runAllAsync();
+    await expect(executePromise).to.be.rejectedWith("Timeout");
+    clock.restore();
+  });
+
+  it("should not raise a timeout error when createBatchPermissionSignature completes within the timeout transaction", async () => {
+    const clock = sinon.useFakeTimers();
+    sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+    sinon.stub(permissionClient, "createBatchPermissionSignature").callsFake(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return {};
+    });
+
+    const executePromise = permissionClient.createBatchPermissionSignature({
+      ipId: AddressZero,
+      permissions: [
+        {
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+        },
+      ],
+      txOptions: {
+        waitForTransaction: true,
+        timeout: 2000,
+      },
+    });
+
+    clock.tick(1000);
+    await clock.runAllAsync();
+    await expect(executePromise).to.not.be.rejectedWith("Timeout");
+    clock.restore();
   });
 });

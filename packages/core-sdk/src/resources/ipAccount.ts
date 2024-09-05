@@ -49,7 +49,11 @@ export class IPAccountClient {
         const txHash = await ipAccountClient.execute({ ...req, operation: 0 });
 
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
         }
         return { txHash: txHash };
       }
@@ -94,7 +98,11 @@ export class IPAccountClient {
         const txHash = await ipAccountClient.executeWithSig(req);
 
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
         }
         return { txHash: txHash };
       }

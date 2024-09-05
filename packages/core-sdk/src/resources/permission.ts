@@ -79,7 +79,11 @@ export class PermissionClient {
       } else {
         const txHash = await this.accessControllerClient.setPermission(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -106,7 +110,7 @@ export class PermissionClient {
     request: CreateSetPermissionSignatureRequest,
   ): Promise<SetPermissionsResponse> {
     try {
-      const { ipId, signer, to, txOptions, func, permission, deadline } = request;
+      const { ipId, signer, to, func, permission, deadline } = request;
       await this.checkIsRegistered(ipId);
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const data = encodeFunctionData({
@@ -151,9 +155,12 @@ export class PermissionClient {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
-
-        if (txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        if (request.txOptions?.waitForTransaction) {
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -188,7 +195,11 @@ export class PermissionClient {
       } else {
         const txHash = await this.accessControllerClient.setAllPermissions(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -216,7 +227,7 @@ export class PermissionClient {
     request: SetBatchPermissionsRequest,
   ): Promise<SetPermissionsResponse> {
     try {
-      const { permissions, txOptions } = request;
+      const { permissions } = request;
       for (const permission of permissions) {
         await this.checkIsRegistered(permission.ipId);
       }
@@ -233,8 +244,12 @@ export class PermissionClient {
         return { encodedTxData: this.accessControllerClient.setBatchPermissionsEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setBatchPermissions(req);
-        if (txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        if (request.txOptions?.waitForTransaction) {
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -262,7 +277,7 @@ export class PermissionClient {
     request: CreateBatchPermissionSignatureRequest,
   ): Promise<SetPermissionsResponse> {
     try {
-      const { permissions, deadline, ipId, txOptions } = request;
+      const { permissions, deadline, ipId } = request;
       for (const permission of permissions) {
         await this.checkIsRegistered(permission.ipId);
       }
@@ -303,8 +318,12 @@ export class PermissionClient {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
-        if (txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        if (request.txOptions?.waitForTransaction) {
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };

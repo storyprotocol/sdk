@@ -135,6 +135,53 @@ describe("Test RoyaltyClient", () => {
       expect(result.txHash).equals(txHash);
       expect(result.royaltyTokensCollected).equals(1);
     });
+
+    it("should handle timeout error when collectRoyaltyTokens transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(royaltyClient, "getRoyaltyVaultAddress").resolves("0xproxyAddress");
+      sinon.stub(IpRoyaltyVaultImplClient.prototype, "collectRoyaltyTokens").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = royaltyClient.collectRoyaltyTokens({
+        parentIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when collectRoyaltyTokens completes within the timeout transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(IpRoyaltyVaultImplClient.prototype, "collectRoyaltyTokens").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return {};
+      });
+
+      const executePromise = royaltyClient.collectRoyaltyTokens({
+        parentIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        royaltyVaultIpId: txHash,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
+    });
   });
 
   describe("Test royaltyClient.payRoyaltyOnBehalf", async () => {
@@ -204,6 +251,56 @@ describe("Test RoyaltyClient", () => {
       });
 
       expect(result.txHash).equals(txHash);
+    });
+
+    it("should handle timeout error when payRoyaltyOnBehalf transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalf").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = royaltyClient.payRoyaltyOnBehalf({
+        receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        amount: 1,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when payRoyaltyOnBehalf completes within the timeout transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(royaltyClient, "getRoyaltyVaultAddress").resolves("0xproxyAddress");
+      sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalf").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return txHash;
+      });
+
+      const executePromise = royaltyClient.payRoyaltyOnBehalf({
+        receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        amount: 1,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
     });
   });
 
@@ -367,6 +464,58 @@ describe("Test RoyaltyClient", () => {
       expect(result.txHash).equals(txHash);
       expect(result.claimableToken).equals(1);
     });
+
+    it("should handle timeout error when claimRevenue transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(royaltyClient, "getRoyaltyVaultAddress").resolves("0xproxyAddress");
+      sinon
+        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
+        .callsFake(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          throw new Error("Timeout");
+        });
+
+      const executePromise = royaltyClient.claimRevenue({
+        snapshotIds: ["1", "2"],
+        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when claimRevenue completes within the timeout transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(royaltyClient, "getRoyaltyVaultAddress").resolves("0xproxyAddress");
+      sinon
+        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
+        .callsFake(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          return txHash;
+        });
+
+      const executePromise = royaltyClient.claimRevenue({
+        snapshotIds: ["1", "2"],
+        royaltyVaultIpId: "0xvaultIpId",
+        token: "0xtoken",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+      await clock.runAllAsync();
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
+    });
   });
 
   describe("Test royaltyClient.snapshot", async () => {
@@ -433,5 +582,49 @@ describe("Test RoyaltyClient", () => {
       expect(result.txHash).equals(txHash);
       expect(result.snapshotId).equals(1);
     });
+  });
+
+  it("should handle timeout error when snapShot transaction exceeds the timeout", async () => {
+    const clock = sinon.useFakeTimers();
+    sinon.stub(royaltyClient, "getRoyaltyVaultAddress").resolves("0xproxyAddress");
+    sinon.stub(IpRoyaltyVaultImplClient.prototype, "snapshot").callsFake(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      throw new Error("Timeout");
+    });
+
+    const executePromise = royaltyClient.snapshot({
+      royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+      txOptions: {
+        waitForTransaction: true,
+        timeout: 2000,
+      },
+    });
+
+    clock.tick(3000);
+    await clock.runAllAsync();
+    await expect(executePromise).to.be.rejectedWith("Timeout");
+    clock.restore();
+  });
+
+  it("should not raise a timeout error when snapShot completes within the timeout transaction", async () => {
+    const clock = sinon.useFakeTimers();
+    sinon.stub(royaltyClient, "getRoyaltyVaultAddress").resolves("0xproxyAddress");
+    sinon.stub(IpRoyaltyVaultImplClient.prototype, "snapshot").callsFake(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return txHash;
+    });
+
+    const executePromise = royaltyClient.snapshot({
+      royaltyVaultIpId: "0xvaultIpId",
+      txOptions: {
+        waitForTransaction: true,
+        timeout: 2000,
+      },
+    });
+
+    clock.tick(1000);
+    await clock.runAllAsync();
+    await expect(executePromise).to.not.be.rejectedWith("Timeout");
+    clock.restore();
   });
 });

@@ -59,7 +59,11 @@ export class NftClient {
       } else {
         const txHash = await this.spgClient.createCollection(req);
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs = this.spgClient.parseTxCollectionCreatedEvent(txReceipt);
           return {
             txHash: txHash,

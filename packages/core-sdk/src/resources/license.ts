@@ -79,7 +79,11 @@ export class LicenseClient {
           terms: licenseTerms,
         });
         if (request?.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs =
             this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
           return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
@@ -124,7 +128,11 @@ export class LicenseClient {
           terms: licenseTerms,
         });
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs =
             this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
           return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
@@ -171,7 +179,11 @@ export class LicenseClient {
           terms: licenseTerms,
         });
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs =
             this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
           return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
@@ -232,7 +244,11 @@ export class LicenseClient {
       } else {
         const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -312,7 +328,11 @@ export class LicenseClient {
       } else {
         const txHash = await this.licensingModuleClient.mintLicenseTokens(req);
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
           const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
           const licenseTokenIds = [];

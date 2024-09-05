@@ -368,6 +368,65 @@ describe("Test IpAssetClient", () => {
         expect((err as Error).message).equal("Failed to register IP: revert error");
       }
     });
+
+    it("should handle timeout when register transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "register").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = ipAssetClient.register({
+        nftContract,
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when register transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "register").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return txHash;
+      });
+
+      const executePromise = ipAssetClient.register({
+        nftContract,
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
   });
 
   describe("Test ipAssetClient.registerDerivative", async () => {
@@ -533,6 +592,66 @@ describe("Test IpAssetClient", () => {
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
+
+    it("should handle timeout when register derivative transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(ipAssetClient.licensingModuleClient, "registerDerivative").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = ipAssetClient.registerDerivative({
+        childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+        licenseTermsIds: ["1"],
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 1000,
+        },
+      });
+
+      clock.tick(3000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when register transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(ipAssetClient.licensingModuleClient, "registerDerivative").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return txHash;
+      });
+
+      const executePromise = ipAssetClient.register({
+        nftContract,
+        tokenId: "3",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
   });
 
   describe("Test ipAssetClient.registerDerivativeWithLicenseTokens", async () => {
@@ -646,6 +765,55 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should handle timeout when register derivative with license token transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(ipAssetClient, "registerDerivativeWithLicenseTokens").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = ipAssetClient.registerDerivativeWithLicenseTokens({
+        childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+        licenseTokenIds: ["1"],
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(3000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when register derivative with license transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(ipAssetClient, "registerDerivativeWithLicenseTokens").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return {
+          txHash: txHash,
+        };
+      });
+
+      const executePromise = ipAssetClient.registerDerivativeWithLicenseTokens({
+        childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+        licenseTokenIds: ["1"],
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 
@@ -1142,6 +1310,55 @@ describe("Test IpAssetClient", () => {
 
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
+
+    it("should handle timeout when register IP and attach Pil terms transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(ipAssetClient, "registerIpAndAttachPilTerms").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = ipAssetClient.registerIpAndAttachPilTerms({
+        nftContract: zeroAddress,
+        tokenId: "3",
+        pilType: PIL_TYPE.COMMERCIAL_USE,
+        mintingFee: "100",
+        currency: zeroAddress,
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(3000);
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when register IP and attach Pil terms with license transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient, "registerIpAndAttachPilTerms").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return {
+          txHash: txHash,
+        };
+      });
+
+      const executePromise = ipAssetClient.registerIpAndAttachPilTerms({
+        nftContract: zeroAddress,
+        tokenId: "3",
+        pilType: PIL_TYPE.COMMERCIAL_USE,
+        mintingFee: "100",
+        currency: zeroAddress,
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(1000);
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
   });
 
   describe("Test ipAssetClient.mintAndRegisterIpAndMakeDerivative", async () => {
@@ -1262,7 +1479,7 @@ describe("Test IpAssetClient", () => {
       expect(res.childIpId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
     });
 
-    it("should return encoded tx data when call mintAndRegisterIpAndMakeDerivative given correct args and encodedTxDataOnly of true", async () => {
+    it("should return encoded tx data when call mint and register IP and  make derivative given correct args and encodedTxDataOnly of true", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -1302,6 +1519,55 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should handle timeout when mint and register IP and make derivative transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(ipAssetClient, "mintAndRegisterIpAndMakeDerivative").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = ipAssetClient.mintAndRegisterIpAndMakeDerivative({
+        nftContract,
+        derivData: {
+          parentIpIds: ["0xmockParentIpId"],
+          licenseTermsIds: ["1", "2"],
+        },
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(3000);
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when mint and register IP and make derivative transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient, "mintAndRegisterIpAndMakeDerivative").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return {
+          txHash: txHash,
+        };
+      });
+
+      const executePromise = ipAssetClient.mintAndRegisterIpAndMakeDerivative({
+        nftContract,
+        derivData: {
+          parentIpIds: ["0xmockParentIpId"],
+          licenseTermsIds: ["1", "2"],
+        },
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(1000);
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 });

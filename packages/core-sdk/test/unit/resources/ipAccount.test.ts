@@ -12,6 +12,7 @@ describe("Test IPAccountClient", () => {
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
   const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
@@ -46,7 +47,7 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call execute successfully", async () => {
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
       const result = await ipAccountClient.execute({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -58,7 +59,7 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call execute successfully with waitForTransaction", async () => {
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.execute({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -71,6 +72,65 @@ describe("Test IPAccountClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should handle timeout when executing IP account transaction", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(IpAccountImplClient.prototype, "execute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = ipAccountClient.execute({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        to: zeroAddress,
+        value: 2,
+        data: "0x11111111111111111111111111111",
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(3000);
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when executing IP account transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(IpAccountImplClient.prototype, "execute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return {
+          blockHash: "0xmockBlockHash",
+          blockNumber: BigInt(12345),
+          contractAddress: null,
+          cumulativeGasUsed: BigInt(21000),
+          from: "0xmockFromAddress",
+          gasUsed: BigInt(21000),
+          logs: [],
+          logsBloom: "0xmockLogsBloom",
+          status: "success",
+          to: "0xmockToAddress",
+          transactionHash: "0xmockTransactionHash",
+          transactionIndex: 1,
+          type: "0x0",
+          effectiveGasPrice: BigInt(1000000000),
+        };
+      });
+
+      const executePromise = ipAccountClient.execute({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        to: zeroAddress,
+        value: 2,
+        data: "0x11111111111111111111111111111",
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(1000);
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 
@@ -95,7 +155,7 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call executeWithSig successfully", async () => {
-      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -110,7 +170,7 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call executeWithSig successfully with waitForTransaction", async () => {
-      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -126,6 +186,73 @@ describe("Test IPAccountClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should handle timeout when executing IP account transaction with signature", async () => {
+      const clock = sinon.useFakeTimers();
+
+      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executeWithSigPromise = ipAccountClient.executeWithSig({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        to: zeroAddress,
+        value: 2,
+        data: "0x11111111111111111111111111111",
+        signer: zeroAddress,
+        deadline: 20,
+        signature: zeroAddress,
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(3000);
+
+      await expect(executeWithSigPromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when executing IP account transaction with signature completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+
+      sinon.stub(IpAccountImplClient.prototype, "executeWithSig").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return {
+          blockHash: "0xmockBlockHash",
+          blockNumber: BigInt(12345),
+          contractAddress: null,
+          cumulativeGasUsed: BigInt(21000),
+          from: "0xmockFromAddress",
+          gasUsed: BigInt(21000),
+          logs: [],
+          logsBloom: "0xmockLogsBloom",
+          status: "success",
+          to: "0xmockToAddress",
+          transactionHash: "0xmockTransactionHash",
+          transactionIndex: 1,
+          type: "0x0",
+          effectiveGasPrice: BigInt(1000000000),
+        };
+      });
+
+      const executeWithSigPromise = ipAccountClient.executeWithSig({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        to: zeroAddress,
+        value: 2,
+        data: "0x11111111111111111111111111111",
+        signer: zeroAddress,
+        deadline: 20,
+        signature: zeroAddress,
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(1000);
+
+      await expect(executeWithSigPromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 

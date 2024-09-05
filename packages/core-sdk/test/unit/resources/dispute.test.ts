@@ -76,6 +76,50 @@ describe("Test DisputeClient", () => {
       expect(result.txHash).equal(txHash);
       expect(result.disputeId).equal(1n);
     });
+
+    it("should handle timeout when raising dispute", async () => {
+      const clock = sinon.useFakeTimers();
+
+      sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const raiseDisputePromise = disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        arbitrationPolicy: "0x",
+        linkToDisputeEvidence: "link",
+        targetTag: "tag",
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(3000);
+
+      await expect(raiseDisputePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when resolving dispute completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+
+      sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        return "0x1234567890abcdef";
+      });
+
+      const raiseDisputePromise = disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        arbitrationPolicy: "0x",
+        linkToDisputeEvidence: "link",
+        targetTag: "tag",
+        txOptions: { waitForTransaction: true, timeout: 3000 },
+      });
+
+      clock.tick(2000);
+      await expect(raiseDisputePromise).to.not.be.rejectedWith("Timeout");
+      clock.restore();
+    });
   });
 
   describe("Test cancelDispute", () => {
@@ -108,6 +152,45 @@ describe("Test DisputeClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
+    });
+
+    it("should handle timeout when cancelling dispute", async () => {
+      const clock = sinon.useFakeTimers();
+
+      sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const cancelDisputePromise = disputeClient.cancelDispute({
+        disputeId: 1,
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+      clock.tick(3000);
+
+      await expect(cancelDisputePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise timeout when canceling dispute completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+
+      sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return "0x1234567890abcdef";
+      });
+
+      const cancelDisputePromise = disputeClient.cancelDispute({
+        disputeId: 1,
+        txOptions: { waitForTransaction: true, timeout: 2000 }, // Timeout is 2000 ms
+      });
+
+      clock.tick(1000);
+
+      await expect(cancelDisputePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 
@@ -143,6 +226,47 @@ describe("Test DisputeClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
+    });
+
+    it("should handle timeout when resolving dispute", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const resolveDisputePromise = disputeClient.resolveDispute({
+        disputeId: 1,
+        data: "0x",
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(3000);
+
+      await expect(resolveDisputePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when resolving dispute completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+
+      sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return "0x1234567890abcdef";
+      });
+
+      const resolveDisputePromise = disputeClient.resolveDispute({
+        disputeId: 1,
+        data: "0x",
+        txOptions: { waitForTransaction: true, timeout: 2000 },
+      });
+
+      clock.tick(1000);
+
+      await expect(resolveDisputePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 });

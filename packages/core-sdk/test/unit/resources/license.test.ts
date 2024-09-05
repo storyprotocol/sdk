@@ -98,6 +98,50 @@ describe("Test LicenseClient", () => {
         );
       }
     });
+
+    it("should handle timeout when register non commercial social remixing PIL transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient, "registerNonComSocialRemixingPIL").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = licenseClient.registerNonComSocialRemixingPIL({
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when register non commercial social remixing PIL transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient, "registerNonComSocialRemixingPIL").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        return {};
+      });
+
+      const executePromise = licenseClient.registerNonComSocialRemixingPIL({
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
   });
 
   describe("Test licenseClient.registerCommercialUsePIL", async () => {
@@ -173,6 +217,56 @@ describe("Test LicenseClient", () => {
           "Failed to register commercial use PIL: request fail.",
         );
       }
+    });
+
+    it("should handle timeout when register commercial use PIL transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient, "registerCommercialUsePIL").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = licenseClient.registerCommercialUsePIL({
+        mintingFee: "1",
+        currency: zeroAddress,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+
+      // await clock.runAllAsync();
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when register commercial social remixing PIL transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient, "registerCommercialUsePIL").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        return {};
+      });
+
+      const executePromise = licenseClient.registerCommercialUsePIL({
+        mintingFee: "1",
+        currency: zeroAddress,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 
@@ -253,6 +347,57 @@ describe("Test LicenseClient", () => {
           "Failed to register commercial remix PIL: request fail.",
         );
       }
+    });
+    it("should handle timeout when register commercial remix PIL transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient, "registerCommercialRemixPIL").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = licenseClient.registerCommercialRemixPIL({
+        mintingFee: "1",
+        commercialRevShare: 100,
+        currency: zeroAddress,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when register commercial remix PIL transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient, "registerCommercialRemixPIL").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        return {};
+      });
+
+      const executePromise = licenseClient.registerCommercialRemixPIL({
+        mintingFee: "1",
+        commercialRevShare: 100,
+        currency: zeroAddress,
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 
@@ -356,6 +501,60 @@ describe("Test LicenseClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should handle timeout when attach license terms transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient, "attachLicenseTerms").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = licenseClient.attachLicenseTerms({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when attach license terms transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient, "attachLicenseTerms").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        return {};
+      });
+
+      const executePromise = licenseClient.attachLicenseTerms({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 
@@ -524,6 +723,66 @@ describe("Test LicenseClient", () => {
 
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTokenIds).to.deep.equal([1n, 2n, 3n, 4n, 5n]);
+    });
+
+    it("should handle timeout when mint license tokens transaction transaction exceeds the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(licenseClient, "mintLicenseTokens").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        throw new Error("Timeout");
+      });
+
+      const executePromise = licenseClient.mintLicenseTokens({
+        licensorIpId: zeroAddress,
+        licenseTermsId: "1",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(3000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.be.rejectedWith("Timeout");
+
+      clock.restore();
+    });
+
+    it("should not raise a timeout error when mint license tokens transaction completes within the timeout", async () => {
+      const clock = sinon.useFakeTimers();
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(licenseClient, "mintLicenseTokens").callsFake(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        return {};
+      });
+
+      const executePromise = licenseClient.mintLicenseTokens({
+        licensorIpId: zeroAddress,
+        licenseTermsId: "1",
+        txOptions: {
+          waitForTransaction: true,
+          timeout: 2000,
+        },
+      });
+
+      clock.tick(1000);
+
+      await clock.runAllAsync();
+
+      await expect(executePromise).to.not.be.rejectedWith("Timeout");
+
+      clock.restore();
     });
   });
 

@@ -302,7 +302,11 @@ export class IPAssetClient {
           });
         }
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const targetLogs = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
           return { txHash: txHash, ipId: targetLogs[0].ipId };
         } else {
@@ -375,7 +379,11 @@ export class IPAssetClient {
       } else {
         const txHash = await this.licensingModuleClient.registerDerivative(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash };
         } else {
           return { txHash };
@@ -426,7 +434,11 @@ export class IPAssetClient {
       } else {
         const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          await this.rpcClient.waitForTransactionReceipt(txOptions);
           return { txHash: txHash };
         } else {
           return { txHash: txHash };
@@ -488,7 +500,11 @@ export class IPAssetClient {
       } else {
         const txHash = await this.spgClient.mintAndRegisterIpAndAttachPilTerms(object);
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0];
           const licenseTermsId = await this.getLicenseTermsId(txReceipt);
           return {
@@ -613,7 +629,11 @@ export class IPAssetClient {
       } else {
         const txHash = await this.spgClient.registerIpAndAttachPilTerms(object);
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const ipRegisterEvent = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
           const licenseTermsId = await this.getLicenseTermsId(txReceipt);
           return { txHash, licenseTermsId: licenseTermsId, ipId: ipRegisterEvent[0].ipId };
@@ -756,7 +776,11 @@ export class IPAssetClient {
       } else {
         const txHash = await this.spgClient.registerIpAndMakeDerivative(object);
         if (request.txOptions?.waitForTransaction) {
-          const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const receipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
           return { txHash, ipId: log.ipId };
         }
@@ -833,7 +857,11 @@ export class IPAssetClient {
       } else {
         const txHash = await this.spgClient.mintAndRegisterIpAndMakeDerivative(object);
         if (request.txOptions?.waitForTransaction) {
-          const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          let txOptions: { hash: `0x${string}`; timeout?: number } = { hash: txHash };
+          if (request.txOptions?.timeout) {
+            txOptions = { ...txOptions, timeout: request.txOptions.timeout };
+          }
+          const receipt = await this.rpcClient.waitForTransactionReceipt(txOptions);
           const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
           return { txHash, childIpId: log.ipId };
         }
