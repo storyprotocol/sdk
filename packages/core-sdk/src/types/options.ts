@@ -7,13 +7,6 @@ export type TxOptions = {
   // not submit and execute, it will only encode the abi and
   // function data and return.
   encodedTxDataOnly?: boolean;
-  // The price (in wei) to pay per gas.
-  gasPrice?: bigint;
-  // Total fee per gas (in wei).
-  maxFeePerGas?: bigint;
-  // The number of confirmations (blocks that have passed)
-  // to wait before resolving.
-  numBlockConfirmations?: number;
 };
 
 export type WithTxOptions<T> = T & {
