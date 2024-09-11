@@ -34,7 +34,6 @@ describe("Test IPAccountClient", () => {
         data: "0x11111111111111111111111111111",
         txOptions: {
           waitForTransaction: true,
-          maxFeePerGas: parseUnits("100", 9),
         },
       };
       try {

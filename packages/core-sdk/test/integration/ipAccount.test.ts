@@ -26,7 +26,6 @@ describe("Ip Account functions", () => {
       tokenId: tokenId!,
       txOptions: {
         waitForTransaction: true,
-        maxFeePerGas: parseUnits("100", 9),
       },
     });
     ipId = registerResult.ipId!;
@@ -51,7 +50,6 @@ describe("Ip Account functions", () => {
       ipId: ipId,
       txOptions: {
         waitForTransaction: true,
-        maxFeePerGas: parseUnits("100", 9),
       },
     });
     expect(response.txHash).to.be.a("string").and.not.empty;
