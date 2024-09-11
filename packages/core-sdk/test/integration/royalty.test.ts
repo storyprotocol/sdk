@@ -182,7 +182,7 @@ describe("Test royalty Functions", () => {
       });
       const snapshotId = await client.royalty.snapshot({
         royaltyVaultIpId: ipId1,
-        txOptions: { waitForTransaction: true, maxFeePerGas: parseUnits("100", 9) },
+        txOptions: { waitForTransaction: true },
       });
 
       const response = await client.royalty.claimRevenue({
