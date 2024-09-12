@@ -58,7 +58,7 @@ export class PermissionClient {
    *   @param request.to The address that can be called by the `signer` (currently only modules can be `to`).
    *   @param request.permission The new permission level.
    *   @param request.func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
@@ -79,7 +79,10 @@ export class PermissionClient {
       } else {
         const txHash = await this.accessControllerClient.setPermission(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -98,7 +101,7 @@ export class PermissionClient {
    *   @param request.permission The new permission level.
    *   @param request.func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
@@ -151,9 +154,11 @@ export class PermissionClient {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
-
-        if (txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...txOptions,
+            hash: txHash,
+          });
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -169,7 +174,7 @@ export class PermissionClient {
    *   @param request.ipId The IP ID that grants the permission for `signer`
    *   @param request.signer The address of the signer receiving the permissions.
    *   @param request.permission The new permission.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
@@ -188,7 +193,10 @@ export class PermissionClient {
       } else {
         const txHash = await this.accessControllerClient.setAllPermissions(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -208,7 +216,7 @@ export class PermissionClient {
    *   @param request.permissions[].permission The new permission level.
    *   @param request.permissions[].func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
@@ -233,8 +241,11 @@ export class PermissionClient {
         return { encodedTxData: this.accessControllerClient.setBatchPermissionsEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setBatchPermissions(req);
-        if (txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...txOptions,
+            hash: txHash,
+          });
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -254,7 +265,7 @@ export class PermissionClient {
    *   @param request.permissions[].to The address that can be called by the `signer` (currently only modules can be `to`).
    *   @param request.permissions[].permission The new permission level.
    *   @param request.permissions[].func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
@@ -303,8 +314,11 @@ export class PermissionClient {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
-        if (txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...txOptions,
+            hash: txHash,
+          });
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };

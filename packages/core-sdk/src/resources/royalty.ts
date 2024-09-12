@@ -46,7 +46,7 @@ export class RoyaltyClient {
    * @param request - The request object that contains all data needed to collect royalty tokens.
    *   @param request.parentIpId The ip id of the ancestor to whom the royalty tokens belong to.
    *   @param request.royaltyVaultIpId The id of the royalty vault.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional the amount of royalty tokens collected if waitForTxn is set to true.
    * @emits RoyaltyTokensCollected (ancestorIpId, royaltyTokensCollected)
    */
@@ -76,7 +76,10 @@ export class RoyaltyClient {
       } else {
         const txHash = await ipRoyaltyVault.collectRoyaltyTokens(req);
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           const targetLogs = ipRoyaltyVault.parseTxRoyaltyTokensCollectedEvent(txReceipt);
           return {
             txHash: txHash,
@@ -98,7 +101,7 @@ export class RoyaltyClient {
    *   @param request.payerIpId The ID of the IP asset that pays the royalties.
    *   @param request.token The token to use to pay the royalties.
    *   @param request.amount The amount to pay.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async payRoyaltyOnBehalf(
@@ -128,7 +131,10 @@ export class RoyaltyClient {
       } else {
         const txHash = await this.royaltyModuleClient.payRoyaltyOnBehalf(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           return { txHash };
         } else {
           return { txHash };
@@ -146,7 +152,6 @@ export class RoyaltyClient {
    *   @param request.account The address of the token holder.
    *   @param request.snapshotId The snapshot id.
    *   @param request.token The revenue token to claim.
-   *   @param request.txOptions [Optional] The transaction options.
    * @returns A Promise that contains the amount of revenue token claimable
    */
   public async claimableRevenue(
@@ -178,7 +183,7 @@ export class RoyaltyClient {
    *   @param request.royaltyVaultIpId The id of the royalty vault.
    *   @param request.token The revenue token to claim.
    *   @param request.account [Optional] The ipId to send.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional claimableToken if waitForTxn is set to true.
    * @emits RevenueTokenClaimed (claimer, token, amount).
    */
@@ -223,6 +228,7 @@ export class RoyaltyClient {
       }
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
           hash: txHash,
         });
         const targetLogs = ipRoyaltyVault.parseTxRevenueTokenClaimedEvent(txReceipt);
@@ -238,7 +244,7 @@ export class RoyaltyClient {
    * Snapshots the claimable revenue and royalty token amounts.
    * @param request - The request object that contains all data needed to snapshot.
    *   @param request.royaltyVaultIpId The id of the royalty vault.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional snapshotId if waitForTxn is set to true.
    * @emits SnapshotCompleted (snapshotId, snapshotTimestamp, unclaimedTokens).
    */
@@ -257,7 +263,10 @@ export class RoyaltyClient {
       } else {
         const txHash = await ipRoyaltyVault.snapshot();
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           const targetLogs = ipRoyaltyVault.parseTxSnapshotCompletedEvent(txReceipt);
           return { txHash, snapshotId: targetLogs[0].snapshotId };
         } else {

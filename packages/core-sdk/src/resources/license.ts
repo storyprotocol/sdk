@@ -55,7 +55,7 @@ export class LicenseClient {
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
    * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
@@ -79,7 +79,10 @@ export class LicenseClient {
           terms: licenseTerms,
         });
         if (request?.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           const targetLogs =
             this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
           return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
@@ -96,7 +99,7 @@ export class LicenseClient {
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
@@ -124,7 +127,10 @@ export class LicenseClient {
           terms: licenseTerms,
         });
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           const targetLogs =
             this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
           return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
@@ -142,7 +148,7 @@ export class LicenseClient {
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
@@ -171,7 +177,10 @@ export class LicenseClient {
           terms: licenseTerms,
         });
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           const targetLogs =
             this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
           return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
@@ -190,7 +199,7 @@ export class LicenseClient {
    *   @param request.ipId The address of the IP to which the license terms are attached.
    *   @param request.licenseTemplate The address of the license template.
    *   @param request.licenseTermsId The ID of the license terms.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async attachLicenseTerms(
@@ -232,7 +241,10 @@ export class LicenseClient {
       } else {
         const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           return { txHash: txHash, success: true };
         } else {
           return { txHash: txHash };
@@ -261,7 +273,7 @@ export class LicenseClient {
    *   @param request.licenseTermsId The ID of the license terms within the license template.
    *   @param request.amount The amount of license tokens to mint.
    *   @param request.receiver The address of the receiver.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional license token IDs if waitForTxn is set to true.
    * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
    */
@@ -312,7 +324,10 @@ export class LicenseClient {
       } else {
         const txHash = await this.licensingModuleClient.mintLicenseTokens(req);
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
           const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
           const licenseTokenIds = [];

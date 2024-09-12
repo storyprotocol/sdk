@@ -27,6 +27,7 @@ export class IPAccountClient {
    *   @param request.value The amount of Ether to send.
    *   @param request.accountAddress The ipId to send.
    *   @param request.data The data to send along with the transaction.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns Tx hash for the transaction.
    */
   public async execute(request: IPAccountExecuteRequest): Promise<IPAccountExecuteResponse> {
@@ -49,7 +50,10 @@ export class IPAccountClient {
         const txHash = await ipAccountClient.execute({ ...req, operation: 0 });
 
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
         }
         return { txHash: txHash };
       }
@@ -67,6 +71,7 @@ export class IPAccountClient {
    *   @param request.signer The signer of the transaction.
    *   @param request.deadline The deadline of the transaction signature.
    *   @param request.signature The signature of the transaction, EIP-712 encoded.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns Tx hash for the transaction.
    */
   public async executeWithSig(
@@ -94,7 +99,10 @@ export class IPAccountClient {
         const txHash = await ipAccountClient.executeWithSig(req);
 
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
         }
         return { txHash: txHash };
       }

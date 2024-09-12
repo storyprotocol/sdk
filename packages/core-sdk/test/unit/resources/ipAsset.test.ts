@@ -214,7 +214,6 @@ describe("Test IpAssetClient", () => {
           },
           txOptions: {
             waitForTransaction: waitForTransaction,
-            maxFeePerGas: parseUnits("100", 9),
           },
         });
       } catch (err) {
