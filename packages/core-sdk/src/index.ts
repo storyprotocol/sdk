@@ -25,8 +25,16 @@ export type {
   RegisterIpAndAttachPilTermsRequest,
   RegisterIpAndAttachPilTermsResponse,
   MintAndRegisterIpAndMakeDerivativeRequest,
+  GenerateCreatorMetadataParam,
   IpCreator,
+  GenerateIpMetadataParam,
   IpMetadata,
+  IpRelationship,
+  IpAttribute,
+  IpCreatorSocial,
+  IpMedia,
+  IPRobotTerms,
+  StoryProtocolApp,
 } from "./types/resources/ipAsset";
 
 export type {
