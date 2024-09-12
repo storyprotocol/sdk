@@ -29,7 +29,7 @@ export class DisputeClient {
    *   @param request.linkToDisputeEvidence - The link to the dispute evidence.
    *   @param request.targetTag - The target tag of the dispute.
    *   @param request.calldata - Optional calldata to initialize the policy.
-   *   @param request.txOptions - Optional transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a RaiseDisputeResponse containing the transaction hash.
    * @throws `NotRegisteredIpId` if targetIpId is not registered in the IPA Registry.
    * @throws `NotWhitelistedDisputeTag` if targetTag is not whitelisted.
@@ -52,7 +52,10 @@ export class DisputeClient {
         const txHash = await this.disputeModuleClient.raiseDispute(req);
 
         if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
           const targetLogs = this.disputeModuleClient.parseTxDisputeRaisedEvent(txReceipt);
           return {
             txHash: txHash,
@@ -71,6 +74,7 @@ export class DisputeClient {
    * @param request - The request object containing details to cancel the dispute.
    *   @param request.disputeId The ID of the dispute to be cancelled.
    *   @param request.calldata Optional additional data used in the cancellation process.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a CancelDisputeResponse containing the transaction hash.
    * @throws NotInDisputeState, if the currentTag of the Dispute is not being disputed
    * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
@@ -90,7 +94,10 @@ export class DisputeClient {
         const txHash = await this.disputeModuleClient.cancelDispute(req);
 
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
         }
 
         return { txHash: txHash };
@@ -105,6 +112,7 @@ export class DisputeClient {
    * @param request - The request object containing details to resolve the dispute.
    *   @param request.disputeId The ID of the dispute to be resolved.
    *   @param request.data The data to resolve the dispute.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a ResolveDisputeResponse.
    * @throws NotAbleToResolve, if currentTag is still in dispute (i.e still needs a judgement to be set)
    * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
@@ -122,7 +130,10 @@ export class DisputeClient {
       } else {
         const txHash = await this.disputeModuleClient.resolveDispute(req);
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
         }
 
         return { txHash: txHash };
