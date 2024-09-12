@@ -6,21 +6,22 @@ import {
   SetBatchPermissionsRequest,
   CreateBatchPermissionSignatureRequest,
 } from "@story-protocol/core-sdk";
-import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
 import { handleError } from "../util";
+import { useLoading } from "../hooks/useLoading";
+import { useErrors } from "../hooks/useError";
 
 const usePermission = () => {
   const client = useStoryContext();
-  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+  const [loadings, setLoadings] = useLoading({
     setPermission: false,
     createSetPermissionSignature: false,
     setAllPermissions: false,
     setBatchPermissions: false,
     createBatchPermissionSignature: false,
   });
-  const [errors, setErrors] = useState<Record<string, string | null>>({
+  const [errors, setErrors] = useErrors({
     setPermission: null,
     createSetPermissionSignature: null,
     setAllPermissions: null,
@@ -52,15 +53,15 @@ const usePermission = () => {
     request: SetPermissionsRequest
   ): Promise<SetPermissionsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, setPermission: true }));
-      setErrors((prev) => ({ ...prev, setPermission: null }));
+      setLoadings("setPermission", true);
+      setErrors("setPermission", null);
       const response = await client.permission.setPermission(request);
-      setLoadings((prev) => ({ ...prev, setPermission: false }));
+      setLoadings("setPermission", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, setPermission: errorMessage }));
-      setLoadings((prev) => ({ ...prev, setPermission: false }));
+      setErrors("setPermission", errorMessage);
+      setLoadings("setPermission", false);
       throw new Error(errorMessage);
     }
   };
@@ -82,20 +83,17 @@ const usePermission = () => {
     request: CreateSetPermissionSignatureRequest
   ): Promise<SetPermissionsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, createSetPermissionSignature: true }));
-      setErrors((prev) => ({ ...prev, createSetPermissionSignature: null }));
+      setLoadings("createSetPermissionSignature", true);
+      setErrors("createSetPermissionSignature", null);
       const response = await client.permission.createSetPermissionSignature(
         request
       );
-      setLoadings((prev) => ({ ...prev, createSetPermissionSignature: false }));
+      setLoadings("createSetPermissionSignature", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        createSetPermissionSignature: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, createSetPermissionSignature: false }));
+      setErrors("createSetPermissionSignature", errorMessage);
+      setLoadings("createSetPermissionSignature", false);
       throw new Error(errorMessage);
     }
   };
@@ -114,15 +112,15 @@ const usePermission = () => {
     request: SetAllPermissionsRequest
   ): Promise<SetPermissionsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, setAllPermissions: true }));
-      setErrors((prev) => ({ ...prev, setAllPermissions: null }));
+      setLoadings("setAllPermissions", true);
+      setErrors("setAllPermissions", null);
       const response = await client.permission.setAllPermissions(request);
-      setLoadings((prev) => ({ ...prev, setAllPermissions: false }));
+      setLoadings("setAllPermissions", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, setAllPermissions: errorMessage }));
-      setLoadings((prev) => ({ ...prev, setAllPermissions: false }));
+      setErrors("setAllPermissions", errorMessage);
+      setLoadings("setAllPermissions", false);
       throw new Error(errorMessage);
     }
   };
@@ -145,15 +143,15 @@ const usePermission = () => {
     request: SetBatchPermissionsRequest
   ): Promise<SetPermissionsResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, setBatchPermissions: true }));
-      setErrors((prev) => ({ ...prev, setBatchPermissions: null }));
+      setLoadings("setBatchPermissions", true);
+      setErrors("setBatchPermissions", null);
       const response = await client.permission.setBatchPermissions(request);
-      setLoadings((prev) => ({ ...prev, setBatchPermissions: false }));
+      setLoadings("setBatchPermissions", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, setBatchPermissions: errorMessage }));
-      setLoadings((prev) => ({ ...prev, setBatchPermissions: false }));
+      setErrors("setBatchPermissions", errorMessage);
+      setLoadings("setBatchPermissions", false);
       throw new Error(errorMessage);
     }
   };
@@ -176,29 +174,17 @@ const usePermission = () => {
     request: CreateBatchPermissionSignatureRequest
   ): Promise<SetPermissionsResponse> => {
     try {
-      setLoadings((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: true,
-      }));
-      setErrors((prev) => ({ ...prev, createBatchPermissionSignature: null }));
+      setLoadings("createBatchPermissionSignature", true);
+      setErrors("createBatchPermissionSignature", null);
       const response = await client.permission.createBatchPermissionSignature(
         request
       );
-      setLoadings((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: false,
-      }));
+      setLoadings("createBatchPermissionSignature", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: false,
-      }));
+      setErrors("createBatchPermissionSignature", errorMessage);
+      setLoadings("createBatchPermissionSignature", false);
       throw new Error(errorMessage);
     }
   };

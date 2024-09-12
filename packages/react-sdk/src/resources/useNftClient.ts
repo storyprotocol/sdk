@@ -2,17 +2,18 @@ import {
   CreateNFTCollectionRequest,
   CreateNFTCollectionResponse,
 } from "@story-protocol/core-sdk";
-import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
 import { handleError } from "../util";
+import { useLoading } from "../hooks/useLoading";
+import { useErrors } from "../hooks/useError";
 
 const useNftClient = () => {
   const client = useStoryContext();
-  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+  const [loadings, setLoadings] = useLoading({
     createNFTCollection: false,
   });
-  const [errors, setErrors] = useState<Record<string, string | null>>({
+  const [errors, setErrors] = useErrors({
     createNFTCollection: null,
   });
 
@@ -33,15 +34,15 @@ const useNftClient = () => {
     request: CreateNFTCollectionRequest
   ): Promise<CreateNFTCollectionResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, createNFTCollection: true }));
-      setErrors((prev) => ({ ...prev, createNFTCollection: null }));
+      setLoadings("createNFTCollection", true);
+      setErrors("createNFTCollection", null);
       const response = await client.nftClient.createNFTCollection(request);
-      setLoadings((prev) => ({ ...prev, createNFTCollection: false }));
+      setLoadings("createNFTCollection", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, createNFTCollection: errorMessage }));
-      setLoadings((prev) => ({ ...prev, createNFTCollection: false }));
+      setErrors("createNFTCollection", errorMessage);
+      setLoadings("createNFTCollection", false);
       throw new Error(errorMessage);
     }
   };

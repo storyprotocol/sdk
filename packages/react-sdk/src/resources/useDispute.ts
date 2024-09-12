@@ -6,19 +6,20 @@ import {
   ResolveDisputeRequest,
   ResolveDisputeResponse,
 } from "@story-protocol/core-sdk";
-import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
 import { handleError } from "../util";
+import { useLoading } from "../hooks/useLoading";
+import { useErrors } from "../hooks/useError";
 
 const useDispute = () => {
   const client = useStoryContext();
-  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+  const [loadings, setLoadings] = useLoading({
     raiseDispute: false,
     cancelDispute: false,
     resolveDispute: false,
   });
-  const [errors, setErrors] = useState<Record<string, string | null>>({
+  const [errors, setErrors] = useErrors({
     raiseDispute: null,
     cancelDispute: null,
     resolveDispute: null,
@@ -44,15 +45,15 @@ const useDispute = () => {
     request: RaiseDisputeRequest
   ): Promise<RaiseDisputeResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, raiseDispute: true }));
-      setErrors((prev) => ({ ...prev, raiseDispute: null }));
+      setLoadings("raiseDispute", true);
+      setErrors("raiseDispute", null);
       const response = await client.dispute.raiseDispute(request);
-      setLoadings((prev) => ({ ...prev, raiseDispute: false }));
+      setLoadings("raiseDispute", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, raiseDispute: errorMessage }));
-      setLoadings((prev) => ({ ...prev, raiseDispute: false }));
+      setErrors("raiseDispute", errorMessage);
+      setLoadings("raiseDispute", false);
       throw new Error(errorMessage);
     }
   };
@@ -73,15 +74,15 @@ const useDispute = () => {
     request: CancelDisputeRequest
   ): Promise<CancelDisputeResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, cancelDispute: true }));
-      setErrors((prev) => ({ ...prev, cancelDispute: null }));
+      setLoadings("cancelDispute", true);
+      setErrors("cancelDispute", null);
       const response = await client.dispute.cancelDispute(request);
-      setLoadings((prev) => ({ ...prev, cancelDispute: false }));
+      setLoadings("cancelDispute", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, cancelDispute: errorMessage }));
-      setLoadings((prev) => ({ ...prev, cancelDispute: false }));
+      setErrors("cancelDispute", errorMessage);
+      setLoadings("cancelDispute", false);
       throw new Error(errorMessage);
     }
   };
@@ -100,15 +101,15 @@ const useDispute = () => {
     request: ResolveDisputeRequest
   ): Promise<ResolveDisputeResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, resolveDispute: true }));
-      setErrors((prev) => ({ ...prev, resolveDispute: null }));
+      setLoadings("resolveDispute", true);
+      setErrors("resolveDispute", null);
       const response = await client.dispute.resolveDispute(request);
-      setLoadings((prev) => ({ ...prev, resolveDispute: false }));
+      setLoadings("resolveDispute", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, resolveDispute: errorMessage }));
-      setLoadings((prev) => ({ ...prev, resolveDispute: false }));
+      setErrors("resolveDispute", errorMessage);
+      setLoadings("resolveDispute", false);
       throw new Error(errorMessage);
     }
   };

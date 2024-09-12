@@ -11,14 +11,15 @@ import {
   SnapshotResponse,
 } from "@story-protocol/core-sdk";
 import { Hex, Address } from "viem";
-import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
 import { handleError } from "../util";
+import { useLoading } from "../hooks/useLoading";
+import { useErrors } from "../hooks/useError";
 
 const useRoyalty = () => {
   const client = useStoryContext();
-  const [loadings, setLoadings] = useState<Record<string, boolean>>({
+  const [loadings, setLoadings] = useLoading({
     collectRoyaltyTokens: false,
     payRoyaltyOnBehalf: false,
     claimableRevenue: false,
@@ -26,7 +27,7 @@ const useRoyalty = () => {
     snapshot: false,
     getRoyaltyVaultAddress: false,
   });
-  const [errors, setErrors] = useState<Record<string, string | null>>({
+  const [errors, setErrors] = useErrors({
     collectRoyaltyTokens: null,
     payRoyaltyOnBehalf: null,
     claimableRevenue: null,
@@ -48,15 +49,15 @@ const useRoyalty = () => {
     request: CollectRoyaltyTokensRequest
   ): Promise<CollectRoyaltyTokensResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, collectRoyaltyTokens: true }));
-      setErrors((prev) => ({ ...prev, collectRoyaltyTokens: null }));
+      setLoadings("collectRoyaltyTokens", true);
+      setErrors("collectRoyaltyTokens", null);
       const response = await client.royalty.collectRoyaltyTokens(request);
-      setLoadings((prev) => ({ ...prev, collectRoyaltyTokens: false }));
+      setLoadings("collectRoyaltyTokens", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, collectRoyaltyTokens: errorMessage }));
-      setLoadings((prev) => ({ ...prev, collectRoyaltyTokens: false }));
+      setErrors("collectRoyaltyTokens", errorMessage);
+      setLoadings("collectRoyaltyTokens", false);
       throw new Error(errorMessage);
     }
   };
@@ -75,15 +76,15 @@ const useRoyalty = () => {
     request: PayRoyaltyOnBehalfRequest
   ): Promise<PayRoyaltyOnBehalfResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, payRoyaltyOnBehalf: true }));
-      setErrors((prev) => ({ ...prev, payRoyaltyOnBehalf: null }));
+      setLoadings("payRoyaltyOnBehalf", true);
+      setErrors("payRoyaltyOnBehalf", null);
       const response = await client.royalty.payRoyaltyOnBehalf(request);
-      setLoadings((prev) => ({ ...prev, payRoyaltyOnBehalf: false }));
+      setLoadings("payRoyaltyOnBehalf", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, payRoyaltyOnBehalf: errorMessage }));
-      setLoadings((prev) => ({ ...prev, payRoyaltyOnBehalf: false }));
+      setErrors("payRoyaltyOnBehalf", errorMessage);
+      setLoadings("payRoyaltyOnBehalf", false);
       throw new Error(errorMessage);
     }
   };
@@ -102,15 +103,15 @@ const useRoyalty = () => {
     request: ClaimableRevenueRequest
   ): Promise<ClaimableRevenueResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, claimableRevenue: true }));
-      setErrors((prev) => ({ ...prev, claimableRevenue: null }));
+      setLoadings("claimableRevenue", true);
+      setErrors("claimableRevenue", null);
       const response = await client.royalty.claimableRevenue(request);
-      setLoadings((prev) => ({ ...prev, claimableRevenue: false }));
+      setLoadings("claimableRevenue", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, claimableRevenue: errorMessage }));
-      setLoadings((prev) => ({ ...prev, claimableRevenue: false }));
+      setErrors("claimableRevenue", errorMessage);
+      setLoadings("claimableRevenue", false);
       throw new Error(errorMessage);
     }
   };
@@ -130,15 +131,15 @@ const useRoyalty = () => {
     request: ClaimRevenueRequest
   ): Promise<ClaimRevenueResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, claimRevenue: true }));
-      setErrors((prev) => ({ ...prev, claimRevenue: null }));
+      setLoadings("claimRevenue", true);
+      setErrors("claimRevenue", null);
       const response = await client.royalty.claimRevenue(request);
-      setLoadings((prev) => ({ ...prev, claimRevenue: false }));
+      setLoadings("claimRevenue", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, claimRevenue: errorMessage }));
-      setLoadings((prev) => ({ ...prev, claimRevenue: false }));
+      setErrors("claimRevenue", errorMessage);
+      setLoadings("claimRevenue", false);
       throw new Error(errorMessage);
     }
   };
@@ -155,15 +156,15 @@ const useRoyalty = () => {
     request: SnapshotRequest
   ): Promise<SnapshotResponse> => {
     try {
-      setLoadings((prev) => ({ ...prev, snapshot: true }));
-      setErrors((prev) => ({ ...prev, snapshot: null }));
+      setLoadings("snapshot", true);
+      setErrors("snapshot", null);
       const response = await client.royalty.snapshot(request);
-      setLoadings((prev) => ({ ...prev, snapshot: false }));
+      setLoadings("snapshot", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, snapshot: errorMessage }));
-      setLoadings((prev) => ({ ...prev, snapshot: false }));
+      setErrors("snapshot", errorMessage);
+      setLoadings("snapshot", false);
       throw new Error(errorMessage);
     }
   };
@@ -177,17 +178,17 @@ const useRoyalty = () => {
     royaltyVaultIpId: Hex
   ): Promise<Address> => {
     try {
-      setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: true }));
-      setErrors((prev) => ({ ...prev, getRoyaltyVaultAddress: null }));
+      setLoadings("getRoyaltyVaultAddress", true);
+      setErrors("getRoyaltyVaultAddress", null);
       const response = await client.royalty.getRoyaltyVaultAddress(
         royaltyVaultIpId
       );
-      setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: false }));
+      setLoadings("getRoyaltyVaultAddress", false);
       return response;
     } catch (e) {
       const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, getRoyaltyVaultAddress: errorMessage }));
-      setLoadings((prev) => ({ ...prev, getRoyaltyVaultAddress: false }));
+      setErrors("getRoyaltyVaultAddress", errorMessage);
+      setLoadings("getRoyaltyVaultAddress", false);
       throw new Error(errorMessage);
     }
   };
