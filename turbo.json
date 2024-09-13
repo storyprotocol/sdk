@@ -15,5 +15,6 @@
       "cache": false,
       "persistent": true
     }
-  }
+  },
+  "globalEnv": ["TEST_WALLET_ADDRESS", "WALLET_PRIVATE_KEY"]
 }
