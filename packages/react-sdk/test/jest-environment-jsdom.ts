@@ -1,7 +1,8 @@
+import { TextDecoder, TextEncoder } from "util";
+
 import $JSDOMEnvironment, {
   TestEnvironment as $TestEnvironment,
 } from "jest-environment-jsdom";
-import { TextDecoder, TextEncoder } from "util";
 
 /**
  * This patched JSDOMEnvironment serves as a proxy for the default JSDOMEnvironment from Jest.

@@ -7,17 +7,12 @@ import {
   toFunctionSelector,
 } from "viem";
 
-import { mockERC721Address, getTokenId, walletClient } from "./utils/util";
-import {
-  AccessPermission,
-  getPermissionSignature,
-  useIpAccount,
-  useIpAsset,
-} from "../../src";
+import { mockERC721Address, getTokenId } from "./utils/util";
+import { AccessPermission, useIpAccount, useIpAsset } from "../../src";
 import Wrapper from "./utils/Wrapper";
 
-const coreMetadataModuleAddress = "0xDa498A3f7c8a88cb72201138C366bE3778dB9575";
-const permissionAddress = "0xF9936a224b3Deb6f9A4645ccAfa66f7ECe83CF0A";
+const coreMetadataModuleAddress = "0x290F414EA46b361ECFB6b430F98346CB593D02b9";
+const permissionAddress = "0x01d470c28822d3701Db6325333cEE9737524776E";
 const accessControllerAbi = [
   {
     inputs: [
@@ -81,7 +76,7 @@ describe("useIpAccount Functions", () => {
       functionName: "setPermission",
       args: [
         getAddress(ipId),
-        getAddress(process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex),
+        getAddress(process.env.TEST_WALLET_ADDRESS as Hex),
         getAddress(coreMetadataModuleAddress),
         toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         AccessPermission.ALLOW,
@@ -97,49 +92,6 @@ describe("useIpAccount Functions", () => {
           value: 0,
           data,
           ipId: ipId,
-        })
-      ).resolves.toEqual(
-        expect.objectContaining({
-          txHash: expect.any(String),
-        })
-      );
-    });
-  });
-
-  it("should success when executeWithSig setting permission", async () => {
-    const state = await ipAccountHook.getIpAccountNonce(ipId);
-    const expectedState = state + 1n;
-    const deadline = Date.now() + 60000;
-    const signature = await getPermissionSignature({
-      ipId,
-      wallet: walletClient,
-      permissions: [
-        {
-          ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
-          to: coreMetadataModuleAddress,
-          permission: AccessPermission.ALLOW,
-          func: "function setAll(address,string,bytes32,bytes32)",
-        },
-      ],
-      nonce: expectedState,
-
-      chainId: 11155111n,
-      deadline: BigInt(deadline),
-    });
-    await act(async () => {
-      await expect(
-        ipAccountHook.executeWithSig({
-          ipId: ipId,
-          value: 0,
-          to: permissionAddress,
-          data: data,
-          deadline: deadline,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Hex,
-          signature: signature,
-          txOptions: {
-            waitForTransaction: true,
-          },
         })
       ).resolves.toEqual(
         expect.objectContaining({

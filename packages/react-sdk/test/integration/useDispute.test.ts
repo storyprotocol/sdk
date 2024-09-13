@@ -6,7 +6,7 @@ import { useIpAsset } from "../../src";
 import Wrapper from "./utils/Wrapper";
 import { mockERC721Address, getTokenId } from "./utils/util";
 
-const arbitrationPolicyAddress = "0xc07Bc791CF55E718BA7D70cE650B3152BbE3325e";
+const arbitrationPolicyAddress = "0xcaEC2bD1B1fD57bC47357F688f97d57387E68E25";
 describe("useDispute Functions", () => {
   const {
     result: { current: disputeHook },
