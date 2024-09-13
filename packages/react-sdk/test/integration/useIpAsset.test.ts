@@ -10,7 +10,12 @@ import {
 } from "../../src";
 import { useIpAsset } from "../../src";
 import Wrapper from "./utils/Wrapper";
-import { mockERC721Address, getTokenId, mockERC20Address } from "./utils/util";
+import {
+  mockERC721Address,
+  getTokenId,
+  mockERC20Address,
+  mintBySpg,
+} from "./utils/util";
 
 describe("useIpAsset Functions", () => {
   const {
@@ -40,6 +45,9 @@ describe("useIpAsset Functions", () => {
       childIpId = result.ipId!;
     });
     await waitFor(() => {
+      expect(result).toMatchObject({
+        ipId: expect.any(String),
+      });
       expect(result).toEqual(
         expect.objectContaining({
           ipId: expect.any(String),
@@ -56,9 +64,9 @@ describe("useIpAsset Functions", () => {
         ipAssetHook.register({
           nftContract: mockERC721Address,
           tokenId: tokenId!,
-          metadata: {
-            metadataURI: "test-uri",
-            metadataHash: toHex("test-metadata-hash", { size: 32 }),
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
           txOptions: {
@@ -183,15 +191,15 @@ describe("useIpAsset Functions", () => {
       });
     });
     describe("should success when mint and register ip and attach pil terms", () => {
-      it.skip("Non-Commercial Remix", async () => {
+      it("Non-Commercial Remix", async () => {
         await act(async () => {
           await expect(
             ipAssetHook.mintAndRegisterIpAssetWithPilTerms({
               nftContract,
               pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
-              metadata: {
-                metadataURI: "test-uri",
-                metadataHash: toHex("test-metadata-hash", { size: 32 }),
+              ipMetadata: {
+                ipMetadataURI: "test-uri",
+                ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
                 nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
               },
               txOptions: {
@@ -216,9 +224,9 @@ describe("useIpAsset Functions", () => {
               commercialRevShare: 10,
               mintingFee: "100",
               currency: mockERC20Address,
-              metadata: {
-                metadataURI: "test-uri",
-                metadataHash: toHex("test-metadata-hash", { size: 32 }),
+              ipMetadata: {
+                ipMetadataURI: "test-uri",
+                ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
                 nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
               },
               txOptions: {
@@ -243,9 +251,9 @@ describe("useIpAsset Functions", () => {
               commercialRevShare: 10,
               mintingFee: "100",
               currency: mockERC20Address,
-              metadata: {
-                metadataURI: "test-uri",
-                metadataHash: toHex("test-metadata-hash", { size: 32 }),
+              ipMetadata: {
+                ipMetadataURI: "test-uri",
+                ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
                 nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
               },
               txOptions: {
@@ -262,8 +270,8 @@ describe("useIpAsset Functions", () => {
       });
     });
 
-    it.skip("should success when register derivative ip", async () => {
-      const tokenChildId = await getTokenId(nftContract);
+    it("should success when register derivative ip", async () => {
+      const tokenChildId = await mintBySpg(nftContract, "test-metadata");
       let createIpAssetWithPilTermsResponse: CreateIpAssetWithPilTermsResponse;
       await act(async () => {
         createIpAssetWithPilTermsResponse =
@@ -300,8 +308,8 @@ describe("useIpAsset Functions", () => {
       });
     });
 
-    it.skip("should success when register ip and attach pil terms", async () => {
-      const tokenId = await getTokenId(nftContract);
+    it("should success when register ip and attach pil terms", async () => {
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
       const deadline = 1000n;
       await act(async () => {
         await expect(
@@ -309,7 +317,9 @@ describe("useIpAsset Functions", () => {
             nftContract: nftContract,
             tokenId: tokenId!,
             deadline,
-            pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
+            pilType: PIL_TYPE.COMMERCIAL_USE,
+            mintingFee: "100",
+            currency: mockERC20Address,
             txOptions: {
               waitForTransaction: true,
             },

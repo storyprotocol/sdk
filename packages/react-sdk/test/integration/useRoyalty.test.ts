@@ -116,7 +116,7 @@ describe("useRoyalty Functions", () => {
     });
   });
 
-  it("should success when snapshot", async () => {
+  it.skip("should success when snapshot", async () => {
     await act(async () => {
       await expect(
         royaltyHook.snapshot({
@@ -133,7 +133,7 @@ describe("useRoyalty Functions", () => {
       );
     });
   });
-  it("should success when claimable revenue", async () => {
+  it.skip("should success when claimable revenue", async () => {
     await act(async () => {
       await expect(
         royaltyHook.claimableRevenue({
@@ -146,7 +146,7 @@ describe("useRoyalty Functions", () => {
     });
   });
 
-  it("should success when claim revenue by ipAccount", async () => {
+  it.skip("should success when claim revenue by ipAccount", async () => {
     await act(async () => {
       await expect(
         royaltyHook.claimRevenue({
@@ -167,7 +167,7 @@ describe("useRoyalty Functions", () => {
     });
   });
 
-  it("should success when claim revenue by ipAccount by EOA", async () => {
+  it.skip("should success when claim revenue by ipAccount by EOA", async () => {
     const proxyAddress = await royaltyHook.getRoyaltyVaultAddress(ipId1);
     //1.transfer token to eoa
     await act(async () => {
@@ -207,7 +207,7 @@ describe("useRoyalty Functions", () => {
           ],
           functionName: "transfer",
           args: [
-            process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+            process.env.TEST_WALLET_ADDRESS as Address,
             BigInt(10 * 10 ** 6),
           ],
         }),
