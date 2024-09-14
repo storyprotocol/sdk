@@ -25,8 +25,6 @@ import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 const useIpAsset = () => {
   const client = useStoryContext();
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
-    generateCreatorMetadata: false,
-    generateIpMetadata: false,
     register: false,
     registerDerivative: false,
     registerDerivativeWithLicenseTokens: false,
@@ -36,8 +34,6 @@ const useIpAsset = () => {
     mintAndRegisterIpAndMakeDerivative: false,
   });
   const [errors, setErrors] = useState<Record<string, string | null>>({
-    generateCreatorMetadata: null,
-    generateIpMetadata: null,
     register: null,
     registerDerivative: null,
     registerDerivativeWithLicenseTokens: null,
