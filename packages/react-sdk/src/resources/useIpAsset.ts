@@ -20,13 +20,11 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
-import { handleError } from "../util";
+import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
 const useIpAsset = () => {
   const client = useStoryContext();
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
-    generateCreatorMetadata: false,
-    generateIpMetadata: false,
     register: false,
     registerDerivative: false,
     registerDerivativeWithLicenseTokens: false,
@@ -36,8 +34,6 @@ const useIpAsset = () => {
     mintAndRegisterIpAndMakeDerivative: false,
   });
   const [errors, setErrors] = useState<Record<string, string | null>>({
-    generateCreatorMetadata: null,
-    generateIpMetadata: null,
     register: null,
     registerDerivative: null,
     registerDerivativeWithLicenseTokens: null,
@@ -64,12 +60,7 @@ const useIpAsset = () => {
   const generateCreatorMetadata = (
     param: GenerateCreatorMetadataParam
   ): IpCreator => {
-    try {
-      return client.ipAsset.generateCreatorMetadata(param);
-    } catch (e) {
-      const errorMessage = handleError(e);
-      throw new Error(errorMessage);
-    }
+    return client.ipAsset.generateCreatorMetadata(param);
   };
 
   /**
@@ -112,12 +103,7 @@ const useIpAsset = () => {
    * @returns An `IpMetadata` object containing the provided details and any additional properties.
    */
   const generateIpMetadata = (param: GenerateIpMetadataParam): IpMetadata => {
-    try {
-      return client.ipAsset.generateIpMetadata(param);
-    } catch (e) {
-      const errorMessage = handleError(e);
-      throw new Error(errorMessage);
-    }
+    return client.ipAsset.generateIpMetadata(param);
   };
 
   /**
@@ -135,22 +121,15 @@ const useIpAsset = () => {
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
-  const register = async (
-    request: RegisterRequest
-  ): Promise<RegisterIpResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, register: true }));
-      setErrors((prev) => ({ ...prev, register: null }));
-      const response = await client.ipAsset.register(request);
-      setLoadings((prev) => ({ ...prev, register: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, register: errorMessage }));
-      setLoadings((prev) => ({ ...prev, register: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const register = withLoadingErrorHandling<
+    RegisterRequest,
+    RegisterIpResponse
+  >(
+    "register",
+    client.ipAsset.register.bind(client.ipAsset),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Registers a derivative directly with parent IP&#39;s license terms, without needing license tokens,
@@ -165,22 +144,15 @@ const useIpAsset = () => {
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  const registerDerivative = async (
-    request: RegisterDerivativeRequest
-  ): Promise<RegisterDerivativeResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, registerDerivative: true }));
-      setErrors((prev) => ({ ...prev, registerDerivative: null }));
-      const response = await client.ipAsset.registerDerivative(request);
-      setLoadings((prev) => ({ ...prev, registerDerivative: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, registerDerivative: errorMessage }));
-      setLoadings((prev) => ({ ...prev, registerDerivative: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const registerDerivative = withLoadingErrorHandling<
+    RegisterDerivativeRequest,
+    RegisterDerivativeResponse
+  >(
+    "registerDerivative",
+    client.ipAsset.registerDerivative.bind(client.ipAsset),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Registers a derivative with license tokens.
@@ -193,39 +165,15 @@ const useIpAsset = () => {
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  const registerDerivativeWithLicenseTokens = async (
-    request: RegisterDerivativeWithLicenseTokensRequest
-  ): Promise<RegisterDerivativeWithLicenseTokensResponse> => {
-    try {
-      setLoadings((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: true,
-      }));
-      setErrors((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: null,
-      }));
-      const response = await client.ipAsset.registerDerivativeWithLicenseTokens(
-        request
-      );
-      setLoadings((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: false,
-      }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        registerDerivativeWithLicenseTokens: false,
-      }));
-      throw new Error(errorMessage);
-    }
-  };
+  const registerDerivativeWithLicenseTokens = withLoadingErrorHandling<
+    RegisterDerivativeWithLicenseTokensRequest,
+    RegisterDerivativeWithLicenseTokensResponse
+  >(
+    "registerDerivativeWithLicenseTokens",
+    client.ipAsset.registerDerivativeWithLicenseTokens.bind(client.ipAsset),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Mint an NFT from a collection and register it as an IP.
@@ -246,39 +194,15 @@ const useIpAsset = () => {
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
-  const mintAndRegisterIpAssetWithPilTerms = async (
-    request: CreateIpAssetWithPilTermsRequest
-  ): Promise<CreateIpAssetWithPilTermsResponse> => {
-    try {
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: true,
-      }));
-      setErrors((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: null,
-      }));
-      const response = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms(
-        request
-      );
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: false,
-      }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAssetWithPilTerms: false,
-      }));
-      throw new Error(errorMessage);
-    }
-  };
+  const mintAndRegisterIpAssetWithPilTerms = withLoadingErrorHandling<
+    CreateIpAssetWithPilTermsRequest,
+    CreateIpAssetWithPilTermsResponse
+  >(
+    "mintAndRegisterIpAssetWithPilTerms",
+    client.ipAsset.mintAndRegisterIpAssetWithPilTerms.bind(client.ipAsset),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.R.
@@ -299,27 +223,15 @@ const useIpAsset = () => {
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, License Terms Id if waitForTxn is set to true.
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
-  const registerIpAndAttachPilTerms = async (
-    request: RegisterIpAndAttachPilTermsRequest
-  ): Promise<RegisterIpAndAttachPilTermsResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: true }));
-      setErrors((prev) => ({ ...prev, registerIpAndAttachPilTerms: null }));
-      const response = await client.ipAsset.registerIpAndAttachPilTerms(
-        request
-      );
-      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerIpAndAttachPilTerms: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, registerIpAndAttachPilTerms: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const registerIpAndAttachPilTerms = withLoadingErrorHandling<
+    RegisterIpAndAttachPilTermsRequest,
+    RegisterIpAndAttachPilTermsResponse
+  >(
+    "registerIpAndAttachPilTerms",
+    client.ipAsset.registerIpAndAttachPilTerms.bind(client.ipAsset),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Register the given NFT as a derivative IP with metadata without using license tokens.
@@ -340,22 +252,15 @@ const useIpAsset = () => {
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
-  const registerDerivativeIp = async (
-    request: RegisterIpAndMakeDerivativeRequest
-  ): Promise<RegisterIpAndMakeDerivativeResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, registerDerivativeIp: true }));
-      setErrors((prev) => ({ ...prev, registerDerivativeIp: null }));
-      const response = await client.ipAsset.registerDerivativeIp(request);
-      setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, registerDerivativeIp: errorMessage }));
-      setLoadings((prev) => ({ ...prev, registerDerivativeIp: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const registerDerivativeIp = withLoadingErrorHandling<
+    RegisterIpAndMakeDerivativeRequest,
+    RegisterIpAndMakeDerivativeResponse
+  >(
+    "registerDerivativeIp",
+    client.ipAsset.registerDerivativeIp.bind(client.ipAsset),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
@@ -375,39 +280,15 @@ const useIpAsset = () => {
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
-  const mintAndRegisterIpAndMakeDerivative = async (
-    request: MintAndRegisterIpAndMakeDerivativeRequest
-  ): Promise<RegisterDerivativeResponse> => {
-    try {
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAndMakeDerivative: true,
-      }));
-      setErrors((prev) => ({
-        ...prev,
-        mintAndRegisterIpAndMakeDerivative: null,
-      }));
-      const response = await client.ipAsset.mintAndRegisterIpAndMakeDerivative(
-        request
-      );
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAndMakeDerivative: false,
-      }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        mintAndRegisterIpAndMakeDerivative: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        mintAndRegisterIpAndMakeDerivative: false,
-      }));
-      throw new Error(errorMessage);
-    }
-  };
+  const mintAndRegisterIpAndMakeDerivative = withLoadingErrorHandling<
+    MintAndRegisterIpAndMakeDerivativeRequest,
+    RegisterDerivativeResponse
+  >(
+    "mintAndRegisterIpAndMakeDerivative",
+    client.ipAsset.mintAndRegisterIpAndMakeDerivative.bind(client.ipAsset),
+    setLoadings,
+    setErrors
+  );
 
   return {
     loadings,
