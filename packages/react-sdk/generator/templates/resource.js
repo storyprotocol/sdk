@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const methodTemplate = `<%=comments%><% if(method.isAsync){ %> 
   const <%=method.name %> = withLoadingErrorHandling<<%=method.requests[0].type%>,<%- method.responseType %>>('<%=method.name %>', client.<%= fileName%>.<%=method.name %>.bind(client.<%= fileName%>), setLoadings, setErrors); 
 <% } else { %>
