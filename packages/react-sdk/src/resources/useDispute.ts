@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
-import { handleError } from "../util";
+import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
 const useDispute = () => {
   const client = useStoryContext();
@@ -40,22 +40,15 @@ const useDispute = () => {
    * @calls raiseDispute(address _targetIpId, string memory _linkToDisputeEvidence, bytes32 _targetTag, bytes calldata _data) external nonReentrant returns (uint256) {
    * @emits DisputeRaised (disputeId_, targetIpId, msg.sender, arbitrationPolicy, linkToDisputeEvidence, targetTag, calldata);
    */
-  const raiseDispute = async (
-    request: RaiseDisputeRequest
-  ): Promise<RaiseDisputeResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, raiseDispute: true }));
-      setErrors((prev) => ({ ...prev, raiseDispute: null }));
-      const response = await client.dispute.raiseDispute(request);
-      setLoadings((prev) => ({ ...prev, raiseDispute: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, raiseDispute: errorMessage }));
-      setLoadings((prev) => ({ ...prev, raiseDispute: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const raiseDispute = withLoadingErrorHandling<
+    RaiseDisputeRequest,
+    RaiseDisputeResponse
+  >(
+    "raiseDispute",
+    client.dispute.raiseDispute.bind(client.dispute),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Cancels an ongoing dispute
@@ -70,22 +63,15 @@ const useDispute = () => {
    * @calls cancelDispute(uint256 _disputeId, bytes calldata _data) external nonReentrant {
    * @emits DisputeCancelled (_disputeId, _data);
    */
-  const cancelDispute = async (
-    request: CancelDisputeRequest
-  ): Promise<CancelDisputeResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, cancelDispute: true }));
-      setErrors((prev) => ({ ...prev, cancelDispute: null }));
-      const response = await client.dispute.cancelDispute(request);
-      setLoadings((prev) => ({ ...prev, cancelDispute: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, cancelDispute: errorMessage }));
-      setLoadings((prev) => ({ ...prev, cancelDispute: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const cancelDispute = withLoadingErrorHandling<
+    CancelDisputeRequest,
+    CancelDisputeResponse
+  >(
+    "cancelDispute",
+    client.dispute.cancelDispute.bind(client.dispute),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Resolves a dispute after it has been judged
@@ -98,22 +84,15 @@ const useDispute = () => {
    * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
    * @emits DisputeResolved (_disputeId)
    */
-  const resolveDispute = async (
-    request: ResolveDisputeRequest
-  ): Promise<ResolveDisputeResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, resolveDispute: true }));
-      setErrors((prev) => ({ ...prev, resolveDispute: null }));
-      const response = await client.dispute.resolveDispute(request);
-      setLoadings((prev) => ({ ...prev, resolveDispute: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, resolveDispute: errorMessage }));
-      setLoadings((prev) => ({ ...prev, resolveDispute: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const resolveDispute = withLoadingErrorHandling<
+    ResolveDisputeRequest,
+    ResolveDisputeResponse
+  >(
+    "resolveDispute",
+    client.dispute.resolveDispute.bind(client.dispute),
+    setLoadings,
+    setErrors
+  );
 
   return {
     loadings,

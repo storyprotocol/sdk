@@ -104,6 +104,9 @@ files.forEach((file, index) => {
   fileNames.push(fileName);
   const methods = visit(path.resolve(resourcesFolder, file));
   const methodNames = methods.map((method) => method.name);
+  const asyncMethods = methods
+    .filter((method) => method.isAsync)
+    .map((method) => method.name);
   const types = methods.reduce(
     (acc, curr) =>
       acc.concat(
@@ -125,7 +128,7 @@ files.forEach((file, index) => {
     ejs.render(resourceTemplate.startTemplate, {
       types: [filteredTypes],
       name: fileName,
-      methodNames,
+      methodNames: asyncMethods,
       viemTypes: [...new Set(types.filter((type) => isViemType(type)))],
     })
   );
@@ -139,7 +142,10 @@ files.forEach((file, index) => {
 
   sources = sources.concat(
     methodTemplates,
-    ejs.render(resourceTemplate.endTemplate, { methodNames, name: fileName })
+    ejs.render(resourceTemplate.endTemplate, {
+      methodNames,
+      name: fileName,
+    })
   );
   fs.writeFileSync(`src/resources/use${fileName}.ts`, sources.join("\n"));
 });
