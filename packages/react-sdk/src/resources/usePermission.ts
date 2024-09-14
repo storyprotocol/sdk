@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
-import { handleError } from "../util";
+import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
 const usePermission = () => {
   const client = useStoryContext();
@@ -48,22 +48,15 @@ const usePermission = () => {
    * @returns A Promise that resolves to an object containing the transaction hash.
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
-  const setPermission = async (
-    request: SetPermissionsRequest
-  ): Promise<SetPermissionsResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, setPermission: true }));
-      setErrors((prev) => ({ ...prev, setPermission: null }));
-      const response = await client.permission.setPermission(request);
-      setLoadings((prev) => ({ ...prev, setPermission: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, setPermission: errorMessage }));
-      setLoadings((prev) => ({ ...prev, setPermission: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const setPermission = withLoadingErrorHandling<
+    SetPermissionsRequest,
+    SetPermissionsResponse
+  >(
+    "setPermission",
+    client.permission.setPermission.bind(client.permission),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Specific permission overrides wildcard permission with signature.
@@ -78,27 +71,15 @@ const usePermission = () => {
    * @returns A Promise that resolves to an object containing the transaction hash.
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
-  const createSetPermissionSignature = async (
-    request: CreateSetPermissionSignatureRequest
-  ): Promise<SetPermissionsResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, createSetPermissionSignature: true }));
-      setErrors((prev) => ({ ...prev, createSetPermissionSignature: null }));
-      const response = await client.permission.createSetPermissionSignature(
-        request
-      );
-      setLoadings((prev) => ({ ...prev, createSetPermissionSignature: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        createSetPermissionSignature: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, createSetPermissionSignature: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const createSetPermissionSignature = withLoadingErrorHandling<
+    CreateSetPermissionSignatureRequest,
+    SetPermissionsResponse
+  >(
+    "createSetPermissionSignature",
+    client.permission.createSetPermissionSignature.bind(client.permission),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Sets permission to a signer for all functions across all modules.
@@ -110,22 +91,15 @@ const usePermission = () => {
    * @returns A Promise that resolves to an object containing the transaction hash
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
-  const setAllPermissions = async (
-    request: SetAllPermissionsRequest
-  ): Promise<SetPermissionsResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, setAllPermissions: true }));
-      setErrors((prev) => ({ ...prev, setAllPermissions: null }));
-      const response = await client.permission.setAllPermissions(request);
-      setLoadings((prev) => ({ ...prev, setAllPermissions: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, setAllPermissions: errorMessage }));
-      setLoadings((prev) => ({ ...prev, setAllPermissions: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const setAllPermissions = withLoadingErrorHandling<
+    SetAllPermissionsRequest,
+    SetPermissionsResponse
+  >(
+    "setAllPermissions",
+    client.permission.setAllPermissions.bind(client.permission),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Sets a batch of permissions in a single transaction.
@@ -141,22 +115,15 @@ const usePermission = () => {
    * @returns A Promise that resolves to an object containing the transaction hash
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
-  const setBatchPermissions = async (
-    request: SetBatchPermissionsRequest
-  ): Promise<SetPermissionsResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, setBatchPermissions: true }));
-      setErrors((prev) => ({ ...prev, setBatchPermissions: null }));
-      const response = await client.permission.setBatchPermissions(request);
-      setLoadings((prev) => ({ ...prev, setBatchPermissions: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, setBatchPermissions: errorMessage }));
-      setLoadings((prev) => ({ ...prev, setBatchPermissions: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const setBatchPermissions = withLoadingErrorHandling<
+    SetBatchPermissionsRequest,
+    SetPermissionsResponse
+  >(
+    "setBatchPermissions",
+    client.permission.setBatchPermissions.bind(client.permission),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Sets a batch of permissions in a single transaction with signature.
@@ -172,36 +139,15 @@ const usePermission = () => {
    * @returns A Promise that resolves to an object containing the transaction hash.
    * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
    */
-  const createBatchPermissionSignature = async (
-    request: CreateBatchPermissionSignatureRequest
-  ): Promise<SetPermissionsResponse> => {
-    try {
-      setLoadings((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: true,
-      }));
-      setErrors((prev) => ({ ...prev, createBatchPermissionSignature: null }));
-      const response = await client.permission.createBatchPermissionSignature(
-        request
-      );
-      setLoadings((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: false,
-      }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        createBatchPermissionSignature: false,
-      }));
-      throw new Error(errorMessage);
-    }
-  };
+  const createBatchPermissionSignature = withLoadingErrorHandling<
+    CreateBatchPermissionSignatureRequest,
+    SetPermissionsResponse
+  >(
+    "createBatchPermissionSignature",
+    client.permission.createBatchPermissionSignature.bind(client.permission),
+    setLoadings,
+    setErrors
+  );
 
   return {
     loadings,

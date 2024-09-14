@@ -5,7 +5,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
-import { handleError } from "../util";
+import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
 const useNftClient = () => {
   const client = useStoryContext();
@@ -29,22 +29,15 @@ const useNftClient = () => {
    * @returns A Promise that resolves to a CreateNFTCollectionResponse containing the transaction hash and collection address.
    * @emits CollectionCreated (nftContract);
    */
-  const createNFTCollection = async (
-    request: CreateNFTCollectionRequest
-  ): Promise<CreateNFTCollectionResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, createNFTCollection: true }));
-      setErrors((prev) => ({ ...prev, createNFTCollection: null }));
-      const response = await client.nftClient.createNFTCollection(request);
-      setLoadings((prev) => ({ ...prev, createNFTCollection: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, createNFTCollection: errorMessage }));
-      setLoadings((prev) => ({ ...prev, createNFTCollection: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const createNFTCollection = withLoadingErrorHandling<
+    CreateNFTCollectionRequest,
+    CreateNFTCollectionResponse
+  >(
+    "createNFTCollection",
+    client.nftClient.createNFTCollection.bind(client.nftClient),
+    setLoadings,
+    setErrors
+  );
 
   return {
     loadings,
