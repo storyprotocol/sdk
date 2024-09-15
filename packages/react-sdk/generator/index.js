@@ -1,9 +1,11 @@
-const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
+const { exec } = require("child_process");
+
+const ejs = require("ejs");
 const ts = require("typescript");
 const cliProgress = require("cli-progress");
-const { exec } = require("child_process");
+
 const resourcesFolder = path.resolve(__dirname, "../../core-sdk/src/resources");
 const resourceTemplate = require("./templates/resource");
 const indexTemplate = require("./templates/index");
@@ -26,6 +28,10 @@ const isPrimitiveType = (type) => {
 const isViemType = (type) => {
   return ["Hex", "Address"].includes(type);
 };
+
+const isEnclosedInCurlyBraces = (type) => {
+  return type.slice(0, 1) === "{" && type.slice(-1) === "}";
+};
 const visit = (file) => {
   let program = ts.createProgram([file], { allowJs: true });
   const sourceFile = program.getSourceFile(file);
@@ -44,6 +50,9 @@ const visit = (file) => {
           ts.isIdentifier(member.name)
         ) {
           const requests = [];
+          const isAsync = member.modifiers?.some(
+            (modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword
+          );
           program.getTypeChecker().getSignatureFromDeclaration(member);
           member.parameters.forEach((parameter) => {
             requests.push({
@@ -58,12 +67,14 @@ const visit = (file) => {
               ?.getText()
               .replace("Promise<", "")
               .replace(">", ""),
+            isAsync,
             comments:
               ts
                 .getLeadingCommentRanges(sourceFile.text, member.pos)
                 ?.map((range) =>
                   sourceFile.text.substring(range.pos, range.end).trim()
                 ) || [],
+            defaultValues: undefined, // Get default value,
           };
           publicMethods.push(method);
         }
@@ -72,6 +83,7 @@ const visit = (file) => {
   });
   return publicMethods;
 };
+
 let fileNames = [];
 let exportTypes = [];
 const files = fs.readdirSync(resourcesFolder);
@@ -85,6 +97,9 @@ files.forEach((file, index) => {
   fileNames.push(fileName);
   const methods = visit(path.resolve(resourcesFolder, file));
   const methodNames = methods.map((method) => method.name);
+  const asyncMethods = methods
+    .filter((method) => method.isAsync)
+    .map((method) => method.name);
   const types = methods.reduce(
     (acc, curr) =>
       acc.concat(
@@ -98,6 +113,7 @@ files.forEach((file, index) => {
       types
         .filter((type) => !isPrimitiveType(type))
         .filter((type) => !isViemType(type))
+        .filter((type) => !isEnclosedInCurlyBraces(type))
     ),
   ];
   exportTypes.push(...filteredTypes);
@@ -105,7 +121,7 @@ files.forEach((file, index) => {
     ejs.render(resourceTemplate.startTemplate, {
       types: [filteredTypes],
       name: fileName,
-      methodNames,
+      methodNames: asyncMethods,
       viemTypes: [...new Set(types.filter((type) => isViemType(type)))],
     })
   );
@@ -119,7 +135,10 @@ files.forEach((file, index) => {
 
   sources = sources.concat(
     methodTemplates,
-    ejs.render(resourceTemplate.endTemplate, { methodNames, name: fileName })
+    ejs.render(resourceTemplate.endTemplate, {
+      methodNames,
+      name: fileName,
+    })
   );
   fs.writeFileSync(`src/resources/use${fileName}.ts`, sources.join("\n"));
 });

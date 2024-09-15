@@ -2,6 +2,11 @@ const indexTemplate = `
 export { StoryProvider } from "./StoryProtocolContext";
 export { getPermissionSignature, AccessPermission, PIL_TYPE, } from "@story-protocol/core-sdk";
 export type { PermissionSignatureRequest, StoryConfig, SupportedChainIds,
+    IpRelationship,
+    IpAttribute,
+    IpCreatorSocial,
+    IpMedia,
+    IPRobotTerms,
     <%types.forEach((type,index)=>{%>
     <%=type%><%=index === types.length - 1 ? '' : ','%>
         <%})%>
