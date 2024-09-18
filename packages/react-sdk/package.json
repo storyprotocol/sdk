@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/react-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The Story Protocol React SDK",
   "main": "dist/story-protocol-react-sdk.cjs.js",
   "module": "dist/story-protocol-react-sdk.esm.js",
@@ -62,7 +62,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@story-protocol/core-sdk": "1.0.0-rc.15",
+    "@story-protocol/core-sdk": "1.0.0-rc.22",
     "react": "^18.3.1",
     "viem": "^2.8.12"
   },

@@ -8,8 +8,7 @@ type Props = { children: ReactNode };
 const Wrapper = ({ children }: Props) => (
   <StoryProvider
     config={{
-      transport: http("http://localhost:8545"),
-      // eslint-disable-next-line turbo/no-undeclared-env-vars
+      transport: http("https://testnet.storyrpc.io"),
       account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY! as Address),
     }}
   >
