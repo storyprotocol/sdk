@@ -1,7 +1,8 @@
 import { renderHook } from "@testing-library/react";
+import { act } from "react";
+
 import { useNftClient } from "../../src";
 import Wrapper from "./utils/Wrapper";
-import { act } from "react";
 
 describe("useNftClient Functions", () => {
   const {

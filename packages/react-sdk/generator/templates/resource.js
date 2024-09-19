@@ -1,21 +1,14 @@
-const methodTemplate = `<%=comments%>\nconst <%=method.name %> = async (<% method.requests.forEach((item, index)=> { %>
-    <%= item.name %>: <%= item.type %><%= index === method.requests.length - 1 ? '' : ',' %>
-  <% }); %>): Promise<<%- method.responseType %>> => {
-    try {
-      setLoadings((prev) => ({ ...prev, <%=method.name %>: true }));
-      setErrors((prev) => ({ ...prev, <%=method.name %>: null }));
-      const response = await client.<%= fileName%>.<%=method.name %>(<% method.requests.forEach((item,index)=>{%>
-        <%=item.name %><%=index === method.requests.length - 1 ? '' : ',' %>
-     <% })%>);
-      setLoadings((prev ) => ({ ...prev, <%=method.name %>: false }));
-      return response;
-    }catch(e){
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, <%=method.name %>: errorMessage }));
-      setLoadings((prev) => ({ ...prev, <%=method.name %>: false }));
-      throw new Error(errorMessage);
-    }
+const methodTemplate = `<%=comments%><% if(method.isAsync){ %> 
+  const <%=method.name %> = withLoadingErrorHandling<<%=method.requests[0].type%>,<%- method.responseType %>>('<%=method.name %>', client.<%= fileName%>.<%=method.name %>.bind(client.<%= fileName%>), setLoadings, setErrors); 
+<% } else { %>
+  const <%=method.name %> =(<% method.requests.forEach((item, index)=> { %>
+    <%= item.name||"request" %>: <%= item.type %><%= index === method.requests.length - 1 ? '' : ',' %>
+  <% }); %>): <%- method.responseType %>=> {
+  return client.<%= fileName%>.<%=method.name %>(<% method.requests.forEach((item,index)=>{%>
+    <%=item.name||"request" %><%=index === method.requests.length - 1 ? '' : ',' %>
+    <% })%>);
   };
+<% } %>
   `;
 
 const startTemplate = `import { <% types.forEach((type,index)=>{%>\n<%=type %><%= index===types.length-1?'':','%><%})%> 
@@ -27,7 +20,7 @@ const startTemplate = `import { <% types.forEach((type,index)=>{%>\n<%=type %><%
   
   import { useState } from "react";
   import { useStoryContext } from "../StoryProtocolContext";
-  import { handleError } from "../util";
+  import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
   const use<%=name %> = () => {
     const client = useStoryContext();
     const [loadings,setLoadings] = useState<Record<string,boolean>>({<% methodNames.forEach((name,index)=>{%><%=name %>: false<%=index === methodNames.length - 1 ? '' : ',' %> <%})%>});

@@ -33,7 +33,7 @@ describe("usePermission Functions", () => {
       await expect(
         permissionHook.setPermission({
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          signer: process.env.TEST_WALLET_ADDRESS as Address,
           to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
           permission: 1,
           txOptions: {
@@ -54,7 +54,7 @@ describe("usePermission Functions", () => {
       await expect(
         permissionHook.setAllPermissions({
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          signer: process.env.TEST_WALLET_ADDRESS as Address,
           permission: 1,
           txOptions: {
             waitForTransaction: true,
@@ -74,7 +74,7 @@ describe("usePermission Functions", () => {
       await expect(
         permissionHook.createSetPermissionSignature({
           ipId: ipId,
-          signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+          signer: process.env.TEST_WALLET_ADDRESS as Address,
           to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
           permission: 1,
           deadline: 60000n,
@@ -98,14 +98,14 @@ describe("usePermission Functions", () => {
           permissions: [
             {
               ipId: ipId,
-              signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+              signer: process.env.TEST_WALLET_ADDRESS as Address,
               to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
               permission: 1,
               func: "function setAll(address,string,bytes32,bytes32)",
             },
             {
               ipId: ipId,
-              signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+              signer: process.env.TEST_WALLET_ADDRESS as Address,
               to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
               permission: 1,
               func: "function freezeMetadata(address)",
@@ -132,14 +132,14 @@ describe("usePermission Functions", () => {
           permissions: [
             {
               ipId: ipId,
-              signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+              signer: process.env.TEST_WALLET_ADDRESS as Address,
               to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
               permission: 1,
               func: "function setAll(address,string,bytes32,bytes32)",
             },
             {
               ipId: ipId,
-              signer: process.env.SEPOLIA_TEST_WALLET_ADDRESS as Address,
+              signer: process.env.TEST_WALLET_ADDRESS as Address,
               to: "0x2ac240293f12032E103458451dE8A8096c5A72E8",
               permission: 1,
               func: "function freezeMetadata(address)",

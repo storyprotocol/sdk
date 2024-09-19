@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
-import { handleError } from "../util";
+import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
 const useLicense = () => {
   const client = useStoryContext();
@@ -37,69 +37,38 @@ const useLicense = () => {
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
    * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
-  const registerNonComSocialRemixingPIL = async (
-    request: RegisterNonComSocialRemixingPILRequest
-  ): Promise<RegisterPILResponse> => {
-    try {
-      setLoadings((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: true,
-      }));
-      setErrors((prev) => ({ ...prev, registerNonComSocialRemixingPIL: null }));
-      const response = await client.license.registerNonComSocialRemixingPIL(
-        request
-      );
-      setLoadings((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: false,
-      }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: errorMessage,
-      }));
-      setLoadings((prev) => ({
-        ...prev,
-        registerNonComSocialRemixingPIL: false,
-      }));
-      throw new Error(errorMessage);
-    }
-  };
+  const registerNonComSocialRemixingPIL = withLoadingErrorHandling<
+    RegisterNonComSocialRemixingPILRequest,
+    RegisterPILResponse
+  >(
+    "registerNonComSocialRemixingPIL",
+    client.license.registerNonComSocialRemixingPIL.bind(client.license),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Convenient function to register a PIL commercial use license to the registry.
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
-  const registerCommercialUsePIL = async (
-    request: RegisterCommercialUsePILRequest
-  ): Promise<RegisterPILResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: true }));
-      setErrors((prev) => ({ ...prev, registerCommercialUsePIL: null }));
-      const response = await client.license.registerCommercialUsePIL(request);
-      setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerCommercialUsePIL: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, registerCommercialUsePIL: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const registerCommercialUsePIL = withLoadingErrorHandling<
+    RegisterCommercialUsePILRequest,
+    RegisterPILResponse
+  >(
+    "registerCommercialUsePIL",
+    client.license.registerCommercialUsePIL.bind(client.license),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Convenient function to register a PIL commercial Remix license to the registry.
@@ -107,29 +76,19 @@ const useLicense = () => {
    *   @param request.mintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
-  const registerCommercialRemixPIL = async (
-    request: RegisterCommercialRemixPILRequest
-  ): Promise<RegisterPILResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: true }));
-      setErrors((prev) => ({ ...prev, registerCommercialRemixPIL: null }));
-      const response = await client.license.registerCommercialRemixPIL(request);
-      setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({
-        ...prev,
-        registerCommercialRemixPIL: errorMessage,
-      }));
-      setLoadings((prev) => ({ ...prev, registerCommercialRemixPIL: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const registerCommercialRemixPIL = withLoadingErrorHandling<
+    RegisterCommercialRemixPILRequest,
+    RegisterPILResponse
+  >(
+    "registerCommercialRemixPIL",
+    client.license.registerCommercialRemixPIL.bind(client.license),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Attaches license terms to an IP.
@@ -137,25 +96,18 @@ const useLicense = () => {
    *   @param request.ipId The address of the IP to which the license terms are attached.
    *   @param request.licenseTemplate The address of the license template.
    *   @param request.licenseTermsId The ID of the license terms.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
-  const attachLicenseTerms = async (
-    request: AttachLicenseTermsRequest
-  ): Promise<AttachLicenseTermsResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, attachLicenseTerms: true }));
-      setErrors((prev) => ({ ...prev, attachLicenseTerms: null }));
-      const response = await client.license.attachLicenseTerms(request);
-      setLoadings((prev) => ({ ...prev, attachLicenseTerms: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, attachLicenseTerms: errorMessage }));
-      setLoadings((prev) => ({ ...prev, attachLicenseTerms: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const attachLicenseTerms = withLoadingErrorHandling<
+    AttachLicenseTermsRequest,
+    AttachLicenseTermsResponse
+  >(
+    "attachLicenseTerms",
+    client.license.attachLicenseTerms.bind(client.license),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Mints license tokens for the license terms attached to an IP.
@@ -175,50 +127,34 @@ const useLicense = () => {
    *   @param request.licenseTermsId The ID of the license terms within the license template.
    *   @param request.amount The amount of license tokens to mint.
    *   @param request.receiver The address of the receiver.
-   *   @param request.txOptions [Optional] The transaction options.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional license token IDs if waitForTxn is set to true.
    * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
    */
-  const mintLicenseTokens = async (
-    request: MintLicenseTokensRequest
-  ): Promise<MintLicenseTokensResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, mintLicenseTokens: true }));
-      setErrors((prev) => ({ ...prev, mintLicenseTokens: null }));
-      const response = await client.license.mintLicenseTokens(request);
-      setLoadings((prev) => ({ ...prev, mintLicenseTokens: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, mintLicenseTokens: errorMessage }));
-      setLoadings((prev) => ({ ...prev, mintLicenseTokens: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const mintLicenseTokens = withLoadingErrorHandling<
+    MintLicenseTokensRequest,
+    MintLicenseTokensResponse
+  >(
+    "mintLicenseTokens",
+    client.license.mintLicenseTokens.bind(client.license),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Gets license terms of the given ID.
    * @param selectedLicenseTermsId The ID of the license terms.
    * @returns A Promise that resolves to an object containing the PILTerms associate with the given ID.
    */
-  const getLicenseTerms = async (
-    selectedLicenseTermsId: LicenseTermsId
-  ): Promise<PiLicenseTemplateGetLicenseTermsResponse> => {
-    try {
-      setLoadings((prev) => ({ ...prev, getLicenseTerms: true }));
-      setErrors((prev) => ({ ...prev, getLicenseTerms: null }));
-      const response = await client.license.getLicenseTerms(
-        selectedLicenseTermsId
-      );
-      setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
-      return response;
-    } catch (e) {
-      const errorMessage = handleError(e);
-      setErrors((prev) => ({ ...prev, getLicenseTerms: errorMessage }));
-      setLoadings((prev) => ({ ...prev, getLicenseTerms: false }));
-      throw new Error(errorMessage);
-    }
-  };
+  const getLicenseTerms = withLoadingErrorHandling<
+    LicenseTermsId,
+    PiLicenseTemplateGetLicenseTermsResponse
+  >(
+    "getLicenseTerms",
+    client.license.getLicenseTerms.bind(client.license),
+    setLoadings,
+    setErrors
+  );
 
   return {
     loadings,

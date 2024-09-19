@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useState } from "react";
 import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
 
 type Props = {
@@ -9,9 +9,13 @@ type Props = {
 const StoryContext = createContext<StoryClient>({} as StoryClient);
 
 const StoryProvider = ({ config, children }: Props) => {
-  const client = StoryClient.newClient(config);
+  const [client, setClient] = useState<StoryClient>();
+
+  if (!client) {
+    setClient(StoryClient.newClient(config));
+  }
   return (
-    <StoryContext.Provider value={client}>{children}</StoryContext.Provider>
+    <StoryContext.Provider value={client!}>{children}</StoryContext.Provider>
   );
 };
 const useStoryContext = (): StoryClient => {

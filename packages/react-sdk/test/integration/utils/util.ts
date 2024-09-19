@@ -5,33 +5,44 @@ import {
   createWalletClient,
   Hex,
   Address,
-  Chain,
+  defineChain,
 } from "viem";
-import { sepolia } from "viem/chains";
-import { SupportedChainIds } from "@story-protocol/core-sdk";
 
-export const RPC = "https://rpc.partner.testnet.storyprotocol.net";
-// export const RPC = "http://127.0.0.1:8545";
-export const mockERC721Address = "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F49";
-export const mockERC20Address = "0xB132A6B7AE652c974EE1557A3521D53d18F6739f";
+export const RPC = "https://testnet.storyrpc.io";
+export const mockERC721Address = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
+export const mockERC20Address = "0x91f6F05B08c16769d3c85867548615d270C42fC7";
+export const iliad = defineChain({
+  id: 15_13,
+  name: "iliad",
+  nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ["https://testnet.storyrpc.io"],
+      webSocket: ["wss://story-network.rpc.caldera.xyz/ws"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Explorer",
+      url: "https://testnet.storyscan.xyz",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      blockCreated: 5882,
+    },
+  },
+  testnet: true,
+});
 
-function chainStringToViemChain(chainId: SupportedChainIds): Chain {
-  switch (chainId) {
-    case "11155111":
-    case "sepolia":
-      return sepolia;
-    default:
-      throw new Error(`chainId ${chainId as string} not supported`);
-  }
-}
 const baseConfig = {
-  chain: chainStringToViemChain("sepolia"),
+  chain: iliad,
   transport: http(RPC),
 } as const;
 export const publicClient = createPublicClient(baseConfig);
 export const walletClient = createWalletClient({
   ...baseConfig,
-  // eslint-disable-next-line turbo/no-undeclared-env-vars
   account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
 });
 
@@ -50,10 +61,51 @@ export const getTokenId = async (
         type: "function",
       },
     ],
-    address: nftContract || mockERC721Address,
+    address: mockERC721Address,
     functionName: "mint",
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
-    args: [process.env.WALLET_PRIVATE_KEY as Hex],
+    args: [process.env.TEST_WALLET_ADDRESS as Hex],
+    account: walletClient.account,
+  });
+  const hash = await walletClient.writeContract(request);
+  const { logs } = await publicClient.waitForTransactionReceipt({
+    hash,
+  });
+  if (logs[0].topics[3]) {
+    return parseInt(logs[0].topics[3], 16);
+  }
+};
+
+export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
+  const { request } = await publicClient.simulateContract({
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "to",
+            type: "address",
+          },
+          {
+            internalType: "string",
+            name: "nftMetadata",
+            type: "string",
+          },
+        ],
+        name: "mint",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+    ],
+    address: nftContract,
+    functionName: "mint",
+    args: [process.env.TEST_WALLET_ADDRESS! as Address, nftMetadata],
     account: walletClient.account,
   });
   const hash = await walletClient.writeContract(request);
