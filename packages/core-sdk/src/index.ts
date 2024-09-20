@@ -87,6 +87,7 @@ export type {
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
   IpAccountStateResponse,
+  TokenResponse,
 } from "./types/resources/ipAccount";
 
 export type {

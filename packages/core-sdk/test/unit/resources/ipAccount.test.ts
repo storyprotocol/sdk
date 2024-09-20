@@ -71,6 +71,24 @@ describe("Test IPAccountClient", () => {
 
       expect(result.txHash).to.equal(txHash);
     });
+
+    it("should return encodedTxData when call execute successfully with encodedTxDataOnly", async () => {
+      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
+      IpAccountImplClient.prototype.executeEncode = sinon
+        .stub()
+        .returns("0x11111111111111111111111111111");
+      const result = await ipAccountClient.execute({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        to: zeroAddress,
+        value: 2,
+        data: "0x11111111111111111111111111111",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.equal("0x11111111111111111111111111111");
+    });
   });
 
   describe("Test executeWithSig", () => {
@@ -126,9 +144,39 @@ describe("Test IPAccountClient", () => {
 
       expect(result.txHash).to.equal(txHash);
     });
+
+    it("should return encodedTxData when call executeWithSig successfully with encodedTxDataOnly", async () => {
+      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+      IpAccountImplClient.prototype.executeWithSigEncode = sinon
+        .stub()
+        .returns("0x11111111111111111111111111111");
+      const result = await ipAccountClient.executeWithSig({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        to: zeroAddress,
+        value: 2,
+        data: "0x11111111111111111111111111111",
+        signer: zeroAddress,
+        deadline: 20,
+        signature: zeroAddress,
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.equal("0x11111111111111111111111111111");
+    });
   });
 
   describe("Test getIpAccountNonce", () => {
+    it("should throw invalid address error when call getIpAccountNonce given a wrong ipId", async () => {
+      try {
+        await ipAccountClient.getIpAccountNonce("0x123");
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to get the IP Account nonce: ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+        );
+      }
+    });
     it("should return the state of the IP Account", async () => {
       sinon
         .stub(IpAccountImplClient.prototype, "state")
@@ -137,6 +185,24 @@ describe("Test IPAccountClient", () => {
         "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       );
       expect(state).to.equal("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+    });
+  });
+
+  describe("Test getToken", () => {
+    it("should invalid address error error when call getToken given a wrong ipId", async () => {
+      try {
+        await ipAccountClient.getToken("0x123");
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to get the token: ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+        );
+      }
+    });
+
+    it("should return the token information when call getToken with correct args", async () => {
+      sinon.stub(IpAccountImplClient.prototype, "token").resolves([1513n, zeroAddress, 1n]);
+      const token = await ipAccountClient.getToken("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+      expect(token).to.deep.equal({ chainId: 1513n, tokenContract: zeroAddress, tokenId: 1n });
     });
   });
 });

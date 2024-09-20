@@ -54,4 +54,16 @@ describe("Ip Account functions", () => {
     });
     expect(response.txHash).to.be.a("string").and.not.empty;
   });
+
+  it("should not throw error when getIpAccountNonce", async () => {
+    const response = await client.ipAccount.getIpAccountNonce(ipId);
+    expect(response).to.be.a("string").and.not.empty;
+  });
+
+  it("should not throw error when call getToken", async () => {
+    const response = await client.ipAccount.getToken(ipId);
+    expect(response.chainId).to.be.a("bigint");
+    expect(response.tokenContract).to.be.a("string").and.not.empty;
+    expect(response.tokenId).to.be.a("bigint");
+  });
 });

@@ -33,3 +33,9 @@ export type IPAccountExecuteWithSigResponse = {
 };
 
 export type IpAccountStateResponse = Hex;
+
+export type TokenResponse = {
+  chainId: bigint;
+  tokenContract: Address;
+  tokenId: bigint;
+};
