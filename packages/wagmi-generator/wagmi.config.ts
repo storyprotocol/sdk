@@ -111,7 +111,7 @@ export default defineConfig(async () => {
     contracts: [],
     plugins: [
       optimizedBlockExplorer({
-        baseUrl: "https://testnet.storyscan.xyz",
+        baseUrl: "https://testnet.storyscan.xyz/api",
         name: "iliad",
         getAddress: await resolveProxyContracts({
           baseUrl: "https://testnet.storyrpc.io",
@@ -137,7 +137,7 @@ export default defineConfig(async () => {
             "raiseDispute",
             "resolveDispute",
           ],
-          IPAccountImpl: ["execute", "executeWithSig", "state"],
+          IPAccountImpl: ["execute", "executeWithSig", "state", "token"],
           IPAssetRegistry: [
             "IPRegistered",
             "ipId",
@@ -169,6 +169,7 @@ export default defineConfig(async () => {
             "registerDerivative",
             "getLicenseTerms",
             "LicenseTermsAttached",
+            "predictMintingLicenseFee",
           ],
           ModuleRegistry: ["isRegistered", "getDefaultLicenseTerms"],
           RoyaltyModule: ["payRoyaltyOnBehalf"],
