@@ -1,6 +1,6 @@
 export { StoryClient } from "./client";
 export { AddressZero, HashZero } from "./constants/common";
-
+export { iliad } from "./utils/chain";
 export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
