@@ -17,25 +17,49 @@ export type RegisterNonComSocialRemixingPILRequest = {
   txOptions?: TxOptions;
 };
 
-export type LicenseTerms = {
-  defaultMintingFee: bigint;
-  expiration: bigint;
-  commercialRevCeiling: bigint;
-  derivativeRevCeiling: bigint;
-  commercializerCheckerData: Address;
+/**
+ * This structure defines the terms for a Programmable IP License (PIL). These terms can be attached to IP Assets. The legal document of the PIL can be found in this repository.
+ * @interface LicenseTerms
+ **/
+export interface LicenseTerms {
+  /*Indicates whether the license is transferable or not.*/
   transferable: boolean;
+  /*The address of the royalty policy contract which required to StoryProtocol in advance.*/
   royaltyPolicy: Address;
+  /*The default minting fee to be paid when minting a license.*/
+  defaultMintingFee: bigint;
+  /*The expiration period of the license.*/
+  expiration: bigint;
+  /*Indicates whether the work can be used commercially or not.*/
   commercialUse: boolean;
+  /*Whether attribution is required when reproducing the work commercially or not.*/
   commercialAttribution: boolean;
+  /*Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.*/
   commercializerChecker: Address;
+  /*The data to be passed to the commercializer checker contract.*/
+  commercializerCheckerData: Address;
+  /*Percentage of revenue that must be shared with the licensor.*/
   commercialRevShare: number;
+  /*The maximum revenue that can be generated from the commercial use of the work.*/
+  commercialRevCeiling: bigint;
+  /*Indicates whether the licensee can create derivatives of his work or not.*/
   derivativesAllowed: boolean;
+  /*Indicates whether attribution is required for derivatives of the work or not.*/
   derivativesAttribution: boolean;
+  /*Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.*/
   derivativesApproval: boolean;
+  /*Indicates whether the licensee must license derivatives of the work under the same terms or not.*/
   derivativesReciprocal: boolean;
+  /*The maximum revenue that can be generated from the derivative use of the work.*/
+  derivativeRevCeiling: bigint;
+  /*The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.*/
   currency: Address;
+  /*The URI of the license terms, which can be used to fetch the offchain license terms.*/
   uri: string;
-};
+}
+export interface RegisterPILTermsRequest extends LicenseTerms {
+  txOptions?: TxOptions;
+}
 export type LicenseTermsIdResponse = bigint;
 
 export type RegisterPILResponse = {

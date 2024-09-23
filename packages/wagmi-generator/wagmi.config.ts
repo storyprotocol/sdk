@@ -172,7 +172,7 @@ export default defineConfig(async () => {
             "predictMintingLicenseFee",
           ],
           ModuleRegistry: ["isRegistered", "getDefaultLicenseTerms"],
-          RoyaltyModule: ["payRoyaltyOnBehalf"],
+          RoyaltyModule: ["payRoyaltyOnBehalf", "isWhitelistedRoyaltyPolicy","isWhitelistedRoyaltyToken"],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],
           SPG: [

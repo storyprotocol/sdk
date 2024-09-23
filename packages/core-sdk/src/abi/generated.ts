@@ -13646,6 +13646,28 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
 // Contract RoyaltyModule =============================================================
 
 /**
+ * RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest
+ *
+ * @param royaltyPolicy address
+ */
+export type RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest = {
+  royaltyPolicy: Address;
+};
+
+export type RoyaltyModuleIsWhitelistedRoyaltyPolicyResponse = boolean;
+
+/**
+ * RoyaltyModuleIsWhitelistedRoyaltyTokenRequest
+ *
+ * @param token address
+ */
+export type RoyaltyModuleIsWhitelistedRoyaltyTokenRequest = {
+  token: Address;
+};
+
+export type RoyaltyModuleIsWhitelistedRoyaltyTokenResponse = boolean;
+
+/**
  * RoyaltyModulePayRoyaltyOnBehalfRequest
  *
  * @param receiverIpId address
@@ -13661,16 +13683,60 @@ export type RoyaltyModulePayRoyaltyOnBehalfRequest = {
 };
 
 /**
- * contract RoyaltyModule write method
+ * contract RoyaltyModule readonly method
  */
-export class RoyaltyModuleClient {
-  protected readonly wallet: SimpleWalletClient;
+export class RoyaltyModuleReadOnlyClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(royaltyModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method isWhitelistedRoyaltyPolicy for contract RoyaltyModule
+   *
+   * @param request RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest
+   * @return Promise<RoyaltyModuleIsWhitelistedRoyaltyPolicyResponse>
+   */
+  public async isWhitelistedRoyaltyPolicy(
+    request: RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest,
+  ): Promise<RoyaltyModuleIsWhitelistedRoyaltyPolicyResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyModuleAbi,
+      address: this.address,
+      functionName: "isWhitelistedRoyaltyPolicy",
+      args: [request.royaltyPolicy],
+    });
+  }
+
+  /**
+   * method isWhitelistedRoyaltyToken for contract RoyaltyModule
+   *
+   * @param request RoyaltyModuleIsWhitelistedRoyaltyTokenRequest
+   * @return Promise<RoyaltyModuleIsWhitelistedRoyaltyTokenResponse>
+   */
+  public async isWhitelistedRoyaltyToken(
+    request: RoyaltyModuleIsWhitelistedRoyaltyTokenRequest,
+  ): Promise<RoyaltyModuleIsWhitelistedRoyaltyTokenResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyModuleAbi,
+      address: this.address,
+      functionName: "isWhitelistedRoyaltyToken",
+      args: [request.token],
+    });
+  }
+}
+
+/**
+ * contract RoyaltyModule write method
+ */
+export class RoyaltyModuleClient extends RoyaltyModuleReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
     this.wallet = wallet;
   }
 
