@@ -19,9 +19,9 @@ export type RegisterNonComSocialRemixingPILRequest = {
 
 /**
  * This structure defines the terms for a Programmable IP License (PIL). These terms can be attached to IP Assets. The legal document of the PIL can be found in this repository.
- * @interface LicenseTerms
+ * @type LicenseTerms
  **/
-export interface LicenseTerms {
+export type LicenseTerms = {
   /*Indicates whether the license is transferable or not.*/
   transferable: boolean;
   /*The address of the royalty policy contract which required to StoryProtocol in advance.*/
@@ -56,10 +56,17 @@ export interface LicenseTerms {
   currency: Address;
   /*The URI of the license terms, which can be used to fetch the offchain license terms.*/
   uri: string;
-}
-export interface RegisterPILTermsRequest extends LicenseTerms {
+};
+export type RegisterPILTermsRequest = Omit<
+  LicenseTerms,
+  "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
+> & {
+  defaultMintingFee: bigint | string | number;
+  expiration: bigint | string | number;
+  commercialRevCeiling: bigint | string | number;
+  derivativeRevCeiling: bigint | string | number;
   txOptions?: TxOptions;
-}
+};
 export type LicenseTermsIdResponse = bigint;
 
 export type RegisterPILResponse = {
@@ -69,13 +76,13 @@ export type RegisterPILResponse = {
 };
 
 export type RegisterCommercialUsePILRequest = {
-  mintingFee: string | number | bigint;
+  defaultMintingFee: string | number | bigint;
   currency: Address;
   txOptions?: TxOptions;
 };
 
 export type RegisterCommercialRemixPILRequest = {
-  mintingFee: string | number | bigint;
+  defaultMintingFee: string | number | bigint;
   commercialRevShare: number;
   currency: Address;
   txOptions?: TxOptions;
