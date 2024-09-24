@@ -110,13 +110,10 @@ export class LicenseClient {
       };
       this.verifyCommercialUse(object);
       this.verifyDerivatives(object);
-      //TODO: waiting for kingter reply
-      if (object.commercialUse && object.defaultMintingFee && object.currency) {
-        if (object.commercialRevShare < 0 || object.commercialRevShare > 100) {
-          throw new Error("CommercialRevShare should be between 0 and 100.");
-        } else {
-          object.commercialRevShare = (object.commercialRevShare / 100) * 100000000;
-        }
+      if (object.commercialRevShare < 0 || object.commercialRevShare > 100) {
+        throw new Error("CommercialRevShare should be between 0 and 100.");
+      } else {
+        object.commercialRevShare = (object.commercialRevShare / 100) * 100000000;
       }
       const licenseTermsId = await this.getLicenseTermsId(object);
       if (licenseTermsId !== 0n) {

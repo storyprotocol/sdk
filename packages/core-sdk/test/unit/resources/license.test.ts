@@ -312,7 +312,7 @@ describe("Test LicenseClient", () => {
       expect(result.txHash).to.equal(undefined);
     });
 
-    it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is more than 100, commercialUse of true, defaultMintingFee and currency have value", async () => {
+    it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is more than 100", async () => {
       sinon
         .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
         .resolves(true);
@@ -335,7 +335,7 @@ describe("Test LicenseClient", () => {
         "Failed to register license terms: CommercialRevShare should be between 0 and 100.",
       );
     });
-    it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is less than 0, commercialUse of true, defaultMintingFee and currency have value", async () => {
+    it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is less than 0", async () => {
       sinon
         .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
         .resolves(true);
