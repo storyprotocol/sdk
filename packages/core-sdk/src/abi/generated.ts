@@ -2237,6 +2237,7 @@ export const ipRoyaltyVaultImplAbi = [
   { type: "error", inputs: [], name: "IpRoyaltyVault__AlreadyClaimed" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ClaimerNotAnAncestor" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__EnforcedPause" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__IpGraphCallFailed" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__IpTagged" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__NotRoyaltyPolicyLAP" },
   {
@@ -2693,6 +2694,7 @@ export const licenseRegistryAbi = [
     inputs: [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -2727,6 +2729,14 @@ export const licenseRegistryAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "LicenseRegistry__AddParentIpToIPGraphFailed",
+  },
   {
     type: "error",
     inputs: [],
@@ -2848,6 +2858,7 @@ export const licenseRegistryAbi = [
   },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroAccessManager" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "LicenseRegistry__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicenseTemplate" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
   {
@@ -3007,6 +3018,13 @@ export const licenseRegistryAbi = [
     inputs: [],
     name: "EXPIRATION_TIME",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -6006,6 +6024,7 @@ export const royaltyPolicyLapAbi = [
     inputs: [
       { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -6064,6 +6083,7 @@ export const royaltyPolicyLapAbi = [
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__UnlinkableToParents" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroIPGraphACL" },
   {
     type: "error",
     inputs: [],
@@ -6216,6 +6236,13 @@ export const royaltyPolicyLapAbi = [
       },
     ],
     name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -6849,6 +6876,13 @@ export const spgAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
+    name: "multicall",
+    outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "", internalType: "address", type: "address" },
       { name: "", internalType: "address", type: "address" },
@@ -7444,6 +7478,25 @@ export const spgnftImplAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "_fromTokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "_toTokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "BatchMetadataUpdate",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "version",
         internalType: "uint64",
         type: "uint64",
@@ -7451,6 +7504,19 @@ export const spgnftImplAbi = [
       },
     ],
     name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_tokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "MetadataUpdate",
   },
   {
     type: "event",
@@ -7618,7 +7684,10 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "to", internalType: "address", type: "address" }],
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "nftMetadataURI", internalType: "string", type: "string" },
+    ],
     name: "mint",
     outputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
@@ -7628,6 +7697,7 @@ export const spgnftImplAbi = [
     inputs: [
       { name: "to", internalType: "address", type: "address" },
       { name: "payer", internalType: "address", type: "address" },
+      { name: "nftMetadataURI", internalType: "string", type: "string" },
     ],
     name: "mintBySPG",
     outputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
@@ -9252,6 +9322,15 @@ export type IpAccountImplStateResponse = {
 };
 
 /**
+ * IpAccountImplTokenResponse
+ *
+ * @param 0 uint256
+ * @param 1 address
+ * @param 2 uint256
+ */
+export type IpAccountImplTokenResponse = readonly [bigint, Address, bigint];
+
+/**
  * IpAccountImplExecuteRequest
  *
  * @param to address
@@ -9325,6 +9404,20 @@ export class IpAccountImplReadOnlyClient {
     return {
       result: result,
     };
+  }
+
+  /**
+   * method token for contract IPAccountImpl
+   *
+   * @param request IpAccountImplTokenRequest
+   * @return Promise<IpAccountImplTokenResponse>
+   */
+  public async token(): Promise<IpAccountImplTokenResponse> {
+    return await this.rpcClient.readContract({
+      abi: ipAccountImplAbi,
+      address: this.address,
+      functionName: "token",
+    });
   }
 }
 
@@ -10233,6 +10326,8 @@ export type LicenseRegistryDisputeModuleResponse = Address;
 
 export type LicenseRegistryExpirationTimeResponse = Hex;
 
+export type LicenseRegistryIpGraphAclResponse = Address;
+
 export type LicenseRegistryIpGraphContractResponse = Address;
 
 export type LicenseRegistryLicensingModuleResponse = Address;
@@ -10976,6 +11071,20 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
       abi: licenseRegistryAbi,
       address: this.address,
       functionName: "EXPIRATION_TIME",
+    });
+  }
+
+  /**
+   * method IP_GRAPH_ACL for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryIpGraphAclRequest
+   * @return Promise<LicenseRegistryIpGraphAclResponse>
+   */
+  public async ipGraphAcl(): Promise<LicenseRegistryIpGraphAclResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "IP_GRAPH_ACL",
     });
   }
 
@@ -13537,6 +13646,28 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
 // Contract RoyaltyModule =============================================================
 
 /**
+ * RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest
+ *
+ * @param royaltyPolicy address
+ */
+export type RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest = {
+  royaltyPolicy: Address;
+};
+
+export type RoyaltyModuleIsWhitelistedRoyaltyPolicyResponse = boolean;
+
+/**
+ * RoyaltyModuleIsWhitelistedRoyaltyTokenRequest
+ *
+ * @param token address
+ */
+export type RoyaltyModuleIsWhitelistedRoyaltyTokenRequest = {
+  token: Address;
+};
+
+export type RoyaltyModuleIsWhitelistedRoyaltyTokenResponse = boolean;
+
+/**
  * RoyaltyModulePayRoyaltyOnBehalfRequest
  *
  * @param receiverIpId address
@@ -13552,16 +13683,60 @@ export type RoyaltyModulePayRoyaltyOnBehalfRequest = {
 };
 
 /**
- * contract RoyaltyModule write method
+ * contract RoyaltyModule readonly method
  */
-export class RoyaltyModuleClient {
-  protected readonly wallet: SimpleWalletClient;
+export class RoyaltyModuleReadOnlyClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+  constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(royaltyModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method isWhitelistedRoyaltyPolicy for contract RoyaltyModule
+   *
+   * @param request RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest
+   * @return Promise<RoyaltyModuleIsWhitelistedRoyaltyPolicyResponse>
+   */
+  public async isWhitelistedRoyaltyPolicy(
+    request: RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest,
+  ): Promise<RoyaltyModuleIsWhitelistedRoyaltyPolicyResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyModuleAbi,
+      address: this.address,
+      functionName: "isWhitelistedRoyaltyPolicy",
+      args: [request.royaltyPolicy],
+    });
+  }
+
+  /**
+   * method isWhitelistedRoyaltyToken for contract RoyaltyModule
+   *
+   * @param request RoyaltyModuleIsWhitelistedRoyaltyTokenRequest
+   * @return Promise<RoyaltyModuleIsWhitelistedRoyaltyTokenResponse>
+   */
+  public async isWhitelistedRoyaltyToken(
+    request: RoyaltyModuleIsWhitelistedRoyaltyTokenRequest,
+  ): Promise<RoyaltyModuleIsWhitelistedRoyaltyTokenResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyModuleAbi,
+      address: this.address,
+      functionName: "isWhitelistedRoyaltyToken",
+      args: [request.token],
+    });
+  }
+}
+
+/**
+ * contract RoyaltyModule write method
+ */
+export class RoyaltyModuleClient extends RoyaltyModuleReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
     this.wallet = wallet;
   }
 
@@ -14847,12 +15022,32 @@ export type SpgnftImplApprovalForAllEvent = {
 };
 
 /**
+ * SpgnftImplBatchMetadataUpdateEvent
+ *
+ * @param _fromTokenId uint256
+ * @param _toTokenId uint256
+ */
+export type SpgnftImplBatchMetadataUpdateEvent = {
+  _fromTokenId: bigint;
+  _toTokenId: bigint;
+};
+
+/**
  * SpgnftImplInitializedEvent
  *
  * @param version uint64
  */
 export type SpgnftImplInitializedEvent = {
   version: bigint;
+};
+
+/**
+ * SpgnftImplMetadataUpdateEvent
+ *
+ * @param _tokenId uint256
+ */
+export type SpgnftImplMetadataUpdateEvent = {
+  _tokenId: bigint;
 };
 
 /**
@@ -15058,9 +15253,11 @@ export type SpgnftImplInitializeRequest = {
  * SpgnftImplMintRequest
  *
  * @param to address
+ * @param nftMetadataURI string
  */
 export type SpgnftImplMintRequest = {
   to: Address;
+  nftMetadataURI: string;
 };
 
 /**
@@ -15068,10 +15265,12 @@ export type SpgnftImplMintRequest = {
  *
  * @param to address
  * @param payer address
+ * @param nftMetadataURI string
  */
 export type SpgnftImplMintBySpgRequest = {
   to: Address;
   payer: Address;
+  nftMetadataURI: string;
 };
 
 /**
@@ -15270,6 +15469,47 @@ export class SpgnftImplEventClient {
   }
 
   /**
+   * event BatchMetadataUpdate for contract SPGNFTImpl
+   */
+  public watchBatchMetadataUpdateEvent(
+    onLogs: (txHash: Hex, ev: Partial<SpgnftImplBatchMetadataUpdateEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: spgnftImplAbi,
+      address: this.address,
+      eventName: "BatchMetadataUpdate",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event BatchMetadataUpdate for contract SPGNFTImpl
+   */
+  public parseTxBatchMetadataUpdateEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<SpgnftImplBatchMetadataUpdateEvent> {
+    const targetLogs: Array<SpgnftImplBatchMetadataUpdateEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: spgnftImplAbi,
+          eventName: "BatchMetadataUpdate",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "BatchMetadataUpdate") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
    * event Initialized for contract SPGNFTImpl
    */
   public watchInitializedEvent(
@@ -15299,6 +15539,47 @@ export class SpgnftImplEventClient {
           topics: log.topics,
         });
         if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event MetadataUpdate for contract SPGNFTImpl
+   */
+  public watchMetadataUpdateEvent(
+    onLogs: (txHash: Hex, ev: Partial<SpgnftImplMetadataUpdateEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: spgnftImplAbi,
+      address: this.address,
+      eventName: "MetadataUpdate",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event MetadataUpdate for contract SPGNFTImpl
+   */
+  public parseTxMetadataUpdateEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<SpgnftImplMetadataUpdateEvent> {
+    const targetLogs: Array<SpgnftImplMetadataUpdateEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: spgnftImplAbi,
+          eventName: "MetadataUpdate",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "MetadataUpdate") {
           targetLogs.push(event.args);
         }
       } catch (e) {
@@ -15843,7 +16124,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       address: this.address,
       functionName: "mint",
       account: this.wallet.account,
-      args: [request.to],
+      args: [request.to, request.nftMetadataURI],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -15860,7 +16141,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       data: encodeFunctionData({
         abi: spgnftImplAbi,
         functionName: "mint",
-        args: [request.to],
+        args: [request.to, request.nftMetadataURI],
       }),
     };
   }
@@ -15877,7 +16158,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       address: this.address,
       functionName: "mintBySPG",
       account: this.wallet.account,
-      args: [request.to, request.payer],
+      args: [request.to, request.payer, request.nftMetadataURI],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -15894,7 +16175,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       data: encodeFunctionData({
         abi: spgnftImplAbi,
         functionName: "mintBySPG",
-        args: [request.to, request.payer],
+        args: [request.to, request.payer, request.nftMetadataURI],
       }),
     };
   }

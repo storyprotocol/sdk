@@ -31,7 +31,7 @@ describe("Test royalty Functions", () => {
     };
     const getCommercialPolicyId = async (): Promise<bigint> => {
       const response = await client.license.registerCommercialRemixPIL({
-        mintingFee: "1",
+        defaultMintingFee: "1",
         currency: MockERC20.address,
         commercialRevShare: 100,
         txOptions: {

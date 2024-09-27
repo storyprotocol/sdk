@@ -1,6 +1,6 @@
 export { StoryClient } from "./client";
 export { AddressZero, HashZero } from "./constants/common";
-
+export { iliad } from "./utils/chain";
 export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
@@ -47,6 +47,7 @@ export type {
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
   LicenseTermsId,
+  LicenseTerms,
 } from "./types/resources/license";
 export { PIL_TYPE } from "./types/resources/license";
 
@@ -87,6 +88,7 @@ export type {
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
   IpAccountStateResponse,
+  TokenResponse,
 } from "./types/resources/ipAccount";
 
 export type {

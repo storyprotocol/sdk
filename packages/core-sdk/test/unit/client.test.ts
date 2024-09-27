@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { createWalletClient, http, Transport } from "viem";
-import { StoryClient, StoryConfig } from "../../src";
-import { iliad } from "../../src/utils/utils";
+import { StoryClient, StoryConfig, iliad } from "../../src/index";
 const rpc = "http://127.0.0.1:8545";
 
 describe("Test StoryClient", () => {

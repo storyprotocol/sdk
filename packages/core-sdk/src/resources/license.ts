@@ -8,6 +8,7 @@ import {
   PiLicenseTemplateClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
+  RoyaltyModuleReadOnlyClient,
   RoyaltyPolicyLapClient,
   SimpleWalletClient,
 } from "../abi/generated";
@@ -24,6 +25,7 @@ import {
   PIL_TYPE,
   AttachLicenseTermsResponse,
   LicenseTermsId,
+  RegisterPILTermsRequest,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
@@ -36,6 +38,7 @@ export class LicenseClient {
   public piLicenseTemplateReadOnlyClient: PiLicenseTemplateReadOnlyClient;
   public licenseTemplateClient: PiLicenseTemplateClient;
   public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
+  public royaltyModuleReadOnlyClient: RoyaltyModuleReadOnlyClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -46,12 +49,102 @@ export class LicenseClient {
     this.piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
     this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(rpcClient, wallet);
+    this.royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
-
+  /**
+   * Registers new license terms and return the ID of the newly registered license terms.
+   * @param request - The request object that contains all data needed to register a license term.
+   *   @param request.transferable Indicates whether the license is transferable or not.
+   *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
+   *   @param request.mintingFee The fee to be paid when minting a license.
+   *   @param request.expiration The expiration period of the license.
+   *   @param request.commercialUse Indicates whether the work can be used commercially or not.
+   *   @param request.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
+   *   @param request.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
+   *   @param request.commercializerCheckerData The data to be passed to the commercializer checker contract.
+   *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
+   *   @param request.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
+   *   @param request.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
+   *   @param request.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
+   *   @param request.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
+   *   @param request.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
+   *   @param request.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
+   *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *   @param request.uri The URI of the license terms, which can be used to fetch the offchain license terms.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to an object containing the optional transaction hash, optional transaction encodedTxData and optional license terms Id.
+   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
+   */
+  public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
+    try {
+      const { royaltyPolicy, currency } = request;
+      if (getAddress(royaltyPolicy, "request.royaltyPolicy") !== zeroAddress) {
+        const isWhitelistedArbitrationPolicy =
+          await this.royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({ royaltyPolicy });
+        if (!isWhitelistedArbitrationPolicy) {
+          throw new Error("The royalty policy is not whitelisted.");
+        }
+      }
+      if (getAddress(currency, "request.currency") !== zeroAddress) {
+        const isWhitelistedRoyaltyToken =
+          await this.royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken({
+            token: currency,
+          });
+        if (!isWhitelistedRoyaltyToken) {
+          throw new Error("The currency token is not whitelisted.");
+        }
+      }
+      if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
+        throw new Error("Royalty policy requires currency token.");
+      }
+      const object = {
+        ...request,
+        defaultMintingFee: BigInt(request.defaultMintingFee),
+        expiration: BigInt(request.expiration),
+        commercialRevCeiling: BigInt(request.commercialRevCeiling),
+        derivativeRevCeiling: BigInt(request.derivativeRevCeiling),
+      };
+      this.verifyCommercialUse(object);
+      this.verifyDerivatives(object);
+      if (object.commercialRevShare < 0 || object.commercialRevShare > 100) {
+        throw new Error("CommercialRevShare should be between 0 and 100.");
+      } else {
+        object.commercialRevShare = (object.commercialRevShare / 100) * 100000000;
+      }
+      const licenseTermsId = await this.getLicenseTermsId(object);
+      if (licenseTermsId !== 0n) {
+        return { licenseTermsId: licenseTermsId };
+      }
+      if (request?.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+            terms: object,
+          }),
+        };
+      } else {
+        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
+          terms: object,
+        });
+        if (request?.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          const targetLogs =
+            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
+          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+        } else {
+          return { txHash: txHash };
+        }
+      }
+    } catch (error) {
+      handleError(error, "Failed to register license terms");
+    }
+  }
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
    * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
@@ -97,7 +190,7 @@ export class LicenseClient {
   /**
    * Convenient function to register a PIL commercial use license to the registry.
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
-   *   @param request.mintingFee The fee to be paid when minting a license.
+   *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
@@ -108,7 +201,7 @@ export class LicenseClient {
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-        defaultMintingFee: request.mintingFee,
+        defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
       });
@@ -145,7 +238,7 @@ export class LicenseClient {
   /**
    * Convenient function to register a PIL commercial Remix license to the registry.
    * @param request - The request object that contains all data needed to register license.
-   *   @param request.mintingFee The fee to be paid when minting a license.
+   *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
@@ -157,7 +250,7 @@ export class LicenseClient {
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-        defaultMintingFee: request.mintingFee,
+        defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
         royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
@@ -364,5 +457,50 @@ export class LicenseClient {
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;
+  }
+  private verifyCommercialUse(terms: LicenseTerms) {
+    if (!terms.commercialUse) {
+      if (terms.commercialAttribution) {
+        throw new Error("Cannot add commercial attribution when commercial use is disabled.");
+      }
+      if (terms.commercializerChecker !== zeroAddress) {
+        throw new Error("Cannot add commercializerChecker when commercial use is disabled.");
+      }
+      if (terms.commercialRevShare > 0) {
+        throw new Error("Cannot add commercial revenue share when commercial use is disabled.");
+      }
+      if (terms.commercialRevCeiling > 0) {
+        throw new Error("Cannot add commercial revenue ceiling when commercial use is disabled.");
+      }
+      if (terms.derivativeRevCeiling > 0) {
+        throw new Error(
+          "Cannot add derivative revenue ceiling share when commercial use is disabled.",
+        );
+      }
+      if (terms.royaltyPolicy !== zeroAddress) {
+        throw new Error("Cannot add commercial royalty policy when commercial use is disabled.");
+      }
+    } else {
+      if (terms.royaltyPolicy === zeroAddress) {
+        throw new Error("Royalty policy is required when commercial use is enabled.");
+      }
+    }
+  }
+
+  private verifyDerivatives(terms: LicenseTerms) {
+    if (!terms.derivativesAllowed) {
+      if (terms.derivativesAttribution) {
+        throw new Error("Cannot add derivative attribution when derivative use is disabled.");
+      }
+      if (terms.derivativesApproval) {
+        throw new Error("Cannot add derivative approval when derivative use is disabled.");
+      }
+      if (terms.derivativesReciprocal) {
+        throw new Error("Cannot add derivative reciprocal when derivative use is disabled.");
+      }
+      if (terms.derivativeRevCeiling > 0) {
+        throw new Error("Cannot add derivative revenue ceiling when derivative use is disabled.");
+      }
+    }
   }
 }

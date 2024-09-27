@@ -1,4 +1,4 @@
-import { PublicClient } from "viem";
+import { Address, PublicClient } from "viem";
 
 import {
   IPAccountExecuteRequest,
@@ -6,6 +6,7 @@ import {
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
   IpAccountStateResponse,
+  TokenResponse,
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
 import { IpAccountImplClient, SimpleWalletClient } from "../abi/generated";
@@ -113,15 +114,41 @@ export class IPAccountClient {
 
   /** Returns the IPAccount's internal nonce for transaction ordering.
    * @param ipId The IP ID
-   * @returns The nonce for transaction ordering.
+   * @returns A Promise that resolves to the IP Account's nonce.
    */
-  public async getIpAccountNonce(ipId: string): Promise<IpAccountStateResponse> {
-    const ipAccount = new IpAccountImplClient(
-      this.rpcClient,
-      this.wallet,
-      getAddress(ipId, "ipId"),
-    );
-    const { result: state } = await ipAccount.state();
-    return state;
+  public async getIpAccountNonce(ipId: Address): Promise<IpAccountStateResponse> {
+    try {
+      const ipAccount = new IpAccountImplClient(
+        this.rpcClient,
+        this.wallet,
+        getAddress(ipId, "ipId"),
+      );
+      const { result: state } = await ipAccount.state();
+      return state;
+    } catch (error) {
+      handleError(error, "Failed to get the IP Account nonce");
+    }
+  }
+
+  /**
+   * Returns the identifier of the non-fungible token which owns the account
+   * @returns A Promise that resolves to an object containing the chain ID, token contract address, and token ID.
+   */
+  public async getToken(ipId: Address): Promise<TokenResponse> {
+    try {
+      const ipAccount = new IpAccountImplClient(
+        this.rpcClient,
+        this.wallet,
+        getAddress(ipId, "ipId"),
+      );
+      const [chainId, tokenContract, tokenId] = await ipAccount.token();
+      return {
+        chainId,
+        tokenContract,
+        tokenId,
+      };
+    } catch (error) {
+      handleError(error, "Failed to get the token");
+    }
   }
 }
