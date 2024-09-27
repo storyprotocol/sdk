@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Hex } from "viem";
+import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { mockERC721, getStoryClient, getTokenId, iliadChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
@@ -16,6 +16,31 @@ describe("License Functions", () => {
     client = getStoryClient();
   });
   describe("registering license with different types", async () => {
+    it("should not throw error when registering license ", async () => {
+      const result = await client.license.registerPILTerms({
+        defaultMintingFee: "1",
+        currency: MockERC20.address,
+        transferable: false,
+        royaltyPolicy: zeroAddress,
+        commercialUse: false,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x",
+        commercialRevShare: 0,
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        uri: "",
+        expiration: "",
+        commercialRevCeiling: "",
+        derivativeRevCeiling: "",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
     it("should not throw error when registering license with non commercial social remixing PIL", async () => {
       const result = await client.license.registerNonComSocialRemixingPIL({
         txOptions: {
@@ -26,7 +51,7 @@ describe("License Functions", () => {
     });
     it("should not throw error when registering license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
-        mintingFee: "1",
+        defaultMintingFee: "1",
         currency: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
@@ -37,7 +62,7 @@ describe("License Functions", () => {
 
     it("should not throw error when registering license with commercial Remix use", async () => {
       const result = await client.license.registerCommercialRemixPIL({
-        mintingFee: "1",
+        defaultMintingFee: "1",
         commercialRevShare: 100,
         currency: MockERC20.address,
         txOptions: {
@@ -67,7 +92,7 @@ describe("License Functions", () => {
       );
       ipId = registerResult.ipId!;
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
-        mintingFee: "1",
+        defaultMintingFee: "1",
         commercialRevShare: 100,
         currency: MockERC20.address,
         txOptions: {

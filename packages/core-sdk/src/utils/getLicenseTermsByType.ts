@@ -35,7 +35,7 @@ export function getLicenseTermByType(
     return licenseTerms;
   } else if (type === PIL_TYPE.COMMERCIAL_USE) {
     if (!term || term.defaultMintingFee === undefined || term.currency === undefined) {
-      throw new Error("mintingFee currency are required for commercial use PIL.");
+      throw new Error("MintingFee currency are required for commercial use PIL.");
     }
     licenseTerms.royaltyPolicy = getAddress(term.royaltyPolicyLAPAddress);
     licenseTerms.defaultMintingFee = BigInt(term.defaultMintingFee);
@@ -52,11 +52,11 @@ export function getLicenseTermByType(
       term.commercialRevShare === undefined
     ) {
       throw new Error(
-        "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
+        "MintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );
     }
     if (term.commercialRevShare < 0 || term.commercialRevShare > 100) {
-      throw new Error("commercialRevShare should be between 0 and 100.");
+      throw new Error("CommercialRevShare should be between 0 and 100.");
     }
     licenseTerms.royaltyPolicy = getAddress(term.royaltyPolicyLAPAddress);
     licenseTerms.defaultMintingFee = BigInt(term.defaultMintingFee);

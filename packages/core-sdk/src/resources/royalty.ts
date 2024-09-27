@@ -1,4 +1,4 @@
-import { Address, Hex, PublicClient, encodeFunctionData } from "viem";
+import { Address, Hex, PublicClient, encodeFunctionData, zeroAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -108,23 +108,26 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
+      const { receiverIpId, payerIpId, token, amount } = request;
       const isReceiverRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.receiverIpId, "request.receiverIpId"),
+        id: getAddress(receiverIpId, "request.receiverIpId"),
       });
       if (!isReceiverRegistered) {
-        throw new Error(`The receiver IP with id ${request.receiverIpId} is not registered.`);
+        throw new Error(`The receiver IP with id ${receiverIpId} is not registered.`);
       }
-      const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.payerIpId, "request.payerIpId"),
-      });
-      if (!isPayerRegistered) {
-        throw new Error(`The payer IP with id ${request.payerIpId} is not registered.`);
+      if (getAddress(payerIpId, "request.payerIpId") && payerIpId !== zeroAddress) {
+        const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
+          id: payerIpId,
+        });
+        if (!isPayerRegistered) {
+          throw new Error(`The payer IP with id ${request.payerIpId} is not registered.`);
+        }
       }
       const req = {
-        receiverIpId: request.receiverIpId,
-        payerIpId: request.payerIpId,
-        token: getAddress(request.token, "request.token"),
-        amount: BigInt(request.amount),
+        receiverIpId: receiverIpId,
+        payerIpId: payerIpId,
+        token: getAddress(token, "request.token"),
+        amount: BigInt(amount),
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.royaltyModuleClient.payRoyaltyOnBehalfEncode(req) };

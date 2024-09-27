@@ -30,7 +30,7 @@ describe("Get License Terms By Type", () => {
   describe("Get Commercial License Terms", () => {
     it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without terms", async () => {
       expect(() => getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE)).to.throw(
-        "mintingFee currency are required for commercial use PIL.",
+        "MintingFee currency are required for commercial use PIL.",
       );
     });
 
@@ -40,7 +40,7 @@ describe("Get License Terms By Type", () => {
           currency: zeroAddress,
           royaltyPolicyLAPAddress: zeroAddress,
         }),
-      ).to.throw("mintingFee currency are required for commercial use PIL.");
+      ).to.throw("MintingFee currency are required for commercial use PIL.");
     });
 
     it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without currency", async () => {
@@ -49,7 +49,7 @@ describe("Get License Terms By Type", () => {
           royaltyPolicyLAPAddress: zeroAddress,
           defaultMintingFee: "1",
         }),
-      ).to.throw("mintingFee currency are required for commercial use PIL.");
+      ).to.throw("MintingFee currency are required for commercial use PIL.");
     });
 
     it("it should throw when call getLicenseTermByType given COMMERCIAL_USE and wrong royaltyAddress", async () => {
@@ -93,7 +93,7 @@ describe("Get License Terms By Type", () => {
   describe("Get Commercial remix License Terms", () => {
     it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without terms", async () => {
       expect(() => getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX)).to.throw(
-        "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
+        "MintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );
     });
 
@@ -105,7 +105,7 @@ describe("Get License Terms By Type", () => {
           commercialRevShare: 100,
         }),
       ).to.throw(
-        "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
+        "MintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );
     });
 
@@ -117,7 +117,7 @@ describe("Get License Terms By Type", () => {
           commercialRevShare: 100,
         }),
       ).to.throw(
-        "mintingFee, currency and commercialRevShare are required for commercial remix PIL.",
+        "MintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );
     });
 
@@ -140,7 +140,7 @@ describe("Get License Terms By Type", () => {
           currency: zeroAddress,
         }),
       ).to.throw(
-        `mintingFee, currency and commercialRevShare are required for commercial remix PIL.`,
+        `MintingFee, currency and commercialRevShare are required for commercial remix PIL.`,
       );
     });
 
@@ -171,7 +171,7 @@ describe("Get License Terms By Type", () => {
         uri: "",
       });
     });
-    it("it throw commercialRevShare error  when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is less than 0 ", async () => {
+    it("it throw commercialRevShare error when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is less than 0 ", async () => {
       expect(() =>
         getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
           royaltyPolicyLAPAddress: zeroAddress,
@@ -179,7 +179,7 @@ describe("Get License Terms By Type", () => {
           currency: zeroAddress,
           commercialRevShare: -8,
         }),
-      ).to.throw(`commercialRevShare should be between 0 and 100.`);
+      ).to.throw(`CommercialRevShare should be between 0 and 100.`);
     });
 
     it("it throw commercialRevShare error  when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is greater than 100", async () => {
@@ -190,7 +190,7 @@ describe("Get License Terms By Type", () => {
           currency: zeroAddress,
           commercialRevShare: 105,
         }),
-      ).to.throw(`commercialRevShare should be between 0 and 100.`);
+      ).to.throw(`CommercialRevShare should be between 0 and 100.`);
     });
 
     it("it get commercialRevShare correct value when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is 10", async () => {

@@ -7,10 +7,10 @@ import {
   chainStringToViemChain,
   waitTx,
   getAddress,
-  iliad,
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
+import { iliad } from "../../../src/index";
 
 describe("Test waitTxAndFilterLog", () => {
   const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
