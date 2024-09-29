@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - v1.1
   pull_request:
     branches:
       - main
+      - v1.1
 
 jobs:
   Timestamp:
@@ -30,6 +32,21 @@ jobs:
           content=$(cat packages/react-sdk/package.json)
           echo "REACT_SDK_VERSION_TO_BE_PUBLISHED=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
 
+  extract_branch_name:
+    needs: [Timestamp]
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.extract_branch_name.outputs.branch_name }}
+    steps:
+      - name: Extract branch name
+        id: extract_branch_name
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+          else
+          echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_OUTPUT
+          fi
+
   # Fetch the latest version from NPM
   fetch_latest_version:
     needs: [Timestamp]
@@ -51,6 +68,29 @@ jobs:
           echo "CORE_SDK_LATEST_VERSION=$CORE_SDK_LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "Latest version of @story-protocol/react-sdk on NPMJS is $REACT_SDK_LATEST_VERSION"
           echo "REACT_SDK_LATEST_VERSION=$REACT_SDK_LATEST_VERSION" >> $GITHUB_OUTPUT
+
+  check_if_version_is_valid_for_branch:
+    needs: [extract_branch_name, print_version_to_publish]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if version is valid for branch
+        id: check_if_version_is_valid_for_branch
+        run: |
+          BRANCH_NAME="${{ needs.extract_branch_name.outputs.branch_name }}"
+          SDK_VERSION="${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}"
+          REACT_SDK_VERSION="${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}"
+          if [[ "$BRANCH_NAME" == "v1.1" || "$BRANCH_NAME" == "dev_v1.1" ]]; then
+            if ! [[ "$SDK_VERSION" =~ ^1\.1 ]] && ! [[ "$REACT_SDK_VERSION" =~ ^1\.1 ]]; then
+               echo "Error: Invalid version @story-protocol/core-sdk@$SDK_VERSION or @story-protocol/react-sdk@$REACT_SDK_VERSION for branch 'v1.1', only versions starting with '1.1' are allowed in v1.1 branch"
+              exit 1
+            fi
+          elif [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "dev" ]]; then
+              if ! [[ "$SDK_VERSION" =~ ^1\.2 ]] && ! [[ "$REACT_SDK_VERSION" =~ ^1\.2 ]]; then
+                echo "Error: Invalid version @story-protocol/core-sdk@$SDK_VERSION or @story-protocol/react-sdk@$REACT_SDK_VERSION for branch 'main', only versions starting with '1.2' are allowed in main branch"
+                exit 1
+              fi
+          fi
+
   # Fail the PR if the version to be published is the same as the latest version on NPM
   fail_if_version_is_same:
     needs: [print_version_to_publish, fetch_latest_version]
