@@ -12,97 +12,103 @@ export default defineConfig(async () => {
     {
       name: "AccessController",
       address: {
-        [iliadChainId]: "0x01d470c28822d3701Db6325333cEE9737524776E",
+        [iliadChainId]: "0xa8bF970E95278A7aF475CE13C24cdcC3a2234a3D",
       },
     },
     {
       name: "DisputeModule",
       address: {
-        [iliadChainId]: "0xDae11663438a0958E7075F604E3a5eEe77FD3878",
+        [iliadChainId]: "0xD082824B244Edcc5Bb5e67cD96a7d5a189c7E247",
       },
     },
     {
       name: "IPAccountImpl",
       address: {
-        [iliadChainId]: "0x8F763c16753e830a8020c80f9F0131Eb8Ef52879",
+        [iliadChainId]: "0x778159888076ADF6A574081346AF5837453885dE",
       },
     },
     {
       name: "IPAssetRegistry",
       address: {
-        [iliadChainId]: "0xe34A78B3d658aF7ad69Ff1EFF9012ECa025a14Be",
+        [iliadChainId]: "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
       },
     },
     {
       name: "IpRoyaltyVaultImpl",
       address: {
-        [iliadChainId]: "0xfb5b5B61c9a437E06Ba87367aaBf3766d091E3D1",
+        [iliadChainId]: "0x9b7Ae229653251c6090324800D7E46435853C069",
       },
     },
     {
       name: "LicenseRegistry",
       address: {
-        [iliadChainId]: "0xF542AF9a5A6E4A85a4f084D38B322516ec336097",
+        [iliadChainId]: "0xedf8e338F05f7B1b857C3a8d3a0aBB4bc2c41723",
       },
     },
     {
       name: "LicenseToken",
       address: {
-        [iliadChainId]: "0xB31FE33De46A1FA5d4Ec669EDB049892E0A1EB4C",
+        [iliadChainId]: "0xc7A302E03cd7A304394B401192bfED872af501BE",
       },
     },
     {
       name: "LicensingModule",
       address: {
-        [iliadChainId]: "0xf49da534215DA7b48E57A41d41dac25C912FCC60",
+        [iliadChainId]: "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
       },
     },
     {
       name: "PILicenseTemplate",
       address: {
-        [iliadChainId]: "0x8BB1ADE72E21090Fc891e1d4b88AC5E57b27cB31",
+        [iliadChainId]: "0x0752f61E59fD2D39193a74610F1bd9a6Ade2E3f9",
       },
     },
     {
       name: "ModuleRegistry",
       address: {
-        [iliadChainId]: "0x008ac202A8545D10f25707439bE4c139Be4Df75F",
+        [iliadChainId]: "0x7b3ba7839F5754B02531Aa84680637f78CB476c0",
       },
     },
     {
       name: "RoyaltyModule",
       address: {
-        [iliadChainId]: "0x968beb5432c362c12b5Be6967a5d6F1ED5A63F01",
+        [iliadChainId]: "0x3C27b2D7d30131D4b58C3584FD7c86e3358744de",
       },
     },
     {
       name: "RoyaltyPolicyLAP",
       address: {
-        [iliadChainId]: "0x61A5c7570f5bDB118D65053Ba60DE87e050E664e",
+        [iliadChainId]: "0x4074CEC2B3427f983D14d0C5E962a06B7162Ab92",
       },
     },
     {
       name: "SPG",
       address: {
-        [iliadChainId]: "0x69415CE984A79a3Cfbe3F51024C63b6C107331e3",
+        [iliadChainId]: "0xAceb5E631d743AF76aF69414eC8D356c13435E59",
       },
     },
     {
       name: "SPGNFTBeacon",
       address: {
-        [iliadChainId]: "0x027D258659FBdda9033f9c008AF166239EBa67c1",
+        [iliadChainId]: "0x769A0F5197D427a7fC4378317437e924c8c74b33",
       },
     },
     {
       name: "SPGNFTImpl",
       address: {
-        [iliadChainId]: "0xDb6480C00B570324A122A6B35F9CAC0F87BDb3e6",
+        [iliadChainId]: "0x07AeC2b41E691cec9c48Fee5a63fAc2AB460615a",
+      },
+    },
+    {
+      name: "GroupingWorkflows",
+      address: {
+        [iliadChainId]: "0xDed2AF44142489d5c380322A22cB9A0B8f22111A",
       },
     },
     {
       name: "CoreMetadataModule",
       address: {
-        [iliadChainId]: "0x290F414EA46b361ECFB6b430F98346CB593D02b9",
+        [iliadChainId]: "0x56eFacFCcacfdEbd1d6E3C4071CaCDEbA0902f04",
       },
     },
   ];
@@ -172,7 +178,12 @@ export default defineConfig(async () => {
             "predictMintingLicenseFee",
           ],
           ModuleRegistry: ["isRegistered", "getDefaultLicenseTerms"],
-          RoyaltyModule: ["payRoyaltyOnBehalf", "isWhitelistedRoyaltyPolicy","isWhitelistedRoyaltyToken"],
+          RoyaltyModule: [
+            "payRoyaltyOnBehalf",
+            "isWhitelistedRoyaltyPolicy",
+            "isWhitelistedRoyaltyToken",
+            "ipRoyaltyVaults",
+          ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],
           SPG: [
@@ -187,6 +198,11 @@ export default defineConfig(async () => {
             "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
             "registerIpAndMakeDerivativeWithLicenseTokens",
             "registerIp",
+          ],
+          GroupingWorkflows: [
+            "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+            "registerIpAndAttachLicenseAndAddToGroup",
+            "registerGroupAndAttachLicenseAndAddIps",
           ],
         },
       }),
