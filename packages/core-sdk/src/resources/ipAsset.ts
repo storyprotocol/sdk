@@ -43,7 +43,6 @@ import {
   LicenseTokenReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
-  RoyaltyPolicyLapClient,
   SimpleWalletClient,
   SpgClient,
   SpgMintAndRegisterIpAndAttachPilTermsRequest,
@@ -53,6 +52,7 @@ import {
   SpgRegisterIpRequest,
   accessControllerAbi,
   ipAccountImplAbi,
+  royaltyPolicyLapAddress,
 } from "../abi/generated";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
@@ -64,7 +64,6 @@ export class IPAssetClient {
   public licenseTemplateClient: PiLicenseTemplateClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   public licenseTokenReadOnlyClient: LicenseTokenReadOnlyClient;
-  public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
   public accessControllerClient: AccessControllerClient;
   public coreMetadataModuleClient: CoreMetadataModuleClient;
   public spgClient: SpgClient;
@@ -78,7 +77,6 @@ export class IPAssetClient {
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
     this.licenseTokenReadOnlyClient = new LicenseTokenReadOnlyClient(rpcClient);
-    this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(rpcClient, wallet);
     this.accessControllerClient = new AccessControllerClient(rpcClient, wallet);
     this.coreMetadataModuleClient = new CoreMetadataModuleClient(rpcClient, wallet);
     this.spgClient = new SpgClient(rpcClient, wallet);
@@ -425,7 +423,7 @@ export class IPAssetClient {
   /**
    * Mint an NFT from a collection and register it as an IP.
    * @param request - The request object that contains all data needed to mint and register ip.
-   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.spgNftContract The address of the NFT collection.
    *   @param request.pilType The type of the PIL.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
@@ -451,11 +449,14 @@ export class IPAssetClient {
       const licenseTerm = getLicenseTermByType(request.pilType, {
         defaultMintingFee: request.mintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
         commercialRevShare: request.commercialRevShare,
+        royaltyPolicyLAPAddress:
+          royaltyPolicyLapAddress[
+            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
+          ],
       });
       const object: SpgMintAndRegisterIpAndAttachPilTermsRequest = {
-        nftContract: getAddress(request.nftContract, "request.nftContract"),
+        spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
         recipient:
           (request.recipient && getAddress(request.recipient, "request.recipient")) ||
           this.wallet.account!.address,
@@ -527,7 +528,10 @@ export class IPAssetClient {
       const licenseTerm = getLicenseTermByType(request.pilType, {
         defaultMintingFee: request.mintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+        royaltyPolicyLAPAddress:
+          royaltyPolicyLapAddress[
+            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
+          ],
         commercialRevShare: request.commercialRevShare,
       });
       const calculatedDeadline = getDeadline(request.deadline);
@@ -764,7 +768,7 @@ export class IPAssetClient {
   /**
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
    * @param request - The request object that contains all data needed to mint and register ip and make derivative.
-   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.spgNftContract The address of the NFT collection.
    *   @param request.derivData The derivative data to be used for registerDerivative.
    *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
    *   @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.

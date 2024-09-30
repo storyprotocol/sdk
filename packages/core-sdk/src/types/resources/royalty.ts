@@ -22,18 +22,6 @@ export type RoyaltyContext = {
   parentAncestorsRoyalties2: number[];
 };
 
-export type CollectRoyaltyTokensRequest = {
-  parentIpId: Address;
-  royaltyVaultIpId: Address;
-  txOptions?: TxOptions;
-};
-
-export type CollectRoyaltyTokensResponse = {
-  txHash?: string;
-  encodedTxData?: EncodedTxData;
-  royaltyTokensCollected?: bigint;
-};
-
 export type RoyaltyData = [
   isUnlinkableToParents: boolean,
   ipRoyaltyVault: Address,

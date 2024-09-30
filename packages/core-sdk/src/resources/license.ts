@@ -9,8 +9,8 @@ import {
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
   RoyaltyModuleReadOnlyClient,
-  RoyaltyPolicyLapClient,
   SimpleWalletClient,
+  royaltyPolicyLapAddress,
 } from "../abi/generated";
 import {
   LicenseTerms,
@@ -29,7 +29,8 @@ import {
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
-import { getAddress } from "../utils/utils";
+import { chain, getAddress } from "../utils/utils";
+import { SupportedChainIds } from "../types/config";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -37,23 +38,23 @@ export class LicenseClient {
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public piLicenseTemplateReadOnlyClient: PiLicenseTemplateReadOnlyClient;
   public licenseTemplateClient: PiLicenseTemplateClient;
-  public royaltyPolicyLAPClient: RoyaltyPolicyLapClient;
   public royaltyModuleReadOnlyClient: RoyaltyModuleReadOnlyClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
+  private readonly chainId: SupportedChainIds;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
     this.licenseRegistryClient = new LicenseRegistryEventClient(rpcClient);
     this.piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
-    this.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(rpcClient, wallet);
     this.royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
+    this.chainId = chainId;
   }
   /**
    * Registers new license terms and return the ID of the newly registered license terms.
@@ -203,7 +204,10 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+        royaltyPolicyLAPAddress:
+          royaltyPolicyLapAddress[
+            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
+          ],
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0n) {
@@ -252,7 +256,10 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress: this.royaltyPolicyLAPClient.address,
+        royaltyPolicyLAPAddress:
+          royaltyPolicyLapAddress[
+            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
+          ],
         commercialRevShare: request.commercialRevShare,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);

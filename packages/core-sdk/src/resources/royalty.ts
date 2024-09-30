@@ -4,8 +4,6 @@ import { handleError } from "../utils/errors";
 import {
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
-  CollectRoyaltyTokensRequest,
-  CollectRoyaltyTokensResponse,
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
   SnapshotRequest,
@@ -17,7 +15,6 @@ import {
   IpAssetRegistryClient,
   IpRoyaltyVaultImplClient,
   RoyaltyModuleClient,
-  RoyaltyPolicyLapClient,
   SimpleWalletClient,
   ipRoyaltyVaultImplAbi,
 } from "../abi/generated";
@@ -25,7 +22,6 @@ import { IPAccountClient } from "./ipAccount";
 import { getAddress } from "../utils/utils";
 
 export class RoyaltyClient {
-  public royaltyPolicyLapClient: RoyaltyPolicyLapClient;
   public royaltyModuleClient: RoyaltyModuleClient;
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public ipAccountClient: IPAccountClient;
@@ -33,65 +29,11 @@ export class RoyaltyClient {
   private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
-    this.royaltyPolicyLapClient = new RoyaltyPolicyLapClient(rpcClient, wallet);
     this.royaltyModuleClient = new RoyaltyModuleClient(rpcClient, wallet);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.ipAccountClient = new IPAccountClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-  }
-
-  /**
-   * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
-   * @param request - The request object that contains all data needed to collect royalty tokens.
-   *   @param request.parentIpId The ip id of the ancestor to whom the royalty tokens belong to.
-   *   @param request.royaltyVaultIpId The id of the royalty vault.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional the amount of royalty tokens collected if waitForTxn is set to true.
-   * @emits RoyaltyTokensCollected (ancestorIpId, royaltyTokensCollected)
-   */
-  public async collectRoyaltyTokens(
-    request: CollectRoyaltyTokensRequest,
-  ): Promise<CollectRoyaltyTokensResponse> {
-    try {
-      const isParentIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.parentIpId, "request.parentIpId"),
-      });
-      if (!isParentIpIdRegistered) {
-        throw new Error(`The parent IP with id ${request.parentIpId} is not registered.`);
-      }
-      const proxyAddress = await this.getRoyaltyVaultAddress(
-        getAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
-      );
-      const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
-        this.rpcClient,
-        this.wallet,
-        proxyAddress,
-      );
-      const req = {
-        ancestorIpId: request.parentIpId,
-      };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: ipRoyaltyVault.collectRoyaltyTokensEncode(req) };
-      } else {
-        const txHash = await ipRoyaltyVault.collectRoyaltyTokens(req);
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs = ipRoyaltyVault.parseTxRoyaltyTokensCollectedEvent(txReceipt);
-          return {
-            txHash: txHash,
-            royaltyTokensCollected: targetLogs[0].royaltyTokensCollected,
-          };
-        } else {
-          return { txHash: txHash };
-        }
-      }
-    } catch (error) {
-      handleError(error, "Failed to collect royalty tokens");
-    }
   }
 
   /**
@@ -293,12 +235,6 @@ export class RoyaltyClient {
     if (!isRoyaltyVaultIpIdRegistered) {
       throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
     }
-    const data = await this.royaltyPolicyLapClient.getRoyaltyData({
-      ipId: royaltyVaultIpId,
-    });
-    if (!data[1] || data[1] === "0x") {
-      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} address is not set.`);
-    }
-    return data[1];
+    return await this.royaltyModuleClient.ipRoyaltyVaults({ ipId: royaltyVaultIpId });
   }
 }

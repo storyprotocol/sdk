@@ -52,8 +52,6 @@ export type {
 export { PIL_TYPE } from "./types/resources/license";
 
 export type {
-  CollectRoyaltyTokensRequest,
-  CollectRoyaltyTokensResponse,
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
   SnapshotRequest,

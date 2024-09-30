@@ -52,7 +52,7 @@ export type RegisterDerivativeResponse = {
 };
 
 export type CreateIpAssetWithPilTermsRequest = {
-  nftContract: Address;
+  spgNftContract: Address;
   pilType: PIL_TYPE;
   currency?: Address;
   mintingFee?: string | number | bigint;
@@ -103,7 +103,7 @@ export type RegisterIpAndAttachPilTermsResponse = {
 };
 
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
-  nftContract: Address;
+  spgNftContract: Address;
   derivData: {
     parentIpIds: Address[];
     licenseTermsIds: string[] | bigint[] | number[];

@@ -25,7 +25,6 @@ export class DisputeClient {
    * Raises a dispute on a given ipId
    * @param request - The request object containing necessary data to raise a dispute.
    *   @param request.targetIpId - The IP ID that is the target of the dispute.
-   *   @param request.arbitrationPolicy - The address of the arbitration policy.
    *   @param request.linkToDisputeEvidence - The link to the dispute evidence.
    *   @param request.targetTag - The target tag of the dispute.
    *   @param request.calldata - Optional calldata to initialize the policy.

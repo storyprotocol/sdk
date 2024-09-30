@@ -5,7 +5,6 @@ import { EncodedTxData } from "../../abi/generated";
 
 export type RaiseDisputeRequest = {
   targetIpId: Address;
-  arbitrationPolicy: Address;
   linkToDisputeEvidence: string;
   targetTag: string;
   calldata?: Address;
