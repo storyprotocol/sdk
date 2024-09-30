@@ -33,6 +33,9 @@ describe("Test NftClient", () => {
           symbol: "symbol",
           maxSupply: 1,
           mintFee: -1n,
+          isPublicMinting: true,
+          mintOpen: true,
+          mintFeeRecipient: "0x",
         });
       } catch (e) {
         expect((e as Error).message).equal(
@@ -48,6 +51,9 @@ describe("Test NftClient", () => {
           symbol: "symbol",
           maxSupply: 1,
           mintFee: 1n,
+          isPublicMinting: true,
+          mintOpen: true,
+          mintFeeRecipient: "0x",
         });
       } catch (e) {
         expect((e as Error).message).equal(
@@ -64,6 +70,9 @@ describe("Test NftClient", () => {
         maxSupply: 1,
         mintFee: 1n,
         mintFeeToken: mintFeeToken,
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       });
 
       expect(result.txHash).equal(txHash);
@@ -77,6 +86,9 @@ describe("Test NftClient", () => {
         name: "name",
         symbol: "symbol",
         owner: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         txOptions: {
           waitForTransaction: true,
         },

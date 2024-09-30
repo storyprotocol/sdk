@@ -11,7 +11,6 @@ import {
   LocalAccount,
   zeroAddress,
   Address,
-  parseUnits,
 } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
@@ -22,7 +21,7 @@ describe("Test IpAssetClient", () => {
   let ipAssetClient: IPAssetClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-  const nftContract = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+  const spgNftContract = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -39,8 +38,6 @@ describe("Test IpAssetClient", () => {
     (ipAssetClient.coreMetadataModuleClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (ipAssetClient.licensingModuleClient as any).address =
-      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
-    (ipAssetClient.royaltyPolicyLAPClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
 
@@ -163,7 +160,7 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await ipAssetClient.register({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
       });
 
@@ -179,7 +176,7 @@ describe("Test IpAssetClient", () => {
 
       try {
         await ipAssetClient.register({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           deadline: "error",
           ipMetadata: {
@@ -206,7 +203,7 @@ describe("Test IpAssetClient", () => {
       const waitForTransaction: boolean = true;
       try {
         await ipAssetClient.register({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           deadline: "12321",
           ipMetadata: {
@@ -233,7 +230,7 @@ describe("Test IpAssetClient", () => {
         .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
 
       const res = await ipAssetClient.register({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
       });
 
@@ -263,7 +260,7 @@ describe("Test IpAssetClient", () => {
       ]);
 
       const response = await ipAssetClient.register({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         txOptions: {
           waitForTransaction: true,
@@ -296,7 +293,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
       const response = await ipAssetClient.register({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         ipMetadata: {
           ipMetadataURI: "",
@@ -357,7 +354,7 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "register").throws(new Error("revert error"));
       try {
         await ipAssetClient.register({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           txOptions: {
             waitForTransaction: true,
@@ -652,7 +649,7 @@ describe("Test IpAssetClient", () => {
     it("throw PIL_TYPE error when createIpAssetWithPilTerms given PIL_TYPE is not match", async () => {
       try {
         await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
-          nftContract,
+          spgNftContract,
         } as unknown as CreateIpAssetWithPilTermsRequest);
       } catch (err) {
         expect((err as Error).message).equal(
@@ -661,19 +658,19 @@ describe("Test IpAssetClient", () => {
       }
     });
 
-    it("should throw address error when createIpAssetWithPilTerms given nftContract is wrong address", async () => {
+    it("should throw address error when createIpAssetWithPilTerms given spgNftContract is wrong address", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
         await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
-          nftContract: "0x",
+          spgNftContract: "0x",
           pilType: PIL_TYPE.COMMERCIAL_USE,
           mintingFee: "100",
           currency: zeroAddress,
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to mint and register IP and attach PIL terms: request.nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          `Failed to mint and register IP and attach PIL terms: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
         );
       }
     });
@@ -682,7 +679,7 @@ describe("Test IpAssetClient", () => {
       const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIpAndAttachPilTerms").resolves(hash);
       const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
-        nftContract,
+        spgNftContract,
         pilType: PIL_TYPE.COMMERCIAL_USE,
         mintingFee: "100",
         currency: zeroAddress,
@@ -719,7 +716,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
       const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
-        nftContract,
+        spgNftContract,
         pilType: PIL_TYPE.COMMERCIAL_USE,
         mintingFee: "100",
         currency: zeroAddress,
@@ -741,7 +738,7 @@ describe("Test IpAssetClient", () => {
       const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIpAndAttachPilTerms").resolves(hash);
       const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         pilType: 0,
         mintingFee: "100",
         currency: zeroAddress,
@@ -768,7 +765,7 @@ describe("Test IpAssetClient", () => {
 
       try {
         await ipAssetClient.registerDerivativeIp({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -790,7 +787,7 @@ describe("Test IpAssetClient", () => {
 
       try {
         await ipAssetClient.registerDerivativeIp({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -815,7 +812,7 @@ describe("Test IpAssetClient", () => {
 
       try {
         await ipAssetClient.registerDerivativeIp({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -842,7 +839,7 @@ describe("Test IpAssetClient", () => {
         .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
 
       const res = await ipAssetClient.registerDerivativeIp({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         derivData: {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -871,7 +868,7 @@ describe("Test IpAssetClient", () => {
         .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
 
       const res = await ipAssetClient.registerDerivativeIp({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         derivData: {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -913,7 +910,7 @@ describe("Test IpAssetClient", () => {
       ]);
 
       const res = await ipAssetClient.registerDerivativeIp({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         derivData: {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -987,7 +984,7 @@ describe("Test IpAssetClient", () => {
 
       try {
         await ipAssetClient.registerIpAndAttachPilTerms({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           ipMetadata: {
             ipMetadataURI: "https://",
@@ -1007,7 +1004,7 @@ describe("Test IpAssetClient", () => {
     it("should throw PIL_TYPE error when registerIpAndAttachPilTerms given PIL_TYPE is not match", async () => {
       try {
         await ipAssetClient.registerIpAndAttachPilTerms({
-          nftContract,
+          spgNftContract,
           tokenId: "3",
         } as unknown as RegisterIpAndAttachPilTermsRequest);
       } catch (err) {
@@ -1025,7 +1022,7 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       await ipAssetClient.registerIpAndAttachPilTerms({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         ipMetadata: {
           ipMetadataHash: toHex(0, { size: 32 }),
@@ -1051,7 +1048,7 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         ipMetadata: {
           ipMetadataHash: toHex(0, { size: 32 }),
@@ -1091,7 +1088,7 @@ describe("Test IpAssetClient", () => {
         licenseTermsId: 5n,
       });
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
-        nftContract,
+        nftContract: spgNftContract,
         tokenId: "3",
         ipMetadata: {
           ipMetadataURI: "https://",
@@ -1152,7 +1149,7 @@ describe("Test IpAssetClient", () => {
 
       try {
         await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
-          nftContract,
+          spgNftContract,
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
             licenseTermsIds: ["1", "2"],
@@ -1176,7 +1173,7 @@ describe("Test IpAssetClient", () => {
 
       try {
         await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
-          nftContract,
+          spgNftContract,
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
             licenseTermsIds: ["1"],
@@ -1202,7 +1199,7 @@ describe("Test IpAssetClient", () => {
         .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
 
       const res = await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
-        nftContract,
+        spgNftContract,
         derivData: {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
           licenseTermsIds: ["1"],
@@ -1241,7 +1238,7 @@ describe("Test IpAssetClient", () => {
       ]);
 
       const res = await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
-        nftContract,
+        spgNftContract,
         derivData: {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
           licenseTermsIds: ["1"],
@@ -1285,7 +1282,7 @@ describe("Test IpAssetClient", () => {
       ]);
 
       const res = await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         derivData: {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
           licenseTermsIds: ["1"],

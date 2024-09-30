@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient, PIL_TYPE } from "../../src";
-import { Hex, toHex } from "viem";
+import { Address, Hex, toHex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { mockERC721, getStoryClient, getTokenId, mintBySpg, iliadChainId } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
@@ -113,6 +113,9 @@ describe("IP Asset Functions ", () => {
         name: "test-collection",
         symbol: "TEST",
         maxSupply: 100,
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
         txOptions: {
           waitForTransaction: true,
         },
@@ -122,7 +125,7 @@ describe("IP Asset Functions ", () => {
       const mockERC20 = new MockERC20();
       await mockERC20.approve(spgAddress[iliadChainId as keyof typeof spgAddress]);
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        nftContract,
+        spgNftContract: nftContract,
         pilType: PIL_TYPE.COMMERCIAL_REMIX,
         commercialRevShare: 10,
         mintingFee: "100",
@@ -138,7 +141,7 @@ describe("IP Asset Functions ", () => {
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
       it("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          nftContract,
+          spgNftContract: nftContract,
           pilType: PIL_TYPE.NON_COMMERCIAL_REMIX,
           ipMetadata: {
             ipMetadataURI: "test-uri",
@@ -152,7 +155,7 @@ describe("IP Asset Functions ", () => {
       });
       it("Commercial Use", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          nftContract,
+          spgNftContract: nftContract,
           pilType: PIL_TYPE.COMMERCIAL_USE,
           commercialRevShare: 10,
           mintingFee: "100",
@@ -171,7 +174,7 @@ describe("IP Asset Functions ", () => {
 
       it("Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          nftContract,
+          spgNftContract: nftContract,
           pilType: PIL_TYPE.COMMERCIAL_REMIX,
           commercialRevShare: 10,
           mintingFee: "100",
@@ -189,7 +192,7 @@ describe("IP Asset Functions ", () => {
       });
       it("should get the related log when createIpAssetWithPilTerms given waitForTransaction is true ", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          nftContract,
+          spgNftContract: nftContract,
           pilType: PIL_TYPE.COMMERCIAL_REMIX,
           commercialRevShare: 10,
           mintingFee: "100",
@@ -260,7 +263,7 @@ describe("IP Asset Functions ", () => {
 
     it("should not throw error when call mintAndRegisterIpAndMakeDerivative", async () => {
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
-        nftContract: nftContract,
+        spgNftContract: nftContract,
         derivData: {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],

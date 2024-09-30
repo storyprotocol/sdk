@@ -9,7 +9,7 @@ import { MockERC20 } from "./utils/mockERC20";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const arbitrationPolicyAddress = "0xcaEC2bD1B1fD57bC47357F688f97d57387E68E25";
+const arbitrationPolicyAddress = "0x8038697357F63415e848785e45B00eB60BcD797b";
 describe("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
@@ -37,7 +37,6 @@ describe("Dispute Functions", () => {
   it("should not throw error when raise a dispute", async () => {
     const raiseDisputeRequest: RaiseDisputeRequest = {
       targetIpId: ipIdB,
-      arbitrationPolicy: arbitrationPolicyAddress,
       linkToDisputeEvidence: "foo",
       targetTag: "PLAGIARISM",
       txOptions: {

@@ -4,12 +4,10 @@ import * as sinon from "sinon";
 import { LicenseClient } from "../../../src";
 import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import {
-  PiLicenseTemplateGetLicenseTermsResponse,
-  RoyaltyPolicyLapClient,
-} from "../../../src/abi/generated";
+import { PiLicenseTemplateGetLicenseTermsResponse } from "../../../src/abi/generated";
 import { LicenseTerms } from "../../../src/types/resources/license";
 import { MockERC20 } from "../../integration/utils/mockERC20";
+import { iliadChainId } from "../../integration/utils/util";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -25,12 +23,7 @@ describe("Test LicenseClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    licenseClient = new LicenseClient(rpcMock, walletMock);
-    licenseClient.royaltyPolicyLAPClient = new RoyaltyPolicyLapClient(
-      rpcMock,
-      walletMock,
-      zeroAddress,
-    );
+    licenseClient = new LicenseClient(rpcMock, walletMock, "1513");
   });
 
   afterEach(() => {

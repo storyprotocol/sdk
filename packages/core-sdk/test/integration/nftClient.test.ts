@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { StoryClient } from "../../src";
 import { getStoryClient } from "./utils/util";
+import { Address } from "viem";
 
 describe("nftClient Functions", () => {
   let client: StoryClient;
@@ -12,6 +13,9 @@ describe("nftClient Functions", () => {
       name: "test-collection",
       symbol: "TEST",
       maxSupply: 100,
+      isPublicMinting: true,
+      mintFeeRecipient: process.env.TEST_WALLET_ADDRESS as Address,
+      mintOpen: true,
       txOptions: {
         waitForTransaction: true,
       },

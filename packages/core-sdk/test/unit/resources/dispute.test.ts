@@ -29,7 +29,6 @@ describe("Test DisputeClient", () => {
       try {
         await disputeClient.raiseDispute({
           targetIpId: "0x",
-          arbitrationPolicy: "0x",
           linkToDisputeEvidence: "link",
           targetTag: "tag",
         });
@@ -44,7 +43,6 @@ describe("Test DisputeClient", () => {
       sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        arbitrationPolicy: "0x",
         linkToDisputeEvidence: "link",
         targetTag: "tag",
       });
@@ -67,7 +65,6 @@ describe("Test DisputeClient", () => {
       ]);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        arbitrationPolicy: "0x",
         linkToDisputeEvidence: "link",
         targetTag: "tag",
         txOptions: { waitForTransaction: true },

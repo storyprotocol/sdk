@@ -57,9 +57,7 @@ describe("Test royalty Functions", () => {
       const licenseTermsId = await getCommercialPolicyId();
       await attachLicenseTerms(ipId1, licenseTermsId);
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(
-        royaltyPolicyLapAddress[Number(iliadChainId) as keyof typeof royaltyPolicyLapAddress],
-      );
+      await mockERC20.approve(client.royalty.royaltyModuleClient.address);
       await client.ipAsset.registerDerivative({
         childIpId: ipId2,
         parentIpIds: [ipId1],
@@ -68,18 +66,6 @@ describe("Test royalty Functions", () => {
           waitForTransaction: true,
         },
       });
-    });
-
-    it("should not throw error when collect royalty tokens", async () => {
-      const response = await client.royalty.collectRoyaltyTokens({
-        parentIpId: ipId1,
-        royaltyVaultIpId: ipId2,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(response.txHash).to.be.a("string").not.empty;
-      expect(response.royaltyTokensCollected).to.be.a("bigint");
     });
 
     it("should not throw error when pay royalty on behalf", async () => {
