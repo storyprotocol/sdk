@@ -27,13 +27,7 @@ export class StoryClient {
   private readonly config: StoryConfig & { chainId: SupportedChainIds };
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
-  private _ipAsset: IPAssetClient | null = null;
-  private _permission: PermissionClient | null = null;
-  private _license: LicenseClient | null = null;
-  private _dispute: DisputeClient | null = null;
-  private _ipAccount: IPAccountClient | null = null;
-  private _royalty: RoyaltyClient | null = null;
-  private _nftClient: NftClient | null = null;
+  private _clients: { [key: string]: any } = {};
 
   /**
    * @param config - the configuration for the SDK client
@@ -106,100 +100,45 @@ export class StoryClient {
   }
 
   /**
-   * Getter for the ip asset client. The client is lazily created when
+   * Generic getter for clients. The client is lazily created when
    * this method is called.
    *
-   * @returns the IPAssetClient instance
+   * @param clientName - the name of the client
+   * @param ClientClass - the class of the client
+   * @returns the client instance
    */
+  private getClient<T>(clientName: string, ClientClass: new (...args: any[]) => T): T {
+    if (!this._clients[clientName]) {
+      this._clients[clientName] = new ClientClass(this.rpcClient, this.wallet, this.config.chainId);
+    }
+    return this._clients[clientName];
+  }
+
   public get ipAsset(): IPAssetClient {
-    if (this._ipAsset === null) {
-      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.config.chainId);
-    }
-
-    return this._ipAsset;
+    return this.getClient('ipAsset', IPAssetClient);
   }
 
-  /**
-   * Getter for the permission client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the PermissionClient instance
-   */
   public get permission(): PermissionClient {
-    if (this._permission === null) {
-      this._permission = new PermissionClient(this.rpcClient, this.wallet, this.config.chainId);
-    }
-
-    return this._permission;
+    return this.getClient('permission', PermissionClient);
   }
 
-  /**
-   * Getter for the license client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the LicenseClient instance
-   */
   public get license(): LicenseClient {
-    if (this._license === null) {
-      this._license = new LicenseClient(this.rpcClient, this.wallet);
-    }
-
-    return this._license;
+    return this.getClient('license', LicenseClient);
   }
 
-  /**
-   * Getter for the dispute client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the DisputeClient instance
-   */
   public get dispute(): DisputeClient {
-    if (this._dispute === null) {
-      this._dispute = new DisputeClient(this.rpcClient, this.wallet);
-    }
-
-    return this._dispute;
+    return this.getClient('dispute', DisputeClient);
   }
 
-  /**
-   * Getter for the ip account client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the IPAccountClient instance
-   */
   public get ipAccount(): IPAccountClient {
-    if (this._ipAccount === null) {
-      this._ipAccount = new IPAccountClient(this.rpcClient, this.wallet);
-    }
-
-    return this._ipAccount;
+    return this.getClient('ipAccount', IPAccountClient);
   }
 
-  /**
-   * Getter for the royalty client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the RoyaltyClient instance
-   */
   public get royalty(): RoyaltyClient {
-    if (this._royalty === null) {
-      this._royalty = new RoyaltyClient(this.rpcClient, this.wallet);
-    }
-
-    return this._royalty;
+    return this.getClient('royalty', RoyaltyClient);
   }
 
-  /**
-   * Getter for the NFT client. The client is lazily created when
-   * this method is called.
-   *
-   * @returns the NftClient instance
-   */
   public get nftClient(): NftClient {
-    if (this._nftClient === null) {
-      this._nftClient = new NftClient(this.rpcClient, this.wallet);
-    }
-
-    return this._nftClient;
+    return this.getClient('nftClient', NftClient);
   }
 }
