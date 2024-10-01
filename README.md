@@ -69,9 +69,9 @@ This section provides the instructions on how to build Story Protocol SDK from s
 
 ### Prerequisite
 
-- Install PNPM: Execute `npm install -g pnpm`
-- Install TypeScript: Run `pnpm add typescript -D`
-- Install Yalc: Use `npm install -g yalc`
+- Install [PNPM](https://pnpm.io/): Execute `npm install -g pnpm`
+- Install [TypeScript](https://www.typescriptlang.org/): Run `pnpm add typescript -D`
+- Install [Yalc](https://github.com/wclr/yalc): Use `npm install -g yalc`
 
 ### Steps for Using Yalc for Local Testing of Core-SDK
 
