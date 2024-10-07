@@ -833,7 +833,7 @@ export class IPAssetClient {
             hash: txHash,
           });
           const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
-          return { txHash, childIpId: log.ipId };
+          return { txHash, childIpId: log.ipId, tokenId: log.tokenId };
         }
         return { txHash };
       }
