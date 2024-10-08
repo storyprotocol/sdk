@@ -8,7 +8,6 @@ import {
   PiLicenseTemplateClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
-  RoyaltyModuleReadOnlyClient,
   SimpleWalletClient,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
@@ -28,7 +27,7 @@ import {
   RegisterPILTermsRequest,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
-import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
+import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 
@@ -38,7 +37,6 @@ export class LicenseClient {
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public piLicenseTemplateReadOnlyClient: PiLicenseTemplateReadOnlyClient;
   public licenseTemplateClient: PiLicenseTemplateClient;
-  public royaltyModuleReadOnlyClient: RoyaltyModuleReadOnlyClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -49,7 +47,6 @@ export class LicenseClient {
     this.licenseRegistryClient = new LicenseRegistryEventClient(rpcClient);
     this.piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
-    this.royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
@@ -82,40 +79,7 @@ export class LicenseClient {
    */
   public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
     try {
-      const { royaltyPolicy, currency } = request;
-      if (getAddress(royaltyPolicy, "request.royaltyPolicy") !== zeroAddress) {
-        const isWhitelistedArbitrationPolicy =
-          await this.royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({ royaltyPolicy });
-        if (!isWhitelistedArbitrationPolicy) {
-          throw new Error("The royalty policy is not whitelisted.");
-        }
-      }
-      if (getAddress(currency, "request.currency") !== zeroAddress) {
-        const isWhitelistedRoyaltyToken =
-          await this.royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken({
-            token: currency,
-          });
-        if (!isWhitelistedRoyaltyToken) {
-          throw new Error("The currency token is not whitelisted.");
-        }
-      }
-      if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
-        throw new Error("Royalty policy requires currency token.");
-      }
-      const object = {
-        ...request,
-        defaultMintingFee: BigInt(request.defaultMintingFee),
-        expiration: BigInt(request.expiration),
-        commercialRevCeiling: BigInt(request.commercialRevCeiling),
-        derivativeRevCeiling: BigInt(request.derivativeRevCeiling),
-      };
-      this.verifyCommercialUse(object);
-      this.verifyDerivatives(object);
-      if (object.commercialRevShare < 0 || object.commercialRevShare > 100) {
-        throw new Error("CommercialRevShare should be between 0 and 100.");
-      } else {
-        object.commercialRevShare = (object.commercialRevShare / 100) * 100000000;
-      }
+      const object = await validateLicenseTerms(request, this.rpcClient);
       const licenseTermsId = await this.getLicenseTermsId(object);
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
@@ -464,50 +428,5 @@ export class LicenseClient {
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;
-  }
-  private verifyCommercialUse(terms: LicenseTerms) {
-    if (!terms.commercialUse) {
-      if (terms.commercialAttribution) {
-        throw new Error("Cannot add commercial attribution when commercial use is disabled.");
-      }
-      if (terms.commercializerChecker !== zeroAddress) {
-        throw new Error("Cannot add commercializerChecker when commercial use is disabled.");
-      }
-      if (terms.commercialRevShare > 0) {
-        throw new Error("Cannot add commercial revenue share when commercial use is disabled.");
-      }
-      if (terms.commercialRevCeiling > 0) {
-        throw new Error("Cannot add commercial revenue ceiling when commercial use is disabled.");
-      }
-      if (terms.derivativeRevCeiling > 0) {
-        throw new Error(
-          "Cannot add derivative revenue ceiling share when commercial use is disabled.",
-        );
-      }
-      if (terms.royaltyPolicy !== zeroAddress) {
-        throw new Error("Cannot add commercial royalty policy when commercial use is disabled.");
-      }
-    } else {
-      if (terms.royaltyPolicy === zeroAddress) {
-        throw new Error("Royalty policy is required when commercial use is enabled.");
-      }
-    }
-  }
-
-  private verifyDerivatives(terms: LicenseTerms) {
-    if (!terms.derivativesAllowed) {
-      if (terms.derivativesAttribution) {
-        throw new Error("Cannot add derivative attribution when derivative use is disabled.");
-      }
-      if (terms.derivativesApproval) {
-        throw new Error("Cannot add derivative approval when derivative use is disabled.");
-      }
-      if (terms.derivativesReciprocal) {
-        throw new Error("Cannot add derivative reciprocal when derivative use is disabled.");
-      }
-      if (terms.derivativeRevCeiling > 0) {
-        throw new Error("Cannot add derivative revenue ceiling when derivative use is disabled.");
-      }
-    }
   }
 }
