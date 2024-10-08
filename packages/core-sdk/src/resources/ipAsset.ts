@@ -24,6 +24,7 @@ import {
   IpCreator,
   IpMetadata,
   MintAndRegisterIpAndMakeDerivativeRequest,
+  MintAndRegisterIpRequest,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
@@ -47,6 +48,7 @@ import {
   SpgClient,
   SpgMintAndRegisterIpAndAttachPilTermsRequest,
   SpgMintAndRegisterIpAndMakeDerivativeRequest,
+  SpgMintAndRegisterIpRequest,
   SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
   SpgRegisterIpRequest,
@@ -777,7 +779,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.*
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
@@ -845,6 +847,53 @@ export class IPAssetClient {
       handleError(error, "Failed to mint and register IP and make derivative");
     }
   }
+  /**
+   * Mint an NFT from a SPGNFT collection and register it with metadata as an IP.
+   * @param request - The request object that contains all data needed to attach license terms.
+   *   @param request.spgNftContract The address of the SPGNFT collection.
+   *   @param request.recipient The address of the recipient of the minted NFT.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.*
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID and Token ID.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   */
+  public async mintAndRegisterIp(request: MintAndRegisterIpRequest): Promise<RegisterIpResponse> {
+    try {
+      const object: SpgMintAndRegisterIpRequest = {
+        spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
+        recipient:
+          (request.recipient && getAddress(request.recipient, "request.recipient")) ||
+          this.wallet.account!.address,
+        ipMetadata: {
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
+        },
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.mintAndRegisterIpEncode(object) };
+      } else {
+        const txHash = await this.spgClient.mintAndRegisterIp(object);
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          const ipRegisterEvent = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
+          return { txHash, ipId: ipRegisterEvent[0].ipId, tokenId: ipRegisterEvent[0].tokenId };
+        }
+        return { txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to mint and register IP");
+    }
+  }
+
   private async getIpIdAddress(
     nftContract: Address,
     tokenId: bigint | string | number,

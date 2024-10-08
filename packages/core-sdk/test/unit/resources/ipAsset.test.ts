@@ -364,6 +364,36 @@ describe("Test IpAssetClient", () => {
         expect((err as Error).message).equal("Failed to register IP: revert error");
       }
     });
+
+    it("should return encoded tx data when register a IP given correct args, encodedTxDataOnly is true and metadata", async () => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon
+        .stub(ipAssetClient.spgClient, "registerIp")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const response = await ipAssetClient.register({
+        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: "3",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(response.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
   });
 
   describe("Test ipAssetClient.registerDerivative", async () => {
@@ -1239,6 +1269,7 @@ describe("Test IpAssetClient", () => {
 
       const res = await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
         spgNftContract,
+        recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         derivData: {
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
           licenseTermsIds: ["1"],
@@ -1298,6 +1329,104 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+  });
+  //mintAndRegisterIp
+  describe("Test ipAssetClient.mintAndRegisterIp", async () => {
+    it("should throw spgNftContract error when mintAndRegisterIp given spgNftContract is wrong address", async () => {
+      try {
+        await ipAssetClient.mintAndRegisterIp({
+          spgNftContract: "0x",
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          `Failed to mint and register IP: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+        );
+      }
+    });
+
+    it("should throw recipient error when mintAndRegisterIp given recipient is wrong address", async () => {
+      try {
+        await ipAssetClient.mintAndRegisterIp({
+          spgNftContract,
+          recipient: "0x",
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          `Failed to mint and register IP: request.recipient address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+        );
+      }
+    });
+
+    it("should return txHash when mintAndRegisterIp given correct args", async () => {
+      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIp").resolves(hash);
+
+      const result = await ipAssetClient.mintAndRegisterIp({
+        spgNftContract,
+        ipMetadata: {
+          ipMetadataURI: "",
+          ipMetadataHash: toHex(0, { size: 32 }),
+        },
+      });
+
+      expect(result.txHash).to.equal(hash);
+    });
+
+    it("should return ipId,txHash when mintAndRegisterIp given correct args and waitForTransaction of true", async () => {
+      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIp").resolves(hash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+
+      const result = await ipAssetClient.mintAndRegisterIp({
+        spgNftContract,
+        ipMetadata: {
+          ipMetadataURI: "",
+          ipMetadataHash: toHex(0, { size: 32 }),
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(result.txHash).to.equal(hash);
+      expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+    });
+
+    it("should return encoded tx data when mintAndRegisterIp given correct args and encodedTxDataOnly of true", async () => {
+      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.spgClient, "mintAndRegisterIp").resolves(hash);
+
+      const result = await ipAssetClient.mintAndRegisterIp({
+        spgNftContract,
+        recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        ipMetadata: {
+          ipMetadataURI: "",
+        },
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
 });

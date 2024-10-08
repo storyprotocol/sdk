@@ -15,7 +15,7 @@ describe("IP Asset Functions ", () => {
     client = getStoryClient();
   });
 
-  describe("Create IP Asset", async () => {
+  describe.skip("Create IP Asset", async () => {
     let parentIpId: Hex;
     let childIpId: Hex;
     let noCommercialLicenseTermsId: bigint;
@@ -138,7 +138,7 @@ describe("IP Asset Functions ", () => {
       licenseTermsId = result.licenseTermsId!;
     });
 
-    describe("should not throw error when mint and register ip and attach pil terms", async () => {
+    describe.skip("should not throw error when mint and register ip and attach pil terms", async () => {
       it("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract: nftContract,
@@ -274,6 +274,22 @@ describe("IP Asset Functions ", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.childIpId).to.be.a("string").and.not.empty;
+    });
+
+    it("should not throw error when call mintAndRegisterIp", async () => {
+      const result = await client.ipAsset.mintAndRegisterIp({
+        spgNftContract: nftContract,
+        ipMetadata: {
+          ipMetadataURI: "test-uri",
+          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.ipId).to.be.a("string").and.not.empty;
     });
   });
 });

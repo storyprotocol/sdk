@@ -35,6 +35,7 @@ export type {
   IpMedia,
   IPRobotTerms,
   StoryProtocolApp,
+  MintAndRegisterIpRequest,
 } from "./types/resources/ipAsset";
 
 export type {

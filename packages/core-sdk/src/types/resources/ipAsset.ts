@@ -18,6 +18,7 @@ export type RegisterIpResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
+  tokenId?: bigint;
 };
 
 export type RegisterRequest = {
@@ -194,3 +195,8 @@ export type IpMetadata = {
   robotTerms?: IPRobotTerms;
   [key: string]: unknown;
 };
+
+export type MintAndRegisterIpRequest = {
+  spgNftContract: Address;
+  recipient?: Address;
+} & IpMetadataAndTxOption;
