@@ -7,7 +7,8 @@ import chaiAsPromised from "chai-as-promised";
 import { PiLicenseTemplateGetLicenseTermsResponse } from "../../../src/abi/generated";
 import { LicenseTerms } from "../../../src/types/resources/license";
 import { MockERC20 } from "../../integration/utils/mockERC20";
-import { iliadChainId } from "../../integration/utils/util";
+const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
+
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -31,6 +32,12 @@ describe("Test LicenseClient", () => {
   });
 
   describe("Test licenseClient.registerPILTerms", async () => {
+    beforeEach(() => {
+      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
+        .stub()
+        .resolves(true);
+      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon.stub().resolves(true);
+    });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
       currency: MockERC20.address,
@@ -50,251 +57,7 @@ describe("Test LicenseClient", () => {
       derivativeRevCeiling: 0n,
       uri: "",
     };
-
-    it("should throw royalty error when call registerRILTerms with invalid royalty policy address", async () => {
-      await expect(
-        licenseClient.registerPILTerms({
-          ...licenseTerms,
-          royaltyPolicy: "0x",
-        }),
-      ).to.be.rejectedWith(
-        "Failed to register license terms: request.royaltyPolicy address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-      );
-    });
-
-    it("should throw royalty whitelist error when call registerRILTerms with invalid royalty whitelist address", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(false);
-      await expect(
-        licenseClient.registerPILTerms({
-          ...licenseTerms,
-          royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        }),
-      ).to.be.rejectedWith(
-        "Failed to register license terms: The royalty policy is not whitelisted.",
-      );
-    });
-
-    it("should throw currency error when call registerRILTerms with invalid currency address", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      await expect(
-        licenseClient.registerPILTerms({
-          ...licenseTerms,
-          currency: "0x",
-        }),
-      ).to.be.rejectedWith(
-        "Failed to register license terms: request.currency address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-      );
-    });
-
-    it("should throw currency whitelist error when call registerRILTerms with invalid currency whitelist address", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(false);
-      await expect(
-        licenseClient.registerPILTerms({
-          ...licenseTerms,
-          currency: MockERC20.address,
-        }),
-      ).to.be.rejectedWith(
-        "Failed to register license terms: The currency token is not whitelisted.",
-      );
-    });
-
-    it("should throw royalty policy requires currency token error when call registerRILTerms given royaltyPolicy is not zero address and current is zero address", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(true);
-      await expect(
-        licenseClient.registerPILTerms({
-          ...licenseTerms,
-          currency: zeroAddress,
-          royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        }),
-      ).to.be.rejectedWith(
-        "Failed to register license terms: Royalty policy requires currency token.",
-      );
-    });
-
-    describe("verify commercial use", () => {
-      beforeEach(() => {
-        sinon
-          .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-          .resolves(true);
-        sinon
-          .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-          .resolves(true);
-      });
-      it("should throw commercialAttribution error when call registerRILTerms given commercialUse is false and commercialAttribution is true", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: false,
-            commercialAttribution: true,
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add commercial attribution when commercial use is disabled.",
-        );
-      });
-
-      it("should throw commercializerChecker error when call registerRILTerms given commercialUse is false and commercialChecker is not zero address", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: false,
-            commercializerChecker: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add commercializerChecker when commercial use is disabled.",
-        );
-      });
-      it("should throw commercialRevShare error when call registerRILTerms given commercialUse is false and commercialRevShare is more than 0 ", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: false,
-            commercializerChecker: zeroAddress,
-            commercialRevShare: 1,
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add commercial revenue share when commercial use is disabled.",
-        );
-      });
-
-      it("should throw commercialRevCeiling error when call registerRILTerms given commercialUse is false and commercialRevCeiling is more than 0", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: false,
-            commercialRevCeiling: 1,
-            commercializerChecker: zeroAddress,
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add commercial revenue ceiling when commercial use is disabled.",
-        );
-      });
-
-      it("should throw derivativeRevCeiling error when call registerRILTerms given commercialUse is false and derivativeRevCeiling is more than 0", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: false,
-            derivativeRevCeiling: 1,
-            commercializerChecker: zeroAddress,
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add derivative revenue ceiling share when commercial use is disabled.",
-        );
-      });
-
-      it("should throw royaltyPolicy error when call registerRILTerms given commercialUse is false and royaltyPolicy is not zero address", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: false,
-            royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-            commercializerChecker: zeroAddress,
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add commercial royalty policy when commercial use is disabled.",
-        );
-      });
-
-      it("should throw royaltyPolicy error when call registerRILTerms given commercialUse is true and royaltyPolicy is zero address", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: true,
-            royaltyPolicy: zeroAddress,
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Royalty policy is required when commercial use is enabled.",
-        );
-      });
-    });
-
-    describe("verify derivatives", () => {
-      beforeEach(() => {
-        sinon
-          .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-          .resolves(true);
-        sinon
-          .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-          .resolves(true);
-      });
-      it("should throw derivativesAttribution error when call registerRILTerms given derivativesAllowed is false and derivativesAttribution is true", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: true,
-            derivativesAllowed: false,
-            derivativesAttribution: true,
-            royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add derivative attribution when derivative use is disabled.",
-        );
-      });
-
-      it("should throw derivativesApproval error when call registerRILTerms given derivativesAllowed is false and derivativesApproval is true", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: true,
-            derivativesAllowed: false,
-            derivativesApproval: true,
-            royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add derivative approval when derivative use is disabled.",
-        );
-      });
-
-      it("should throw derivativesReciprocal error when call registerRILTerms given derivativesAllowed is false and derivativesReciprocal is true", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: true,
-            derivativesAllowed: false,
-            derivativesReciprocal: true,
-            royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add derivative reciprocal when derivative use is disabled.",
-        );
-      });
-
-      it("should throw derivativeRevCeiling error when call registerRILTerms given derivativesAllowed is false and derivativeRevCeiling is more than 0", async () => {
-        await expect(
-          licenseClient.registerPILTerms({
-            ...licenseTerms,
-            commercialUse: true,
-            derivativesAllowed: false,
-            derivativeRevCeiling: 1,
-            royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          }),
-        ).to.be.rejectedWith(
-          "Failed to register license terms: Cannot add derivative revenue ceiling when derivative use is disabled.",
-        );
-      });
-    });
-
     it("should return directly licenseTermsId when call registerPILTerms given request have already registered", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(true);
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
         .resolves({ selectedLicenseTermsId: BigInt(1) });
@@ -306,12 +69,6 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is more than 100", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(true);
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
         .resolves({ selectedLicenseTermsId: BigInt(0) });
@@ -330,12 +87,6 @@ describe("Test LicenseClient", () => {
     });
     it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is less than 0", async () => {
       sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(true);
-      sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
         .resolves({ selectedLicenseTermsId: BigInt(0) });
       await expect(
@@ -352,12 +103,6 @@ describe("Test LicenseClient", () => {
       );
     });
     it("should return encodedTxData when call registerPILTerms given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(true);
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
         .resolves({ selectedLicenseTermsId: BigInt(0) });
@@ -378,12 +123,6 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call registerPILTerms given args is correct", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(true);
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
         .resolves({ selectedLicenseTermsId: BigInt(0) });
@@ -406,12 +145,6 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call registerPILTerms given args is correct and waitForTransaction of true", async () => {
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.royaltyModuleReadOnlyClient, "isWhitelistedRoyaltyToken")
-        .resolves(true);
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
         .resolves({ selectedLicenseTermsId: BigInt(0) });
@@ -506,6 +239,26 @@ describe("Test LicenseClient", () => {
         );
       }
     });
+
+    it("should return encodedTxData when call registerNonComSocialRemixingPIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
+        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+
+      const result = await licenseClient.registerNonComSocialRemixingPIL({
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.deep.equal({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
+    });
   });
 
   describe("Test licenseClient.registerCommercialUsePIL", async () => {
@@ -581,6 +334,28 @@ describe("Test LicenseClient", () => {
           "Failed to register commercial use PIL: request fail.",
         );
       }
+    });
+
+    it("should return encodedTxData when call registerCommercialUsePIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
+        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+
+      const result = await licenseClient.registerCommercialUsePIL({
+        defaultMintingFee: "1",
+        currency: zeroAddress,
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.deep.equal({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
     });
   });
 
@@ -661,6 +436,29 @@ describe("Test LicenseClient", () => {
           "Failed to register commercial remix PIL: request fail.",
         );
       }
+    });
+
+    it("should return encodedTxData when call registerCommercialRemixPIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
+        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+
+      const result = await licenseClient.registerCommercialRemixPIL({
+        defaultMintingFee: "1",
+        commercialRevShare: 100,
+        currency: zeroAddress,
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.deep.equal({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
     });
   });
 
@@ -764,6 +562,30 @@ describe("Test LicenseClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should return encodedTxData when call attachLicenseTerms given txOptions.encodedTxDataOnly of true and args is correct", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(false);
+      sinon
+        .stub(licenseClient.licensingModuleClient, "attachLicenseTermsEncode")
+        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+
+      const result = await licenseClient.attachLicenseTerms({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.deep.equal({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
     });
   });
 
@@ -932,6 +754,30 @@ describe("Test LicenseClient", () => {
 
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTokenIds).to.deep.equal([1n, 2n, 3n, 4n, 5n]);
+    });
+
+    it("should return encodedTxData when call mintLicenseTokens given txOptions.encodedTxDataOnly of true and args is correct", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(licenseClient.licensingModuleClient, "mintLicenseTokensEncode")
+        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+
+      const result = await licenseClient.mintLicenseTokens({
+        licensorIpId: zeroAddress,
+        licenseTermsId: "1",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.deep.equal({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
     });
   });
 

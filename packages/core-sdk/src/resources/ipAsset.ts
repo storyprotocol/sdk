@@ -34,6 +34,8 @@ import {
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpResponse,
+  RegisterPilTermsAndAttachRequest,
+  RegisterPilTermsAndAttachResponse,
   RegisterRequest,
 } from "../types/resources/ipAsset";
 import {
@@ -52,11 +54,12 @@ import {
   SpgRegisterIpAndAttachPilTermsRequest,
   SpgRegisterIpAndMakeDerivativeRequest,
   SpgRegisterIpRequest,
+  SpgRegisterPilTermsAndAttachRequest,
   accessControllerAbi,
   ipAccountImplAbi,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
-import { getLicenseTermByType } from "../utils/getLicenseTermsByType";
+import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { AccessPermission, SetPermissionsRequest } from "../types/resources/permission";
 
@@ -893,7 +896,74 @@ export class IPAssetClient {
       handleError(error, "Failed to mint and register IP");
     }
   }
+  /**
+   * Register Programmable IP License Terms (if unregistered) and attach it to IP.
+   * @param request - The request object that contains all data needed to attach license terms.
+   *   @param request.ipId The ID of the IP.
+   *   @param request.terms The PIL terms to be registered.
+   *     @param request.terms.transferable Indicates whether the license is transferable or not.
+   *     @param request.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
+   *     @param request.terms.mintingFee The fee to be paid when minting a license.
+   *     @param request.terms.expiration The expiration period of the license.
+   *     @param request.terms.commercialUse Indicates whether the work can be used commercially or not.
+   *     @param request.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
+   *     @param request.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
+   *     @param request.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
+   *     @param request.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
+   *     @param request.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
+   *     @param request.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
+   *     @param request.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
+   *     @param request.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
+   *     @param request.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
+   *     @param request.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
+   *     @param request.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *     @param request.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash.
+   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
+   */
+  public async registerPilTermsAndAttach(
+    request: RegisterPilTermsAndAttachRequest,
+  ): Promise<RegisterPilTermsAndAttachResponse> {
+    try {
+      const ipId = getAddress(request.ipId, "request.ipId");
+      const isRegistered = await this.isRegistered(ipId);
+      if (!isRegistered) {
+        throw new Error(`The IP with id ${ipId} is not registered.`);
+      }
+      const licenseTerms = await validateLicenseTerms(request.terms, this.rpcClient);
+      const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({
+        terms: licenseTerms,
+      });
+      if (licenseRes.selectedLicenseTermsId !== 0n) {
+        throw new Error(
+          `The license terms with id ${licenseRes.selectedLicenseTermsId} is already registered.`,
+        );
+      }
+      const object: SpgRegisterPilTermsAndAttachRequest = {
+        ipId,
+        terms: licenseTerms,
+      };
 
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.spgClient.registerPilTermsAndAttachEncode(object) };
+      } else {
+        const txHash = await this.spgClient.registerPilTermsAndAttach(object);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          //TODO: get license terms id from event
+          return { txHash, licenseTermsId: licenseRes.selectedLicenseTermsId };
+        } else {
+          return { txHash };
+        }
+      }
+    } catch (error) {
+      handleError(error, "Failed to register PIL terms and attach");
+    }
+  }
   private async getIpIdAddress(
     nftContract: Address,
     tokenId: bigint | string | number,

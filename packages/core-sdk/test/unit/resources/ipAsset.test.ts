@@ -1,7 +1,12 @@
 import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { CreateIpAssetWithPilTermsRequest, IPAssetClient, PIL_TYPE } from "../../../src";
+import {
+  CreateIpAssetWithPilTermsRequest,
+  IPAssetClient,
+  LicenseTerms,
+  PIL_TYPE,
+} from "../../../src";
 import {
   PublicClient,
   WalletClient,
@@ -14,6 +19,9 @@ import {
 } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
+import { MockERC20 } from "../../integration/utils/mockERC20";
+const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
+
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -1331,7 +1339,6 @@ describe("Test IpAssetClient", () => {
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
-  //mintAndRegisterIp
   describe("Test ipAssetClient.mintAndRegisterIp", async () => {
     it("should throw spgNftContract error when mintAndRegisterIp given spgNftContract is wrong address", async () => {
       try {
@@ -1427,6 +1434,139 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+  });
+
+  describe("Test ipAssetClient.registerPilTermsAndAttach", async () => {
+    beforeEach(() => {
+      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
+        .stub()
+        .resolves(true);
+      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon.stub().resolves(true);
+    });
+    const licenseTerms: LicenseTerms = {
+      defaultMintingFee: 1513n,
+      currency: MockERC20.address,
+      royaltyPolicy: zeroAddress,
+      transferable: false,
+      expiration: 0n,
+      commercialUse: false,
+      commercialAttribution: false,
+      commercializerChecker: zeroAddress,
+      commercializerCheckerData: "0x",
+      commercialRevShare: 0,
+      commercialRevCeiling: 0n,
+      derivativesAllowed: false,
+      derivativesAttribution: false,
+      derivativesApproval: false,
+      derivativesReciprocal: false,
+      derivativeRevCeiling: 0n,
+      uri: "",
+    };
+    it("should throw ipId error when registerPilTermsAndAttach given ipId is wrong address", async () => {
+      try {
+        await ipAssetClient.registerPilTermsAndAttach({
+          ipId: "0x",
+          terms: licenseTerms,
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          `Failed to register PIL terms and attach: request.ipId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+        );
+      }
+    });
+
+    it("should throw ipId have not registered error when registerPilTermsAndAttach given ipId have not registered", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await ipAssetClient.registerPilTermsAndAttach({
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          terms: licenseTerms,
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register PIL terms and attach: The IP with id 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not registered.",
+        );
+      }
+    });
+
+    it("should throw license terms registered error when registerPilTermsAndAttach given license terms have registered", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: 1n });
+
+      try {
+        await ipAssetClient.registerPilTermsAndAttach({
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          terms: licenseTerms,
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register PIL terms and attach: The license terms with id 1 is already registered.",
+        );
+      }
+    });
+
+    it("should return encoded tx data when registerPilTermsAndAttach given correct args and encodedTxDataOnly of true", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: 0n });
+
+      const result = await ipAssetClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        terms: licenseTerms,
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should return txHash when registerPilTermsAndAttach given correct args", async () => {
+      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.spgClient, "registerPilTermsAndAttach").resolves(hash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: 0n });
+      const result = await ipAssetClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        terms: licenseTerms,
+      });
+
+      expect(result.txHash).to.equal(hash);
+    });
+
+    it("should return txHash and licenseTermsId when registerPilTermsAndAttach given correct args and waitForTransaction of true", async () => {
+      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon.stub(ipAssetClient.spgClient, "registerPilTermsAndAttach").resolves(hash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: 0n });
+      sinon.stub(ipAssetClient.licensingModuleClient, "parseTxLicenseTermsAttachedEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          caller: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsId: 0n,
+        },
+      ]);
+
+      const result = await ipAssetClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        terms: licenseTerms,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(result.txHash).to.equal(hash);
+      expect(result.licenseTermsId).to.equal(0n);
     });
   });
 });

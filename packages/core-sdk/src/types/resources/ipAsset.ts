@@ -1,7 +1,7 @@
 import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
-import { PIL_TYPE } from "./license";
+import { PIL_TYPE, RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 
 type IpMetadataAndTxOption = {
@@ -200,3 +200,15 @@ export type MintAndRegisterIpRequest = {
   spgNftContract: Address;
   recipient?: Address;
 } & IpMetadataAndTxOption;
+
+export type RegisterPilTermsAndAttachRequest = {
+  ipId: Address;
+  terms: RegisterPILTermsRequest;
+  txOptions?: TxOptions;
+};
+
+export type RegisterPilTermsAndAttachResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  licenseTermsId?: bigint;
+};

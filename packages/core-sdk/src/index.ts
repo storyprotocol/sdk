@@ -36,6 +36,8 @@ export type {
   IPRobotTerms,
   StoryProtocolApp,
   MintAndRegisterIpRequest,
+  RegisterPilTermsAndAttachRequest,
+  RegisterPilTermsAndAttachResponse,
 } from "./types/resources/ipAsset";
 
 export type {
