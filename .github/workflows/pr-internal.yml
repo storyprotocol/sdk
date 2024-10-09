@@ -5,23 +5,27 @@ on:
     branches:
       - main
       - dev
+      - v1.1
+      - dev_v1.1
+
   pull_request:
     branches:
       - main
       - dev
+      - v1.1
+      - dev_v1.1
 
 jobs:
-
   Timestamp:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
-  
+
   build_and_test:
     needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}
-      ENVIRONMENT: 'beta-sepolia'
+      ENVIRONMENT: "beta-sepolia"
     secrets:
       RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
