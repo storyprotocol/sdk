@@ -100,4 +100,20 @@ describe("useIpAccount Functions", () => {
       );
     });
   });
+
+  it("should success when call getIpAccountNonce", async () => {
+    await act(async () => {
+      await expect(ipAccountHook.getIpAccountNonce(ipId)).resolves.toEqual(
+        expect.any(String)
+      );
+    });
+  });
+
+  it("should success when call getToken", async () => {
+    await act(async () => {
+      await expect(ipAccountHook.getToken(ipId)).resolves.toEqual(
+        expect.any(String)
+      );
+    });
+  });
 });

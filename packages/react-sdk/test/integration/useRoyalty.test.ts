@@ -39,7 +39,7 @@ describe("useRoyalty Functions", () => {
     return await act(async () => {
       return (
         await licenseHook.registerCommercialUsePIL({
-          mintingFee: "1",
+          defaultMintingFee: "1",
           currency: mockERC20Address,
           txOptions: {
             waitForTransaction: true,
