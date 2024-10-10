@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/react-sdk",
-  "version": "0.0.2",
+  "version": "1.1.0-stable",
   "description": "The Story Protocol React SDK",
   "main": "dist/story-protocol-react-sdk.cjs.js",
   "module": "dist/story-protocol-react-sdk.esm.js",
