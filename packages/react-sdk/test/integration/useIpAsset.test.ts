@@ -132,6 +132,7 @@ describe("useIpAsset Functions", () => {
   });
 
   it("should success when registering derivative with license tokens", async () => {
+    console.log("tokenId", "mockERC721Address", mockERC721Address);
     const tokenId = await getTokenId();
     let ipId: Address;
     let licenseTokenId: bigint;

@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react";
-import { Hex } from "viem";
+import { Hex, zeroAddress } from "viem";
 import { act } from "react";
 
 import { useIpAsset, useLicense } from "../../src";
@@ -13,7 +13,39 @@ describe("useLicense Functions", () => {
   const {
     result: { current: ipAssetHook },
   } = renderHook(() => useIpAsset(), { wrapper: Wrapper });
-  describe("registering license with different types", () => {
+  describe("should success when register license with generic license terms", () => {
+    it("should success when registerPILTerms", async () => {
+      await act(async () => {
+        await expect(
+          licenseHook.registerPILTerms({
+            defaultMintingFee: "1",
+            currency: mockERC20Address,
+            transferable: false,
+            royaltyPolicy: zeroAddress,
+            commercialUse: false,
+            commercialAttribution: false,
+            commercializerChecker: zeroAddress,
+            commercializerCheckerData: "0x",
+            commercialRevShare: 0,
+            derivativesAllowed: false,
+            derivativesAttribution: false,
+            derivativesApproval: false,
+            derivativesReciprocal: false,
+            uri: "",
+            expiration: "",
+            commercialRevCeiling: "",
+            derivativeRevCeiling: "",
+            txOptions: {
+              waitForTransaction: true,
+            },
+          })
+        ).resolves.toEqual(
+          expect.objectContaining({
+            licenseTermsId: expect.any(BigInt),
+          })
+        );
+      });
+    });
     it("should success when register license with non commercial social remixing PIL", async () => {
       await act(async () => {
         await expect(
@@ -34,7 +66,7 @@ describe("useLicense Functions", () => {
       await act(async () => {
         await expect(
           licenseHook.registerCommercialUsePIL({
-            mintingFee: "1",
+            defaultMintingFee: "1",
             currency: mockERC20Address,
             txOptions: {
               waitForTransaction: true,
@@ -52,7 +84,7 @@ describe("useLicense Functions", () => {
       await act(async () => {
         await expect(
           licenseHook.registerCommercialRemixPIL({
-            mintingFee: "1",
+            defaultMintingFee: "1",
             commercialRevShare: 100,
             currency: mockERC20Address,
             txOptions: {

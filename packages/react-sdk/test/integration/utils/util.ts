@@ -8,7 +8,7 @@ import {
   defineChain,
 } from "viem";
 
-export const RPC = "https://testnet.storyrpc.io";
+export const RPC = "https://story-testnet.aura.network";
 export const mockERC721Address = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
 export const mockERC20Address = "0x91f6F05B08c16769d3c85867548615d270C42fC7";
 export const iliad = defineChain({
@@ -46,9 +46,7 @@ export const walletClient = createWalletClient({
   account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
 });
 
-export const getTokenId = async (
-  nftContract?: Address
-): Promise<number | undefined> => {
+export const getTokenId = async (): Promise<number | undefined> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
