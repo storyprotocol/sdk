@@ -204,6 +204,7 @@ export type MintAndRegisterIpRequest = {
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
   terms: RegisterPILTermsRequest;
+  deadline?: string | number | bigint;
   txOptions?: TxOptions;
 };
 
@@ -212,3 +213,9 @@ export type RegisterPilTermsAndAttachResponse = {
   encodedTxData?: EncodedTxData;
   licenseTermsId?: bigint;
 };
+
+export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  spgNftContract: Address;
+  licenseTokenIds: string[] | bigint[] | number[];
+  recipient?: Address;
+} & IpMetadataAndTxOption;

@@ -96,19 +96,43 @@ export default defineConfig(async () => {
     {
       name: "SPGNFTImpl",
       address: {
-        [iliadChainId]: "0x07AeC2b41E691cec9c48Fee5a63fAc2AB460615a",
-      },
-    },
-    {
-      name: "GroupingWorkflows",
-      address: {
-        [iliadChainId]: "0xDed2AF44142489d5c380322A22cB9A0B8f22111A",
+        [iliadChainId]: "0x92C7c6805DF9B936888e5daC865111dF028846E5",
       },
     },
     {
       name: "CoreMetadataModule",
       address: {
         [iliadChainId]: "0x56eFacFCcacfdEbd1d6E3C4071CaCDEbA0902f04",
+      },
+    },
+    {
+      name: "DerivativeWorkflows",
+      address: {
+        [iliadChainId]: "0xdAe4A3134c33C4aD24cF2907C8f73Acdb58649be",
+      },
+    },
+    {
+      name: "GroupingWorkflows",
+      address: {
+        [iliadChainId]: "0x81d717d320Af60805c85B5aD60b506D6e9920584",
+      },
+    },
+    {
+      name: "RegistrationWorkflows",
+      address: {
+        [iliadChainId]: "0x601C24bFA5Ae435162A5dC3cd166280C471d16c8",
+      },
+    },
+    {
+      name: "RoyaltyWorkflows",
+      address: {
+        [iliadChainId]: "0x24f571e4982163bC166E594De289D6b754cB82A5",
+      },
+    },
+    {
+      name: "LicenseAttachmentWorkflows",
+      address: {
+        [iliadChainId]: "0x96D26F998a56D6Ee34Fb581d26aAEb94e71e3929",
       },
     },
   ];
@@ -185,24 +209,37 @@ export default defineConfig(async () => {
             "ipRoyaltyVaults",
           ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
-          LicenseToken: ["ownerOf"],
-          SPG: [
-            "createCollection",
-            "CollectionCreated",
-            "mintAndRegisterIp",
-            "registerPILTermsAndAttach",
-            "mintAndRegisterIpAndAttachPILTerms",
-            "registerIpAndAttachPILTerms",
-            "mintAndRegisterIpAndMakeDerivative",
-            "registerIpAndMakeDerivative",
-            "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
-            "registerIpAndMakeDerivativeWithLicenseTokens",
-            "registerIp",
-          ],
+          LicenseToken: ["ownerOf", "approve"],
+          SPG: ["CollectionCreated"],
           GroupingWorkflows: [
             "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
             "registerIpAndAttachLicenseAndAddToGroup",
+            "registerGroupAndAttachLicense",
             "registerGroupAndAttachLicenseAndAddIps",
+          ],
+          DerivativeWorkflows: [
+            "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+            "registerIpAndMakeDerivative",
+            "mintAndRegisterIpAndMakeDerivative",
+            "registerIpAndMakeDerivativeWithLicenseTokens",
+            "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+          ],
+          RegistrationWorkflows: [
+            "createCollection",
+            "mintAndRegisterIp",
+            "registerIp",
+            "CollectionCreated",
+          ],
+          LicenseAttachmentWorkflows: [
+            "registerPILTermsAndAttach",
+            "registerIpAndAttachPILTerms",
+            "mintAndRegisterIpAndAttachPILTerms",
+          ],
+          RoyaltyWorkflows: [
+            "transferToVaultAndSnapshotAndClaimByTokenBatch",
+            "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
+            "snapshotAndClaimByTokenBatch",
+            "snapshotAndClaimBySnapshotBatch",
           ],
         },
       }),

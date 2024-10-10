@@ -63,6 +63,7 @@ export class MockERC20 {
       account: this.walletClient.account,
     });
     const approveHash = await this.walletClient.writeContract(call);
+    console.log("Approve hash: ", approveHash);
     await waitTx(this.publicClient, approveHash);
   }
 

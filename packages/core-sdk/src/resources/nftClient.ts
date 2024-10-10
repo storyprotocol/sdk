@@ -1,6 +1,6 @@
 import { PublicClient, isAddress, maxUint32, zeroAddress } from "viem";
 
-import { SimpleWalletClient, SpgClient } from "../abi/generated";
+import { RegistrationWorkflowsClient, SimpleWalletClient } from "../abi/generated";
 import {
   CreateNFTCollectionRequest,
   CreateNFTCollectionResponse,
@@ -9,14 +9,14 @@ import { handleError } from "../utils/errors";
 import { getAddress } from "../utils/utils";
 
 export class NftClient {
-  public spgClient: SpgClient;
+  public registrationWorkflowsClient: RegistrationWorkflowsClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
-    this.spgClient = new SpgClient(rpcClient, wallet);
+    this.registrationWorkflowsClient = new RegistrationWorkflowsClient(rpcClient, wallet);
   }
 
   /**
@@ -34,7 +34,7 @@ export class NftClient {
    * 	 @param request.owner - [Optional] The owner of the collection.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a CreateNFTCollectionResponse containing the transaction hash and collection address.
-   * @emits CollectionCreated (nftContract);
+   * @emits CollectionCreated (spgNftContract);
    */
   public async createNFTCollection(
     request: CreateNFTCollectionRequest,
@@ -64,21 +64,24 @@ export class NftClient {
 
       if (request.txOptions?.encodedTxDataOnly) {
         return {
-          encodedTxData: this.spgClient.createCollectionEncode({
+          encodedTxData: this.registrationWorkflowsClient.createCollectionEncode({
             spgNftInitParams,
           }),
         };
       } else {
-        const txHash = await this.spgClient.createCollection({ spgNftInitParams });
+        const txHash = await this.registrationWorkflowsClient.createCollection({
+          spgNftInitParams,
+        });
         if (request.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
             hash: txHash,
           });
-          const targetLogs = this.spgClient.parseTxCollectionCreatedEvent(txReceipt);
+          const targetLogs =
+            this.registrationWorkflowsClient.parseTxCollectionCreatedEvent(txReceipt);
           return {
             txHash: txHash,
-            nftContract: targetLogs[0].nftContract,
+            nftContract: targetLogs[0].spgNftContract,
           };
         }
         return { txHash: txHash };

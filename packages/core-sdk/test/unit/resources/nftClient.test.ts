@@ -1,9 +1,9 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import * as sinon from "sinon";
-import { Hex, PublicClient, WalletClient } from "viem";
+import { PublicClient, WalletClient } from "viem";
 
-import { CreateNFTCollectionRequest, NftClient } from "../../../src";
+import { NftClient } from "../../../src";
 import { createMock } from "../testUtils";
 
 chai.use(chaiAsPromised);
@@ -63,7 +63,7 @@ describe("Test NftClient", () => {
     });
 
     it("should return txHash when call createNFTCollection successfully", async () => {
-      sinon.stub(nftClient.spgClient, "createCollection").resolves(txHash);
+      sinon.stub(nftClient.registrationWorkflowsClient, "createCollection").resolves(txHash);
       const result = await nftClient.createNFTCollection({
         name: "name",
         symbol: "symbol",
@@ -79,9 +79,11 @@ describe("Test NftClient", () => {
     });
 
     it("should return txHash when call createNFTCollection successfully with waitForTransaction", async () => {
-      const nftContract = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
-      sinon.stub(nftClient.spgClient, "createCollection").resolves(txHash);
-      sinon.stub(nftClient.spgClient, "parseTxCollectionCreatedEvent").returns([{ nftContract }]);
+      const spgNftContract = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
+      sinon.stub(nftClient.registrationWorkflowsClient, "createCollection").resolves(txHash);
+      sinon
+        .stub(nftClient.registrationWorkflowsClient, "parseTxCollectionCreatedEvent")
+        .returns([{ spgNftContract }]);
       const result = await nftClient.createNFTCollection({
         name: "name",
         symbol: "symbol",
@@ -95,7 +97,7 @@ describe("Test NftClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
-      expect(result.nftContract).equal(nftContract);
+      expect(result.nftContract).equal(spgNftContract);
     });
   });
 });
