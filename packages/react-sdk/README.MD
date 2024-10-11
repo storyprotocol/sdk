@@ -39,7 +39,6 @@ import { StoryProvider } from "@story-protocol/react-sdk";
 const client = StoryClient.newClient(config);
  <StoryProvider
   config={{
-    chainId: "sepolia",
     transport: http("RPC_URL"),
     wallet: walletClient,
   }}

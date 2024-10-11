@@ -111,9 +111,11 @@ describe("useIpAccount Functions", () => {
 
   it("should success when call getToken", async () => {
     await act(async () => {
-      await expect(ipAccountHook.getToken(ipId)).resolves.toEqual(
-        expect.any(String)
-      );
+      await expect(ipAccountHook.getToken(ipId)).resolves.toEqual({
+        chainId: expect.any(BigInt),
+        tokenContract: expect.any(String),
+        tokenId: expect.any(BigInt),
+      });
     });
   });
 });
