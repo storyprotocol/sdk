@@ -219,3 +219,10 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   licenseTokenIds: string[] | bigint[] | number[];
   recipient?: Address;
 } & IpMetadataAndTxOption;
+
+export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  nftContract: Address;
+  tokenId: string | number | bigint;
+  licenseTokenIds: string[] | bigint[] | number[];
+  deadline?: string | number | bigint;
+} & IpMetadataAndTxOption;

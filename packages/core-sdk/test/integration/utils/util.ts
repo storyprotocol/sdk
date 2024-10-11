@@ -7,7 +7,7 @@ import {
   licenseTokenAddress,
   spgnftBeaconAddress,
 } from "../../../src/abi/generated";
-export const RPC = "https://story-testnet.aura.network";
+export const RPC = "https://testnet.storyrpc.io";
 export const iliadChainId = 1513;
 
 export const mockERC721 = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";

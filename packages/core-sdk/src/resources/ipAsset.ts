@@ -34,6 +34,7 @@ import {
   RegisterIpAndAttachPilTermsResponse,
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
+  RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   RegisterIpResponse,
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
@@ -46,6 +47,7 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
+  DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   GroupingWorkflowsClient,
   IpAccountImplClient,
   IpAssetRegistryClient,
@@ -407,15 +409,7 @@ export class IPAssetClient {
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
-      request.licenseTokenIds = request.licenseTokenIds.map((id) => BigInt(id));
-      for (const licenseTokenId of request.licenseTokenIds) {
-        const tokenOwnerAddress = await this.licenseTokenReadOnlyClient.ownerOf({
-          tokenId: licenseTokenId,
-        });
-        if (!tokenOwnerAddress) {
-          throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
-        }
-      }
+      request.licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
       const req = {
         childIpId: getAddress(request.childIpId, "request.childIpId"),
         licenseTokenIds: request.licenseTokenIds,
@@ -1044,7 +1038,6 @@ export class IPAssetClient {
    * @param request - The request object that contains all data needed to mint and register ip and make derivative with license tokens.
    *   @param request.spgNftContract The address of the NFT collection.
    *   @param request.licenseTokenIds The IDs of the license tokens to be burned for linking the IP to parent IPs.
-   *   @param request.royaltyContext The context for royalty module, should be empty for Royalty Policy LAP.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -1059,18 +1052,7 @@ export class IPAssetClient {
   ): Promise<RegisterIpResponse> {
     try {
       //TODO: how to approve ERC721 token for license token
-      if (request.licenseTokenIds.length === 0) {
-        throw new Error("License token IDs must be provided.");
-      }
-      const licenseTokenIds = request.licenseTokenIds.map((id) => BigInt(id));
-      for (const licenseTokenId of licenseTokenIds) {
-        const tokenOwnerAddress = await this.licenseTokenReadOnlyClient.ownerOf({
-          tokenId: licenseTokenId,
-        });
-        if (!tokenOwnerAddress) {
-          throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
-        }
-      }
+      const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
       const object: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest =
         {
           spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
@@ -1110,6 +1092,118 @@ export class IPAssetClient {
       }
     } catch (error) {
       handleError(error, "Failed to mint and register IP and make derivative with license tokens");
+    }
+  }
+  /**
+   * Register the given NFT as a derivative IP using license tokens.
+   * @param request - The request object that contains all data needed to register ip and make derivative with license tokens.
+   *   @param request.spgNftContract The address of the NFT collection.
+   *   @param request.licenseTokenIds The IDs of the license tokens to be burned for linking the IP to parent IPs.
+   *   @param request.tokenId The ID of the NFT.
+   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID and Token ID.
+   */
+  public async registerIpAndMakeDerivativeWithLicenseTokens(
+    request: RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): Promise<RegisterIpResponse> {
+    try {
+      //TODO: how to approve ERC721 token for license token
+      const tokenId = BigInt(request.tokenId);
+      const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
+      const isRegistered = await this.isRegistered(ipIdAddress);
+      if (isRegistered) {
+        throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
+      }
+      const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
+      const calculatedDeadline = getDeadline(request.deadline);
+      const sigMetadataSignature = await getPermissionSignature({
+        ipId: ipIdAddress,
+        deadline: calculatedDeadline,
+        state: toHex(0, { size: 32 }),
+        wallet: this.wallet as WalletClient,
+        chainId: chain[this.chainId],
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
+            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: "function setAll(address,string,bytes32,bytes32)",
+          },
+        ],
+      });
+      const sigRegisterSignature = await getPermissionSignature({
+        ipId: ipIdAddress,
+        deadline: calculatedDeadline,
+        state: this.getSigSignatureState({
+          ipId: ipIdAddress,
+          signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
+          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+          permission: AccessPermission.ALLOW,
+          func: "function setAll(address,string,bytes32,bytes32)",
+        }),
+        wallet: this.wallet as WalletClient,
+        chainId: chain[this.chainId],
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: "function registerDerivativeWithLicenseTokens(address,uint256[],bytes)",
+          },
+        ],
+      });
+      const object: DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+        ...request,
+        tokenId,
+        licenseTokenIds,
+        royaltyContext: zeroAddress,
+        ipMetadata: {
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
+        },
+        sigMetadata: {
+          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          deadline: calculatedDeadline,
+          signature: sigMetadataSignature,
+        },
+        sigRegister: {
+          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          deadline: calculatedDeadline,
+          signature: sigRegisterSignature,
+        },
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData:
+            this.derivativeWorkflowsClient.registerIpAndMakeDerivativeWithLicenseTokensEncode(
+              object,
+            ),
+        };
+      } else {
+        const txHash =
+          await this.derivativeWorkflowsClient.registerIpAndMakeDerivativeWithLicenseTokens(object);
+        if (request.txOptions?.waitForTransaction) {
+          const receipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+          return { txHash, ipId: log.ipId };
+        }
+        return { txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to register IP and make derivative with license tokens");
     }
   }
   private async getIpIdAddress(
@@ -1170,5 +1264,23 @@ export class IPAssetClient {
       licenseTermsId = defaultLicenseTerms.licenseTermsId;
     }
     return licenseTermsId;
+  }
+
+  private async validateLicenseTokenIds(
+    licenseTokenIds: string[] | bigint[] | number[],
+  ): Promise<bigint[]> {
+    if (licenseTokenIds.length === 0) {
+      throw new Error("License token IDs must be provided.");
+    }
+    const newLicenseTokenIds = licenseTokenIds.map((id) => BigInt(id));
+    for (const licenseTokenId of newLicenseTokenIds) {
+      const tokenOwnerAddress = await this.licenseTokenReadOnlyClient.ownerOf({
+        tokenId: licenseTokenId,
+      });
+      if (!tokenOwnerAddress) {
+        throw new Error(`License token id ${licenseTokenId} must be owned by the caller.`);
+      }
+    }
+    return newLicenseTokenIds;
   }
 }

@@ -383,5 +383,32 @@ describe("IP Asset Functions ", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
+
+    it("should not throw error when call registerIpAndMakeDerivativeWithLicenseTokens", async () => {
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
+      const mintLicenseTokensResult = await client.license.mintLicenseTokens({
+        licenseTermsId: noCommercialLicenseTermsId,
+        licensorIpId: parentIpId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const result = await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({
+        nftContract: nftContract,
+        tokenId: tokenId!,
+        licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+        ipMetadata: {
+          ipMetadataURI: "test-uri",
+          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
+        deadline: 1000n,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.ipId).to.be.a("string").and.not.empty;
+    });
   });
 });
