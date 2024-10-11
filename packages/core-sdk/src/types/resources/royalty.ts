@@ -76,3 +76,15 @@ export type SnapshotResponse = {
   encodedTxData?: EncodedTxData;
   snapshotId?: bigint;
 };
+
+export type TransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
+  ancestorIpId: Address;
+  royaltyClaimDetails: {
+    childIpId: Address;
+    royaltyPolicy: Address;
+    currencyToken: Address;
+    amount: bigint;
+  }[];
+  claimer: Address;
+  txOptions?: TxOptions;
+};

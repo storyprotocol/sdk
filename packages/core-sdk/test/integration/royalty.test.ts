@@ -16,8 +16,9 @@ describe("Test royalty Functions", () => {
     client = getStoryClient();
   });
   describe("Royalty Functions", async () => {
-    let ipId1: Hex;
-    let ipId2: Hex;
+    let parentIpId: Hex;
+    let childIpId: Hex;
+    let licenseTermsId: bigint;
     const getIpId = async (): Promise<Hex> => {
       const tokenId = await getTokenId();
       const response = await client.ipAsset.register({
@@ -31,9 +32,9 @@ describe("Test royalty Functions", () => {
     };
     const getCommercialPolicyId = async (): Promise<bigint> => {
       const response = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: "100",
         currency: MockERC20.address,
-        commercialRevShare: 100,
+        commercialRevShare: 10,
         txOptions: {
           waitForTransaction: true,
         },
@@ -52,15 +53,15 @@ describe("Test royalty Functions", () => {
     };
 
     before(async () => {
-      ipId1 = await getIpId();
-      ipId2 = await getIpId();
-      const licenseTermsId = await getCommercialPolicyId();
-      await attachLicenseTerms(ipId1, licenseTermsId);
+      parentIpId = await getIpId();
+      childIpId = await getIpId();
+      licenseTermsId = await getCommercialPolicyId();
+      await attachLicenseTerms(parentIpId, licenseTermsId);
       const mockERC20 = new MockERC20();
       await mockERC20.approve(client.royalty.royaltyModuleClient.address);
       await client.ipAsset.registerDerivative({
-        childIpId: ipId2,
-        parentIpIds: [ipId1],
+        childIpId: childIpId,
+        parentIpIds: [parentIpId],
         licenseTermsIds: [licenseTermsId],
         txOptions: {
           waitForTransaction: true,
@@ -70,10 +71,10 @@ describe("Test royalty Functions", () => {
 
     it("should not throw error when pay royalty on behalf", async () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
-        receiverIpId: ipId1,
-        payerIpId: ipId2,
+        receiverIpId: parentIpId,
+        payerIpId: childIpId,
         token: MockERC20.address,
-        amount: "10",
+        amount: "100",
         txOptions: {
           waitForTransaction: true,
         },
@@ -81,9 +82,9 @@ describe("Test royalty Functions", () => {
       expect(response.txHash).to.be.a("string").not.empty;
     });
     // Because of the snapshot interval is long, so we can't get the snapshotId in the same test case. Let's skip the related test case.
-    it.skip("should not throw error when snapshot", async () => {
+    it("should not throw error when snapshot", async () => {
       const response = await client.royalty.snapshot({
-        royaltyVaultIpId: ipId1,
+        royaltyVaultIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
         },
@@ -92,21 +93,21 @@ describe("Test royalty Functions", () => {
       expect(response.snapshotId).to.be.a("bigint");
       snapshotId = response.snapshotId!;
     });
-    it.skip("should not throw error when claimable revenue", async () => {
+    it("should not throw error when claimable revenue", async () => {
       const response = await client.royalty.claimableRevenue({
-        royaltyVaultIpId: ipId1,
-        account: ipId1,
+        royaltyVaultIpId: parentIpId,
+        account: parentIpId,
         snapshotId: snapshotId.toString(),
         token: MockERC20.address,
       });
       expect(response).to.be.a("bigint");
     });
 
-    it.skip("should not throw error when claim revenue by ipAccount", async () => {
+    it("should not throw error when claim revenue by ipAccount", async () => {
       const response = await client.royalty.claimRevenue({
-        royaltyVaultIpId: ipId1,
+        royaltyVaultIpId: parentIpId,
         snapshotIds: [snapshotId.toString()],
-        account: ipId1,
+        account: parentIpId,
         token: MockERC20.address,
         txOptions: {
           waitForTransaction: true,
@@ -115,13 +116,13 @@ describe("Test royalty Functions", () => {
       expect(response.claimableToken).to.be.a("bigint");
     });
 
-    it.skip("should not throw error when claim revenue by ipAccount by EOA", async () => {
-      const proxyAddress = await client.royalty.getRoyaltyVaultAddress(ipId1);
+    it("should not throw error when claim revenue by ipAccount by EOA", async () => {
+      const proxyAddress = await client.royalty.getRoyaltyVaultAddress(parentIpId);
       //1.transfer token to eoa
       await client.ipAccount.execute({
         to: proxyAddress,
         value: 0,
-        ipId: ipId1,
+        ipId: parentIpId,
         txOptions: {
           waitForTransaction: true,
         },
@@ -158,8 +159,8 @@ describe("Test royalty Functions", () => {
       });
       //2. transfer token to royaltyVault，revenue token
       await client.royalty.payRoyaltyOnBehalf({
-        receiverIpId: ipId1,
-        payerIpId: ipId2,
+        receiverIpId: parentIpId,
+        payerIpId: childIpId,
         token: MockERC20.address,
         amount: "10",
         txOptions: {
@@ -167,12 +168,12 @@ describe("Test royalty Functions", () => {
         },
       });
       const snapshotId = await client.royalty.snapshot({
-        royaltyVaultIpId: ipId1,
+        royaltyVaultIpId: parentIpId,
         txOptions: { waitForTransaction: true },
       });
 
       const response = await client.royalty.claimRevenue({
-        royaltyVaultIpId: ipId1,
+        royaltyVaultIpId: parentIpId,
         snapshotIds: [snapshotId.snapshotId!],
         token: MockERC20.address,
         txOptions: {
@@ -180,6 +181,44 @@ describe("Test royalty Functions", () => {
         },
       });
       expect(response.claimableToken).to.be.a("bigint");
+    });
+
+    it("should not throw error when transfer to vault and snapshot and claim by token batch", async () => {
+      const child2IpId = await getIpId();
+      await client.ipAsset.registerDerivative({
+        childIpId: child2IpId,
+        parentIpIds: [childIpId],
+        licenseTermsIds: [licenseTermsId],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      await client.royalty.payRoyaltyOnBehalf({
+        receiverIpId: childIpId,
+        payerIpId: child2IpId,
+        token: MockERC20.address,
+        amount: "100",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const response = await client.royalty.transferToVaultAndSnapshotAndClaimByTokenBatch({
+        ancestorIpId: parentIpId,
+        claimer: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",
+        royaltyClaimDetails: [
+          {
+            childIpId: childIpId,
+            royaltyPolicy:
+              royaltyPolicyLapAddress[iliadChainId as keyof typeof royaltyPolicyLapAddress],
+            currencyToken: MockERC20.address,
+            amount: BigInt(1),
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(response.txHash).to.be.a("string").not.empty;
     });
   });
 });

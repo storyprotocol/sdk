@@ -1854,6 +1854,498 @@ export const disputeModuleConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GroupingModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const groupingModuleAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "licenseToken", internalType: "address", type: "address" },
+      { name: "groupNFT", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
+  },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "childGroupId", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__CannotAddGroupToGroup",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__GroupFrozenDueToAlreadyMintLicenseTokens",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__GroupFrozenDueToHasDerivativeIps",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "GroupingModule__GroupIPHasMintingFee",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__GroupIPHasNoLicenseTerms",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupNFT", internalType: "address", type: "address" }],
+    name: "GroupingModule__InvalidGroupNFT",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "GroupingModule__IpHasNoGroupLicenseTerms",
+  },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroGroupNFT" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroGroupRewardPool" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroIpAssetRegistry" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroLicenseRegistry" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroLicenseToken" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "ipIds",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+    ],
+    name: "AddedIpToGroup",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "ipId",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256[]",
+        type: "uint256[]",
+        indexed: false,
+      },
+    ],
+    name: "ClaimedReward",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "groupPool",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "IPGroupRegistered",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "ipIds",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+    ],
+    name: "RemovedIpFromGroup",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUP_IP_ASSET_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGroupIPAssetRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUP_NFT",
+    outputs: [{ name: "", internalType: "contract IGroupNFT", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ACCOUNT_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_TOKEN",
+    outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupIpId", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "addIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "claimReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "getClaimableReward",
+    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "groupPool", internalType: "address", type: "address" }],
+    name: "registerGroup",
+    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupIpId", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "removeIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "rewardPool", internalType: "address", type: "address" }],
+    name: "whitelistGroupRewardPool",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const groupingModuleAddress = {
+  1513: "0x26Eb59B900FD158396931d2349Fd6B08f0390e76",
+} as const;
+
+/**
+ *
+ */
+export const groupingModuleConfig = {
+  address: groupingModuleAddress,
+  abi: groupingModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GroupingWorkflows
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -8493,6 +8985,378 @@ export const royaltyPolicyLapConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RoyaltyPolicyLRP
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const royaltyPolicyLrpAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
+      { name: "ipGraph", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__AboveMaxPercent" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyPolicyLRP__ExceedsClaimableRoyalty",
+  },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__NotRoyaltyModule" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroAmount" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroClaimableRoyalty" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroIPGraphACL" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroRoyaltyModule" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "ipId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "ancestorIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RevenueTransferredToVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+    ],
+    name: "getPolicyRoyalty",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getPolicyRoyaltyStack",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licensePercent", internalType: "uint32", type: "uint32" },
+    ],
+    name: "getPolicyRtsRequiredToLink",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "getTransferredTokens",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licensePercent", internalType: "uint32", type: "uint32" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLicenseMinting",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      {
+        name: "licenseRoyaltyPolicies",
+        internalType: "address[]",
+        type: "address[]",
+      },
+      { name: "licensesPercent", internalType: "uint32[]", type: "uint32[]" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLinkToParents",
+    outputs: [{ name: "newRoyaltyStackLRP", internalType: "uint32", type: "uint32" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferToVault",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const royaltyPolicyLrpAddress = {
+  1513: "0x7F6a8f43EC6059eC80C172441CEe3423988a0be9",
+} as const;
+
+/**
+ *
+ */
+export const royaltyPolicyLrpConfig = {
+  address: royaltyPolicyLrpAddress,
+  abi: royaltyPolicyLrpAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RoyaltyWorkflows
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -12042,6 +12906,1229 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
         abi: disputeModuleAbi,
         functionName: "resolveDispute",
         args: [request.disputeId, request.data],
+      }),
+    };
+  }
+}
+
+// Contract GroupingModule =============================================================
+
+/**
+ * GroupingModuleAddedIpToGroupEvent
+ *
+ * @param groupId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleAddedIpToGroupEvent = {
+  groupId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleAuthorityUpdatedEvent
+ *
+ * @param authority address
+ */
+export type GroupingModuleAuthorityUpdatedEvent = {
+  authority: Address;
+};
+
+/**
+ * GroupingModuleClaimedRewardEvent
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipId address[]
+ * @param amount uint256[]
+ */
+export type GroupingModuleClaimedRewardEvent = {
+  groupId: Address;
+  token: Address;
+  ipId: readonly Address[];
+  amount: readonly bigint[];
+};
+
+/**
+ * GroupingModuleIpGroupRegisteredEvent
+ *
+ * @param groupId address
+ * @param groupPool address
+ */
+export type GroupingModuleIpGroupRegisteredEvent = {
+  groupId: Address;
+  groupPool: Address;
+};
+
+/**
+ * GroupingModuleInitializedEvent
+ *
+ * @param version uint64
+ */
+export type GroupingModuleInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * GroupingModulePausedEvent
+ *
+ * @param account address
+ */
+export type GroupingModulePausedEvent = {
+  account: Address;
+};
+
+/**
+ * GroupingModuleRemovedIpFromGroupEvent
+ *
+ * @param groupId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleRemovedIpFromGroupEvent = {
+  groupId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleUnpausedEvent
+ *
+ * @param account address
+ */
+export type GroupingModuleUnpausedEvent = {
+  account: Address;
+};
+
+/**
+ * GroupingModuleUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type GroupingModuleUpgradedEvent = {
+  implementation: Address;
+};
+
+export type GroupingModuleAccessControllerResponse = Address;
+
+export type GroupingModuleGroupIpAssetRegistryResponse = Address;
+
+export type GroupingModuleGroupNftResponse = Address;
+
+export type GroupingModuleIpAccountRegistryResponse = Address;
+
+export type GroupingModuleLicenseRegistryResponse = Address;
+
+export type GroupingModuleLicenseTokenResponse = Address;
+
+export type GroupingModuleUpgradeInterfaceVersionResponse = string;
+
+export type GroupingModuleAuthorityResponse = Address;
+
+/**
+ * GroupingModuleGetClaimableRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleGetClaimableRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+export type GroupingModuleGetClaimableRewardResponse = readonly bigint[];
+
+export type GroupingModuleIsConsumingScheduledOpResponse = Hex;
+
+export type GroupingModuleNameResponse = string;
+
+export type GroupingModulePausedResponse = boolean;
+
+export type GroupingModuleProxiableUuidResponse = Hex;
+
+/**
+ * GroupingModuleSupportsInterfaceRequest
+ *
+ * @param interfaceId bytes4
+ */
+export type GroupingModuleSupportsInterfaceRequest = {
+  interfaceId: Hex;
+};
+
+export type GroupingModuleSupportsInterfaceResponse = boolean;
+
+/**
+ * GroupingModuleProtocolPausableInitRequest
+ *
+ * @param accessManager address
+ */
+export type GroupingModuleProtocolPausableInitRequest = {
+  accessManager: Address;
+};
+
+/**
+ * GroupingModuleAddIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleAddIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleClaimRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleClaimRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleInitializeRequest
+ *
+ * @param accessManager address
+ */
+export type GroupingModuleInitializeRequest = {
+  accessManager: Address;
+};
+
+/**
+ * GroupingModuleRegisterGroupRequest
+ *
+ * @param groupPool address
+ */
+export type GroupingModuleRegisterGroupRequest = {
+  groupPool: Address;
+};
+
+/**
+ * GroupingModuleRemoveIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleRemoveIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleSetAuthorityRequest
+ *
+ * @param newAuthority address
+ */
+export type GroupingModuleSetAuthorityRequest = {
+  newAuthority: Address;
+};
+
+/**
+ * GroupingModuleUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type GroupingModuleUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
+};
+
+/**
+ * GroupingModuleWhitelistGroupRewardPoolRequest
+ *
+ * @param rewardPool address
+ */
+export type GroupingModuleWhitelistGroupRewardPoolRequest = {
+  rewardPool: Address;
+};
+
+/**
+ * contract GroupingModule event
+ */
+export class GroupingModuleEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(groupingModuleAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AddedIpToGroup for contract GroupingModule
+   */
+  public watchAddedIpToGroupEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleAddedIpToGroupEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "AddedIpToGroup",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AddedIpToGroup for contract GroupingModule
+   */
+  public parseTxAddedIpToGroupEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleAddedIpToGroupEvent> {
+    const targetLogs: Array<GroupingModuleAddedIpToGroupEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "AddedIpToGroup",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AddedIpToGroup") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event AuthorityUpdated for contract GroupingModule
+   */
+  public watchAuthorityUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleAuthorityUpdatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "AuthorityUpdated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AuthorityUpdated for contract GroupingModule
+   */
+  public parseTxAuthorityUpdatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleAuthorityUpdatedEvent> {
+    const targetLogs: Array<GroupingModuleAuthorityUpdatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "AuthorityUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event ClaimedReward for contract GroupingModule
+   */
+  public watchClaimedRewardEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleClaimedRewardEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "ClaimedReward",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event ClaimedReward for contract GroupingModule
+   */
+  public parseTxClaimedRewardEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleClaimedRewardEvent> {
+    const targetLogs: Array<GroupingModuleClaimedRewardEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "ClaimedReward",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "ClaimedReward") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event IPGroupRegistered for contract GroupingModule
+   */
+  public watchIpGroupRegisteredEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleIpGroupRegisteredEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "IPGroupRegistered",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event IPGroupRegistered for contract GroupingModule
+   */
+  public parseTxIpGroupRegisteredEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleIpGroupRegisteredEvent> {
+    const targetLogs: Array<GroupingModuleIpGroupRegisteredEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "IPGroupRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "IPGroupRegistered") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract GroupingModule
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract GroupingModule
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleInitializedEvent> {
+    const targetLogs: Array<GroupingModuleInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Paused for contract GroupingModule
+   */
+  public watchPausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModulePausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Paused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Paused for contract GroupingModule
+   */
+  public parseTxPausedEvent(txReceipt: TransactionReceipt): Array<GroupingModulePausedEvent> {
+    const targetLogs: Array<GroupingModulePausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Paused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Paused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event RemovedIpFromGroup for contract GroupingModule
+   */
+  public watchRemovedIpFromGroupEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleRemovedIpFromGroupEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "RemovedIpFromGroup",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event RemovedIpFromGroup for contract GroupingModule
+   */
+  public parseTxRemovedIpFromGroupEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleRemovedIpFromGroupEvent> {
+    const targetLogs: Array<GroupingModuleRemovedIpFromGroupEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "RemovedIpFromGroup",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "RemovedIpFromGroup") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Unpaused for contract GroupingModule
+   */
+  public watchUnpausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleUnpausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Unpaused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Unpaused for contract GroupingModule
+   */
+  public parseTxUnpausedEvent(txReceipt: TransactionReceipt): Array<GroupingModuleUnpausedEvent> {
+    const targetLogs: Array<GroupingModuleUnpausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Unpaused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Unpaused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract GroupingModule
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract GroupingModule
+   */
+  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<GroupingModuleUpgradedEvent> {
+    const targetLogs: Array<GroupingModuleUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract GroupingModule readonly method
+ */
+export class GroupingModuleReadOnlyClient extends GroupingModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method ACCESS_CONTROLLER for contract GroupingModule
+   *
+   * @param request GroupingModuleAccessControllerRequest
+   * @return Promise<GroupingModuleAccessControllerResponse>
+   */
+  public async accessController(): Promise<GroupingModuleAccessControllerResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "ACCESS_CONTROLLER",
+    });
+  }
+
+  /**
+   * method GROUP_IP_ASSET_REGISTRY for contract GroupingModule
+   *
+   * @param request GroupingModuleGroupIpAssetRegistryRequest
+   * @return Promise<GroupingModuleGroupIpAssetRegistryResponse>
+   */
+  public async groupIpAssetRegistry(): Promise<GroupingModuleGroupIpAssetRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "GROUP_IP_ASSET_REGISTRY",
+    });
+  }
+
+  /**
+   * method GROUP_NFT for contract GroupingModule
+   *
+   * @param request GroupingModuleGroupNftRequest
+   * @return Promise<GroupingModuleGroupNftResponse>
+   */
+  public async groupNft(): Promise<GroupingModuleGroupNftResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "GROUP_NFT",
+    });
+  }
+
+  /**
+   * method IP_ACCOUNT_REGISTRY for contract GroupingModule
+   *
+   * @param request GroupingModuleIpAccountRegistryRequest
+   * @return Promise<GroupingModuleIpAccountRegistryResponse>
+   */
+  public async ipAccountRegistry(): Promise<GroupingModuleIpAccountRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "IP_ACCOUNT_REGISTRY",
+    });
+  }
+
+  /**
+   * method LICENSE_REGISTRY for contract GroupingModule
+   *
+   * @param request GroupingModuleLicenseRegistryRequest
+   * @return Promise<GroupingModuleLicenseRegistryResponse>
+   */
+  public async licenseRegistry(): Promise<GroupingModuleLicenseRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "LICENSE_REGISTRY",
+    });
+  }
+
+  /**
+   * method LICENSE_TOKEN for contract GroupingModule
+   *
+   * @param request GroupingModuleLicenseTokenRequest
+   * @return Promise<GroupingModuleLicenseTokenResponse>
+   */
+  public async licenseToken(): Promise<GroupingModuleLicenseTokenResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "LICENSE_TOKEN",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract GroupingModule
+   *
+   * @param request GroupingModuleUpgradeInterfaceVersionRequest
+   * @return Promise<GroupingModuleUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<GroupingModuleUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method authority for contract GroupingModule
+   *
+   * @param request GroupingModuleAuthorityRequest
+   * @return Promise<GroupingModuleAuthorityResponse>
+   */
+  public async authority(): Promise<GroupingModuleAuthorityResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "authority",
+    });
+  }
+
+  /**
+   * method getClaimableReward for contract GroupingModule
+   *
+   * @param request GroupingModuleGetClaimableRewardRequest
+   * @return Promise<GroupingModuleGetClaimableRewardResponse>
+   */
+  public async getClaimableReward(
+    request: GroupingModuleGetClaimableRewardRequest,
+  ): Promise<GroupingModuleGetClaimableRewardResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "getClaimableReward",
+      args: [request.groupId, request.token, request.ipIds],
+    });
+  }
+
+  /**
+   * method isConsumingScheduledOp for contract GroupingModule
+   *
+   * @param request GroupingModuleIsConsumingScheduledOpRequest
+   * @return Promise<GroupingModuleIsConsumingScheduledOpResponse>
+   */
+  public async isConsumingScheduledOp(): Promise<GroupingModuleIsConsumingScheduledOpResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method name for contract GroupingModule
+   *
+   * @param request GroupingModuleNameRequest
+   * @return Promise<GroupingModuleNameResponse>
+   */
+  public async name(): Promise<GroupingModuleNameResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method paused for contract GroupingModule
+   *
+   * @param request GroupingModulePausedRequest
+   * @return Promise<GroupingModulePausedResponse>
+   */
+  public async paused(): Promise<GroupingModulePausedResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "paused",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract GroupingModule
+   *
+   * @param request GroupingModuleProxiableUuidRequest
+   * @return Promise<GroupingModuleProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<GroupingModuleProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+
+  /**
+   * method supportsInterface for contract GroupingModule
+   *
+   * @param request GroupingModuleSupportsInterfaceRequest
+   * @return Promise<GroupingModuleSupportsInterfaceResponse>
+   */
+  public async supportsInterface(
+    request: GroupingModuleSupportsInterfaceRequest,
+  ): Promise<GroupingModuleSupportsInterfaceResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "supportsInterface",
+      args: [request.interfaceId],
+    });
+  }
+}
+
+/**
+ * contract GroupingModule write method
+ */
+export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract GroupingModule
+   *
+   * @param request GroupingModuleProtocolPausableInitRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async protocolPausableInit(
+    request: GroupingModuleProtocolPausableInitRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "__ProtocolPausable_init",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleProtocolPausableInitRequest
+   * @return EncodedTxData
+   */
+  public protocolPausableInitEncode(
+    request: GroupingModuleProtocolPausableInitRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "__ProtocolPausable_init",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method addIp for contract GroupingModule
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async addIp(request: GroupingModuleAddIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "addIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method addIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return EncodedTxData
+   */
+  public addIpEncode(request: GroupingModuleAddIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "addIp",
+        args: [request.groupIpId, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method claimReward for contract GroupingModule
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async claimReward(
+    request: GroupingModuleClaimRewardRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "claimReward",
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method claimReward for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return EncodedTxData
+   */
+  public claimRewardEncode(request: GroupingModuleClaimRewardRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "claimReward",
+        args: [request.groupId, request.token, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method initialize for contract GroupingModule
+   *
+   * @param request GroupingModuleInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: GroupingModuleInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: GroupingModuleInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method pause for contract GroupingModule
+   *
+   * @param request GroupingModulePauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async pause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "pause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method pause for contract GroupingModule with only encode
+   *
+   * @param request GroupingModulePauseRequest
+   * @return EncodedTxData
+   */
+  public pauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "pause",
+      }),
+    };
+  }
+
+  /**
+   * method registerGroup for contract GroupingModule
+   *
+   * @param request GroupingModuleRegisterGroupRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerGroup(
+    request: GroupingModuleRegisterGroupRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "registerGroup",
+      account: this.wallet.account,
+      args: [request.groupPool],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerGroup for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleRegisterGroupRequest
+   * @return EncodedTxData
+   */
+  public registerGroupEncode(request: GroupingModuleRegisterGroupRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "registerGroup",
+        args: [request.groupPool],
+      }),
+    };
+  }
+
+  /**
+   * method removeIp for contract GroupingModule
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async removeIp(request: GroupingModuleRemoveIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "removeIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method removeIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return EncodedTxData
+   */
+  public removeIpEncode(request: GroupingModuleRemoveIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "removeIp",
+        args: [request.groupIpId, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method setAuthority for contract GroupingModule
+   *
+   * @param request GroupingModuleSetAuthorityRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAuthority(
+    request: GroupingModuleSetAuthorityRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "setAuthority",
+      account: this.wallet.account,
+      args: [request.newAuthority],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: GroupingModuleSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
+  }
+
+  /**
+   * method unpause for contract GroupingModule
+   *
+   * @param request GroupingModuleUnpauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async unpause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "unpause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method unpause for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleUnpauseRequest
+   * @return EncodedTxData
+   */
+  public unpauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "unpause",
+      }),
+    };
+  }
+
+  /**
+   * method upgradeToAndCall for contract GroupingModule
+   *
+   * @param request GroupingModuleUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: GroupingModuleUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: GroupingModuleUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method whitelistGroupRewardPool for contract GroupingModule
+   *
+   * @param request GroupingModuleWhitelistGroupRewardPoolRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async whitelistGroupRewardPool(
+    request: GroupingModuleWhitelistGroupRewardPoolRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "whitelistGroupRewardPool",
+      account: this.wallet.account,
+      args: [request.rewardPool],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method whitelistGroupRewardPool for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleWhitelistGroupRewardPoolRequest
+   * @return EncodedTxData
+   */
+  public whitelistGroupRewardPoolEncode(
+    request: GroupingModuleWhitelistGroupRewardPoolRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "whitelistGroupRewardPool",
+        args: [request.rewardPool],
       }),
     };
   }
@@ -17368,6 +19455,1004 @@ export class RoyaltyModuleClient extends RoyaltyModuleReadOnlyClient {
 }
 
 // Contract RoyaltyPolicyLAP =============================================================
+
+// Contract RoyaltyPolicyLRP =============================================================
+
+/**
+ * RoyaltyPolicyLrpAuthorityUpdatedEvent
+ *
+ * @param authority address
+ */
+export type RoyaltyPolicyLrpAuthorityUpdatedEvent = {
+  authority: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpInitializedEvent
+ *
+ * @param version uint64
+ */
+export type RoyaltyPolicyLrpInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * RoyaltyPolicyLrpPausedEvent
+ *
+ * @param account address
+ */
+export type RoyaltyPolicyLrpPausedEvent = {
+  account: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpRevenueTransferredToVaultEvent
+ *
+ * @param ipId address
+ * @param ancestorIpId address
+ * @param token address
+ * @param amount uint256
+ */
+export type RoyaltyPolicyLrpRevenueTransferredToVaultEvent = {
+  ipId: Address;
+  ancestorIpId: Address;
+  token: Address;
+  amount: bigint;
+};
+
+/**
+ * RoyaltyPolicyLrpUnpausedEvent
+ *
+ * @param account address
+ */
+export type RoyaltyPolicyLrpUnpausedEvent = {
+  account: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type RoyaltyPolicyLrpUpgradedEvent = {
+  implementation: Address;
+};
+
+export type RoyaltyPolicyLrpIpGraphResponse = Address;
+
+export type RoyaltyPolicyLrpIpGraphAclResponse = Address;
+
+export type RoyaltyPolicyLrpRoyaltyModuleResponse = Address;
+
+export type RoyaltyPolicyLrpUpgradeInterfaceVersionResponse = string;
+
+export type RoyaltyPolicyLrpAuthorityResponse = Address;
+
+/**
+ * RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest
+ *
+ * @param ipId address
+ */
+export type RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest = {
+  ipId: Address;
+};
+
+export type RoyaltyPolicyLrpGetPolicyRoyaltyStackResponse = number;
+
+/**
+ * RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest
+ *
+ * @param ipId address
+ * @param licensePercent uint32
+ */
+export type RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest = {
+  ipId: Address;
+  licensePercent: number;
+};
+
+export type RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkResponse = number;
+
+/**
+ * RoyaltyPolicyLrpGetTransferredTokensRequest
+ *
+ * @param ipId address
+ * @param ancestorIpId address
+ * @param token address
+ */
+export type RoyaltyPolicyLrpGetTransferredTokensRequest = {
+  ipId: Address;
+  ancestorIpId: Address;
+  token: Address;
+};
+
+export type RoyaltyPolicyLrpGetTransferredTokensResponse = bigint;
+
+export type RoyaltyPolicyLrpIsConsumingScheduledOpResponse = Hex;
+
+export type RoyaltyPolicyLrpPausedResponse = boolean;
+
+export type RoyaltyPolicyLrpProxiableUuidResponse = Hex;
+
+/**
+ * RoyaltyPolicyLrpProtocolPausableInitRequest
+ *
+ * @param accessManager address
+ */
+export type RoyaltyPolicyLrpProtocolPausableInitRequest = {
+  accessManager: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpGetPolicyRoyaltyRequest
+ *
+ * @param ipId address
+ * @param ancestorIpId address
+ */
+export type RoyaltyPolicyLrpGetPolicyRoyaltyRequest = {
+  ipId: Address;
+  ancestorIpId: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpInitializeRequest
+ *
+ * @param accessManager address
+ */
+export type RoyaltyPolicyLrpInitializeRequest = {
+  accessManager: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpOnLicenseMintingRequest
+ *
+ * @param 0 address
+ * @param 1 uint32
+ * @param 2 bytes
+ */
+export type RoyaltyPolicyLrpOnLicenseMintingRequest = readonly [Address, number, Hex];
+
+/**
+ * RoyaltyPolicyLrpOnLinkToParentsRequest
+ *
+ * @param 0 address
+ * @param 1 address[]
+ * @param 2 address[]
+ * @param 3 uint32[]
+ * @param 4 bytes
+ */
+export type RoyaltyPolicyLrpOnLinkToParentsRequest = readonly [
+  Address,
+  readonly Address[],
+  readonly Address[],
+  readonly number[],
+  Hex,
+];
+
+/**
+ * RoyaltyPolicyLrpSetAuthorityRequest
+ *
+ * @param newAuthority address
+ */
+export type RoyaltyPolicyLrpSetAuthorityRequest = {
+  newAuthority: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpTransferToVaultRequest
+ *
+ * @param ipId address
+ * @param ancestorIpId address
+ * @param token address
+ * @param amount uint256
+ */
+export type RoyaltyPolicyLrpTransferToVaultRequest = {
+  ipId: Address;
+  ancestorIpId: Address;
+  token: Address;
+  amount: bigint;
+};
+
+/**
+ * RoyaltyPolicyLrpUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type RoyaltyPolicyLrpUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
+};
+
+/**
+ * contract RoyaltyPolicyLRP event
+ */
+export class RoyaltyPolicyLrpEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(royaltyPolicyLrpAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AuthorityUpdated for contract RoyaltyPolicyLRP
+   */
+  public watchAuthorityUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpAuthorityUpdatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "AuthorityUpdated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AuthorityUpdated for contract RoyaltyPolicyLRP
+   */
+  public parseTxAuthorityUpdatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<RoyaltyPolicyLrpAuthorityUpdatedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpAuthorityUpdatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "AuthorityUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract RoyaltyPolicyLRP
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract RoyaltyPolicyLRP
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<RoyaltyPolicyLrpInitializedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Paused for contract RoyaltyPolicyLRP
+   */
+  public watchPausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpPausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Paused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Paused for contract RoyaltyPolicyLRP
+   */
+  public parseTxPausedEvent(txReceipt: TransactionReceipt): Array<RoyaltyPolicyLrpPausedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpPausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Paused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Paused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event RevenueTransferredToVault for contract RoyaltyPolicyLRP
+   */
+  public watchRevenueTransferredToVaultEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpRevenueTransferredToVaultEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "RevenueTransferredToVault",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event RevenueTransferredToVault for contract RoyaltyPolicyLRP
+   */
+  public parseTxRevenueTransferredToVaultEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<RoyaltyPolicyLrpRevenueTransferredToVaultEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpRevenueTransferredToVaultEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "RevenueTransferredToVault",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "RevenueTransferredToVault") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Unpaused for contract RoyaltyPolicyLRP
+   */
+  public watchUnpausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpUnpausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Unpaused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Unpaused for contract RoyaltyPolicyLRP
+   */
+  public parseTxUnpausedEvent(txReceipt: TransactionReceipt): Array<RoyaltyPolicyLrpUnpausedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpUnpausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Unpaused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Unpaused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract RoyaltyPolicyLRP
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract RoyaltyPolicyLRP
+   */
+  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<RoyaltyPolicyLrpUpgradedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract RoyaltyPolicyLRP readonly method
+ */
+export class RoyaltyPolicyLrpReadOnlyClient extends RoyaltyPolicyLrpEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method IP_GRAPH for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIpGraphRequest
+   * @return Promise<RoyaltyPolicyLrpIpGraphResponse>
+   */
+  public async ipGraph(): Promise<RoyaltyPolicyLrpIpGraphResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "IP_GRAPH",
+    });
+  }
+
+  /**
+   * method IP_GRAPH_ACL for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIpGraphAclRequest
+   * @return Promise<RoyaltyPolicyLrpIpGraphAclResponse>
+   */
+  public async ipGraphAcl(): Promise<RoyaltyPolicyLrpIpGraphAclResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "IP_GRAPH_ACL",
+    });
+  }
+
+  /**
+   * method ROYALTY_MODULE for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpRoyaltyModuleRequest
+   * @return Promise<RoyaltyPolicyLrpRoyaltyModuleResponse>
+   */
+  public async royaltyModule(): Promise<RoyaltyPolicyLrpRoyaltyModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "ROYALTY_MODULE",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpUpgradeInterfaceVersionRequest
+   * @return Promise<RoyaltyPolicyLrpUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<RoyaltyPolicyLrpUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method authority for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpAuthorityRequest
+   * @return Promise<RoyaltyPolicyLrpAuthorityResponse>
+   */
+  public async authority(): Promise<RoyaltyPolicyLrpAuthorityResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "authority",
+    });
+  }
+
+  /**
+   * method getPolicyRoyaltyStack for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest
+   * @return Promise<RoyaltyPolicyLrpGetPolicyRoyaltyStackResponse>
+   */
+  public async getPolicyRoyaltyStack(
+    request: RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest,
+  ): Promise<RoyaltyPolicyLrpGetPolicyRoyaltyStackResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getPolicyRoyaltyStack",
+      args: [request.ipId],
+    });
+  }
+
+  /**
+   * method getPolicyRtsRequiredToLink for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest
+   * @return Promise<RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkResponse>
+   */
+  public async getPolicyRtsRequiredToLink(
+    request: RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest,
+  ): Promise<RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getPolicyRtsRequiredToLink",
+      args: [request.ipId, request.licensePercent],
+    });
+  }
+
+  /**
+   * method getTransferredTokens for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetTransferredTokensRequest
+   * @return Promise<RoyaltyPolicyLrpGetTransferredTokensResponse>
+   */
+  public async getTransferredTokens(
+    request: RoyaltyPolicyLrpGetTransferredTokensRequest,
+  ): Promise<RoyaltyPolicyLrpGetTransferredTokensResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getTransferredTokens",
+      args: [request.ipId, request.ancestorIpId, request.token],
+    });
+  }
+
+  /**
+   * method isConsumingScheduledOp for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIsConsumingScheduledOpRequest
+   * @return Promise<RoyaltyPolicyLrpIsConsumingScheduledOpResponse>
+   */
+  public async isConsumingScheduledOp(): Promise<RoyaltyPolicyLrpIsConsumingScheduledOpResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method paused for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpPausedRequest
+   * @return Promise<RoyaltyPolicyLrpPausedResponse>
+   */
+  public async paused(): Promise<RoyaltyPolicyLrpPausedResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "paused",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpProxiableUuidRequest
+   * @return Promise<RoyaltyPolicyLrpProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<RoyaltyPolicyLrpProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+}
+
+/**
+ * contract RoyaltyPolicyLRP write method
+ */
+export class RoyaltyPolicyLrpClient extends RoyaltyPolicyLrpReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpProtocolPausableInitRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async protocolPausableInit(
+    request: RoyaltyPolicyLrpProtocolPausableInitRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "__ProtocolPausable_init",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpProtocolPausableInitRequest
+   * @return EncodedTxData
+   */
+  public protocolPausableInitEncode(
+    request: RoyaltyPolicyLrpProtocolPausableInitRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "__ProtocolPausable_init",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method getPolicyRoyalty for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRoyaltyRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async getPolicyRoyalty(
+    request: RoyaltyPolicyLrpGetPolicyRoyaltyRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getPolicyRoyalty",
+      account: this.wallet.account,
+      args: [request.ipId, request.ancestorIpId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method getPolicyRoyalty for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRoyaltyRequest
+   * @return EncodedTxData
+   */
+  public getPolicyRoyaltyEncode(request: RoyaltyPolicyLrpGetPolicyRoyaltyRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "getPolicyRoyalty",
+        args: [request.ipId, request.ancestorIpId],
+      }),
+    };
+  }
+
+  /**
+   * method initialize for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: RoyaltyPolicyLrpInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: RoyaltyPolicyLrpInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method onLicenseMinting for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpOnLicenseMintingRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onLicenseMinting(
+    request: RoyaltyPolicyLrpOnLicenseMintingRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "onLicenseMinting",
+      account: this.wallet.account,
+      args: [request[0], request[1], request[2]],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onLicenseMinting for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpOnLicenseMintingRequest
+   * @return EncodedTxData
+   */
+  public onLicenseMintingEncode(request: RoyaltyPolicyLrpOnLicenseMintingRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "onLicenseMinting",
+        args: [request[0], request[1], request[2]],
+      }),
+    };
+  }
+
+  /**
+   * method onLinkToParents for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpOnLinkToParentsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onLinkToParents(
+    request: RoyaltyPolicyLrpOnLinkToParentsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "onLinkToParents",
+      account: this.wallet.account,
+      args: [request[0], request[1], request[2], request[3], request[4]],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onLinkToParents for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpOnLinkToParentsRequest
+   * @return EncodedTxData
+   */
+  public onLinkToParentsEncode(request: RoyaltyPolicyLrpOnLinkToParentsRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "onLinkToParents",
+        args: [request[0], request[1], request[2], request[3], request[4]],
+      }),
+    };
+  }
+
+  /**
+   * method pause for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpPauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async pause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "pause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method pause for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpPauseRequest
+   * @return EncodedTxData
+   */
+  public pauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "pause",
+      }),
+    };
+  }
+
+  /**
+   * method setAuthority for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpSetAuthorityRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAuthority(
+    request: RoyaltyPolicyLrpSetAuthorityRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "setAuthority",
+      account: this.wallet.account,
+      args: [request.newAuthority],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: RoyaltyPolicyLrpSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
+  }
+
+  /**
+   * method transferToVault for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpTransferToVaultRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferToVault(
+    request: RoyaltyPolicyLrpTransferToVaultRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "transferToVault",
+      account: this.wallet.account,
+      args: [request.ipId, request.ancestorIpId, request.token, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferToVault for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpTransferToVaultRequest
+   * @return EncodedTxData
+   */
+  public transferToVaultEncode(request: RoyaltyPolicyLrpTransferToVaultRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "transferToVault",
+        args: [request.ipId, request.ancestorIpId, request.token, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method unpause for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpUnpauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async unpause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "unpause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method unpause for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpUnpauseRequest
+   * @return EncodedTxData
+   */
+  public unpauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "unpause",
+      }),
+    };
+  }
+
+  /**
+   * method upgradeToAndCall for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: RoyaltyPolicyLrpUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: RoyaltyPolicyLrpUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
+  }
+}
 
 // Contract RoyaltyWorkflows =============================================================
 

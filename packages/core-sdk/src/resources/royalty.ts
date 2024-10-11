@@ -10,11 +10,14 @@ import {
   SnapshotResponse,
   ClaimRevenueRequest,
   ClaimRevenueResponse,
+  TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
 } from "../types/resources/royalty";
 import {
   IpAssetRegistryClient,
   IpRoyaltyVaultImplClient,
   RoyaltyModuleClient,
+  RoyaltyWorkflowsClient,
+  RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
   SimpleWalletClient,
   ipRoyaltyVaultImplAbi,
 } from "../abi/generated";
@@ -25,12 +28,14 @@ export class RoyaltyClient {
   public royaltyModuleClient: RoyaltyModuleClient;
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public ipAccountClient: IPAccountClient;
+  public royaltyWorkflowsClient: RoyaltyWorkflowsClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.royaltyModuleClient = new RoyaltyModuleClient(rpcClient, wallet);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
+    this.royaltyWorkflowsClient = new RoyaltyWorkflowsClient(rpcClient, wallet);
     this.ipAccountClient = new IPAccountClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
@@ -236,5 +241,53 @@ export class RoyaltyClient {
       throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
     }
     return await this.royaltyModuleClient.ipRoyaltyVaults({ ipId: royaltyVaultIpId });
+  }
+
+  public async transferToVaultAndSnapshotAndClaimByTokenBatch(
+    request: TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
+  ) {
+    try {
+      if (request.royaltyClaimDetails.length === 0) {
+        throw new Error("The royaltyClaimDetails must provide at least one item.");
+      }
+      const isAncestorIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: getAddress(request.ancestorIpId, "royaltyVaultIpId"),
+      });
+      if (!isAncestorIpIdRegistered) {
+        throw new Error(`The ancestor IP with id ${request.ancestorIpId} is not registered.`);
+      }
+      const object: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
+        ancestorIpId: getAddress(request.ancestorIpId, "request.ancestorIpId"),
+        royaltyClaimDetails: request.royaltyClaimDetails.map((item) => ({
+          childIpId: getAddress(item.childIpId, "item.childIpId"),
+          royaltyPolicy: getAddress(item.royaltyPolicy, "item.royaltyPolicy"),
+          currencyToken: getAddress(item.currencyToken, "item.currencyToken"),
+          amount: BigInt(item.amount),
+        })),
+        claimer: request.claimer && getAddress(request.claimer, "request.claimer"),
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData:
+            this.royaltyWorkflowsClient.transferToVaultAndSnapshotAndClaimByTokenBatchEncode(
+              object,
+            ),
+        };
+      } else {
+        const txHash =
+          await this.royaltyWorkflowsClient.transferToVaultAndSnapshotAndClaimByTokenBatch(object);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          return { txHash };
+        } else {
+          return { txHash };
+        }
+      }
+    } catch (error) {
+      handleError(error, "Failed to transfer to vault and snapshot and claim by token batch");
+    }
   }
 }

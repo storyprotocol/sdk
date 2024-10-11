@@ -82,6 +82,12 @@ export default defineConfig(async () => {
       },
     },
     {
+      name: "RoyaltyPolicyLRP",
+      address: {
+        [iliadChainId]: "0x7F6a8f43EC6059eC80C172441CEe3423988a0be9",
+      },
+    },
+    {
       name: "SPG",
       address: {
         [iliadChainId]: "0xAceb5E631d743AF76aF69414eC8D356c13435E59",
@@ -133,6 +139,12 @@ export default defineConfig(async () => {
       name: "LicenseAttachmentWorkflows",
       address: {
         [iliadChainId]: "0x96D26F998a56D6Ee34Fb581d26aAEb94e71e3929",
+      },
+    },
+    {
+      name: "GroupingModule",
+      address: {
+        [iliadChainId]: "0x26Eb59B900FD158396931d2349Fd6B08f0390e76",
       },
     },
   ];

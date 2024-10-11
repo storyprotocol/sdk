@@ -226,3 +226,12 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   licenseTokenIds: string[] | bigint[] | number[];
   deadline?: string | number | bigint;
 } & IpMetadataAndTxOption;
+
+export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
+  spgNftContract: Address;
+  licenseTokenIds: string | bigint | number;
+  groupId: Address;
+  recipient?: Address;
+  licenseTemplate?: Address;
+  deadline?: string | number | bigint;
+} & IpMetadataAndTxOption;
