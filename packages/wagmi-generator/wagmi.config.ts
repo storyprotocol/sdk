@@ -209,7 +209,7 @@ export default defineConfig(async () => {
             "ipRoyaltyVaults",
           ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
-          LicenseToken: ["ownerOf", "approve"],
+          LicenseToken: ["ownerOf"],
           SPG: ["CollectionCreated"],
           GroupingWorkflows: [
             "mintAndRegisterIpAndAttachLicenseAndAddToGroup",

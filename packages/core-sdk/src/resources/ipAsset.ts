@@ -969,6 +969,7 @@ export class IPAssetClient {
     request: RegisterPilTermsAndAttachRequest,
   ): Promise<RegisterPilTermsAndAttachResponse> {
     try {
+      //TODO: Invalid Signature registerIpAndAttachPilTerms
       const { ipId, terms } = request;
       const isRegistered = await this.isRegistered(ipId);
       if (!isRegistered) {
@@ -984,11 +985,7 @@ export class IPAssetClient {
         );
       }
       const calculatedDeadline = getDeadline(request.deadline);
-      const ipAccount = new IpAccountImplClient(
-        this.rpcClient,
-        this.wallet,
-        getAddress(ipId, "ipId"),
-      );
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const { result: state } = await ipAccount.state();
       const sigAttachSignature = await getPermissionSignature({
         ipId: ipId,
@@ -1033,7 +1030,6 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          //TODO: get license terms id from event
           return { txHash, licenseTermsId: licenseRes.selectedLicenseTermsId };
         } else {
           return { txHash };
@@ -1062,6 +1058,7 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterIpResponse> {
     try {
+      //TODO: how to approve ERC721 token for license token
       if (request.licenseTokenIds.length === 0) {
         throw new Error("License token IDs must be provided.");
       }

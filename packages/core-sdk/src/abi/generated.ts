@@ -15106,17 +15106,6 @@ export type LicenseTokenOwnerOfRequest = {
 export type LicenseTokenOwnerOfResponse = Address;
 
 /**
- * LicenseTokenApproveRequest
- *
- * @param to address
- * @param tokenId uint256
- */
-export type LicenseTokenApproveRequest = {
-  to: Address;
-  tokenId: bigint;
-};
-
-/**
  * contract LicenseToken readonly method
  */
 export class LicenseTokenReadOnlyClient {
@@ -15141,52 +15130,6 @@ export class LicenseTokenReadOnlyClient {
       functionName: "ownerOf",
       args: [request.tokenId],
     });
-  }
-}
-
-/**
- * contract LicenseToken write method
- */
-export class LicenseTokenClient extends LicenseTokenReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method approve for contract LicenseToken
-   *
-   * @param request LicenseTokenApproveRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async approve(request: LicenseTokenApproveRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licenseTokenAbi,
-      address: this.address,
-      functionName: "approve",
-      account: this.wallet.account,
-      args: [request.to, request.tokenId],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method approve for contract LicenseToken with only encode
-   *
-   * @param request LicenseTokenApproveRequest
-   * @return EncodedTxData
-   */
-  public approveEncode(request: LicenseTokenApproveRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: licenseTokenAbi,
-        functionName: "approve",
-        args: [request.to, request.tokenId],
-      }),
-    };
   }
 }
 

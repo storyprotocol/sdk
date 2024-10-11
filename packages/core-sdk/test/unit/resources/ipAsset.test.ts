@@ -21,6 +21,7 @@ import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
 import { MockERC20 } from "../../integration/utils/mockERC20";
 const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
+const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,6 +48,10 @@ describe("Test IpAssetClient", () => {
     (ipAssetClient.coreMetadataModuleClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (ipAssetClient.licensingModuleClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (ipAssetClient.registrationWorkflowsClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (ipAssetClient.licenseAttachmentWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
 
@@ -1460,6 +1465,9 @@ describe("Test IpAssetClient", () => {
         .stub()
         .resolves(true);
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon.stub().resolves(true);
+      IpAccountImplClient.prototype.state = sinon
+        .stub()
+        .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
     });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
@@ -1488,7 +1496,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to register PIL terms and attach: request.ipId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          `Failed to register PIL terms and attach: ipId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
         );
       }
     });
@@ -1600,15 +1608,13 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative with license tokens: License tokens must be provided.",
+          "Failed to mint and register IP and make derivative with license tokens: License token IDs must be provided.",
         );
       }
     });
 
     it("should throw licenseTokens is not owned by caller error when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given wrong licenseTokens", async () => {
-      sinon
-        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
-        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+      sinon.stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(undefined);
 
       try {
         await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
@@ -1617,19 +1623,20 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative with license tokens: License token 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not owned by the caller.",
+          "Failed to mint and register IP and make derivative with license tokens: License token id 169371642198122114185371466690533487013299380860 must be owned by the caller.",
         );
       }
     });
     it("should return txHash when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given correct args", async () => {
-      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon
+        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
+        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       sinon
         .stub(
           ipAssetClient.derivativeWorkflowsClient,
           "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
         )
-        .resolves(hash);
-      sinon.stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(undefined);
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
 
       const result = await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract,
@@ -1640,18 +1647,21 @@ describe("Test IpAssetClient", () => {
         },
       });
 
-      expect(result.txHash).to.equal(hash);
+      expect(result.txHash).to.equal(
+        "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+      );
     });
 
     it("should return txHash and ipId when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given correct args and waitForTransaction of true", async () => {
-      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon
+        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
+        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       sinon
         .stub(
           ipAssetClient.derivativeWorkflowsClient,
           "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
         )
-        .resolves(hash);
-      sinon.stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(undefined);
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -1676,20 +1686,23 @@ describe("Test IpAssetClient", () => {
         },
       });
 
-      expect(result.txHash).to.equal(hash);
+      expect(result.txHash).to.equal(
+        "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+      );
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.tokenId).to.equal(1n);
     });
 
     it("should return encoded tx data when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given correct args and encodedTxDataOnly of true", async () => {
-      const hash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+      sinon
+        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
+        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       sinon
         .stub(
           ipAssetClient.derivativeWorkflowsClient,
           "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
         )
-        .resolves(hash);
-      sinon.stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(undefined);
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
 
       const result = await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract,

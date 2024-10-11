@@ -93,12 +93,18 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
 };
 
 export const approveForLicenseToken = async (address: Address) => {
+  const tokenId = await publicClient.readContract({
+    abi: licenseTokenAbi,
+    address: licenseToken,
+    functionName: "balanceOf",
+    args: [address],
+  });
   const { request: call } = await publicClient.simulateContract({
     abi: licenseTokenAbi,
     address: licenseToken,
     functionName: "approve",
     account: walletClient.account,
-    args: [address, BigInt(100000 * 10 ** 6)],
+    args: [address, tokenId],
   });
   const hash = await walletClient.writeContract(call);
   console.log("erc721 approve hash: ", hash);

@@ -299,6 +299,16 @@ describe("IP Asset Functions ", () => {
     });
 
     it("should not throw error when call registerPilTermsAndAttach", async () => {
+      // const tokenId = await getTokenId();
+      // const ipId = (
+      //   await client.ipAsset.register({
+      //     nftContract: mockERC721,
+      //     tokenId: tokenId!,
+      //     txOptions: {
+      //       waitForTransaction: true,
+      //     },
+      //   })
+      // ).ipId!;
       const result = await client.ipAsset.registerPilTermsAndAttach({
         ipId: parentIpId,
         terms: {
@@ -339,10 +349,16 @@ describe("IP Asset Functions ", () => {
       // await mockERC20.approve(
       //   derivativeWorkflowsAddress[iliadChainId as keyof typeof derivativeWorkflowsAddress],
       // );
-
+      // await client.ipAsset.rpcClient.readContract({
+      //   abi: licenseTokenAbi,
+      //   address: this.address,
+      //   functionName: "balanceOf",
+      //   args: [request.owner],
+      // });
       await approveForLicenseToken(
         derivativeWorkflowsAddress[iliadChainId as keyof typeof derivativeWorkflowsAddress],
       );
+
       await mockERC20.approve(spgnftImplAddress[iliadChainId as keyof typeof spgnftImplAddress]);
       await mockERC20.approve(spgnftImplAddress[iliadChainId as keyof typeof spgnftImplAddress]);
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
