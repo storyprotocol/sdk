@@ -1055,7 +1055,6 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterIpResponse> {
     try {
-      //TODO: how to approve ERC721 token for license token
       const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
       const object: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest =
         {
@@ -1084,6 +1083,7 @@ export class IPAssetClient {
           await this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
             object,
           );
+        console.log("txHash", txHash);
         if (request.txOptions?.waitForTransaction) {
           const receipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
@@ -1101,7 +1101,7 @@ export class IPAssetClient {
   /**
    * Register the given NFT as a derivative IP using license tokens.
    * @param request - The request object that contains all data needed to register ip and make derivative with license tokens.
-   *   @param request.spgNftContract The address of the NFT collection.
+   *   @param request.nftContract The address of the NFT collection.
    *   @param request.licenseTokenIds The IDs of the license tokens to be burned for linking the IP to parent IPs.
    *   @param request.tokenId The ID of the NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
@@ -1111,13 +1111,12 @@ export class IPAssetClient {
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID and Token ID.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID.
    */
   public async registerIpAndMakeDerivativeWithLicenseTokens(
     request: RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterIpResponse> {
     try {
-      //TODO: how to approve ERC721 token for license token
       const tokenId = BigInt(request.tokenId);
       const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
       const isRegistered = await this.isRegistered(ipIdAddress);
