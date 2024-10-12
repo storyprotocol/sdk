@@ -85,6 +85,30 @@ export type TransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
     currencyToken: Address;
     amount: bigint;
   }[];
-  claimer: Address;
+  txOptions?: TxOptions;
+};
+
+export type TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest = {
+  ancestorIpId: Address;
+  unclaimedSnapshotIds: bigint[];
+  royaltyClaimDetails: {
+    childIpId: Address;
+    royaltyPolicy: Address;
+    currencyToken: Address;
+    amount: bigint;
+  }[];
+  txOptions?: TxOptions;
+};
+
+export type SnapshotAndClaimByTokenBatchRequest = {
+  ipId: Address;
+  currencyTokens: Address[];
+  txOptions?: TxOptions;
+};
+
+export type SnapshotAndClaimBySnapshotBatchRequest = {
+  ipId: Address;
+  unclaimedSnapshotIds: bigint[];
+  currencyTokens: Address[];
   txOptions?: TxOptions;
 };

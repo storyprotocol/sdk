@@ -92,13 +92,7 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
   }
 };
 
-export const approveForLicenseToken = async (address: Address) => {
-  const tokenId = await publicClient.readContract({
-    abi: licenseTokenAbi,
-    address: licenseToken,
-    functionName: "balanceOf",
-    args: [address],
-  });
+export const approveForLicenseToken = async (address: Address, tokenId: bigint) => {
   const { request: call } = await publicClient.simulateContract({
     abi: licenseTokenAbi,
     address: licenseToken,

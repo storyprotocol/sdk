@@ -11,12 +11,18 @@ import {
   ClaimRevenueRequest,
   ClaimRevenueResponse,
   TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
+  TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
+  SnapshotAndClaimByTokenBatchRequest,
+  SnapshotAndClaimBySnapshotBatchRequest,
 } from "../types/resources/royalty";
 import {
   IpAssetRegistryClient,
   IpRoyaltyVaultImplClient,
   RoyaltyModuleClient,
   RoyaltyWorkflowsClient,
+  RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest,
+  RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest,
+  RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
   RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
   SimpleWalletClient,
   ipRoyaltyVaultImplAbi,
@@ -251,7 +257,7 @@ export class RoyaltyClient {
         throw new Error("The royaltyClaimDetails must provide at least one item.");
       }
       const isAncestorIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.ancestorIpId, "royaltyVaultIpId"),
+        id: getAddress(request.ancestorIpId, "request.ancestorIpId"),
       });
       if (!isAncestorIpIdRegistered) {
         throw new Error(`The ancestor IP with id ${request.ancestorIpId} is not registered.`);
@@ -264,7 +270,7 @@ export class RoyaltyClient {
           currencyToken: getAddress(item.currencyToken, "item.currencyToken"),
           amount: BigInt(item.amount),
         })),
-        claimer: request.claimer && getAddress(request.claimer, "request.claimer"),
+        claimer: this.wallet.account!.address,
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return {
@@ -288,6 +294,121 @@ export class RoyaltyClient {
       }
     } catch (error) {
       handleError(error, "Failed to transfer to vault and snapshot and claim by token batch");
+    }
+  }
+
+  public async transferToVaultAndSnapshotAndClaimBySnapshotBatch(
+    request: TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
+  ) {
+    try {
+      if (request.royaltyClaimDetails.length === 0) {
+        throw new Error("The royaltyClaimDetails must provide at least one item.");
+      }
+      const isAncestorIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: getAddress(request.ancestorIpId, "request.ancestorIpId"),
+      });
+      if (!isAncestorIpIdRegistered) {
+        throw new Error(`The ancestor IP with id ${request.ancestorIpId} is not registered.`);
+      }
+      const object: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest = {
+        ancestorIpId: getAddress(request.ancestorIpId, "request.ancestorIpId"),
+        royaltyClaimDetails: request.royaltyClaimDetails.map((item) => ({
+          childIpId: getAddress(item.childIpId, "item.childIpId"),
+          royaltyPolicy: getAddress(item.royaltyPolicy, "item.royaltyPolicy"),
+          currencyToken: getAddress(item.currencyToken, "item.currencyToken"),
+          amount: BigInt(item.amount),
+        })),
+        claimer: this.wallet.account!.address,
+        unclaimedSnapshotIds: request.unclaimedSnapshotIds.map((item) => BigInt(item)),
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData:
+            this.royaltyWorkflowsClient.transferToVaultAndSnapshotAndClaimBySnapshotBatchEncode(
+              object,
+            ),
+        };
+      } else {
+        const txHash =
+          await this.royaltyWorkflowsClient.transferToVaultAndSnapshotAndClaimBySnapshotBatch(
+            object,
+          );
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          return { txHash };
+        } else {
+          return { txHash };
+        }
+      }
+    } catch (error) {
+      handleError(error, "Failed to transfer to vault and snapshot and claim by snapshot batch");
+    }
+  }
+
+  public async snapshotAndClaimByTokenBatch(request: SnapshotAndClaimByTokenBatchRequest) {
+    try {
+      const object: RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest = {
+        ipId: getAddress(request.ipId, "request.ipId"),
+        currencyTokens: request.currencyTokens.map((item) =>
+          getAddress(item, "item.currencyTokens"),
+        ),
+        claimer: this.wallet.account!.address,
+      };
+      // const test = await this.getRoyaltyVaultAddress(object.ipId);
+      // console.log("test", test);
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.royaltyWorkflowsClient.snapshotAndClaimByTokenBatchEncode(object),
+        };
+      } else {
+        const txHash = await this.royaltyWorkflowsClient.snapshotAndClaimByTokenBatch(object);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          return { txHash };
+        } else {
+          return { txHash };
+        }
+      }
+    } catch (error) {
+      handleError(error, "Failed to snapshot and claim by token batch");
+    }
+  }
+
+  public async snapshotAndClaimBySnapshotBatch(request: SnapshotAndClaimBySnapshotBatchRequest) {
+    try {
+      const object: RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest = {
+        ipId: getAddress(request.ipId, "request.ipId"),
+        claimer: this.wallet.account!.address,
+        currencyTokens: request.currencyTokens.map((item) =>
+          getAddress(item, "item.currencyTokens"),
+        ),
+        unclaimedSnapshotIds: request.unclaimedSnapshotIds.map((item) => BigInt(item)),
+      };
+      // const test = await this.getRoyaltyVaultAddress(object.ipId);
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.royaltyWorkflowsClient.snapshotAndClaimBySnapshotBatchEncode(object),
+        };
+      } else {
+        const txHash = await this.royaltyWorkflowsClient.snapshotAndClaimBySnapshotBatch(object);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          return { txHash };
+        } else {
+          return { txHash };
+        }
+      }
+    } catch (error) {
+      handleError(error, "Failed to snapshot and claim by snapshot batch");
     }
   }
 }
