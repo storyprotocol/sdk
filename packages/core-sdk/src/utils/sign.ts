@@ -3,7 +3,10 @@ import { encodeAbiParameters, encodeFunctionData, keccak256, toFunctionSelector 
 import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
 import { getAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
-import { PermissionSignatureRequest, PermissionSignatureResponse } from "../types/common";
+import {
+  PermissionSignatureRequest,
+  PermissionSignatureResponse,
+} from "../types/resources/permission";
 
 /**
  * Get the signature for setting permissions.

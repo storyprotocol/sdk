@@ -15,6 +15,7 @@ import { IPAccountClient } from "./resources/ipAccount";
 import { chainStringToViemChain } from "./utils/utils";
 import { RoyaltyClient } from "./resources/royalty";
 import { NftClient } from "./resources/nftClient";
+import { GroupClient } from "./resources/group";
 import { SimpleWalletClient } from "./abi/generated";
 
 if (typeof process !== "undefined") {
@@ -34,6 +35,7 @@ export class StoryClient {
   private _ipAccount: IPAccountClient | null = null;
   private _royalty: RoyaltyClient | null = null;
   private _nftClient: NftClient | null = null;
+  private _groupClient: GroupClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -201,5 +203,19 @@ export class StoryClient {
     }
 
     return this._nftClient;
+  }
+
+  /**
+   * Getter for the group client. The client is lazily created when
+   * this method is called.
+   *
+   * @returns the GroupClient instance
+   */
+  public get groupClient(): GroupClient {
+    if (this._groupClient === null) {
+      this._groupClient = new GroupClient(this.rpcClient, this.wallet, this.config.chainId);
+    }
+
+    return this._groupClient;
   }
 }

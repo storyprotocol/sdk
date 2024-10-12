@@ -147,6 +147,12 @@ export default defineConfig(async () => {
         [iliadChainId]: "0x26Eb59B900FD158396931d2349Fd6B08f0390e76",
       },
     },
+    {
+      name: "MockEvenSplitGroupPool",
+      address: {
+        [iliadChainId]: "0x69e0D5123bc0539a87a9dDcE82E803575e35cbb4",
+      },
+    },
   ];
   return {
     out: "../core-sdk/src/abi/generated.ts",

@@ -48,7 +48,6 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  GroupingWorkflowsClient,
   IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
@@ -62,7 +61,6 @@ import {
   RegistrationWorkflowsClient,
   RegistrationWorkflowsMintAndRegisterIpRequest,
   RegistrationWorkflowsRegisterIpRequest,
-  RoyaltyWorkflowsClient,
   SimpleWalletClient,
   accessControllerAbi,
   ipAccountImplAbi,
@@ -83,9 +81,6 @@ export class IPAssetClient {
   public registrationWorkflowsClient: RegistrationWorkflowsClient;
   public licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
   public derivativeWorkflowsClient: DerivativeWorkflowsClient;
-  public groupingWorkflowsClient: GroupingWorkflowsClient;
-  public royaltyWorkflowsClient: RoyaltyWorkflowsClient;
-  // public groupingModuleEventClient: GroupingModuleEventClient;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -102,9 +97,6 @@ export class IPAssetClient {
     this.registrationWorkflowsClient = new RegistrationWorkflowsClient(rpcClient, wallet);
     this.licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
     this.derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
-    this.groupingWorkflowsClient = new GroupingWorkflowsClient(rpcClient, wallet);
-    this.royaltyWorkflowsClient = new RoyaltyWorkflowsClient(rpcClient, wallet);
-    // this.groupingModuleEventClient = new GroupingModuleEventClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -463,6 +455,7 @@ export class IPAssetClient {
     request: CreateIpAssetWithPilTermsRequest,
   ): Promise<CreateIpAssetWithPilTermsResponse> {
     try {
+      //TODO: Invalid signature
       if (request.pilType === undefined || request.pilType === null) {
         throw new Error("PIL type is required.");
       }
@@ -1083,7 +1076,6 @@ export class IPAssetClient {
           await this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
             object,
           );
-        console.log("txHash", txHash);
         if (request.txOptions?.waitForTransaction) {
           const receipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
@@ -1209,51 +1201,6 @@ export class IPAssetClient {
       handleError(error, "Failed to register IP and make derivative with license tokens");
     }
   }
-
-  // public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
-  //   request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
-  // ): Promise<void> {
-  //   try {
-  //     const licenseTokeId = BigInt(request.licenseTokenIds);
-  //     const licenseTermsIds = await this.validateLicenseTokenIds([licenseTokeId]);
-  //     const sigAddToGroupSignature = await getPermissionSignature({
-  //       ipId: request.groupId,
-  //       deadline: getDeadline(request.deadline),
-  //       state: toHex(0, { size: 32 }),
-  //       wallet: this.wallet as WalletClient,
-  //       chainId: chain[this.chainId],
-  //       permissions: [
-  //         {
-  //           ipId: request.groupId,
-  //           signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
-  //           to: getAddress(this.groupingModuleEventClient.address, "groupingModuleEventClient"),
-  //           permission: AccessPermission.ALLOW,
-  //           func: " function addIp(address, address[])",
-  //         },
-  //       ],
-  //     });
-  //     const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
-  //       ...request,
-  //       spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
-  //       recipient:
-  //         (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-  //         this.wallet.account!.address,
-  //       licenseTemplate:
-  //         (request.licenseTemplate &&
-  //           getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-  //         this.licenseTemplateClient.address,
-  //       licenseTermsId: licenseTermsIds[0],
-  //       ipMetadata: {
-  //         ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
-  //         ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
-  //         nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
-  //         nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
-  //       },
-  //     };
-  //   } catch (error) {
-  //     handleError(error, "Failed to mint and register IP and attach license and add to group");
-  //   }
-  // }
 
   private async getIpIdAddress(
     nftContract: Address,

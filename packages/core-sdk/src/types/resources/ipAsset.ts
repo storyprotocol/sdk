@@ -1,18 +1,9 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { PIL_TYPE, RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
-
-type IpMetadataAndTxOption = {
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
-  txOptions?: TxOptions;
-};
+import { IpMetadataAndTxOption } from "../common";
 
 export type RegisterIpResponse = {
   txHash?: string;
@@ -224,14 +215,5 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
   tokenId: string | number | bigint;
   licenseTokenIds: string[] | bigint[] | number[];
-  deadline?: string | number | bigint;
-} & IpMetadataAndTxOption;
-
-export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
-  spgNftContract: Address;
-  licenseTokenIds: string | bigint | number;
-  groupId: Address;
-  recipient?: Address;
-  licenseTemplate?: Address;
   deadline?: string | number | bigint;
 } & IpMetadataAndTxOption;

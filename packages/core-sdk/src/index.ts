@@ -74,6 +74,8 @@ export type {
   SetAllPermissionsRequest,
   SetBatchPermissionsRequest,
   CreateBatchPermissionSignatureRequest,
+  PermissionSignatureRequest,
+  PermissionSignatureResponse,
 } from "./types/resources/permission";
 export { AccessPermission } from "./types/resources/permission";
 export type {
@@ -100,10 +102,15 @@ export type {
 } from "./types/resources/nftClient";
 
 export type {
+  RegisterGroupRequest,
+  RegisterGroupResponse,
+  RegisterGroupAndAttachLicenseRequest,
+  RegisterGroupAndAttachLicenseResponse,
+} from "./types/resources/group";
+export type {
   PiLicenseTemplateGetLicenseTermsResponse,
   IpAccountImplStateResponse,
   EncodedTxData,
 } from "./abi/generated";
 
 export { getPermissionSignature } from "./utils/sign";
-export type { PermissionSignatureRequest, PermissionSignatureResponse } from "./types/common";
