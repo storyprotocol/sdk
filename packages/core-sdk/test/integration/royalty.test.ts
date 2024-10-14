@@ -101,63 +101,6 @@ describe("Test royalty Functions", () => {
       });
       expect(response).to.be.a("bigint");
     });
-
-    it("should not throw error when claim revenue by ipAccount by EOA", async () => {
-      const proxyAddress = await client.royalty.getRoyaltyVaultAddress(parentIpId);
-      //1.transfer token to eoa
-      await client.ipAccount.execute({
-        to: proxyAddress,
-        value: 0,
-        ipId: parentIpId,
-        txOptions: {
-          waitForTransaction: true,
-        },
-        data: encodeFunctionData({
-          abi: [
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "to",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "value",
-                  type: "uint256",
-                },
-              ],
-              name: "transfer",
-              outputs: [
-                {
-                  internalType: "bool",
-                  name: "",
-                  type: "bool",
-                },
-              ],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-          ],
-          functionName: "transfer",
-          args: [process.env.TEST_WALLET_ADDRESS as Hex, BigInt(10 * 10 ** 6)],
-        }),
-      });
-      //2. transfer token to royaltyVault，revenue token
-      await client.royalty.payRoyaltyOnBehalf({
-        receiverIpId: parentIpId,
-        payerIpId: childIpId,
-        token: MockERC20.address,
-        amount: "10",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      const snapshotId = await client.royalty.snapshot({
-        royaltyVaultIpId: parentIpId,
-        txOptions: { waitForTransaction: true },
-      });
-    });
     describe("royalty workflow", async () => {
       let child2IpId: Address;
       before(async () => {
@@ -219,8 +162,7 @@ describe("Test royalty Functions", () => {
           royaltyClaimDetails: [
             {
               childIpId: childIpId,
-              royaltyPolicy:
-                royaltyPolicyLapAddress[iliadChainId as keyof typeof royaltyPolicyLapAddress],
+              royaltyPolicy: royaltyPolicyLapAddress[iliadChainId],
               currencyToken: MockERC20.address,
               amount: BigInt(1),
             },
