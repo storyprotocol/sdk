@@ -57,20 +57,6 @@ export type SnapshotRequest = {
   txOptions?: TxOptions;
 };
 
-export type ClaimRevenueRequest = {
-  snapshotIds: string[] | number[] | bigint[];
-  token: Address;
-  royaltyVaultIpId: Address;
-  account?: Address;
-  txOptions?: TxOptions;
-};
-
-export type ClaimRevenueResponse = {
-  txHash?: string;
-  encodedTxData?: EncodedTxData;
-  claimableToken?: bigint;
-};
-
 export type SnapshotResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;

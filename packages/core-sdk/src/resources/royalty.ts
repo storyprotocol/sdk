@@ -1,4 +1,4 @@
-import { Address, Hex, PublicClient, encodeFunctionData, zeroAddress } from "viem";
+import { Address, Hex, PublicClient, zeroAddress } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -8,8 +8,6 @@ import {
   PayRoyaltyOnBehalfResponse,
   SnapshotRequest,
   SnapshotResponse,
-  ClaimRevenueRequest,
-  ClaimRevenueResponse,
   TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
   TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
   SnapshotAndClaimByTokenBatchRequest,
@@ -25,7 +23,6 @@ import {
   RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
   RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
   SimpleWalletClient,
-  ipRoyaltyVaultImplAbi,
 } from "../abi/generated";
 import { IPAccountClient } from "./ipAccount";
 import { getAddress } from "../utils/utils";
@@ -132,70 +129,6 @@ export class RoyaltyClient {
     }
   }
 
-  /**
-   * Allows token holders to claim by a list of snapshot ids based on the token balance at certain snapshot
-   * @param request - The request object that contains all data needed to claim revenue.
-   *   @param request.snapshotIds The list of snapshot ids.
-   *   @param request.royaltyVaultIpId The id of the royalty vault.
-   *   @param request.token The revenue token to claim.
-   *   @param request.account [Optional] The ipId to send.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional claimableToken if waitForTxn is set to true.
-   * @emits RevenueTokenClaimed (claimer, token, amount).
-   */
-  public async claimRevenue(request: ClaimRevenueRequest): Promise<ClaimRevenueResponse> {
-    try {
-      const proxyAddress = await this.getRoyaltyVaultAddress(
-        getAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
-      );
-      const ipRoyaltyVault = new IpRoyaltyVaultImplClient(
-        this.rpcClient,
-        this.wallet,
-        proxyAddress,
-      );
-      request.snapshotIds = request.snapshotIds.map((item) => BigInt(item));
-      let txHash: Hex;
-      if (request.account) {
-        const iPAccountExecuteResponse = await this.ipAccountClient.execute({
-          to: proxyAddress,
-          value: 0,
-          ipId: getAddress(request.account, "request.account"),
-          txOptions: request.txOptions,
-          data: encodeFunctionData({
-            abi: ipRoyaltyVaultImplAbi,
-            functionName: "claimRevenueBySnapshotBatch",
-            args: [request.snapshotIds, request.token],
-          }),
-        });
-        if (request.txOptions?.encodedTxDataOnly) {
-          return { encodedTxData: iPAccountExecuteResponse.encodedTxData };
-        }
-        txHash = iPAccountExecuteResponse.txHash as Hex;
-      } else {
-        const req = {
-          snapshotIds: request.snapshotIds,
-          token: getAddress(request.token, "request.token"),
-        };
-        if (request.txOptions?.encodedTxDataOnly) {
-          return { encodedTxData: ipRoyaltyVault.claimRevenueBySnapshotBatchEncode(req) };
-        } else {
-          txHash = await ipRoyaltyVault.claimRevenueBySnapshotBatch(req);
-        }
-      }
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const targetLogs = ipRoyaltyVault.parseTxRevenueTokenClaimedEvent(txReceipt);
-        return { txHash, claimableToken: targetLogs[0].amount };
-      } else {
-        return { txHash };
-      }
-    } catch (error) {
-      handleError(error, "Failed to claim revenue");
-    }
-  }
   /**
    * Snapshots the claimable revenue and royalty token amounts.
    * @param request - The request object that contains all data needed to snapshot.

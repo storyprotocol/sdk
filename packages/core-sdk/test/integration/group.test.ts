@@ -3,10 +3,10 @@ import chaiAsPromised from "chai-as-promised";
 import { Address } from "viem";
 import { getStoryClient, iliadChainId, mintBySpg } from "./utils/util";
 import { PIL_TYPE, StoryClient } from "../../src";
-import { mockEvenSplitGroupPoolAddress } from "../../src/abi/generated";
 import { MockERC20 } from "./utils/mockERC20";
+import { evenSplitGroupPoolAddress } from "../../src/abi/generated";
 
-const groupPoolAddress = mockEvenSplitGroupPoolAddress[iliadChainId];
+const groupPoolAddress = evenSplitGroupPoolAddress[iliadChainId];
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,7 +45,7 @@ describe("Group Functions", () => {
     ipId = result.ipId!;
   });
 
-  it.skip("should success when call register group", async () => {
+  it.skip("should success when register group", async () => {
     const result = await client.groupClient.registerGroup({
       groupPool: groupPoolAddress,
       txOptions: {
@@ -56,7 +56,7 @@ describe("Group Functions", () => {
     expect(result.txHash).to.be.a("string").and.not.empty;
     expect(result.groupId).to.be.a("string").and.not.empty;
   });
-  it("should success when call mint and register ip and attach license and add to group", async () => {
+  it("should success when mint and register ip and attach license and add to group", async () => {
     const result = await client.groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
       groupId: "0x01E253fFE5E35e7A6975aeea80b099441D5d5704",
       spgNftContract: spgNftContract,
@@ -68,7 +68,7 @@ describe("Group Functions", () => {
     expect(result.txHash).to.be.a("string").and.not.empty;
     expect(result.ipId).to.be.a("string").and.not.empty;
   });
-  it("should success when call register ip and attach license and add to group", async () => {
+  it("should success when register ip and attach license and add to group", async () => {
     const tokenId = await mintBySpg(spgNftContract, "test-metadata");
     const result = await client.groupClient.registerIpAndAttachLicenseAndAddToGroup({
       groupId: "0x01E253fFE5E35e7A6975aeea80b099441D5d5704",
@@ -84,7 +84,7 @@ describe("Group Functions", () => {
     expect(result.groupId).to.be.a("string").and.not.empty;
   });
 
-  it("should success when call register group and attach license", async () => {
+  it("should success when register group and attach license", async () => {
     const result = await client.groupClient.registerGroupAndAttachLicense({
       groupPool: groupPoolAddress,
       licenseTermsId: licenseTermsId!,
@@ -96,7 +96,7 @@ describe("Group Functions", () => {
     expect(result.groupId).to.be.a("string").and.not.empty;
   });
 
-  it("should success when call register group and attach license and add ips", async () => {
+  it("should success when register group and attach license and add ips", async () => {
     const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
       groupPool: groupPoolAddress,
       ipIds: [ipId],

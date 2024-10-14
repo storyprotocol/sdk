@@ -63,8 +63,6 @@ export type {
   SnapshotResponse,
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
-  ClaimRevenueRequest,
-  ClaimRevenueResponse,
 } from "./types/resources/royalty";
 
 export type {

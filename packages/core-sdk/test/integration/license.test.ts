@@ -15,8 +15,8 @@ describe("License Functions", () => {
   before(() => {
     client = getStoryClient();
   });
-  describe("registering license with different types", async () => {
-    it("should not throw error when registering license ", async () => {
+  describe("register license with different types", async () => {
+    it("should not throw error when register license ", async () => {
       const result = await client.license.registerPILTerms({
         defaultMintingFee: "1",
         currency: MockERC20.address,
@@ -41,7 +41,7 @@ describe("License Functions", () => {
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
-    it("should not throw error when registering license with non commercial social remixing PIL", async () => {
+    it("should not throw error when register license with non commercial social remixing PIL", async () => {
       const result = await client.license.registerNonComSocialRemixingPIL({
         txOptions: {
           waitForTransaction: true,
@@ -49,7 +49,7 @@ describe("License Functions", () => {
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
-    it("should not throw error when registering license with commercial use", async () => {
+    it("should not throw error when register license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "1",
         currency: MockERC20.address,
@@ -60,7 +60,7 @@ describe("License Functions", () => {
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
-    it("should not throw error when registering license with commercial Remix use", async () => {
+    it("should not throw error when register license with commercial Remix use", async () => {
       const result = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
@@ -113,7 +113,7 @@ describe("License Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
 
-    it("should not throw error when minting license tokens", async () => {
+    it("should not throw error when mint license tokens", async () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,

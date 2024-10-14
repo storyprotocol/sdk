@@ -1,13 +1,13 @@
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 
 export type RaiseDisputeRequest = {
   targetIpId: Address;
-  linkToDisputeEvidence: string;
+  disputeEvidenceHash: Hex;
   targetTag: string;
-  calldata?: Address;
+  data?: Address;
   txOptions?: TxOptions;
 };
 
