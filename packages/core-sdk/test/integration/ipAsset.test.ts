@@ -113,6 +113,7 @@ describe("IP Asset Functions ", () => {
     let parentIpId: Hex;
     let licenseTermsId: bigint;
     const mockERC20 = new MockERC20();
+    mockERC20.approve(derivativeWorkflowsAddress[iliadChainId]);
     before(async () => {
       // Create a NFT collection for this test-suite
       const txData = await client.nftClient.createNFTCollection({
@@ -364,7 +365,7 @@ describe("IP Asset Functions ", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
-      expect(result.tokenId).to.be.a("string").and.not.empty;
+      expect(result.tokenId).to.be.a("bigint");
     });
 
     it("should not throw error when call register ip and make derivative with license tokens", async () => {

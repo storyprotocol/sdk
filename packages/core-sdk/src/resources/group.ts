@@ -11,6 +11,7 @@ import {
   GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest,
   IpAccountImplClient,
   IpAssetRegistryClient,
+  LicenseRegistryReadOnlyClient,
   LicenseTokenReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
@@ -42,6 +43,7 @@ export class GroupClient {
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public coreMetadataModuleClient: CoreMetadataModuleClient;
   public licensingModuleClient: LicensingModuleClient;
+  public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: SupportedChainIds;
@@ -58,11 +60,12 @@ export class GroupClient {
     this.groupingModuleClient = new GroupingModuleClient(rpcClient, wallet);
     this.coreMetadataModuleClient = new CoreMetadataModuleClient(rpcClient, wallet);
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
+    this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
   }
   /** Registers a Group IPA.
    * @param request - The request object containing necessary data to register group.
    *   @param request.groupPool The address of the group pool.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
    * @emits PGroupRegistered (groupId, groupPool);
    */
@@ -113,7 +116,7 @@ export class GroupClient {
             signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
             to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: "function addIp(address, address[])",
+            func: "function addIp(address,address[])",
           },
         ],
       });
@@ -173,7 +176,10 @@ export class GroupClient {
       const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         groupId: getAddress(request.groupId, "request.groupId"),
-        licenseTemplate: getAddress(request.licenseTemplate, "request.licenseTemplate"),
+        licenseTemplate:
+          (request.licenseTemplate &&
+            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
+          this.licenseTemplateClient.address,
         licenseTermsId: BigInt(request.licenseTermsId),
         ipMetadata: {
           ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
@@ -197,7 +203,7 @@ export class GroupClient {
                 signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
                 to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
                 permission: AccessPermission.ALLOW,
-                func: "function addIp(address, address[])",
+                func: "function addIp(address,address[])",
               },
             ],
           }),
@@ -284,19 +290,41 @@ export class GroupClient {
       handleError(error, "Failed to register group and attach license");
     }
   }
-
+  /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
+   * @param request - The request object containing necessary data to register group and attach license and add ips.
+   *   @param request.pIds must have the same PIL terms as the group IP.
+   *   @param request.groupPool The address of the group reward pool.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP.
+   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
+   * @emits PGroupRegistered (groupId, groupPool);
+   */
   public async registerGroupAndAttachLicenseAndAddIps(
     request: RegisterGroupAndAttachLicenseAndAddIpsRequest,
   ): Promise<RegisterGroupAndAttachLicenseAndAddIpsResponse> {
     try {
-      //TODO: LicensingModule__LicenseTermsNotFound
+      request.licenseTemplate =
+        (request.licenseTemplate &&
+          getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
+        this.licenseTemplateClient.address;
+      for (let i = 0; i < request.ipIds.length; i++) {
+        const isAttachedLicenseTerms =
+          await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+            ipId: getAddress(request.ipIds[i], "request.ipIds"),
+            licenseTemplate: request.licenseTemplate,
+            licenseTermsId: BigInt(request.licenseTermsId),
+          });
+        if (!isAttachedLicenseTerms) {
+          throw new Error(
+            `License terms must be attached to IP ${request.ipIds[i]} before adding to group.`,
+          );
+        }
+      }
       const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
         groupPool: getAddress(request.groupPool, "request.groupPool"),
         ipIds: request.ipIds.map((ipId) => getAddress(ipId, "request.ipId")),
-        licenseTemplate:
-          (request.licenseTemplate &&
-            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-          this.licenseTemplateClient.address,
+        licenseTemplate: request.licenseTemplate,
         licenseTermsId: BigInt(request.licenseTermsId),
       };
       if (request.txOptions?.encodedTxDataOnly) {

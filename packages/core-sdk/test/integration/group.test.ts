@@ -16,7 +16,7 @@ describe("Group Functions", () => {
   let spgNftContract: Address;
   let licenseTermsId: bigint;
   let ipId: Address;
-  beforeEach(async () => {
+  before(async () => {
     client = getStoryClient();
     spgNftContract = (
       await client.nftClient.createNFTCollection({
@@ -33,19 +33,20 @@ describe("Group Functions", () => {
     ).nftContract!;
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: spgNftContract,
-      pilType: PIL_TYPE.COMMERCIAL_REMIX,
+      pilType: PIL_TYPE.COMMERCIAL_USE,
       commercialRevShare: 10,
-      mintingFee: "100",
+      mintingFee: "0",
       currency: MockERC20.address,
       txOptions: {
         waitForTransaction: true,
       },
     });
+    console.log("result", result);
     licenseTermsId = result.licenseTermsId!;
     ipId = result.ipId!;
   });
 
-  it.skip("should success when register group", async () => {
+  it("should success when register group", async () => {
     const result = await client.groupClient.registerGroup({
       groupPool: groupPoolAddress,
       txOptions: {
@@ -58,7 +59,7 @@ describe("Group Functions", () => {
   });
   it("should success when mint and register ip and attach license and add to group", async () => {
     const result = await client.groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
-      groupId: "0x01E253fFE5E35e7A6975aeea80b099441D5d5704",
+      groupId,
       spgNftContract: spgNftContract,
       licenseTermsId: licenseTermsId!,
       txOptions: {
@@ -71,11 +72,10 @@ describe("Group Functions", () => {
   it("should success when register ip and attach license and add to group", async () => {
     const tokenId = await mintBySpg(spgNftContract, "test-metadata");
     const result = await client.groupClient.registerIpAndAttachLicenseAndAddToGroup({
-      groupId: "0x01E253fFE5E35e7A6975aeea80b099441D5d5704",
+      groupId,
       nftContract: spgNftContract,
       tokenId: tokenId!,
       licenseTermsId: licenseTermsId!,
-      licenseTemplate: MockERC20.address,
       txOptions: {
         waitForTransaction: true,
       },
@@ -101,7 +101,6 @@ describe("Group Functions", () => {
       groupPool: groupPoolAddress,
       ipIds: [ipId],
       licenseTermsId: licenseTermsId!,
-      licenseTemplate: MockERC20.address,
       txOptions: {
         waitForTransaction: true,
       },

@@ -104,6 +104,8 @@ export type {
   RegisterGroupResponse,
   RegisterGroupAndAttachLicenseRequest,
   RegisterGroupAndAttachLicenseResponse,
+  RegisterGroupAndAttachLicenseAndAddIpsRequest,
+  RegisterGroupAndAttachLicenseAndAddIpsResponse,
 } from "./types/resources/group";
 export type {
   PiLicenseTemplateGetLicenseTermsResponse,

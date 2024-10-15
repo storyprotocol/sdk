@@ -1,8 +1,8 @@
 import { Address } from "viem";
 
-import { IpMetadataAndTxOption } from "../common";
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
+import { IpMetadataAndTxOption } from "../common";
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   spgNftContract: Address;
@@ -28,8 +28,8 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   groupId: Address;
-  licenseTemplate: Address;
   licenseTermsId: bigint | string | number;
+  licenseTemplate?: Address;
   deadline?: bigint;
 } & IpMetadataAndTxOption;
 

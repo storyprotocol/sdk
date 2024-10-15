@@ -455,7 +455,6 @@ export class IPAssetClient {
     request: CreateIpAssetWithPilTermsRequest,
   ): Promise<CreateIpAssetWithPilTermsResponse> {
     try {
-      //TODO: Invalid signature
       if (request.pilType === undefined || request.pilType === null) {
         throw new Error("PIL type is required.");
       }

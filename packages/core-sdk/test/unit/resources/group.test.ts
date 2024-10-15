@@ -124,4 +124,77 @@ describe("Test GroupClient", () => {
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
+  describe("Test groupClient.registerGroupAndAttachLicenseAndAddIps", async () => {
+    it("should throw not attach between license terms and ip id when call registerGroupAndAttachLicenseAndAddIps given ipIds is not attach license terms", async () => {
+      try {
+        sinon
+          .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+          .resolves(false);
+        await groupClient.registerGroupAndAttachLicenseAndAddIps({
+          groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+          licenseTermsId: "100",
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register group and attach license and add ips: License terms must be attached to IP 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c before adding to group.",
+        );
+      }
+    });
+
+    it("should return encodedData when call registerGroupAndAttachLicenseAndAddIps successfully with encodedTxDataOnly of true", async () => {
+      sinon
+        .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
+        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+        licenseTermsId: "100",
+        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+    it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args", async () => {
+      sinon
+        .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
+        .resolves(txHash);
+      const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
+        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+        licenseTermsId: "100",
+      });
+      expect(result.txHash).equal(txHash);
+    });
+
+    it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args with waitForTransaction of true", async () => {
+      sinon
+        .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
+        .resolves(txHash);
+      sinon.stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
+        {
+          groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
+      ]);
+      const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
+        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+        licenseTermsId: "100",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+    });
+  });
 });
