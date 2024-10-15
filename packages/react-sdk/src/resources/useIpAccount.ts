@@ -4,7 +4,9 @@ import {
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
   IpAccountStateResponse,
+  TokenResponse,
 } from "@story-protocol/core-sdk";
+import { Address } from "viem";
 import { useState } from "react";
 
 import { useStoryContext } from "../StoryProtocolContext";
@@ -16,11 +18,13 @@ const useIpAccount = () => {
     execute: false,
     executeWithSig: false,
     getIpAccountNonce: false,
+    getToken: false,
   });
   const [errors, setErrors] = useState<Record<string, string | null>>({
     execute: null,
     executeWithSig: null,
     getIpAccountNonce: null,
+    getToken: null,
   });
 
   /** Executes a transaction from the IP Account.
@@ -67,14 +71,25 @@ const useIpAccount = () => {
 
   /** Returns the IPAccount&#39;s internal nonce for transaction ordering.
    * @param ipId The IP ID
-   * @returns The nonce for transaction ordering.
+   * @returns A Promise that resolves to the IP Account&#39;s nonce.
    */
   const getIpAccountNonce = withLoadingErrorHandling<
-    string,
+    Address,
     IpAccountStateResponse
   >(
     "getIpAccountNonce",
     client.ipAccount.getIpAccountNonce.bind(client.ipAccount),
+    setLoadings,
+    setErrors
+  );
+
+  /**
+   * Returns the identifier of the non-fungible token which owns the account
+   * @returns A Promise that resolves to an object containing the chain ID, token contract address, and token ID.
+   */
+  const getToken = withLoadingErrorHandling<Address, TokenResponse>(
+    "getToken",
+    client.ipAccount.getToken.bind(client.ipAccount),
     setLoadings,
     setErrors
   );
@@ -85,6 +100,7 @@ const useIpAccount = () => {
     execute,
     executeWithSig,
     getIpAccountNonce,
+    getToken,
   };
 };
 export default useIpAccount;
