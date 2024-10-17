@@ -26,7 +26,7 @@ describe("Permission Functions", () => {
       })
     ).ipId!;
   });
-  it("should not throw error when call setPermission", async () => {
+  it("should not throw error when set permission", async () => {
     const response = await client.permission.setPermission({
       ipId: ipId,
       signer: process.env.TEST_WALLET_ADDRESS as Address,
@@ -40,7 +40,7 @@ describe("Permission Functions", () => {
     expect(response.success).to.be.a("boolean").and.to.equal(true);
   });
 
-  it("should not throw error when call setAllPermissions", async () => {
+  it("should not throw error when set all permissions", async () => {
     const response = await client.permission.setAllPermissions({
       ipId: ipId,
       signer: process.env.TEST_WALLET_ADDRESS as Address,
@@ -54,7 +54,7 @@ describe("Permission Functions", () => {
     expect(response.success).to.be.a("boolean").and.to.equal(true);
   });
 
-  it("should not throw error when call createSetPermissionSignature", async () => {
+  it("should not throw error when create set permission signature", async () => {
     const response = await client.permission.createSetPermissionSignature({
       ipId,
       signer: process.env.TEST_WALLET_ADDRESS as Address,
@@ -71,7 +71,7 @@ describe("Permission Functions", () => {
     expect(response.success).to.be.a("boolean").and.to.equal(true);
   });
 
-  it("should not throw error when call setBatchPermissions", async () => {
+  it("should not throw error when set batch permissions", async () => {
     const response = await client.permission.setBatchPermissions({
       permissions: [
         {
@@ -98,7 +98,7 @@ describe("Permission Functions", () => {
     expect(response.success).to.be.a("boolean").and.to.equal(true);
   });
 
-  it("should not throw error when call createBatchPermissionSignature", async () => {
+  it("should not throw error when create batch permission signature", async () => {
     const response = await client.permission.createBatchPermissionSignature({
       ipId: ipId,
       permissions: [

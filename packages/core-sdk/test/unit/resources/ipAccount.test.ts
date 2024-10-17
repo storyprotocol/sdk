@@ -4,7 +4,7 @@ import * as sinon from "sinon";
 import { IPAccountClient } from "../../../src/resources/ipAccount";
 import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
 import * as utils from "../../../src/utils/utils";
-import { Account, PublicClient, WalletClient, zeroAddress, parseUnits } from "viem";
+import { Account, PublicClient, WalletClient, zeroAddress } from "viem";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 describe("Test IPAccountClient", () => {

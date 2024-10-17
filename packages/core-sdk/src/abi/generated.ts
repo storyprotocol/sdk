@@ -390,7 +390,7 @@ export const accessControllerAbi = [
  *
  */
 export const accessControllerAddress = {
-  1513: "0x01d470c28822d3701Db6325333cEE9737524776E",
+  1513: "0xbcaD7EA76Ee68Cc507874e9050a7E7D7ff07BB09",
 } as const;
 
 /**
@@ -399,6 +399,265 @@ export const accessControllerAddress = {
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ArbitrationPolicySP
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const arbitrationPolicySpAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "disputeModule", internalType: "address", type: "address" },
+      { name: "paymentToken", internalType: "address", type: "address" },
+      { name: "arbitrationPrice", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  { type: "error", inputs: [], name: "ArbitrationPolicySP__NotDisputeModule" },
+  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroPaymentToken" },
+  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroTreasury" },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ARBITRATION_PRICE",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "PAYMENT_TOKEN",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "accessManager", internalType: "address", type: "address" },
+      { name: "newTreasury", internalType: "address", type: "address" },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onDisputeCancel",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "decision", internalType: "bool", type: "bool" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onDisputeJudgement",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onRaiseDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onResolveDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newTreasury", internalType: "address", type: "address" }],
+    name: "setTreasury",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "treasury",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const arbitrationPolicySpAddress = {
+  1513: "0x8038697357F63415e848785e45B00eB60BcD797b",
+} as const;
+
+/**
+ *
+ */
+export const arbitrationPolicySpConfig = {
+  address: arbitrationPolicySpAddress,
+  abi: arbitrationPolicySpAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -691,7 +950,7 @@ export const coreMetadataModuleAbi = [
  *
  */
 export const coreMetadataModuleAddress = {
-  1513: "0x290F414EA46b361ECFB6b430F98346CB593D02b9",
+  1513: "0xa71Bd7aff91Da5E27A6f96c546D489F6e0870E45",
 } as const;
 
 /**
@@ -700,6 +959,464 @@ export const coreMetadataModuleAddress = {
 export const coreMetadataModuleConfig = {
   address: coreMetadataModuleAddress,
   abi: coreMetadataModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// DerivativeWorkflows
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const derivativeWorkflowsAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "coreMetadataModule", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "licenseToken", internalType: "address", type: "address" },
+      { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "pilTemplate", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "actualTokenOwner", internalType: "address", type: "address" },
+    ],
+    name: "DerivativeWorkflows__CallerAndNotTokenOwner",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "DerivativeWorkflows__EmptyLicenseTokens",
+  },
+  { type: "error", inputs: [], name: "DerivativeWorkflows__ZeroAddressParam" },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  { type: "error", inputs: [], name: "Workflow__CallerNotAuthorizedToMint" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "CORE_METADATA_MODULE",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract ICoreMetadataModule",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_TOKEN",
+    outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "PIL_TEMPLATE",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IPILicenseTemplate",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      {
+        name: "derivData",
+        internalType: "struct WorkflowStructs.MakeDerivative",
+        type: "tuple",
+        components: [
+          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          {
+            name: "licenseTermsIds",
+            internalType: "uint256[]",
+            type: "uint256[]",
+          },
+          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      { name: "recipient", internalType: "address", type: "address" },
+    ],
+    name: "mintAndRegisterIpAndMakeDerivative",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      { name: "recipient", internalType: "address", type: "address" },
+    ],
+    name: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
+    name: "multicall",
+    outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onERC721Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      {
+        name: "derivData",
+        internalType: "struct WorkflowStructs.MakeDerivative",
+        type: "tuple",
+        components: [
+          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          {
+            name: "licenseTermsIds",
+            internalType: "uint256[]",
+            type: "uint256[]",
+          },
+          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadata",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "sigRegister",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndMakeDerivative",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadata",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "sigRegister",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndMakeDerivativeWithLicenseTokens",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "newNftContractBeacon",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "setNftContractBeacon",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const derivativeWorkflowsAddress = {
+  1513: "0xC022C70DA8c23Ae8e36B3de9039Ed24E4E42a127",
+} as const;
+
+/**
+ *
+ */
+export const derivativeWorkflowsConfig = {
+  address: derivativeWorkflowsAddress,
+  abi: derivativeWorkflowsAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -780,14 +1497,10 @@ export const disputeModuleAbi = [
   { type: "error", inputs: [], name: "DisputeModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroArbitrationPolicy" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroArbitrationRelayer" },
+  { type: "error", inputs: [], name: "DisputeModule__ZeroDisputeEvidenceHash" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroDisputeTag" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroIPAssetRegistry" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroLicenseRegistry" },
-  {
-    type: "error",
-    inputs: [],
-    name: "DisputeModule__ZeroLinkToDisputeEvidence",
-  },
   {
     type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
@@ -800,11 +1513,6 @@ export const disputeModuleAbi = [
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-  {
-    type: "error",
-    inputs: [{ name: "str", internalType: "string", type: "string" }],
-    name: "StringTooLong",
-  },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -974,7 +1682,7 @@ export const disputeModuleAbi = [
         indexed: false,
       },
       {
-        name: "linkToDisputeEvidence",
+        name: "disputeEvidenceHash",
         internalType: "bytes32",
         type: "bytes32",
         indexed: false,
@@ -1164,11 +1872,7 @@ export const disputeModuleAbi = [
       { name: "targetIpId", internalType: "address", type: "address" },
       { name: "disputeInitiator", internalType: "address", type: "address" },
       { name: "arbitrationPolicy", internalType: "address", type: "address" },
-      {
-        name: "linkToDisputeEvidence",
-        internalType: "bytes32",
-        type: "bytes32",
-      },
+      { name: "disputeEvidenceHash", internalType: "bytes32", type: "bytes32" },
       { name: "targetTag", internalType: "bytes32", type: "bytes32" },
       { name: "currentTag", internalType: "bytes32", type: "bytes32" },
       { name: "parentDisputeId", internalType: "uint256", type: "uint256" },
@@ -1259,7 +1963,7 @@ export const disputeModuleAbi = [
     type: "function",
     inputs: [
       { name: "targetIpId", internalType: "address", type: "address" },
-      { name: "linkToDisputeEvidence", internalType: "string", type: "string" },
+      { name: "disputeEvidenceHash", internalType: "bytes32", type: "bytes32" },
       { name: "targetTag", internalType: "bytes32", type: "bytes32" },
       { name: "data", internalType: "bytes", type: "bytes" },
     ],
@@ -1384,7 +2088,7 @@ export const disputeModuleAbi = [
  *
  */
 export const disputeModuleAddress = {
-  1513: "0xDae11663438a0958E7075F604E3a5eEe77FD3878",
+  1513: "0x26525b4A1c2261A27B9ee89D512c2f7DceF85f4a",
 } as const;
 
 /**
@@ -1393,6 +2097,1289 @@ export const disputeModuleAddress = {
 export const disputeModuleConfig = {
   address: disputeModuleAddress,
   abi: disputeModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// EvenSplitGroupPool
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const evenSplitGroupPoolAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "groupingModule", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "EvenSplitGroupPool__CallerIsNotGroupingModule",
+  },
+  { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroGroupingModule" },
+  {
+    type: "error",
+    inputs: [],
+    name: "EvenSplitGroupPool__ZeroIPAssetRegistry",
+  },
+  { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroRoyaltyModule" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUPING_MODULE",
+    outputs: [{ name: "", internalType: "contract IGroupingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUP_IP_ASSET_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGroupIPAssetRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+    ],
+    name: "addIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "depositReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "distributeRewards",
+    outputs: [{ name: "rewards", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "getAvailableReward",
+    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+    ],
+    name: "getIpAddedTime",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+    ],
+    name: "getIpRewardDebt",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "getTotalIps",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+    ],
+    name: "isIPAdded",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+    ],
+    name: "removeIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const evenSplitGroupPoolAddress = {
+  1513: "0xA1dB7AB14900Cd9eF9A7eBA931A206250F403a14",
+} as const;
+
+/**
+ *
+ */
+export const evenSplitGroupPoolConfig = {
+  address: evenSplitGroupPoolAddress,
+  abi: evenSplitGroupPoolAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GroupingModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const groupingModuleAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "licenseToken", internalType: "address", type: "address" },
+      { name: "groupNFT", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
+  },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "childGroupId", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__CannotAddGroupToGroup",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__GroupFrozenDueToAlreadyMintLicenseTokens",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__GroupFrozenDueToHasDerivativeIps",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "GroupingModule__GroupIPHasMintingFee",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__GroupIPHasNoLicenseTerms",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__GroupRoyaltyVaultNotCreated",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupNFT", internalType: "address", type: "address" }],
+    name: "GroupingModule__InvalidGroupNFT",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "GroupingModule__IpHasNoGroupLicenseTerms",
+  },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroGroupNFT" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroGroupRewardPool" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroIpAssetRegistry" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroLicenseRegistry" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroLicenseToken" },
+  { type: "error", inputs: [], name: "GroupingModule__ZeroRoyaltyModule" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "ipIds",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+    ],
+    name: "AddedIpToGroup",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "ipId",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256[]",
+        type: "uint256[]",
+        indexed: false,
+      },
+    ],
+    name: "ClaimedReward",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "pool", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "snapshots",
+        internalType: "uint256[]",
+        type: "uint256[]",
+        indexed: false,
+      },
+    ],
+    name: "CollectedRoyaltiesToGroupPool",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "groupPool",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "IPGroupRegistered",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "groupId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "ipIds",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+    ],
+    name: "RemovedIpFromGroup",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUP_IP_ASSET_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGroupIPAssetRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUP_NFT",
+    outputs: [{ name: "", internalType: "contract IGroupNFT", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ACCOUNT_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IIPAccountRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_TOKEN",
+    outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupIpId", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "addIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "claimReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "collectRoyalties",
+    outputs: [{ name: "royalties", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "getClaimableReward",
+    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "groupPool", internalType: "address", type: "address" }],
+    name: "registerGroup",
+    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupIpId", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "removeIp",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "rewardPool", internalType: "address", type: "address" }],
+    name: "whitelistGroupRewardPool",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const groupingModuleAddress = {
+  1513: "0xaB7a16Ad9e46656C59e6071d920feeE7A3416ECf",
+} as const;
+
+/**
+ *
+ */
+export const groupingModuleConfig = {
+  address: groupingModuleAddress,
+  abi: groupingModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GroupingWorkflows
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const groupingWorkflowsAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "coreMetadataModule", internalType: "address", type: "address" },
+      { name: "groupingModule", internalType: "address", type: "address" },
+      { name: "groupNft", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "pilTemplate", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "GroupingWorkflows__ZeroAddressParam" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  { type: "error", inputs: [], name: "Workflow__CallerNotAuthorizedToMint" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "CORE_METADATA_MODULE",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract ICoreMetadataModule",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUPING_MODULE",
+    outputs: [{ name: "", internalType: "contract IGroupingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUP_NFT",
+    outputs: [{ name: "", internalType: "contract GroupNFT", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "PIL_TEMPLATE",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IPILicenseTemplate",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
+      {
+        name: "groupSnapshotIds",
+        internalType: "uint256[]",
+        type: "uint256[]",
+      },
+      { name: "memberIpIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "collectRoyaltiesAndClaimReward",
+    outputs: [
+      {
+        name: "collectedRoyalties",
+        internalType: "uint256[]",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "recipient", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigAddToGroup",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
+    name: "multicall",
+    outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupPool", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "registerGroupAndAttachLicense",
+    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupPool", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "registerGroupAndAttachLicenseAndAddIps",
+    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadataAndAttach",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "sigAddToGroup",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndAttachLicenseAndAddToGroup",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "newNftContractBeacon",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "setNftContractBeacon",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const groupingWorkflowsAddress = {
+  1513: "0x426fF4F7E9Debe565F5Fe6F53334Ad3982295E20",
+} as const;
+
+/**
+ *
+ */
+export const groupingWorkflowsConfig = {
+  address: groupingWorkflowsAddress,
+  abi: groupingWorkflowsAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1808,7 +3795,7 @@ export const ipAccountImplAbi = [
  *
  */
 export const ipAccountImplAddress = {
-  1513: "0x8F763c16753e830a8020c80f9F0131Eb8Ef52879",
+  1513: "0xaE2D8F01920DB2328BEd676652154c9D2Cb863fa",
 } as const;
 
 /**
@@ -1832,6 +3819,7 @@ export const ipAssetRegistryAbi = [
     inputs: [
       { name: "erc6551Registry", internalType: "address", type: "address" },
       { name: "ipAccountImpl", internalType: "address", type: "address" },
+      { name: "groupingModule", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -1867,6 +3855,31 @@ export const ipAssetRegistryAbi = [
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
   { type: "error", inputs: [], name: "FailedInnerCall" },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "GroupIPAssetRegistry__CallerIsNotGroupingModule",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupPool", internalType: "address", type: "address" }],
+    name: "GroupIPAssetRegistry__GroupRewardPoolNotRegistered",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "rewardPool", internalType: "address", type: "address" }],
+    name: "GroupIPAssetRegistry__InvalidGroupRewardPool",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupIPAssetRegistry__NotRegisteredGroupIP",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "GroupIPAssetRegistry__NotRegisteredIP",
+  },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroERC6551Registry" },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroIpAccountImpl" },
   { type: "error", inputs: [], name: "IPAssetRegistry__AlreadyRegistered" },
@@ -2056,6 +4069,13 @@ export const ipAssetRegistryAbi = [
   {
     type: "function",
     inputs: [],
+    name: "GROUPING_MODULE",
+    outputs: [{ name: "", internalType: "contract IGroupingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "IP_ACCOUNT_IMPL",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
@@ -2083,8 +4103,46 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "addGroupMember",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+    ],
+    name: "containsIp",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "startIndex", internalType: "uint256", type: "uint256" },
+      { name: "size", internalType: "uint256", type: "uint256" },
+    ],
+    name: "getGroupMembers",
+    outputs: [{ name: "results", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "getGroupRewardPool",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
@@ -2140,6 +4198,20 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "isRegisteredGroup",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "rewardPool", internalType: "address", type: "address" }],
+    name: "isWhitelistedGroupRewardPool",
+    outputs: [{ name: "isWhitelisted", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "pause",
     outputs: [],
@@ -2172,10 +4244,38 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "groupNft", internalType: "address", type: "address" },
+      { name: "groupNftId", internalType: "uint256", type: "uint256" },
+      { name: "rewardPool", internalType: "address", type: "address" },
+    ],
+    name: "registerGroup",
+    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "removeGroupMember",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "totalMembers",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -2201,13 +4301,20 @@ export const ipAssetRegistryAbi = [
     outputs: [],
     stateMutability: "payable",
   },
+  {
+    type: "function",
+    inputs: [{ name: "rewardPool", internalType: "address", type: "address" }],
+    name: "whitelistGroupRewardPool",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
 ] as const;
 
 /**
  *
  */
 export const ipAssetRegistryAddress = {
-  1513: "0xe34A78B3d658aF7ad69Ff1EFF9012ECa025a14Be",
+  1513: "0x14CAB45705Fe73EC6d126518E59Fe3C61a181E40",
 } as const;
 
 /**
@@ -2229,24 +4336,43 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "constructor",
     inputs: [
-      { name: "royaltyPolicyLAP", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
-  { type: "error", inputs: [], name: "IpRoyaltyVault__AlreadyClaimed" },
-  { type: "error", inputs: [], name: "IpRoyaltyVault__ClaimerNotAnAncestor" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__EnforcedPause" },
-  { type: "error", inputs: [], name: "IpRoyaltyVault__IpGraphCallFailed" },
-  { type: "error", inputs: [], name: "IpRoyaltyVault__IpTagged" },
-  { type: "error", inputs: [], name: "IpRoyaltyVault__NotRoyaltyPolicyLAP" },
   {
     type: "error",
     inputs: [],
-    name: "IpRoyaltyVault__SnapshotIntervalTooShort",
+    name: "IpRoyaltyVault__InsufficientTimeElapsedSinceLastSnapshot",
   },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__InvalidTargetIpId" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__NoClaimableTokens" },
+  {
+    type: "error",
+    inputs: [],
+    name: "IpRoyaltyVault__NoNewRevenueSinceLastSnapshot",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "IpRoyaltyVault__NotAllowedToAddTokenToVault",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "IpRoyaltyVault__NotWhitelistedRoyaltyToken",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "IpRoyaltyVault__VaultDoesNotBelongToAnAncestor",
+  },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__VaultsMustClaimAsSelf" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroAmount" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroDisputeModule" },
-  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroRoyaltyPolicyLAP" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroRoyaltyModule" },
   {
     type: "event",
     anonymous: false,
@@ -2283,6 +4409,25 @@ export const ipRoyaltyVaultImplAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RevenueTokenAddedToVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "claimer",
         internalType: "address",
         type: "address",
@@ -2306,25 +4451,6 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "event",
     anonymous: false,
-    inputs: [
-      {
-        name: "ancestorIpId",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "royaltyTokensCollected",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "RoyaltyTokensCollected",
-  },
-  {
-    type: "event",
-    anonymous: false,
     inputs: [{ name: "id", internalType: "uint256", type: "uint256", indexed: false }],
     name: "Snapshot",
   },
@@ -2342,12 +4468,6 @@ export const ipRoyaltyVaultImplAbi = [
         name: "snapshotTimestamp",
         internalType: "uint256",
         type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "unclaimedTokens",
-        internalType: "uint32",
-        type: "uint32",
         indexed: false,
       },
     ],
@@ -2378,23 +4498,9 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_GRAPH_CONTRACT",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
     stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "ROYALTY_POLICY_LAP",
-    outputs: [{ name: "", internalType: "contract IRoyaltyPolicyLAP", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "addIpRoyaltyVaultTokens",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -2403,13 +4509,6 @@ export const ipRoyaltyVaultImplAbi = [
       { name: "spender", internalType: "address", type: "address" },
     ],
     name: "allowance",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "ancestorsVaultAmount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
@@ -2445,8 +4544,9 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [
       { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "token", internalType: "address", type: "address" },
+      { name: "targetIpId", internalType: "address", type: "address" },
     ],
-    name: "claimRevenueBySnapshotBatch",
+    name: "claimBySnapshotBatchAsSelf",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -2455,9 +4555,32 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [
       { name: "snapshotId", internalType: "uint256", type: "uint256" },
       { name: "tokenList", internalType: "address[]", type: "address[]" },
+      { name: "targetIpId", internalType: "address", type: "address" },
     ],
-    name: "claimRevenueByTokenBatch",
+    name: "claimByTokenBatchAsSelf",
     outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "claimer", internalType: "address", type: "address" },
+    ],
+    name: "claimRevenueOnBehalfBySnapshotBatch",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "tokenList", internalType: "address[]", type: "address[]" },
+      { name: "claimer", internalType: "address", type: "address" },
+    ],
+    name: "claimRevenueOnBehalfByTokenBatch",
+    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
     stateMutability: "nonpayable",
   },
   {
@@ -2490,37 +4613,10 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "ancestorIpId", internalType: "address", type: "address" },
-      { name: "_tokens", internalType: "address[]", type: "address[]" },
-    ],
-    name: "collectAccruedTokens",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "ancestorIpId", internalType: "address", type: "address" }],
-    name: "collectRoyaltyTokens",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ancestorIpId", internalType: "address", type: "address" },
-      { name: "token", internalType: "address", type: "address" },
-    ],
-    name: "collectableAmount",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [],
     name: "decimals",
     outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
   {
     type: "function",
@@ -2531,6 +4627,13 @@ export const ipRoyaltyVaultImplAbi = [
     name: "decreaseAllowance",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getCurrentSnapshotId",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -2548,8 +4651,8 @@ export const ipRoyaltyVaultImplAbi = [
       { name: "name", internalType: "string", type: "string" },
       { name: "symbol", internalType: "string", type: "string" },
       { name: "supply", internalType: "uint32", type: "uint32" },
-      { name: "unclaimedTokens", internalType: "uint32", type: "uint32" },
       { name: "ipIdAddress", internalType: "address", type: "address" },
+      { name: "rtReceiver", internalType: "address", type: "address" },
     ],
     name: "initialize",
     outputs: [],
@@ -2575,13 +4678,6 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "ancestorIpId", internalType: "address", type: "address" }],
-    name: "isCollectedByAncestor",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [],
     name: "lastSnapshotTimestamp",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
@@ -2592,6 +4688,13 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "pendingVaultAmount",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
@@ -2652,17 +4755,13 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "snapshotId", internalType: "uint256", type: "uint256" }],
-    name: "unclaimedAtSnapshot",
-    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "unclaimedRoyaltyTokens",
-    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
-    stateMutability: "view",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "updateVaultBalance",
+    outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -2670,7 +4769,7 @@ export const ipRoyaltyVaultImplAbi = [
  *
  */
 export const ipRoyaltyVaultImplAddress = {
-  1513: "0xfb5b5B61c9a437E06Ba87367aaBf3766d091E3D1",
+  1513: "0x604dc8E58f720DEB345B2F3e08B2B354eA6CE498",
 } as const;
 
 /**
@@ -2679,6 +4778,496 @@ export const ipRoyaltyVaultImplAddress = {
 export const ipRoyaltyVaultImplConfig = {
   address: ipRoyaltyVaultImplAddress,
   abi: ipRoyaltyVaultImplAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// LicenseAttachmentWorkflows
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const licenseAttachmentWorkflowsAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "coreMetadataModule", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "pilTemplate", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicenseAttachmentWorkflows__ZeroAddressParam",
+  },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  { type: "error", inputs: [], name: "Workflow__CallerNotAuthorizedToMint" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "CORE_METADATA_MODULE",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract ICoreMetadataModule",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "PIL_TEMPLATE",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IPILicenseTemplate",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "recipient", internalType: "address", type: "address" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "terms",
+        internalType: "struct PILTerms",
+        type: "tuple",
+        components: [
+          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "expiration", internalType: "uint256", type: "uint256" },
+          { name: "commercialUse", internalType: "bool", type: "bool" },
+          { name: "commercialAttribution", internalType: "bool", type: "bool" },
+          {
+            name: "commercializerChecker",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "commercializerCheckerData",
+            internalType: "bytes",
+            type: "bytes",
+          },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "commercialRevCeiling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
+          {
+            name: "derivativesAttribution",
+            internalType: "bool",
+            type: "bool",
+          },
+          { name: "derivativesApproval", internalType: "bool", type: "bool" },
+          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
+          {
+            name: "derivativeRevCeiling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "currency", internalType: "address", type: "address" },
+          { name: "uri", internalType: "string", type: "string" },
+        ],
+      },
+    ],
+    name: "mintAndRegisterIpAndAttachPILTerms",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
+    name: "multicall",
+    outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "terms",
+        internalType: "struct PILTerms",
+        type: "tuple",
+        components: [
+          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "expiration", internalType: "uint256", type: "uint256" },
+          { name: "commercialUse", internalType: "bool", type: "bool" },
+          { name: "commercialAttribution", internalType: "bool", type: "bool" },
+          {
+            name: "commercializerChecker",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "commercializerCheckerData",
+            internalType: "bytes",
+            type: "bytes",
+          },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "commercialRevCeiling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
+          {
+            name: "derivativesAttribution",
+            internalType: "bool",
+            type: "bool",
+          },
+          { name: "derivativesApproval", internalType: "bool", type: "bool" },
+          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
+          {
+            name: "derivativeRevCeiling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "currency", internalType: "address", type: "address" },
+          { name: "uri", internalType: "string", type: "string" },
+        ],
+      },
+      {
+        name: "sigMetadata",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "sigAttach",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndAttachPILTerms",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "terms",
+        internalType: "struct PILTerms",
+        type: "tuple",
+        components: [
+          { name: "transferable", internalType: "bool", type: "bool" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          {
+            name: "defaultMintingFee",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "expiration", internalType: "uint256", type: "uint256" },
+          { name: "commercialUse", internalType: "bool", type: "bool" },
+          { name: "commercialAttribution", internalType: "bool", type: "bool" },
+          {
+            name: "commercializerChecker",
+            internalType: "address",
+            type: "address",
+          },
+          {
+            name: "commercializerCheckerData",
+            internalType: "bytes",
+            type: "bytes",
+          },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "commercialRevCeiling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
+          {
+            name: "derivativesAttribution",
+            internalType: "bool",
+            type: "bool",
+          },
+          { name: "derivativesApproval", internalType: "bool", type: "bool" },
+          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
+          {
+            name: "derivativeRevCeiling",
+            internalType: "uint256",
+            type: "uint256",
+          },
+          { name: "currency", internalType: "address", type: "address" },
+          { name: "uri", internalType: "string", type: "string" },
+        ],
+      },
+      {
+        name: "sigAttach",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerPILTermsAndAttach",
+    outputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "newNftContractBeacon",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "setNftContractBeacon",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const licenseAttachmentWorkflowsAddress = {
+  1513: "0x1B95144b62B4566501482e928aa435Dd205fE71B",
+} as const;
+
+/**
+ *
+ */
+export const licenseAttachmentWorkflowsConfig = {
+  address: licenseAttachmentWorkflowsAddress,
+  abi: licenseAttachmentWorkflowsAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2695,6 +5284,7 @@ export const licenseRegistryAbi = [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "ipGraphAcl", internalType: "address", type: "address" },
+      { name: "ipGraph", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -3023,15 +5613,15 @@ export const licenseRegistryAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_GRAPH_ACL",
-    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    name: "IP_GRAPH",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [],
-    name: "IP_GRAPH_CONTRACT",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -3168,6 +5758,19 @@ export const licenseRegistryAbi = [
     inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
     name: "getParentIpCount",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "parentIpId", internalType: "address", type: "address" },
+    ],
+    name: "getParentLicenseTerms",
+    outputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
     stateMutability: "view",
   },
   {
@@ -3359,7 +5962,7 @@ export const licenseRegistryAbi = [
  *
  */
 export const licenseRegistryAddress = {
-  1513: "0xF542AF9a5A6E4A85a4f084D38B322516ec336097",
+  1513: "0x4D71a082DE74B40904c1d89d9C3bfB7079d4c542",
 } as const;
 
 /**
@@ -3765,6 +6368,13 @@ export const licenseTokenAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "licensorIpId", internalType: "address", type: "address" }],
+    name: "getTotalTokensByLicensor",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "accessManager", internalType: "address", type: "address" },
       { name: "imageUrl", internalType: "string", type: "string" },
@@ -3973,7 +6583,7 @@ export const licenseTokenAbi = [
  *
  */
 export const licenseTokenAddress = {
-  1513: "0xB31FE33De46A1FA5d4Ec669EDB049892E0A1EB4C",
+  1513: "0xd8aEF404432a2b3363479A6157285926B6B3b743",
 } as const;
 
 /**
@@ -4045,18 +6655,6 @@ export const licensingModuleAbi = [
   { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "LicensingModule__DisputedIpId" },
-  {
-    type: "error",
-    inputs: [
-      { name: "royaltyPolicy", internalType: "address", type: "address" },
-      {
-        name: "anotherRoyaltyPolicy",
-        internalType: "address",
-        type: "address",
-      },
-    ],
-    name: "LicensingModule__IncompatibleRoyaltyPolicy",
-  },
   {
     type: "error",
     inputs: [
@@ -4444,6 +7042,23 @@ export const licensingModuleAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+    ],
+    name: "predictMintingLicenseFee",
+    outputs: [
+      { name: "currencyToken", internalType: "address", type: "address" },
+      { name: "tokenAmount", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
@@ -4532,7 +7147,7 @@ export const licensingModuleAbi = [
  *
  */
 export const licensingModuleAddress = {
-  1513: "0xf49da534215DA7b48E57A41d41dac25C912FCC60",
+  1513: "0xC8f165950411504eA130692B87A7148e469f7090",
 } as const;
 
 /**
@@ -4541,6 +7156,206 @@ export const licensingModuleAddress = {
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
   abi: licensingModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MockERC20
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const mockErc20Abi = [
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
+  {
+    type: "error",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "allowance", internalType: "uint256", type: "uint256" },
+      { name: "needed", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC20InsufficientAllowance",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "sender", internalType: "address", type: "address" },
+      { name: "balance", internalType: "uint256", type: "uint256" },
+      { name: "needed", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC20InsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "approver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidApprover",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidReceiver",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "sender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSender",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "spender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSpender",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "spender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Approval",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Transfer",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "burn",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "decimals",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "mint",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const mockErc20Address = {
+  1513: "0x91f6F05B08c16769d3c85867548615d270C42fC7",
+} as const;
+
+/**
+ *
+ */
+export const mockErc20Config = {
+  address: mockErc20Address,
+  abi: mockErc20Abi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4837,7 +7652,7 @@ export const moduleRegistryAbi = [
  *
  */
 export const moduleRegistryAddress = {
-  1513: "0x008ac202A8545D10f25707439bE4c139Be4Df75F",
+  1513: "0x47bEae573B73F8BF1B4fa4Af065c39743871003f",
 } as const;
 
 /**
@@ -5308,7 +8123,7 @@ export const piLicenseTemplateAbi = [
     name: "getRoyaltyPolicy",
     outputs: [
       { name: "royaltyPolicy", internalType: "address", type: "address" },
-      { name: "royaltyData", internalType: "bytes", type: "bytes" },
+      { name: "royaltyPercent", internalType: "uint32", type: "uint32" },
       { name: "mintingFee", internalType: "uint256", type: "uint256" },
       { name: "currency", internalType: "address", type: "address" },
     ],
@@ -5523,7 +8338,7 @@ export const piLicenseTemplateAbi = [
  *
  */
 export const piLicenseTemplateAddress = {
-  1513: "0x8BB1ADE72E21090Fc891e1d4b88AC5E57b27cB31",
+  1513: "0xbB7ACFBE330C56aA9a3aEb84870743C3566992c3",
 } as const;
 
 /**
@@ -5535,954 +8350,22 @@ export const piLicenseTemplateConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// RoyaltyModule
+// RegistrationWorkflows
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  *
  */
-export const royaltyModuleAbi = [
-  {
-    type: "constructor",
-    inputs: [
-      { name: "licensingModule", internalType: "address", type: "address" },
-      { name: "disputeModule", internalType: "address", type: "address" },
-      { name: "licenseRegistry", internalType: "address", type: "address" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "authority", internalType: "address", type: "address" }],
-    name: "AccessManagedInvalidAuthority",
-  },
-  {
-    type: "error",
-    inputs: [
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "delay", internalType: "uint32", type: "uint32" },
-    ],
-    name: "AccessManagedRequiredDelay",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "caller", internalType: "address", type: "address" }],
-    name: "AccessManagedUnauthorized",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "target", internalType: "address", type: "address" }],
-    name: "AddressEmptyCode",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
-    name: "ERC1967InvalidImplementation",
-  },
-  { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "EnforcedPause" },
-  { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
-  { type: "error", inputs: [], name: "InvalidInitialization" },
-  { type: "error", inputs: [], name: "NotInitializing" },
-  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyModule__CanOnlyMintSelectedPolicy",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyModule__IncompatibleRoyaltyPolicy",
-  },
-  { type: "error", inputs: [], name: "RoyaltyModule__IpIsExpired" },
-  { type: "error", inputs: [], name: "RoyaltyModule__IpIsTagged" },
-  { type: "error", inputs: [], name: "RoyaltyModule__NoParentsOnLinking" },
-  { type: "error", inputs: [], name: "RoyaltyModule__NoRoyaltyPolicySet" },
-  { type: "error", inputs: [], name: "RoyaltyModule__NotAllowedCaller" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyModule__NotWhitelistedRoyaltyPolicy",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyModule__NotWhitelistedRoyaltyToken",
-  },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroAccessManager" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroDisputeModule" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicenseRegistry" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicensingModule" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyPolicy" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyToken" },
-  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
-  {
-    type: "error",
-    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
-    name: "UUPSUnsupportedProxiableUUID",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "authority",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "AuthorityUpdated",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "version",
-        internalType: "uint64",
-        type: "uint64",
-        indexed: false,
-      },
-    ],
-    name: "Initialized",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "receiverIpId",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "payerAddress",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "token",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "amount",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "LicenseMintingFeePaid",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "account",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "Paused",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "receiverIpId",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "payerIpId",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "sender",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "token",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "amount",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "RoyaltyPaid",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "royaltyPolicy",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
-    ],
-    name: "RoyaltyPolicyWhitelistUpdated",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "token",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
-    ],
-    name: "RoyaltyTokenWhitelistUpdated",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "account",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "Unpaused",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "implementation",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    name: "Upgraded",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "DISPUTE_MODULE",
-    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "LICENSE_REGISTRY",
-    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "LICENSING_MODULE",
-    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "UPGRADE_INTERFACE_VERSION",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
-    name: "__ProtocolPausable_init",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "authority",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "isConsumingScheduledOp",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "royaltyPolicy", internalType: "address", type: "address" }],
-    name: "isWhitelistedRoyaltyPolicy",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "isWhitelistedRoyaltyToken",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "name",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "royaltyPolicy", internalType: "address", type: "address" },
-      { name: "licenseData", internalType: "bytes", type: "bytes" },
-      { name: "externalData", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onLicenseMinting",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "royaltyPolicy", internalType: "address", type: "address" },
-      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
-      { name: "licenseData", internalType: "bytes[]", type: "bytes[]" },
-      { name: "externalData", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onLinkToParents",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "pause",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "paused",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "receiverIpId", internalType: "address", type: "address" },
-      { name: "payerAddress", internalType: "address", type: "address" },
-      {
-        name: "licenseRoyaltyPolicy",
-        internalType: "address",
-        type: "address",
-      },
-      { name: "token", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "payLicenseMintingFee",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "receiverIpId", internalType: "address", type: "address" },
-      { name: "payerIpId", internalType: "address", type: "address" },
-      { name: "token", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "payRoyaltyOnBehalf",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "proxiableUUID",
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "royaltyPolicies",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
-    name: "setAuthority",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "unpause",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "newImplementation", internalType: "address", type: "address" },
-      { name: "data", internalType: "bytes", type: "bytes" },
-    ],
-    name: "upgradeToAndCall",
-    outputs: [],
-    stateMutability: "payable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "royaltyPolicy", internalType: "address", type: "address" },
-      { name: "allowed", internalType: "bool", type: "bool" },
-    ],
-    name: "whitelistRoyaltyPolicy",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "token", internalType: "address", type: "address" },
-      { name: "allowed", internalType: "bool", type: "bool" },
-    ],
-    name: "whitelistRoyaltyToken",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-] as const;
-
-/**
- *
- */
-export const royaltyModuleAddress = {
-  1513: "0x968beb5432c362c12b5Be6967a5d6F1ED5A63F01",
-} as const;
-
-/**
- *
- */
-export const royaltyModuleConfig = {
-  address: royaltyModuleAddress,
-  abi: royaltyModuleAbi,
-} as const;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// RoyaltyPolicyLAP
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- *
- */
-export const royaltyPolicyLapAbi = [
-  {
-    type: "constructor",
-    inputs: [
-      { name: "royaltyModule", internalType: "address", type: "address" },
-      { name: "licensingModule", internalType: "address", type: "address" },
-      { name: "ipGraphAcl", internalType: "address", type: "address" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "authority", internalType: "address", type: "address" }],
-    name: "AccessManagedInvalidAuthority",
-  },
-  {
-    type: "error",
-    inputs: [
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "delay", internalType: "uint32", type: "uint32" },
-    ],
-    name: "AccessManagedRequiredDelay",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "caller", internalType: "address", type: "address" }],
-    name: "AccessManagedUnauthorized",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "target", internalType: "address", type: "address" }],
-    name: "AddressEmptyCode",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
-    name: "ERC1967InvalidImplementation",
-  },
-  { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "EnforcedPause" },
-  { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
-  { type: "error", inputs: [], name: "InvalidInitialization" },
-  { type: "error", inputs: [], name: "NotInitializing" },
-  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveAncestorsLimit" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveParentLimit" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__AboveRoyaltyStackLimit",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__LastPositionNotAbleToMintLicense",
-  },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__UnlinkableToParents" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroAccessManager" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroIPGraphACL" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__ZeroIpRoyaltyVaultBeacon",
-  },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroLicensingModule" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroRoyaltyModule" },
-  {
-    type: "error",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "SafeERC20FailedOperation",
-  },
-  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
-  {
-    type: "error",
-    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
-    name: "UUPSUnsupportedProxiableUUID",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "authority",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "AuthorityUpdated",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "version",
-        internalType: "uint64",
-        type: "uint64",
-        indexed: false,
-      },
-    ],
-    name: "Initialized",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "beacon",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "IpRoyaltyVaultBeaconSet",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "account",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "Paused",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "ipId",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "ipRoyaltyVault",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "royaltyStack",
-        internalType: "uint32",
-        type: "uint32",
-        indexed: false,
-      },
-    ],
-    name: "PolicyInitialized",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "token",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "vault",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "RevenueTokenAddedToVault",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "interval",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "SnapshotIntervalSet",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "account",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "Unpaused",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "implementation",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    name: "Upgraded",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "IP_GRAPH_ACL",
-    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "IP_GRAPH_CONTRACT",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "LICENSING_MODULE",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "MAX_ANCESTORS",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "MAX_PARENTS",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "ROYALTY_MODULE",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "TOTAL_RT_SUPPLY",
-    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "UPGRADE_INTERFACE_VERSION",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
-    name: "__ProtocolPausable_init",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "authority",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "getIpRoyaltyVaultBeacon",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "getRoyaltyData",
-    outputs: [
-      { name: "", internalType: "bool", type: "bool" },
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "uint32", type: "uint32" },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "getSnapshotInterval",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "isConsumingScheduledOp",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "licenseData", internalType: "bytes", type: "bytes" },
-      { name: "externalData", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onLicenseMinting",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
-      { name: "licenseData", internalType: "bytes[]", type: "bytes[]" },
-      { name: "externalData", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onLinkToParents",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "token", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "onRoyaltyPayment",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "pause",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "paused",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "proxiableUUID",
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
-    name: "setAuthority",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "beacon", internalType: "address", type: "address" }],
-    name: "setIpRoyaltyVaultBeacon",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "timestampInterval", internalType: "uint256", type: "uint256" }],
-    name: "setSnapshotInterval",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "unpause",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "newImplementation", internalType: "address", type: "address" },
-      { name: "data", internalType: "bytes", type: "bytes" },
-    ],
-    name: "upgradeToAndCall",
-    outputs: [],
-    stateMutability: "payable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "newVault", internalType: "address", type: "address" }],
-    name: "upgradeVaults",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-] as const;
-
-/**
- *
- */
-export const royaltyPolicyLapAddress = {
-  1513: "0x61A5c7570f5bDB118D65053Ba60DE87e050E664e",
-} as const;
-
-/**
- *
- */
-export const royaltyPolicyLapConfig = {
-  address: royaltyPolicyLapAddress,
-  abi: royaltyPolicyLapAbi,
-} as const;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// SPG
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- *
- */
-export const spgAbi = [
+export const registrationWorkflowsAbi = [
   {
     type: "constructor",
     inputs: [
       { name: "accessController", internalType: "address", type: "address" },
-      { name: "ipAssetRegistry", internalType: "address", type: "address" },
-      { name: "licensingModule", internalType: "address", type: "address" },
-      { name: "licenseRegistry", internalType: "address", type: "address" },
-      { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "coreMetadataModule", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "licensingModule", internalType: "address", type: "address" },
       { name: "pilTemplate", internalType: "address", type: "address" },
-      { name: "licenseToken", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -6511,11 +8394,6 @@ export const spgAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
@@ -6525,20 +8403,8 @@ export const spgAbi = [
   { type: "error", inputs: [], name: "NotInitializing" },
   {
     type: "error",
-    inputs: [
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "actualTokenOwner", internalType: "address", type: "address" },
-    ],
-    name: "SPG__CallerAndNotTokenOwner",
-  },
-  { type: "error", inputs: [], name: "SPG__CallerNotMinterRole" },
-  { type: "error", inputs: [], name: "SPG__EmptyLicenseTokens" },
-  { type: "error", inputs: [], name: "SPG__ZeroAddressParam" },
-  {
-    type: "error",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "SafeERC20FailedOperation",
+    inputs: [],
+    name: "RegistrationWorkflows__ZeroAddressParam",
   },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
@@ -6546,6 +8412,7 @@ export const spgAbi = [
     inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
     name: "UUPSUnsupportedProxiableUUID",
   },
+  { type: "error", inputs: [], name: "Workflow__CallerNotAuthorizedToMint" },
   {
     type: "event",
     anonymous: false,
@@ -6564,7 +8431,7 @@ export const spgAbi = [
     anonymous: false,
     inputs: [
       {
-        name: "nftContract",
+        name: "spgNftContract",
         internalType: "address",
         type: "address",
         indexed: true,
@@ -6635,13 +8502,6 @@ export const spgAbi = [
   {
     type: "function",
     inputs: [],
-    name: "LICENSE_TOKEN",
-    outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
     stateMutability: "view",
@@ -6662,13 +8522,6 @@ export const spgAbi = [
   {
     type: "function",
     inputs: [],
-    name: "ROYALTY_MODULE",
-    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
@@ -6683,15 +8536,31 @@ export const spgAbi = [
   {
     type: "function",
     inputs: [
-      { name: "name", internalType: "string", type: "string" },
-      { name: "symbol", internalType: "string", type: "string" },
-      { name: "maxSupply", internalType: "uint32", type: "uint32" },
-      { name: "mintFee", internalType: "uint256", type: "uint256" },
-      { name: "mintFeeToken", internalType: "address", type: "address" },
-      { name: "owner", internalType: "address", type: "address" },
+      {
+        name: "spgNftInitParams",
+        internalType: "struct ISPGNFT.InitParams",
+        type: "tuple",
+        components: [
+          { name: "name", internalType: "string", type: "string" },
+          { name: "symbol", internalType: "string", type: "string" },
+          { name: "baseURI", internalType: "string", type: "string" },
+          { name: "contractURI", internalType: "string", type: "string" },
+          { name: "maxSupply", internalType: "uint32", type: "uint32" },
+          { name: "mintFee", internalType: "uint256", type: "uint256" },
+          { name: "mintFeeToken", internalType: "address", type: "address" },
+          {
+            name: "mintFeeRecipient",
+            internalType: "address",
+            type: "address",
+          },
+          { name: "owner", internalType: "address", type: "address" },
+          { name: "mintOpen", internalType: "bool", type: "bool" },
+          { name: "isPublicMinting", internalType: "bool", type: "bool" },
+        ],
+      },
     ],
     name: "createCollection",
-    outputs: [{ name: "nftContract", internalType: "address", type: "address" }],
+    outputs: [{ name: "spgNftContract", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
   {
@@ -6711,11 +8580,11 @@ export const spgAbi = [
   {
     type: "function",
     inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "spgNftContract", internalType: "address", type: "address" },
       { name: "recipient", internalType: "address", type: "address" },
       {
         name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
         type: "tuple",
         components: [
           { name: "ipMetadataURI", internalType: "string", type: "string" },
@@ -6734,163 +8603,9 @@ export const spgAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "recipient", internalType: "address", type: "address" },
-      {
-        name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-    ],
-    name: "mintAndRegisterIpAndAttachPILTerms",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      {
-        name: "derivData",
-        internalType: "struct IStoryProtocolGateway.MakeDerivative",
-        type: "tuple",
-        components: [
-          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
-          { name: "licenseTemplate", internalType: "address", type: "address" },
-          {
-            name: "licenseTermsIds",
-            internalType: "uint256[]",
-            type: "uint256[]",
-          },
-          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      { name: "recipient", internalType: "address", type: "address" },
-    ],
-    name: "mintAndRegisterIpAndMakeDerivative",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-      {
-        name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      { name: "recipient", internalType: "address", type: "address" },
-    ],
-    name: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
     name: "multicall",
     outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "address", type: "address" },
-      { name: "", internalType: "uint256", type: "uint256" },
-      { name: "", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onERC721Received",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
     stateMutability: "nonpayable",
   },
   {
@@ -6907,7 +8622,7 @@ export const spgAbi = [
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       {
         name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
         type: "tuple",
         components: [
           { name: "ipMetadataURI", internalType: "string", type: "string" },
@@ -6918,7 +8633,7 @@ export const spgAbi = [
       },
       {
         name: "sigMetadata",
-        internalType: "struct IStoryProtocolGateway.SignatureData",
+        internalType: "struct WorkflowStructs.SignatureData",
         type: "tuple",
         components: [
           { name: "signer", internalType: "address", type: "address" },
@@ -6929,262 +8644,6 @@ export const spgAbi = [
     ],
     name: "registerIp",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      {
-        name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct IStoryProtocolGateway.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigAttach",
-        internalType: "struct IStoryProtocolGateway.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndAttachPILTerms",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      {
-        name: "derivData",
-        internalType: "struct IStoryProtocolGateway.MakeDerivative",
-        type: "tuple",
-        components: [
-          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
-          { name: "licenseTemplate", internalType: "address", type: "address" },
-          {
-            name: "licenseTermsIds",
-            internalType: "uint256[]",
-            type: "uint256[]",
-          },
-          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct IStoryProtocolGateway.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigRegister",
-        internalType: "struct IStoryProtocolGateway.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndMakeDerivative",
-    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-      {
-        name: "ipMetadata",
-        internalType: "struct IStoryProtocolGateway.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct IStoryProtocolGateway.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigRegister",
-        internalType: "struct IStoryProtocolGateway.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndMakeDerivativeWithLicenseTokens",
-    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      {
-        name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-    ],
-    name: "registerPILTermsAndAttach",
-    outputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
   {
@@ -7229,14 +8688,1912 @@ export const spgAbi = [
 /**
  *
  */
-export const spgAddress = {
-  1513: "0x69415CE984A79a3Cfbe3F51024C63b6C107331e3",
+export const registrationWorkflowsAddress = {
+  1513: "0xF403fcCAAE6C503D0CC1D25904A0B2cCd5B96C6F",
 } as const;
 
 /**
  *
  */
-export const spgConfig = { address: spgAddress, abi: spgAbi } as const;
+export const registrationWorkflowsConfig = {
+  address: registrationWorkflowsAddress,
+  abi: registrationWorkflowsAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RoyaltyModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const royaltyModuleAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "licensingModule", internalType: "address", type: "address" },
+      { name: "disputeModule", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "ipGraph", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__AboveAccumulatedRoyaltyPoliciesLimit",
+  },
+  { type: "error", inputs: [], name: "RoyaltyModule__AboveAncestorsLimit" },
+  { type: "error", inputs: [], name: "RoyaltyModule__AboveMaxPercent" },
+  { type: "error", inputs: [], name: "RoyaltyModule__AboveParentLimit" },
+  { type: "error", inputs: [], name: "RoyaltyModule__IpIsTagged" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__LastPositionNotAbleToMintLicense",
+  },
+  { type: "error", inputs: [], name: "RoyaltyModule__NoParentsOnLinking" },
+  { type: "error", inputs: [], name: "RoyaltyModule__NotAllowedCaller" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__NotWhitelistedOrRegisteredRoyaltyPolicy",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__NotWhitelistedRoyaltyToken",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__PolicyAlreadyWhitelistedOrRegistered",
+  },
+  { type: "error", inputs: [], name: "RoyaltyModule__UnlinkableToParents" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroAccessManager" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__ZeroAccumulatedRoyaltyPoliciesLimit",
+  },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroAmount" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroIpAssetRegistry" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicenseRegistry" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicensingModule" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroMaxAncestors" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroMaxParents" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroParentIpId" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroReceiverVault" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyPolicy" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyToken" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroTreasury" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "VaultController__ZeroIpRoyaltyVaultBeacon",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "externalRoyaltyPolicy",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "ExternalRoyaltyPolicyRegistered",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "maxParents",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "maxAncestors",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "accumulatedRoyaltyPoliciesLimit",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "IpGraphLimitsUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "ipId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "ipRoyaltyVault",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "IpRoyaltyVaultDeployed",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "receiverIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "payerAddress",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "amountAfterFee",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "LicenseMintingFeePaid",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "ipId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "royaltyPolicy",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "licensePercent",
+        internalType: "uint32",
+        type: "uint32",
+        indexed: false,
+      },
+      {
+        name: "externalData",
+        internalType: "bytes",
+        type: "bytes",
+        indexed: false,
+      },
+    ],
+    name: "LicensedWithRoyalty",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "ipId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "parentIpIds",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+      {
+        name: "licenseRoyaltyPolicies",
+        internalType: "address[]",
+        type: "address[]",
+        indexed: false,
+      },
+      {
+        name: "licensesPercent",
+        internalType: "uint32[]",
+        type: "uint32[]",
+        indexed: false,
+      },
+      {
+        name: "externalData",
+        internalType: "bytes",
+        type: "bytes",
+        indexed: false,
+      },
+    ],
+    name: "LinkedToParents",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "royaltyFeePercent",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RoyaltyFeePercentSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "receiverIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "payerIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "sender",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "amountAfterFee",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RoyaltyPaid",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "royaltyPolicy",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
+    ],
+    name: "RoyaltyPolicyWhitelistUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
+    ],
+    name: "RoyaltyTokenWhitelistUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "treasury",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "TreasurySet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGroupIPAssetRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSING_MODULE",
+    outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "MAX_PERCENT",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "accumulatedRoyaltyPolicies",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getAncestorsCount",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "globalRoyaltyStack",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+    ],
+    name: "hasAncestorIp",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "accessManager", internalType: "address", type: "address" },
+      { name: "parentLimit", internalType: "uint256", type: "uint256" },
+      { name: "ancestorLimit", internalType: "uint256", type: "uint256" },
+      {
+        name: "accumulatedRoyaltyPoliciesLimit",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ipRoyaltyVaultBeacon",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "ipRoyaltyVaults",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipRoyaltyVault", internalType: "address", type: "address" }],
+    name: "isIpRoyaltyVault",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "externalRoyaltyPolicy",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "isRegisteredExternalRoyaltyPolicy",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "royaltyPolicy", internalType: "address", type: "address" }],
+    name: "isWhitelistedRoyaltyPolicy",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "isWhitelistedRoyaltyToken",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "maxAccumulatedRoyaltyPolicies",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "maxAncestors",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "maxParents",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "maxPercent",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      { name: "licensePercent", internalType: "uint32", type: "uint32" },
+      { name: "externalData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLicenseMinting",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      {
+        name: "licenseRoyaltyPolicies",
+        internalType: "address[]",
+        type: "address[]",
+      },
+      { name: "licensesPercent", internalType: "uint32[]", type: "uint32[]" },
+      { name: "externalData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLinkToParents",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "receiverIpId", internalType: "address", type: "address" },
+      { name: "payerAddress", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "payLicenseMintingFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "receiverIpId", internalType: "address", type: "address" },
+      { name: "payerIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "payRoyaltyOnBehalf",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "externalRoyaltyPolicy",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "registerExternalRoyaltyPolicy",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "royaltyFeePercent",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "parentLimit", internalType: "uint256", type: "uint256" },
+      { name: "ancestorLimit", internalType: "uint256", type: "uint256" },
+      {
+        name: "accumulatedRoyaltyPoliciesLimit",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "setIpGraphLimits",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "beacon", internalType: "address", type: "address" }],
+    name: "setIpRoyaltyVaultBeacon",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "royaltyFeePercent", internalType: "uint32", type: "uint32" }],
+    name: "setRoyaltyFeePercent",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "timestampInterval", internalType: "uint256", type: "uint256" }],
+    name: "setSnapshotInterval",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "treasury", internalType: "address", type: "address" }],
+    name: "setTreasury",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "snapshotInterval",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "totalRevenueTokensReceived",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "treasury",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newVault", internalType: "address", type: "address" }],
+    name: "upgradeVaults",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
+    ],
+    name: "whitelistRoyaltyPolicy",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
+    ],
+    name: "whitelistRoyaltyToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const royaltyModuleAddress = {
+  1513: "0xaCb5764E609aa3a5ED36bA74ba59679246Cb0963",
+} as const;
+
+/**
+ *
+ */
+export const royaltyModuleConfig = {
+  address: royaltyModuleAddress,
+  abi: royaltyModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RoyaltyPolicyLAP
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const royaltyPolicyLapAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
+      { name: "ipGraph", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveMaxPercent" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyPolicyLAP__ExceedsClaimableRoyalty",
+  },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroAmount" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroClaimableRoyalty" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroIPGraphACL" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroRoyaltyModule" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "ipId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "ancestorIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RevenueTransferredToVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+    ],
+    name: "getPolicyRoyalty",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getPolicyRoyaltyStack",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licensePercent", internalType: "uint32", type: "uint32" },
+    ],
+    name: "getPolicyRtsRequiredToLink",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "getTransferredTokens",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licensePercent", internalType: "uint32", type: "uint32" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLicenseMinting",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      {
+        name: "licenseRoyaltyPolicies",
+        internalType: "address[]",
+        type: "address[]",
+      },
+      { name: "licensesPercent", internalType: "uint32[]", type: "uint32[]" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLinkToParents",
+    outputs: [{ name: "newRoyaltyStackLAP", internalType: "uint32", type: "uint32" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferToVault",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const royaltyPolicyLapAddress = {
+  1513: "0x793Df8d32c12B0bE9985FFF6afB8893d347B6686",
+} as const;
+
+/**
+ *
+ */
+export const royaltyPolicyLapConfig = {
+  address: royaltyPolicyLapAddress,
+  abi: royaltyPolicyLapAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RoyaltyPolicyLRP
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const royaltyPolicyLrpAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
+      { name: "ipGraph", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__AboveMaxPercent" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyPolicyLRP__ExceedsClaimableRoyalty",
+  },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__NotRoyaltyModule" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroAccessManager" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroAmount" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroClaimableRoyalty" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroIPGraphACL" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroRoyaltyModule" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "ipId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "ancestorIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RevenueTransferredToVault",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+    ],
+    name: "getPolicyRoyalty",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getPolicyRoyaltyStack",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licensePercent", internalType: "uint32", type: "uint32" },
+    ],
+    name: "getPolicyRtsRequiredToLink",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "getTransferredTokens",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licensePercent", internalType: "uint32", type: "uint32" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLicenseMinting",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+      {
+        name: "licenseRoyaltyPolicies",
+        internalType: "address[]",
+        type: "address[]",
+      },
+      { name: "licensesPercent", internalType: "uint32[]", type: "uint32[]" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onLinkToParents",
+    outputs: [{ name: "newRoyaltyStackLRP", internalType: "uint32", type: "uint32" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferToVault",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const royaltyPolicyLrpAddress = {
+  1513: "0x1eF035c7054bd45e25B2a29A06a37b1350F50596",
+} as const;
+
+/**
+ *
+ */
+export const royaltyPolicyLrpConfig = {
+  address: royaltyPolicyLrpAddress,
+  abi: royaltyPolicyLrpAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RoyaltyWorkflows
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const royaltyWorkflowsAbi = [
+  {
+    type: "constructor",
+    inputs: [{ name: "royaltyModule", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "RoyaltyWorkflows__ZeroAddressParam" },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
+    name: "multicall",
+    outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "claimer", internalType: "address", type: "address" },
+      {
+        name: "unclaimedSnapshotIds",
+        internalType: "uint256[]",
+        type: "uint256[]",
+      },
+      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
+    ],
+    name: "snapshotAndClaimBySnapshotBatch",
+    outputs: [
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "claimer", internalType: "address", type: "address" },
+      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
+    ],
+    name: "snapshotAndClaimByTokenBatch",
+    outputs: [
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "claimer", internalType: "address", type: "address" },
+      {
+        name: "unclaimedSnapshotIds",
+        internalType: "uint256[]",
+        type: "uint256[]",
+      },
+      {
+        name: "royaltyClaimDetails",
+        internalType: "struct IRoyaltyWorkflows.RoyaltyClaimDetails[]",
+        type: "tuple[]",
+        components: [
+          { name: "childIpId", internalType: "address", type: "address" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "currencyToken", internalType: "address", type: "address" },
+          { name: "amount", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    name: "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
+    outputs: [
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "claimer", internalType: "address", type: "address" },
+      {
+        name: "royaltyClaimDetails",
+        internalType: "struct IRoyaltyWorkflows.RoyaltyClaimDetails[]",
+        type: "tuple[]",
+        components: [
+          { name: "childIpId", internalType: "address", type: "address" },
+          { name: "royaltyPolicy", internalType: "address", type: "address" },
+          { name: "currencyToken", internalType: "address", type: "address" },
+          { name: "amount", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    name: "transferToVaultAndSnapshotAndClaimByTokenBatch",
+    outputs: [
+      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const royaltyWorkflowsAddress = {
+  1513: "0xc757921ee0f7c8E935d44BFBDc2602786e0eda6C",
+} as const;
+
+/**
+ *
+ */
+export const royaltyWorkflowsConfig = {
+  address: royaltyWorkflowsAddress,
+  abi: royaltyWorkflowsAbi,
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SPGNFTBeacon
@@ -7342,7 +10699,7 @@ export const spgnftBeaconAbi = [
  *
  */
 export const spgnftBeaconAddress = {
-  1513: "0x027D258659FBdda9033f9c008AF166239EBa67c1",
+  1513: "0x02324ca8f369abB445F50c4cE79e956e49AC75d8",
 } as const;
 
 /**
@@ -7363,7 +10720,20 @@ export const spgnftBeaconConfig = {
 export const spgnftImplAbi = [
   {
     type: "constructor",
-    inputs: [{ name: "spg", internalType: "address", type: "address" }],
+    inputs: [
+      { name: "derivativeWorkflows", internalType: "address", type: "address" },
+      { name: "groupingWorkflows", internalType: "address", type: "address" },
+      {
+        name: "licenseAttachmentWorkflows",
+        internalType: "address",
+        type: "address",
+      },
+      {
+        name: "registrationWorkflows",
+        internalType: "address",
+        type: "address",
+      },
+    ],
     stateMutability: "nonpayable",
   },
   { type: "error", inputs: [], name: "AccessControlBadConfirmation" },
@@ -7424,10 +10794,13 @@ export const spgnftImplAbi = [
   },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
-  { type: "error", inputs: [], name: "SPGNFT_ZeroMaxSupply" },
-  { type: "error", inputs: [], name: "SPGNFT__CallerNotSPG" },
+  { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipient" },
+  { type: "error", inputs: [], name: "SPGNFT__CallerNotPeripheryContract" },
   { type: "error", inputs: [], name: "SPGNFT__MaxSupplyReached" },
+  { type: "error", inputs: [], name: "SPGNFT__MintingClosed" },
+  { type: "error", inputs: [], name: "SPGNFT__MintingDenied" },
   { type: "error", inputs: [], name: "SPGNFT__ZeroAddressParam" },
+  { type: "error", inputs: [], name: "SPGNFT__ZeroMaxSupply" },
   {
     type: "event",
     anonymous: false,
@@ -7603,7 +10976,28 @@ export const spgnftImplAbi = [
   {
     type: "function",
     inputs: [],
-    name: "SPG_ADDRESS",
+    name: "DERIVATIVE_WORKFLOWS_ADDRESS",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUPING_WORKFLOWS_ADDRESS",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_ATTACHMENT_WORKFLOWS_ADDRESS",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "REGISTRATION_WORKFLOWS_ADDRESS",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
@@ -7622,6 +11016,13 @@ export const spgnftImplAbi = [
     inputs: [{ name: "owner", internalType: "address", type: "address" }],
     name: "balanceOf",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "baseURI",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
   },
   {
@@ -7661,12 +11062,27 @@ export const spgnftImplAbi = [
   {
     type: "function",
     inputs: [
-      { name: "name", internalType: "string", type: "string" },
-      { name: "symbol", internalType: "string", type: "string" },
-      { name: "maxSupply", internalType: "uint32", type: "uint32" },
-      { name: "mintFee", internalType: "uint256", type: "uint256" },
-      { name: "mintFeeToken", internalType: "address", type: "address" },
-      { name: "owner", internalType: "address", type: "address" },
+      {
+        name: "initParams",
+        internalType: "struct ISPGNFT.InitParams",
+        type: "tuple",
+        components: [
+          { name: "name", internalType: "string", type: "string" },
+          { name: "symbol", internalType: "string", type: "string" },
+          { name: "baseURI", internalType: "string", type: "string" },
+          { name: "maxSupply", internalType: "uint32", type: "uint32" },
+          { name: "mintFee", internalType: "uint256", type: "uint256" },
+          { name: "mintFeeToken", internalType: "address", type: "address" },
+          {
+            name: "mintFeeRecipient",
+            internalType: "address",
+            type: "address",
+          },
+          { name: "owner", internalType: "address", type: "address" },
+          { name: "mintOpen", internalType: "bool", type: "bool" },
+          { name: "isPublicMinting", internalType: "bool", type: "bool" },
+        ],
+      },
     ],
     name: "initialize",
     outputs: [],
@@ -7699,7 +11115,7 @@ export const spgnftImplAbi = [
       { name: "payer", internalType: "address", type: "address" },
       { name: "nftMetadataURI", internalType: "string", type: "string" },
     ],
-    name: "mintBySPG",
+    name: "mintByPeriphery",
     outputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
@@ -7713,8 +11129,22 @@ export const spgnftImplAbi = [
   {
     type: "function",
     inputs: [],
+    name: "mintFeeRecipient",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "mintFeeToken",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "mintOpen",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
@@ -7729,6 +11159,13 @@ export const spgnftImplAbi = [
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "ownerOf",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "publicMinting",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
@@ -7786,6 +11223,13 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "baseURI", internalType: "string", type: "string" }],
+    name: "setBaseURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "fee", internalType: "uint256", type: "uint256" }],
     name: "setMintFee",
     outputs: [],
@@ -7793,8 +11237,29 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "newFeeRecipient", internalType: "address", type: "address" }],
+    name: "setMintFeeRecipient",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "setMintFeeToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "mintOpen", internalType: "bool", type: "bool" }],
+    name: "setMintOpen",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "isPublicMinting", internalType: "bool", type: "bool" }],
+    name: "setPublicMinting",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -7839,10 +11304,7 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "token", internalType: "address", type: "address" },
-      { name: "recipient", internalType: "address", type: "address" },
-    ],
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
     name: "withdrawToken",
     outputs: [],
     stateMutability: "nonpayable",
@@ -7853,7 +11315,7 @@ export const spgnftImplAbi = [
  *
  */
 export const spgnftImplAddress = {
-  1513: "0xDb6480C00B570324A122A6B35F9CAC0F87BDb3e6",
+  1513: "0xC8E4376Da033cE244027B03f9b94dc0d7005D67E",
 } as const;
 
 /**
@@ -8128,6 +11590,704 @@ export class AccessControllerClient extends AccessControllerEventClient {
         abi: accessControllerAbi,
         functionName: "setPermission",
         args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
+      }),
+    };
+  }
+}
+
+// Contract ArbitrationPolicySP =============================================================
+
+/**
+ * ArbitrationPolicySpAuthorityUpdatedEvent
+ *
+ * @param authority address
+ */
+export type ArbitrationPolicySpAuthorityUpdatedEvent = {
+  authority: Address;
+};
+
+/**
+ * ArbitrationPolicySpInitializedEvent
+ *
+ * @param version uint64
+ */
+export type ArbitrationPolicySpInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * ArbitrationPolicySpUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type ArbitrationPolicySpUpgradedEvent = {
+  implementation: Address;
+};
+
+export type ArbitrationPolicySpArbitrationPriceResponse = bigint;
+
+export type ArbitrationPolicySpDisputeModuleResponse = Address;
+
+export type ArbitrationPolicySpPaymentTokenResponse = Address;
+
+export type ArbitrationPolicySpUpgradeInterfaceVersionResponse = string;
+
+export type ArbitrationPolicySpAuthorityResponse = Address;
+
+export type ArbitrationPolicySpIsConsumingScheduledOpResponse = Hex;
+
+export type ArbitrationPolicySpProxiableUuidResponse = Hex;
+
+export type ArbitrationPolicySpTreasuryResponse = Address;
+
+/**
+ * ArbitrationPolicySpInitializeRequest
+ *
+ * @param accessManager address
+ * @param newTreasury address
+ */
+export type ArbitrationPolicySpInitializeRequest = {
+  accessManager: Address;
+  newTreasury: Address;
+};
+
+/**
+ * ArbitrationPolicySpOnDisputeCancelRequest
+ *
+ * @param caller address
+ * @param disputeId uint256
+ * @param data bytes
+ */
+export type ArbitrationPolicySpOnDisputeCancelRequest = {
+  caller: Address;
+  disputeId: bigint;
+  data: Hex;
+};
+
+/**
+ * ArbitrationPolicySpOnDisputeJudgementRequest
+ *
+ * @param disputeId uint256
+ * @param decision bool
+ * @param data bytes
+ */
+export type ArbitrationPolicySpOnDisputeJudgementRequest = {
+  disputeId: bigint;
+  decision: boolean;
+  data: Hex;
+};
+
+/**
+ * ArbitrationPolicySpOnRaiseDisputeRequest
+ *
+ * @param caller address
+ * @param data bytes
+ */
+export type ArbitrationPolicySpOnRaiseDisputeRequest = {
+  caller: Address;
+  data: Hex;
+};
+
+/**
+ * ArbitrationPolicySpOnResolveDisputeRequest
+ *
+ * @param caller address
+ * @param disputeId uint256
+ * @param data bytes
+ */
+export type ArbitrationPolicySpOnResolveDisputeRequest = {
+  caller: Address;
+  disputeId: bigint;
+  data: Hex;
+};
+
+/**
+ * ArbitrationPolicySpSetAuthorityRequest
+ *
+ * @param newAuthority address
+ */
+export type ArbitrationPolicySpSetAuthorityRequest = {
+  newAuthority: Address;
+};
+
+/**
+ * ArbitrationPolicySpSetTreasuryRequest
+ *
+ * @param newTreasury address
+ */
+export type ArbitrationPolicySpSetTreasuryRequest = {
+  newTreasury: Address;
+};
+
+/**
+ * ArbitrationPolicySpUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type ArbitrationPolicySpUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
+};
+
+/**
+ * contract ArbitrationPolicySP event
+ */
+export class ArbitrationPolicySpEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(arbitrationPolicySpAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AuthorityUpdated for contract ArbitrationPolicySP
+   */
+  public watchAuthorityUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<ArbitrationPolicySpAuthorityUpdatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      eventName: "AuthorityUpdated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AuthorityUpdated for contract ArbitrationPolicySP
+   */
+  public parseTxAuthorityUpdatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<ArbitrationPolicySpAuthorityUpdatedEvent> {
+    const targetLogs: Array<ArbitrationPolicySpAuthorityUpdatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: arbitrationPolicySpAbi,
+          eventName: "AuthorityUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract ArbitrationPolicySP
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<ArbitrationPolicySpInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract ArbitrationPolicySP
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<ArbitrationPolicySpInitializedEvent> {
+    const targetLogs: Array<ArbitrationPolicySpInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: arbitrationPolicySpAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract ArbitrationPolicySP
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<ArbitrationPolicySpUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract ArbitrationPolicySP
+   */
+  public parseTxUpgradedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<ArbitrationPolicySpUpgradedEvent> {
+    const targetLogs: Array<ArbitrationPolicySpUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: arbitrationPolicySpAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract ArbitrationPolicySP readonly method
+ */
+export class ArbitrationPolicySpReadOnlyClient extends ArbitrationPolicySpEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method ARBITRATION_PRICE for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpArbitrationPriceRequest
+   * @return Promise<ArbitrationPolicySpArbitrationPriceResponse>
+   */
+  public async arbitrationPrice(): Promise<ArbitrationPolicySpArbitrationPriceResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "ARBITRATION_PRICE",
+    });
+  }
+
+  /**
+   * method DISPUTE_MODULE for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpDisputeModuleRequest
+   * @return Promise<ArbitrationPolicySpDisputeModuleResponse>
+   */
+  public async disputeModule(): Promise<ArbitrationPolicySpDisputeModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "DISPUTE_MODULE",
+    });
+  }
+
+  /**
+   * method PAYMENT_TOKEN for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpPaymentTokenRequest
+   * @return Promise<ArbitrationPolicySpPaymentTokenResponse>
+   */
+  public async paymentToken(): Promise<ArbitrationPolicySpPaymentTokenResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "PAYMENT_TOKEN",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpUpgradeInterfaceVersionRequest
+   * @return Promise<ArbitrationPolicySpUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<ArbitrationPolicySpUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method authority for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpAuthorityRequest
+   * @return Promise<ArbitrationPolicySpAuthorityResponse>
+   */
+  public async authority(): Promise<ArbitrationPolicySpAuthorityResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "authority",
+    });
+  }
+
+  /**
+   * method isConsumingScheduledOp for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpIsConsumingScheduledOpRequest
+   * @return Promise<ArbitrationPolicySpIsConsumingScheduledOpResponse>
+   */
+  public async isConsumingScheduledOp(): Promise<ArbitrationPolicySpIsConsumingScheduledOpResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpProxiableUuidRequest
+   * @return Promise<ArbitrationPolicySpProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<ArbitrationPolicySpProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+
+  /**
+   * method treasury for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpTreasuryRequest
+   * @return Promise<ArbitrationPolicySpTreasuryResponse>
+   */
+  public async treasury(): Promise<ArbitrationPolicySpTreasuryResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "treasury",
+    });
+  }
+}
+
+/**
+ * contract ArbitrationPolicySP write method
+ */
+export class ArbitrationPolicySpClient extends ArbitrationPolicySpReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method initialize for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: ArbitrationPolicySpInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.accessManager, request.newTreasury],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: ArbitrationPolicySpInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "initialize",
+        args: [request.accessManager, request.newTreasury],
+      }),
+    };
+  }
+
+  /**
+   * method onDisputeCancel for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpOnDisputeCancelRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onDisputeCancel(
+    request: ArbitrationPolicySpOnDisputeCancelRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "onDisputeCancel",
+      account: this.wallet.account,
+      args: [request.caller, request.disputeId, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onDisputeCancel for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpOnDisputeCancelRequest
+   * @return EncodedTxData
+   */
+  public onDisputeCancelEncode(request: ArbitrationPolicySpOnDisputeCancelRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "onDisputeCancel",
+        args: [request.caller, request.disputeId, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method onDisputeJudgement for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpOnDisputeJudgementRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onDisputeJudgement(
+    request: ArbitrationPolicySpOnDisputeJudgementRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "onDisputeJudgement",
+      account: this.wallet.account,
+      args: [request.disputeId, request.decision, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onDisputeJudgement for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpOnDisputeJudgementRequest
+   * @return EncodedTxData
+   */
+  public onDisputeJudgementEncode(
+    request: ArbitrationPolicySpOnDisputeJudgementRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "onDisputeJudgement",
+        args: [request.disputeId, request.decision, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method onRaiseDispute for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpOnRaiseDisputeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onRaiseDispute(
+    request: ArbitrationPolicySpOnRaiseDisputeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "onRaiseDispute",
+      account: this.wallet.account,
+      args: [request.caller, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onRaiseDispute for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpOnRaiseDisputeRequest
+   * @return EncodedTxData
+   */
+  public onRaiseDisputeEncode(request: ArbitrationPolicySpOnRaiseDisputeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "onRaiseDispute",
+        args: [request.caller, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method onResolveDispute for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpOnResolveDisputeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onResolveDispute(
+    request: ArbitrationPolicySpOnResolveDisputeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "onResolveDispute",
+      account: this.wallet.account,
+      args: [request.caller, request.disputeId, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onResolveDispute for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpOnResolveDisputeRequest
+   * @return EncodedTxData
+   */
+  public onResolveDisputeEncode(
+    request: ArbitrationPolicySpOnResolveDisputeRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "onResolveDispute",
+        args: [request.caller, request.disputeId, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method setAuthority for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpSetAuthorityRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAuthority(
+    request: ArbitrationPolicySpSetAuthorityRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "setAuthority",
+      account: this.wallet.account,
+      args: [request.newAuthority],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: ArbitrationPolicySpSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
+  }
+
+  /**
+   * method setTreasury for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpSetTreasuryRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setTreasury(
+    request: ArbitrationPolicySpSetTreasuryRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "setTreasury",
+      account: this.wallet.account,
+      args: [request.newTreasury],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setTreasury for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpSetTreasuryRequest
+   * @return EncodedTxData
+   */
+  public setTreasuryEncode(request: ArbitrationPolicySpSetTreasuryRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "setTreasury",
+        args: [request.newTreasury],
+      }),
+    };
+  }
+
+  /**
+   * method upgradeToAndCall for contract ArbitrationPolicySP
+   *
+   * @param request ArbitrationPolicySpUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: ArbitrationPolicySpUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicySpAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract ArbitrationPolicySP with only encode
+   *
+   * @param request ArbitrationPolicySpUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(
+    request: ArbitrationPolicySpUpgradeToAndCallRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicySpAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
       }),
     };
   }
@@ -8974,6 +13134,335 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
   }
 }
 
+// Contract DerivativeWorkflows =============================================================
+
+/**
+ * DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest
+ *
+ * @param spgNftContract address
+ * @param derivData tuple
+ * @param ipMetadata tuple
+ * @param recipient address
+ */
+export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
+  spgNftContract: Address;
+  derivData: {
+    parentIpIds: readonly Address[];
+    licenseTemplate: Address;
+    licenseTermsIds: readonly bigint[];
+    royaltyContext: Hex;
+  };
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  recipient: Address;
+};
+
+/**
+ * DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+ *
+ * @param spgNftContract address
+ * @param licenseTokenIds uint256[]
+ * @param royaltyContext bytes
+ * @param ipMetadata tuple
+ * @param recipient address
+ */
+export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  spgNftContract: Address;
+  licenseTokenIds: readonly bigint[];
+  royaltyContext: Hex;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  recipient: Address;
+};
+
+/**
+ * DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param derivData tuple
+ * @param ipMetadata tuple
+ * @param sigMetadata tuple
+ * @param sigRegister tuple
+ */
+export type DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  derivData: {
+    parentIpIds: readonly Address[];
+    licenseTemplate: Address;
+    licenseTermsIds: readonly bigint[];
+    royaltyContext: Hex;
+  };
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+  sigRegister: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param licenseTokenIds uint256[]
+ * @param royaltyContext bytes
+ * @param ipMetadata tuple
+ * @param sigMetadata tuple
+ * @param sigRegister tuple
+ */
+export type DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  licenseTokenIds: readonly bigint[];
+  royaltyContext: Hex;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+  sigRegister: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * contract DerivativeWorkflows write method
+ */
+export class DerivativeWorkflowsClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(derivativeWorkflowsAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivative for contract DerivativeWorkflows
+   *
+   * @param request DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndMakeDerivative(
+    request: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: derivativeWorkflowsAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndMakeDerivative",
+      account: this.wallet.account,
+      args: [request.spgNftContract, request.derivData, request.ipMetadata, request.recipient],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivative for contract DerivativeWorkflows with only encode
+   *
+   * @param request DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndMakeDerivativeEncode(
+    request: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivative",
+        args: [request.spgNftContract, request.derivData, request.ipMetadata, request.recipient],
+      }),
+    };
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract DerivativeWorkflows
+   *
+   * @param request DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
+    request: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: derivativeWorkflowsAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+      account: this.wallet.account,
+      args: [
+        request.spgNftContract,
+        request.licenseTokenIds,
+        request.royaltyContext,
+        request.ipMetadata,
+        request.recipient,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract DerivativeWorkflows with only encode
+   *
+   * @param request DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
+    request: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+        args: [
+          request.spgNftContract,
+          request.licenseTokenIds,
+          request.royaltyContext,
+          request.ipMetadata,
+          request.recipient,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method registerIpAndMakeDerivative for contract DerivativeWorkflows
+   *
+   * @param request DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndMakeDerivative(
+    request: DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: derivativeWorkflowsAbi,
+      address: this.address,
+      functionName: "registerIpAndMakeDerivative",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.derivData,
+        request.ipMetadata,
+        request.sigMetadata,
+        request.sigRegister,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndMakeDerivative for contract DerivativeWorkflows with only encode
+   *
+   * @param request DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndMakeDerivativeEncode(
+    request: DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "registerIpAndMakeDerivative",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.derivData,
+          request.ipMetadata,
+          request.sigMetadata,
+          request.sigRegister,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method registerIpAndMakeDerivativeWithLicenseTokens for contract DerivativeWorkflows
+   *
+   * @param request DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndMakeDerivativeWithLicenseTokens(
+    request: DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: derivativeWorkflowsAbi,
+      address: this.address,
+      functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.licenseTokenIds,
+        request.royaltyContext,
+        request.ipMetadata,
+        request.sigMetadata,
+        request.sigRegister,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndMakeDerivativeWithLicenseTokens for contract DerivativeWorkflows with only encode
+   *
+   * @param request DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndMakeDerivativeWithLicenseTokensEncode(
+    request: DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.licenseTokenIds,
+          request.royaltyContext,
+          request.ipMetadata,
+          request.sigMetadata,
+          request.sigRegister,
+        ],
+      }),
+    };
+  }
+}
+
 // Contract DisputeModule =============================================================
 
 /**
@@ -8994,7 +13483,7 @@ export type DisputeModuleDisputeCancelledEvent = {
  * @param targetIpId address
  * @param disputeInitiator address
  * @param arbitrationPolicy address
- * @param linkToDisputeEvidence bytes32
+ * @param disputeEvidenceHash bytes32
  * @param targetTag bytes32
  * @param data bytes
  */
@@ -9003,7 +13492,7 @@ export type DisputeModuleDisputeRaisedEvent = {
   targetIpId: Address;
   disputeInitiator: Address;
   arbitrationPolicy: Address;
-  linkToDisputeEvidence: Hex;
+  disputeEvidenceHash: Hex;
   targetTag: Hex;
   data: Hex;
 };
@@ -9032,13 +13521,13 @@ export type DisputeModuleCancelDisputeRequest = {
  * DisputeModuleRaiseDisputeRequest
  *
  * @param targetIpId address
- * @param linkToDisputeEvidence string
+ * @param disputeEvidenceHash bytes32
  * @param targetTag bytes32
  * @param data bytes
  */
 export type DisputeModuleRaiseDisputeRequest = {
   targetIpId: Address;
-  linkToDisputeEvidence: string;
+  disputeEvidenceHash: Hex;
   targetTag: Hex;
   data: Hex;
 };
@@ -9251,7 +13740,7 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
       address: this.address,
       functionName: "raiseDispute",
       account: this.wallet.account,
-      args: [request.targetIpId, request.linkToDisputeEvidence, request.targetTag, request.data],
+      args: [request.targetIpId, request.disputeEvidenceHash, request.targetTag, request.data],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -9268,7 +13757,7 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
       data: encodeFunctionData({
         abi: disputeModuleAbi,
         functionName: "raiseDispute",
-        args: [request.targetIpId, request.linkToDisputeEvidence, request.targetTag, request.data],
+        args: [request.targetIpId, request.disputeEvidenceHash, request.targetTag, request.data],
       }),
     };
   }
@@ -9305,6 +13794,2653 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
         abi: disputeModuleAbi,
         functionName: "resolveDispute",
         args: [request.disputeId, request.data],
+      }),
+    };
+  }
+}
+
+// Contract EvenSplitGroupPool =============================================================
+
+/**
+ * EvenSplitGroupPoolAuthorityUpdatedEvent
+ *
+ * @param authority address
+ */
+export type EvenSplitGroupPoolAuthorityUpdatedEvent = {
+  authority: Address;
+};
+
+/**
+ * EvenSplitGroupPoolInitializedEvent
+ *
+ * @param version uint64
+ */
+export type EvenSplitGroupPoolInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * EvenSplitGroupPoolPausedEvent
+ *
+ * @param account address
+ */
+export type EvenSplitGroupPoolPausedEvent = {
+  account: Address;
+};
+
+/**
+ * EvenSplitGroupPoolUnpausedEvent
+ *
+ * @param account address
+ */
+export type EvenSplitGroupPoolUnpausedEvent = {
+  account: Address;
+};
+
+/**
+ * EvenSplitGroupPoolUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type EvenSplitGroupPoolUpgradedEvent = {
+  implementation: Address;
+};
+
+export type EvenSplitGroupPoolGroupingModuleResponse = Address;
+
+export type EvenSplitGroupPoolGroupIpAssetRegistryResponse = Address;
+
+export type EvenSplitGroupPoolRoyaltyModuleResponse = Address;
+
+export type EvenSplitGroupPoolUpgradeInterfaceVersionResponse = string;
+
+export type EvenSplitGroupPoolAuthorityResponse = Address;
+
+/**
+ * EvenSplitGroupPoolGetAvailableRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type EvenSplitGroupPoolGetAvailableRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+export type EvenSplitGroupPoolGetAvailableRewardResponse = readonly bigint[];
+
+/**
+ * EvenSplitGroupPoolGetIpAddedTimeRequest
+ *
+ * @param groupId address
+ * @param ipId address
+ */
+export type EvenSplitGroupPoolGetIpAddedTimeRequest = {
+  groupId: Address;
+  ipId: Address;
+};
+
+export type EvenSplitGroupPoolGetIpAddedTimeResponse = bigint;
+
+/**
+ * EvenSplitGroupPoolGetIpRewardDebtRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipId address
+ */
+export type EvenSplitGroupPoolGetIpRewardDebtRequest = {
+  groupId: Address;
+  token: Address;
+  ipId: Address;
+};
+
+export type EvenSplitGroupPoolGetIpRewardDebtResponse = bigint;
+
+/**
+ * EvenSplitGroupPoolGetTotalIpsRequest
+ *
+ * @param groupId address
+ */
+export type EvenSplitGroupPoolGetTotalIpsRequest = {
+  groupId: Address;
+};
+
+export type EvenSplitGroupPoolGetTotalIpsResponse = bigint;
+
+export type EvenSplitGroupPoolIsConsumingScheduledOpResponse = Hex;
+
+/**
+ * EvenSplitGroupPoolIsIpAddedRequest
+ *
+ * @param groupId address
+ * @param ipId address
+ */
+export type EvenSplitGroupPoolIsIpAddedRequest = {
+  groupId: Address;
+  ipId: Address;
+};
+
+export type EvenSplitGroupPoolIsIpAddedResponse = boolean;
+
+export type EvenSplitGroupPoolPausedResponse = boolean;
+
+export type EvenSplitGroupPoolProxiableUuidResponse = Hex;
+
+/**
+ * EvenSplitGroupPoolProtocolPausableInitRequest
+ *
+ * @param accessManager address
+ */
+export type EvenSplitGroupPoolProtocolPausableInitRequest = {
+  accessManager: Address;
+};
+
+/**
+ * EvenSplitGroupPoolAddIpRequest
+ *
+ * @param groupId address
+ * @param ipId address
+ */
+export type EvenSplitGroupPoolAddIpRequest = {
+  groupId: Address;
+  ipId: Address;
+};
+
+/**
+ * EvenSplitGroupPoolDepositRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param amount uint256
+ */
+export type EvenSplitGroupPoolDepositRewardRequest = {
+  groupId: Address;
+  token: Address;
+  amount: bigint;
+};
+
+/**
+ * EvenSplitGroupPoolDistributeRewardsRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type EvenSplitGroupPoolDistributeRewardsRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * EvenSplitGroupPoolInitializeRequest
+ *
+ * @param accessManager address
+ */
+export type EvenSplitGroupPoolInitializeRequest = {
+  accessManager: Address;
+};
+
+/**
+ * EvenSplitGroupPoolRemoveIpRequest
+ *
+ * @param groupId address
+ * @param ipId address
+ */
+export type EvenSplitGroupPoolRemoveIpRequest = {
+  groupId: Address;
+  ipId: Address;
+};
+
+/**
+ * EvenSplitGroupPoolSetAuthorityRequest
+ *
+ * @param newAuthority address
+ */
+export type EvenSplitGroupPoolSetAuthorityRequest = {
+  newAuthority: Address;
+};
+
+/**
+ * EvenSplitGroupPoolUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type EvenSplitGroupPoolUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
+};
+
+/**
+ * contract EvenSplitGroupPool event
+ */
+export class EvenSplitGroupPoolEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(evenSplitGroupPoolAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AuthorityUpdated for contract EvenSplitGroupPool
+   */
+  public watchAuthorityUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<EvenSplitGroupPoolAuthorityUpdatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      eventName: "AuthorityUpdated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AuthorityUpdated for contract EvenSplitGroupPool
+   */
+  public parseTxAuthorityUpdatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<EvenSplitGroupPoolAuthorityUpdatedEvent> {
+    const targetLogs: Array<EvenSplitGroupPoolAuthorityUpdatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: evenSplitGroupPoolAbi,
+          eventName: "AuthorityUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract EvenSplitGroupPool
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<EvenSplitGroupPoolInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract EvenSplitGroupPool
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<EvenSplitGroupPoolInitializedEvent> {
+    const targetLogs: Array<EvenSplitGroupPoolInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: evenSplitGroupPoolAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Paused for contract EvenSplitGroupPool
+   */
+  public watchPausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<EvenSplitGroupPoolPausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      eventName: "Paused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Paused for contract EvenSplitGroupPool
+   */
+  public parseTxPausedEvent(txReceipt: TransactionReceipt): Array<EvenSplitGroupPoolPausedEvent> {
+    const targetLogs: Array<EvenSplitGroupPoolPausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: evenSplitGroupPoolAbi,
+          eventName: "Paused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Paused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Unpaused for contract EvenSplitGroupPool
+   */
+  public watchUnpausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<EvenSplitGroupPoolUnpausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      eventName: "Unpaused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Unpaused for contract EvenSplitGroupPool
+   */
+  public parseTxUnpausedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<EvenSplitGroupPoolUnpausedEvent> {
+    const targetLogs: Array<EvenSplitGroupPoolUnpausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: evenSplitGroupPoolAbi,
+          eventName: "Unpaused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Unpaused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract EvenSplitGroupPool
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<EvenSplitGroupPoolUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract EvenSplitGroupPool
+   */
+  public parseTxUpgradedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<EvenSplitGroupPoolUpgradedEvent> {
+    const targetLogs: Array<EvenSplitGroupPoolUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: evenSplitGroupPoolAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract EvenSplitGroupPool readonly method
+ */
+export class EvenSplitGroupPoolReadOnlyClient extends EvenSplitGroupPoolEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method GROUPING_MODULE for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGroupingModuleRequest
+   * @return Promise<EvenSplitGroupPoolGroupingModuleResponse>
+   */
+  public async groupingModule(): Promise<EvenSplitGroupPoolGroupingModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "GROUPING_MODULE",
+    });
+  }
+
+  /**
+   * method GROUP_IP_ASSET_REGISTRY for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGroupIpAssetRegistryRequest
+   * @return Promise<EvenSplitGroupPoolGroupIpAssetRegistryResponse>
+   */
+  public async groupIpAssetRegistry(): Promise<EvenSplitGroupPoolGroupIpAssetRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "GROUP_IP_ASSET_REGISTRY",
+    });
+  }
+
+  /**
+   * method ROYALTY_MODULE for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolRoyaltyModuleRequest
+   * @return Promise<EvenSplitGroupPoolRoyaltyModuleResponse>
+   */
+  public async royaltyModule(): Promise<EvenSplitGroupPoolRoyaltyModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "ROYALTY_MODULE",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolUpgradeInterfaceVersionRequest
+   * @return Promise<EvenSplitGroupPoolUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<EvenSplitGroupPoolUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method authority for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolAuthorityRequest
+   * @return Promise<EvenSplitGroupPoolAuthorityResponse>
+   */
+  public async authority(): Promise<EvenSplitGroupPoolAuthorityResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "authority",
+    });
+  }
+
+  /**
+   * method getAvailableReward for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGetAvailableRewardRequest
+   * @return Promise<EvenSplitGroupPoolGetAvailableRewardResponse>
+   */
+  public async getAvailableReward(
+    request: EvenSplitGroupPoolGetAvailableRewardRequest,
+  ): Promise<EvenSplitGroupPoolGetAvailableRewardResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "getAvailableReward",
+      args: [request.groupId, request.token, request.ipIds],
+    });
+  }
+
+  /**
+   * method getIpAddedTime for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGetIpAddedTimeRequest
+   * @return Promise<EvenSplitGroupPoolGetIpAddedTimeResponse>
+   */
+  public async getIpAddedTime(
+    request: EvenSplitGroupPoolGetIpAddedTimeRequest,
+  ): Promise<EvenSplitGroupPoolGetIpAddedTimeResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "getIpAddedTime",
+      args: [request.groupId, request.ipId],
+    });
+  }
+
+  /**
+   * method getIpRewardDebt for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGetIpRewardDebtRequest
+   * @return Promise<EvenSplitGroupPoolGetIpRewardDebtResponse>
+   */
+  public async getIpRewardDebt(
+    request: EvenSplitGroupPoolGetIpRewardDebtRequest,
+  ): Promise<EvenSplitGroupPoolGetIpRewardDebtResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "getIpRewardDebt",
+      args: [request.groupId, request.token, request.ipId],
+    });
+  }
+
+  /**
+   * method getTotalIps for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGetTotalIpsRequest
+   * @return Promise<EvenSplitGroupPoolGetTotalIpsResponse>
+   */
+  public async getTotalIps(
+    request: EvenSplitGroupPoolGetTotalIpsRequest,
+  ): Promise<EvenSplitGroupPoolGetTotalIpsResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "getTotalIps",
+      args: [request.groupId],
+    });
+  }
+
+  /**
+   * method isConsumingScheduledOp for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolIsConsumingScheduledOpRequest
+   * @return Promise<EvenSplitGroupPoolIsConsumingScheduledOpResponse>
+   */
+  public async isConsumingScheduledOp(): Promise<EvenSplitGroupPoolIsConsumingScheduledOpResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method isIPAdded for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolIsIpAddedRequest
+   * @return Promise<EvenSplitGroupPoolIsIpAddedResponse>
+   */
+  public async isIpAdded(
+    request: EvenSplitGroupPoolIsIpAddedRequest,
+  ): Promise<EvenSplitGroupPoolIsIpAddedResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "isIPAdded",
+      args: [request.groupId, request.ipId],
+    });
+  }
+
+  /**
+   * method paused for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolPausedRequest
+   * @return Promise<EvenSplitGroupPoolPausedResponse>
+   */
+  public async paused(): Promise<EvenSplitGroupPoolPausedResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "paused",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolProxiableUuidRequest
+   * @return Promise<EvenSplitGroupPoolProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<EvenSplitGroupPoolProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+}
+
+/**
+ * contract EvenSplitGroupPool write method
+ */
+export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolProtocolPausableInitRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async protocolPausableInit(
+    request: EvenSplitGroupPoolProtocolPausableInitRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "__ProtocolPausable_init",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolProtocolPausableInitRequest
+   * @return EncodedTxData
+   */
+  public protocolPausableInitEncode(
+    request: EvenSplitGroupPoolProtocolPausableInitRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "__ProtocolPausable_init",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method addIp for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolAddIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async addIp(request: EvenSplitGroupPoolAddIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "addIp",
+      account: this.wallet.account,
+      args: [request.groupId, request.ipId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method addIp for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolAddIpRequest
+   * @return EncodedTxData
+   */
+  public addIpEncode(request: EvenSplitGroupPoolAddIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "addIp",
+        args: [request.groupId, request.ipId],
+      }),
+    };
+  }
+
+  /**
+   * method depositReward for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolDepositRewardRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async depositReward(
+    request: EvenSplitGroupPoolDepositRewardRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "depositReward",
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method depositReward for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolDepositRewardRequest
+   * @return EncodedTxData
+   */
+  public depositRewardEncode(request: EvenSplitGroupPoolDepositRewardRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "depositReward",
+        args: [request.groupId, request.token, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method distributeRewards for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolDistributeRewardsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async distributeRewards(
+    request: EvenSplitGroupPoolDistributeRewardsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "distributeRewards",
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method distributeRewards for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolDistributeRewardsRequest
+   * @return EncodedTxData
+   */
+  public distributeRewardsEncode(
+    request: EvenSplitGroupPoolDistributeRewardsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "distributeRewards",
+        args: [request.groupId, request.token, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method initialize for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: EvenSplitGroupPoolInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: EvenSplitGroupPoolInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method pause for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolPauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async pause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "pause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method pause for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolPauseRequest
+   * @return EncodedTxData
+   */
+  public pauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "pause",
+      }),
+    };
+  }
+
+  /**
+   * method removeIp for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolRemoveIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async removeIp(
+    request: EvenSplitGroupPoolRemoveIpRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "removeIp",
+      account: this.wallet.account,
+      args: [request.groupId, request.ipId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method removeIp for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolRemoveIpRequest
+   * @return EncodedTxData
+   */
+  public removeIpEncode(request: EvenSplitGroupPoolRemoveIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "removeIp",
+        args: [request.groupId, request.ipId],
+      }),
+    };
+  }
+
+  /**
+   * method setAuthority for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolSetAuthorityRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAuthority(
+    request: EvenSplitGroupPoolSetAuthorityRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "setAuthority",
+      account: this.wallet.account,
+      args: [request.newAuthority],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: EvenSplitGroupPoolSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
+  }
+
+  /**
+   * method unpause for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolUnpauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async unpause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "unpause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method unpause for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolUnpauseRequest
+   * @return EncodedTxData
+   */
+  public unpauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "unpause",
+      }),
+    };
+  }
+
+  /**
+   * method upgradeToAndCall for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: EvenSplitGroupPoolUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract EvenSplitGroupPool with only encode
+   *
+   * @param request EvenSplitGroupPoolUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: EvenSplitGroupPoolUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: evenSplitGroupPoolAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
+  }
+}
+
+// Contract GroupingModule =============================================================
+
+/**
+ * GroupingModuleAddedIpToGroupEvent
+ *
+ * @param groupId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleAddedIpToGroupEvent = {
+  groupId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleAuthorityUpdatedEvent
+ *
+ * @param authority address
+ */
+export type GroupingModuleAuthorityUpdatedEvent = {
+  authority: Address;
+};
+
+/**
+ * GroupingModuleClaimedRewardEvent
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipId address[]
+ * @param amount uint256[]
+ */
+export type GroupingModuleClaimedRewardEvent = {
+  groupId: Address;
+  token: Address;
+  ipId: readonly Address[];
+  amount: readonly bigint[];
+};
+
+/**
+ * GroupingModuleCollectedRoyaltiesToGroupPoolEvent
+ *
+ * @param groupId address
+ * @param token address
+ * @param pool address
+ * @param amount uint256
+ * @param snapshots uint256[]
+ */
+export type GroupingModuleCollectedRoyaltiesToGroupPoolEvent = {
+  groupId: Address;
+  token: Address;
+  pool: Address;
+  amount: bigint;
+  snapshots: readonly bigint[];
+};
+
+/**
+ * GroupingModuleIpGroupRegisteredEvent
+ *
+ * @param groupId address
+ * @param groupPool address
+ */
+export type GroupingModuleIpGroupRegisteredEvent = {
+  groupId: Address;
+  groupPool: Address;
+};
+
+/**
+ * GroupingModuleInitializedEvent
+ *
+ * @param version uint64
+ */
+export type GroupingModuleInitializedEvent = {
+  version: bigint;
+};
+
+/**
+ * GroupingModulePausedEvent
+ *
+ * @param account address
+ */
+export type GroupingModulePausedEvent = {
+  account: Address;
+};
+
+/**
+ * GroupingModuleRemovedIpFromGroupEvent
+ *
+ * @param groupId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleRemovedIpFromGroupEvent = {
+  groupId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleUnpausedEvent
+ *
+ * @param account address
+ */
+export type GroupingModuleUnpausedEvent = {
+  account: Address;
+};
+
+/**
+ * GroupingModuleUpgradedEvent
+ *
+ * @param implementation address
+ */
+export type GroupingModuleUpgradedEvent = {
+  implementation: Address;
+};
+
+export type GroupingModuleAccessControllerResponse = Address;
+
+export type GroupingModuleGroupIpAssetRegistryResponse = Address;
+
+export type GroupingModuleGroupNftResponse = Address;
+
+export type GroupingModuleIpAccountRegistryResponse = Address;
+
+export type GroupingModuleLicenseRegistryResponse = Address;
+
+export type GroupingModuleLicenseTokenResponse = Address;
+
+export type GroupingModuleRoyaltyModuleResponse = Address;
+
+export type GroupingModuleUpgradeInterfaceVersionResponse = string;
+
+export type GroupingModuleAuthorityResponse = Address;
+
+/**
+ * GroupingModuleGetClaimableRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleGetClaimableRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+export type GroupingModuleGetClaimableRewardResponse = readonly bigint[];
+
+export type GroupingModuleIsConsumingScheduledOpResponse = Hex;
+
+export type GroupingModuleNameResponse = string;
+
+export type GroupingModulePausedResponse = boolean;
+
+export type GroupingModuleProxiableUuidResponse = Hex;
+
+/**
+ * GroupingModuleSupportsInterfaceRequest
+ *
+ * @param interfaceId bytes4
+ */
+export type GroupingModuleSupportsInterfaceRequest = {
+  interfaceId: Hex;
+};
+
+export type GroupingModuleSupportsInterfaceResponse = boolean;
+
+/**
+ * GroupingModuleProtocolPausableInitRequest
+ *
+ * @param accessManager address
+ */
+export type GroupingModuleProtocolPausableInitRequest = {
+  accessManager: Address;
+};
+
+/**
+ * GroupingModuleAddIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleAddIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleClaimRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleClaimRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleCollectRoyaltiesRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param snapshotIds uint256[]
+ */
+export type GroupingModuleCollectRoyaltiesRequest = {
+  groupId: Address;
+  token: Address;
+  snapshotIds: readonly bigint[];
+};
+
+/**
+ * GroupingModuleInitializeRequest
+ *
+ * @param accessManager address
+ */
+export type GroupingModuleInitializeRequest = {
+  accessManager: Address;
+};
+
+/**
+ * GroupingModuleRegisterGroupRequest
+ *
+ * @param groupPool address
+ */
+export type GroupingModuleRegisterGroupRequest = {
+  groupPool: Address;
+};
+
+/**
+ * GroupingModuleRemoveIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleRemoveIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleSetAuthorityRequest
+ *
+ * @param newAuthority address
+ */
+export type GroupingModuleSetAuthorityRequest = {
+  newAuthority: Address;
+};
+
+/**
+ * GroupingModuleUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type GroupingModuleUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
+};
+
+/**
+ * GroupingModuleWhitelistGroupRewardPoolRequest
+ *
+ * @param rewardPool address
+ */
+export type GroupingModuleWhitelistGroupRewardPoolRequest = {
+  rewardPool: Address;
+};
+
+/**
+ * contract GroupingModule event
+ */
+export class GroupingModuleEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(groupingModuleAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AddedIpToGroup for contract GroupingModule
+   */
+  public watchAddedIpToGroupEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleAddedIpToGroupEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "AddedIpToGroup",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AddedIpToGroup for contract GroupingModule
+   */
+  public parseTxAddedIpToGroupEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleAddedIpToGroupEvent> {
+    const targetLogs: Array<GroupingModuleAddedIpToGroupEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "AddedIpToGroup",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AddedIpToGroup") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event AuthorityUpdated for contract GroupingModule
+   */
+  public watchAuthorityUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleAuthorityUpdatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "AuthorityUpdated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AuthorityUpdated for contract GroupingModule
+   */
+  public parseTxAuthorityUpdatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleAuthorityUpdatedEvent> {
+    const targetLogs: Array<GroupingModuleAuthorityUpdatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "AuthorityUpdated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event ClaimedReward for contract GroupingModule
+   */
+  public watchClaimedRewardEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleClaimedRewardEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "ClaimedReward",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event ClaimedReward for contract GroupingModule
+   */
+  public parseTxClaimedRewardEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleClaimedRewardEvent> {
+    const targetLogs: Array<GroupingModuleClaimedRewardEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "ClaimedReward",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "ClaimedReward") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event CollectedRoyaltiesToGroupPool for contract GroupingModule
+   */
+  public watchCollectedRoyaltiesToGroupPoolEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleCollectedRoyaltiesToGroupPoolEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "CollectedRoyaltiesToGroupPool",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event CollectedRoyaltiesToGroupPool for contract GroupingModule
+   */
+  public parseTxCollectedRoyaltiesToGroupPoolEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleCollectedRoyaltiesToGroupPoolEvent> {
+    const targetLogs: Array<GroupingModuleCollectedRoyaltiesToGroupPoolEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "CollectedRoyaltiesToGroupPool",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "CollectedRoyaltiesToGroupPool") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event IPGroupRegistered for contract GroupingModule
+   */
+  public watchIpGroupRegisteredEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleIpGroupRegisteredEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "IPGroupRegistered",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event IPGroupRegistered for contract GroupingModule
+   */
+  public parseTxIpGroupRegisteredEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleIpGroupRegisteredEvent> {
+    const targetLogs: Array<GroupingModuleIpGroupRegisteredEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "IPGroupRegistered",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "IPGroupRegistered") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract GroupingModule
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract GroupingModule
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleInitializedEvent> {
+    const targetLogs: Array<GroupingModuleInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Paused for contract GroupingModule
+   */
+  public watchPausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModulePausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Paused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Paused for contract GroupingModule
+   */
+  public parseTxPausedEvent(txReceipt: TransactionReceipt): Array<GroupingModulePausedEvent> {
+    const targetLogs: Array<GroupingModulePausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Paused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Paused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event RemovedIpFromGroup for contract GroupingModule
+   */
+  public watchRemovedIpFromGroupEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleRemovedIpFromGroupEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "RemovedIpFromGroup",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event RemovedIpFromGroup for contract GroupingModule
+   */
+  public parseTxRemovedIpFromGroupEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleRemovedIpFromGroupEvent> {
+    const targetLogs: Array<GroupingModuleRemovedIpFromGroupEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "RemovedIpFromGroup",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "RemovedIpFromGroup") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Unpaused for contract GroupingModule
+   */
+  public watchUnpausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleUnpausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Unpaused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Unpaused for contract GroupingModule
+   */
+  public parseTxUnpausedEvent(txReceipt: TransactionReceipt): Array<GroupingModuleUnpausedEvent> {
+    const targetLogs: Array<GroupingModuleUnpausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Unpaused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Unpaused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract GroupingModule
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract GroupingModule
+   */
+  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<GroupingModuleUpgradedEvent> {
+    const targetLogs: Array<GroupingModuleUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract GroupingModule readonly method
+ */
+export class GroupingModuleReadOnlyClient extends GroupingModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method ACCESS_CONTROLLER for contract GroupingModule
+   *
+   * @param request GroupingModuleAccessControllerRequest
+   * @return Promise<GroupingModuleAccessControllerResponse>
+   */
+  public async accessController(): Promise<GroupingModuleAccessControllerResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "ACCESS_CONTROLLER",
+    });
+  }
+
+  /**
+   * method GROUP_IP_ASSET_REGISTRY for contract GroupingModule
+   *
+   * @param request GroupingModuleGroupIpAssetRegistryRequest
+   * @return Promise<GroupingModuleGroupIpAssetRegistryResponse>
+   */
+  public async groupIpAssetRegistry(): Promise<GroupingModuleGroupIpAssetRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "GROUP_IP_ASSET_REGISTRY",
+    });
+  }
+
+  /**
+   * method GROUP_NFT for contract GroupingModule
+   *
+   * @param request GroupingModuleGroupNftRequest
+   * @return Promise<GroupingModuleGroupNftResponse>
+   */
+  public async groupNft(): Promise<GroupingModuleGroupNftResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "GROUP_NFT",
+    });
+  }
+
+  /**
+   * method IP_ACCOUNT_REGISTRY for contract GroupingModule
+   *
+   * @param request GroupingModuleIpAccountRegistryRequest
+   * @return Promise<GroupingModuleIpAccountRegistryResponse>
+   */
+  public async ipAccountRegistry(): Promise<GroupingModuleIpAccountRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "IP_ACCOUNT_REGISTRY",
+    });
+  }
+
+  /**
+   * method LICENSE_REGISTRY for contract GroupingModule
+   *
+   * @param request GroupingModuleLicenseRegistryRequest
+   * @return Promise<GroupingModuleLicenseRegistryResponse>
+   */
+  public async licenseRegistry(): Promise<GroupingModuleLicenseRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "LICENSE_REGISTRY",
+    });
+  }
+
+  /**
+   * method LICENSE_TOKEN for contract GroupingModule
+   *
+   * @param request GroupingModuleLicenseTokenRequest
+   * @return Promise<GroupingModuleLicenseTokenResponse>
+   */
+  public async licenseToken(): Promise<GroupingModuleLicenseTokenResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "LICENSE_TOKEN",
+    });
+  }
+
+  /**
+   * method ROYALTY_MODULE for contract GroupingModule
+   *
+   * @param request GroupingModuleRoyaltyModuleRequest
+   * @return Promise<GroupingModuleRoyaltyModuleResponse>
+   */
+  public async royaltyModule(): Promise<GroupingModuleRoyaltyModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "ROYALTY_MODULE",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract GroupingModule
+   *
+   * @param request GroupingModuleUpgradeInterfaceVersionRequest
+   * @return Promise<GroupingModuleUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<GroupingModuleUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method authority for contract GroupingModule
+   *
+   * @param request GroupingModuleAuthorityRequest
+   * @return Promise<GroupingModuleAuthorityResponse>
+   */
+  public async authority(): Promise<GroupingModuleAuthorityResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "authority",
+    });
+  }
+
+  /**
+   * method getClaimableReward for contract GroupingModule
+   *
+   * @param request GroupingModuleGetClaimableRewardRequest
+   * @return Promise<GroupingModuleGetClaimableRewardResponse>
+   */
+  public async getClaimableReward(
+    request: GroupingModuleGetClaimableRewardRequest,
+  ): Promise<GroupingModuleGetClaimableRewardResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "getClaimableReward",
+      args: [request.groupId, request.token, request.ipIds],
+    });
+  }
+
+  /**
+   * method isConsumingScheduledOp for contract GroupingModule
+   *
+   * @param request GroupingModuleIsConsumingScheduledOpRequest
+   * @return Promise<GroupingModuleIsConsumingScheduledOpResponse>
+   */
+  public async isConsumingScheduledOp(): Promise<GroupingModuleIsConsumingScheduledOpResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method name for contract GroupingModule
+   *
+   * @param request GroupingModuleNameRequest
+   * @return Promise<GroupingModuleNameResponse>
+   */
+  public async name(): Promise<GroupingModuleNameResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method paused for contract GroupingModule
+   *
+   * @param request GroupingModulePausedRequest
+   * @return Promise<GroupingModulePausedResponse>
+   */
+  public async paused(): Promise<GroupingModulePausedResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "paused",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract GroupingModule
+   *
+   * @param request GroupingModuleProxiableUuidRequest
+   * @return Promise<GroupingModuleProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<GroupingModuleProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+
+  /**
+   * method supportsInterface for contract GroupingModule
+   *
+   * @param request GroupingModuleSupportsInterfaceRequest
+   * @return Promise<GroupingModuleSupportsInterfaceResponse>
+   */
+  public async supportsInterface(
+    request: GroupingModuleSupportsInterfaceRequest,
+  ): Promise<GroupingModuleSupportsInterfaceResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "supportsInterface",
+      args: [request.interfaceId],
+    });
+  }
+}
+
+/**
+ * contract GroupingModule write method
+ */
+export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract GroupingModule
+   *
+   * @param request GroupingModuleProtocolPausableInitRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async protocolPausableInit(
+    request: GroupingModuleProtocolPausableInitRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "__ProtocolPausable_init",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleProtocolPausableInitRequest
+   * @return EncodedTxData
+   */
+  public protocolPausableInitEncode(
+    request: GroupingModuleProtocolPausableInitRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "__ProtocolPausable_init",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method addIp for contract GroupingModule
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async addIp(request: GroupingModuleAddIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "addIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method addIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return EncodedTxData
+   */
+  public addIpEncode(request: GroupingModuleAddIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "addIp",
+        args: [request.groupIpId, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method claimReward for contract GroupingModule
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async claimReward(
+    request: GroupingModuleClaimRewardRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "claimReward",
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method claimReward for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return EncodedTxData
+   */
+  public claimRewardEncode(request: GroupingModuleClaimRewardRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "claimReward",
+        args: [request.groupId, request.token, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method collectRoyalties for contract GroupingModule
+   *
+   * @param request GroupingModuleCollectRoyaltiesRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async collectRoyalties(
+    request: GroupingModuleCollectRoyaltiesRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "collectRoyalties",
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.snapshotIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method collectRoyalties for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleCollectRoyaltiesRequest
+   * @return EncodedTxData
+   */
+  public collectRoyaltiesEncode(request: GroupingModuleCollectRoyaltiesRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "collectRoyalties",
+        args: [request.groupId, request.token, request.snapshotIds],
+      }),
+    };
+  }
+
+  /**
+   * method initialize for contract GroupingModule
+   *
+   * @param request GroupingModuleInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: GroupingModuleInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: GroupingModuleInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method pause for contract GroupingModule
+   *
+   * @param request GroupingModulePauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async pause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "pause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method pause for contract GroupingModule with only encode
+   *
+   * @param request GroupingModulePauseRequest
+   * @return EncodedTxData
+   */
+  public pauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "pause",
+      }),
+    };
+  }
+
+  /**
+   * method registerGroup for contract GroupingModule
+   *
+   * @param request GroupingModuleRegisterGroupRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerGroup(
+    request: GroupingModuleRegisterGroupRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "registerGroup",
+      account: this.wallet.account,
+      args: [request.groupPool],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerGroup for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleRegisterGroupRequest
+   * @return EncodedTxData
+   */
+  public registerGroupEncode(request: GroupingModuleRegisterGroupRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "registerGroup",
+        args: [request.groupPool],
+      }),
+    };
+  }
+
+  /**
+   * method removeIp for contract GroupingModule
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async removeIp(request: GroupingModuleRemoveIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "removeIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method removeIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return EncodedTxData
+   */
+  public removeIpEncode(request: GroupingModuleRemoveIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "removeIp",
+        args: [request.groupIpId, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method setAuthority for contract GroupingModule
+   *
+   * @param request GroupingModuleSetAuthorityRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAuthority(
+    request: GroupingModuleSetAuthorityRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "setAuthority",
+      account: this.wallet.account,
+      args: [request.newAuthority],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: GroupingModuleSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
+  }
+
+  /**
+   * method unpause for contract GroupingModule
+   *
+   * @param request GroupingModuleUnpauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async unpause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "unpause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method unpause for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleUnpauseRequest
+   * @return EncodedTxData
+   */
+  public unpauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "unpause",
+      }),
+    };
+  }
+
+  /**
+   * method upgradeToAndCall for contract GroupingModule
+   *
+   * @param request GroupingModuleUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: GroupingModuleUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: GroupingModuleUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method whitelistGroupRewardPool for contract GroupingModule
+   *
+   * @param request GroupingModuleWhitelistGroupRewardPoolRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async whitelistGroupRewardPool(
+    request: GroupingModuleWhitelistGroupRewardPoolRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "whitelistGroupRewardPool",
+      account: this.wallet.account,
+      args: [request.rewardPool],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method whitelistGroupRewardPool for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleWhitelistGroupRewardPoolRequest
+   * @return EncodedTxData
+   */
+  public whitelistGroupRewardPoolEncode(
+    request: GroupingModuleWhitelistGroupRewardPoolRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "whitelistGroupRewardPool",
+        args: [request.rewardPool],
+      }),
+    };
+  }
+}
+
+// Contract GroupingWorkflows =============================================================
+
+/**
+ * GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest
+ *
+ * @param spgNftContract address
+ * @param groupId address
+ * @param recipient address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param ipMetadata tuple
+ * @param sigAddToGroup tuple
+ */
+export type GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
+  spgNftContract: Address;
+  groupId: Address;
+  recipient: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  sigAddToGroup: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * GroupingWorkflowsRegisterGroupAndAttachLicenseRequest
+ *
+ * @param groupPool address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
+  groupPool: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest
+ *
+ * @param groupPool address
+ * @param ipIds address[]
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
+  groupPool: Address;
+  ipIds: readonly Address[];
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param groupId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param ipMetadata tuple
+ * @param sigMetadataAndAttach tuple
+ * @param sigAddToGroup tuple
+ */
+export type GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  groupId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  sigMetadataAndAttach: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+  sigAddToGroup: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * contract GroupingWorkflows write method
+ */
+export class GroupingWorkflowsClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(groupingWorkflowsAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method mintAndRegisterIpAndAttachLicenseAndAddToGroup for contract GroupingWorkflows
+   *
+   * @param request GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
+    request: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingWorkflowsAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+      account: this.wallet.account,
+      args: [
+        request.spgNftContract,
+        request.groupId,
+        request.recipient,
+        request.licenseTemplate,
+        request.licenseTermsId,
+        request.ipMetadata,
+        request.sigAddToGroup,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndAttachLicenseAndAddToGroup for contract GroupingWorkflows with only encode
+   *
+   * @param request GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode(
+    request: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+        args: [
+          request.spgNftContract,
+          request.groupId,
+          request.recipient,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.ipMetadata,
+          request.sigAddToGroup,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method registerGroupAndAttachLicense for contract GroupingWorkflows
+   *
+   * @param request GroupingWorkflowsRegisterGroupAndAttachLicenseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerGroupAndAttachLicense(
+    request: GroupingWorkflowsRegisterGroupAndAttachLicenseRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingWorkflowsAbi,
+      address: this.address,
+      functionName: "registerGroupAndAttachLicense",
+      account: this.wallet.account,
+      args: [request.groupPool, request.licenseTemplate, request.licenseTermsId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerGroupAndAttachLicense for contract GroupingWorkflows with only encode
+   *
+   * @param request GroupingWorkflowsRegisterGroupAndAttachLicenseRequest
+   * @return EncodedTxData
+   */
+  public registerGroupAndAttachLicenseEncode(
+    request: GroupingWorkflowsRegisterGroupAndAttachLicenseRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingWorkflowsAbi,
+        functionName: "registerGroupAndAttachLicense",
+        args: [request.groupPool, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
+  }
+
+  /**
+   * method registerGroupAndAttachLicenseAndAddIps for contract GroupingWorkflows
+   *
+   * @param request GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerGroupAndAttachLicenseAndAddIps(
+    request: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingWorkflowsAbi,
+      address: this.address,
+      functionName: "registerGroupAndAttachLicenseAndAddIps",
+      account: this.wallet.account,
+      args: [request.groupPool, request.ipIds, request.licenseTemplate, request.licenseTermsId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerGroupAndAttachLicenseAndAddIps for contract GroupingWorkflows with only encode
+   *
+   * @param request GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest
+   * @return EncodedTxData
+   */
+  public registerGroupAndAttachLicenseAndAddIpsEncode(
+    request: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingWorkflowsAbi,
+        functionName: "registerGroupAndAttachLicenseAndAddIps",
+        args: [request.groupPool, request.ipIds, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
+  }
+
+  /**
+   * method registerIpAndAttachLicenseAndAddToGroup for contract GroupingWorkflows
+   *
+   * @param request GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndAttachLicenseAndAddToGroup(
+    request: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingWorkflowsAbi,
+      address: this.address,
+      functionName: "registerIpAndAttachLicenseAndAddToGroup",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.groupId,
+        request.licenseTemplate,
+        request.licenseTermsId,
+        request.ipMetadata,
+        request.sigMetadataAndAttach,
+        request.sigAddToGroup,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndAttachLicenseAndAddToGroup for contract GroupingWorkflows with only encode
+   *
+   * @param request GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndAttachLicenseAndAddToGroupEncode(
+    request: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingWorkflowsAbi,
+        functionName: "registerIpAndAttachLicenseAndAddToGroup",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.groupId,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.ipMetadata,
+          request.sigMetadataAndAttach,
+          request.sigAddToGroup,
+        ],
       }),
     };
   }
@@ -9828,27 +16964,14 @@ export type IpRoyaltyVaultImplRevenueTokenClaimedEvent = {
 };
 
 /**
- * IpRoyaltyVaultImplRoyaltyTokensCollectedEvent
- *
- * @param ancestorIpId address
- * @param royaltyTokensCollected uint256
- */
-export type IpRoyaltyVaultImplRoyaltyTokensCollectedEvent = {
-  ancestorIpId: Address;
-  royaltyTokensCollected: bigint;
-};
-
-/**
  * IpRoyaltyVaultImplSnapshotCompletedEvent
  *
  * @param snapshotId uint256
  * @param snapshotTimestamp uint256
- * @param unclaimedTokens uint32
  */
 export type IpRoyaltyVaultImplSnapshotCompletedEvent = {
   snapshotId: bigint;
   snapshotTimestamp: bigint;
-  unclaimedTokens: number;
 };
 
 /**
@@ -9869,34 +16992,16 @@ export type IpRoyaltyVaultImplClaimableRevenueResponse = bigint;
 export type IpRoyaltyVaultImplIpIdResponse = Address;
 
 /**
- * IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
+ * IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest
  *
  * @param snapshotIds uint256[]
  * @param token address
+ * @param claimer address
  */
-export type IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest = {
+export type IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest = {
   snapshotIds: readonly bigint[];
   token: Address;
-};
-
-/**
- * IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
- *
- * @param snapshotId uint256
- * @param tokenList address[]
- */
-export type IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest = {
-  snapshotId: bigint;
-  tokenList: readonly Address[];
-};
-
-/**
- * IpRoyaltyVaultImplCollectRoyaltyTokensRequest
- *
- * @param ancestorIpId address
- */
-export type IpRoyaltyVaultImplCollectRoyaltyTokensRequest = {
-  ancestorIpId: Address;
+  claimer: Address;
 };
 
 /**
@@ -9943,47 +17048,6 @@ export class IpRoyaltyVaultImplEventClient {
           topics: log.topics,
         });
         if (event.eventName === "RevenueTokenClaimed") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event RoyaltyTokensCollected for contract IpRoyaltyVaultImpl
-   */
-  public watchRoyaltyTokensCollectedEvent(
-    onLogs: (txHash: Hex, ev: Partial<IpRoyaltyVaultImplRoyaltyTokensCollectedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: ipRoyaltyVaultImplAbi,
-      address: this.address,
-      eventName: "RoyaltyTokensCollected",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event RoyaltyTokensCollected for contract IpRoyaltyVaultImpl
-   */
-  public parseTxRoyaltyTokensCollectedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<IpRoyaltyVaultImplRoyaltyTokensCollectedEvent> {
-    const targetLogs: Array<IpRoyaltyVaultImplRoyaltyTokensCollectedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: ipRoyaltyVaultImplAbi,
-          eventName: "RoyaltyTokensCollected",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "RoyaltyTokensCollected") {
           targetLogs.push(event.args);
         }
       } catch (e) {
@@ -10087,115 +17151,39 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
   }
 
   /**
-   * method claimRevenueBySnapshotBatch for contract IpRoyaltyVaultImpl
+   * method claimRevenueOnBehalfBySnapshotBatch for contract IpRoyaltyVaultImpl
    *
-   * @param request IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
+   * @param request IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async claimRevenueBySnapshotBatch(
-    request: IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest,
+  public async claimRevenueOnBehalfBySnapshotBatch(
+    request: IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: ipRoyaltyVaultImplAbi,
       address: this.address,
-      functionName: "claimRevenueBySnapshotBatch",
+      functionName: "claimRevenueOnBehalfBySnapshotBatch",
       account: this.wallet.account,
-      args: [request.snapshotIds, request.token],
+      args: [request.snapshotIds, request.token, request.claimer],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
-   * method claimRevenueBySnapshotBatch for contract IpRoyaltyVaultImpl with only encode
+   * method claimRevenueOnBehalfBySnapshotBatch for contract IpRoyaltyVaultImpl with only encode
    *
-   * @param request IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest
+   * @param request IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest
    * @return EncodedTxData
    */
-  public claimRevenueBySnapshotBatchEncode(
-    request: IpRoyaltyVaultImplClaimRevenueBySnapshotBatchRequest,
+  public claimRevenueOnBehalfBySnapshotBatchEncode(
+    request: IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest,
   ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
         abi: ipRoyaltyVaultImplAbi,
-        functionName: "claimRevenueBySnapshotBatch",
-        args: [request.snapshotIds, request.token],
-      }),
-    };
-  }
-
-  /**
-   * method claimRevenueByTokenBatch for contract IpRoyaltyVaultImpl
-   *
-   * @param request IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async claimRevenueByTokenBatch(
-    request: IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: ipRoyaltyVaultImplAbi,
-      address: this.address,
-      functionName: "claimRevenueByTokenBatch",
-      account: this.wallet.account,
-      args: [request.snapshotId, request.tokenList],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method claimRevenueByTokenBatch for contract IpRoyaltyVaultImpl with only encode
-   *
-   * @param request IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest
-   * @return EncodedTxData
-   */
-  public claimRevenueByTokenBatchEncode(
-    request: IpRoyaltyVaultImplClaimRevenueByTokenBatchRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: ipRoyaltyVaultImplAbi,
-        functionName: "claimRevenueByTokenBatch",
-        args: [request.snapshotId, request.tokenList],
-      }),
-    };
-  }
-
-  /**
-   * method collectRoyaltyTokens for contract IpRoyaltyVaultImpl
-   *
-   * @param request IpRoyaltyVaultImplCollectRoyaltyTokensRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async collectRoyaltyTokens(
-    request: IpRoyaltyVaultImplCollectRoyaltyTokensRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: ipRoyaltyVaultImplAbi,
-      address: this.address,
-      functionName: "collectRoyaltyTokens",
-      account: this.wallet.account,
-      args: [request.ancestorIpId],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method collectRoyaltyTokens for contract IpRoyaltyVaultImpl with only encode
-   *
-   * @param request IpRoyaltyVaultImplCollectRoyaltyTokensRequest
-   * @return EncodedTxData
-   */
-  public collectRoyaltyTokensEncode(
-    request: IpRoyaltyVaultImplCollectRoyaltyTokensRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: ipRoyaltyVaultImplAbi,
-        functionName: "collectRoyaltyTokens",
-        args: [request.ancestorIpId],
+        functionName: "claimRevenueOnBehalfBySnapshotBatch",
+        args: [request.snapshotIds, request.token, request.claimer],
       }),
     };
   }
@@ -10228,6 +17216,274 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
       data: encodeFunctionData({
         abi: ipRoyaltyVaultImplAbi,
         functionName: "snapshot",
+      }),
+    };
+  }
+}
+
+// Contract LicenseAttachmentWorkflows =============================================================
+
+/**
+ * LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest
+ *
+ * @param spgNftContract address
+ * @param recipient address
+ * @param ipMetadata tuple
+ * @param terms tuple
+ */
+export type LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest = {
+  spgNftContract: Address;
+  recipient: Address;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  terms: {
+    transferable: boolean;
+    royaltyPolicy: Address;
+    defaultMintingFee: bigint;
+    expiration: bigint;
+    commercialUse: boolean;
+    commercialAttribution: boolean;
+    commercializerChecker: Address;
+    commercializerCheckerData: Hex;
+    commercialRevShare: number;
+    commercialRevCeiling: bigint;
+    derivativesAllowed: boolean;
+    derivativesAttribution: boolean;
+    derivativesApproval: boolean;
+    derivativesReciprocal: boolean;
+    derivativeRevCeiling: bigint;
+    currency: Address;
+    uri: string;
+  };
+};
+
+/**
+ * LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param ipMetadata tuple
+ * @param terms tuple
+ * @param sigMetadata tuple
+ * @param sigAttach tuple
+ */
+export type LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  terms: {
+    transferable: boolean;
+    royaltyPolicy: Address;
+    defaultMintingFee: bigint;
+    expiration: bigint;
+    commercialUse: boolean;
+    commercialAttribution: boolean;
+    commercializerChecker: Address;
+    commercializerCheckerData: Hex;
+    commercialRevShare: number;
+    commercialRevCeiling: bigint;
+    derivativesAllowed: boolean;
+    derivativesAttribution: boolean;
+    derivativesApproval: boolean;
+    derivativesReciprocal: boolean;
+    derivativeRevCeiling: bigint;
+    currency: Address;
+    uri: string;
+  };
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+  sigAttach: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest
+ *
+ * @param ipId address
+ * @param terms tuple
+ * @param sigAttach tuple
+ */
+export type LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest = {
+  ipId: Address;
+  terms: {
+    transferable: boolean;
+    royaltyPolicy: Address;
+    defaultMintingFee: bigint;
+    expiration: bigint;
+    commercialUse: boolean;
+    commercialAttribution: boolean;
+    commercializerChecker: Address;
+    commercializerCheckerData: Hex;
+    commercialRevShare: number;
+    commercialRevCeiling: bigint;
+    derivativesAllowed: boolean;
+    derivativesAttribution: boolean;
+    derivativesApproval: boolean;
+    derivativesReciprocal: boolean;
+    derivativeRevCeiling: bigint;
+    currency: Address;
+    uri: string;
+  };
+  sigAttach: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * contract LicenseAttachmentWorkflows write method
+ */
+export class LicenseAttachmentWorkflowsClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(licenseAttachmentWorkflowsAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method mintAndRegisterIpAndAttachPILTerms for contract LicenseAttachmentWorkflows
+   *
+   * @param request LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndAttachPilTerms(
+    request: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseAttachmentWorkflowsAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndAttachPILTerms",
+      account: this.wallet.account,
+      args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndAttachPILTerms for contract LicenseAttachmentWorkflows with only encode
+   *
+   * @param request LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndAttachPilTermsEncode(
+    request: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseAttachmentWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndAttachPILTerms",
+        args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
+      }),
+    };
+  }
+
+  /**
+   * method registerIpAndAttachPILTerms for contract LicenseAttachmentWorkflows
+   *
+   * @param request LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndAttachPilTerms(
+    request: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseAttachmentWorkflowsAbi,
+      address: this.address,
+      functionName: "registerIpAndAttachPILTerms",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.ipMetadata,
+        request.terms,
+        request.sigMetadata,
+        request.sigAttach,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndAttachPILTerms for contract LicenseAttachmentWorkflows with only encode
+   *
+   * @param request LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndAttachPilTermsEncode(
+    request: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseAttachmentWorkflowsAbi,
+        functionName: "registerIpAndAttachPILTerms",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.ipMetadata,
+          request.terms,
+          request.sigMetadata,
+          request.sigAttach,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method registerPILTermsAndAttach for contract LicenseAttachmentWorkflows
+   *
+   * @param request LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerPilTermsAndAttach(
+    request: LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseAttachmentWorkflowsAbi,
+      address: this.address,
+      functionName: "registerPILTermsAndAttach",
+      account: this.wallet.account,
+      args: [request.ipId, request.terms, request.sigAttach],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerPILTermsAndAttach for contract LicenseAttachmentWorkflows with only encode
+   *
+   * @param request LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest
+   * @return EncodedTxData
+   */
+  public registerPilTermsAndAttachEncode(
+    request: LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseAttachmentWorkflowsAbi,
+        functionName: "registerPILTermsAndAttach",
+        args: [request.ipId, request.terms, request.sigAttach],
       }),
     };
   }
@@ -10326,9 +17582,9 @@ export type LicenseRegistryDisputeModuleResponse = Address;
 
 export type LicenseRegistryExpirationTimeResponse = Hex;
 
-export type LicenseRegistryIpGraphAclResponse = Address;
+export type LicenseRegistryIpGraphResponse = Address;
 
-export type LicenseRegistryIpGraphContractResponse = Address;
+export type LicenseRegistryIpGraphAclResponse = Address;
 
 export type LicenseRegistryLicensingModuleResponse = Address;
 
@@ -10485,6 +17741,28 @@ export type LicenseRegistryGetParentIpCountRequest = {
 };
 
 export type LicenseRegistryGetParentIpCountResponse = bigint;
+
+/**
+ * LicenseRegistryGetParentLicenseTermsRequest
+ *
+ * @param childIpId address
+ * @param parentIpId address
+ */
+export type LicenseRegistryGetParentLicenseTermsRequest = {
+  childIpId: Address;
+  parentIpId: Address;
+};
+
+/**
+ * LicenseRegistryGetParentLicenseTermsResponse
+ *
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryGetParentLicenseTermsResponse = {
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
 
 /**
  * LicenseRegistryHasDerivativeIpsRequest
@@ -11075,6 +18353,20 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
   }
 
   /**
+   * method IP_GRAPH for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryIpGraphRequest
+   * @return Promise<LicenseRegistryIpGraphResponse>
+   */
+  public async ipGraph(): Promise<LicenseRegistryIpGraphResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "IP_GRAPH",
+    });
+  }
+
+  /**
    * method IP_GRAPH_ACL for contract LicenseRegistry
    *
    * @param request LicenseRegistryIpGraphAclRequest
@@ -11085,20 +18377,6 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
       abi: licenseRegistryAbi,
       address: this.address,
       functionName: "IP_GRAPH_ACL",
-    });
-  }
-
-  /**
-   * method IP_GRAPH_CONTRACT for contract LicenseRegistry
-   *
-   * @param request LicenseRegistryIpGraphContractRequest
-   * @return Promise<LicenseRegistryIpGraphContractResponse>
-   */
-  public async ipGraphContract(): Promise<LicenseRegistryIpGraphContractResponse> {
-    return await this.rpcClient.readContract({
-      abi: licenseRegistryAbi,
-      address: this.address,
-      functionName: "IP_GRAPH_CONTRACT",
     });
   }
 
@@ -11323,6 +18601,27 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
       functionName: "getParentIpCount",
       args: [request.childIpId],
     });
+  }
+
+  /**
+   * method getParentLicenseTerms for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetParentLicenseTermsRequest
+   * @return Promise<LicenseRegistryGetParentLicenseTermsResponse>
+   */
+  public async getParentLicenseTerms(
+    request: LicenseRegistryGetParentLicenseTermsRequest,
+  ): Promise<LicenseRegistryGetParentLicenseTermsResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getParentLicenseTerms",
+      args: [request.childIpId, request.parentIpId],
+    });
+    return {
+      licenseTemplate: result[0],
+      licenseTermsId: result[1],
+    };
   }
 
   /**
@@ -11928,6 +19227,36 @@ export type LicensingModuleLicenseTokensMintedEvent = {
 };
 
 /**
+ * LicensingModulePredictMintingLicenseFeeRequest
+ *
+ * @param licensorIpId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param amount uint256
+ * @param receiver address
+ * @param royaltyContext bytes
+ */
+export type LicensingModulePredictMintingLicenseFeeRequest = {
+  licensorIpId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  amount: bigint;
+  receiver: Address;
+  royaltyContext: Hex;
+};
+
+/**
+ * LicensingModulePredictMintingLicenseFeeResponse
+ *
+ * @param currencyToken address
+ * @param tokenAmount uint256
+ */
+export type LicensingModulePredictMintingLicenseFeeResponse = {
+  currencyToken: Address;
+  tokenAmount: bigint;
+};
+
+/**
  * LicensingModuleAttachLicenseTermsRequest
  *
  * @param ipId address
@@ -12085,9 +19414,46 @@ export class LicensingModuleEventClient {
 }
 
 /**
+ * contract LicensingModule readonly method
+ */
+export class LicensingModuleReadOnlyClient extends LicensingModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method predictMintingLicenseFee for contract LicensingModule
+   *
+   * @param request LicensingModulePredictMintingLicenseFeeRequest
+   * @return Promise<LicensingModulePredictMintingLicenseFeeResponse>
+   */
+  public async predictMintingLicenseFee(
+    request: LicensingModulePredictMintingLicenseFeeRequest,
+  ): Promise<LicensingModulePredictMintingLicenseFeeResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "predictMintingLicenseFee",
+      args: [
+        request.licensorIpId,
+        request.licenseTemplate,
+        request.licenseTermsId,
+        request.amount,
+        request.receiver,
+        request.royaltyContext,
+      ],
+    });
+    return {
+      currencyToken: result[0],
+      tokenAmount: result[1],
+    };
+  }
+}
+
+/**
  * contract LicensingModule write method
  */
-export class LicensingModuleClient extends LicensingModuleEventClient {
+export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
   protected readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
@@ -12267,6 +19633,493 @@ export class LicensingModuleClient extends LicensingModuleEventClient {
         abi: licensingModuleAbi,
         functionName: "registerDerivativeWithLicenseTokens",
         args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
+      }),
+    };
+  }
+}
+
+// Contract MockERC20 =============================================================
+
+/**
+ * MockErc20ApprovalEvent
+ *
+ * @param owner address
+ * @param spender address
+ * @param value uint256
+ */
+export type MockErc20ApprovalEvent = {
+  owner: Address;
+  spender: Address;
+  value: bigint;
+};
+
+/**
+ * MockErc20TransferEvent
+ *
+ * @param from address
+ * @param to address
+ * @param value uint256
+ */
+export type MockErc20TransferEvent = {
+  from: Address;
+  to: Address;
+  value: bigint;
+};
+
+/**
+ * MockErc20AllowanceRequest
+ *
+ * @param owner address
+ * @param spender address
+ */
+export type MockErc20AllowanceRequest = {
+  owner: Address;
+  spender: Address;
+};
+
+export type MockErc20AllowanceResponse = bigint;
+
+/**
+ * MockErc20BalanceOfRequest
+ *
+ * @param account address
+ */
+export type MockErc20BalanceOfRequest = {
+  account: Address;
+};
+
+export type MockErc20BalanceOfResponse = bigint;
+
+export type MockErc20DecimalsResponse = number;
+
+export type MockErc20NameResponse = string;
+
+export type MockErc20SymbolResponse = string;
+
+export type MockErc20TotalSupplyResponse = bigint;
+
+/**
+ * MockErc20ApproveRequest
+ *
+ * @param spender address
+ * @param value uint256
+ */
+export type MockErc20ApproveRequest = {
+  spender: Address;
+  value: bigint;
+};
+
+/**
+ * MockErc20BurnRequest
+ *
+ * @param from address
+ * @param amount uint256
+ */
+export type MockErc20BurnRequest = {
+  from: Address;
+  amount: bigint;
+};
+
+/**
+ * MockErc20MintRequest
+ *
+ * @param to address
+ * @param amount uint256
+ */
+export type MockErc20MintRequest = {
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * MockErc20TransferRequest
+ *
+ * @param to address
+ * @param value uint256
+ */
+export type MockErc20TransferRequest = {
+  to: Address;
+  value: bigint;
+};
+
+/**
+ * MockErc20TransferFromRequest
+ *
+ * @param from address
+ * @param to address
+ * @param value uint256
+ */
+export type MockErc20TransferFromRequest = {
+  from: Address;
+  to: Address;
+  value: bigint;
+};
+
+/**
+ * contract MockERC20 event
+ */
+export class MockErc20EventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(mockErc20Address, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event Approval for contract MockERC20
+   */
+  public watchApprovalEvent(
+    onLogs: (txHash: Hex, ev: Partial<MockErc20ApprovalEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: mockErc20Abi,
+      address: this.address,
+      eventName: "Approval",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Approval for contract MockERC20
+   */
+  public parseTxApprovalEvent(txReceipt: TransactionReceipt): Array<MockErc20ApprovalEvent> {
+    const targetLogs: Array<MockErc20ApprovalEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: mockErc20Abi,
+          eventName: "Approval",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Approval") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Transfer for contract MockERC20
+   */
+  public watchTransferEvent(
+    onLogs: (txHash: Hex, ev: Partial<MockErc20TransferEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: mockErc20Abi,
+      address: this.address,
+      eventName: "Transfer",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Transfer for contract MockERC20
+   */
+  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<MockErc20TransferEvent> {
+    const targetLogs: Array<MockErc20TransferEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: mockErc20Abi,
+          eventName: "Transfer",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Transfer") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract MockERC20 readonly method
+ */
+export class MockErc20ReadOnlyClient extends MockErc20EventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method allowance for contract MockERC20
+   *
+   * @param request MockErc20AllowanceRequest
+   * @return Promise<MockErc20AllowanceResponse>
+   */
+  public async allowance(request: MockErc20AllowanceRequest): Promise<MockErc20AllowanceResponse> {
+    return await this.rpcClient.readContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "allowance",
+      args: [request.owner, request.spender],
+    });
+  }
+
+  /**
+   * method balanceOf for contract MockERC20
+   *
+   * @param request MockErc20BalanceOfRequest
+   * @return Promise<MockErc20BalanceOfResponse>
+   */
+  public async balanceOf(request: MockErc20BalanceOfRequest): Promise<MockErc20BalanceOfResponse> {
+    return await this.rpcClient.readContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "balanceOf",
+      args: [request.account],
+    });
+  }
+
+  /**
+   * method decimals for contract MockERC20
+   *
+   * @param request MockErc20DecimalsRequest
+   * @return Promise<MockErc20DecimalsResponse>
+   */
+  public async decimals(): Promise<MockErc20DecimalsResponse> {
+    return await this.rpcClient.readContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "decimals",
+    });
+  }
+
+  /**
+   * method name for contract MockERC20
+   *
+   * @param request MockErc20NameRequest
+   * @return Promise<MockErc20NameResponse>
+   */
+  public async name(): Promise<MockErc20NameResponse> {
+    return await this.rpcClient.readContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method symbol for contract MockERC20
+   *
+   * @param request MockErc20SymbolRequest
+   * @return Promise<MockErc20SymbolResponse>
+   */
+  public async symbol(): Promise<MockErc20SymbolResponse> {
+    return await this.rpcClient.readContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "symbol",
+    });
+  }
+
+  /**
+   * method totalSupply for contract MockERC20
+   *
+   * @param request MockErc20TotalSupplyRequest
+   * @return Promise<MockErc20TotalSupplyResponse>
+   */
+  public async totalSupply(): Promise<MockErc20TotalSupplyResponse> {
+    return await this.rpcClient.readContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "totalSupply",
+    });
+  }
+}
+
+/**
+ * contract MockERC20 write method
+ */
+export class MockErc20Client extends MockErc20ReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method approve for contract MockERC20
+   *
+   * @param request MockErc20ApproveRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async approve(request: MockErc20ApproveRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "approve",
+      account: this.wallet.account,
+      args: [request.spender, request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method approve for contract MockERC20 with only encode
+   *
+   * @param request MockErc20ApproveRequest
+   * @return EncodedTxData
+   */
+  public approveEncode(request: MockErc20ApproveRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: mockErc20Abi,
+        functionName: "approve",
+        args: [request.spender, request.value],
+      }),
+    };
+  }
+
+  /**
+   * method burn for contract MockERC20
+   *
+   * @param request MockErc20BurnRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async burn(request: MockErc20BurnRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "burn",
+      account: this.wallet.account,
+      args: [request.from, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method burn for contract MockERC20 with only encode
+   *
+   * @param request MockErc20BurnRequest
+   * @return EncodedTxData
+   */
+  public burnEncode(request: MockErc20BurnRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: mockErc20Abi,
+        functionName: "burn",
+        args: [request.from, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method mint for contract MockERC20
+   *
+   * @param request MockErc20MintRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mint(request: MockErc20MintRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "mint",
+      account: this.wallet.account,
+      args: [request.to, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mint for contract MockERC20 with only encode
+   *
+   * @param request MockErc20MintRequest
+   * @return EncodedTxData
+   */
+  public mintEncode(request: MockErc20MintRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: mockErc20Abi,
+        functionName: "mint",
+        args: [request.to, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method transfer for contract MockERC20
+   *
+   * @param request MockErc20TransferRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transfer(request: MockErc20TransferRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "transfer",
+      account: this.wallet.account,
+      args: [request.to, request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transfer for contract MockERC20 with only encode
+   *
+   * @param request MockErc20TransferRequest
+   * @return EncodedTxData
+   */
+  public transferEncode(request: MockErc20TransferRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: mockErc20Abi,
+        functionName: "transfer",
+        args: [request.to, request.value],
+      }),
+    };
+  }
+
+  /**
+   * method transferFrom for contract MockERC20
+   *
+   * @param request MockErc20TransferFromRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferFrom(
+    request: MockErc20TransferFromRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: mockErc20Abi,
+      address: this.address,
+      functionName: "transferFrom",
+      account: this.wallet.account,
+      args: [request.from, request.to, request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferFrom for contract MockERC20 with only encode
+   *
+   * @param request MockErc20TransferFromRequest
+   * @return EncodedTxData
+   */
+  public transferFromEncode(request: MockErc20TransferFromRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: mockErc20Abi,
+        functionName: "transferFrom",
+        args: [request.from, request.to, request.value],
       }),
     };
   }
@@ -12521,13 +20374,13 @@ export type PiLicenseTemplateGetRoyaltyPolicyRequest = {
  * PiLicenseTemplateGetRoyaltyPolicyResponse
  *
  * @param royaltyPolicy address
- * @param royaltyData bytes
+ * @param royaltyPercent uint32
  * @param mintingFee uint256
  * @param currency address
  */
 export type PiLicenseTemplateGetRoyaltyPolicyResponse = {
   royaltyPolicy: Address;
-  royaltyData: Hex;
+  royaltyPercent: number;
   mintingFee: bigint;
   currency: Address;
 };
@@ -13182,7 +21035,7 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
     });
     return {
       royaltyPolicy: result[0],
-      royaltyData: result[1],
+      royaltyPercent: result[1],
       mintingFee: result[2],
       currency: result[3],
     };
@@ -13643,7 +21496,270 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
   }
 }
 
+// Contract RegistrationWorkflows =============================================================
+
+/**
+ * RegistrationWorkflowsCollectionCreatedEvent
+ *
+ * @param spgNftContract address
+ */
+export type RegistrationWorkflowsCollectionCreatedEvent = {
+  spgNftContract: Address;
+};
+
+/**
+ * RegistrationWorkflowsCreateCollectionRequest
+ *
+ * @param spgNftInitParams tuple
+ */
+export type RegistrationWorkflowsCreateCollectionRequest = {
+  spgNftInitParams: {
+    name: string;
+    symbol: string;
+    baseURI: string;
+    contractURI: string;
+    maxSupply: number;
+    mintFee: bigint;
+    mintFeeToken: Address;
+    mintFeeRecipient: Address;
+    owner: Address;
+    mintOpen: boolean;
+    isPublicMinting: boolean;
+  };
+};
+
+/**
+ * RegistrationWorkflowsMintAndRegisterIpRequest
+ *
+ * @param spgNftContract address
+ * @param recipient address
+ * @param ipMetadata tuple
+ */
+export type RegistrationWorkflowsMintAndRegisterIpRequest = {
+  spgNftContract: Address;
+  recipient: Address;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+};
+
+/**
+ * RegistrationWorkflowsRegisterIpRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param ipMetadata tuple
+ * @param sigMetadata tuple
+ */
+export type RegistrationWorkflowsRegisterIpRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  ipMetadata: {
+    ipMetadataURI: string;
+    ipMetadataHash: Hex;
+    nftMetadataURI: string;
+    nftMetadataHash: Hex;
+  };
+  sigMetadata: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * contract RegistrationWorkflows event
+ */
+export class RegistrationWorkflowsEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(registrationWorkflowsAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event CollectionCreated for contract RegistrationWorkflows
+   */
+  public watchCollectionCreatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RegistrationWorkflowsCollectionCreatedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: registrationWorkflowsAbi,
+      address: this.address,
+      eventName: "CollectionCreated",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event CollectionCreated for contract RegistrationWorkflows
+   */
+  public parseTxCollectionCreatedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<RegistrationWorkflowsCollectionCreatedEvent> {
+    const targetLogs: Array<RegistrationWorkflowsCollectionCreatedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: registrationWorkflowsAbi,
+          eventName: "CollectionCreated",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "CollectionCreated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract RegistrationWorkflows write method
+ */
+export class RegistrationWorkflowsClient extends RegistrationWorkflowsEventClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method createCollection for contract RegistrationWorkflows
+   *
+   * @param request RegistrationWorkflowsCreateCollectionRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async createCollection(
+    request: RegistrationWorkflowsCreateCollectionRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: registrationWorkflowsAbi,
+      address: this.address,
+      functionName: "createCollection",
+      account: this.wallet.account,
+      args: [request.spgNftInitParams],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method createCollection for contract RegistrationWorkflows with only encode
+   *
+   * @param request RegistrationWorkflowsCreateCollectionRequest
+   * @return EncodedTxData
+   */
+  public createCollectionEncode(
+    request: RegistrationWorkflowsCreateCollectionRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: registrationWorkflowsAbi,
+        functionName: "createCollection",
+        args: [request.spgNftInitParams],
+      }),
+    };
+  }
+
+  /**
+   * method mintAndRegisterIp for contract RegistrationWorkflows
+   *
+   * @param request RegistrationWorkflowsMintAndRegisterIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIp(
+    request: RegistrationWorkflowsMintAndRegisterIpRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: registrationWorkflowsAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIp",
+      account: this.wallet.account,
+      args: [request.spgNftContract, request.recipient, request.ipMetadata],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIp for contract RegistrationWorkflows with only encode
+   *
+   * @param request RegistrationWorkflowsMintAndRegisterIpRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpEncode(
+    request: RegistrationWorkflowsMintAndRegisterIpRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: registrationWorkflowsAbi,
+        functionName: "mintAndRegisterIp",
+        args: [request.spgNftContract, request.recipient, request.ipMetadata],
+      }),
+    };
+  }
+
+  /**
+   * method registerIp for contract RegistrationWorkflows
+   *
+   * @param request RegistrationWorkflowsRegisterIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIp(
+    request: RegistrationWorkflowsRegisterIpRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: registrationWorkflowsAbi,
+      address: this.address,
+      functionName: "registerIp",
+      account: this.wallet.account,
+      args: [request.nftContract, request.tokenId, request.ipMetadata, request.sigMetadata],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIp for contract RegistrationWorkflows with only encode
+   *
+   * @param request RegistrationWorkflowsRegisterIpRequest
+   * @return EncodedTxData
+   */
+  public registerIpEncode(request: RegistrationWorkflowsRegisterIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: registrationWorkflowsAbi,
+        functionName: "registerIp",
+        args: [request.nftContract, request.tokenId, request.ipMetadata, request.sigMetadata],
+      }),
+    };
+  }
+}
+
 // Contract RoyaltyModule =============================================================
+
+/**
+ * RoyaltyModuleIpRoyaltyVaultsRequest
+ *
+ * @param ipId address
+ */
+export type RoyaltyModuleIpRoyaltyVaultsRequest = {
+  ipId: Address;
+};
+
+export type RoyaltyModuleIpRoyaltyVaultsResponse = Address;
 
 /**
  * RoyaltyModuleIsWhitelistedRoyaltyPolicyRequest
@@ -13692,6 +21808,23 @@ export class RoyaltyModuleReadOnlyClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(royaltyModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method ipRoyaltyVaults for contract RoyaltyModule
+   *
+   * @param request RoyaltyModuleIpRoyaltyVaultsRequest
+   * @return Promise<RoyaltyModuleIpRoyaltyVaultsResponse>
+   */
+  public async ipRoyaltyVaults(
+    request: RoyaltyModuleIpRoyaltyVaultsRequest,
+  ): Promise<RoyaltyModuleIpRoyaltyVaultsResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyModuleAbi,
+      address: this.address,
+      functionName: "ipRoyaltyVaults",
+      args: [request.ipId],
+    });
   }
 
   /**
@@ -13779,446 +21912,235 @@ export class RoyaltyModuleClient extends RoyaltyModuleReadOnlyClient {
 
 // Contract RoyaltyPolicyLAP =============================================================
 
+// Contract RoyaltyPolicyLRP =============================================================
+
 /**
- * RoyaltyPolicyLapGetRoyaltyDataRequest
+ * RoyaltyPolicyLrpAuthorityUpdatedEvent
  *
- * @param ipId address
+ * @param authority address
  */
-export type RoyaltyPolicyLapGetRoyaltyDataRequest = {
-  ipId: Address;
+export type RoyaltyPolicyLrpAuthorityUpdatedEvent = {
+  authority: Address;
 };
 
 /**
- * RoyaltyPolicyLapGetRoyaltyDataResponse
+ * RoyaltyPolicyLrpInitializedEvent
  *
- * @param 0 bool
- * @param 1 address
- * @param 2 uint32
+ * @param version uint64
  */
-export type RoyaltyPolicyLapGetRoyaltyDataResponse = readonly [boolean, Address, number];
+export type RoyaltyPolicyLrpInitializedEvent = {
+  version: bigint;
+};
 
 /**
- * RoyaltyPolicyLapOnRoyaltyPaymentRequest
+ * RoyaltyPolicyLrpPausedEvent
  *
- * @param caller address
+ * @param account address
+ */
+export type RoyaltyPolicyLrpPausedEvent = {
+  account: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpRevenueTransferredToVaultEvent
+ *
  * @param ipId address
+ * @param ancestorIpId address
  * @param token address
  * @param amount uint256
  */
-export type RoyaltyPolicyLapOnRoyaltyPaymentRequest = {
-  caller: Address;
+export type RoyaltyPolicyLrpRevenueTransferredToVaultEvent = {
   ipId: Address;
+  ancestorIpId: Address;
   token: Address;
   amount: bigint;
 };
 
 /**
- * contract RoyaltyPolicyLAP readonly method
- */
-export class RoyaltyPolicyLapReadOnlyClient {
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, address?: Address) {
-    this.address = address || getAddress(royaltyPolicyLapAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-  }
-
-  /**
-   * method getRoyaltyData for contract RoyaltyPolicyLAP
-   *
-   * @param request RoyaltyPolicyLapGetRoyaltyDataRequest
-   * @return Promise<RoyaltyPolicyLapGetRoyaltyDataResponse>
-   */
-  public async getRoyaltyData(
-    request: RoyaltyPolicyLapGetRoyaltyDataRequest,
-  ): Promise<RoyaltyPolicyLapGetRoyaltyDataResponse> {
-    return await this.rpcClient.readContract({
-      abi: royaltyPolicyLapAbi,
-      address: this.address,
-      functionName: "getRoyaltyData",
-      args: [request.ipId],
-    });
-  }
-}
-
-/**
- * contract RoyaltyPolicyLAP write method
- */
-export class RoyaltyPolicyLapClient extends RoyaltyPolicyLapReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method onRoyaltyPayment for contract RoyaltyPolicyLAP
-   *
-   * @param request RoyaltyPolicyLapOnRoyaltyPaymentRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async onRoyaltyPayment(
-    request: RoyaltyPolicyLapOnRoyaltyPaymentRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: royaltyPolicyLapAbi,
-      address: this.address,
-      functionName: "onRoyaltyPayment",
-      account: this.wallet.account,
-      args: [request.caller, request.ipId, request.token, request.amount],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method onRoyaltyPayment for contract RoyaltyPolicyLAP with only encode
-   *
-   * @param request RoyaltyPolicyLapOnRoyaltyPaymentRequest
-   * @return EncodedTxData
-   */
-  public onRoyaltyPaymentEncode(request: RoyaltyPolicyLapOnRoyaltyPaymentRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: royaltyPolicyLapAbi,
-        functionName: "onRoyaltyPayment",
-        args: [request.caller, request.ipId, request.token, request.amount],
-      }),
-    };
-  }
-}
-
-// Contract SPG =============================================================
-
-/**
- * SpgCollectionCreatedEvent
+ * RoyaltyPolicyLrpUnpausedEvent
  *
- * @param nftContract address
+ * @param account address
  */
-export type SpgCollectionCreatedEvent = {
-  nftContract: Address;
+export type RoyaltyPolicyLrpUnpausedEvent = {
+  account: Address;
 };
 
 /**
- * SpgCreateCollectionRequest
+ * RoyaltyPolicyLrpUpgradedEvent
  *
- * @param name string
- * @param symbol string
- * @param maxSupply uint32
- * @param mintFee uint256
- * @param mintFeeToken address
- * @param owner address
+ * @param implementation address
  */
-export type SpgCreateCollectionRequest = {
-  name: string;
-  symbol: string;
-  maxSupply: number;
-  mintFee: bigint;
-  mintFeeToken: Address;
-  owner: Address;
+export type RoyaltyPolicyLrpUpgradedEvent = {
+  implementation: Address;
 };
 
-/**
- * SpgMintAndRegisterIpRequest
- *
- * @param nftContract address
- * @param recipient address
- * @param ipMetadata tuple
- */
-export type SpgMintAndRegisterIpRequest = {
-  nftContract: Address;
-  recipient: Address;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-};
+export type RoyaltyPolicyLrpIpGraphResponse = Address;
+
+export type RoyaltyPolicyLrpIpGraphAclResponse = Address;
+
+export type RoyaltyPolicyLrpRoyaltyModuleResponse = Address;
+
+export type RoyaltyPolicyLrpUpgradeInterfaceVersionResponse = string;
+
+export type RoyaltyPolicyLrpAuthorityResponse = Address;
 
 /**
- * SpgMintAndRegisterIpAndAttachPilTermsRequest
- *
- * @param nftContract address
- * @param recipient address
- * @param ipMetadata tuple
- * @param terms tuple
- */
-export type SpgMintAndRegisterIpAndAttachPilTermsRequest = {
-  nftContract: Address;
-  recipient: Address;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
-  };
-};
-
-/**
- * SpgMintAndRegisterIpAndMakeDerivativeRequest
- *
- * @param nftContract address
- * @param derivData tuple
- * @param ipMetadata tuple
- * @param recipient address
- */
-export type SpgMintAndRegisterIpAndMakeDerivativeRequest = {
-  nftContract: Address;
-  derivData: {
-    parentIpIds: readonly Address[];
-    licenseTemplate: Address;
-    licenseTermsIds: readonly bigint[];
-    royaltyContext: Hex;
-  };
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  recipient: Address;
-};
-
-/**
- * SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
- *
- * @param nftContract address
- * @param licenseTokenIds uint256[]
- * @param royaltyContext bytes
- * @param ipMetadata tuple
- * @param recipient address
- */
-export type SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
-  nftContract: Address;
-  licenseTokenIds: readonly bigint[];
-  royaltyContext: Hex;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  recipient: Address;
-};
-
-/**
- * SpgRegisterIpRequest
- *
- * @param nftContract address
- * @param tokenId uint256
- * @param ipMetadata tuple
- * @param sigMetadata tuple
- */
-export type SpgRegisterIpRequest = {
-  nftContract: Address;
-  tokenId: bigint;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-};
-
-/**
- * SpgRegisterIpAndAttachPilTermsRequest
- *
- * @param nftContract address
- * @param tokenId uint256
- * @param ipMetadata tuple
- * @param terms tuple
- * @param sigMetadata tuple
- * @param sigAttach tuple
- */
-export type SpgRegisterIpAndAttachPilTermsRequest = {
-  nftContract: Address;
-  tokenId: bigint;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
-  };
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-  sigAttach: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-};
-
-/**
- * SpgRegisterIpAndMakeDerivativeRequest
- *
- * @param nftContract address
- * @param tokenId uint256
- * @param derivData tuple
- * @param ipMetadata tuple
- * @param sigMetadata tuple
- * @param sigRegister tuple
- */
-export type SpgRegisterIpAndMakeDerivativeRequest = {
-  nftContract: Address;
-  tokenId: bigint;
-  derivData: {
-    parentIpIds: readonly Address[];
-    licenseTemplate: Address;
-    licenseTermsIds: readonly bigint[];
-    royaltyContext: Hex;
-  };
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-  sigRegister: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-};
-
-/**
- * SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
- *
- * @param nftContract address
- * @param tokenId uint256
- * @param licenseTokenIds uint256[]
- * @param royaltyContext bytes
- * @param ipMetadata tuple
- * @param sigMetadata tuple
- * @param sigRegister tuple
- */
-export type SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
-  nftContract: Address;
-  tokenId: bigint;
-  licenseTokenIds: readonly bigint[];
-  royaltyContext: Hex;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-  sigRegister: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-};
-
-/**
- * SpgRegisterPilTermsAndAttachRequest
+ * RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest
  *
  * @param ipId address
- * @param terms tuple
  */
-export type SpgRegisterPilTermsAndAttachRequest = {
+export type RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest = {
   ipId: Address;
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
-  };
+};
+
+export type RoyaltyPolicyLrpGetPolicyRoyaltyStackResponse = number;
+
+/**
+ * RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest
+ *
+ * @param ipId address
+ * @param licensePercent uint32
+ */
+export type RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest = {
+  ipId: Address;
+  licensePercent: number;
+};
+
+export type RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkResponse = number;
+
+/**
+ * RoyaltyPolicyLrpGetTransferredTokensRequest
+ *
+ * @param ipId address
+ * @param ancestorIpId address
+ * @param token address
+ */
+export type RoyaltyPolicyLrpGetTransferredTokensRequest = {
+  ipId: Address;
+  ancestorIpId: Address;
+  token: Address;
+};
+
+export type RoyaltyPolicyLrpGetTransferredTokensResponse = bigint;
+
+export type RoyaltyPolicyLrpIsConsumingScheduledOpResponse = Hex;
+
+export type RoyaltyPolicyLrpPausedResponse = boolean;
+
+export type RoyaltyPolicyLrpProxiableUuidResponse = Hex;
+
+/**
+ * RoyaltyPolicyLrpProtocolPausableInitRequest
+ *
+ * @param accessManager address
+ */
+export type RoyaltyPolicyLrpProtocolPausableInitRequest = {
+  accessManager: Address;
 };
 
 /**
- * contract SPG event
+ * RoyaltyPolicyLrpGetPolicyRoyaltyRequest
+ *
+ * @param ipId address
+ * @param ancestorIpId address
  */
-export class SpgEventClient {
+export type RoyaltyPolicyLrpGetPolicyRoyaltyRequest = {
+  ipId: Address;
+  ancestorIpId: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpInitializeRequest
+ *
+ * @param accessManager address
+ */
+export type RoyaltyPolicyLrpInitializeRequest = {
+  accessManager: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpOnLicenseMintingRequest
+ *
+ * @param 0 address
+ * @param 1 uint32
+ * @param 2 bytes
+ */
+export type RoyaltyPolicyLrpOnLicenseMintingRequest = readonly [Address, number, Hex];
+
+/**
+ * RoyaltyPolicyLrpOnLinkToParentsRequest
+ *
+ * @param 0 address
+ * @param 1 address[]
+ * @param 2 address[]
+ * @param 3 uint32[]
+ * @param 4 bytes
+ */
+export type RoyaltyPolicyLrpOnLinkToParentsRequest = readonly [
+  Address,
+  readonly Address[],
+  readonly Address[],
+  readonly number[],
+  Hex,
+];
+
+/**
+ * RoyaltyPolicyLrpSetAuthorityRequest
+ *
+ * @param newAuthority address
+ */
+export type RoyaltyPolicyLrpSetAuthorityRequest = {
+  newAuthority: Address;
+};
+
+/**
+ * RoyaltyPolicyLrpTransferToVaultRequest
+ *
+ * @param ipId address
+ * @param ancestorIpId address
+ * @param token address
+ * @param amount uint256
+ */
+export type RoyaltyPolicyLrpTransferToVaultRequest = {
+  ipId: Address;
+  ancestorIpId: Address;
+  token: Address;
+  amount: bigint;
+};
+
+/**
+ * RoyaltyPolicyLrpUpgradeToAndCallRequest
+ *
+ * @param newImplementation address
+ * @param data bytes
+ */
+export type RoyaltyPolicyLrpUpgradeToAndCallRequest = {
+  newImplementation: Address;
+  data: Hex;
+};
+
+/**
+ * contract RoyaltyPolicyLRP event
+ */
+export class RoyaltyPolicyLrpEventClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
   constructor(rpcClient: PublicClient, address?: Address) {
-    this.address = address || getAddress(spgAddress, rpcClient.chain?.id);
+    this.address = address || getAddress(royaltyPolicyLrpAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
   }
 
   /**
-   * event CollectionCreated for contract SPG
+   * event AuthorityUpdated for contract RoyaltyPolicyLRP
    */
-  public watchCollectionCreatedEvent(
-    onLogs: (txHash: Hex, ev: Partial<SpgCollectionCreatedEvent>) => void,
+  public watchAuthorityUpdatedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpAuthorityUpdatedEvent>) => void,
   ): WatchContractEventReturnType {
     return this.rpcClient.watchContractEvent({
-      abi: spgAbi,
+      abi: royaltyPolicyLrpAbi,
       address: this.address,
-      eventName: "CollectionCreated",
+      eventName: "AuthorityUpdated",
       onLogs: (evs) => {
         evs.forEach((it) => onLogs(it.transactionHash, it.args));
       },
@@ -14226,21 +22148,220 @@ export class SpgEventClient {
   }
 
   /**
-   * parse tx receipt event CollectionCreated for contract SPG
+   * parse tx receipt event AuthorityUpdated for contract RoyaltyPolicyLRP
    */
-  public parseTxCollectionCreatedEvent(
+  public parseTxAuthorityUpdatedEvent(
     txReceipt: TransactionReceipt,
-  ): Array<SpgCollectionCreatedEvent> {
-    const targetLogs: Array<SpgCollectionCreatedEvent> = [];
+  ): Array<RoyaltyPolicyLrpAuthorityUpdatedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpAuthorityUpdatedEvent> = [];
     for (const log of txReceipt.logs) {
       try {
         const event = decodeEventLog({
-          abi: spgAbi,
-          eventName: "CollectionCreated",
+          abi: royaltyPolicyLrpAbi,
+          eventName: "AuthorityUpdated",
           data: log.data,
           topics: log.topics,
         });
-        if (event.eventName === "CollectionCreated") {
+        if (event.eventName === "AuthorityUpdated") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Initialized for contract RoyaltyPolicyLRP
+   */
+  public watchInitializedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpInitializedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Initialized",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Initialized for contract RoyaltyPolicyLRP
+   */
+  public parseTxInitializedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<RoyaltyPolicyLrpInitializedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpInitializedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Initialized",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Initialized") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Paused for contract RoyaltyPolicyLRP
+   */
+  public watchPausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpPausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Paused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Paused for contract RoyaltyPolicyLRP
+   */
+  public parseTxPausedEvent(txReceipt: TransactionReceipt): Array<RoyaltyPolicyLrpPausedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpPausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Paused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Paused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event RevenueTransferredToVault for contract RoyaltyPolicyLRP
+   */
+  public watchRevenueTransferredToVaultEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpRevenueTransferredToVaultEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "RevenueTransferredToVault",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event RevenueTransferredToVault for contract RoyaltyPolicyLRP
+   */
+  public parseTxRevenueTransferredToVaultEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<RoyaltyPolicyLrpRevenueTransferredToVaultEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpRevenueTransferredToVaultEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "RevenueTransferredToVault",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "RevenueTransferredToVault") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Unpaused for contract RoyaltyPolicyLRP
+   */
+  public watchUnpausedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpUnpausedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Unpaused",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Unpaused for contract RoyaltyPolicyLRP
+   */
+  public parseTxUnpausedEvent(txReceipt: TransactionReceipt): Array<RoyaltyPolicyLrpUnpausedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpUnpausedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Unpaused",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Unpaused") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Upgraded for contract RoyaltyPolicyLRP
+   */
+  public watchUpgradedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyPolicyLrpUpgradedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      eventName: "Upgraded",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Upgraded for contract RoyaltyPolicyLRP
+   */
+  public parseTxUpgradedEvent(txReceipt: TransactionReceipt): Array<RoyaltyPolicyLrpUpgradedEvent> {
+    const targetLogs: Array<RoyaltyPolicyLrpUpgradedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyPolicyLrpAbi,
+          eventName: "Upgraded",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Upgraded") {
           targetLogs.push(event.args);
         }
       } catch (e) {
@@ -14252,9 +22373,181 @@ export class SpgEventClient {
 }
 
 /**
- * contract SPG write method
+ * contract RoyaltyPolicyLRP readonly method
  */
-export class SpgClient extends SpgEventClient {
+export class RoyaltyPolicyLrpReadOnlyClient extends RoyaltyPolicyLrpEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method IP_GRAPH for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIpGraphRequest
+   * @return Promise<RoyaltyPolicyLrpIpGraphResponse>
+   */
+  public async ipGraph(): Promise<RoyaltyPolicyLrpIpGraphResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "IP_GRAPH",
+    });
+  }
+
+  /**
+   * method IP_GRAPH_ACL for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIpGraphAclRequest
+   * @return Promise<RoyaltyPolicyLrpIpGraphAclResponse>
+   */
+  public async ipGraphAcl(): Promise<RoyaltyPolicyLrpIpGraphAclResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "IP_GRAPH_ACL",
+    });
+  }
+
+  /**
+   * method ROYALTY_MODULE for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpRoyaltyModuleRequest
+   * @return Promise<RoyaltyPolicyLrpRoyaltyModuleResponse>
+   */
+  public async royaltyModule(): Promise<RoyaltyPolicyLrpRoyaltyModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "ROYALTY_MODULE",
+    });
+  }
+
+  /**
+   * method UPGRADE_INTERFACE_VERSION for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpUpgradeInterfaceVersionRequest
+   * @return Promise<RoyaltyPolicyLrpUpgradeInterfaceVersionResponse>
+   */
+  public async upgradeInterfaceVersion(): Promise<RoyaltyPolicyLrpUpgradeInterfaceVersionResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "UPGRADE_INTERFACE_VERSION",
+    });
+  }
+
+  /**
+   * method authority for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpAuthorityRequest
+   * @return Promise<RoyaltyPolicyLrpAuthorityResponse>
+   */
+  public async authority(): Promise<RoyaltyPolicyLrpAuthorityResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "authority",
+    });
+  }
+
+  /**
+   * method getPolicyRoyaltyStack for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest
+   * @return Promise<RoyaltyPolicyLrpGetPolicyRoyaltyStackResponse>
+   */
+  public async getPolicyRoyaltyStack(
+    request: RoyaltyPolicyLrpGetPolicyRoyaltyStackRequest,
+  ): Promise<RoyaltyPolicyLrpGetPolicyRoyaltyStackResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getPolicyRoyaltyStack",
+      args: [request.ipId],
+    });
+  }
+
+  /**
+   * method getPolicyRtsRequiredToLink for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest
+   * @return Promise<RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkResponse>
+   */
+  public async getPolicyRtsRequiredToLink(
+    request: RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkRequest,
+  ): Promise<RoyaltyPolicyLrpGetPolicyRtsRequiredToLinkResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getPolicyRtsRequiredToLink",
+      args: [request.ipId, request.licensePercent],
+    });
+  }
+
+  /**
+   * method getTransferredTokens for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetTransferredTokensRequest
+   * @return Promise<RoyaltyPolicyLrpGetTransferredTokensResponse>
+   */
+  public async getTransferredTokens(
+    request: RoyaltyPolicyLrpGetTransferredTokensRequest,
+  ): Promise<RoyaltyPolicyLrpGetTransferredTokensResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getTransferredTokens",
+      args: [request.ipId, request.ancestorIpId, request.token],
+    });
+  }
+
+  /**
+   * method isConsumingScheduledOp for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIsConsumingScheduledOpRequest
+   * @return Promise<RoyaltyPolicyLrpIsConsumingScheduledOpResponse>
+   */
+  public async isConsumingScheduledOp(): Promise<RoyaltyPolicyLrpIsConsumingScheduledOpResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method paused for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpPausedRequest
+   * @return Promise<RoyaltyPolicyLrpPausedResponse>
+   */
+  public async paused(): Promise<RoyaltyPolicyLrpPausedResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "paused",
+    });
+  }
+
+  /**
+   * method proxiableUUID for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpProxiableUuidRequest
+   * @return Promise<RoyaltyPolicyLrpProxiableUuidResponse>
+   */
+  public async proxiableUuid(): Promise<RoyaltyPolicyLrpProxiableUuidResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "proxiableUUID",
+    });
+  }
+}
+
+/**
+ * contract RoyaltyPolicyLRP write method
+ */
+export class RoyaltyPolicyLrpClient extends RoyaltyPolicyLrpReadOnlyClient {
   protected readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
@@ -14263,443 +22556,600 @@ export class SpgClient extends SpgEventClient {
   }
 
   /**
-   * method createCollection for contract SPG
+   * method __ProtocolPausable_init for contract RoyaltyPolicyLRP
    *
-   * @param request SpgCreateCollectionRequest
+   * @param request RoyaltyPolicyLrpProtocolPausableInitRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async createCollection(
-    request: SpgCreateCollectionRequest,
+  public async protocolPausableInit(
+    request: RoyaltyPolicyLrpProtocolPausableInitRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
+      abi: royaltyPolicyLrpAbi,
       address: this.address,
-      functionName: "createCollection",
+      functionName: "__ProtocolPausable_init",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method __ProtocolPausable_init for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpProtocolPausableInitRequest
+   * @return EncodedTxData
+   */
+  public protocolPausableInitEncode(
+    request: RoyaltyPolicyLrpProtocolPausableInitRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "__ProtocolPausable_init",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method getPolicyRoyalty for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRoyaltyRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async getPolicyRoyalty(
+    request: RoyaltyPolicyLrpGetPolicyRoyaltyRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "getPolicyRoyalty",
+      account: this.wallet.account,
+      args: [request.ipId, request.ancestorIpId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method getPolicyRoyalty for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpGetPolicyRoyaltyRequest
+   * @return EncodedTxData
+   */
+  public getPolicyRoyaltyEncode(request: RoyaltyPolicyLrpGetPolicyRoyaltyRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "getPolicyRoyalty",
+        args: [request.ipId, request.ancestorIpId],
+      }),
+    };
+  }
+
+  /**
+   * method initialize for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpInitializeRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async initialize(
+    request: RoyaltyPolicyLrpInitializeRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "initialize",
+      account: this.wallet.account,
+      args: [request.accessManager],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method initialize for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpInitializeRequest
+   * @return EncodedTxData
+   */
+  public initializeEncode(request: RoyaltyPolicyLrpInitializeRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "initialize",
+        args: [request.accessManager],
+      }),
+    };
+  }
+
+  /**
+   * method onLicenseMinting for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpOnLicenseMintingRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onLicenseMinting(
+    request: RoyaltyPolicyLrpOnLicenseMintingRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "onLicenseMinting",
+      account: this.wallet.account,
+      args: [request[0], request[1], request[2]],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onLicenseMinting for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpOnLicenseMintingRequest
+   * @return EncodedTxData
+   */
+  public onLicenseMintingEncode(request: RoyaltyPolicyLrpOnLicenseMintingRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "onLicenseMinting",
+        args: [request[0], request[1], request[2]],
+      }),
+    };
+  }
+
+  /**
+   * method onLinkToParents for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpOnLinkToParentsRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async onLinkToParents(
+    request: RoyaltyPolicyLrpOnLinkToParentsRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "onLinkToParents",
+      account: this.wallet.account,
+      args: [request[0], request[1], request[2], request[3], request[4]],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method onLinkToParents for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpOnLinkToParentsRequest
+   * @return EncodedTxData
+   */
+  public onLinkToParentsEncode(request: RoyaltyPolicyLrpOnLinkToParentsRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "onLinkToParents",
+        args: [request[0], request[1], request[2], request[3], request[4]],
+      }),
+    };
+  }
+
+  /**
+   * method pause for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpPauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async pause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "pause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method pause for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpPauseRequest
+   * @return EncodedTxData
+   */
+  public pauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "pause",
+      }),
+    };
+  }
+
+  /**
+   * method setAuthority for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpSetAuthorityRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setAuthority(
+    request: RoyaltyPolicyLrpSetAuthorityRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "setAuthority",
+      account: this.wallet.account,
+      args: [request.newAuthority],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setAuthority for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpSetAuthorityRequest
+   * @return EncodedTxData
+   */
+  public setAuthorityEncode(request: RoyaltyPolicyLrpSetAuthorityRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "setAuthority",
+        args: [request.newAuthority],
+      }),
+    };
+  }
+
+  /**
+   * method transferToVault for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpTransferToVaultRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferToVault(
+    request: RoyaltyPolicyLrpTransferToVaultRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "transferToVault",
+      account: this.wallet.account,
+      args: [request.ipId, request.ancestorIpId, request.token, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferToVault for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpTransferToVaultRequest
+   * @return EncodedTxData
+   */
+  public transferToVaultEncode(request: RoyaltyPolicyLrpTransferToVaultRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "transferToVault",
+        args: [request.ipId, request.ancestorIpId, request.token, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method unpause for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpUnpauseRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async unpause(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "unpause",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method unpause for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpUnpauseRequest
+   * @return EncodedTxData
+   */
+  public unpauseEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "unpause",
+      }),
+    };
+  }
+
+  /**
+   * method upgradeToAndCall for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpUpgradeToAndCallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async upgradeToAndCall(
+    request: RoyaltyPolicyLrpUpgradeToAndCallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "upgradeToAndCall",
+      account: this.wallet.account,
+      args: [request.newImplementation, request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method upgradeToAndCall for contract RoyaltyPolicyLRP with only encode
+   *
+   * @param request RoyaltyPolicyLrpUpgradeToAndCallRequest
+   * @return EncodedTxData
+   */
+  public upgradeToAndCallEncode(request: RoyaltyPolicyLrpUpgradeToAndCallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLrpAbi,
+        functionName: "upgradeToAndCall",
+        args: [request.newImplementation, request.data],
+      }),
+    };
+  }
+}
+
+// Contract RoyaltyWorkflows =============================================================
+
+/**
+ * RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest
+ *
+ * @param ipId address
+ * @param claimer address
+ * @param unclaimedSnapshotIds uint256[]
+ * @param currencyTokens address[]
+ */
+export type RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest = {
+  ipId: Address;
+  claimer: Address;
+  unclaimedSnapshotIds: readonly bigint[];
+  currencyTokens: readonly Address[];
+};
+
+/**
+ * RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest
+ *
+ * @param ipId address
+ * @param claimer address
+ * @param currencyTokens address[]
+ */
+export type RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest = {
+  ipId: Address;
+  claimer: Address;
+  currencyTokens: readonly Address[];
+};
+
+/**
+ * RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest
+ *
+ * @param ancestorIpId address
+ * @param claimer address
+ * @param unclaimedSnapshotIds uint256[]
+ * @param royaltyClaimDetails tuple[]
+ */
+export type RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest = {
+  ancestorIpId: Address;
+  claimer: Address;
+  unclaimedSnapshotIds: readonly bigint[];
+  royaltyClaimDetails: {
+    childIpId: Address;
+    royaltyPolicy: Address;
+    currencyToken: Address;
+    amount: bigint;
+  }[];
+};
+
+/**
+ * RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest
+ *
+ * @param ancestorIpId address
+ * @param claimer address
+ * @param royaltyClaimDetails tuple[]
+ */
+export type RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
+  ancestorIpId: Address;
+  claimer: Address;
+  royaltyClaimDetails: {
+    childIpId: Address;
+    royaltyPolicy: Address;
+    currencyToken: Address;
+    amount: bigint;
+  }[];
+};
+
+/**
+ * contract RoyaltyWorkflows write method
+ */
+export class RoyaltyWorkflowsClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(royaltyWorkflowsAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method snapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows
+   *
+   * @param request RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async snapshotAndClaimBySnapshotBatch(
+    request: RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyWorkflowsAbi,
+      address: this.address,
+      functionName: "snapshotAndClaimBySnapshotBatch",
+      account: this.wallet.account,
+      args: [request.ipId, request.claimer, request.unclaimedSnapshotIds, request.currencyTokens],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method snapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows with only encode
+   *
+   * @param request RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest
+   * @return EncodedTxData
+   */
+  public snapshotAndClaimBySnapshotBatchEncode(
+    request: RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyWorkflowsAbi,
+        functionName: "snapshotAndClaimBySnapshotBatch",
+        args: [request.ipId, request.claimer, request.unclaimedSnapshotIds, request.currencyTokens],
+      }),
+    };
+  }
+
+  /**
+   * method snapshotAndClaimByTokenBatch for contract RoyaltyWorkflows
+   *
+   * @param request RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async snapshotAndClaimByTokenBatch(
+    request: RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyWorkflowsAbi,
+      address: this.address,
+      functionName: "snapshotAndClaimByTokenBatch",
+      account: this.wallet.account,
+      args: [request.ipId, request.claimer, request.currencyTokens],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method snapshotAndClaimByTokenBatch for contract RoyaltyWorkflows with only encode
+   *
+   * @param request RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest
+   * @return EncodedTxData
+   */
+  public snapshotAndClaimByTokenBatchEncode(
+    request: RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyWorkflowsAbi,
+        functionName: "snapshotAndClaimByTokenBatch",
+        args: [request.ipId, request.claimer, request.currencyTokens],
+      }),
+    };
+  }
+
+  /**
+   * method transferToVaultAndSnapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows
+   *
+   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferToVaultAndSnapshotAndClaimBySnapshotBatch(
+    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyWorkflowsAbi,
+      address: this.address,
+      functionName: "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
       account: this.wallet.account,
       args: [
-        request.name,
-        request.symbol,
-        request.maxSupply,
-        request.mintFee,
-        request.mintFeeToken,
-        request.owner,
+        request.ancestorIpId,
+        request.claimer,
+        request.unclaimedSnapshotIds,
+        request.royaltyClaimDetails,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
-   * method createCollection for contract SPG with only encode
+   * method transferToVaultAndSnapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows with only encode
    *
-   * @param request SpgCreateCollectionRequest
+   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest
    * @return EncodedTxData
    */
-  public createCollectionEncode(request: SpgCreateCollectionRequest): EncodedTxData {
+  public transferToVaultAndSnapshotAndClaimBySnapshotBatchEncode(
+    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
+  ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "createCollection",
+        abi: royaltyWorkflowsAbi,
+        functionName: "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
         args: [
-          request.name,
-          request.symbol,
-          request.maxSupply,
-          request.mintFee,
-          request.mintFeeToken,
-          request.owner,
+          request.ancestorIpId,
+          request.claimer,
+          request.unclaimedSnapshotIds,
+          request.royaltyClaimDetails,
         ],
       }),
     };
   }
 
   /**
-   * method mintAndRegisterIp for contract SPG
+   * method transferToVaultAndSnapshotAndClaimByTokenBatch for contract RoyaltyWorkflows
    *
-   * @param request SpgMintAndRegisterIpRequest
+   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async mintAndRegisterIp(
-    request: SpgMintAndRegisterIpRequest,
+  public async transferToVaultAndSnapshotAndClaimByTokenBatch(
+    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
   ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
+      abi: royaltyWorkflowsAbi,
       address: this.address,
-      functionName: "mintAndRegisterIp",
+      functionName: "transferToVaultAndSnapshotAndClaimByTokenBatch",
       account: this.wallet.account,
-      args: [request.nftContract, request.recipient, request.ipMetadata],
+      args: [request.ancestorIpId, request.claimer, request.royaltyClaimDetails],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
 
   /**
-   * method mintAndRegisterIp for contract SPG with only encode
+   * method transferToVaultAndSnapshotAndClaimByTokenBatch for contract RoyaltyWorkflows with only encode
    *
-   * @param request SpgMintAndRegisterIpRequest
+   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest
    * @return EncodedTxData
    */
-  public mintAndRegisterIpEncode(request: SpgMintAndRegisterIpRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "mintAndRegisterIp",
-        args: [request.nftContract, request.recipient, request.ipMetadata],
-      }),
-    };
-  }
-
-  /**
-   * method mintAndRegisterIpAndAttachPILTerms for contract SPG
-   *
-   * @param request SpgMintAndRegisterIpAndAttachPilTermsRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async mintAndRegisterIpAndAttachPilTerms(
-    request: SpgMintAndRegisterIpAndAttachPilTermsRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "mintAndRegisterIpAndAttachPILTerms",
-      account: this.wallet.account,
-      args: [request.nftContract, request.recipient, request.ipMetadata, request.terms],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method mintAndRegisterIpAndAttachPILTerms for contract SPG with only encode
-   *
-   * @param request SpgMintAndRegisterIpAndAttachPilTermsRequest
-   * @return EncodedTxData
-   */
-  public mintAndRegisterIpAndAttachPilTermsEncode(
-    request: SpgMintAndRegisterIpAndAttachPilTermsRequest,
+  public transferToVaultAndSnapshotAndClaimByTokenBatchEncode(
+    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
   ): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "mintAndRegisterIpAndAttachPILTerms",
-        args: [request.nftContract, request.recipient, request.ipMetadata, request.terms],
-      }),
-    };
-  }
-
-  /**
-   * method mintAndRegisterIpAndMakeDerivative for contract SPG
-   *
-   * @param request SpgMintAndRegisterIpAndMakeDerivativeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async mintAndRegisterIpAndMakeDerivative(
-    request: SpgMintAndRegisterIpAndMakeDerivativeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "mintAndRegisterIpAndMakeDerivative",
-      account: this.wallet.account,
-      args: [request.nftContract, request.derivData, request.ipMetadata, request.recipient],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method mintAndRegisterIpAndMakeDerivative for contract SPG with only encode
-   *
-   * @param request SpgMintAndRegisterIpAndMakeDerivativeRequest
-   * @return EncodedTxData
-   */
-  public mintAndRegisterIpAndMakeDerivativeEncode(
-    request: SpgMintAndRegisterIpAndMakeDerivativeRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "mintAndRegisterIpAndMakeDerivative",
-        args: [request.nftContract, request.derivData, request.ipMetadata, request.recipient],
-      }),
-    };
-  }
-
-  /**
-   * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract SPG
-   *
-   * @param request SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
-    request: SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
-      account: this.wallet.account,
-      args: [
-        request.nftContract,
-        request.licenseTokenIds,
-        request.royaltyContext,
-        request.ipMetadata,
-        request.recipient,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method mintAndRegisterIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
-   *
-   * @param request SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return EncodedTxData
-   */
-  public mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
-    request: SpgMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
-        args: [
-          request.nftContract,
-          request.licenseTokenIds,
-          request.royaltyContext,
-          request.ipMetadata,
-          request.recipient,
-        ],
-      }),
-    };
-  }
-
-  /**
-   * method registerIp for contract SPG
-   *
-   * @param request SpgRegisterIpRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerIp(request: SpgRegisterIpRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "registerIp",
-      account: this.wallet.account,
-      args: [request.nftContract, request.tokenId, request.ipMetadata, request.sigMetadata],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerIp for contract SPG with only encode
-   *
-   * @param request SpgRegisterIpRequest
-   * @return EncodedTxData
-   */
-  public registerIpEncode(request: SpgRegisterIpRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "registerIp",
-        args: [request.nftContract, request.tokenId, request.ipMetadata, request.sigMetadata],
-      }),
-    };
-  }
-
-  /**
-   * method registerIpAndAttachPILTerms for contract SPG
-   *
-   * @param request SpgRegisterIpAndAttachPilTermsRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerIpAndAttachPilTerms(
-    request: SpgRegisterIpAndAttachPilTermsRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "registerIpAndAttachPILTerms",
-      account: this.wallet.account,
-      args: [
-        request.nftContract,
-        request.tokenId,
-        request.ipMetadata,
-        request.terms,
-        request.sigMetadata,
-        request.sigAttach,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerIpAndAttachPILTerms for contract SPG with only encode
-   *
-   * @param request SpgRegisterIpAndAttachPilTermsRequest
-   * @return EncodedTxData
-   */
-  public registerIpAndAttachPilTermsEncode(
-    request: SpgRegisterIpAndAttachPilTermsRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "registerIpAndAttachPILTerms",
-        args: [
-          request.nftContract,
-          request.tokenId,
-          request.ipMetadata,
-          request.terms,
-          request.sigMetadata,
-          request.sigAttach,
-        ],
-      }),
-    };
-  }
-
-  /**
-   * method registerIpAndMakeDerivative for contract SPG
-   *
-   * @param request SpgRegisterIpAndMakeDerivativeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerIpAndMakeDerivative(
-    request: SpgRegisterIpAndMakeDerivativeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "registerIpAndMakeDerivative",
-      account: this.wallet.account,
-      args: [
-        request.nftContract,
-        request.tokenId,
-        request.derivData,
-        request.ipMetadata,
-        request.sigMetadata,
-        request.sigRegister,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerIpAndMakeDerivative for contract SPG with only encode
-   *
-   * @param request SpgRegisterIpAndMakeDerivativeRequest
-   * @return EncodedTxData
-   */
-  public registerIpAndMakeDerivativeEncode(
-    request: SpgRegisterIpAndMakeDerivativeRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "registerIpAndMakeDerivative",
-        args: [
-          request.nftContract,
-          request.tokenId,
-          request.derivData,
-          request.ipMetadata,
-          request.sigMetadata,
-          request.sigRegister,
-        ],
-      }),
-    };
-  }
-
-  /**
-   * method registerIpAndMakeDerivativeWithLicenseTokens for contract SPG
-   *
-   * @param request SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerIpAndMakeDerivativeWithLicenseTokens(
-    request: SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
-      account: this.wallet.account,
-      args: [
-        request.nftContract,
-        request.tokenId,
-        request.licenseTokenIds,
-        request.royaltyContext,
-        request.ipMetadata,
-        request.sigMetadata,
-        request.sigRegister,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerIpAndMakeDerivativeWithLicenseTokens for contract SPG with only encode
-   *
-   * @param request SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest
-   * @return EncodedTxData
-   */
-  public registerIpAndMakeDerivativeWithLicenseTokensEncode(
-    request: SpgRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "registerIpAndMakeDerivativeWithLicenseTokens",
-        args: [
-          request.nftContract,
-          request.tokenId,
-          request.licenseTokenIds,
-          request.royaltyContext,
-          request.ipMetadata,
-          request.sigMetadata,
-          request.sigRegister,
-        ],
-      }),
-    };
-  }
-
-  /**
-   * method registerPILTermsAndAttach for contract SPG
-   *
-   * @param request SpgRegisterPilTermsAndAttachRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerPilTermsAndAttach(
-    request: SpgRegisterPilTermsAndAttachRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: spgAbi,
-      address: this.address,
-      functionName: "registerPILTermsAndAttach",
-      account: this.wallet.account,
-      args: [request.ipId, request.terms],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerPILTermsAndAttach for contract SPG with only encode
-   *
-   * @param request SpgRegisterPilTermsAndAttachRequest
-   * @return EncodedTxData
-   */
-  public registerPilTermsAndAttachEncode(
-    request: SpgRegisterPilTermsAndAttachRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: spgAbi,
-        functionName: "registerPILTermsAndAttach",
-        args: [request.ipId, request.terms],
+        abi: royaltyWorkflowsAbi,
+        functionName: "transferToVaultAndSnapshotAndClaimByTokenBatch",
+        args: [request.ancestorIpId, request.claimer, request.royaltyClaimDetails],
       }),
     };
   }
@@ -15104,7 +23554,13 @@ export type SpgnftImplTransferEvent = {
 
 export type SpgnftImplDefaultAdminRoleResponse = Hex;
 
-export type SpgnftImplSpgAddressResponse = Address;
+export type SpgnftImplDerivativeWorkflowsAddressResponse = Address;
+
+export type SpgnftImplGroupingWorkflowsAddressResponse = Address;
+
+export type SpgnftImplLicenseAttachmentWorkflowsAddressResponse = Address;
+
+export type SpgnftImplRegistrationWorkflowsAddressResponse = Address;
 
 /**
  * SpgnftImplBalanceOfRequest
@@ -15116,6 +23572,8 @@ export type SpgnftImplBalanceOfRequest = {
 };
 
 export type SpgnftImplBalanceOfResponse = bigint;
+
+export type SpgnftImplBaseUriResponse = string;
 
 /**
  * SpgnftImplGetApprovedRequest
@@ -15167,7 +23625,11 @@ export type SpgnftImplIsApprovedForAllResponse = boolean;
 
 export type SpgnftImplMintFeeResponse = bigint;
 
+export type SpgnftImplMintFeeRecipientResponse = Address;
+
 export type SpgnftImplMintFeeTokenResponse = Address;
+
+export type SpgnftImplMintOpenResponse = boolean;
 
 export type SpgnftImplNameResponse = string;
 
@@ -15181,6 +23643,8 @@ export type SpgnftImplOwnerOfRequest = {
 };
 
 export type SpgnftImplOwnerOfResponse = Address;
+
+export type SpgnftImplPublicMintingResponse = boolean;
 
 /**
  * SpgnftImplSupportsInterfaceRequest
@@ -15233,20 +23697,21 @@ export type SpgnftImplGrantRoleRequest = {
 /**
  * SpgnftImplInitializeRequest
  *
- * @param name string
- * @param symbol string
- * @param maxSupply uint32
- * @param mintFee uint256
- * @param mintFeeToken address
- * @param owner address
+ * @param initParams tuple
  */
 export type SpgnftImplInitializeRequest = {
-  name: string;
-  symbol: string;
-  maxSupply: number;
-  mintFee: bigint;
-  mintFeeToken: Address;
-  owner: Address;
+  initParams: {
+    name: string;
+    symbol: string;
+    baseURI: string;
+    maxSupply: number;
+    mintFee: bigint;
+    mintFeeToken: Address;
+    mintFeeRecipient: Address;
+    owner: Address;
+    mintOpen: boolean;
+    isPublicMinting: boolean;
+  };
 };
 
 /**
@@ -15261,13 +23726,13 @@ export type SpgnftImplMintRequest = {
 };
 
 /**
- * SpgnftImplMintBySpgRequest
+ * SpgnftImplMintByPeripheryRequest
  *
  * @param to address
  * @param payer address
  * @param nftMetadataURI string
  */
-export type SpgnftImplMintBySpgRequest = {
+export type SpgnftImplMintByPeripheryRequest = {
   to: Address;
   payer: Address;
   nftMetadataURI: string;
@@ -15335,6 +23800,15 @@ export type SpgnftImplSetApprovalForAllRequest = {
 };
 
 /**
+ * SpgnftImplSetBaseUriRequest
+ *
+ * @param baseURI string
+ */
+export type SpgnftImplSetBaseUriRequest = {
+  baseURI: string;
+};
+
+/**
  * SpgnftImplSetMintFeeRequest
  *
  * @param fee uint256
@@ -15344,12 +23818,39 @@ export type SpgnftImplSetMintFeeRequest = {
 };
 
 /**
+ * SpgnftImplSetMintFeeRecipientRequest
+ *
+ * @param newFeeRecipient address
+ */
+export type SpgnftImplSetMintFeeRecipientRequest = {
+  newFeeRecipient: Address;
+};
+
+/**
  * SpgnftImplSetMintFeeTokenRequest
  *
  * @param token address
  */
 export type SpgnftImplSetMintFeeTokenRequest = {
   token: Address;
+};
+
+/**
+ * SpgnftImplSetMintOpenRequest
+ *
+ * @param mintOpen bool
+ */
+export type SpgnftImplSetMintOpenRequest = {
+  mintOpen: boolean;
+};
+
+/**
+ * SpgnftImplSetPublicMintingRequest
+ *
+ * @param isPublicMinting bool
+ */
+export type SpgnftImplSetPublicMintingRequest = {
+  isPublicMinting: boolean;
 };
 
 /**
@@ -15369,11 +23870,9 @@ export type SpgnftImplTransferFromRequest = {
  * SpgnftImplWithdrawTokenRequest
  *
  * @param token address
- * @param recipient address
  */
 export type SpgnftImplWithdrawTokenRequest = {
   token: Address;
-  recipient: Address;
 };
 
 /**
@@ -15771,16 +24270,58 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
   }
 
   /**
-   * method SPG_ADDRESS for contract SPGNFTImpl
+   * method DERIVATIVE_WORKFLOWS_ADDRESS for contract SPGNFTImpl
    *
-   * @param request SpgnftImplSpgAddressRequest
-   * @return Promise<SpgnftImplSpgAddressResponse>
+   * @param request SpgnftImplDerivativeWorkflowsAddressRequest
+   * @return Promise<SpgnftImplDerivativeWorkflowsAddressResponse>
    */
-  public async spgAddress(): Promise<SpgnftImplSpgAddressResponse> {
+  public async derivativeWorkflowsAddress(): Promise<SpgnftImplDerivativeWorkflowsAddressResponse> {
     return await this.rpcClient.readContract({
       abi: spgnftImplAbi,
       address: this.address,
-      functionName: "SPG_ADDRESS",
+      functionName: "DERIVATIVE_WORKFLOWS_ADDRESS",
+    });
+  }
+
+  /**
+   * method GROUPING_WORKFLOWS_ADDRESS for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplGroupingWorkflowsAddressRequest
+   * @return Promise<SpgnftImplGroupingWorkflowsAddressResponse>
+   */
+  public async groupingWorkflowsAddress(): Promise<SpgnftImplGroupingWorkflowsAddressResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "GROUPING_WORKFLOWS_ADDRESS",
+    });
+  }
+
+  /**
+   * method LICENSE_ATTACHMENT_WORKFLOWS_ADDRESS for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplLicenseAttachmentWorkflowsAddressRequest
+   * @return Promise<SpgnftImplLicenseAttachmentWorkflowsAddressResponse>
+   */
+  public async licenseAttachmentWorkflowsAddress(): Promise<SpgnftImplLicenseAttachmentWorkflowsAddressResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "LICENSE_ATTACHMENT_WORKFLOWS_ADDRESS",
+    });
+  }
+
+  /**
+   * method REGISTRATION_WORKFLOWS_ADDRESS for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplRegistrationWorkflowsAddressRequest
+   * @return Promise<SpgnftImplRegistrationWorkflowsAddressResponse>
+   */
+  public async registrationWorkflowsAddress(): Promise<SpgnftImplRegistrationWorkflowsAddressResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "REGISTRATION_WORKFLOWS_ADDRESS",
     });
   }
 
@@ -15798,6 +24339,20 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
       address: this.address,
       functionName: "balanceOf",
       args: [request.owner],
+    });
+  }
+
+  /**
+   * method baseURI for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplBaseUriRequest
+   * @return Promise<SpgnftImplBaseUriResponse>
+   */
+  public async baseUri(): Promise<SpgnftImplBaseUriResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "baseURI",
     });
   }
 
@@ -15882,6 +24437,20 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
   }
 
   /**
+   * method mintFeeRecipient for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplMintFeeRecipientRequest
+   * @return Promise<SpgnftImplMintFeeRecipientResponse>
+   */
+  public async mintFeeRecipient(): Promise<SpgnftImplMintFeeRecipientResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "mintFeeRecipient",
+    });
+  }
+
+  /**
    * method mintFeeToken for contract SPGNFTImpl
    *
    * @param request SpgnftImplMintFeeTokenRequest
@@ -15892,6 +24461,20 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
       abi: spgnftImplAbi,
       address: this.address,
       functionName: "mintFeeToken",
+    });
+  }
+
+  /**
+   * method mintOpen for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplMintOpenRequest
+   * @return Promise<SpgnftImplMintOpenResponse>
+   */
+  public async mintOpen(): Promise<SpgnftImplMintOpenResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "mintOpen",
     });
   }
 
@@ -15921,6 +24504,20 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
       address: this.address,
       functionName: "ownerOf",
       args: [request.tokenId],
+    });
+  }
+
+  /**
+   * method publicMinting for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplPublicMintingRequest
+   * @return Promise<SpgnftImplPublicMintingResponse>
+   */
+  public async publicMinting(): Promise<SpgnftImplPublicMintingResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "publicMinting",
     });
   }
 
@@ -16076,14 +24673,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       address: this.address,
       functionName: "initialize",
       account: this.wallet.account,
-      args: [
-        request.name,
-        request.symbol,
-        request.maxSupply,
-        request.mintFee,
-        request.mintFeeToken,
-        request.owner,
-      ],
+      args: [request.initParams],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16100,14 +24690,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       data: encodeFunctionData({
         abi: spgnftImplAbi,
         functionName: "initialize",
-        args: [
-          request.name,
-          request.symbol,
-          request.maxSupply,
-          request.mintFee,
-          request.mintFeeToken,
-          request.owner,
-        ],
+        args: [request.initParams],
       }),
     };
   }
@@ -16147,16 +24730,18 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
-   * method mintBySPG for contract SPGNFTImpl
+   * method mintByPeriphery for contract SPGNFTImpl
    *
-   * @param request SpgnftImplMintBySpgRequest
+   * @param request SpgnftImplMintByPeripheryRequest
    * @return Promise<WriteContractReturnType>
    */
-  public async mintBySpg(request: SpgnftImplMintBySpgRequest): Promise<WriteContractReturnType> {
+  public async mintByPeriphery(
+    request: SpgnftImplMintByPeripheryRequest,
+  ): Promise<WriteContractReturnType> {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: spgnftImplAbi,
       address: this.address,
-      functionName: "mintBySPG",
+      functionName: "mintByPeriphery",
       account: this.wallet.account,
       args: [request.to, request.payer, request.nftMetadataURI],
     });
@@ -16164,17 +24749,17 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
-   * method mintBySPG for contract SPGNFTImpl with only encode
+   * method mintByPeriphery for contract SPGNFTImpl with only encode
    *
-   * @param request SpgnftImplMintBySpgRequest
+   * @param request SpgnftImplMintByPeripheryRequest
    * @return EncodedTxData
    */
-  public mintBySpgEncode(request: SpgnftImplMintBySpgRequest): EncodedTxData {
+  public mintByPeripheryEncode(request: SpgnftImplMintByPeripheryRequest): EncodedTxData {
     return {
       to: this.address,
       data: encodeFunctionData({
         abi: spgnftImplAbi,
-        functionName: "mintBySPG",
+        functionName: "mintByPeriphery",
         args: [request.to, request.payer, request.nftMetadataURI],
       }),
     };
@@ -16359,6 +24944,40 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
   }
 
   /**
+   * method setBaseURI for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplSetBaseUriRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setBaseUri(request: SpgnftImplSetBaseUriRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "setBaseURI",
+      account: this.wallet.account,
+      args: [request.baseURI],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setBaseURI for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetBaseUriRequest
+   * @return EncodedTxData
+   */
+  public setBaseUriEncode(request: SpgnftImplSetBaseUriRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setBaseURI",
+        args: [request.baseURI],
+      }),
+    };
+  }
+
+  /**
    * method setMintFee for contract SPGNFTImpl
    *
    * @param request SpgnftImplSetMintFeeRequest
@@ -16388,6 +25007,42 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
         abi: spgnftImplAbi,
         functionName: "setMintFee",
         args: [request.fee],
+      }),
+    };
+  }
+
+  /**
+   * method setMintFeeRecipient for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplSetMintFeeRecipientRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setMintFeeRecipient(
+    request: SpgnftImplSetMintFeeRecipientRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "setMintFeeRecipient",
+      account: this.wallet.account,
+      args: [request.newFeeRecipient],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setMintFeeRecipient for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetMintFeeRecipientRequest
+   * @return EncodedTxData
+   */
+  public setMintFeeRecipientEncode(request: SpgnftImplSetMintFeeRecipientRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setMintFeeRecipient",
+        args: [request.newFeeRecipient],
       }),
     };
   }
@@ -16424,6 +25079,78 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
         abi: spgnftImplAbi,
         functionName: "setMintFeeToken",
         args: [request.token],
+      }),
+    };
+  }
+
+  /**
+   * method setMintOpen for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplSetMintOpenRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setMintOpen(
+    request: SpgnftImplSetMintOpenRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "setMintOpen",
+      account: this.wallet.account,
+      args: [request.mintOpen],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setMintOpen for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetMintOpenRequest
+   * @return EncodedTxData
+   */
+  public setMintOpenEncode(request: SpgnftImplSetMintOpenRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setMintOpen",
+        args: [request.mintOpen],
+      }),
+    };
+  }
+
+  /**
+   * method setPublicMinting for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplSetPublicMintingRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setPublicMinting(
+    request: SpgnftImplSetPublicMintingRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "setPublicMinting",
+      account: this.wallet.account,
+      args: [request.isPublicMinting],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setPublicMinting for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetPublicMintingRequest
+   * @return EncodedTxData
+   */
+  public setPublicMintingEncode(request: SpgnftImplSetPublicMintingRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setPublicMinting",
+        args: [request.isPublicMinting],
       }),
     };
   }
@@ -16478,7 +25205,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       address: this.address,
       functionName: "withdrawToken",
       account: this.wallet.account,
-      args: [request.token, request.recipient],
+      args: [request.token],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16495,7 +25222,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       data: encodeFunctionData({
         abi: spgnftImplAbi,
         functionName: "withdrawToken",
-        args: [request.token, request.recipient],
+        args: [request.token],
       }),
     };
   }

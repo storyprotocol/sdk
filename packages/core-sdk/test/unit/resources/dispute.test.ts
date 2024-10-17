@@ -6,13 +6,12 @@ import { PublicClient, WalletClient } from "viem";
 import { DisputeClient } from "../../../src";
 
 chai.use(chaiAsPromised);
+const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
 
 describe("Test DisputeClient", () => {
   let disputeClient: DisputeClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-
-  const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -29,8 +28,7 @@ describe("Test DisputeClient", () => {
       try {
         await disputeClient.raiseDispute({
           targetIpId: "0x",
-          arbitrationPolicy: "0x",
-          linkToDisputeEvidence: "link",
+          disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           targetTag: "tag",
         });
       } catch (e) {
@@ -44,8 +42,7 @@ describe("Test DisputeClient", () => {
       sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        arbitrationPolicy: "0x",
-        linkToDisputeEvidence: "link",
+        disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         targetTag: "tag",
       });
 
@@ -60,15 +57,14 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           disputeInitiator: "0x",
           arbitrationPolicy: "0x",
-          linkToDisputeEvidence: "0x",
+          disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           targetTag: "0x",
           data: "0x",
         },
       ]);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        arbitrationPolicy: "0x",
-        linkToDisputeEvidence: "link",
+        disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         targetTag: "tag",
         txOptions: { waitForTransaction: true },
       });
