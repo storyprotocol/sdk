@@ -307,16 +307,6 @@ describe("Test royalty Functions", () => {
         expect(response.amountsClaimed).to.be.a("bigint");
       });
       it("should not throw error when transfer to vault and snapshot and claim by token batch", async () => {
-        // await transferToken();
-        // await client.royalty.payRoyaltyOnBehalf({
-        //   receiverIpId: parentIpId,
-        //   payerIpId: childIpId,
-        //   token: MockERC20.address,
-        //   amount: 100000,
-        //   txOptions: {
-        //     waitForTransaction: true,
-        //   },
-        // });
         const child2IpId = await getIpId();
         await client.ipAsset.registerDerivative({
           childIpId: child2IpId,
@@ -347,7 +337,6 @@ describe("Test royalty Functions", () => {
             waitForTransaction: true,
           },
         });
-        console.log("response", response);
         expect(response.txHash).to.be.a("string").not.empty;
         expect(response.snapshotId).to.be.a("bigint");
         expect(response.amountsClaimed).to.be.a("bigint");

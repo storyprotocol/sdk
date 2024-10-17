@@ -23,7 +23,7 @@ describe("Test Permission", () => {
     permissionClient = new PermissionClient(rpcMock, walletMock, "iliad");
     IpAccountImplClient.prototype.state = sinon
       .stub()
-      .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
+      .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a5e" });
     (permissionClient.accessControllerClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });

@@ -8,6 +8,7 @@ export { DisputeClient } from "./resources/dispute";
 export { NftClient } from "./resources/nftClient";
 export { IPAccountClient } from "./resources/ipAccount";
 export { RoyaltyClient } from "./resources/royalty";
+export { GroupClient } from "./resources/group";
 
 export type { StoryConfig, SupportedChainIds } from "./types/config";
 

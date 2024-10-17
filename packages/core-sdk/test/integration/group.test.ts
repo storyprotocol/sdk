@@ -42,19 +42,17 @@ describe("Group Functions", () => {
         waitForTransaction: true,
       },
     });
-    console.log("result", result);
     licenseTermsId = result.licenseTermsId!;
     ipId = result.ipId!;
   });
 
-  it.skip("should success when register group", async () => {
+  it("should success when register group", async () => {
     const result = await client.groupClient.registerGroup({
       groupPool: groupPoolAddress,
       txOptions: {
         waitForTransaction: true,
       },
     });
-    console.log("result", result);
     groupId = result.groupId!;
     expect(result.txHash).to.be.a("string").and.not.empty;
     expect(result.groupId).to.be.a("string").and.not.empty;
@@ -86,7 +84,7 @@ describe("Group Functions", () => {
     expect(result.ipId).to.be.a("string").and.not.empty;
   });
 
-  it.skip("should success when register group and attach license", async () => {
+  it("should success when register group and attach license", async () => {
     const result = await client.groupClient.registerGroupAndAttachLicense({
       groupPool: groupPoolAddress,
       licenseTermsId: licenseTermsId!,
@@ -98,7 +96,7 @@ describe("Group Functions", () => {
     expect(result.groupId).to.be.a("string").and.not.empty;
   });
 
-  it.skip("should success when register group and attach license and add ips", async () => {
+  it("should success when register group and attach license and add ips", async () => {
     const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
       groupPool: groupPoolAddress,
       ipIds: [ipId],

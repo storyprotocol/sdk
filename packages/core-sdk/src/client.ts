@@ -35,7 +35,7 @@ export class StoryClient {
   private _ipAccount: IPAccountClient | null = null;
   private _royalty: RoyaltyClient | null = null;
   private _nftClient: NftClient | null = null;
-  private _groupClient: GroupClient | null = null;
+  private _group: GroupClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -212,10 +212,10 @@ export class StoryClient {
    * @returns the GroupClient instance
    */
   public get groupClient(): GroupClient {
-    if (this._groupClient === null) {
-      this._groupClient = new GroupClient(this.rpcClient, this.wallet, this.config.chainId);
+    if (this._group === null) {
+      this._group = new GroupClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
-    return this._groupClient;
+    return this._group;
   }
 }

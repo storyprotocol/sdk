@@ -79,7 +79,7 @@ type RoyaltyClaimDetail = {
   childIpId: Address;
   royaltyPolicy: Address;
   currencyToken: Address;
-  amount: bigint;
+  amount: bigint | string | number;
 };
 export type TransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
   ancestorIpId: Address;
@@ -90,7 +90,7 @@ export type TransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
 
 export type TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest = {
   ancestorIpId: Address;
-  unclaimedSnapshotIds: bigint[];
+  unclaimedSnapshotIds: bigint[] | number[] | string[];
   claimer?: Address;
   royaltyClaimDetails: RoyaltyClaimDetail[];
   txOptions?: TxOptions;

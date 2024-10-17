@@ -45,6 +45,7 @@ export class GroupClient {
   public coreMetadataModuleClient: CoreMetadataModuleClient;
   public licensingModuleClient: LicensingModuleClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
+
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: SupportedChainIds;
@@ -100,30 +101,29 @@ export class GroupClient {
    * @param request - The request object containing necessary data to mint and register Ip and attach license and add to group.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
-   *   @param request.recipient The address of the recipient of the minted NFT.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP.
-   * . @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
+   *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
+   * . @param request.deadline [Optional] The deadline for the signature in milliseconds,default value is 1000ms.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes ip ID, token ID.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   ): Promise<MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse> {
     try {
-      //TODO: Add unit
       const { groupId, recipient, spgNftContract, deadline, licenseTemplate } = request;
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(groupId, "groupId"),
       });
       if (!isRegistered) {
-        throw new Error(`Group IP ${groupId} is not registered`);
+        throw new Error(`Group IP ${groupId} is not registered.`);
       }
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, groupId);
       const { result: state } = await ipAccount.state();
@@ -144,6 +144,7 @@ export class GroupClient {
           },
         ],
       });
+
       const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         ...request,
         spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
@@ -195,7 +196,7 @@ export class GroupClient {
    *   @param request.tokenId The ID of the NFT.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License..
    * . @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
@@ -203,14 +204,13 @@ export class GroupClient {
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes ip id, token id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
   public async registerIpAndAttachLicenseAndAddToGroup(
     request: RegisterIpAndAttachLicenseAndAddToGroupRequest,
   ): Promise<RegisterIpAndAttachLicenseAndAddToGroupResponse> {
     try {
-      //TODO: Add unit test
       const ipIdAddress = await this.ipAssetRegistryClient.ipId({
         chainId: chain[this.chainId],
         tokenContract: getAddress(request.nftContract, "nftContract"),
@@ -373,7 +373,7 @@ export class GroupClient {
           });
         if (!isAttachedLicenseTerms) {
           throw new Error(
-            `License terms must be attached to IP ${request.ipIds[i]} before adding to group`,
+            `License terms must be attached to IP ${request.ipIds[i]} before adding to group.`,
           );
         }
       }

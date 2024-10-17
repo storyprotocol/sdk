@@ -81,8 +81,9 @@ describe("Test StoryClient", () => {
       expect(client.license).to.not.equal(null).and.to.not.equal(undefined);
       expect(client.ipAccount).to.not.equal(null).and.to.not.equal(undefined);
       expect(client.dispute).to.not.equal(null).and.to.not.equal(undefined);
-      // expect(client.royalty).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.royalty).to.not.equal(null).and.to.not.equal(undefined);
       expect(client.nftClient).to.not.equal(null).and.to.not.equal(undefined);
+      expect(client.groupClient).to.not.equal(null).and.to.not.equal(undefined);
     });
   });
 });

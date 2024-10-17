@@ -327,7 +327,23 @@ export class RoyaltyClient {
       handleError(error, "Failed to transfer to vault and snapshot and claim by token batch");
     }
   }
-
+  /**
+   *  Transfers royalties to the ancestor IP's royalty vault, takes a snapshot, claims revenue for each
+   * specified currency token both on the new snapshot and on each specified unclaimed snapshots.
+   * @param request - The request object that contains all data needed to transfer to vault and snapshot and claim by snapshot batch.
+   *   @param request.ancestorIpId The address of the ancestor IP.
+   *   @param request.unclaimedSnapshotIds The IDs of unclaimed snapshots to include in the claim.
+   *   @param request.royaltyClaimDetails The details of the royalty claim from child IPs
+   *   @param request.royaltyClaimDetails - The details of the royalty claim from child IPs
+   *   @param request.royaltyClaimDetails.childIpId The address of the child IP.
+   *   @param request.royaltyClaimDetails.royaltyPolicy The address of the royalty policy.
+   *   @param request.royaltyClaimDetails.currencyToken The address of the currency (revenue) token to claim.
+   *   @param request.claimer [Optional] The address of the claimer of the revenue tokens (must be a royalty token holder), default value is wallet address.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes snapshot ID and amounts claimed.
+   * @emits SnapshotCompleted (snapshotId, snapshotTimestamp, unclaimedTokens).
+   * @emits RevenueTokenClaimed (claimer, token, amount).
+   */
   public async transferToVaultAndSnapshotAndClaimBySnapshotBatch(
     request: TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
   ): Promise<TransferToVaultAndSnapshotAndClaimBySnapshotBatchResponse> {

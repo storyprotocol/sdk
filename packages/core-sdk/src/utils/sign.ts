@@ -71,6 +71,7 @@ export const getPermissionSignature = async (
       ],
     ),
   );
+
   return await wallet.signTypedData({
     account: wallet.account,
     domain: {

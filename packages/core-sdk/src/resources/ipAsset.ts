@@ -956,7 +956,6 @@ export class IPAssetClient {
     request: RegisterPilTermsAndAttachRequest,
   ): Promise<RegisterPilTermsAndAttachResponse> {
     try {
-      //TODO: Invalid Signature registerIpAndAttachPilTerms
       const { ipId, terms } = request;
       const isRegistered = await this.isRegistered(ipId);
       if (!isRegistered) {
