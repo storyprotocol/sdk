@@ -122,6 +122,7 @@ describe("IP Asset Functions ", () => {
         maxSupply: 100,
         isPublicMinting: true,
         mintOpen: true,
+        contractURI: "test-uri",
         mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
         txOptions: {
           waitForTransaction: true,
@@ -299,18 +300,18 @@ describe("IP Asset Functions ", () => {
     });
     //TODO:Invalid signature
     it("should not throw error when call register pil terms and attach", async () => {
-      // const tokenId = await getTokenId();
-      // const ipId = (
-      //   await client.ipAsset.register({
-      //     nftContract: mockERC721,
-      //     tokenId: tokenId!,
-      //     txOptions: {
-      //       waitForTransaction: true,
-      //     },
-      //   })
-      // ).ipId!;
+      const tokenId = await getTokenId();
+      const ipId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        })
+      ).ipId!;
       const result = await client.ipAsset.registerPilTermsAndAttach({
-        ipId: parentIpId,
+        ipId: ipId,
         terms: {
           transferable: true,
           royaltyPolicy: zeroAddress,

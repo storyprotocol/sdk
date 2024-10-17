@@ -1,6 +1,10 @@
 import { PublicClient, isAddress, maxUint32, zeroAddress } from "viem";
 
-import { RegistrationWorkflowsClient, SimpleWalletClient } from "../abi/generated";
+import {
+  RegistrationWorkflowsClient,
+  RegistrationWorkflowsCreateCollectionRequest,
+  SimpleWalletClient,
+} from "../abi/generated";
 import {
   CreateNFTCollectionRequest,
   CreateNFTCollectionResponse,
@@ -27,6 +31,7 @@ export class NftClient {
    * 	 @param request.isPublicMinting - If true, anyone can mint from the collection. If false, only the addresses with the minter role can mint.
    * 	 @param request.mintOpen Whether the collection is open for minting on creation.
    *   @param request.mintFeeRecipient - The address to receive mint fees.
+   *   @param request.mintFeeRecipient - The contract URI for the collection. Follows ERC-7572 standard. See https://eips.ethereum.org/EIPS/eip-7572
    * 	 @param request.baseURI - [Optional] The base URI for the collection. If baseURI is not empty, tokenURI will be either baseURI + token ID (if nftMetadataURI is empty) or baseURI + nftMetadataURI.
    * 	 @param request.maxSupply - [Optional] The maximum supply of the collection.
    * 	 @param request.mintFee - [Optional] The cost to mint a token.
@@ -47,31 +52,30 @@ export class NftClient {
         throw new Error("Invalid mint fee token address, mint fee is greater than 0.");
       }
 
-      const spgNftInitParams = {
-        name: request.name,
-        symbol: request.symbol,
-        baseURI: request.baseURI ?? "",
-        maxSupply: request.maxSupply ?? Number(maxUint32),
-        mintFee: request.mintFee ?? 0n,
-        mintFeeToken: request.mintFeeToken ?? zeroAddress,
-        owner:
-          (request.owner && getAddress(request.owner, "request.owner")) ||
-          this.wallet.account!.address,
-        mintFeeRecipient: getAddress(request.mintFeeRecipient, "request.mintFeeRecipient"),
-        mintOpen: request.mintOpen,
-        isPublicMinting: request.isPublicMinting,
+      const object: RegistrationWorkflowsCreateCollectionRequest = {
+        spgNftInitParams: {
+          name: request.name,
+          symbol: request.symbol,
+          baseURI: request.baseURI ?? "",
+          maxSupply: request.maxSupply ?? Number(maxUint32),
+          mintFee: request.mintFee ?? 0n,
+          mintFeeToken: request.mintFeeToken ?? zeroAddress,
+          owner:
+            (request.owner && getAddress(request.owner, "request.owner")) ||
+            this.wallet.account!.address,
+          mintFeeRecipient: getAddress(request.mintFeeRecipient, "request.mintFeeRecipient"),
+          mintOpen: request.mintOpen,
+          isPublicMinting: request.isPublicMinting,
+          contractURI: request.contractURI,
+        },
       };
 
       if (request.txOptions?.encodedTxDataOnly) {
         return {
-          encodedTxData: this.registrationWorkflowsClient.createCollectionEncode({
-            spgNftInitParams,
-          }),
+          encodedTxData: this.registrationWorkflowsClient.createCollectionEncode(object),
         };
       } else {
-        const txHash = await this.registrationWorkflowsClient.createCollection({
-          spgNftInitParams,
-        });
+        const txHash = await this.registrationWorkflowsClient.createCollection(object);
         if (request.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,

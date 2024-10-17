@@ -580,27 +580,6 @@ export class IPAssetClient {
           },
         ],
       });
-      const object: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest = {
-        nftContract: getAddress(request.nftContract, "request.nftContract"),
-        tokenId: request.tokenId,
-        terms: licenseTerm,
-        ipMetadata: {
-          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
-          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
-          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
-          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
-        },
-        sigMetadata: {
-          signer: zeroAddress,
-          deadline: BigInt(0),
-          signature: zeroHash,
-        },
-        sigAttach: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-          deadline: calculatedDeadline,
-          signature: sigAttachSignature,
-        },
-      };
       const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
@@ -620,11 +599,29 @@ export class IPAssetClient {
           },
         ],
       });
-      object.sigMetadata = {
-        signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-        deadline: calculatedDeadline,
-        signature: sigMetadataSignature,
+
+      const object: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest = {
+        nftContract: getAddress(request.nftContract, "request.nftContract"),
+        tokenId: request.tokenId,
+        terms: licenseTerm,
+        ipMetadata: {
+          ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+          ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+          nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+          nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
+        },
+        sigMetadata: {
+          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          deadline: calculatedDeadline,
+          signature: sigMetadataSignature,
+        },
+        sigAttach: {
+          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          deadline: calculatedDeadline,
+          signature: sigAttachSignature,
+        },
       };
+
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
@@ -891,7 +888,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.*
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID and Token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
@@ -1001,11 +998,10 @@ export class IPAssetClient {
         terms: licenseTerms,
         sigAttach: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-          deadline: getDeadline(request.deadline),
+          deadline: calculatedDeadline,
           signature: sigAttachSignature,
         },
       };
-
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:

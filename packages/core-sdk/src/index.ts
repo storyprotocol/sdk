@@ -63,6 +63,12 @@ export type {
   SnapshotResponse,
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
+  SnapshotAndClaimBySnapshotBatchRequest,
+  SnapshotAndClaimBySnapshotBatchResponse,
+  SnapshotAndClaimByTokenBatchRequest,
+  SnapshotAndClaimByTokenBatchResponse,
+  TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
+  TransferToVaultAndSnapshotAndClaimBySnapshotBatchResponse,
 } from "./types/resources/royalty";
 
 export type {
@@ -106,6 +112,10 @@ export type {
   RegisterGroupAndAttachLicenseResponse,
   RegisterGroupAndAttachLicenseAndAddIpsRequest,
   RegisterGroupAndAttachLicenseAndAddIpsResponse,
+  MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
+  RegisterIpAndAttachLicenseAndAddToGroupRequest,
+  RegisterIpAndAttachLicenseAndAddToGroupResponse,
 } from "./types/resources/group";
 export type {
   PiLicenseTemplateGetLicenseTermsResponse,

@@ -36,6 +36,7 @@ describe("Test NftClient", () => {
           isPublicMinting: true,
           mintOpen: true,
           mintFeeRecipient: "0x",
+          contractURI: "test-uri",
         });
       } catch (e) {
         expect((e as Error).message).equal(
@@ -54,6 +55,7 @@ describe("Test NftClient", () => {
           isPublicMinting: true,
           mintOpen: true,
           mintFeeRecipient: "0x",
+          contractURI: "test-uri",
         });
       } catch (e) {
         expect((e as Error).message).equal(
@@ -71,6 +73,7 @@ describe("Test NftClient", () => {
         mintFee: 1n,
         mintFeeToken: mintFeeToken,
         isPublicMinting: true,
+        contractURI: "test-uri",
         mintOpen: true,
         mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       });
@@ -90,6 +93,7 @@ describe("Test NftClient", () => {
         owner: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         isPublicMinting: true,
         mintOpen: true,
+        contractURI: "test-uri",
         mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         txOptions: {
           waitForTransaction: true,

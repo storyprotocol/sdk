@@ -16,6 +16,7 @@ describe("nftClient Functions", () => {
       isPublicMinting: true,
       mintFeeRecipient: process.env.TEST_WALLET_ADDRESS as Address,
       mintOpen: true,
+      contractURI: "test-uri",
       txOptions: {
         waitForTransaction: true,
       },

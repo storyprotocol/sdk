@@ -96,6 +96,21 @@ describe("Test RoyaltyClient", () => {
 
       expect(result.txHash).equals(txHash);
     });
+
+    it("should return encodedData when call payRoyaltyOnBehalf given correct args and encodedTxDataOnly is true", async () => {
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalfEncode").resolves("0x");
+
+      const result = await royaltyClient.payRoyaltyOnBehalf({
+        receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        amount: 1,
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+    });
   });
 
   describe("Test royaltyClient.claimableRevenue", async () => {
@@ -180,15 +195,33 @@ describe("Test RoyaltyClient", () => {
           account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           snapshotIds: [1],
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          royaltyVaultIpId: "0x",
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to claim revenue: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 address is not set.",
+          "Failed to claim revenue: request.royaltyVaultIpId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
         );
       }
     });
+    it("should return encodedData when call claimRevenue given correct args and encodedTxDataOnly is true", async () => {
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.royaltyModuleClient, "ipRoyaltyVaults")
+        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+      sinon
+        .stub(royaltyClient.ipAccountClient, "execute")
+        .resolves({ encodedTxData: { data: "0x", to: "0x" } });
 
+      const result = await royaltyClient.claimRevenue({
+        account: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        snapshotIds: [1],
+        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+    });
     it("should return txHash when call claimRevenue given correct args", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
@@ -210,7 +243,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.royaltyModuleClient, "ipRoyaltyVaults")
         .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       sinon
-        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
+        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueOnBehalfBySnapshotBatch")
         .resolves(txHash);
       sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "parseTxRevenueTokenClaimedEvent").returns([
@@ -239,7 +272,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.royaltyModuleClient, "ipRoyaltyVaults")
         .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       sinon
-        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueBySnapshotBatch")
+        .stub(IpRoyaltyVaultImplClient.prototype, "claimRevenueOnBehalfBySnapshotBatch")
         .resolves(txHash);
       sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
       sinon.stub(IpRoyaltyVaultImplClient.prototype, "parseTxRevenueTokenClaimedEvent").returns([
@@ -327,6 +360,89 @@ describe("Test RoyaltyClient", () => {
 
       expect(result.txHash).equals(txHash);
       expect(result.snapshotId).equals(1);
+    });
+  });
+
+  describe("Test royaltyClient.snapshotAndClaimBySnapshotBatch", async () => {
+    it("it should throw royaltyVaultIpId error when call snapshotAndClaimBySnapshotBatch given royaltyVaultIpId is not registered", async () => {
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await royaltyClient.snapshotAndClaimBySnapshotBatch({
+          royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          unclaimedSnapshotIds: [1],
+          currencyTokens: ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
+        });
+      } catch (err) {
+        expect((err as Error).message).equals(
+          "Failed to snapshot and claim by snapshot batch: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
+        );
+      }
+    });
+    it("should return encodedData when call snapshotAndClaimBySnapshotBatch given correct args and encodedTxDataOnly is true", async () => {
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.royaltyModuleClient, "ipRoyaltyVaults")
+        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+      sinon.stub(royaltyClient.ipAccountClient, "execute").resolves({ txHash });
+
+      const result = await royaltyClient.snapshotAndClaimBySnapshotBatch({
+        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        unclaimedSnapshotIds: [1],
+        currencyTokens: ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+    });
+    it("should return txHash when call snapshotAndClaimBySnapshotBatch given correct args", async () => {
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "snapshotAndClaimBySnapshotBatch")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+
+      const result = await royaltyClient.snapshotAndClaimBySnapshotBatch({
+        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        unclaimedSnapshotIds: [1],
+        currencyTokens: ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
+      });
+
+      expect(result.txHash).equals(txHash);
+    });
+
+    it("should return txHash when call snapshotAndClaimBySnapshotBatch given correct args and waitForTransaction is true", async () => {
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "snapshotAndClaimBySnapshotBatch")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          {
+            claimer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+            token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+            amount: 1n,
+          },
+        ]);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxSnapshotCompletedEvent")
+        .returns([
+          {
+            snapshotId: 1n,
+            snapshotTimestamp: 1n,
+          },
+        ]);
+
+      const result = await royaltyClient.snapshotAndClaimBySnapshotBatch({
+        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        unclaimedSnapshotIds: [1],
+        currencyTokens: ["0x73fcb515cee99e4991465ef586cfe2b072ebb512"],
+        txOptions: { waitForTransaction: true },
+      });
+
+      expect(result.txHash).equals(txHash);
+      expect(result.snapshotId).equals(1n);
+      expect(result.amountsClaimed).equals(1n);
     });
   });
 });

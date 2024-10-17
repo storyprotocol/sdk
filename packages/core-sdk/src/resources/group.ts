@@ -17,7 +17,6 @@ import {
   PiLicenseTemplateClient,
   SimpleWalletClient,
 } from "../abi/generated";
-import { RegisterIpResponse } from "../types/resources/ipAsset";
 import { AccessPermission } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
 import { getPermissionSignature, getDeadline } from "../utils/sign";
@@ -25,6 +24,7 @@ import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import {
   MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
   RegisterGroupAndAttachLicenseAndAddIpsRequest,
   RegisterGroupAndAttachLicenseAndAddIpsResponse,
   RegisterGroupAndAttachLicenseRequest,
@@ -32,6 +32,7 @@ import {
   RegisterGroupRequest,
   RegisterGroupResponse,
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
+  RegisterIpAndAttachLicenseAndAddToGroupResponse,
 } from "../types/resources/group";
 
 export class GroupClient {
@@ -65,7 +66,7 @@ export class GroupClient {
   /** Registers a Group IPA.
    * @param request - The request object containing necessary data to register group.
    *   @param request.groupPool The address of the group pool.
-   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
    * @emits PGroupRegistered (groupId, groupPool);
    */
@@ -95,18 +96,41 @@ export class GroupClient {
       handleError(error, "Failed to register group");
     }
   }
-
+  /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
+   * @param request - The request object containing necessary data to mint and register Ip and attach license and add to group.
+   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.groupId The ID of the group IP to add the newly registered IP.
+   *   @param request.recipient The address of the recipient of the minted NFT.
+   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP.
+   * . @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes ip ID, token ID.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
+   */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
-  ): Promise<RegisterIpResponse> {
+  ): Promise<MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse> {
     try {
-      //TODO: Invalid signature
+      //TODO: Add unit
       const { groupId, recipient, spgNftContract, deadline, licenseTemplate } = request;
+      const isRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: getAddress(groupId, "groupId"),
+      });
+      if (!isRegistered) {
+        throw new Error(`Group IP ${groupId} is not registered`);
+      }
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, groupId);
       const { result: state } = await ipAccount.state();
+      const calculatedDeadline = getDeadline(deadline);
       const sigAddToGroupSignature = await getPermissionSignature({
         ipId: groupId,
-        deadline: getDeadline(deadline),
+        deadline: calculatedDeadline,
         state,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
@@ -137,7 +161,7 @@ export class GroupClient {
         },
         sigAddToGroup: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-          deadline: getDeadline(request.deadline),
+          deadline: calculatedDeadline,
           signature: sigAddToGroupSignature,
         },
       };
@@ -165,14 +189,36 @@ export class GroupClient {
       handleError(error, "Failed to mint and register IP and attach license and add to group");
     }
   }
-
+  /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
+   * @param request - The request object containing necessary data to register ip and attach license and add to group.
+   *   @param request.spgNftContract The address of the NFT collection.
+   *   @param request.tokenId The ID of the NFT.
+   *   @param request.groupId The ID of the group IP to add the newly registered IP.
+   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP.
+   * . @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes ip id, token id.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
+   */
   public async registerIpAndAttachLicenseAndAddToGroup(
     request: RegisterIpAndAttachLicenseAndAddToGroupRequest,
-  ): Promise<RegisterGroupResponse> {
+  ): Promise<RegisterIpAndAttachLicenseAndAddToGroupResponse> {
     try {
-      //TODO: Invalid signature
+      //TODO: Add unit test
+      const ipIdAddress = await this.ipAssetRegistryClient.ipId({
+        chainId: chain[this.chainId],
+        tokenContract: getAddress(request.nftContract, "nftContract"),
+        tokenId: BigInt(request.tokenId),
+      });
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, request.groupId);
       const { result: state } = await ipAccount.state();
+      const calculatedDeadline = getDeadline(request.deadline);
       const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         groupId: getAddress(request.groupId, "request.groupId"),
@@ -190,10 +236,10 @@ export class GroupClient {
         tokenId: BigInt(request.tokenId),
         sigAddToGroup: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-          deadline: getDeadline(request.deadline),
+          deadline: calculatedDeadline,
           signature: await getPermissionSignature({
             ipId: getAddress(request.groupId, "request.groupId"),
-            deadline: getDeadline(request.deadline),
+            deadline: calculatedDeadline,
             state,
             wallet: this.wallet as WalletClient,
             chainId: chain[this.chainId],
@@ -210,23 +256,24 @@ export class GroupClient {
         },
         sigMetadataAndAttach: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-          deadline: getDeadline(request.deadline),
+          deadline: calculatedDeadline,
           signature: await getPermissionSignature({
-            ipId: getAddress(request.groupId, "request.groupId"),
-            deadline: getDeadline(request.deadline),
+            ipId: ipIdAddress,
+            deadline: calculatedDeadline,
             state: toHex(0, { size: 32 }),
             wallet: this.wallet as WalletClient,
+            permissionFunc: "setBatchPermissions",
             chainId: chain[this.chainId],
             permissions: [
               {
-                ipId: getAddress(request.groupId, "request.groupId"),
+                ipId: ipIdAddress,
                 signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
                 to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
                 permission: AccessPermission.ALLOW,
                 func: "function setAll(address,string,bytes32,bytes32)",
               },
               {
-                ipId: getAddress(request.groupId, "request.groupId"),
+                ipId: ipIdAddress,
                 signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
                 to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
                 permission: AccessPermission.ALLOW,
@@ -251,13 +298,22 @@ export class GroupClient {
           hash: txHash,
         });
         const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
-        return { txHash, groupId: log.ipId };
+        return { txHash, ipId: log.ipId, tokenId: log.tokenId };
       }
       return { txHash };
     } catch (error) {
       handleError(error, "Failed to register IP and attach license and add to group");
     }
   }
+  /** Register a group IP with a group reward pool and attach license terms to the group IP.
+   * @param request - The request object containing necessary data to register group and attach license.
+   *   @param request.groupPool The address of the group reward pool.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP.
+   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
+   * @emits PGroupRegistered (groupId, groupPool);
+   */
   public async registerGroupAndAttachLicense(
     request: RegisterGroupAndAttachLicenseRequest,
   ): Promise<RegisterGroupAndAttachLicenseResponse> {
@@ -317,7 +373,7 @@ export class GroupClient {
           });
         if (!isAttachedLicenseTerms) {
           throw new Error(
-            `License terms must be attached to IP ${request.ipIds[i]} before adding to group.`,
+            `License terms must be attached to IP ${request.ipIds[i]} before adding to group`,
           );
         }
       }

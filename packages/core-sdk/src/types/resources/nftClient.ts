@@ -9,6 +9,7 @@ export type CreateNFTCollectionRequest = {
   isPublicMinting: boolean;
   mintOpen: boolean;
   mintFeeRecipient: Address;
+  contractURI: string;
   baseURI?: string;
   maxSupply?: number;
   mintFee?: bigint;

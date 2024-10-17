@@ -13,6 +13,12 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   deadline?: string | number | bigint;
 } & IpMetadataAndTxOption;
 
+export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  ipId?: Address;
+  tokenId?: bigint;
+};
 export type RegisterGroupRequest = {
   groupPool: Address;
   txOptions?: TxOptions;
@@ -33,6 +39,12 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   deadline?: bigint;
 } & IpMetadataAndTxOption;
 
+export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  ipId?: Address;
+  tokenId?: bigint;
+};
 export type RegisterGroupAndAttachLicenseRequest = {
   groupPool: Address;
   licenseTermsId: bigint | string | number;

@@ -200,7 +200,6 @@ export default defineConfig(async () => {
             "IPAccountRegistered",
           ],
           IpRoyaltyVaultImpl: [
-            "claimRevenueBySnapshotBatch",
             "claimRevenueByTokenBatch",
             "claimableRevenue",
             "collectRoyaltyTokens",
@@ -209,6 +208,7 @@ export default defineConfig(async () => {
             "snapshot",
             "SnapshotCompleted",
             "RevenueTokenClaimed",
+            "claimRevenueOnBehalfBySnapshotBatch",
           ],
           PiLicenseTemplate: [
             "getLicenseTermsId",
