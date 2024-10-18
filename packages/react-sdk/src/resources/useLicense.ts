@@ -15,8 +15,57 @@ import { useState } from "react";
 import { useStoryContext } from "../StoryProtocolContext";
 import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
-const useLicense = () => {
+type UseLicenseReturn = {
+  loadings: Record<string, boolean> | undefined;
+  errors: Record<string, string | null> | undefined;
+  registerNonComSocialRemixingPIL:
+    | ((
+        request: RegisterNonComSocialRemixingPILRequest,
+      ) => Promise<RegisterPILResponse>)
+    | undefined;
+  registerCommercialUsePIL:
+    | ((
+        request: RegisterCommercialUsePILRequest,
+      ) => Promise<RegisterPILResponse>)
+    | undefined;
+  registerCommercialRemixPIL:
+    | ((
+        request: RegisterCommercialRemixPILRequest,
+      ) => Promise<RegisterPILResponse>)
+    | undefined;
+  attachLicenseTerms:
+    | ((
+        request: AttachLicenseTermsRequest,
+      ) => Promise<AttachLicenseTermsResponse>)
+    | undefined;
+  mintLicenseTokens:
+    | ((
+        request: MintLicenseTokensRequest,
+      ) => Promise<MintLicenseTokensResponse>)
+    | undefined;
+  getLicenseTerms:
+    | ((
+        selectedLicenseTermsId: LicenseTermsId,
+      ) => Promise<PiLicenseTemplateGetLicenseTermsResponse>)
+    | undefined;
+};
+
+const useLicense = (): UseLicenseReturn => {
   const client = useStoryContext();
+
+  if (!client) {
+    return {
+      loadings: undefined,
+      errors: undefined,
+      registerNonComSocialRemixingPIL: undefined,
+      registerCommercialUsePIL: undefined,
+      registerCommercialRemixPIL: undefined,
+      attachLicenseTerms: undefined,
+      mintLicenseTokens: undefined,
+      getLicenseTerms: undefined,
+    };
+  }
+
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
     registerNonComSocialRemixingPIL: false,
     registerCommercialUsePIL: false,
@@ -48,7 +97,7 @@ const useLicense = () => {
     "registerNonComSocialRemixingPIL",
     client.license.registerNonComSocialRemixingPIL.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -67,7 +116,7 @@ const useLicense = () => {
     "registerCommercialUsePIL",
     client.license.registerCommercialUsePIL.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -87,7 +136,7 @@ const useLicense = () => {
     "registerCommercialRemixPIL",
     client.license.registerCommercialRemixPIL.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -106,7 +155,7 @@ const useLicense = () => {
     "attachLicenseTerms",
     client.license.attachLicenseTerms.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -138,7 +187,7 @@ const useLicense = () => {
     "mintLicenseTokens",
     client.license.mintLicenseTokens.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -153,7 +202,7 @@ const useLicense = () => {
     "getLicenseTerms",
     client.license.getLicenseTerms.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
@@ -167,4 +216,5 @@ const useLicense = () => {
     getLicenseTerms,
   };
 };
+
 export default useLicense;
