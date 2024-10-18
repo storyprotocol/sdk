@@ -1,23 +1,15 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
-import { PIL_TYPE } from "./license";
+import { PIL_TYPE, RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
-
-type IpMetadataAndTxOption = {
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
-  txOptions?: TxOptions;
-};
+import { IpMetadataAndTxOption } from "../common";
 
 export type RegisterIpResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
+  tokenId?: bigint;
 };
 
 export type RegisterRequest = {
@@ -52,7 +44,7 @@ export type RegisterDerivativeResponse = {
 };
 
 export type CreateIpAssetWithPilTermsRequest = {
-  nftContract: Address;
+  spgNftContract: Address;
   pilType: PIL_TYPE;
   currency?: Address;
   mintingFee?: string | number | bigint;
@@ -103,7 +95,7 @@ export type RegisterIpAndAttachPilTermsResponse = {
 };
 
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
-  nftContract: Address;
+  spgNftContract: Address;
   derivData: {
     parentIpIds: Address[];
     licenseTermsIds: string[] | bigint[] | number[];
@@ -194,3 +186,34 @@ export type IpMetadata = {
   robotTerms?: IPRobotTerms;
   [key: string]: unknown;
 };
+
+export type MintAndRegisterIpRequest = {
+  spgNftContract: Address;
+  recipient?: Address;
+} & IpMetadataAndTxOption;
+
+export type RegisterPilTermsAndAttachRequest = {
+  ipId: Address;
+  terms: RegisterPILTermsRequest;
+  deadline?: string | number | bigint;
+  txOptions?: TxOptions;
+};
+
+export type RegisterPilTermsAndAttachResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  licenseTermsId?: bigint;
+};
+
+export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  spgNftContract: Address;
+  licenseTokenIds: string[] | bigint[] | number[];
+  recipient?: Address;
+} & IpMetadataAndTxOption;
+
+export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
+  nftContract: Address;
+  tokenId: string | number | bigint;
+  licenseTokenIds: string[] | bigint[] | number[];
+  deadline?: string | number | bigint;
+} & IpMetadataAndTxOption;

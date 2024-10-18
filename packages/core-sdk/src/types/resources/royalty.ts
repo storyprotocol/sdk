@@ -22,18 +22,6 @@ export type RoyaltyContext = {
   parentAncestorsRoyalties2: number[];
 };
 
-export type CollectRoyaltyTokensRequest = {
-  parentIpId: Address;
-  royaltyVaultIpId: Address;
-  txOptions?: TxOptions;
-};
-
-export type CollectRoyaltyTokensResponse = {
-  txHash?: string;
-  encodedTxData?: EncodedTxData;
-  royaltyTokensCollected?: bigint;
-};
-
 export type RoyaltyData = [
   isUnlinkableToParents: boolean,
   ipRoyaltyVault: Address,
@@ -82,9 +70,65 @@ export type ClaimRevenueResponse = {
   encodedTxData?: EncodedTxData;
   claimableToken?: bigint;
 };
-
 export type SnapshotResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
   snapshotId?: bigint;
+};
+type RoyaltyClaimDetail = {
+  childIpId: Address;
+  royaltyPolicy: Address;
+  currencyToken: Address;
+  amount: bigint | string | number;
+};
+export type TransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
+  ancestorIpId: Address;
+  royaltyClaimDetails: RoyaltyClaimDetail[];
+  claimer?: Address;
+  txOptions?: TxOptions;
+};
+export type TransferToVaultAndSnapshotAndClaimByTokenBatchResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  snapshotId?: bigint;
+  amountsClaimed?: bigint;
+};
+export type TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest = {
+  ancestorIpId: Address;
+  unclaimedSnapshotIds: bigint[] | number[] | string[];
+  claimer?: Address;
+  royaltyClaimDetails: RoyaltyClaimDetail[];
+  txOptions?: TxOptions;
+};
+export type TransferToVaultAndSnapshotAndClaimBySnapshotBatchResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  snapshotId?: bigint;
+  amountsClaimed?: bigint;
+};
+export type SnapshotAndClaimByTokenBatchRequest = {
+  royaltyVaultIpId: Address;
+  currencyTokens: Address[];
+  claimer?: Address;
+  txOptions?: TxOptions;
+};
+export type SnapshotAndClaimByTokenBatchResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  snapshotId?: bigint;
+  amountsClaimed?: bigint;
+};
+export type SnapshotAndClaimBySnapshotBatchRequest = {
+  royaltyVaultIpId: Address;
+  unclaimedSnapshotIds: bigint[] | number[] | string[];
+  currencyTokens: Address[];
+  claimer?: Address;
+  txOptions?: TxOptions;
+};
+
+export type SnapshotAndClaimBySnapshotBatchResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  snapshotId?: bigint;
+  amountsClaimed?: bigint;
 };
