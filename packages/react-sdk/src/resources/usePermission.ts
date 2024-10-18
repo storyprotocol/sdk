@@ -11,7 +11,31 @@ import { useState } from "react";
 import { useStoryContext } from "../StoryProtocolContext";
 import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
-const usePermission = () => {
+type UsePermissionReturn = {
+  loadings: Record<string, boolean> | undefined;
+  errors: Record<string, string | null> | undefined;
+  setPermission:
+    | ((request: SetPermissionsRequest) => Promise<SetPermissionsResponse>)
+    | undefined;
+  createSetPermissionSignature:
+    | ((
+        request: CreateSetPermissionSignatureRequest,
+      ) => Promise<SetPermissionsResponse>)
+    | undefined;
+  setAllPermissions:
+    | ((request: SetAllPermissionsRequest) => Promise<SetPermissionsResponse>)
+    | undefined;
+  setBatchPermissions:
+    | ((request: SetBatchPermissionsRequest) => Promise<SetPermissionsResponse>)
+    | undefined;
+  createBatchPermissionSignature:
+    | ((
+        request: CreateBatchPermissionSignatureRequest,
+      ) => Promise<SetPermissionsResponse>)
+    | undefined;
+};
+
+const usePermission = (): UsePermissionReturn => {
   const client = useStoryContext();
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
     setPermission: false,
@@ -27,6 +51,18 @@ const usePermission = () => {
     setBatchPermissions: null,
     createBatchPermissionSignature: null,
   });
+
+  if (!client) {
+    return {
+      loadings: undefined,
+      errors: undefined,
+      setPermission: undefined,
+      createSetPermissionSignature: undefined,
+      setAllPermissions: undefined,
+      setBatchPermissions: undefined,
+      createBatchPermissionSignature: undefined,
+    };
+  }
 
   /**
    * Sets the permission for a specific function call
@@ -55,7 +91,7 @@ const usePermission = () => {
     "setPermission",
     client.permission.setPermission.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -78,7 +114,7 @@ const usePermission = () => {
     "createSetPermissionSignature",
     client.permission.createSetPermissionSignature.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -98,7 +134,7 @@ const usePermission = () => {
     "setAllPermissions",
     client.permission.setAllPermissions.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -122,7 +158,7 @@ const usePermission = () => {
     "setBatchPermissions",
     client.permission.setBatchPermissions.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -146,7 +182,7 @@ const usePermission = () => {
     "createBatchPermissionSignature",
     client.permission.createBatchPermissionSignature.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
@@ -159,4 +195,5 @@ const usePermission = () => {
     createBatchPermissionSignature,
   };
 };
+
 export default usePermission;

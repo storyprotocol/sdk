@@ -22,7 +22,51 @@ import { useState } from "react";
 import { useStoryContext } from "../StoryProtocolContext";
 import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
-const useIpAsset = () => {
+type UseIpAssetReturn = {
+  loadings: Record<string, boolean> | undefined;
+  errors: Record<string, string | null> | undefined;
+  generateCreatorMetadata:
+    | ((param: GenerateCreatorMetadataParam) => IpCreator)
+    | undefined;
+  generateIpMetadata:
+    | ((param: GenerateIpMetadataParam) => IpMetadata)
+    | undefined;
+  register:
+    | ((request: RegisterRequest) => Promise<RegisterIpResponse>)
+    | undefined;
+  registerDerivative:
+    | ((
+        request: RegisterDerivativeRequest,
+      ) => Promise<RegisterDerivativeResponse>)
+    | undefined;
+  registerDerivativeWithLicenseTokens:
+    | ((
+        request: RegisterDerivativeWithLicenseTokensRequest,
+      ) => Promise<RegisterDerivativeWithLicenseTokensResponse>)
+    | undefined;
+  mintAndRegisterIpAssetWithPilTerms:
+    | ((
+        request: CreateIpAssetWithPilTermsRequest,
+      ) => Promise<CreateIpAssetWithPilTermsResponse>)
+    | undefined;
+  registerIpAndAttachPilTerms:
+    | ((
+        request: RegisterIpAndAttachPilTermsRequest,
+      ) => Promise<RegisterIpAndAttachPilTermsResponse>)
+    | undefined;
+  registerDerivativeIp:
+    | ((
+        request: RegisterIpAndMakeDerivativeRequest,
+      ) => Promise<RegisterIpAndMakeDerivativeResponse>)
+    | undefined;
+  mintAndRegisterIpAndMakeDerivative:
+    | ((
+        request: MintAndRegisterIpAndMakeDerivativeRequest,
+      ) => Promise<RegisterDerivativeResponse>)
+    | undefined;
+};
+
+const useIpAsset = (): UseIpAssetReturn => {
   const client = useStoryContext();
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
     register: false,
@@ -43,6 +87,22 @@ const useIpAsset = () => {
     mintAndRegisterIpAndMakeDerivative: null,
   });
 
+  if (!client) {
+    return {
+      loadings: undefined,
+      errors: undefined,
+      generateCreatorMetadata: undefined,
+      generateIpMetadata: undefined,
+      register: undefined,
+      registerDerivative: undefined,
+      registerDerivativeWithLicenseTokens: undefined,
+      mintAndRegisterIpAssetWithPilTerms: undefined,
+      registerIpAndAttachPilTerms: undefined,
+      registerDerivativeIp: undefined,
+      mintAndRegisterIpAndMakeDerivative: undefined,
+    };
+  }
+
   /**
    * Create a new `IpCreator` object with the specified details.
    * @param params - The parameters required to create the `IpCreator` object.
@@ -58,7 +118,7 @@ const useIpAsset = () => {
    * @returns An `IpCreator` object containing the provided details.
    */
   const generateCreatorMetadata = (
-    param: GenerateCreatorMetadataParam
+    param: GenerateCreatorMetadataParam,
   ): IpCreator => {
     return client.ipAsset.generateCreatorMetadata(param);
   };
@@ -128,7 +188,7 @@ const useIpAsset = () => {
     "register",
     client.ipAsset.register.bind(client.ipAsset),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -151,7 +211,7 @@ const useIpAsset = () => {
     "registerDerivative",
     client.ipAsset.registerDerivative.bind(client.ipAsset),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -172,7 +232,7 @@ const useIpAsset = () => {
     "registerDerivativeWithLicenseTokens",
     client.ipAsset.registerDerivativeWithLicenseTokens.bind(client.ipAsset),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -201,7 +261,7 @@ const useIpAsset = () => {
     "mintAndRegisterIpAssetWithPilTerms",
     client.ipAsset.mintAndRegisterIpAssetWithPilTerms.bind(client.ipAsset),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -230,7 +290,7 @@ const useIpAsset = () => {
     "registerIpAndAttachPilTerms",
     client.ipAsset.registerIpAndAttachPilTerms.bind(client.ipAsset),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -259,7 +319,7 @@ const useIpAsset = () => {
     "registerDerivativeIp",
     client.ipAsset.registerDerivativeIp.bind(client.ipAsset),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -287,7 +347,7 @@ const useIpAsset = () => {
     "mintAndRegisterIpAndMakeDerivative",
     client.ipAsset.mintAndRegisterIpAndMakeDerivative.bind(client.ipAsset),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {

@@ -7,8 +7,27 @@ import { useState } from "react";
 import { useStoryContext } from "../StoryProtocolContext";
 import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
-const useNftClient = () => {
+type UseNftClientReturn = {
+  loadings: Record<string, boolean> | undefined;
+  errors: Record<string, string | null> | undefined;
+  createNFTCollection:
+    | ((
+        request: CreateNFTCollectionRequest,
+      ) => Promise<CreateNFTCollectionResponse>)
+    | undefined;
+};
+
+const useNftClient = (): UseNftClientReturn => {
   const client = useStoryContext();
+
+  if (!client) {
+    return {
+      loadings: undefined,
+      errors: undefined,
+      createNFTCollection: undefined,
+    };
+  }
+
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
     createNFTCollection: false,
   });
@@ -36,7 +55,7 @@ const useNftClient = () => {
     "createNFTCollection",
     client.nftClient.createNFTCollection.bind(client.nftClient),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {

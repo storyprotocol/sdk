@@ -21,11 +21,11 @@ describe("useLicense Functions", () => {
             txOptions: {
               waitForTransaction: true,
             },
-          })
+          }),
         ).resolves.toEqual(
           expect.objectContaining({
             licenseTermsId: expect.any(BigInt),
-          })
+          }),
         );
       });
     });
@@ -39,11 +39,11 @@ describe("useLicense Functions", () => {
             txOptions: {
               waitForTransaction: true,
             },
-          })
+          }),
         ).resolves.toEqual(
           expect.objectContaining({
             licenseTermsId: expect.any(BigInt),
-          })
+          }),
         );
       });
     });
@@ -58,11 +58,11 @@ describe("useLicense Functions", () => {
             txOptions: {
               waitForTransaction: true,
             },
-          })
+          }),
         ).resolves.toEqual(
           expect.objectContaining({
             licenseTermsId: expect.any(BigInt),
-          })
+          }),
         );
       });
     });
@@ -105,12 +105,12 @@ describe("useLicense Functions", () => {
             txOptions: {
               waitForTransaction: true,
             },
-          })
+          }),
         ).resolves.toEqual(
           expect.objectContaining({
             txHash: expect.any(String),
             success: expect.any(Boolean),
-          })
+          }),
         );
       });
     });
@@ -124,12 +124,12 @@ describe("useLicense Functions", () => {
             txOptions: {
               waitForTransaction: true,
             },
-          })
+          }),
         ).resolves.toEqual(
           expect.objectContaining({
             txHash: expect.any(String),
             licenseTokenIds: expect.any(Array),
-          })
+          }),
         );
       });
     });
@@ -137,7 +137,7 @@ describe("useLicense Functions", () => {
     it("should success when get license terms", async () => {
       await act(async () => {
         await expect(licenseHook.getLicenseTerms(licenseId)).resolves.toEqual(
-          expect.any(Object)
+          expect.any(Object),
         );
       });
     });

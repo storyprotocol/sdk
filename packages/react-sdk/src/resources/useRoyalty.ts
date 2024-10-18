@@ -16,8 +16,29 @@ import { useState } from "react";
 import { useStoryContext } from "../StoryProtocolContext";
 import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
-const useRoyalty = () => {
+type UseRoyaltyReturn = {
+  loadings: Record<string, boolean>;
+  errors: Record<string, string | null>;
+  collectRoyaltyTokens: (
+    request: CollectRoyaltyTokensRequest,
+  ) => Promise<CollectRoyaltyTokensResponse>;
+  payRoyaltyOnBehalf: (
+    request: PayRoyaltyOnBehalfRequest,
+  ) => Promise<PayRoyaltyOnBehalfResponse>;
+  claimableRevenue: (
+    request: ClaimableRevenueRequest,
+  ) => Promise<ClaimableRevenueResponse>;
+  claimRevenue: (request: ClaimRevenueRequest) => Promise<ClaimRevenueResponse>;
+  snapshot: (request: SnapshotRequest) => Promise<SnapshotResponse>;
+  getRoyaltyVaultAddress: (royaltyVaultIpId: Hex) => Promise<Address>;
+};
+
+const useRoyalty = (): UseRoyaltyReturn | undefined => {
   const client = useStoryContext();
+  if (!client) {
+    return undefined;
+  }
+
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
     collectRoyaltyTokens: false,
     payRoyaltyOnBehalf: false,
@@ -51,7 +72,7 @@ const useRoyalty = () => {
     "collectRoyaltyTokens",
     client.royalty.collectRoyaltyTokens.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -71,7 +92,7 @@ const useRoyalty = () => {
     "payRoyaltyOnBehalf",
     client.royalty.payRoyaltyOnBehalf.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -90,7 +111,7 @@ const useRoyalty = () => {
     "claimableRevenue",
     client.royalty.claimableRevenue.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -111,7 +132,7 @@ const useRoyalty = () => {
     "claimRevenue",
     client.royalty.claimRevenue.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -126,7 +147,7 @@ const useRoyalty = () => {
     "snapshot",
     client.royalty.snapshot.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -138,7 +159,7 @@ const useRoyalty = () => {
     "getRoyaltyVaultAddress",
     client.royalty.getRoyaltyVaultAddress.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
@@ -152,4 +173,5 @@ const useRoyalty = () => {
     getRoyaltyVaultAddress,
   };
 };
+
 export default useRoyalty;

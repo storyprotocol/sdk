@@ -10,8 +10,35 @@ import { useState } from "react";
 import { useStoryContext } from "../StoryProtocolContext";
 import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
-const useIpAccount = () => {
+type UseIpAccountReturn = {
+  loadings: Record<string, boolean> | undefined;
+  errors: Record<string, string | null> | undefined;
+  execute:
+    | ((request: IPAccountExecuteRequest) => Promise<IPAccountExecuteResponse>)
+    | undefined;
+  executeWithSig:
+    | ((
+        request: IPAccountExecuteWithSigRequest,
+      ) => Promise<IPAccountExecuteWithSigResponse>)
+    | undefined;
+  getIpAccountNonce:
+    | ((ipId: string) => Promise<IpAccountStateResponse>)
+    | undefined;
+};
+
+const useIpAccount = (): UseIpAccountReturn => {
   const client = useStoryContext();
+
+  if (!client) {
+    return {
+      loadings: undefined,
+      errors: undefined,
+      execute: undefined,
+      executeWithSig: undefined,
+      getIpAccountNonce: undefined,
+    };
+  }
+
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
     execute: false,
     executeWithSig: false,
@@ -40,7 +67,7 @@ const useIpAccount = () => {
     "execute",
     client.ipAccount.execute.bind(client.ipAccount),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /** Executes a transaction from the IP Account.
@@ -62,7 +89,7 @@ const useIpAccount = () => {
     "executeWithSig",
     client.ipAccount.executeWithSig.bind(client.ipAccount),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /** Returns the IPAccount&#39;s internal nonce for transaction ordering.
@@ -76,7 +103,7 @@ const useIpAccount = () => {
     "getIpAccountNonce",
     client.ipAccount.getIpAccountNonce.bind(client.ipAccount),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
@@ -87,4 +114,5 @@ const useIpAccount = () => {
     getIpAccountNonce,
   };
 };
+
 export default useIpAccount;

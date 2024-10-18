@@ -11,8 +11,33 @@ import { useState } from "react";
 import { useStoryContext } from "../StoryProtocolContext";
 import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 
-const useDispute = () => {
+type UseDisputeReturn = {
+  loadings: Record<string, boolean> | undefined;
+  errors: Record<string, string | null> | undefined;
+  raiseDispute:
+    | ((request: RaiseDisputeRequest) => Promise<RaiseDisputeResponse>)
+    | undefined;
+  cancelDispute:
+    | ((request: CancelDisputeRequest) => Promise<CancelDisputeResponse>)
+    | undefined;
+  resolveDispute:
+    | ((request: ResolveDisputeRequest) => Promise<ResolveDisputeResponse>)
+    | undefined;
+};
+
+const useDispute = (): UseDisputeReturn => {
   const client = useStoryContext();
+
+  if (!client) {
+    return {
+      loadings: undefined,
+      errors: undefined,
+      raiseDispute: undefined,
+      cancelDispute: undefined,
+      resolveDispute: undefined,
+    };
+  }
+
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
     raiseDispute: false,
     cancelDispute: false,
@@ -47,7 +72,7 @@ const useDispute = () => {
     "raiseDispute",
     client.dispute.raiseDispute.bind(client.dispute),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -70,7 +95,7 @@ const useDispute = () => {
     "cancelDispute",
     client.dispute.cancelDispute.bind(client.dispute),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -91,7 +116,7 @@ const useDispute = () => {
     "resolveDispute",
     client.dispute.resolveDispute.bind(client.dispute),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
@@ -102,4 +127,5 @@ const useDispute = () => {
     resolveDispute,
   };
 };
+
 export default useDispute;
