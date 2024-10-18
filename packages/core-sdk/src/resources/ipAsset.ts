@@ -205,7 +205,7 @@ export class IPAssetClient {
       app,
       tags,
       robotTerms,
-      ...additionalProperties, // Include any additional properties
+      ...additionalProperties,
     };
   }
 
@@ -220,8 +220,8 @@ export class IPAssetClient {
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
   public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
@@ -301,7 +301,7 @@ export class IPAssetClient {
             hash: txHash,
           });
           const targetLogs = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
-          return { txHash: txHash, ipId: targetLogs[0].ipId };
+          return { txHash: txHash, ipId: targetLogs[0].ipId, tokenId: targetLogs[0].tokenId };
         } else {
           return { txHash: txHash };
         }
@@ -442,12 +442,12 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.recipient [Optional] The address of the recipient of the minted NFT.
+   *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, Token ID, License Terms Id if waitForTxn is set to true.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, Token ID, License Terms Id.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
@@ -807,7 +807,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.recipient [Optional] The address of the recipient of the minted NFT.
+   *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
@@ -883,7 +883,7 @@ export class IPAssetClient {
    * Mint an NFT from a SPGNFT collection and register it with metadata as an IP.
    * @param request - The request object that contains all data needed to attach license terms.
    *   @param request.spgNftContract The address of the SPGNFT collection.
-   *   @param request.recipient The address of the recipient of the minted NFT.
+   *   @param request.recipient The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -948,8 +948,8 @@ export class IPAssetClient {
    *     @param request.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *     @param request.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms id.
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   public async registerPilTermsAndAttach(
@@ -1034,9 +1034,10 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.recipient - [Optional] The address to receive the minted NFT.
+   *   @param request.recipient - [Optional] The address to receive the minted NFT,default value is your wallet address.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID and Token ID.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
   public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
     request: MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
@@ -1096,7 +1097,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID.
    */
   public async registerIpAndMakeDerivativeWithLicenseTokens(

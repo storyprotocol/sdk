@@ -87,7 +87,12 @@ export type TransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
   claimer?: Address;
   txOptions?: TxOptions;
 };
-
+export type TransferToVaultAndSnapshotAndClaimByTokenBatchResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  snapshotId?: bigint;
+  amountsClaimed?: bigint;
+};
 export type TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest = {
   ancestorIpId: Address;
   unclaimedSnapshotIds: bigint[] | number[] | string[];

@@ -1465,8 +1465,8 @@ describe("Test IpAssetClient", () => {
         .stub()
         .resolves(true);
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon.stub().resolves(true);
-      IpAccountImplClient.prototype.state = sinon
-        .stub()
+      sinon
+        .stub(IpAccountImplClient.prototype, "state")
         .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
     });
     const licenseTerms: LicenseTerms = {

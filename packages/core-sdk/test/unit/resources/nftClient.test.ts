@@ -101,7 +101,31 @@ describe("Test NftClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
-      expect(result.nftContract).equal(spgNftContract);
+      expect(result.spgNftContract).equal(spgNftContract);
+    });
+
+    it("should return encodedTxData when call createNFTCollection successfully with encodedTxDataOnly", async () => {
+      sinon.stub(nftClient.registrationWorkflowsClient, "createCollectionEncode").returns({
+        data: "0x",
+        to: "0x",
+      });
+
+      const result = await nftClient.createNFTCollection({
+        name: "name",
+        symbol: "symbol",
+        maxSupply: 1,
+        mintFee: 1n,
+        mintFeeToken: mintFeeToken,
+        isPublicMinting: true,
+        contractURI: "test-uri",
+        mintOpen: true,
+        mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 });

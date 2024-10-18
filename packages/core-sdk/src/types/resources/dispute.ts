@@ -19,7 +19,7 @@ export type RaiseDisputeResponse = {
 
 export type CancelDisputeRequest = {
   disputeId: number | string | bigint;
-  calldata?: Address;
+  data?: Address;
   txOptions?: TxOptions;
 };
 

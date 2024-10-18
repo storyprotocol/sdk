@@ -147,11 +147,30 @@ describe("Test IpAssetClient", () => {
     });
   });
   describe("Test groupClient.registerGroupAndAttachLicenseAndAddIps", async () => {
+    it("should throw group id register error when call registerGroupAndAttachLicenseAndAddIps given ip id is not registered", async () => {
+      try {
+        sinon
+          .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+          .resolves(true);
+        sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+        await groupClient.registerGroupAndAttachLicenseAndAddIps({
+          groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+          licenseTermsId: "100",
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register group and attach license and add ips: IP 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not registered.",
+        );
+      }
+    });
     it("should throw not attach between license terms and ip id when call registerGroupAndAttachLicenseAndAddIps given ipIds is not attach license terms", async () => {
       try {
         sinon
           .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
           .resolves(false);
+        sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
         await groupClient.registerGroupAndAttachLicenseAndAddIps({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
@@ -169,6 +188,8 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
@@ -184,6 +205,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
         .resolves(txHash);
@@ -199,6 +221,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
         .resolves(txHash);
@@ -239,9 +262,6 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given correct args", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      // IpAccountImplClient.prototype.state = sinon
-      //   .stub()
-      //   .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
       sinon
         .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
         .resolves(txHash);
@@ -316,10 +336,29 @@ describe("Test IpAssetClient", () => {
   });
 
   describe("Test groupClient.registerIpAndAttachLicenseAndAddToGroup", async () => {
+    it("should throw group id register error when call registerIpAndAttachLicenseAndAddToGroup given ip id is not registered", async () => {
+      sinon
+        .stub(groupClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await groupClient.registerIpAndAttachLicenseAndAddToGroup({
+          groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: "100",
+          licenseTermsId: "100",
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license and add to group: Group IP 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not registered.",
+        );
+      }
+    });
     it("should throw nft contract error when call registerIpAndAttachLicenseAndAddToGroup given nft contract address is invalid", async () => {
       sinon
         .stub(groupClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await groupClient.registerIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -338,6 +377,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(groupClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup")
         .resolves(txHash);
@@ -354,6 +394,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(groupClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup")
         .resolves(txHash);
@@ -385,6 +426,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(groupClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroupEncode")
         .returns({

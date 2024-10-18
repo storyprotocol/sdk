@@ -35,7 +35,7 @@ describe("License Terms Helper", () => {
     describe("Get Commercial License Terms", () => {
       it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without terms", async () => {
         expect(() => getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE)).to.throw(
-          "MintingFee currency are required for commercial use PIL.",
+          "DefaultMintingFee, currency are required for commercial use PIL.",
         );
       });
 
@@ -45,7 +45,7 @@ describe("License Terms Helper", () => {
             currency: zeroAddress,
             royaltyPolicyLAPAddress: zeroAddress,
           }),
-        ).to.throw("MintingFee currency are required for commercial use PIL.");
+        ).to.throw("DefaultMintingFee, currency are required for commercial use PIL.");
       });
 
       it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without currency", async () => {
@@ -54,7 +54,7 @@ describe("License Terms Helper", () => {
             royaltyPolicyLAPAddress: zeroAddress,
             defaultMintingFee: "1",
           }),
-        ).to.throw("MintingFee currency are required for commercial use PIL.");
+        ).to.throw("DefaultMintingFee, currency are required for commercial use PIL.");
       });
 
       it("it should throw when call getLicenseTermByType given COMMERCIAL_USE and wrong royaltyAddress", async () => {

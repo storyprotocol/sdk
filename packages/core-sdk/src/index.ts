@@ -70,6 +70,8 @@ export type {
   SnapshotAndClaimByTokenBatchResponse,
   TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
   TransferToVaultAndSnapshotAndClaimBySnapshotBatchResponse,
+  TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
+  TransferToVaultAndSnapshotAndClaimByTokenBatchResponse,
 } from "./types/resources/royalty";
 
 export type {

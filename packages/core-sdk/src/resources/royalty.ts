@@ -16,6 +16,8 @@ import {
   ClaimRevenueResponse,
   SnapshotAndClaimBySnapshotBatchResponse,
   TransferToVaultAndSnapshotAndClaimBySnapshotBatchResponse,
+  TransferToVaultAndSnapshotAndClaimByTokenBatchResponse,
+  SnapshotAndClaimByTokenBatchResponse,
 } from "../types/resources/royalty";
 import {
   IpAssetRegistryClient,
@@ -272,7 +274,7 @@ export class RoyaltyClient {
    */
   public async transferToVaultAndSnapshotAndClaimByTokenBatch(
     request: TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
-  ) {
+  ): Promise<TransferToVaultAndSnapshotAndClaimByTokenBatchResponse> {
     try {
       if (request.royaltyClaimDetails.length === 0) {
         throw new Error("The royaltyClaimDetails must provide at least one item.");
@@ -419,7 +421,9 @@ export class RoyaltyClient {
    * @emits SnapshotCompleted (snapshotId, snapshotTimestamp, unclaimedTokens).
    * @emits RevenueTokenClaimed (claimer, token, amount).
    */
-  public async snapshotAndClaimByTokenBatch(request: SnapshotAndClaimByTokenBatchRequest) {
+  public async snapshotAndClaimByTokenBatch(
+    request: SnapshotAndClaimByTokenBatchRequest,
+  ): Promise<SnapshotAndClaimByTokenBatchResponse> {
     try {
       const isRegister = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),

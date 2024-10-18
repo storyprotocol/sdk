@@ -21,6 +21,6 @@ describe("nftClient Functions", () => {
         waitForTransaction: true,
       },
     });
-    expect(txData.nftContract).to.be.a("string").and.not.empty;
+    expect(txData.spgNftContract).to.be.a("string").and.not.empty;
   });
 });

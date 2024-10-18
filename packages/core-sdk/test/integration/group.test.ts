@@ -31,7 +31,7 @@ describe("Group Functions", () => {
           waitForTransaction: true,
         },
       })
-    ).nftContract!;
+    ).spgNftContract!;
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: spgNftContract,
       pilType: PIL_TYPE.COMMERCIAL_USE,

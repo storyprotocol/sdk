@@ -21,5 +21,5 @@ export type CreateNFTCollectionRequest = {
 export type CreateNFTCollectionResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
-  nftContract?: Hex;
+  spgNftContract?: Address;
 };

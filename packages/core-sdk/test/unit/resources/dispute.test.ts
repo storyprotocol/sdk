@@ -72,6 +72,17 @@ describe("Test DisputeClient", () => {
       expect(result.txHash).equal(txHash);
       expect(result.disputeId).equal(1n);
     });
+
+    it("should return encodedTxData when call raiseDispute successfully with encodedTxDataOnly", async () => {
+      const result = await disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        disputeEvidenceHash: "0xb7b94ecbd1f9f8cb209909e5785fb2858c9a8c4b220c017995a75346ad1b5db5",
+        targetTag: "tag",
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+    });
   });
 
   describe("Test cancelDispute", () => {
@@ -90,7 +101,7 @@ describe("Test DisputeClient", () => {
       sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").resolves(txHash);
       const result = await disputeClient.cancelDispute({
         disputeId: 1,
-        calldata: "0x",
+        data: "0x",
       });
 
       expect(result.txHash).equal(txHash);
@@ -104,6 +115,15 @@ describe("Test DisputeClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
+    });
+
+    it("should return encodedTxData when call cancelDispute successfully with encodedTxDataOnly", async () => {
+      const result = await disputeClient.cancelDispute({
+        disputeId: 1,
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 
@@ -139,6 +159,16 @@ describe("Test DisputeClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
+    });
+
+    it("should return encodedTxData when call resolveDispute successfully with encodedTxDataOnly", async () => {
+      const result = await disputeClient.resolveDispute({
+        disputeId: 1,
+        data: "0x",
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 });
