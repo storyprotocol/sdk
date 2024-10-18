@@ -66,7 +66,7 @@ export class GroupClient {
   }
   /** Registers a Group IPA.
    * @param request - The request object containing necessary data to register group.
-   *   @param request.groupPool The address of the group pool.
+   *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
    * @emits PGroupRegistered (groupId, groupPool);
@@ -313,7 +313,7 @@ export class GroupClient {
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
    * @param request - The request object containing necessary data to register group and attach license.
-   *   @param request.groupPool The address of the group reward pool.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
    *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
    *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
@@ -355,7 +355,7 @@ export class GroupClient {
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    * @param request - The request object containing necessary data to register group and attach license and add ips.
    *   @param request.pIds must have the same PIL terms as the group IP.
-   *   @param request.groupPool The address of the group reward pool.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
    *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
    *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
