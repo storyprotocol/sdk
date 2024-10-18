@@ -298,8 +298,7 @@ describe("IP Asset Functions ", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
-    // Because fix parameters in the function cause register the same license terms
-    it.skip("should not throw error when call register pil terms and attach", async () => {
+    it("should not throw error when call register pil terms and attach", async () => {
       const tokenId = await getTokenId();
       const ipId = (
         await client.ipAsset.register({

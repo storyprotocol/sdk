@@ -965,11 +965,6 @@ export class IPAssetClient {
       const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({
         terms: licenseTerms,
       });
-      if (licenseRes.selectedLicenseTermsId !== 0n) {
-        throw new Error(
-          `The license terms with id ${licenseRes.selectedLicenseTermsId} is already registered.`,
-        );
-      }
       const calculatedDeadline = getDeadline(request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const { result: state } = await ipAccount.state();

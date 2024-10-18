@@ -1516,24 +1516,6 @@ describe("Test IpAssetClient", () => {
       }
     });
 
-    it("should throw license terms registered error when registerPilTermsAndAttach given license terms have registered", async () => {
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: 1n });
-
-      try {
-        await ipAssetClient.registerPilTermsAndAttach({
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          terms: licenseTerms,
-        });
-      } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to register PIL terms and attach: The license terms with id 1 is already registered.",
-        );
-      }
-    });
-
     it("should return encoded tx data when registerPilTermsAndAttach given correct args and encodedTxDataOnly of true", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
