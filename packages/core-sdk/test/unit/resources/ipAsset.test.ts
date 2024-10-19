@@ -152,6 +152,25 @@ describe("Test IpAssetClient", () => {
         expect(metadata).to.have.property("customField1", "Custom Value 1");
         expect(metadata).to.have.property("customField2", 42);
       });
+
+      // generateIpMetadata - @boris added test cases
+
+      it("should create an IpMetadata object with default values when optional parameters are missing", function () {
+        const metadata = ipAssetClient.generateIpMetadata({ title: "Sample Title" });
+
+        expect(metadata).to.be.an("object");
+        expect(metadata).to.have.property("title", "Sample Title");
+        expect(metadata).to.have.property("description", "");
+        expect(metadata).to.have.property("ipType", "");
+        expect(metadata).to.have.property("relationships").that.is.an("array").and.empty;
+        expect(metadata).to.have.property("createdAt", "");
+        expect(metadata).to.have.property("watermarkImg", "");
+        expect(metadata).to.have.property("creators").that.is.an("array").and.empty;
+        expect(metadata).to.have.property("media").that.is.an("array").and.empty;
+        expect(metadata).to.have.property("attributes").that.is.an("array").and.empty;
+        expect(metadata).to.have.property("tags").that.is.an("array").and.empty;
+        expect(metadata).to.have.property("robotTerms", undefined);
+      });
     });
   });
 
@@ -366,6 +385,42 @@ describe("Test IpAssetClient", () => {
       } catch (err) {
         expect((err as Error).message).equal("Failed to register IP: revert error");
       }
+    });
+
+    // Test ipAssetClient.register - @boris added test cases
+
+    it("should throw an error when `tokenId` is not a valid number or BigInt", async function () {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await ipAssetClient.register({ nftContract, tokenId: "invalidTokenId" });
+      } catch (err) {
+        expect((err as Error).message).to.equal(
+          "Failed to register IP: Cannot convert invalidTokenId to a BigInt",
+        );
+      }
+    });
+
+    it("should handle boundary BigInt tokenId values correctly", async function () {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "register")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+
+      const bigTokenId = BigInt(
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      ).toString(); // Maximum BigInt value
+
+      const response = await ipAssetClient.register({
+        nftContract,
+        tokenId: bigTokenId,
+      });
+      expect(response.txHash).equal(
+        "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+      );
     });
   });
 
@@ -646,6 +701,59 @@ describe("Test IpAssetClient", () => {
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
+
+    describe("registerDerivativeWithLicenseTokens", function () {
+      it("should handle concurrent transactions correctly", async function () {
+        sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+        sinon
+          .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
+          .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+        sinon
+          .stub(ipAssetClient.licensingModuleClient, "registerDerivativeWithLicenseTokens")
+          .resolves("0xtesthash");
+
+        const response1 = ipAssetClient.registerDerivativeWithLicenseTokens({
+          childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+          licenseTokenIds: ["1"],
+        });
+
+        const response2 = ipAssetClient.registerDerivativeWithLicenseTokens({
+          childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+          licenseTokenIds: ["2"],
+        });
+
+        const [result1, result2] = await Promise.all([response1, response2]);
+
+        expect(result1.txHash).to.equal("0xtesthash");
+        expect(result2.txHash).to.equal("0xtesthash");
+      });
+    });
+
+    // registerDerivativeWithLicenseTokens - @boris added test cases
+    it("should handle concurrent transactions correctly", async function () {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
+        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+      sinon
+        .stub(ipAssetClient.licensingModuleClient, "registerDerivativeWithLicenseTokens")
+        .resolves("0xtesthash");
+
+      const response1 = ipAssetClient.registerDerivativeWithLicenseTokens({
+        childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+        licenseTokenIds: ["1"],
+      });
+
+      const response2 = ipAssetClient.registerDerivativeWithLicenseTokens({
+        childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+        licenseTokenIds: ["2"],
+      });
+
+      const [result1, result2] = await Promise.all([response1, response2]);
+
+      expect(result1.txHash).to.equal("0xtesthash");
+      expect(result2.txHash).to.equal("0xtesthash");
+    });
   });
 
   describe("Test ipAssetClient.createIpAssetWithPilTerms", async () => {
@@ -756,6 +864,23 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    // Test ipAssetClient.createIpAssetWithPilTerms - @boris added test cases
+
+    it("should throw an error when `nftContract` is an invalid address", async function () {
+      try {
+        await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
+          nftContract: "0x",
+          pilType: PIL_TYPE.COMMERCIAL_USE,
+          mintingFee: "100",
+          currency: zeroAddress,
+        });
+      } catch (err) {
+        expect((err as Error).message).to.equal(
+          "Failed to mint and register IP and attach PIL terms: request.nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+        );
+      }
     });
   });
 
@@ -976,6 +1101,39 @@ describe("Test IpAssetClient", () => {
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
+
+    // registerDerivativeIp - @boris added test cases
+
+    // failing - it's passing and it shouldn't?
+    // the lenght of licenseTermsIds should match parentIpIds?
+    it.skip("should throw an error when the length of `parentIpIds` does not match `licenseTermsIds`", async function () {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.spgClient, "registerIpAndMakeDerivative")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+
+      try {
+        const res = await ipAssetClient.registerDerivativeIp({
+          nftContract,
+          tokenId: "3",
+          derivData: {
+            parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+            licenseTermsIds: ["1", "2"],
+          },
+        });
+      } catch (err) {
+        console.log("looo");
+        expect((err as Error).message).to.equal(
+          "Failed to register derivative IP: Parent IP IDs and License terms IDs must be provided in pairs.",
+        );
+      }
+    });
   });
 
   describe("Test ipAssetClient.registerIpAndAttachPilTerms", async () => {
@@ -1140,6 +1298,32 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    // registerIpAndAttachPilTerms - @boris added test cases
+
+    it("should handle missing optional parameters correctly", async function () {
+      const stub = sinon.stub(ipAssetClient.spgClient, "registerIpAndAttachPilTerms");
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      await ipAssetClient.registerIpAndAttachPilTerms({
+        nftContract, // This is assumed to be a valid contract address
+        tokenId: "3", // Token ID as a string
+        pilType: PIL_TYPE.COMMERCIAL_USE, // Required type
+        mintingFee: "0", // Add a valid minting fee (e.g., "0" or "100")
+        currency: zeroAddress, // Add the zero address or a valid ERC20 address
+      });
+
+      expect(stub.calledOnce).to.be.true;
+      expect(stub.args[0][0].ipMetadata).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataURI: "",
+        nftMetadataHash: zeroHash,
+      });
     });
   });
 

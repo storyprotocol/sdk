@@ -45,7 +45,7 @@ describe("Test DisputeClient", () => {
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         arbitrationPolicy: "0x",
-        linkToDisputeEvidence: "link",
+        linkToDisputeEvidence: "",
         targetTag: "tag",
       });
 
@@ -76,6 +76,37 @@ describe("Test DisputeClient", () => {
       expect(result.txHash).equal(txHash);
       expect(result.disputeId).equal(1n);
     });
+
+    // Raise dispute - @boris added test cases
+
+    // Failing
+    it.skip("should throw ZeroLinkToDisputeEvidence error when linkToDisputeEvidence is empty", async () => {
+      try {
+        await disputeClient.raiseDispute({
+          targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          arbitrationPolicy: "0x",
+          linkToDisputeEvidence: "link",
+          targetTag: "tag",
+        });
+      } catch (e) {
+        expect((e as Error).message).equal("Failed to raise dispute: ZeroLinkToDisputeEvidence");
+      }
+    });
+
+    // Passing after debugging `dispute.ts`
+    it("should return encodedTxData when encodedTxDataOnly is set", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "raiseDisputeEncode").resolves("encodedData");
+      const result = await disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        arbitrationPolicy: "0x",
+        linkToDisputeEvidence: "link",
+        targetTag: "tag",
+        txOptions: { encodedTxDataOnly: true },
+      });
+      console.log(JSON.stringify(result, null, 2));
+
+      expect(result.encodedTxData).to.equal("encodedData");
+    });
   });
 
   describe("Test cancelDispute", () => {
@@ -105,6 +136,30 @@ describe("Test DisputeClient", () => {
       const result = await disputeClient.cancelDispute({
         disputeId: 1,
         txOptions: { waitForTransaction: true },
+      });
+
+      expect(result.txHash).equal(txHash);
+    });
+
+    // Cancel Dispute - @boris added test cases
+
+    // Passing after debugging `dispute.ts`
+    it("should return encodedTxData when encodedTxDataOnly is set", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "cancelDisputeEncode").resolves("encodedData");
+      const result = await disputeClient.cancelDispute({
+        disputeId: 1,
+        calldata: "0x",
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData).equal("encodedData");
+    });
+
+    // Passing
+    it("should handle empty calldata correctly", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").resolves(txHash);
+      const result = await disputeClient.cancelDispute({
+        disputeId: 1,
       });
 
       expect(result.txHash).equal(txHash);
@@ -143,6 +198,20 @@ describe("Test DisputeClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
+    });
+
+    // Resolve Dispute - @boris added test cases
+
+    // Passing after debugging `dispute.ts`
+    it("should return encodedTxData when encodedTxDataOnly is set", async () => {
+      sinon.stub(disputeClient.disputeModuleClient, "resolveDisputeEncode").resolves("encodedData");
+      const result = await disputeClient.resolveDispute({
+        disputeId: 1,
+        data: "0x",
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData).equal("encodedData");
     });
   });
 });

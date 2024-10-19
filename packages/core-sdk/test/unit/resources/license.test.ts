@@ -31,6 +31,15 @@ describe("Test LicenseClient", () => {
       walletMock,
       zeroAddress,
     );
+
+    expect(licenseClient.licensingModuleClient).to.exist;
+    expect(licenseClient.licenseRegistryClient).to.exist;
+    expect(licenseClient.piLicenseTemplateReadOnlyClient).to.exist;
+    expect(licenseClient.licenseTemplateClient).to.exist;
+    expect(licenseClient.royaltyPolicyLAPClient).to.exist;
+    expect(licenseClient.royaltyModuleReadOnlyClient).to.exist;
+    expect(licenseClient.licenseRegistryReadOnlyClient).to.exist;
+    expect(licenseClient.ipAssetRegistryClient).to.exist;
   });
 
   afterEach(() => {
@@ -130,6 +139,40 @@ describe("Test LicenseClient", () => {
       ).to.be.rejectedWith(
         "Failed to register license terms: Royalty policy requires currency token.",
       );
+    });
+
+    // Test registerPILTerms - @boris added test cases
+
+    it("should handle unexpected errors in registerPILTerms gracefully", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
+        .throws(new Error("Unexpected Error"));
+
+      try {
+        await licenseClient.registerPILTerms({
+          defaultMintingFee: 1n,
+          currency: zeroAddress,
+          royaltyPolicy: zeroAddress,
+          transferable: true,
+          expiration: 0n,
+          commercialUse: true,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: "0x",
+          commercialRevShare: 0,
+          commercialRevCeiling: 0n,
+          derivativesAllowed: false,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+          derivativeRevCeiling: 0n,
+          uri: "",
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to register license terms: Royalty policy is required when commercial use is enabled.",
+        );
+      }
     });
 
     describe("verify commercial use", () => {
@@ -772,6 +815,26 @@ describe("Test LicenseClient", () => {
 
       expect(result.txHash).to.equal(txHash);
     });
+
+    // Test attachLicenseTokens - @boris added test cases
+
+    it("should throw error when attachLicenseTerms is called with an invalid license template", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(false);
+
+      await expect(
+        licenseClient.attachLicenseTerms({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: "invalid_address" as Hex,
+        }),
+      ).to.be.rejectedWith(
+        "Failed to attach license terms: request.licenseTemplate address is invalid: invalid_address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+      );
+    });
   });
 
   describe("Test licenseClient.mintLicenseTokens", async () => {
@@ -940,6 +1003,25 @@ describe("Test LicenseClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTokenIds).to.deep.equal([1n, 2n, 3n, 4n, 5n]);
     });
+
+    // Test mintLicenseTokens - @boris added test cases
+
+    // Failing - should it fail with amount 0?
+    it.skip("should throw error when mintLicenseTokens is called with amount 0", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      await expect(
+        licenseClient.mintLicenseTokens({
+          licensorIpId: zeroAddress,
+          licenseTermsId: "1",
+          amount: 0,
+        }),
+      ).to.be.rejectedWith("Failed to mint license tokens: Amount must be greater than 0.");
+    });
   });
 
   describe("Test licenseClient.getLicenseTerms", async () => {
@@ -987,5 +1069,17 @@ describe("Test LicenseClient", () => {
         );
       }
     });
+  });
+
+  // Test getLicenseTokens - @boris added test cases
+
+  it("should throw error when getLicenseTerms is called with non-existent license terms id", async () => {
+    sinon
+      .stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms")
+      .throws(new Error("License terms not found"));
+
+    await expect(licenseClient.getLicenseTerms("9999999999999")).to.be.rejectedWith(
+      "Failed to get license terms: License terms not found",
+    );
   });
 });

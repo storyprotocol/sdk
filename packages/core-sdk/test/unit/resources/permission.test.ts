@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { PermissionClient, AddressZero } from "../../../src";
-import { PublicClient, WalletClient, LocalAccount } from "viem";
+import { PublicClient, WalletClient, LocalAccount, Hex } from "viem";
 import { AccessPermission } from "../../../src/types/resources/permission";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
@@ -84,6 +84,48 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
+
+    // Set Permission - @boris added test cases
+
+    it("should return encoded transaction data when encodedTxDataOnly is true", async () => {
+      type EncodedTxData = { to: Hex; data: Hex };
+      const encodedTxData: EncodedTxData = {
+        to: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+        data: "0x1234",
+      };
+      sinon
+        .stub(permissionClient.accessControllerClient, "setPermissionEncode")
+        .returns(encodedTxData);
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      const result = await permissionClient.setPermission({
+        ipId: AddressZero,
+        signer: AddressZero,
+        to: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData).to.deep.equal(encodedTxData);
+    });
+
+    it("should throw error for invalid function selector", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      try {
+        await permissionClient.setPermission({
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          func: "invalidFunction",
+          permission: AccessPermission.ALLOW,
+        });
+      } catch (error) {
+        expect((error as Error).message).to.include(
+          "Failed to set permissions: Unable to normalize signature",
+        );
+      }
+    });
   });
 
   describe("Test permission.setAllPermissions", async () => {
@@ -132,6 +174,29 @@ describe("Test Permission", () => {
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
+    });
+
+    // Set All Permission - @boris added test cases
+
+    it("should return encoded transaction data when encodedTxDataOnly is true", async () => {
+      type EncodedTxData = { to: Hex; data: Hex };
+      const encodedTxData: EncodedTxData = {
+        to: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+        data: "0x1234",
+      };
+      sinon
+        .stub(permissionClient.accessControllerClient, "setAllPermissionsEncode")
+        .returns(encodedTxData);
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      const result = await permissionClient.setAllPermissions({
+        ipId: AddressZero,
+        signer: AddressZero,
+        permission: AccessPermission.ALLOW,
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData).to.deep.equal(encodedTxData);
     });
   });
 
@@ -304,6 +369,55 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
+
+    // Set Batch Permission - @boris added test cases
+
+    it("should throw error for invalid IP ID", async () => {
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await permissionClient.setBatchPermissions({
+          permissions: [
+            {
+              ipId: AddressZero,
+              signer: AddressZero,
+              to: AddressZero,
+              permission: AccessPermission.ALLOW,
+            },
+          ],
+        });
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          "Failed to set batch permissions: IP id with 0x0000000000000000000000000000000000000000 is not registered.",
+        );
+      }
+    });
+
+    it("should return encoded transaction data when encodedTxDataOnly is true", async () => {
+      type EncodedTxData = { to: Hex; data: Hex };
+      const encodedTxData: EncodedTxData = {
+        to: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+        data: "0x1234",
+      };
+      sinon
+        .stub(permissionClient.accessControllerClient, "setBatchPermissionsEncode")
+        .returns(encodedTxData);
+      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      const result = await permissionClient.setBatchPermissions({
+        permissions: [
+          {
+            ipId: AddressZero,
+            signer: AddressZero,
+            to: AddressZero,
+            permission: AccessPermission.ALLOW,
+          },
+        ],
+        txOptions: { encodedTxDataOnly: true },
+      });
+
+      expect(result.encodedTxData).to.deep.equal(encodedTxData);
+    });
   });
 
   describe("Test permission.createSetBatchPermissionsSignature", async () => {
@@ -371,5 +485,52 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
+  });
+
+  // createBatchPermissionSignature - @boris added test cases
+  it("should return encoded transaction data when encodedTxDataOnly is true", async () => {
+    type EncodedTxData = { to: Hex; data: Hex };
+    const encodedTxData: EncodedTxData = {
+      to: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+      data: "0x1234",
+    };
+    sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+    IpAccountImplClient.prototype.executeWithSigEncode = sinon.stub().returns(encodedTxData);
+
+    const result = await permissionClient.createBatchPermissionSignature({
+      ipId: AddressZero,
+      permissions: [
+        {
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+        },
+      ],
+      txOptions: { encodedTxDataOnly: true },
+    });
+
+    expect(result.encodedTxData).to.deep.equal(encodedTxData);
+  });
+
+  it("should return txHash and success when called with correct arguments and waitForTransaction is true", async () => {
+    sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+    IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+
+    const result = await permissionClient.createBatchPermissionSignature({
+      ipId: AddressZero,
+      permissions: [
+        {
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+        },
+      ],
+      txOptions: { waitForTransaction: true },
+    });
+
+    expect(result.txHash).to.equal(txHash);
+    expect(result.success).to.equal(true);
   });
 });
