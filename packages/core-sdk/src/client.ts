@@ -26,7 +26,7 @@ if (typeof process !== "undefined") {
 export class StoryClient {
   private readonly config: StoryConfig & { chainId: SupportedChainIds };
   private readonly rpcClient: PublicClient;
-  private readonly wallet: SimpleWalletClient;
+  public readonly wallet: SimpleWalletClient;
   private _ipAsset: IPAssetClient | null = null;
   private _permission: PermissionClient | null = null;
   private _license: LicenseClient | null = null;

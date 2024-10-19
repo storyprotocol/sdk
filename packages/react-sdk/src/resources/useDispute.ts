@@ -24,6 +24,16 @@ const useDispute = () => {
     resolveDispute: null,
   });
 
+  if (!client) {
+    return {
+      loadings,
+      errors,
+      raiseDispute: undefined,
+      cancelDispute: undefined,
+      resolveDispute: undefined,
+    };
+  }
+
   /**
    * Raises a dispute on a given ipId
    * @param request - The request object containing necessary data to raise a dispute.
@@ -47,7 +57,7 @@ const useDispute = () => {
     "raiseDispute",
     client.dispute.raiseDispute.bind(client.dispute),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -70,7 +80,7 @@ const useDispute = () => {
     "cancelDispute",
     client.dispute.cancelDispute.bind(client.dispute),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -91,7 +101,7 @@ const useDispute = () => {
     "resolveDispute",
     client.dispute.resolveDispute.bind(client.dispute),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {

@@ -86,12 +86,12 @@ describe("useRoyalty Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        })
+        }),
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           royaltyTokensCollected: expect.any(BigInt),
-        })
+        }),
       );
     });
   });
@@ -107,11 +107,11 @@ describe("useRoyalty Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        })
+        }),
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
-        })
+        }),
       );
     });
   });
@@ -124,12 +124,12 @@ describe("useRoyalty Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        })
+        }),
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           snapshotId: expect.any(BigInt),
-        })
+        }),
       );
     });
   });
@@ -141,7 +141,7 @@ describe("useRoyalty Functions", () => {
           account: ipId1,
           snapshotId: "1",
           token: mockERC20Address,
-        })
+        }),
       ).resolves.toEqual(expect.any(BigInt));
     });
   });
@@ -157,12 +157,12 @@ describe("useRoyalty Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        })
+        }),
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           claimableToken: expect.any(BigInt),
-        })
+        }),
       );
     });
   });
@@ -247,12 +247,12 @@ describe("useRoyalty Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        })
+        }),
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
           claimableToken: expect.any(BigInt),
-        })
+        }),
       );
     });
   });

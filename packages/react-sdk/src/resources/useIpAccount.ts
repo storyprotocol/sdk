@@ -27,6 +27,17 @@ const useIpAccount = () => {
     getToken: null,
   });
 
+  if (!client) {
+    return {
+      loadings,
+      errors,
+      execute: undefined,
+      executeWithSig: undefined,
+      getIpAccountNonce: undefined,
+      getToken: undefined,
+    };
+  }
+
   /** Executes a transaction from the IP Account.
    * @param request - The request object containing necessary data to execute IP Account a transaction.
    *   @param request.ipId The Ip Id to get ip account.
@@ -44,7 +55,7 @@ const useIpAccount = () => {
     "execute",
     client.ipAccount.execute.bind(client.ipAccount),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /** Executes a transaction from the IP Account.
@@ -66,7 +77,7 @@ const useIpAccount = () => {
     "executeWithSig",
     client.ipAccount.executeWithSig.bind(client.ipAccount),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /** Returns the IPAccount&#39;s internal nonce for transaction ordering.
@@ -80,7 +91,7 @@ const useIpAccount = () => {
     "getIpAccountNonce",
     client.ipAccount.getIpAccountNonce.bind(client.ipAccount),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -91,7 +102,7 @@ const useIpAccount = () => {
     "getToken",
     client.ipAccount.getToken.bind(client.ipAccount),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {

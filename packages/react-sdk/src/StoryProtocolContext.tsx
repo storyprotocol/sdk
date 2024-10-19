@@ -11,13 +11,21 @@ const StoryContext = createContext<StoryClient>({} as StoryClient);
 const StoryProvider = ({ config, children }: Props) => {
   const [client, setClient] = useState<StoryClient>();
 
-  if (!client) {
+  if (!config.wallet) {
+    setClient(
+      StoryClient.newClient({
+        transport: config.transport,
+      }),
+    );
+  } else if (!client) {
     setClient(StoryClient.newClient(config));
   }
+
   return (
     <StoryContext.Provider value={client!}>{children}</StoryContext.Provider>
   );
 };
+
 const useStoryContext = (): StoryClient => {
   return useContext(StoryContext);
 };

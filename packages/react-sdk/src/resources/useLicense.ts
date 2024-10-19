@@ -37,6 +37,20 @@ const useLicense = () => {
     getLicenseTerms: null,
   });
 
+  if (!client) {
+    return {
+      loadings,
+      errors,
+      registerPILTerms: undefined,
+      registerNonComSocialRemixingPIL: undefined,
+      registerCommercialUsePIL: undefined,
+      registerCommercialRemixPIL: undefined,
+      attachLicenseTerms: undefined,
+      mintLicenseTokens: undefined,
+      getLicenseTerms: undefined,
+    };
+  }
+
   /**
    * Registers new license terms and return the ID of the newly registered license terms.
    * @param request - The request object that contains all data needed to register a license term.
@@ -68,7 +82,7 @@ const useLicense = () => {
     "registerPILTerms",
     client.license.registerPILTerms.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -85,7 +99,7 @@ const useLicense = () => {
     "registerNonComSocialRemixingPIL",
     client.license.registerNonComSocialRemixingPIL.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -104,7 +118,7 @@ const useLicense = () => {
     "registerCommercialUsePIL",
     client.license.registerCommercialUsePIL.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -124,7 +138,7 @@ const useLicense = () => {
     "registerCommercialRemixPIL",
     client.license.registerCommercialRemixPIL.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -143,7 +157,7 @@ const useLicense = () => {
     "attachLicenseTerms",
     client.license.attachLicenseTerms.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -175,7 +189,7 @@ const useLicense = () => {
     "mintLicenseTokens",
     client.license.mintLicenseTokens.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -190,7 +204,7 @@ const useLicense = () => {
     "getLicenseTerms",
     client.license.getLicenseTerms.bind(client.license),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
