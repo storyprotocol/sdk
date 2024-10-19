@@ -1,20 +1,18 @@
-import { Address, Hex, WalletClient } from "viem";
+import { Hex } from "viem";
 
-import { SetPermissionsRequest } from "./resources/permission";
+import { TxOptions } from "./options";
 
 export type TypedData = {
-  interface: string; // i.e. "(address,uint256)"
+  interface: string;
   data: unknown[];
 };
 
-export type PermissionSignatureRequest = {
-  ipId: Address;
-  state: Hex;
-  deadline: string | number | bigint;
-  wallet: WalletClient;
-  chainId: string | number | bigint;
-  permissions: Omit<SetPermissionsRequest, "txOptions">[];
-  permissionFunc?: "setPermission" | "setBatchPermissions";
+export type IpMetadataAndTxOption = {
+  ipMetadata?: {
+    ipMetadataURI?: string;
+    ipMetadataHash?: Hex;
+    nftMetadataURI?: string;
+    nftMetadataHash?: Hex;
+  };
+  txOptions?: TxOptions;
 };
-
-export type PermissionSignatureResponse = Hex;

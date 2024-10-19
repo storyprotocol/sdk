@@ -16,7 +16,6 @@ import {
   IpAccountImplClient,
   IpAssetRegistryClient,
   SimpleWalletClient,
-  SpgClient,
 } from "../abi/generated";
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
@@ -26,7 +25,6 @@ import { getDeadline, getPermissionSignature } from "../utils/sign";
 export class PermissionClient {
   public accessControllerClient: AccessControllerClient;
   public ipAssetRegistryClient: IpAssetRegistryClient;
-  public spgClient: SpgClient;
   public coreMetadataModuleClient: CoreMetadataModuleClient;
   private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
@@ -38,7 +36,6 @@ export class PermissionClient {
     this.chainId = chainId;
     this.accessControllerClient = new AccessControllerClient(this.rpcClient, this.wallet);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(this.rpcClient, this.wallet);
-    this.spgClient = new SpgClient(this.rpcClient, this.wallet);
     this.coreMetadataModuleClient = new CoreMetadataModuleClient(this.rpcClient, this.wallet);
   }
 

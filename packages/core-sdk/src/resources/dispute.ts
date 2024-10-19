@@ -24,12 +24,11 @@ export class DisputeClient {
   /**
    * Raises a dispute on a given ipId
    * @param request - The request object containing necessary data to raise a dispute.
-   *   @param request.targetIpId - The IP ID that is the target of the dispute.
-   *   @param request.arbitrationPolicy - The address of the arbitration policy.
-   *   @param request.linkToDisputeEvidence - The link to the dispute evidence.
-   *   @param request.targetTag - The target tag of the dispute.
-   *   @param request.calldata - Optional calldata to initialize the policy.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   *   @param request.targetIpId The IP ID that is the target of the dispute.
+   *   @param request.targetTag The target tag of the dispute.
+   *   @param request.disputeEvidenceHash The hash pointing to the dispute evidence
+   *   @param request.data The data to initialize the policy
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a RaiseDisputeResponse containing the transaction hash.
    * @throws `NotRegisteredIpId` if targetIpId is not registered in the IPA Registry.
    * @throws `NotWhitelistedDisputeTag` if targetTag is not whitelisted.
@@ -41,9 +40,9 @@ export class DisputeClient {
     try {
       const req = {
         targetIpId: getAddress(request.targetIpId, "request.targetIpId"),
-        linkToDisputeEvidence: request.linkToDisputeEvidence,
         targetTag: stringToHex(request.targetTag, { size: 32 }),
-        data: request.calldata || "0x",
+        data: request.data || "0x",
+        disputeEvidenceHash: request.disputeEvidenceHash,
       };
 
       if (request.txOptions?.encodedTxDataOnly) {
@@ -73,7 +72,7 @@ export class DisputeClient {
    * Cancels an ongoing dispute
    * @param request - The request object containing details to cancel the dispute.
    *   @param request.disputeId The ID of the dispute to be cancelled.
-   *   @param request.calldata Optional additional data used in the cancellation process.
+   *   @param request.data [Optional] additional data used in the cancellation process.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a CancelDisputeResponse containing the transaction hash.
    * @throws NotInDisputeState, if the currentTag of the Dispute is not being disputed
@@ -86,7 +85,7 @@ export class DisputeClient {
     try {
       const req = {
         disputeId: BigInt(request.disputeId),
-        data: request.calldata ? request.calldata : "0x",
+        data: request.data ? request.data : "0x",
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.disputeModuleClient.cancelDisputeEncode(req) };
