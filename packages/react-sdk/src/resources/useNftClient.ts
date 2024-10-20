@@ -16,6 +16,14 @@ const useNftClient = () => {
     createNFTCollection: null,
   });
 
+  if (!client) {
+    return {
+      loadings,
+      errors,
+      createNFTCollection: undefined,
+    };
+  }
+
   /**
    * Creates a new SPG NFT Collection.
    * @param request - The request object containing necessary data to create a SPG NFT Collection.
@@ -36,7 +44,7 @@ const useNftClient = () => {
     "createNFTCollection",
     client.nftClient.createNFTCollection.bind(client.nftClient),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {

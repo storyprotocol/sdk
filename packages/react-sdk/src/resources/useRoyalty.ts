@@ -35,6 +35,19 @@ const useRoyalty = () => {
     getRoyaltyVaultAddress: null,
   });
 
+  if (!client) {
+    return {
+      loadings,
+      errors,
+      collectRoyaltyTokens: undefined,
+      payRoyaltyOnBehalf: undefined,
+      claimableRevenue: undefined,
+      claimRevenue: undefined,
+      snapshot: undefined,
+      getRoyaltyVaultAddress: undefined,
+    };
+  }
+
   /**
    * Allows ancestors to claim the royalty tokens and any accrued revenue tokens
    * @param request - The request object that contains all data needed to collect royalty tokens.
@@ -51,7 +64,7 @@ const useRoyalty = () => {
     "collectRoyaltyTokens",
     client.royalty.collectRoyaltyTokens.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -71,7 +84,7 @@ const useRoyalty = () => {
     "payRoyaltyOnBehalf",
     client.royalty.payRoyaltyOnBehalf.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -90,7 +103,7 @@ const useRoyalty = () => {
     "claimableRevenue",
     client.royalty.claimableRevenue.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -111,7 +124,7 @@ const useRoyalty = () => {
     "claimRevenue",
     client.royalty.claimRevenue.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -126,7 +139,7 @@ const useRoyalty = () => {
     "snapshot",
     client.royalty.snapshot.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -138,7 +151,7 @@ const useRoyalty = () => {
     "getRoyaltyVaultAddress",
     client.royalty.getRoyaltyVaultAddress.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {

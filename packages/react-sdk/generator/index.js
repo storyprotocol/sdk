@@ -43,7 +43,7 @@ const visit = (file) => {
         if (
           ts.isMethodDeclaration(member) &&
           (member.modifiers?.some(
-            (m) => m.kind === ts.SyntaxKind.PublicKeyword
+            (m) => m.kind === ts.SyntaxKind.PublicKeyword,
           ) ??
             true) &&
           member.name &&
@@ -51,7 +51,7 @@ const visit = (file) => {
         ) {
           const requests = [];
           const isAsync = member.modifiers?.some(
-            (modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword
+            (modifier) => modifier.kind === ts.SyntaxKind.AsyncKeyword,
           );
           program.getTypeChecker().getSignatureFromDeclaration(member);
           member.parameters.forEach((parameter) => {
@@ -72,7 +72,7 @@ const visit = (file) => {
               ts
                 .getLeadingCommentRanges(sourceFile.text, member.pos)
                 ?.map((range) =>
-                  sourceFile.text.substring(range.pos, range.end).trim()
+                  sourceFile.text.substring(range.pos, range.end).trim(),
                 ) || [],
             defaultValues: undefined, // Get default value,
           };
@@ -104,16 +104,16 @@ files.forEach((file, index) => {
     (acc, curr) =>
       acc.concat(
         curr.requests.map((item) => item.type),
-        curr.responseType
+        curr.responseType,
       ),
-    []
+    [],
   );
   const filteredTypes = [
     ...new Set(
       types
         .filter((type) => !isPrimitiveType(type))
         .filter((type) => !isViemType(type))
-        .filter((type) => !isEnclosedInCurlyBraces(type))
+        .filter((type) => !isEnclosedInCurlyBraces(type)),
     ),
   ];
   exportTypes.push(...filteredTypes);
@@ -123,8 +123,29 @@ files.forEach((file, index) => {
       name: fileName,
       methodNames: asyncMethods,
       viemTypes: [...new Set(types.filter((type) => isViemType(type)))],
-    })
+    }),
   );
+
+  const returnObjectWithUndefined = asyncMethods.reduce((acc, method) => {
+    acc[method] = undefined;
+    return acc;
+  }, {});
+
+  sources.push(
+    ejs.render(
+      `
+				if (!client) {
+					return {
+						loadings,
+						errors,
+						<%= Object.entries(returnObjectWithUndefined).map(([key, value]) => \`\${key}: \${value}\`).join(',\\n    ') %>
+						};
+					}
+				`,
+      { returnObjectWithUndefined },
+    ),
+  );
+
   const methodTemplates = methods.map((method) => {
     return ejs.render(resourceTemplate.methodTemplate, {
       method: method,
@@ -138,7 +159,7 @@ files.forEach((file, index) => {
     ejs.render(resourceTemplate.endTemplate, {
       methodNames,
       name: fileName,
-    })
+    }),
   );
   fs.writeFileSync(`src/resources/use${fileName}.ts`, sources.join("\n"));
 });
@@ -151,7 +172,7 @@ exec("npm run fix", (error) => {
   if (error) {
     console.log(
       "\x1b[31m%s\x1b[0m",
-      "\nError occurred while running npm run fix command. Please run `npm run fix` manually."
+      "\nError occurred while running npm run fix command. Please run `npm run fix` manually.",
     );
     bar.stop();
     return;
@@ -160,6 +181,6 @@ exec("npm run fix", (error) => {
   bar.stop();
   console.log(
     "\x1b[32m%s\x1b[0m",
-    "React SDK templates generated successfully!"
+    "React SDK templates generated successfully!",
   );
 });
