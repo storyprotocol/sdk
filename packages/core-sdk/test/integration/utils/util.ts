@@ -7,14 +7,13 @@ import {
   licenseTokenAddress,
   spgnftBeaconAddress,
 } from "../../../src/abi/generated";
-export const RPC = "https://story-testnet.aura.network";
+export const RPC =
+  " https://convincing-dark-feather.story-testnet.quiknode.pro/de18afeed566629cd009ba30eca51d6a9f7fb980/";
 export const iliadChainId = 1513;
 
 export const mockERC721 = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
-export const licenseToken =
-  licenseTokenAddress[Number(iliadChainId) as keyof typeof licenseTokenAddress];
-export const spgNftBeacon =
-  spgnftBeaconAddress[Number(iliadChainId) as keyof typeof spgnftBeaconAddress];
+export const licenseToken = licenseTokenAddress[iliadChainId];
+export const spgNftBeacon = spgnftBeaconAddress[iliadChainId];
 
 const baseConfig = {
   chain: chainStringToViemChain("iliad"),
