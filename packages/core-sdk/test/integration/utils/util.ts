@@ -1,5 +1,5 @@
 import { privateKeyToAccount } from "viem/accounts";
-import { chainStringToViemChain } from "../../../src/utils/utils";
+import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import { spgnftBeaconAddress } from "../../../src/abi/generated";
@@ -8,6 +8,8 @@ export const RPC =
 export const iliadChainId = 1513;
 
 export const mockERC721 = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
+export const licenseToken =
+  licenseTokenAddress[Number(iliadChainId) as keyof typeof licenseTokenAddress];
 export const spgNftBeacon =
   spgnftBeaconAddress[Number(iliadChainId) as keyof typeof spgnftBeaconAddress];
 
@@ -85,6 +87,18 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
   if (logs[0].topics[3]) {
     return parseInt(logs[0].topics[3], 16);
   }
+};
+
+export const approveForLicenseToken = async (address: Address, tokenId: bigint) => {
+  const { request: call } = await publicClient.simulateContract({
+    abi: licenseTokenAbi,
+    address: licenseToken,
+    functionName: "approve",
+    account: walletClient.account,
+    args: [address, tokenId],
+  });
+  const hash = await walletClient.writeContract(call);
+  await waitTx(publicClient, hash);
 };
 export const getStoryClient = (): StoryClient => {
   const config: StoryConfig = {

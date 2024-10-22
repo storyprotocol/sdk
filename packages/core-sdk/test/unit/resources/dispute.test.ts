@@ -6,13 +6,12 @@ import { PublicClient, WalletClient } from "viem";
 import { DisputeClient } from "../../../src";
 
 chai.use(chaiAsPromised);
+const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
 
 describe("Test DisputeClient", () => {
   let disputeClient: DisputeClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-
-  const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -29,8 +28,7 @@ describe("Test DisputeClient", () => {
       try {
         await disputeClient.raiseDispute({
           targetIpId: "0x",
-          arbitrationPolicy: "0x",
-          linkToDisputeEvidence: "link",
+          disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           targetTag: "tag",
         });
       } catch (e) {
@@ -44,8 +42,7 @@ describe("Test DisputeClient", () => {
       sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        arbitrationPolicy: "0x",
-        linkToDisputeEvidence: "",
+        disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         targetTag: "tag",
       });
 
@@ -60,15 +57,14 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           disputeInitiator: "0x",
           arbitrationPolicy: "0x",
-          linkToDisputeEvidence: "0x",
+          disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           targetTag: "0x",
           data: "0x",
         },
       ]);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        arbitrationPolicy: "0x",
-        linkToDisputeEvidence: "link",
+        disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         targetTag: "tag",
         txOptions: { waitForTransaction: true },
       });
@@ -77,35 +73,15 @@ describe("Test DisputeClient", () => {
       expect(result.disputeId).equal(1n);
     });
 
-    // Raise dispute - @boris added test cases
-
-    // Failing
-    it.skip("should throw ZeroLinkToDisputeEvidence error when linkToDisputeEvidence is empty", async () => {
-      try {
-        await disputeClient.raiseDispute({
-          targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          arbitrationPolicy: "0x",
-          linkToDisputeEvidence: "link",
-          targetTag: "tag",
-        });
-      } catch (e) {
-        expect((e as Error).message).equal("Failed to raise dispute: ZeroLinkToDisputeEvidence");
-      }
-    });
-
-    // Passing after debugging `dispute.ts`
-    it.skip("should return encodedTxData when encodedTxDataOnly is set", async () => {
-      sinon.stub(disputeClient.disputeModuleClient, "raiseDisputeEncode").resolves("encodedData");
+    it("should return encodedTxData when call raiseDispute successfully with encodedTxDataOnly", async () => {
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        arbitrationPolicy: "0x",
-        linkToDisputeEvidence: "link",
+        disputeEvidenceHash: "0xb7b94ecbd1f9f8cb209909e5785fb2858c9a8c4b220c017995a75346ad1b5db5",
         targetTag: "tag",
         txOptions: { encodedTxDataOnly: true },
       });
-      console.log(JSON.stringify(result, null, 2));
 
-      expect(result.encodedTxData).to.equal("encodedData");
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 
@@ -125,7 +101,7 @@ describe("Test DisputeClient", () => {
       sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").resolves(txHash);
       const result = await disputeClient.cancelDispute({
         disputeId: 1,
-        calldata: "0x",
+        data: "0x",
       });
 
       expect(result.txHash).equal(txHash);
@@ -141,28 +117,13 @@ describe("Test DisputeClient", () => {
       expect(result.txHash).equal(txHash);
     });
 
-    // Cancel Dispute - @boris added test cases
-
-    // Passing after debugging `dispute.ts`
-    it.skip("should return encodedTxData when encodedTxDataOnly is set", async () => {
-      sinon.stub(disputeClient.disputeModuleClient, "cancelDisputeEncode").resolves("encodedData");
+    it("should return encodedTxData when call cancelDispute successfully with encodedTxDataOnly", async () => {
       const result = await disputeClient.cancelDispute({
         disputeId: 1,
-        calldata: "0x",
         txOptions: { encodedTxDataOnly: true },
       });
 
-      expect(result.encodedTxData).equal("encodedData");
-    });
-
-    // Passing
-    it("should handle empty calldata correctly", async () => {
-      sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").resolves(txHash);
-      const result = await disputeClient.cancelDispute({
-        disputeId: 1,
-      });
-
-      expect(result.txHash).equal(txHash);
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 

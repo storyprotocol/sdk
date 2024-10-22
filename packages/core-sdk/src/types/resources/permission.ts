@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hex, WalletClient } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
@@ -50,3 +50,15 @@ export type CreateBatchPermissionSignatureRequest = {
   ipId: Address;
   deadline?: bigint | number | string;
 } & SetBatchPermissionsRequest;
+
+export type PermissionSignatureRequest = {
+  ipId: Address;
+  state: Hex;
+  deadline: string | number | bigint;
+  wallet: WalletClient;
+  chainId: string | number | bigint;
+  permissions: Omit<SetPermissionsRequest, "txOptions">[];
+  permissionFunc?: "setPermission" | "setBatchPermissions";
+};
+
+export type PermissionSignatureResponse = Hex;

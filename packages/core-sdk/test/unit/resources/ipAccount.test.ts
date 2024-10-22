@@ -4,7 +4,7 @@ import * as sinon from "sinon";
 import { IPAccountClient } from "../../../src/resources/ipAccount";
 import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
 import * as utils from "../../../src/utils/utils";
-import { Account, PublicClient, WalletClient, zeroAddress, parseUnits } from "viem";
+import { Account, PublicClient, WalletClient, zeroAddress } from "viem";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 describe("Test IPAccountClient", () => {
@@ -18,6 +18,12 @@ describe("Test IPAccountClient", () => {
     const accountMock = createMock<Account>();
     walletMock.account = accountMock;
     ipAccountClient = new IPAccountClient(rpcMock, walletMock);
+    sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+    sinon.stub(IpAccountImplClient.prototype, "executeEncode").returns({ data: "0x", to: "0x" });
+    sinon.stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
+    sinon
+      .stub(IpAccountImplClient.prototype, "state")
+      .resolves({ result: "0x73fcb515cee99e4991465ef586cfe2b072ebb512" });
   });
 
   afterEach(() => {
@@ -45,7 +51,6 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call execute successfully", async () => {
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
       const result = await ipAccountClient.execute({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -57,7 +62,6 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call execute successfully with waitForTransaction", async () => {
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.execute({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -73,10 +77,6 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return encodedTxData when call execute successfully with encodedTxDataOnly", async () => {
-      IpAccountImplClient.prototype.execute = sinon.stub().resolves(txHash);
-      IpAccountImplClient.prototype.executeEncode = sinon
-        .stub()
-        .returns("0x11111111111111111111111111111");
       const result = await ipAccountClient.execute({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -87,7 +87,7 @@ describe("Test IPAccountClient", () => {
         },
       });
 
-      expect(result.encodedTxData).to.equal("0x11111111111111111111111111111");
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
 
     // Test execute - @boris added test cases
@@ -144,7 +144,6 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call executeWithSig successfully", async () => {
-      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -159,7 +158,6 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call executeWithSig successfully with waitForTransaction", async () => {
-      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
       sinon.stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -178,10 +176,6 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return encodedTxData when call executeWithSig successfully with encodedTxDataOnly", async () => {
-      IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
-      IpAccountImplClient.prototype.executeWithSigEncode = sinon
-        .stub()
-        .returns("0x11111111111111111111111111111");
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -195,7 +189,7 @@ describe("Test IPAccountClient", () => {
         },
       });
 
-      expect(result.encodedTxData).to.equal("0x11111111111111111111111111111");
+      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
 
     // Test executeWithSig - @boris added test cases
@@ -234,9 +228,6 @@ describe("Test IPAccountClient", () => {
       }
     });
     it("should return the state of the IP Account", async () => {
-      sinon
-        .stub(IpAccountImplClient.prototype, "state")
-        .resolves({ result: "0x73fcb515cee99e4991465ef586cfe2b072ebb512" });
       const state = await ipAccountClient.getIpAccountNonce(
         "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       );
