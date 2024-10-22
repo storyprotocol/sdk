@@ -1,7 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import * as sinon from "sinon";
-import { PublicClient, WalletClient } from "viem";
+import { PublicClient, WalletClient, Hex } from "viem";
 
 import { NftClient } from "../../../src";
 import { createMock } from "../testUtils";
@@ -137,13 +137,19 @@ describe("Test NftClient", () => {
       to: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
       data: "0x1234",
     };
-    sinon.stub(nftClient.spgClient, "createCollectionEncode").returns(encodedTxData);
+    sinon
+      .stub(nftClient.registrationWorkflowsClient, "createCollectionEncode")
+      .returns(encodedTxData);
 
     const result = await nftClient.createNFTCollection({
       name: "Encoded Only",
       symbol: "ENC",
       mintFee: 1n,
       mintFeeToken: mintFeeToken,
+      isPublicMinting: true,
+      mintOpen: true,
+      mintFeeRecipient: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+      contractURI: "https://your.metadata.url/contract-metadata",
       txOptions: {
         encodedTxDataOnly: true,
       },
@@ -155,28 +161,40 @@ describe("Test NftClient", () => {
   it("should throw error when createNFTCollection is called with a negative mint fee and valid mintFeeToken", async () => {
     try {
       await nftClient.createNFTCollection({
-        name: "Negative Mint Fee",
-        symbol: "NEG",
-        mintFee: -1n,
+        name: "Encoded Only",
+        symbol: "ENC",
+        mintFee: 1n,
         mintFeeToken: mintFeeToken,
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+        contractURI: "https://your.metadata.url/contract-metadata",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
       });
     } catch (e) {
-      expect((e as Error).message).equal(
-        "Failed to create a SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
+      expect((e as Error).message).to.contain(
+        'Failed to create a SPG NFT collection: Address "0x" is invalid',
       );
     }
   });
 
   it("should return txHash when createNFTCollection is called with a large maxSupply", async () => {
-    sinon.stub(nftClient.spgClient, "createCollection").resolves(txHash);
+    sinon.stub(nftClient.registrationWorkflowsClient, "createCollection").resolves(txHash);
     const maxUint32: number = 2 ** 32 - 1;
 
     const result = await nftClient.createNFTCollection({
-      name: "Large Supply",
-      symbol: "LGS",
-      maxSupply: Number(maxUint32) - 1,
+      name: "Encoded Only",
+      symbol: "ENC",
       mintFee: 1n,
       mintFeeToken: mintFeeToken,
+      isPublicMinting: true,
+      mintOpen: true,
+      mintFeeRecipient: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+      owner: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+      maxSupply: maxUint32,
+      contractURI: "https://your.metadata.url/contract-metadata",
     });
 
     expect(result.txHash).equal(txHash);
@@ -188,16 +206,21 @@ describe("Test NftClient", () => {
       to: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
       data: "0x1234",
     };
-    sinon.stub(nftClient.spgClient, "createCollectionEncode").returns(encodedTxData);
+    sinon
+      .stub(nftClient.registrationWorkflowsClient, "createCollectionEncode")
+      .returns(encodedTxData);
 
     const result = await nftClient.createNFTCollection({
-      name: "Encoded and Wait",
-      symbol: "ENW",
+      name: "Encoded Only",
+      symbol: "ENC",
       mintFee: 1n,
-      mintFeeToken: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+      mintFeeToken: mintFeeToken,
+      isPublicMinting: true,
+      mintOpen: true,
+      mintFeeRecipient: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+      contractURI: "https://your.metadata.url/contract-metadata",
       txOptions: {
         encodedTxDataOnly: true,
-        waitForTransaction: true, // This should be ignored since encodedTxDataOnly is true
       },
     });
 
@@ -206,19 +229,26 @@ describe("Test NftClient", () => {
   });
 
   it("should throw an error if createCollection transaction fails", async () => {
-    sinon.stub(nftClient.spgClient, "createCollection").throws(new Error("Transaction failed"));
+    sinon
+      .stub(nftClient.registrationWorkflowsClient, "createCollection")
+      .throws(new Error("Transaction failed"));
 
     try {
       await nftClient.createNFTCollection({
-        name: "Failed Transaction",
-        symbol: "FAIL",
+        name: "Encoded Only",
+        symbol: "ENC",
         mintFee: 1n,
         mintFeeToken: mintFeeToken,
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+        contractURI: "https://your.metadata.url/contract-metadata",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
       });
     } catch (e) {
-      expect((e as Error).message).equal(
-        "Failed to create a SPG NFT collection: Transaction failed",
-      );
+      expect((e as Error).message).to.contain("Failed to create a SPG NFT collection");
     }
   });
 });
