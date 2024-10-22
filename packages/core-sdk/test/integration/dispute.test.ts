@@ -46,8 +46,8 @@ describe("Dispute Functions", () => {
     expect(response.txHash).to.be.a("string").and.not.empty;
     expect(response.disputeId).to.be.a("bigint");
   });
-
-  it("should not throw error when cancel a dispute", async () => {
+  //In the current arbitration policy it is not possible to cancel disputes, so skip this test
+  it.skip("should not throw error when cancel a dispute", async () => {
     const cancelDispute: CancelDisputeRequest = {
       disputeId: disputeId,
       txOptions: {

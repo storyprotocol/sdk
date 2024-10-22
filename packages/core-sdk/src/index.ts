@@ -127,3 +127,4 @@ export type {
 } from "./abi/generated";
 
 export { getPermissionSignature } from "./utils/sign";
+export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";

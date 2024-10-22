@@ -7,7 +7,7 @@ export type RaiseDisputeRequest = {
   targetIpId: Address;
   disputeEvidenceHash: Hex;
   targetTag: string;
-  data?: Address;
+  data?: Hex;
   txOptions?: TxOptions;
 };
 
