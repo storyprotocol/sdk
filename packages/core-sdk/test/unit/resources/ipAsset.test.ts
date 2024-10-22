@@ -883,7 +883,7 @@ describe("Test IpAssetClient", () => {
     it("should throw an error when `nftContract` is an invalid address", async function () {
       try {
         await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
-          nftContract: "0x",
+          spgNftContract: "0x",
           pilType: PIL_TYPE.COMMERCIAL_USE,
           mintingFee: "100",
           currency: zeroAddress,
@@ -1127,12 +1127,12 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
       sinon
-        .stub(ipAssetClient.spgClient, "registerIpAndMakeDerivative")
+        .stub(ipAssetClient.derivativeWorkflowsClient, "registerIpAndMakeDerivative")
         .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
 
       try {
         const res = await ipAssetClient.registerDerivativeIp({
-          nftContract,
+          nftContract: spgNftContract,
           tokenId: "3",
           derivData: {
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -1324,14 +1324,17 @@ describe("Test IpAssetClient", () => {
     // registerIpAndAttachPilTerms - @boris added test cases
 
     it("should handle missing optional parameters correctly", async function () {
-      const stub = sinon.stub(ipAssetClient.spgClient, "registerIpAndAttachPilTerms");
+      const stub = sinon.stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "registerIpAndAttachPilTerms",
+      );
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       await ipAssetClient.registerIpAndAttachPilTerms({
-        nftContract, // This is assumed to be a valid contract address
+        nftContract: spgNftContract, // This is assumed to be a valid contract address
         tokenId: "3", // Token ID as a string
         pilType: PIL_TYPE.COMMERCIAL_USE, // Required type
         mintingFee: "0", // Add a valid minting fee (e.g., "0" or "100")

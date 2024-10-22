@@ -2,7 +2,11 @@ import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
-import { spgnftBeaconAddress } from "../../../src/abi/generated";
+import {
+  spgnftBeaconAddress,
+  licenseTokenAddress,
+  licenseTokenAbi,
+} from "../../../src/abi/generated";
 export const RPC =
   "https://convincing-dark-feather.story-testnet.quiknode.pro/de18afeed566629cd009ba30eca51d6a9f7fb980/";
 export const iliadChainId = 1513;
