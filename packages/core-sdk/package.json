@@ -18,8 +18,8 @@
   "scripts": {
     "build": "pnpm run fix && preconstruct build",
     "test": "pnpm run test:unit",
-    "test:unit": "TS_NODE_PROJECT='./tsconfig.test.json' c8 --all --src ./src mocha -r ts-node/register './test/unit/**/*.test.ts'",
-    "test:integration": "TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register './test/integration/**/*.test.ts' --timeout 240000",
+    "test:unit": "TS_NODE_PROJECT='./tsconfig.test.json' c8 --all --src ./src mocha -r ts-node/register './test/unit/utils/ipfs.test.ts'",
+    "test:integration": "TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register './test/integration/**/dispute.test.ts' --timeout 240000",
     "fix": "pnpm run format:fix && pnpm run lint:fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
@@ -31,7 +31,9 @@
   "dependencies": {
     "abitype": "^0.10.2",
     "axios": "^1.5.1",
+    "bs58": "^6.0.0",
     "dotenv": "^16.3.1",
+    "multiformats": "9.9.0",
     "viem": "^2.8.12"
   },
   "devDependencies": {

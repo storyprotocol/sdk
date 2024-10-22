@@ -9,9 +9,8 @@ import { arbitrationPolicySpAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-//Because of IPFS issue, so currently we can't test this function
 const arbitrationPolicyAddress = arbitrationPolicySpAddress[iliadChainId];
-describe.skip("Dispute Functions", () => {
+describe("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
   let disputeId: bigint;
@@ -38,7 +37,7 @@ describe.skip("Dispute Functions", () => {
   it("should not throw error when raise a dispute", async () => {
     const raiseDisputeRequest: RaiseDisputeRequest = {
       targetIpId: ipIdB,
-      disputeEvidenceHash: "0xb7b94ecbd1f9f8cb209909e5785fb2858c9a8c4b220c017995a75346ad1b5db5",
+      disputeEvidenceHash: "0xc3c4733ec8affd06cf9e9ff50ffc6bcd2ec85a6170004bb709669c31de94391a",
       targetTag: "PLAGIARISM",
       txOptions: {
         waitForTransaction: true,
