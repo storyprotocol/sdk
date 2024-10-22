@@ -3,7 +3,8 @@ import { chainStringToViemChain } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import { spgnftBeaconAddress } from "../../../src/abi/generated";
-export const RPC = "https://testnet.storyrpc.io";
+export const RPC =
+  "https://convincing-dark-feather.story-testnet.quiknode.pro/de18afeed566629cd009ba30eca51d6a9f7fb980/";
 export const iliadChainId = 1513;
 
 export const mockERC721 = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
