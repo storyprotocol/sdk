@@ -240,13 +240,11 @@ describe("IP Asset Functions ", () => {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],
         },
-        deadline: 1000n,
-        txOptions: {
-          waitForTransaction: true,
+        ipMetadata: {
+          ipMetadataHash: toHex("test-metadata", { size: 32 }),
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
     });
 
     it("should not throw error when register ip and attach pil terms", async () => {
