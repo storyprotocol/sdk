@@ -84,11 +84,11 @@ jobs:
 
           BRANCH_NAME="${{ needs.extract_branch_name.outputs.branch_name }}"
           if [[ "$BRANCH_NAME" == "v${{ env.VERSION_1_1 }}" || "$BRANCH_NAME" == "dev_v${{ env.VERSION_1_1 }}" ]]; then
-            get_latest_version "${{ env.VERSION_1_1 }}" "bon-sdk" "CORE_SDK_LATEST_VERSION"
-            get_latest_version "${{ env.VERSION_1_1 }}" "bonnie-react-sdk" "REACT_SDK_LATEST_VERSION"
+            get_latest_version "${{ env.VERSION_1_1 }}" "@story-protocol/core-sdk" "CORE_SDK_LATEST_VERSION"
+            get_latest_version "${{ env.VERSION_1_1 }}" "@story-protocol/react-sdk" "REACT_SDK_LATEST_VERSION"
           elif [[ "$BRANCH_NAME" == "${{ env.MAIN }}" || "$BRANCH_NAME" == ${{ env.DEV }} ]]; then        
-            get_latest_version "${{ env.VERSION_1_2 }}" "bon-sdk" "CORE_SDK_LATEST_VERSION"
-            get_latest_version "${{ env.VERSION_1_2 }}" "bonnie-react-sdk" "REACT_SDK_LATEST_VERSION"
+            get_latest_version "${{ env.VERSION_1_2 }}" "@story-protocol/core-sdk" "CORE_SDK_LATEST_VERSION"
+            get_latest_version "${{ env.VERSION_1_2 }}" "@story-protocol/react-sdk" "REACT_SDK_LATEST_VERSION"
           fi
   # Fail if the version including react-sdk and core-sdk does not match the branch strategy
   check_if_version_is_valid_for_branch:
@@ -220,7 +220,7 @@ jobs:
 
       - name: Build
         run: pnpm build
-        
+
       - name: Publish core-sdk package to npm
         if: ${{ github.event_name == 'push' && needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
         run: |
