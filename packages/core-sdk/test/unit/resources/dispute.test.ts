@@ -160,19 +160,5 @@ describe("Test DisputeClient", () => {
 
       expect(result.txHash).equal(txHash);
     });
-
-    // Resolve Dispute - @boris added test cases
-
-    // Passing after debugging `dispute.ts`
-    it.skip("should return encodedTxData when encodedTxDataOnly is set", async () => {
-      sinon.stub(disputeClient.disputeModuleClient, "resolveDisputeEncode").resolves("encodedData");
-      const result = await disputeClient.resolveDispute({
-        disputeId: 1,
-        data: "0x",
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(result.encodedTxData).equal("encodedData");
-    });
   });
 });

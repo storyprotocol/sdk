@@ -1113,39 +1113,6 @@ describe("Test IpAssetClient", () => {
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
-
-    // registerDerivativeIp - @boris added test cases
-
-    // failing - it's passing and it shouldn't?
-    // the lenght of licenseTermsIds should match parentIpIds?
-    it.skip("should throw an error when the length of `parentIpIds` does not match `licenseTermsIds`", async function () {
-      sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-      sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon
-        .stub(ipAssetClient.derivativeWorkflowsClient, "registerIpAndMakeDerivative")
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-
-      try {
-        const res = await ipAssetClient.registerDerivativeIp({
-          nftContract: spgNftContract,
-          tokenId: "3",
-          derivData: {
-            parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
-            licenseTermsIds: ["1", "2"],
-          },
-        });
-      } catch (err) {
-        console.log("looo");
-        expect((err as Error).message).to.equal(
-          "Failed to register derivative IP: Parent IP IDs and License terms IDs must be provided in pairs.",
-        );
-      }
-    });
   });
 
   describe("Test ipAssetClient.registerIpAndAttachPilTerms", async () => {
