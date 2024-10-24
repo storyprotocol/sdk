@@ -347,6 +347,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -450,6 +451,7 @@ describe("Test LicenseClient", () => {
         defaultMintingFee: "1",
         commercialRevShare: 100,
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },

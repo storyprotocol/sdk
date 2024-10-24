@@ -731,6 +731,7 @@ describe("Test IpAssetClient", () => {
         mintingFee: "100",
         currency: zeroAddress,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        royaltyPolicyAddress: zeroAddress,
         ipMetadata: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
@@ -1112,6 +1113,7 @@ describe("Test IpAssetClient", () => {
         pilType: PIL_TYPE.COMMERCIAL_USE,
         mintingFee: "100",
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
       });
 
       expect(result.txHash).to.equal(hash);
