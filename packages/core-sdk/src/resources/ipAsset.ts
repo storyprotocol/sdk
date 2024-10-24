@@ -442,6 +442,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -462,7 +463,9 @@ export class IPAssetClient {
         defaultMintingFee: request.mintingFee,
         currency: request.currency,
         commercialRevShare: request.commercialRevShare,
-        royaltyPolicyLAPAddress:
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
           royaltyPolicyLapAddress[
             chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
           ],
@@ -520,6 +523,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -544,7 +548,9 @@ export class IPAssetClient {
       const licenseTerm = getLicenseTermByType(request.pilType, {
         defaultMintingFee: request.mintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress:
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
           royaltyPolicyLapAddress[
             chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
           ],
