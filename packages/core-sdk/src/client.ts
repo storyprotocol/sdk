@@ -12,7 +12,7 @@ import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
 import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
-import { chainStringToViemChain } from "./utils/utils";
+import { chain, chainStringToViemChain } from "./utils/utils";
 import { RoyaltyClient } from "./resources/royalty";
 import { NftClient } from "./resources/nftClient";
 import { GroupClient } from "./resources/group";
@@ -43,7 +43,7 @@ export class StoryClient {
   private constructor(config: StoryConfig) {
     this.config = {
       ...config,
-      chainId: config.chainId || "iliad",
+      chainId: chain[config.chainId || "odyssey"] as unknown as SupportedChainIds,
     };
     if (!this.config.transport) {
       throw new Error(

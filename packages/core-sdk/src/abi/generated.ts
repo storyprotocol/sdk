@@ -390,7 +390,7 @@ export const accessControllerAbi = [
  *
  */
 export const accessControllerAddress = {
-  1513: "0xbcaD7EA76Ee68Cc507874e9050a7E7D7ff07BB09",
+  1516: "0xa8bF970E95278A7aF475CE13C24cdcC3a2234a3D",
 } as const;
 
 /**
@@ -399,265 +399,6 @@ export const accessControllerAddress = {
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
-} as const;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ArbitrationPolicySP
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- *
- */
-export const arbitrationPolicySpAbi = [
-  {
-    type: "constructor",
-    inputs: [
-      { name: "disputeModule", internalType: "address", type: "address" },
-      { name: "paymentToken", internalType: "address", type: "address" },
-      { name: "arbitrationPrice", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "authority", internalType: "address", type: "address" }],
-    name: "AccessManagedInvalidAuthority",
-  },
-  {
-    type: "error",
-    inputs: [
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "delay", internalType: "uint32", type: "uint32" },
-    ],
-    name: "AccessManagedRequiredDelay",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "caller", internalType: "address", type: "address" }],
-    name: "AccessManagedUnauthorized",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "target", internalType: "address", type: "address" }],
-    name: "AddressEmptyCode",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  { type: "error", inputs: [], name: "ArbitrationPolicySP__NotDisputeModule" },
-  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroAccessManager" },
-  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroDisputeModule" },
-  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroPaymentToken" },
-  { type: "error", inputs: [], name: "ArbitrationPolicySP__ZeroTreasury" },
-  {
-    type: "error",
-    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
-    name: "ERC1967InvalidImplementation",
-  },
-  { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
-  { type: "error", inputs: [], name: "InvalidInitialization" },
-  { type: "error", inputs: [], name: "NotInitializing" },
-  {
-    type: "error",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "SafeERC20FailedOperation",
-  },
-  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
-  {
-    type: "error",
-    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
-    name: "UUPSUnsupportedProxiableUUID",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "authority",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-    ],
-    name: "AuthorityUpdated",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "version",
-        internalType: "uint64",
-        type: "uint64",
-        indexed: false,
-      },
-    ],
-    name: "Initialized",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "implementation",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    name: "Upgraded",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "ARBITRATION_PRICE",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "DISPUTE_MODULE",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "PAYMENT_TOKEN",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "UPGRADE_INTERFACE_VERSION",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "authority",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "accessManager", internalType: "address", type: "address" },
-      { name: "newTreasury", internalType: "address", type: "address" },
-    ],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "isConsumingScheduledOp",
-    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "disputeId", internalType: "uint256", type: "uint256" },
-      { name: "data", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onDisputeCancel",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "disputeId", internalType: "uint256", type: "uint256" },
-      { name: "decision", internalType: "bool", type: "bool" },
-      { name: "data", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onDisputeJudgement",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "data", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onRaiseDispute",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "caller", internalType: "address", type: "address" },
-      { name: "disputeId", internalType: "uint256", type: "uint256" },
-      { name: "data", internalType: "bytes", type: "bytes" },
-    ],
-    name: "onResolveDispute",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "proxiableUUID",
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
-    name: "setAuthority",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "newTreasury", internalType: "address", type: "address" }],
-    name: "setTreasury",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "treasury",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "newImplementation", internalType: "address", type: "address" },
-      { name: "data", internalType: "bytes", type: "bytes" },
-    ],
-    name: "upgradeToAndCall",
-    outputs: [],
-    stateMutability: "payable",
-  },
-] as const;
-
-/**
- *
- */
-export const arbitrationPolicySpAddress = {
-  1513: "0x8038697357F63415e848785e45B00eB60BcD797b",
-} as const;
-
-/**
- *
- */
-export const arbitrationPolicySpConfig = {
-  address: arbitrationPolicySpAddress,
-  abi: arbitrationPolicySpAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -950,7 +691,7 @@ export const coreMetadataModuleAbi = [
  *
  */
 export const coreMetadataModuleAddress = {
-  1513: "0xa71Bd7aff91Da5E27A6f96c546D489F6e0870E45",
+  1516: "0x56eFacFCcacfdEbd1d6E3C4071CaCDEbA0902f04",
 } as const;
 
 /**
@@ -1408,7 +1149,7 @@ export const derivativeWorkflowsAbi = [
  *
  */
 export const derivativeWorkflowsAddress = {
-  1513: "0xC022C70DA8c23Ae8e36B3de9039Ed24E4E42a127",
+  1516: "0xE0e1d222E024bF14B1e0A4b48fC6e6B6F8ebaEB3",
 } as const;
 
 /**
@@ -2088,7 +1829,7 @@ export const disputeModuleAbi = [
  *
  */
 export const disputeModuleAddress = {
-  1513: "0x26525b4A1c2261A27B9ee89D512c2f7DceF85f4a",
+  1516: "0xD082824B244Edcc5Bb5e67cD96a7d5a189c7E247",
 } as const;
 
 /**
@@ -2438,7 +2179,7 @@ export const evenSplitGroupPoolAbi = [
  *
  */
 export const evenSplitGroupPoolAddress = {
-  1513: "0xA1dB7AB14900Cd9eF9A7eBA931A206250F403a14",
+  1516: "0x764842EaEFDc176B673Bd44e6F5c3Db38F8baA54",
 } as const;
 
 /**
@@ -2987,7 +2728,7 @@ export const groupingModuleAbi = [
  *
  */
 export const groupingModuleAddress = {
-  1513: "0xaB7a16Ad9e46656C59e6071d920feeE7A3416ECf",
+  1516: "0x26Eb59B900FD158396931d2349Fd6B08f0390e76",
 } as const;
 
 /**
@@ -3017,6 +2758,7 @@ export const groupingWorkflowsAbi = [
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "pilTemplate", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -3170,6 +2912,13 @@ export const groupingWorkflowsAbi = [
   {
     type: "function",
     inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract RoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
@@ -3184,7 +2933,7 @@ export const groupingWorkflowsAbi = [
   {
     type: "function",
     inputs: [
-      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupIpId", internalType: "address", type: "address" },
       { name: "currencyTokens", internalType: "address[]", type: "address[]" },
       {
         name: "groupSnapshotIds",
@@ -3371,7 +3120,7 @@ export const groupingWorkflowsAbi = [
  *
  */
 export const groupingWorkflowsAddress = {
-  1513: "0x426fF4F7E9Debe565F5Fe6F53334Ad3982295E20",
+  1516: "0xfAa9CCd49DCDfB9a950CBF036cD6082e623a6bcC",
 } as const;
 
 /**
@@ -3795,7 +3544,7 @@ export const ipAccountImplAbi = [
  *
  */
 export const ipAccountImplAddress = {
-  1513: "0xaE2D8F01920DB2328BEd676652154c9D2Cb863fa",
+  1516: "0x778159888076ADF6A574081346AF5837453885dE",
 } as const;
 
 /**
@@ -3845,6 +3594,11 @@ export const ipAssetRegistryAbi = [
     type: "error",
     inputs: [{ name: "target", internalType: "address", type: "address" }],
     name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
   },
   {
     type: "error",
@@ -3902,8 +3656,18 @@ export const ipAssetRegistryAbi = [
     name: "IPAssetRegistry__UnsupportedIERC721Metadata",
   },
   { type: "error", inputs: [], name: "IPAssetRegistry__ZeroAccessManager" },
+  {
+    type: "error",
+    inputs: [{ name: "name", internalType: "string", type: "string" }],
+    name: "IPAssetRegistry__ZeroAddress",
+  },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
   {
     type: "error",
     inputs: [
@@ -4012,6 +3776,37 @@ export const ipAssetRegistryAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "payer",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "treasury",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "feeToken",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint96",
+        type: "uint96",
+        indexed: false,
+      },
+    ],
+    name: "IPRegistrationFeePaid",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "version",
         internalType: "uint64",
         type: "uint64",
@@ -4032,6 +3827,31 @@ export const ipAssetRegistryAbi = [
       },
     ],
     name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "treasury",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "feeToken",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "feeAmount",
+        internalType: "uint96",
+        type: "uint96",
+        indexed: false,
+      },
+    ],
+    name: "RegistrationFeeSet",
   },
   {
     type: "event",
@@ -4130,6 +3950,20 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "getFeeAmount",
+    outputs: [{ name: "", internalType: "uint96", type: "uint96" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getFeeToken",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "groupId", internalType: "address", type: "address" },
       { name: "startIndex", internalType: "uint256", type: "uint256" },
@@ -4150,6 +3984,13 @@ export const ipAssetRegistryAbi = [
     type: "function",
     inputs: [],
     name: "getIPAccountImpl",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getTreasury",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
@@ -4272,6 +4113,17 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "treasury", internalType: "address", type: "address" },
+      { name: "feeToken", internalType: "address", type: "address" },
+      { name: "feeAmount", internalType: "uint96", type: "uint96" },
+    ],
+    name: "setRegistrationFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
     name: "totalMembers",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
@@ -4314,7 +4166,7 @@ export const ipAssetRegistryAbi = [
  *
  */
 export const ipAssetRegistryAddress = {
-  1513: "0x14CAB45705Fe73EC6d126518E59Fe3C61a181E40",
+  1516: "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
 } as const;
 
 /**
@@ -4769,7 +4621,7 @@ export const ipRoyaltyVaultImplAbi = [
  *
  */
 export const ipRoyaltyVaultImplAddress = {
-  1513: "0x604dc8E58f720DEB345B2F3e08B2B354eA6CE498",
+  1516: "0x9b7Ae229653251c6090324800D7E46435853C069",
 } as const;
 
 /**
@@ -5259,7 +5111,7 @@ export const licenseAttachmentWorkflowsAbi = [
  *
  */
 export const licenseAttachmentWorkflowsAddress = {
-  1513: "0x1B95144b62B4566501482e928aa435Dd205fE71B",
+  1516: "0xC7A40c41Cbe44C6B326447081877d69F98127C59",
 } as const;
 
 /**
@@ -5284,7 +5136,6 @@ export const licenseRegistryAbi = [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "ipGraphAcl", internalType: "address", type: "address" },
-      { name: "ipGraph", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -5962,7 +5813,7 @@ export const licenseRegistryAbi = [
  *
  */
 export const licenseRegistryAddress = {
-  1513: "0x4D71a082DE74B40904c1d89d9C3bfB7079d4c542",
+  1516: "0xedf8e338F05f7B1b857C3a8d3a0aBB4bc2c41723",
 } as const;
 
 /**
@@ -6583,7 +6434,7 @@ export const licenseTokenAbi = [
  *
  */
 export const licenseTokenAddress = {
-  1513: "0xd8aEF404432a2b3363479A6157285926B6B3b743",
+  1516: "0xc7A302E03cd7A304394B401192bfED872af501BE",
 } as const;
 
 /**
@@ -7147,7 +6998,7 @@ export const licensingModuleAbi = [
  *
  */
 export const licensingModuleAddress = {
-  1513: "0xC8f165950411504eA130692B87A7148e469f7090",
+  1516: "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
 } as const;
 
 /**
@@ -7347,7 +7198,7 @@ export const mockErc20Abi = [
  *
  */
 export const mockErc20Address = {
-  1513: "0x91f6F05B08c16769d3c85867548615d270C42fC7",
+  1516: "0x2C30F1a7fD58806f57930063850BCBcFf81b46e8",
 } as const;
 
 /**
@@ -7652,7 +7503,7 @@ export const moduleRegistryAbi = [
  *
  */
 export const moduleRegistryAddress = {
-  1513: "0x47bEae573B73F8BF1B4fa4Af065c39743871003f",
+  1516: "0x7b3ba7839F5754B02531Aa84680637f78CB476c0",
 } as const;
 
 /**
@@ -8338,7 +8189,7 @@ export const piLicenseTemplateAbi = [
  *
  */
 export const piLicenseTemplateAddress = {
-  1513: "0xbB7ACFBE330C56aA9a3aEb84870743C3566992c3",
+  1516: "0x0752f61E59fD2D39193a74610F1bd9a6Ade2E3f9",
 } as const;
 
 /**
@@ -8689,7 +8540,7 @@ export const registrationWorkflowsAbi = [
  *
  */
 export const registrationWorkflowsAddress = {
-  1513: "0xF403fcCAAE6C503D0CC1D25904A0B2cCd5B96C6F",
+  1516: "0x8D8E0d24E7B6420d3209EfA185Fa451c95D8316A",
 } as const;
 
 /**
@@ -8715,7 +8566,6 @@ export const royaltyModuleAbi = [
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
-      { name: "ipGraph", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -9580,7 +9430,7 @@ export const royaltyModuleAbi = [
  *
  */
 export const royaltyModuleAddress = {
-  1513: "0xaCb5764E609aa3a5ED36bA74ba59679246Cb0963",
+  1516: "0x3C27b2D7d30131D4b58C3584FD7c86e3358744de",
 } as const;
 
 /**
@@ -9604,7 +9454,6 @@ export const royaltyPolicyLapAbi = [
     inputs: [
       { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "ipGraphAcl", internalType: "address", type: "address" },
-      { name: "ipGraph", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -9952,7 +9801,7 @@ export const royaltyPolicyLapAbi = [
  *
  */
 export const royaltyPolicyLapAddress = {
-  1513: "0x793Df8d32c12B0bE9985FFF6afB8893d347B6686",
+  1516: "0x4074CEC2B3427f983D14d0C5E962a06B7162Ab92",
 } as const;
 
 /**
@@ -9976,7 +9825,6 @@ export const royaltyPolicyLrpAbi = [
     inputs: [
       { name: "royaltyModule", internalType: "address", type: "address" },
       { name: "ipGraphAcl", internalType: "address", type: "address" },
-      { name: "ipGraph", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -10324,7 +10172,7 @@ export const royaltyPolicyLrpAbi = [
  *
  */
 export const royaltyPolicyLrpAddress = {
-  1513: "0x1eF035c7054bd45e25B2a29A06a37b1350F50596",
+  1516: "0x7F6a8f43EC6059eC80C172441CEe3423988a0be9",
 } as const;
 
 /**
@@ -10584,7 +10432,7 @@ export const royaltyWorkflowsAbi = [
  *
  */
 export const royaltyWorkflowsAddress = {
-  1513: "0xc757921ee0f7c8E935d44BFBDc2602786e0eda6C",
+  1516: "0x19E435b1C0857375F9423C8ba508203054CE1d9F",
 } as const;
 
 /**
@@ -10699,7 +10547,7 @@ export const spgnftBeaconAbi = [
  *
  */
 export const spgnftBeaconAddress = {
-  1513: "0x02324ca8f369abB445F50c4cE79e956e49AC75d8",
+  1516: "0xD753c698aE69194C851d60BF759d537DE7477696",
 } as const;
 
 /**
@@ -10865,6 +10713,7 @@ export const spgnftImplAbi = [
     ],
     name: "BatchMetadataUpdate",
   },
+  { type: "event", anonymous: false, inputs: [], name: "ContractURIUpdated" },
   {
     type: "event",
     anonymous: false,
@@ -11027,6 +10876,13 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "contractURI",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
     name: "getApproved",
     outputs: [{ name: "", internalType: "address", type: "address" }],
@@ -11070,6 +10926,7 @@ export const spgnftImplAbi = [
           { name: "name", internalType: "string", type: "string" },
           { name: "symbol", internalType: "string", type: "string" },
           { name: "baseURI", internalType: "string", type: "string" },
+          { name: "contractURI", internalType: "string", type: "string" },
           { name: "maxSupply", internalType: "uint32", type: "uint32" },
           { name: "mintFee", internalType: "uint256", type: "uint256" },
           { name: "mintFeeToken", internalType: "address", type: "address" },
@@ -11230,6 +11087,13 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "contractURI", internalType: "string", type: "string" }],
+    name: "setContractURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "fee", internalType: "uint256", type: "uint256" }],
     name: "setMintFee",
     outputs: [],
@@ -11315,7 +11179,7 @@ export const spgnftImplAbi = [
  *
  */
 export const spgnftImplAddress = {
-  1513: "0xC8E4376Da033cE244027B03f9b94dc0d7005D67E",
+  1516: "0xA12e66a4429c9B7f38893c9b00E80646e0e76446",
 } as const;
 
 /**
@@ -11590,704 +11454,6 @@ export class AccessControllerClient extends AccessControllerEventClient {
         abi: accessControllerAbi,
         functionName: "setPermission",
         args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
-      }),
-    };
-  }
-}
-
-// Contract ArbitrationPolicySP =============================================================
-
-/**
- * ArbitrationPolicySpAuthorityUpdatedEvent
- *
- * @param authority address
- */
-export type ArbitrationPolicySpAuthorityUpdatedEvent = {
-  authority: Address;
-};
-
-/**
- * ArbitrationPolicySpInitializedEvent
- *
- * @param version uint64
- */
-export type ArbitrationPolicySpInitializedEvent = {
-  version: bigint;
-};
-
-/**
- * ArbitrationPolicySpUpgradedEvent
- *
- * @param implementation address
- */
-export type ArbitrationPolicySpUpgradedEvent = {
-  implementation: Address;
-};
-
-export type ArbitrationPolicySpArbitrationPriceResponse = bigint;
-
-export type ArbitrationPolicySpDisputeModuleResponse = Address;
-
-export type ArbitrationPolicySpPaymentTokenResponse = Address;
-
-export type ArbitrationPolicySpUpgradeInterfaceVersionResponse = string;
-
-export type ArbitrationPolicySpAuthorityResponse = Address;
-
-export type ArbitrationPolicySpIsConsumingScheduledOpResponse = Hex;
-
-export type ArbitrationPolicySpProxiableUuidResponse = Hex;
-
-export type ArbitrationPolicySpTreasuryResponse = Address;
-
-/**
- * ArbitrationPolicySpInitializeRequest
- *
- * @param accessManager address
- * @param newTreasury address
- */
-export type ArbitrationPolicySpInitializeRequest = {
-  accessManager: Address;
-  newTreasury: Address;
-};
-
-/**
- * ArbitrationPolicySpOnDisputeCancelRequest
- *
- * @param caller address
- * @param disputeId uint256
- * @param data bytes
- */
-export type ArbitrationPolicySpOnDisputeCancelRequest = {
-  caller: Address;
-  disputeId: bigint;
-  data: Hex;
-};
-
-/**
- * ArbitrationPolicySpOnDisputeJudgementRequest
- *
- * @param disputeId uint256
- * @param decision bool
- * @param data bytes
- */
-export type ArbitrationPolicySpOnDisputeJudgementRequest = {
-  disputeId: bigint;
-  decision: boolean;
-  data: Hex;
-};
-
-/**
- * ArbitrationPolicySpOnRaiseDisputeRequest
- *
- * @param caller address
- * @param data bytes
- */
-export type ArbitrationPolicySpOnRaiseDisputeRequest = {
-  caller: Address;
-  data: Hex;
-};
-
-/**
- * ArbitrationPolicySpOnResolveDisputeRequest
- *
- * @param caller address
- * @param disputeId uint256
- * @param data bytes
- */
-export type ArbitrationPolicySpOnResolveDisputeRequest = {
-  caller: Address;
-  disputeId: bigint;
-  data: Hex;
-};
-
-/**
- * ArbitrationPolicySpSetAuthorityRequest
- *
- * @param newAuthority address
- */
-export type ArbitrationPolicySpSetAuthorityRequest = {
-  newAuthority: Address;
-};
-
-/**
- * ArbitrationPolicySpSetTreasuryRequest
- *
- * @param newTreasury address
- */
-export type ArbitrationPolicySpSetTreasuryRequest = {
-  newTreasury: Address;
-};
-
-/**
- * ArbitrationPolicySpUpgradeToAndCallRequest
- *
- * @param newImplementation address
- * @param data bytes
- */
-export type ArbitrationPolicySpUpgradeToAndCallRequest = {
-  newImplementation: Address;
-  data: Hex;
-};
-
-/**
- * contract ArbitrationPolicySP event
- */
-export class ArbitrationPolicySpEventClient {
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, address?: Address) {
-    this.address = address || getAddress(arbitrationPolicySpAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event AuthorityUpdated for contract ArbitrationPolicySP
-   */
-  public watchAuthorityUpdatedEvent(
-    onLogs: (txHash: Hex, ev: Partial<ArbitrationPolicySpAuthorityUpdatedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      eventName: "AuthorityUpdated",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event AuthorityUpdated for contract ArbitrationPolicySP
-   */
-  public parseTxAuthorityUpdatedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<ArbitrationPolicySpAuthorityUpdatedEvent> {
-    const targetLogs: Array<ArbitrationPolicySpAuthorityUpdatedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: arbitrationPolicySpAbi,
-          eventName: "AuthorityUpdated",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "AuthorityUpdated") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Initialized for contract ArbitrationPolicySP
-   */
-  public watchInitializedEvent(
-    onLogs: (txHash: Hex, ev: Partial<ArbitrationPolicySpInitializedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      eventName: "Initialized",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Initialized for contract ArbitrationPolicySP
-   */
-  public parseTxInitializedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<ArbitrationPolicySpInitializedEvent> {
-    const targetLogs: Array<ArbitrationPolicySpInitializedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: arbitrationPolicySpAbi,
-          eventName: "Initialized",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Initialized") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Upgraded for contract ArbitrationPolicySP
-   */
-  public watchUpgradedEvent(
-    onLogs: (txHash: Hex, ev: Partial<ArbitrationPolicySpUpgradedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      eventName: "Upgraded",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Upgraded for contract ArbitrationPolicySP
-   */
-  public parseTxUpgradedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<ArbitrationPolicySpUpgradedEvent> {
-    const targetLogs: Array<ArbitrationPolicySpUpgradedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: arbitrationPolicySpAbi,
-          eventName: "Upgraded",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Upgraded") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract ArbitrationPolicySP readonly method
- */
-export class ArbitrationPolicySpReadOnlyClient extends ArbitrationPolicySpEventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method ARBITRATION_PRICE for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpArbitrationPriceRequest
-   * @return Promise<ArbitrationPolicySpArbitrationPriceResponse>
-   */
-  public async arbitrationPrice(): Promise<ArbitrationPolicySpArbitrationPriceResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "ARBITRATION_PRICE",
-    });
-  }
-
-  /**
-   * method DISPUTE_MODULE for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpDisputeModuleRequest
-   * @return Promise<ArbitrationPolicySpDisputeModuleResponse>
-   */
-  public async disputeModule(): Promise<ArbitrationPolicySpDisputeModuleResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "DISPUTE_MODULE",
-    });
-  }
-
-  /**
-   * method PAYMENT_TOKEN for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpPaymentTokenRequest
-   * @return Promise<ArbitrationPolicySpPaymentTokenResponse>
-   */
-  public async paymentToken(): Promise<ArbitrationPolicySpPaymentTokenResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "PAYMENT_TOKEN",
-    });
-  }
-
-  /**
-   * method UPGRADE_INTERFACE_VERSION for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpUpgradeInterfaceVersionRequest
-   * @return Promise<ArbitrationPolicySpUpgradeInterfaceVersionResponse>
-   */
-  public async upgradeInterfaceVersion(): Promise<ArbitrationPolicySpUpgradeInterfaceVersionResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "UPGRADE_INTERFACE_VERSION",
-    });
-  }
-
-  /**
-   * method authority for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpAuthorityRequest
-   * @return Promise<ArbitrationPolicySpAuthorityResponse>
-   */
-  public async authority(): Promise<ArbitrationPolicySpAuthorityResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "authority",
-    });
-  }
-
-  /**
-   * method isConsumingScheduledOp for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpIsConsumingScheduledOpRequest
-   * @return Promise<ArbitrationPolicySpIsConsumingScheduledOpResponse>
-   */
-  public async isConsumingScheduledOp(): Promise<ArbitrationPolicySpIsConsumingScheduledOpResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "isConsumingScheduledOp",
-    });
-  }
-
-  /**
-   * method proxiableUUID for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpProxiableUuidRequest
-   * @return Promise<ArbitrationPolicySpProxiableUuidResponse>
-   */
-  public async proxiableUuid(): Promise<ArbitrationPolicySpProxiableUuidResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "proxiableUUID",
-    });
-  }
-
-  /**
-   * method treasury for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpTreasuryRequest
-   * @return Promise<ArbitrationPolicySpTreasuryResponse>
-   */
-  public async treasury(): Promise<ArbitrationPolicySpTreasuryResponse> {
-    return await this.rpcClient.readContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "treasury",
-    });
-  }
-}
-
-/**
- * contract ArbitrationPolicySP write method
- */
-export class ArbitrationPolicySpClient extends ArbitrationPolicySpReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method initialize for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpInitializeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async initialize(
-    request: ArbitrationPolicySpInitializeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "initialize",
-      account: this.wallet.account,
-      args: [request.accessManager, request.newTreasury],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method initialize for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpInitializeRequest
-   * @return EncodedTxData
-   */
-  public initializeEncode(request: ArbitrationPolicySpInitializeRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "initialize",
-        args: [request.accessManager, request.newTreasury],
-      }),
-    };
-  }
-
-  /**
-   * method onDisputeCancel for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpOnDisputeCancelRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async onDisputeCancel(
-    request: ArbitrationPolicySpOnDisputeCancelRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "onDisputeCancel",
-      account: this.wallet.account,
-      args: [request.caller, request.disputeId, request.data],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method onDisputeCancel for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpOnDisputeCancelRequest
-   * @return EncodedTxData
-   */
-  public onDisputeCancelEncode(request: ArbitrationPolicySpOnDisputeCancelRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "onDisputeCancel",
-        args: [request.caller, request.disputeId, request.data],
-      }),
-    };
-  }
-
-  /**
-   * method onDisputeJudgement for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpOnDisputeJudgementRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async onDisputeJudgement(
-    request: ArbitrationPolicySpOnDisputeJudgementRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "onDisputeJudgement",
-      account: this.wallet.account,
-      args: [request.disputeId, request.decision, request.data],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method onDisputeJudgement for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpOnDisputeJudgementRequest
-   * @return EncodedTxData
-   */
-  public onDisputeJudgementEncode(
-    request: ArbitrationPolicySpOnDisputeJudgementRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "onDisputeJudgement",
-        args: [request.disputeId, request.decision, request.data],
-      }),
-    };
-  }
-
-  /**
-   * method onRaiseDispute for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpOnRaiseDisputeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async onRaiseDispute(
-    request: ArbitrationPolicySpOnRaiseDisputeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "onRaiseDispute",
-      account: this.wallet.account,
-      args: [request.caller, request.data],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method onRaiseDispute for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpOnRaiseDisputeRequest
-   * @return EncodedTxData
-   */
-  public onRaiseDisputeEncode(request: ArbitrationPolicySpOnRaiseDisputeRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "onRaiseDispute",
-        args: [request.caller, request.data],
-      }),
-    };
-  }
-
-  /**
-   * method onResolveDispute for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpOnResolveDisputeRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async onResolveDispute(
-    request: ArbitrationPolicySpOnResolveDisputeRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "onResolveDispute",
-      account: this.wallet.account,
-      args: [request.caller, request.disputeId, request.data],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method onResolveDispute for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpOnResolveDisputeRequest
-   * @return EncodedTxData
-   */
-  public onResolveDisputeEncode(
-    request: ArbitrationPolicySpOnResolveDisputeRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "onResolveDispute",
-        args: [request.caller, request.disputeId, request.data],
-      }),
-    };
-  }
-
-  /**
-   * method setAuthority for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpSetAuthorityRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async setAuthority(
-    request: ArbitrationPolicySpSetAuthorityRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "setAuthority",
-      account: this.wallet.account,
-      args: [request.newAuthority],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method setAuthority for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpSetAuthorityRequest
-   * @return EncodedTxData
-   */
-  public setAuthorityEncode(request: ArbitrationPolicySpSetAuthorityRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "setAuthority",
-        args: [request.newAuthority],
-      }),
-    };
-  }
-
-  /**
-   * method setTreasury for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpSetTreasuryRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async setTreasury(
-    request: ArbitrationPolicySpSetTreasuryRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "setTreasury",
-      account: this.wallet.account,
-      args: [request.newTreasury],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method setTreasury for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpSetTreasuryRequest
-   * @return EncodedTxData
-   */
-  public setTreasuryEncode(request: ArbitrationPolicySpSetTreasuryRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "setTreasury",
-        args: [request.newTreasury],
-      }),
-    };
-  }
-
-  /**
-   * method upgradeToAndCall for contract ArbitrationPolicySP
-   *
-   * @param request ArbitrationPolicySpUpgradeToAndCallRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async upgradeToAndCall(
-    request: ArbitrationPolicySpUpgradeToAndCallRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: arbitrationPolicySpAbi,
-      address: this.address,
-      functionName: "upgradeToAndCall",
-      account: this.wallet.account,
-      args: [request.newImplementation, request.data],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method upgradeToAndCall for contract ArbitrationPolicySP with only encode
-   *
-   * @param request ArbitrationPolicySpUpgradeToAndCallRequest
-   * @return EncodedTxData
-   */
-  public upgradeToAndCallEncode(
-    request: ArbitrationPolicySpUpgradeToAndCallRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: arbitrationPolicySpAbi,
-        functionName: "upgradeToAndCall",
-        args: [request.newImplementation, request.data],
       }),
     };
   }
@@ -23575,6 +22741,8 @@ export type SpgnftImplBalanceOfResponse = bigint;
 
 export type SpgnftImplBaseUriResponse = string;
 
+export type SpgnftImplContractUriResponse = string;
+
 /**
  * SpgnftImplGetApprovedRequest
  *
@@ -23704,6 +22872,7 @@ export type SpgnftImplInitializeRequest = {
     name: string;
     symbol: string;
     baseURI: string;
+    contractURI: string;
     maxSupply: number;
     mintFee: bigint;
     mintFeeToken: Address;
@@ -23806,6 +22975,15 @@ export type SpgnftImplSetApprovalForAllRequest = {
  */
 export type SpgnftImplSetBaseUriRequest = {
   baseURI: string;
+};
+
+/**
+ * SpgnftImplSetContractUriRequest
+ *
+ * @param contractURI string
+ */
+export type SpgnftImplSetContractUriRequest = {
+  contractURI: string;
 };
 
 /**
@@ -24353,6 +23531,20 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
       abi: spgnftImplAbi,
       address: this.address,
       functionName: "baseURI",
+    });
+  }
+
+  /**
+   * method contractURI for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplContractUriRequest
+   * @return Promise<SpgnftImplContractUriResponse>
+   */
+  public async contractUri(): Promise<SpgnftImplContractUriResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "contractURI",
     });
   }
 
@@ -24973,6 +24165,42 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
         abi: spgnftImplAbi,
         functionName: "setBaseURI",
         args: [request.baseURI],
+      }),
+    };
+  }
+
+  /**
+   * method setContractURI for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplSetContractUriRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setContractUri(
+    request: SpgnftImplSetContractUriRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "setContractURI",
+      account: this.wallet.account,
+      args: [request.contractURI],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setContractURI for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetContractUriRequest
+   * @return EncodedTxData
+   */
+  public setContractUriEncode(request: SpgnftImplSetContractUriRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setContractURI",
+        args: [request.contractURI],
       }),
     };
   }

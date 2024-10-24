@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Address, Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getTokenId, getStoryClient, iliadChainId } from "./utils/util";
+import { mockERC721, getTokenId, getStoryClient, odyssey } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import { royaltyPolicyLapAddress } from "../../src/abi/generated";
 
@@ -292,7 +292,7 @@ describe("Test royalty Functions", () => {
           royaltyClaimDetails: [
             {
               childIpId: childIpId,
-              royaltyPolicy: royaltyPolicyLapAddress[iliadChainId],
+              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
               currencyToken: MockERC20.address,
               amount: BigInt(1),
             },
@@ -328,7 +328,7 @@ describe("Test royalty Functions", () => {
           royaltyClaimDetails: [
             {
               childIpId: childIpId,
-              royaltyPolicy: royaltyPolicyLapAddress[iliadChainId],
+              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
               currencyToken: MockERC20.address,
               amount: BigInt(1),
             },
