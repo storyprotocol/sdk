@@ -1,7 +1,7 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
 import { CancelDisputeRequest, RaiseDisputeRequest } from "../../src/index";
-import { mockERC721, getStoryClient, getTokenId, odyssey } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
 import { Address } from "viem";
 import { MockERC20 } from "./utils/mockERC20";
@@ -19,7 +19,6 @@ describe("Dispute Functions", () => {
     clientB = getStoryClient();
     const mockERC20 = new MockERC20();
     await mockERC20.mint();
-    // await mockERC20.approve(arbitrationPolicyAddress);
     const tokenId = await getTokenId();
     ipIdB = (
       await clientB.ipAsset.register({
@@ -35,7 +34,7 @@ describe("Dispute Functions", () => {
   it("should not throw error when raise a dispute", async () => {
     const raiseDisputeRequest: RaiseDisputeRequest = {
       targetIpId: ipIdB,
-      disputeEvidenceHash: "0xc3c4733ec8affd06cf9e9ff50ffc6bcd2ec85a6170004bb709669c31de94391a",
+      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
       targetTag: "PLAGIARISM",
       txOptions: {
         waitForTransaction: true,

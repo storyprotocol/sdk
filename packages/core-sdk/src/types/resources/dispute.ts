@@ -5,7 +5,7 @@ import { EncodedTxData } from "../../abi/generated";
 
 export type RaiseDisputeRequest = {
   targetIpId: Address;
-  disputeEvidenceHash: Hex;
+  cid: string;
   targetTag: string;
   data?: Hex;
   txOptions?: TxOptions;

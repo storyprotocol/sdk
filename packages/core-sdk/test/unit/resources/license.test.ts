@@ -24,7 +24,7 @@ describe("Test LicenseClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    licenseClient = new LicenseClient(rpcMock, walletMock, "1513");
+    licenseClient = new LicenseClient(rpcMock, walletMock, "1516");
   });
 
   afterEach(() => {

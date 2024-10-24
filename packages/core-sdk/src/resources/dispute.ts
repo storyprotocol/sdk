@@ -11,6 +11,7 @@ import {
 } from "../types/resources/dispute";
 import { DisputeModuleClient, SimpleWalletClient } from "../abi/generated";
 import { getAddress } from "../utils/utils";
+import { convertCIDtoHashIPFS } from "../utils/ipfs";
 
 export class DisputeClient {
   private readonly rpcClient: PublicClient;
@@ -26,7 +27,7 @@ export class DisputeClient {
    * @param request - The request object containing necessary data to raise a dispute.
    *   @param request.targetIpId The IP ID that is the target of the dispute.
    *   @param request.targetTag The target tag of the dispute.
-   *   @param request.disputeEvidenceHash The hash pointing to the dispute evidence
+   *   @param request.cid CID (Content Identifier) is a unique identifier in IPFS, including CID v0 (base58) and CID v1 (base32).
    *   @param request.data The data to initialize the policy
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a RaiseDisputeResponse containing the transaction hash.
@@ -44,7 +45,7 @@ export class DisputeClient {
         data:
           request.data ||
           "0x00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000278d0000000000000000000000000091f6f05b08c16769d3c85867548615d270c42fc700000000000000000000000000000000000000000000000000000000000000004153534552545f54525554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a7465737420636c61696d00000000000000000000000000000000000000000000",
-        disputeEvidenceHash: request.disputeEvidenceHash,
+        disputeEvidenceHash: convertCIDtoHashIPFS(request.cid),
       };
 
       if (request.txOptions?.encodedTxDataOnly) {
