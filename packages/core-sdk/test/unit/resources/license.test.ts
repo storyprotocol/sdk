@@ -827,4 +827,16 @@ describe("Test LicenseClient", () => {
       }
     });
   });
+
+  // Test getLicenseTokens - @boris added test cases
+
+  it("should throw error when getLicenseTerms is called with non-existent license terms id", async () => {
+    sinon
+      .stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms")
+      .throws(new Error("License terms not found"));
+
+    await expect(licenseClient.getLicenseTerms("9999999999999")).to.be.rejectedWith(
+      "Failed to get license terms: License terms not found",
+    );
+  });
 });

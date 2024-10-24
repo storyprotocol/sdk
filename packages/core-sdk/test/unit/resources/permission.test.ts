@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { PermissionClient, AddressZero } from "../../../src";
-import { PublicClient, WalletClient, LocalAccount } from "viem";
+import { PublicClient, WalletClient, LocalAccount, Hex } from "viem";
 import { AccessPermission } from "../../../src/types/resources/permission";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
@@ -456,5 +456,52 @@ describe("Test Permission", () => {
       });
       expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
+  });
+
+  // createBatchPermissionSignature - @boris added test cases
+  it("should return encoded transaction data when encodedTxDataOnly is true", async () => {
+    type EncodedTxData = { to: Hex; data: Hex };
+    const encodedTxData: EncodedTxData = {
+      to: "0x0E61B0679673Ed99EA1e71E62aFf62BDcDFc70E9",
+      data: "0x1234",
+    };
+    sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+    IpAccountImplClient.prototype.executeWithSigEncode = sinon.stub().returns(encodedTxData);
+
+    const result = await permissionClient.createBatchPermissionSignature({
+      ipId: AddressZero,
+      permissions: [
+        {
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+        },
+      ],
+      txOptions: { encodedTxDataOnly: true },
+    });
+
+    expect(result.encodedTxData).to.deep.equal(encodedTxData);
+  });
+
+  it("should return txHash and success when called with correct arguments and waitForTransaction is true", async () => {
+    sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+    IpAccountImplClient.prototype.executeWithSig = sinon.stub().resolves(txHash);
+
+    const result = await permissionClient.createBatchPermissionSignature({
+      ipId: AddressZero,
+      permissions: [
+        {
+          ipId: AddressZero,
+          signer: AddressZero,
+          to: AddressZero,
+          permission: AccessPermission.ALLOW,
+        },
+      ],
+      txOptions: { waitForTransaction: true },
+    });
+
+    expect(result.txHash).to.equal(txHash);
+    expect(result.success).to.equal(true);
   });
 });
