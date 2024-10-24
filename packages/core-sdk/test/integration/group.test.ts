@@ -1,12 +1,12 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address } from "viem";
-import { getStoryClient, iliadChainId, mintBySpg } from "./utils/util";
+import { getStoryClient, odyssey, mintBySpg } from "./utils/util";
 import { PIL_TYPE, StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
 import { evenSplitGroupPoolAddress } from "../../src/abi/generated";
 
-const groupPoolAddress = evenSplitGroupPoolAddress[iliadChainId];
+const groupPoolAddress = evenSplitGroupPoolAddress[odyssey];
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

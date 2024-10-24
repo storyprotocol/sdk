@@ -1,4 +1,4 @@
-import { Hex, PublicClient, zeroAddress } from "viem";
+import { Address, PublicClient, zeroAddress } from "viem";
 
 import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
 import { getAddress } from "./utils";
@@ -8,8 +8,8 @@ export function getLicenseTermByType(
   type: PIL_TYPE,
   term?: {
     defaultMintingFee?: string | number | bigint;
-    currency?: Hex;
-    royaltyPolicyLAPAddress: Hex;
+    currency?: Address;
+    royaltyPolicyAddress: Address;
     commercialRevShare?: number;
   },
 ): LicenseTerms {
@@ -40,7 +40,7 @@ export function getLicenseTermByType(
       throw new Error("DefaultMintingFee, currency are required for commercial use PIL.");
     }
     licenseTerms.royaltyPolicy = getAddress(
-      term.royaltyPolicyLAPAddress,
+      term.royaltyPolicyAddress,
       "term.royaltyPolicyLAPAddress",
     );
     licenseTerms.defaultMintingFee = BigInt(term.defaultMintingFee);
@@ -64,7 +64,7 @@ export function getLicenseTermByType(
       throw new Error("CommercialRevShare should be between 0 and 100.");
     }
     licenseTerms.royaltyPolicy = getAddress(
-      term.royaltyPolicyLAPAddress,
+      term.royaltyPolicyAddress,
       "term.royaltyPolicyLAPAddress",
     );
     licenseTerms.defaultMintingFee = BigInt(term.defaultMintingFee);

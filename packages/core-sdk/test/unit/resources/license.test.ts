@@ -24,7 +24,7 @@ describe("Test LicenseClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    licenseClient = new LicenseClient(rpcMock, walletMock, "1513");
+    licenseClient = new LicenseClient(rpcMock, walletMock, "1516");
   });
 
   afterEach(() => {
@@ -347,6 +347,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -450,6 +451,7 @@ describe("Test LicenseClient", () => {
         defaultMintingFee: "1",
         commercialRevShare: 100,
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },

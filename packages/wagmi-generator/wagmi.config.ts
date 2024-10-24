@@ -4,7 +4,7 @@ import type { Evaluate } from "@wagmi/cli/src/types";
 import type { ContractConfig } from "@wagmi/cli/src/config";
 import { resolveProxyContracts } from "./resolveProxyContracts";
 import { optimizedBlockExplorer } from "./optimizedBlockExplorer";
-const iliadChainId = 1513;
+const odysseyChainId = 1516;
 import "dotenv/config";
 
 export default defineConfig(async () => {
@@ -12,151 +12,151 @@ export default defineConfig(async () => {
     {
       name: "AccessController",
       address: {
-        [iliadChainId]: "0xbcaD7EA76Ee68Cc507874e9050a7E7D7ff07BB09",
+        [odysseyChainId]: "0xa8bF970E95278A7aF475CE13C24cdcC3a2234a3D",
       },
     },
     {
       name: "DisputeModule",
       address: {
-        [iliadChainId]: "0x26525b4A1c2261A27B9ee89D512c2f7DceF85f4a",
+        [odysseyChainId]: "0xD082824B244Edcc5Bb5e67cD96a7d5a189c7E247",
       },
     },
     {
       name: "IPAccountImpl",
       address: {
-        [iliadChainId]: "0xaE2D8F01920DB2328BEd676652154c9D2Cb863fa",
+        [odysseyChainId]: "0x778159888076ADF6A574081346AF5837453885dE",
       },
     },
     {
       name: "IPAssetRegistry",
       address: {
-        [iliadChainId]: "0x14CAB45705Fe73EC6d126518E59Fe3C61a181E40",
+        [odysseyChainId]: "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
       },
     },
     {
       name: "IpRoyaltyVaultImpl",
       address: {
-        [iliadChainId]: "0x604dc8E58f720DEB345B2F3e08B2B354eA6CE498",
+        [odysseyChainId]: "0x9b7Ae229653251c6090324800D7E46435853C069",
       },
     },
     {
       name: "LicenseRegistry",
       address: {
-        [iliadChainId]: "0x4D71a082DE74B40904c1d89d9C3bfB7079d4c542",
+        [odysseyChainId]: "0xedf8e338F05f7B1b857C3a8d3a0aBB4bc2c41723",
       },
     },
     {
       name: "LicenseToken",
       address: {
-        [iliadChainId]: "0xd8aEF404432a2b3363479A6157285926B6B3b743",
+        [odysseyChainId]: "0xc7A302E03cd7A304394B401192bfED872af501BE",
       },
     },
     {
       name: "LicensingModule",
       address: {
-        [iliadChainId]: "0xC8f165950411504eA130692B87A7148e469f7090",
+        [odysseyChainId]: "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
       },
     },
     {
       name: "PILicenseTemplate",
       address: {
-        [iliadChainId]: "0xbB7ACFBE330C56aA9a3aEb84870743C3566992c3",
+        [odysseyChainId]: "0x0752f61E59fD2D39193a74610F1bd9a6Ade2E3f9",
       },
     },
     {
       name: "ModuleRegistry",
       address: {
-        [iliadChainId]: "0x47bEae573B73F8BF1B4fa4Af065c39743871003f",
+        [odysseyChainId]: "0x7b3ba7839F5754B02531Aa84680637f78CB476c0",
       },
     },
     {
       name: "RoyaltyModule",
       address: {
-        [iliadChainId]: "0xaCb5764E609aa3a5ED36bA74ba59679246Cb0963",
+        [odysseyChainId]: "0x3C27b2D7d30131D4b58C3584FD7c86e3358744de",
       },
     },
     {
       name: "RoyaltyPolicyLAP",
       address: {
-        [iliadChainId]: "0x793Df8d32c12B0bE9985FFF6afB8893d347B6686",
+        [odysseyChainId]: "0x4074CEC2B3427f983D14d0C5E962a06B7162Ab92",
       },
     },
     {
       name: "RoyaltyPolicyLRP",
       address: {
-        [iliadChainId]: "0x1eF035c7054bd45e25B2a29A06a37b1350F50596",
+        [odysseyChainId]: "0x7F6a8f43EC6059eC80C172441CEe3423988a0be9",
       },
     },
     {
       name: "SPGNFTBeacon",
       address: {
-        [iliadChainId]: "0x02324ca8f369abB445F50c4cE79e956e49AC75d8",
+        [odysseyChainId]: "0xD753c698aE69194C851d60BF759d537DE7477696",
       },
     },
     {
       name: "SPGNFTImpl",
       address: {
-        [iliadChainId]: "0xC8E4376Da033cE244027B03f9b94dc0d7005D67E",
+        [odysseyChainId]: "0xA12e66a4429c9B7f38893c9b00E80646e0e76446",
       },
     },
     {
       name: "CoreMetadataModule",
       address: {
-        [iliadChainId]: "0xa71Bd7aff91Da5E27A6f96c546D489F6e0870E45",
+        [odysseyChainId]: "0x56eFacFCcacfdEbd1d6E3C4071CaCDEbA0902f04",
       },
     },
     {
       name: "DerivativeWorkflows",
       address: {
-        [iliadChainId]: "0xC022C70DA8c23Ae8e36B3de9039Ed24E4E42a127",
+        [odysseyChainId]: "0xE0e1d222E024bF14B1e0A4b48fC6e6B6F8ebaEB3",
       },
     },
     {
       name: "GroupingWorkflows",
       address: {
-        [iliadChainId]: "0x426fF4F7E9Debe565F5Fe6F53334Ad3982295E20",
+        [odysseyChainId]: "0xfAa9CCd49DCDfB9a950CBF036cD6082e623a6bcC",
       },
     },
     {
       name: "RegistrationWorkflows",
       address: {
-        [iliadChainId]: "0xF403fcCAAE6C503D0CC1D25904A0B2cCd5B96C6F",
+        [odysseyChainId]: "0x8D8E0d24E7B6420d3209EfA185Fa451c95D8316A",
       },
     },
     {
       name: "RoyaltyWorkflows",
       address: {
-        [iliadChainId]: "0xc757921ee0f7c8E935d44BFBDc2602786e0eda6C",
+        [odysseyChainId]: "0x19E435b1C0857375F9423C8ba508203054CE1d9F",
       },
     },
     {
       name: "LicenseAttachmentWorkflows",
       address: {
-        [iliadChainId]: "0x1B95144b62B4566501482e928aa435Dd205fE71B",
+        [odysseyChainId]: "0xC7A40c41Cbe44C6B326447081877d69F98127C59",
       },
     },
     {
       name: "GroupingModule",
       address: {
-        [iliadChainId]: "0xaB7a16Ad9e46656C59e6071d920feeE7A3416ECf",
+        [odysseyChainId]: "0x26Eb59B900FD158396931d2349Fd6B08f0390e76",
       },
     },
     {
       name: "EvenSplitGroupPool",
       address: {
-        [iliadChainId]: "0xA1dB7AB14900Cd9eF9A7eBA931A206250F403a14",
+        [odysseyChainId]: "0x764842EaEFDc176B673Bd44e6F5c3Db38F8baA54",
       },
     },
-    {
-      name: "ArbitrationPolicySP",
-      address: {
-        [iliadChainId]: "0x8038697357F63415e848785e45B00eB60BcD797b",
-      },
-    },
+    // {
+    //   name: "ArbitrationPolicySP",
+    //   address: {
+    //     [odysseyChainId]: "0x8038697357F63415e848785e45B00eB60BcD797b",
+    //   },
+    // },
     {
       name: "MockERC20",
       address: {
-        [iliadChainId]: "0x91f6F05B08c16769d3c85867548615d270C42fC7",
+        [odysseyChainId]: "0x2C30F1a7fD58806f57930063850BCBcFf81b46e8",
       },
     },
   ];
@@ -165,12 +165,12 @@ export default defineConfig(async () => {
     contracts: [],
     plugins: [
       optimizedBlockExplorer({
-        baseUrl: "https://testnet.storyscan.xyz/api",
-        name: "iliad",
+        baseUrl: "https://odyssey-testnet-explorer.storyscan.xyz/api",
+        name: "Odyssey",
         getAddress: await resolveProxyContracts({
-          baseUrl: "https://testnet.storyrpc.io",
+          baseUrl: "https://odyssey.storyrpc.io/",
           contracts: contracts,
-          chainId: iliadChainId,
+          chainId: odysseyChainId,
         }),
         contracts: contracts,
       }),

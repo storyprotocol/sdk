@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/core-sdk",
-  "version": "1.2.0-rc.0",
+  "version": "1.2.0-rc.1",
   "description": "Story Protocol Core SDK",
   "main": "dist/story-protocol-core-sdk.cjs.js",
   "module": "dist/story-protocol-core-sdk.esm.js",
@@ -31,7 +31,9 @@
   "dependencies": {
     "abitype": "^0.10.2",
     "axios": "^1.5.1",
+    "bs58": "^6.0.0",
     "dotenv": "^16.3.1",
+    "multiformats": "9.9.0",
     "viem": "^2.8.12"
   },
   "devDependencies": {

@@ -212,7 +212,7 @@ export class GroupClient {
   ): Promise<RegisterIpAndAttachLicenseAndAddToGroupResponse> {
     try {
       const ipIdAddress = await this.ipAssetRegistryClient.ipId({
-        chainId: chain[this.chainId],
+        chainId: BigInt(chain[this.chainId]),
         tokenContract: getAddress(request.nftContract, "nftContract"),
         tokenId: BigInt(request.tokenId),
       });

@@ -37,7 +37,7 @@ describe("Test IpAssetClient", () => {
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
-    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "iliad");
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "odyssey");
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
@@ -206,7 +206,7 @@ describe("Test IpAssetClient", () => {
     it("should throw account error when register given wallet have no signTypedData ", async () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
-      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "iliad");
+      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "odyssey");
       (ipAssetClient.registrationWorkflowsClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       (ipAssetClient.coreMetadataModuleClient as any).address =
@@ -731,6 +731,7 @@ describe("Test IpAssetClient", () => {
         mintingFee: "100",
         currency: zeroAddress,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        royaltyPolicyAddress: zeroAddress,
         ipMetadata: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
@@ -1112,6 +1113,7 @@ describe("Test IpAssetClient", () => {
         pilType: PIL_TYPE.COMMERCIAL_USE,
         mintingFee: "100",
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
       });
 
       expect(result.txHash).to.equal(hash);

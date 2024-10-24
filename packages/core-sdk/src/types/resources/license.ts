@@ -78,6 +78,7 @@ export type RegisterPILResponse = {
 export type RegisterCommercialUsePILRequest = {
   defaultMintingFee: string | number | bigint;
   currency: Address;
+  royaltyPolicyAddress?: Address;
   txOptions?: TxOptions;
 };
 
@@ -85,6 +86,7 @@ export type RegisterCommercialRemixPILRequest = {
   defaultMintingFee: string | number | bigint;
   commercialRevShare: number;
   currency: Address;
+  royaltyPolicyAddress?: Address;
   txOptions?: TxOptions;
 };
 

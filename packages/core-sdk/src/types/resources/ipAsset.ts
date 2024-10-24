@@ -50,6 +50,7 @@ export type CreateIpAssetWithPilTermsRequest = {
   mintingFee?: string | number | bigint;
   recipient?: Address;
   commercialRevShare?: number;
+  royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
 
 export type CreateIpAssetWithPilTermsResponse = {
@@ -85,6 +86,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
   currency: Address;
   deadline?: bigint | number | string;
   commercialRevShare?: number;
+  royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
 
 export type RegisterIpAndAttachPilTermsResponse = {

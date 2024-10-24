@@ -9,17 +9,17 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { RPC, iliadChainId } from "./util";
+import { RPC, odyssey } from "./util";
 import { mockErc20Address } from "../../../src/abi/generated";
 
 export class MockERC20 {
   private publicClient: PublicClient;
   private walletClient: WalletClient;
-  static address: Hex = mockErc20Address[iliadChainId];
+  static address: Hex = mockErc20Address[odyssey];
 
   constructor() {
     const baseConfig = {
-      chain: chainStringToViemChain("iliad"),
+      chain: chainStringToViemChain("odyssey"),
       transport: http(RPC),
     } as const;
     this.publicClient = createPublicClient(baseConfig);

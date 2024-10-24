@@ -255,7 +255,7 @@ export class IPAssetClient {
             encodedTxData: this.ipAssetRegistryClient.registerEncode({
               tokenContract: object.nftContract,
               tokenId: object.tokenId,
-              chainid: chain[this.chainId],
+              chainid: BigInt(chain[this.chainId]),
             }),
           };
         }
@@ -292,7 +292,7 @@ export class IPAssetClient {
           txHash = await this.ipAssetRegistryClient.register({
             tokenContract: object.nftContract,
             tokenId: object.tokenId,
-            chainid: chain[this.chainId],
+            chainid: BigInt(chain[this.chainId]),
           });
         }
         if (request.txOptions?.waitForTransaction) {
@@ -442,6 +442,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -462,10 +463,10 @@ export class IPAssetClient {
         defaultMintingFee: request.mintingFee,
         currency: request.currency,
         commercialRevShare: request.commercialRevShare,
-        royaltyPolicyLAPAddress:
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
+          royaltyPolicyLapAddress[chain[this.chainId]],
       });
       const object: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest = {
         spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
@@ -520,6 +521,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
@@ -544,10 +546,10 @@ export class IPAssetClient {
       const licenseTerm = getLicenseTermByType(request.pilType, {
         defaultMintingFee: request.mintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress:
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
+          royaltyPolicyLapAddress[chain[this.chainId]],
         commercialRevShare: request.commercialRevShare,
       });
       const calculatedDeadline = getDeadline(request.deadline);
@@ -1197,7 +1199,7 @@ export class IPAssetClient {
     tokenId: bigint | string | number,
   ): Promise<Address> {
     const ipId = await this.ipAssetRegistryClient.ipId({
-      chainId: chain[this.chainId],
+      chainId: BigInt(chain[this.chainId]),
       tokenContract: getAddress(nftContract, "nftContract"),
       tokenId: BigInt(tokenId),
     });

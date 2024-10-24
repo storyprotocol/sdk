@@ -157,6 +157,7 @@ export class LicenseClient {
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
    *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
@@ -168,10 +169,10 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress:
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
+          royaltyPolicyLapAddress[chain[this.chainId]],
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0n) {
@@ -209,6 +210,7 @@ export class LicenseClient {
    *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
@@ -220,10 +222,10 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress:
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
+          royaltyPolicyLapAddress[chain[this.chainId]],
         commercialRevShare: request.commercialRevShare,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
