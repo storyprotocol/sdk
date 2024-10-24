@@ -255,7 +255,7 @@ export class IPAssetClient {
             encodedTxData: this.ipAssetRegistryClient.registerEncode({
               tokenContract: object.nftContract,
               tokenId: object.tokenId,
-              chainid: chain[this.chainId],
+              chainid: BigInt(chain[this.chainId]),
             }),
           };
         }
@@ -292,7 +292,7 @@ export class IPAssetClient {
           txHash = await this.ipAssetRegistryClient.register({
             tokenContract: object.nftContract,
             tokenId: object.tokenId,
-            chainid: chain[this.chainId],
+            chainid: BigInt(chain[this.chainId]),
           });
         }
         if (request.txOptions?.waitForTransaction) {
@@ -466,9 +466,7 @@ export class IPAssetClient {
         royaltyPolicyAddress:
           (request.royaltyPolicyAddress &&
             getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+          royaltyPolicyLapAddress[chain[this.chainId]],
       });
       const object: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest = {
         spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
@@ -551,9 +549,7 @@ export class IPAssetClient {
         royaltyPolicyAddress:
           (request.royaltyPolicyAddress &&
             getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+          royaltyPolicyLapAddress[chain[this.chainId]],
         commercialRevShare: request.commercialRevShare,
       });
       const calculatedDeadline = getDeadline(request.deadline);
@@ -1203,7 +1199,7 @@ export class IPAssetClient {
     tokenId: bigint | string | number,
   ): Promise<Address> {
     const ipId = await this.ipAssetRegistryClient.ipId({
-      chainId: chain[this.chainId],
+      chainId: BigInt(chain[this.chainId]),
       tokenContract: getAddress(nftContract, "nftContract"),
       tokenId: BigInt(tokenId),
     });

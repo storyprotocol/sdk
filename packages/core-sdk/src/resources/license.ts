@@ -172,9 +172,7 @@ export class LicenseClient {
         royaltyPolicyAddress:
           (request.royaltyPolicyAddress &&
             getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+          royaltyPolicyLapAddress[chain[this.chainId]],
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0n) {
@@ -227,9 +225,7 @@ export class LicenseClient {
         royaltyPolicyAddress:
           (request.royaltyPolicyAddress &&
             getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+          royaltyPolicyLapAddress[chain[this.chainId]],
         commercialRevShare: request.commercialRevShare,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);

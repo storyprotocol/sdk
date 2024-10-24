@@ -87,9 +87,9 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   }
 }
 
-export const chain: { [key in SupportedChainIds]: bigint } = {
-  odyssey: 1516n,
-  1516: 1516n,
+export const chain: { [key in SupportedChainIds]: "1516" } = {
+  odyssey: "1516",
+  1516: "1516",
 };
 
 export const getAddress = (address: string, name: string, chainId?: number): Address => {
