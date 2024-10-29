@@ -10,7 +10,7 @@ import {
 export const RPC = "https://odyssey.storyrpc.io";
 export const odyssey = 1516;
 
-export const mockERC721 = "0x1fb1ac99887c87e984169dfc652dab801c6fab18";
+export const mockERC721 = "0xd7eb01052362e9fb13f624c17b4ead08e0eaae17";
 export const licenseToken = licenseTokenAddress[odyssey];
 export const spgNftBeacon = spgnftBeaconAddress[odyssey];
 

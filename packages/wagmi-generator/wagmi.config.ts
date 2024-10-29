@@ -12,151 +12,145 @@ export default defineConfig(async () => {
     {
       name: "AccessController",
       address: {
-        [odysseyChainId]: "0xa8bF970E95278A7aF475CE13C24cdcC3a2234a3D",
+        [odysseyChainId]: "0xf709c8001E94e2ca6F98b7fFBCd5BD3943E46D81",
       },
     },
     {
       name: "DisputeModule",
       address: {
-        [odysseyChainId]: "0xD082824B244Edcc5Bb5e67cD96a7d5a189c7E247",
+        [odysseyChainId]: "0x692B47fa72eE7Ac0Ec617ea384a0cAD41098F712",
       },
     },
     {
       name: "IPAccountImpl",
       address: {
-        [odysseyChainId]: "0x778159888076ADF6A574081346AF5837453885dE",
+        [odysseyChainId]: "0x24F08796561d6E1AC08e82b68BF4d9500B374Af6",
       },
     },
     {
       name: "IPAssetRegistry",
       address: {
-        [odysseyChainId]: "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+        [odysseyChainId]: "0x28E59E91C0467e89fd0f0438D47Ca839cDfEc095",
       },
     },
     {
       name: "IpRoyaltyVaultImpl",
       address: {
-        [odysseyChainId]: "0x9b7Ae229653251c6090324800D7E46435853C069",
+        [odysseyChainId]: "0x1081250219B16cc3903Aa2d2d1403A75c6A2F9f5",
       },
     },
     {
       name: "LicenseRegistry",
       address: {
-        [odysseyChainId]: "0xedf8e338F05f7B1b857C3a8d3a0aBB4bc2c41723",
+        [odysseyChainId]: "0xBda3992c49E98392e75E78d82B934F3598bA495f",
       },
     },
     {
       name: "LicenseToken",
       address: {
-        [odysseyChainId]: "0xc7A302E03cd7A304394B401192bfED872af501BE",
+        [odysseyChainId]: "0xB138aEd64814F2845554f9DBB116491a077eEB2D",
       },
     },
     {
       name: "LicensingModule",
       address: {
-        [odysseyChainId]: "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+        [odysseyChainId]: "0x5a7D9Fa17DE09350F481A53B470D798c1c1aabae",
       },
     },
     {
       name: "PILicenseTemplate",
       address: {
-        [odysseyChainId]: "0x0752f61E59fD2D39193a74610F1bd9a6Ade2E3f9",
+        [odysseyChainId]: "0x58E2c909D557Cd23EF90D14f8fd21667A5Ae7a93",
       },
     },
     {
       name: "ModuleRegistry",
       address: {
-        [odysseyChainId]: "0x7b3ba7839F5754B02531Aa84680637f78CB476c0",
+        [odysseyChainId]: "0x9F18c5723BC4Ee447CF9B01a8543D3b08b7F09C7",
       },
     },
     {
       name: "RoyaltyModule",
       address: {
-        [odysseyChainId]: "0x3C27b2D7d30131D4b58C3584FD7c86e3358744de",
+        [odysseyChainId]: "0xEa6eD700b11DfF703665CCAF55887ca56134Ae3B",
       },
     },
     {
       name: "RoyaltyPolicyLAP",
       address: {
-        [odysseyChainId]: "0x4074CEC2B3427f983D14d0C5E962a06B7162Ab92",
+        [odysseyChainId]: "0x28b4F70ffE5ba7A26aEF979226f77Eb57fb9Fdb6",
       },
     },
     {
       name: "RoyaltyPolicyLRP",
       address: {
-        [odysseyChainId]: "0x7F6a8f43EC6059eC80C172441CEe3423988a0be9",
+        [odysseyChainId]: "0x7D2d9af4E4ab14Afcfd86436BC348928B40963Dd",
       },
     },
     {
       name: "SPGNFTBeacon",
       address: {
-        [odysseyChainId]: "0xD753c698aE69194C851d60BF759d537DE7477696",
+        [odysseyChainId]: "0x4b913A9da52806A0fd0b031bdf32fa33634d082a",
       },
     },
     {
       name: "SPGNFTImpl",
       address: {
-        [odysseyChainId]: "0xA12e66a4429c9B7f38893c9b00E80646e0e76446",
+        [odysseyChainId]: "0x32c03CD2B4CC3456aCD86C7d5BA8E0405665DbF9",
       },
     },
     {
       name: "CoreMetadataModule",
       address: {
-        [odysseyChainId]: "0x56eFacFCcacfdEbd1d6E3C4071CaCDEbA0902f04",
+        [odysseyChainId]: "0x89630Ccf23277417FBdfd3076C702F5248267e78",
       },
     },
     {
       name: "DerivativeWorkflows",
       address: {
-        [odysseyChainId]: "0xE0e1d222E024bF14B1e0A4b48fC6e6B6F8ebaEB3",
+        [odysseyChainId]: "0xa8815CEB96857FFb8f5F8ce920b1Ae6D70254C7B",
       },
     },
     {
       name: "GroupingWorkflows",
       address: {
-        [odysseyChainId]: "0xfAa9CCd49DCDfB9a950CBF036cD6082e623a6bcC",
+        [odysseyChainId]: "0xcd754994eBE5Ce16D432C1f936f98ac0d4aABA0e",
       },
     },
     {
       name: "RegistrationWorkflows",
       address: {
-        [odysseyChainId]: "0x8D8E0d24E7B6420d3209EfA185Fa451c95D8316A",
+        [odysseyChainId]: "0xde13Be395E1cd753471447Cf6A656979ef87881c",
       },
     },
     {
       name: "RoyaltyWorkflows",
       address: {
-        [odysseyChainId]: "0x19E435b1C0857375F9423C8ba508203054CE1d9F",
+        [odysseyChainId]: "0xAf922379B8e1abc6B0D78547128579221C7F7A22",
       },
     },
     {
       name: "LicenseAttachmentWorkflows",
       address: {
-        [odysseyChainId]: "0xC7A40c41Cbe44C6B326447081877d69F98127C59",
+        [odysseyChainId]: "0x44Bad1E4035a44eAC1606B222873E4a85E8b7D9c",
       },
     },
     {
       name: "GroupingModule",
       address: {
-        [odysseyChainId]: "0x26Eb59B900FD158396931d2349Fd6B08f0390e76",
+        [odysseyChainId]: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
       },
     },
     {
       name: "EvenSplitGroupPool",
       address: {
-        [odysseyChainId]: "0x764842EaEFDc176B673Bd44e6F5c3Db38F8baA54",
+        [odysseyChainId]: "0xC384B56fD62d6679Cd62A2fE0dA3fe4560f33391",
       },
     },
-    // {
-    //   name: "ArbitrationPolicySP",
-    //   address: {
-    //     [odysseyChainId]: "0x8038697357F63415e848785e45B00eB60BcD797b",
-    //   },
-    // },
     {
       name: "MockERC20",
       address: {
-        [odysseyChainId]: "0x2C30F1a7fD58806f57930063850BCBcFf81b46e8",
+        [odysseyChainId]: "0x12A8b0DcC6e3bB0915638361D9D49942Da07F455",
       },
     },
   ];

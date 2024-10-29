@@ -390,7 +390,7 @@ export const accessControllerAbi = [
  *
  */
 export const accessControllerAddress = {
-  1516: "0xa8bF970E95278A7aF475CE13C24cdcC3a2234a3D",
+  1516: "0xf709c8001E94e2ca6F98b7fFBCd5BD3943E46D81",
 } as const;
 
 /**
@@ -691,7 +691,7 @@ export const coreMetadataModuleAbi = [
  *
  */
 export const coreMetadataModuleAddress = {
-  1516: "0x56eFacFCcacfdEbd1d6E3C4071CaCDEbA0902f04",
+  1516: "0x89630Ccf23277417FBdfd3076C702F5248267e78",
 } as const;
 
 /**
@@ -1149,7 +1149,7 @@ export const derivativeWorkflowsAbi = [
  *
  */
 export const derivativeWorkflowsAddress = {
-  1516: "0xE0e1d222E024bF14B1e0A4b48fC6e6B6F8ebaEB3",
+  1516: "0xa8815CEB96857FFb8f5F8ce920b1Ae6D70254C7B",
 } as const;
 
 /**
@@ -1829,7 +1829,7 @@ export const disputeModuleAbi = [
  *
  */
 export const disputeModuleAddress = {
-  1516: "0xD082824B244Edcc5Bb5e67cD96a7d5a189c7E247",
+  1516: "0x692B47fa72eE7Ac0Ec617ea384a0cAD41098F712",
 } as const;
 
 /**
@@ -2179,7 +2179,7 @@ export const evenSplitGroupPoolAbi = [
  *
  */
 export const evenSplitGroupPoolAddress = {
-  1516: "0x764842EaEFDc176B673Bd44e6F5c3Db38F8baA54",
+  1516: "0xC384B56fD62d6679Cd62A2fE0dA3fe4560f33391",
 } as const;
 
 /**
@@ -2728,7 +2728,7 @@ export const groupingModuleAbi = [
  *
  */
 export const groupingModuleAddress = {
-  1516: "0x26Eb59B900FD158396931d2349Fd6B08f0390e76",
+  1516: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
 } as const;
 
 /**
@@ -3120,7 +3120,7 @@ export const groupingWorkflowsAbi = [
  *
  */
 export const groupingWorkflowsAddress = {
-  1516: "0xfAa9CCd49DCDfB9a950CBF036cD6082e623a6bcC",
+  1516: "0xcd754994eBE5Ce16D432C1f936f98ac0d4aABA0e",
 } as const;
 
 /**
@@ -3544,7 +3544,7 @@ export const ipAccountImplAbi = [
  *
  */
 export const ipAccountImplAddress = {
-  1516: "0x778159888076ADF6A574081346AF5837453885dE",
+  1516: "0x24F08796561d6E1AC08e82b68BF4d9500B374Af6",
 } as const;
 
 /**
@@ -4166,7 +4166,7 @@ export const ipAssetRegistryAbi = [
  *
  */
 export const ipAssetRegistryAddress = {
-  1516: "0x1a9d0d28a0422F26D31Be72Edc6f13ea4371E11B",
+  1516: "0x28E59E91C0467e89fd0f0438D47Ca839cDfEc095",
 } as const;
 
 /**
@@ -4621,7 +4621,7 @@ export const ipRoyaltyVaultImplAbi = [
  *
  */
 export const ipRoyaltyVaultImplAddress = {
-  1516: "0x9b7Ae229653251c6090324800D7E46435853C069",
+  1516: "0x1081250219B16cc3903Aa2d2d1403A75c6A2F9f5",
 } as const;
 
 /**
@@ -5111,7 +5111,7 @@ export const licenseAttachmentWorkflowsAbi = [
  *
  */
 export const licenseAttachmentWorkflowsAddress = {
-  1516: "0xC7A40c41Cbe44C6B326447081877d69F98127C59",
+  1516: "0x44Bad1E4035a44eAC1606B222873E4a85E8b7D9c",
 } as const;
 
 /**
@@ -5813,7 +5813,7 @@ export const licenseRegistryAbi = [
  *
  */
 export const licenseRegistryAddress = {
-  1516: "0xedf8e338F05f7B1b857C3a8d3a0aBB4bc2c41723",
+  1516: "0xBda3992c49E98392e75E78d82B934F3598bA495f",
 } as const;
 
 /**
@@ -6434,7 +6434,7 @@ export const licenseTokenAbi = [
  *
  */
 export const licenseTokenAddress = {
-  1516: "0xc7A302E03cd7A304394B401192bfED872af501BE",
+  1516: "0xB138aEd64814F2845554f9DBB116491a077eEB2D",
 } as const;
 
 /**
@@ -6998,7 +6998,7 @@ export const licensingModuleAbi = [
  *
  */
 export const licensingModuleAddress = {
-  1516: "0xd81fd78f557b457b4350cB95D20b547bFEb4D857",
+  1516: "0x5a7D9Fa17DE09350F481A53B470D798c1c1aabae",
 } as const;
 
 /**
@@ -7198,7 +7198,7 @@ export const mockErc20Abi = [
  *
  */
 export const mockErc20Address = {
-  1516: "0x2C30F1a7fD58806f57930063850BCBcFf81b46e8",
+  1516: "0x12A8b0DcC6e3bB0915638361D9D49942Da07F455",
 } as const;
 
 /**
@@ -7503,7 +7503,7 @@ export const moduleRegistryAbi = [
  *
  */
 export const moduleRegistryAddress = {
-  1516: "0x7b3ba7839F5754B02531Aa84680637f78CB476c0",
+  1516: "0x9F18c5723BC4Ee447CF9B01a8543D3b08b7F09C7",
 } as const;
 
 /**
@@ -8189,7 +8189,7 @@ export const piLicenseTemplateAbi = [
  *
  */
 export const piLicenseTemplateAddress = {
-  1516: "0x0752f61E59fD2D39193a74610F1bd9a6Ade2E3f9",
+  1516: "0x58E2c909D557Cd23EF90D14f8fd21667A5Ae7a93",
 } as const;
 
 /**
@@ -8540,7 +8540,7 @@ export const registrationWorkflowsAbi = [
  *
  */
 export const registrationWorkflowsAddress = {
-  1516: "0x8D8E0d24E7B6420d3209EfA185Fa451c95D8316A",
+  1516: "0xde13Be395E1cd753471447Cf6A656979ef87881c",
 } as const;
 
 /**
@@ -9430,7 +9430,7 @@ export const royaltyModuleAbi = [
  *
  */
 export const royaltyModuleAddress = {
-  1516: "0x3C27b2D7d30131D4b58C3584FD7c86e3358744de",
+  1516: "0xEa6eD700b11DfF703665CCAF55887ca56134Ae3B",
 } as const;
 
 /**
@@ -9801,7 +9801,7 @@ export const royaltyPolicyLapAbi = [
  *
  */
 export const royaltyPolicyLapAddress = {
-  1516: "0x4074CEC2B3427f983D14d0C5E962a06B7162Ab92",
+  1516: "0x28b4F70ffE5ba7A26aEF979226f77Eb57fb9Fdb6",
 } as const;
 
 /**
@@ -10172,7 +10172,7 @@ export const royaltyPolicyLrpAbi = [
  *
  */
 export const royaltyPolicyLrpAddress = {
-  1516: "0x7F6a8f43EC6059eC80C172441CEe3423988a0be9",
+  1516: "0x7D2d9af4E4ab14Afcfd86436BC348928B40963Dd",
 } as const;
 
 /**
@@ -10432,7 +10432,7 @@ export const royaltyWorkflowsAbi = [
  *
  */
 export const royaltyWorkflowsAddress = {
-  1516: "0x19E435b1C0857375F9423C8ba508203054CE1d9F",
+  1516: "0xAf922379B8e1abc6B0D78547128579221C7F7A22",
 } as const;
 
 /**
@@ -10547,7 +10547,7 @@ export const spgnftBeaconAbi = [
  *
  */
 export const spgnftBeaconAddress = {
-  1516: "0xD753c698aE69194C851d60BF759d537DE7477696",
+  1516: "0x4b913A9da52806A0fd0b031bdf32fa33634d082a",
 } as const;
 
 /**
@@ -11179,7 +11179,7 @@ export const spgnftImplAbi = [
  *
  */
 export const spgnftImplAddress = {
-  1516: "0xA12e66a4429c9B7f38893c9b00E80646e0e76446",
+  1516: "0x32c03CD2B4CC3456aCD86C7d5BA8E0405665DbF9",
 } as const;
 
 /**
