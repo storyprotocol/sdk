@@ -18485,6 +18485,26 @@ export type LicensingModuleRegisterDerivativeWithLicenseTokensRequest = {
 };
 
 /**
+ * LicensingModuleSetLicensingConfigRequest
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param licensingConfig tuple
+ */
+export type LicensingModuleSetLicensingConfigRequest = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  licensingConfig: {
+    isSet: boolean;
+    mintingFee: bigint;
+    licensingHook: Address;
+    hookData: Hex;
+  };
+};
+
+/**
  * contract LicensingModule event
  */
 export class LicensingModuleEventClient {
@@ -18799,6 +18819,54 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
         abi: licensingModuleAbi,
         functionName: "registerDerivativeWithLicenseTokens",
         args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
+      }),
+    };
+  }
+
+  /**
+   * method setLicensingConfig for contract LicensingModule
+   *
+   * @param request LicensingModuleSetLicensingConfigRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setLicensingConfig(
+    request: LicensingModuleSetLicensingConfigRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licensingModuleAbi,
+      address: this.address,
+      functionName: "setLicensingConfig",
+      account: this.wallet.account,
+      args: [
+        request.ipId,
+        request.licenseTemplate,
+        request.licenseTermsId,
+        request.licensingConfig,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setLicensingConfig for contract LicensingModule with only encode
+   *
+   * @param request LicensingModuleSetLicensingConfigRequest
+   * @return EncodedTxData
+   */
+  public setLicensingConfigEncode(
+    request: LicensingModuleSetLicensingConfigRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licensingModuleAbi,
+        functionName: "setLicensingConfig",
+        args: [
+          request.ipId,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.licensingConfig,
+        ],
       }),
     };
   }

@@ -218,6 +218,7 @@ export default defineConfig(async () => {
             "getLicenseTerms",
             "LicenseTermsAttached",
             "predictMintingLicenseFee",
+            "setLicensingConfig",
           ],
           ModuleRegistry: ["isRegistered", "getDefaultLicenseTerms"],
           RoyaltyModule: [

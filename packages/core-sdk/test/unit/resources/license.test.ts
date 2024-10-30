@@ -829,4 +829,76 @@ describe("Test LicenseClient", () => {
       }
     });
   });
+
+  describe("Test licenseClient.predictMintingLicenseFee", async () => {
+    it("should throw register error when call predictMintingLicenseFee given licenseTermsId is not registered", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await licenseClient.predictMintingLicenseFee({
+          licenseTermsId: "1",
+          licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          amount: "",
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to predict minting license fee: The licensor IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
+        );
+      }
+    });
+
+    it("should throw licenseTermsId error when call predictMintingLicenseFee given licenseTermsId is not exist", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
+      try {
+        await licenseClient.predictMintingLicenseFee({
+          licenseTermsId: "1",
+          licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          amount: "",
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to predict minting license fee: License terms id 1 do not exist.",
+        );
+      }
+    });
+
+    it("should return currency token and token amount when call predictMintingLicenseFee given licenseTemplate and receiver", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee").resolves({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+      const result = await licenseClient.predictMintingLicenseFee({
+        licenseTermsId: "1",
+        licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        amount: "",
+        licenseTemplate: zeroAddress,
+        receiver: zeroAddress,
+      });
+
+      expect(result).to.deep.equal({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+    });
+    it("should return currency token and token amount when call predictMintingLicenseFee given correct args ", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee").resolves({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+      const result = await licenseClient.predictMintingLicenseFee({
+        licenseTermsId: "1",
+        licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        amount: "",
+      });
+
+      expect(result).to.deep.equal({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+    });
+  });
 });

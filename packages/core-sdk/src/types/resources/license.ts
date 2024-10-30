@@ -125,3 +125,12 @@ export enum PIL_TYPE {
 }
 
 export type LicenseTermsId = string | number | bigint;
+
+export type PredictMintingLicenseFeeRequest = {
+  licensorIpId: Address;
+  licenseTermsId: LicenseTermsId;
+  amount: string | number | bigint;
+  licenseTemplate?: Address;
+  receiver?: Address;
+  txOptions?: TxOptions;
+};
