@@ -811,7 +811,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID if waitForTxn is set to true.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes child ip id and token id.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
   public async mintAndRegisterIpAndMakeDerivative(
@@ -873,7 +873,7 @@ export class IPAssetClient {
             hash: txHash,
           });
           const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
-          return { txHash, childIpId: log.ipId };
+          return { txHash, childIpId: log.ipId, tokenId: log.tokenId };
         }
         return { txHash };
       }

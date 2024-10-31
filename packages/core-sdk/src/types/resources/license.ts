@@ -145,7 +145,7 @@ export type SetLicensingConfigRequest = {
     hookData: Hex;
   };
   licenseTemplate: Address;
-  txOptions?: TxOptions; 
+  txOptions?: TxOptions;
 };
 
 export type SetLicensingConfigResponse = {
