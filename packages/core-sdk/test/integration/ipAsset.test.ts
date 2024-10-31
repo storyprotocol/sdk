@@ -7,7 +7,7 @@ import {
   getStoryClient,
   getTokenId,
   mintBySpg,
-  iliadChainId,
+  odyssey,
   approveForLicenseToken,
 } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
@@ -112,8 +112,6 @@ describe("IP Asset Functions ", () => {
     let nftContract: Hex;
     let parentIpId: Hex;
     let licenseTermsId: bigint;
-    const mockERC20 = new MockERC20();
-    mockERC20.approve(derivativeWorkflowsAddress[iliadChainId]);
     before(async () => {
       // Create a NFT collection for this test-suite
       const txData = await client.nftClient.createNFTCollection({
@@ -143,6 +141,9 @@ describe("IP Asset Functions ", () => {
       });
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsId!;
+      const mockERC20 = new MockERC20();
+      await mockERC20.approve(derivativeWorkflowsAddress[odyssey]);
+      await mockERC20.mint();
     });
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
@@ -279,6 +280,7 @@ describe("IP Asset Functions ", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.childIpId).to.be.a("string").and.not.empty;
+      expect(result.tokenId).to.be.a("bigint");
     });
 
     it("should not throw error when mint and register ip", async () => {
@@ -337,7 +339,6 @@ describe("IP Asset Functions ", () => {
     });
 
     it("should not throw error when call mint and register ip and make derivative with license tokens", async () => {
-      await mockERC20.approve(spgnftImplAddress[iliadChainId]);
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
@@ -346,7 +347,7 @@ describe("IP Asset Functions ", () => {
         },
       });
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[iliadChainId],
+        derivativeWorkflowsAddress[odyssey],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
@@ -376,7 +377,7 @@ describe("IP Asset Functions ", () => {
         },
       });
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[iliadChainId],
+        derivativeWorkflowsAddress[odyssey],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
       const result = await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({

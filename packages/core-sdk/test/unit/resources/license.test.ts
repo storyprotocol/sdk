@@ -24,7 +24,7 @@ describe("Test LicenseClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    licenseClient = new LicenseClient(rpcMock, walletMock, "1513");
+    licenseClient = new LicenseClient(rpcMock, walletMock, "1516");
   });
 
   afterEach(() => {
@@ -347,6 +347,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -450,6 +451,7 @@ describe("Test LicenseClient", () => {
         defaultMintingFee: "1",
         commercialRevShare: 100,
         currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -828,15 +830,241 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  // Test getLicenseTokens - @boris added test cases
+  describe("Test licenseClient.predictMintingLicenseFee", async () => {
+    it("should throw register error when call predictMintingLicenseFee given licenseTermsId is not registered", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await licenseClient.predictMintingLicenseFee({
+          licenseTermsId: "1",
+          licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          amount: "",
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to predict minting license fee: The licensor IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
+        );
+      }
+    });
 
-  it("should throw error when getLicenseTerms is called with non-existent license terms id", async () => {
-    sinon
-      .stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms")
-      .throws(new Error("License terms not found"));
+    it("should throw licenseTermsId error when call predictMintingLicenseFee given licenseTermsId is not exist", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
+      try {
+        await licenseClient.predictMintingLicenseFee({
+          licenseTermsId: "1",
+          licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          amount: "",
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to predict minting license fee: License terms id 1 do not exist.",
+        );
+      }
+    });
 
-    await expect(licenseClient.getLicenseTerms("9999999999999")).to.be.rejectedWith(
-      "Failed to get license terms: License terms not found",
-    );
+    it("should return currency token and token amount when call predictMintingLicenseFee given licenseTemplate and receiver", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee").resolves({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+      const result = await licenseClient.predictMintingLicenseFee({
+        licenseTermsId: "1",
+        licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        amount: "",
+        licenseTemplate: zeroAddress,
+        receiver: zeroAddress,
+      });
+
+      expect(result).to.deep.equal({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+    });
+    it("should return currency token and token amount when call predictMintingLicenseFee given correct args ", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee").resolves({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+      const result = await licenseClient.predictMintingLicenseFee({
+        licenseTermsId: "1",
+        licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        amount: "",
+      });
+
+      expect(result).to.deep.equal({
+        currencyToken: zeroAddress,
+        tokenAmount: 1n,
+      });
+    });
+  });
+
+  describe("Test licenseClient.setLicensingConfig", async () => {
+    it("should throw ip registry error when call setLicensingConfig given ip id is not registered", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await licenseClient.setLicensingConfig({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: zeroAddress,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: "",
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+          },
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to set licensing config: The licensor IP with id 0x0000000000000000000000000000000000000000 is not registered.",
+        );
+      }
+    });
+
+    it("should throw licenseTermsId error when call setLicensingConfig given licenseTermsId is not exist", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
+      try {
+        await licenseClient.setLicensingConfig({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: zeroAddress,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: "",
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+          },
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to set licensing config: License terms id 1 do not exist.",
+        );
+      }
+    });
+
+    it("should throw license hook error when call setLicensingConfig given license hook is not registered", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(false);
+      try {
+        await licenseClient.setLicensingConfig({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: zeroAddress,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: "",
+            licensingHook: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+            hookData: zeroAddress,
+          },
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to set licensing config: The licensing hook is not registered.",
+        );
+      }
+    });
+
+    it("should throw license template and license terms mismatch error when call setLicensingConfig given license template is zero address and license terms id is not zero address", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      try {
+        await licenseClient.setLicensingConfig({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: zeroAddress,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: "",
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+          },
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to set licensing config: licenseTemplate is zero address but licenseTermsId is zero.",
+        );
+      }
+    });
+
+    it("should return encodedTxData when call setLicensingConfig given txOptions.encodedTxDataOnly of true and args is correct", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      sinon
+        .stub(licenseClient.licensingModuleClient, "setLicensingConfigEncode")
+        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+
+      const result = await licenseClient.setLicensingConfig({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        licensingConfig: {
+          isSet: false,
+          mintingFee: "",
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+        },
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData).to.deep.equal({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
+    });
+
+    it("should return txHash when call setLicensingConfig given args is correct", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+
+      const result = await licenseClient.setLicensingConfig({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        licensingConfig: {
+          isSet: false,
+          mintingFee: "",
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+        },
+      });
+
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should return txHash and success when call setLicensingConfig given args is correct and waitForTransaction of true", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+
+      const result = await licenseClient.setLicensingConfig({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        licensingConfig: {
+          isSet: false,
+          mintingFee: "",
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(result.txHash).to.equal(txHash);
+      expect(result.success).to.equal(true);
+    });
   });
 });

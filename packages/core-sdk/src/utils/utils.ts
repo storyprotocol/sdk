@@ -13,7 +13,7 @@ import {
 } from "viem";
 
 import { SupportedChainIds } from "../types/config";
-import { iliad } from "./chain";
+import { odyssey } from "./chain";
 
 export async function waitTxAndFilterLog<
   const TAbi extends Abi | readonly unknown[],
@@ -78,18 +78,18 @@ export async function waitTx(
 }
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
-  switch (chainId) {
-    case "1513":
-    case "iliad":
-      return iliad;
+  switch (chainId.toString()) {
+    case "1516":
+    case "odyssey":
+      return odyssey;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }
 }
 
-export const chain: { [key in SupportedChainIds]: bigint } = {
-  iliad: 1513n,
-  1513: 1513n,
+export const chain: { [key in SupportedChainIds]: "1516" } = {
+  odyssey: "1516",
+  1516: "1516",
 };
 
 export const getAddress = (address: string, name: string, chainId?: number): Address => {

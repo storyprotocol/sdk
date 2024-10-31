@@ -28,7 +28,7 @@ describe("Test DisputeClient", () => {
       try {
         await disputeClient.raiseDispute({
           targetIpId: "0x",
-          disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
         });
       } catch (e) {
@@ -42,7 +42,7 @@ describe("Test DisputeClient", () => {
       sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
       });
 
@@ -64,7 +64,7 @@ describe("Test DisputeClient", () => {
       ]);
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
         txOptions: { waitForTransaction: true },
       });
@@ -76,7 +76,7 @@ describe("Test DisputeClient", () => {
     it("should return encodedTxData when call raiseDispute successfully with encodedTxDataOnly", async () => {
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        disputeEvidenceHash: "0xb7b94ecbd1f9f8cb209909e5785fb2858c9a8c4b220c017995a75346ad1b5db5",
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
         txOptions: { encodedTxDataOnly: true },
       });
