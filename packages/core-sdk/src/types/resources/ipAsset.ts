@@ -41,6 +41,7 @@ export type RegisterDerivativeResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
   childIpId?: Address;
+  tokenId?: bigint;
 };
 
 export type CreateIpAssetWithPilTermsRequest = {

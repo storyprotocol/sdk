@@ -282,6 +282,7 @@ describe("IP Asset Functions ", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.childIpId).to.be.a("string").and.not.empty;
+      expect(result.tokenId).to.be.a("bigint");
     });
 
     it("should not throw error when mint and register ip", async () => {
