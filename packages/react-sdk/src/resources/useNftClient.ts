@@ -36,7 +36,7 @@ const useNftClient = () => {
     "createNFTCollection",
     client.nftClient.createNFTCollection.bind(client.nftClient),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
