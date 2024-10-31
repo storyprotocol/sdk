@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
@@ -133,4 +133,23 @@ export type PredictMintingLicenseFeeRequest = {
   licenseTemplate?: Address;
   receiver?: Address;
   txOptions?: TxOptions;
+};
+
+export type SetLicensingConfigRequest = {
+  ipId: Address;
+  licenseTermsId: string | number | bigint;
+  licensingConfig: {
+    isSet: boolean;
+    mintingFee: bigint | string | number;
+    licensingHook: Address;
+    hookData: Hex;
+  };
+  licenseTemplate: Address;
+  txOptions?: TxOptions; 
+};
+
+export type SetLicensingConfigResponse = {
+  txHash?: string;
+  encodedTxData?: EncodedTxData;
+  success?: boolean;
 };

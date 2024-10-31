@@ -55,6 +55,8 @@ export type {
   LicenseTermsId,
   LicenseTerms,
   PredictMintingLicenseFeeRequest,
+  SetLicensingConfigRequest,
+  SetLicensingConfigResponse,
 } from "./types/resources/license";
 export { PIL_TYPE } from "./types/resources/license";
 

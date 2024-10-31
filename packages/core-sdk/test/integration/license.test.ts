@@ -137,5 +137,25 @@ describe("License Functions", () => {
       expect(result.currencyToken).to.be.a("string").and.not.empty;
       expect(result.tokenAmount).to.be.a("bigint");
     });
+
+    it("should not throw error when set licensing config", async () => {
+      const licenseModule = licensingModuleAddress[odyssey];
+      const result = await client.license.setLicensingConfig({
+        ipId: ipId,
+        licenseTermsId: 0n,
+        licenseTemplate: zeroAddress,
+        licensingConfig: {
+          mintingFee: "1",
+          isSet: true,
+          licensingHook: zeroAddress,
+          hookData: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.success).to.be.true;
+    });
   });
 });
