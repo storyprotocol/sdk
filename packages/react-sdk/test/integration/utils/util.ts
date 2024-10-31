@@ -46,9 +46,7 @@ export const walletClient = createWalletClient({
   account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
 });
 
-export const getTokenId = async (
-  nftContract?: Address
-): Promise<number | undefined> => {
+export const getTokenId = async (): Promise<number | undefined> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {

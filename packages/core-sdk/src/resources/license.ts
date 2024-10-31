@@ -5,6 +5,10 @@ import {
   LicenseRegistryEventClient,
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
+  LicensingModulePredictMintingLicenseFeeRequest,
+  LicensingModulePredictMintingLicenseFeeResponse,
+  LicensingModuleSetLicensingConfigRequest,
+  ModuleRegistryReadOnlyClient,
   PiLicenseTemplateClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
@@ -25,6 +29,9 @@ import {
   AttachLicenseTermsResponse,
   LicenseTermsId,
   RegisterPILTermsRequest,
+  PredictMintingLicenseFeeRequest,
+  SetLicensingConfigRequest,
+  SetLicensingConfigResponse,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
@@ -38,6 +45,7 @@ export class LicenseClient {
   public piLicenseTemplateReadOnlyClient: PiLicenseTemplateReadOnlyClient;
   public licenseTemplateClient: PiLicenseTemplateClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
+  public moduleRegistryReadOnlyClient: ModuleRegistryReadOnlyClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: SupportedChainIds;
@@ -49,6 +57,7 @@ export class LicenseClient {
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
+    this.moduleRegistryReadOnlyClient = new ModuleRegistryReadOnlyClient(rpcClient);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -74,7 +83,7 @@ export class LicenseClient {
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.uri The URI of the license terms, which can be used to fetch the offchain license terms.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the optional transaction hash, optional transaction encodedTxData and optional license terms Id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
@@ -114,7 +123,7 @@ export class LicenseClient {
    * Convenient function to register a PIL non commercial social remix license to the registry
    * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerNonComSocialRemixingPIL(
@@ -157,8 +166,9 @@ export class LicenseClient {
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
    *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerCommercialUsePIL(
@@ -168,10 +178,10 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress:
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
+          royaltyPolicyLapAddress[chain[this.chainId]],
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0n) {
@@ -209,8 +219,9 @@ export class LicenseClient {
    *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
    * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
   public async registerCommercialRemixPIL(
@@ -220,10 +231,10 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyLAPAddress:
-          royaltyPolicyLapAddress[
-            chain[this.chainId] as unknown as keyof typeof royaltyPolicyLapAddress
-          ],
+        royaltyPolicyAddress:
+          (request.royaltyPolicyAddress &&
+            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
+          royaltyPolicyLapAddress[chain[this.chainId]],
         commercialRevShare: request.commercialRevShare,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
@@ -264,7 +275,8 @@ export class LicenseClient {
    *   @param request.licenseTemplate The address of the license template.
    *   @param request.licenseTermsId The ID of the license terms.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes success.
+   * If Ip have attached license terms, success will return false and txhash is empty.
    */
   public async attachLicenseTerms(
     request: AttachLicenseTermsRequest,
@@ -338,7 +350,7 @@ export class LicenseClient {
    *   @param request.amount The amount of license tokens to mint.
    *   @param request.receiver The address of the receiver.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional license token IDs if waitForTxn is set to true.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license token IDs.
    * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
    */
   public async mintLicenseTokens(
@@ -425,6 +437,124 @@ export class LicenseClient {
     }
   }
 
+  /**
+   * Pre-compute the minting license fee for the given IP and license terms. The function can be used to calculate the minting license fee before minting license tokens.
+   * @param request - The request object that contains all data needed to predict minting licenses fee.
+   *   @param request.licensorIpId The IP ID of the licensor.
+   *   @param request.licenseTermsId The ID of the license terms.
+   *   @param request.amount The amount of license tokens to mint.
+   *   @param request.licenseTemplate [Optional] The address of the license template,default value is Programmable IP License.
+   *   @param request.receiver [Optional] The address of the receiver,default value is your wallet address.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to an object containing the currency token and token amount.
+   */
+  public async predictMintingLicenseFee(
+    request: PredictMintingLicenseFeeRequest,
+  ): Promise<LicensingModulePredictMintingLicenseFeeResponse> {
+    try {
+      const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: getAddress(request.licensorIpId, "request.licensorIpId"),
+      });
+      if (!isLicenseIpIdRegistered) {
+        throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
+      }
+      const licenseTermsId = BigInt(request.licenseTermsId);
+      const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
+        licenseTermsId,
+      });
+      if (!isExisted) {
+        throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
+      }
+      const object: LicensingModulePredictMintingLicenseFeeRequest = {
+        ...request,
+        receiver:
+          (request.receiver && getAddress(request.receiver, "request.receiver")) ||
+          this.wallet.account!.address,
+        amount: BigInt(request.amount),
+        royaltyContext: zeroAddress,
+        licenseTemplate:
+          (request.licenseTemplate &&
+            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
+          this.licenseTemplateClient.address,
+        licenseTermsId,
+      };
+      return await this.licensingModuleClient.predictMintingLicenseFee(object);
+    } catch (error) {
+      handleError(error, "Failed to predict minting license fee");
+    }
+  }
+
+  /**
+   * Sets the licensing configuration for a specific license terms of an IP. If both licenseTemplate and licenseTermsId are not specified then the licensing config apply to all licenses of given IP.
+   * @param request - The request object that contains all data needed to set licensing config.
+   *   @param request.ipId The address of the IP for which the configuration is being set.
+   *   @param request.licenseTermsId The ID of the license terms within the license template.
+   *   @param request.licenseTemplate The address of the license template used, If not specified, the configuration applies to all licenses.
+   *   @param request.licensingConfig The licensing configuration for the license.
+   *   @param request.licensingConfig.isSet Whether the configuration is set or not.
+   *   @param request.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
+   *   @param request.licensingConfig.hookData The data to be used by the licensing hook.
+   *   @param request.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes success.
+   */
+  public async setLicensingConfig(
+    request: SetLicensingConfigRequest,
+  ): Promise<SetLicensingConfigResponse> {
+    try {
+      const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: getAddress(request.ipId, "request.ipId"),
+      });
+      if (!isLicenseIpIdRegistered) {
+        throw new Error(`The licensor IP with id ${request.ipId} is not registered.`);
+      }
+      const licenseTermsId = BigInt(request.licenseTermsId);
+      const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
+        licenseTermsId,
+      });
+      if (!isExisted) {
+        throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
+      }
+      if (request.licensingConfig.licensingHook !== zeroAddress) {
+        const isRegistered = await this.moduleRegistryReadOnlyClient.isRegistered({
+          moduleAddress: request.licensingConfig.licensingHook,
+        });
+        if (!isRegistered) {
+          throw new Error("The licensing hook is not registered.");
+        }
+      }
+
+      if (request.licenseTemplate === zeroAddress && request.licenseTermsId !== 0n) {
+        throw new Error("licenseTemplate is zero address but licenseTermsId is zero.");
+      }
+      const object: LicensingModuleSetLicensingConfigRequest = {
+        ipId: request.ipId,
+        licenseTemplate: getAddress(request.licenseTemplate, "request.licenseTemplate"),
+        licenseTermsId,
+        licensingConfig: {
+          isSet: request.licensingConfig.isSet,
+          mintingFee: BigInt(request.licensingConfig.mintingFee),
+          hookData: request.licensingConfig.hookData,
+          licensingHook: request.licensingConfig.licensingHook,
+        },
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return { encodedTxData: this.licensingModuleClient.setLicensingConfigEncode(object) };
+      } else {
+        const txHash = await this.licensingModuleClient.setLicensingConfig(object);
+        if (request.txOptions?.waitForTransaction) {
+          await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          return { txHash: txHash, success: true };
+        }
+        return { txHash: txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to set licensing config");
+    }
+  }
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;
