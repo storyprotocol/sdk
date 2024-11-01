@@ -12350,6 +12350,15 @@ export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseToke
 };
 
 /**
+ * DerivativeWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type DerivativeWorkflowsMulticallRequest = {
+  data: readonly Hex[];
+};
+
+/**
  * DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
  *
  * @param nftContract address
@@ -12518,6 +12527,42 @@ export class DerivativeWorkflowsClient {
           request.ipMetadata,
           request.recipient,
         ],
+      }),
+    };
+  }
+
+  /**
+   * method multicall for contract DerivativeWorkflows
+   *
+   * @param request DerivativeWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: DerivativeWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: derivativeWorkflowsAbi,
+      address: this.address,
+      functionName: "multicall",
+      account: this.wallet.account,
+      args: [request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method multicall for contract DerivativeWorkflows with only encode
+   *
+   * @param request DerivativeWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(request: DerivativeWorkflowsMulticallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "multicall",
+        args: [request.data],
       }),
     };
   }
@@ -16428,6 +16473,15 @@ export type LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest 
 };
 
 /**
+ * LicenseAttachmentWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type LicenseAttachmentWorkflowsMulticallRequest = {
+  data: readonly Hex[];
+};
+
+/**
  * LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest
  *
  * @param nftContract address
@@ -16560,6 +16614,42 @@ export class LicenseAttachmentWorkflowsClient {
         abi: licenseAttachmentWorkflowsAbi,
         functionName: "mintAndRegisterIpAndAttachPILTerms",
         args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
+      }),
+    };
+  }
+
+  /**
+   * method multicall for contract LicenseAttachmentWorkflows
+   *
+   * @param request LicenseAttachmentWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: LicenseAttachmentWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseAttachmentWorkflowsAbi,
+      address: this.address,
+      functionName: "multicall",
+      account: this.wallet.account,
+      args: [request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method multicall for contract LicenseAttachmentWorkflows with only encode
+   *
+   * @param request LicenseAttachmentWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(request: LicenseAttachmentWorkflowsMulticallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseAttachmentWorkflowsAbi,
+        functionName: "multicall",
+        args: [request.data],
       }),
     };
   }

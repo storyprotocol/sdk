@@ -17,6 +17,8 @@ import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
+  BatchMintAndRegisterIpAssetWithPilTermsRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsResponse,
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
   GenerateCreatorMetadataParam,
@@ -64,6 +66,7 @@ import {
   SimpleWalletClient,
   accessControllerAbi,
   ipAccountImplAbi,
+  licensingModuleAbi,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
 import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
@@ -85,6 +88,7 @@ export class IPAssetClient {
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: SupportedChainIds;
+  private defaultLicenseTermsId!: bigint;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
@@ -100,6 +104,7 @@ export class IPAssetClient {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
+    void this.getDefaultLicenseTerms();
   }
 
   /**
@@ -385,7 +390,45 @@ export class IPAssetClient {
       handleError(error, "Failed to register derivative");
     }
   }
-
+  //TODO: Throw error
+  public async batchRegisterDerivative(requests: RegisterDerivativeRequest[]) {
+    try {
+      const licenseContract = {
+        address: this.licensingModuleClient.address,
+        abi: licensingModuleAbi,
+        functionName: "registerDerivative",
+      } as const;
+      const contracts = [];
+      for (const request of requests) {
+        await this.registerDerivative({
+          ...request,
+          txOptions: {
+            encodedTxDataOnly: true,
+          },
+        });
+        const req = {
+          childIpId: request.childIpId,
+          parentIpIds: request.parentIpIds,
+          licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
+          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
+          royaltyContext: zeroAddress,
+        };
+        contracts.push({
+          ...licenseContract,
+          args: [
+            req.childIpId,
+            req.parentIpIds,
+            req.licenseTermsIds,
+            req.licenseTemplate,
+            zeroAddress,
+          ],
+        });
+      }
+      await this.rpcClient.multicall({ contracts });
+    } catch (error) {
+      handleError(error, "Failed to batch register derivative");
+    }
+  }
   /**
    * Registers a derivative with license tokens.
    * the derivative IP is registered with license tokens minted from the parent IP's license terms.
@@ -496,7 +539,7 @@ export class IPAssetClient {
             hash: txHash,
           });
           const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt)[0];
-          const licenseTermsId = await this.getLicenseTermsId(txReceipt);
+          const licenseTermsId = this.getLicenseTermsId(txReceipt);
           return {
             txHash: txHash,
             ipId: iPRegisteredLog.ipId,
@@ -510,6 +553,53 @@ export class IPAssetClient {
       handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
   }
+  //TODO: need add the unit tests
+  public async batchMintAndRegisterIpAssetWithPilTerms(
+    request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
+  ): Promise<BatchMintAndRegisterIpAssetWithPilTermsResponse> {
+    try {
+      const calldata: Hex[] = [];
+      for (const arg of request.args) {
+        const result = await this.mintAndRegisterIpAssetWithPilTerms({
+          ...arg,
+          txOptions: {
+            encodedTxDataOnly: true,
+          },
+        });
+        calldata.push(result.encodedTxData!.data);
+      }
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.licenseAttachmentWorkflowsClient.multicallEncode({ data: calldata }),
+        };
+      }
+      const txHash = await this.licenseAttachmentWorkflowsClient.multicall({ data: calldata });
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const licenseTermsEvent =
+          this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt);
+        let results = this.getIpIdAndTokenIdFromEvent(txReceipt);
+        results = results.map((result) => {
+          const licenseTerms = licenseTermsEvent.find((event) => event.ipId === result.ipId);
+          return {
+            ...result,
+            licenseTermsId: licenseTerms?.licenseTermsId || this.defaultLicenseTermsId,
+          };
+        });
+        return {
+          txHash: txHash,
+          results,
+        };
+      }
+      return { txHash };
+    } catch (error) {
+      handleError(error, "Failed to batch mint and register IP and attach PIL terms");
+    }
+  }
+
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.R.
    * @param request - The request object that contains all data needed to mint and register ip.
@@ -639,7 +729,7 @@ export class IPAssetClient {
             hash: txHash,
           });
           const ipRegisterEvent = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
-          const licenseTermsId = await this.getLicenseTermsId(txReceipt);
+          const licenseTermsId = this.getLicenseTermsId(txReceipt);
           return { txHash, licenseTermsId: licenseTermsId, ipId: ipRegisterEvent[0].ipId };
         }
         return { txHash };
@@ -1241,17 +1331,13 @@ export class IPAssetClient {
     return sigAttachState;
   }
 
-  private async getLicenseTermsId(txReceipt: TransactionReceipt): Promise<bigint> {
+  private getLicenseTermsId(txReceipt: TransactionReceipt): bigint {
     const licensingModuleLicenseTermsAttachedEvent =
       this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt);
-    let licenseTermsId =
+    const licenseTermsId =
       licensingModuleLicenseTermsAttachedEvent.length >= 1 &&
       licensingModuleLicenseTermsAttachedEvent[0].licenseTermsId;
-    if (licenseTermsId === false) {
-      const defaultLicenseTerms = await this.licenseRegistryReadOnlyClient.getDefaultLicenseTerms();
-      licenseTermsId = defaultLicenseTerms.licenseTermsId;
-    }
-    return licenseTermsId;
+    return licenseTermsId || this.defaultLicenseTermsId;
   }
 
   private async validateLicenseTokenIds(
@@ -1270,5 +1356,18 @@ export class IPAssetClient {
       }
     }
     return newLicenseTokenIds;
+  }
+
+  private getIpIdAndTokenIdFromEvent(txReceipt: TransactionReceipt) {
+    const IPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
+    return IPRegisteredLog.map((log) => {
+      return { ipId: log.ipId, tokenId: log.tokenId };
+    });
+  }
+
+  private async getDefaultLicenseTerms() {
+    this.defaultLicenseTermsId = (
+      await this.licenseRegistryReadOnlyClient.getDefaultLicenseTerms()
+    ).licenseTermsId;
   }
 }

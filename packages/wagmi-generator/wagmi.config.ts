@@ -253,6 +253,7 @@ export default defineConfig(async () => {
             "registerPILTermsAndAttach",
             "registerIpAndAttachPILTerms",
             "mintAndRegisterIpAndAttachPILTerms",
+            "multicall",
           ],
           RoyaltyWorkflows: [
             "transferToVaultAndSnapshotAndClaimByTokenBatch",

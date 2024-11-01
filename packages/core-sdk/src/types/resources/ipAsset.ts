@@ -220,3 +220,14 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   licenseTokenIds: string[] | bigint[] | number[];
   deadline?: string | number | bigint;
 } & IpMetadataAndTxOption;
+
+export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
+  args: Omit<CreateIpAssetWithPilTermsRequest, "txOptions">[];
+  txOptions?: TxOptions;
+};
+
+export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
+  txHash?: string;
+  results?: Omit<RegisterIpResponse, "encodedTxData">[];
+  encodedTxData?: EncodedTxData;
+};

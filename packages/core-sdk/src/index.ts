@@ -41,6 +41,8 @@ export type {
   RegisterPilTermsAndAttachResponse,
   MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsResponse,
 } from "./types/resources/ipAsset";
 
 export type {
