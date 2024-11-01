@@ -7,17 +7,15 @@ import {
   licenseTokenAddress,
   spgnftBeaconAddress,
 } from "../../../src/abi/generated";
-export const RPC = "https://story-testnet.aura.network";
-export const iliadChainId = 1513;
+export const RPC = "https://odyssey.storyrpc.io";
+export const odyssey = 1516;
 
-export const mockERC721 = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
-export const licenseToken =
-  licenseTokenAddress[Number(iliadChainId) as keyof typeof licenseTokenAddress];
-export const spgNftBeacon =
-  spgnftBeaconAddress[Number(iliadChainId) as keyof typeof spgnftBeaconAddress];
+export const mockERC721 = "0xd7eb01052362e9fb13f624c17b4ead08e0eaae17";
+export const licenseToken = licenseTokenAddress[odyssey];
+export const spgNftBeacon = spgnftBeaconAddress[odyssey];
 
 const baseConfig = {
-  chain: chainStringToViemChain("iliad"),
+  chain: chainStringToViemChain("odyssey"),
   transport: http(RPC),
 } as const;
 export const publicClient = createPublicClient(baseConfig);
@@ -105,7 +103,7 @@ export const approveForLicenseToken = async (address: Address, tokenId: bigint) 
 };
 export const getStoryClient = (): StoryClient => {
   const config: StoryConfig = {
-    chainId: "iliad",
+    chainId: "odyssey",
     transport: http(RPC),
     account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
   };

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { getDeadline, getPermissionSignature } from "../../../src/utils/sign";
 import { Hex, WalletClient, createWalletClient, http, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { iliadChainId } from "../../integration/utils/util";
+import { odyssey } from "../../integration/utils/util";
 import sinon from "sinon";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 
@@ -16,7 +16,7 @@ describe("Sign", () => {
           deadline: 1000n,
           permissions: [],
           wallet: {} as WalletClient,
-          chainId: BigInt(iliadChainId),
+          chainId: BigInt(odyssey),
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -33,7 +33,7 @@ describe("Sign", () => {
           deadline: 1000n,
           permissions: [],
           wallet: { signTypedData: () => Promise.resolve("") } as unknown as WalletClient,
-          chainId: BigInt(iliadChainId),
+          chainId: BigInt(odyssey),
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -44,7 +44,7 @@ describe("Sign", () => {
 
     it("should return signature when call getPermissionSignature given account support signTypedData", async () => {
       const walletClient = createWalletClient({
-        chain: chainStringToViemChain("iliad"),
+        chain: chainStringToViemChain("odyssey"),
         transport: http(),
         account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
       });
@@ -54,7 +54,7 @@ describe("Sign", () => {
         deadline: 1000n,
         permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
         wallet: walletClient,
-        chainId: BigInt(iliadChainId),
+        chainId: BigInt(odyssey),
       });
       expect(result).is.a("string").and.not.empty;
     });

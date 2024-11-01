@@ -1,6 +1,6 @@
 export { StoryClient } from "./client";
 export { AddressZero, HashZero } from "./constants/common";
-export { iliad } from "./utils/chain";
+export { odyssey } from "./utils/chain";
 export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";
@@ -54,6 +54,9 @@ export type {
   MintLicenseTokensResponse,
   LicenseTermsId,
   LicenseTerms,
+  PredictMintingLicenseFeeRequest,
+  SetLicensingConfigRequest,
+  SetLicensingConfigResponse,
 } from "./types/resources/license";
 export { PIL_TYPE } from "./types/resources/license";
 
@@ -124,6 +127,8 @@ export type {
   PiLicenseTemplateGetLicenseTermsResponse,
   IpAccountImplStateResponse,
   EncodedTxData,
+  LicensingModulePredictMintingLicenseFeeResponse,
 } from "./abi/generated";
 
 export { getPermissionSignature } from "./utils/sign";
+export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";

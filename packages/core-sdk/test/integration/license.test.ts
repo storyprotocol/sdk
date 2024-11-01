@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, iliadChainId } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, odyssey } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import { licensingModuleAddress } from "../../src/abi/generated";
 
@@ -87,9 +87,7 @@ describe("License Functions", () => {
         },
       });
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(
-        licensingModuleAddress[Number(iliadChainId) as keyof typeof licensingModuleAddress],
-      );
+      await mockERC20.approve(licensingModuleAddress[odyssey]);
       ipId = registerResult.ipId!;
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "1",
@@ -128,6 +126,36 @@ describe("License Functions", () => {
     it("should not throw error when get license terms", async () => {
       const result = await client.license.getLicenseTerms(licenseId);
       expect(result).not.empty;
+    });
+
+    it("should not throw error when predict minting license fee", async () => {
+      const result = await client.license.predictMintingLicenseFee({
+        licenseTermsId: licenseId,
+        licensorIpId: ipId,
+        amount: 1,
+      });
+      expect(result.currencyToken).to.be.a("string").and.not.empty;
+      expect(result.tokenAmount).to.be.a("bigint");
+    });
+
+    it("should not throw error when set licensing config", async () => {
+      const licenseModule = licensingModuleAddress[odyssey];
+      const result = await client.license.setLicensingConfig({
+        ipId: ipId,
+        licenseTermsId: 0n,
+        licenseTemplate: zeroAddress,
+        licensingConfig: {
+          mintingFee: "1",
+          isSet: true,
+          licensingHook: zeroAddress,
+          hookData: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.success).to.be.true;
     });
   });
 });
