@@ -1206,7 +1206,7 @@ export class IPAssetClient {
     return ipId;
   }
 
-  private async isRegistered(ipId: Hex): Promise<boolean> {
+  public async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId, "ipId") });
   }
 

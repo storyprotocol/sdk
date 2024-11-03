@@ -106,6 +106,18 @@ describe("IP Asset Functions ", () => {
       });
       expect(response.txHash).to.be.a("string").not.empty;
     });
+
+    it.only("should return true if IP asset is registered", async () => {
+      const registeredIpId = "0x4197f9d584148cf58cC623a40ac67ce57C0Ec7FA"; // https://explorer.story.foundation/ipa/0x4197f9d584148cf58cC623a40ac67ce57C0Ec7FA
+      const isRegistered = await client.ipAsset.isRegistered(registeredIpId);
+      expect(isRegistered).to.be.true;
+    });
+
+    it.only("should return false if IP asset is not registered", async () => {
+      const unregisteredIpId = "0x1234567890123456789012345678901234567890";
+      const isRegistered = await client.ipAsset.isRegistered(unregisteredIpId);
+      expect(isRegistered).to.be.false;
+    });
   });
 
   describe("NFT Client (SPG)", () => {
