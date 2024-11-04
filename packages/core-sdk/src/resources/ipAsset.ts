@@ -17,6 +17,8 @@ import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
+  BatchMintAndRegisterIpAndMakeDerivativeRequest,
+  BatchMintAndRegisterIpAndMakeDerivativeResponse,
   BatchMintAndRegisterIpAssetWithPilTermsRequest,
   BatchMintAndRegisterIpAssetWithPilTermsResponse,
   BatchRegisterDerivativeRequest,
@@ -584,14 +586,14 @@ export class IPAssetClient {
   /**
    * Batch mint an NFT from a collection and register it as an IP.
    * @param request - The request object that contains all data needed to batch mint and register ip.
-   *   @param request.args The array of mint and register IP requests.
+   *   @param {Array} request.args The array of mint and register IP requests.
    *     @param request.args.spgNftContract The address of the NFT collection.
    *     @param request.args.pilType The type of the PIL.
    *     @param request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *     @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *      @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *      @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *      @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *     @param request.args.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
    *     @param request.args.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *     @param request.args.mintingFee [Optional] The fee to be paid when minting a license.
@@ -942,14 +944,14 @@ export class IPAssetClient {
    * @param request - The request object that contains all data needed to mint and register ip and make derivative.
    *   @param request.spgNftContract The address of the NFT collection.
    *   @param request.derivData The derivative data to be used for registerDerivative.
-   *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
-   *   @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *   @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
+   *     @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
+   *     @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
+   *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes child ip id and token id.
@@ -1020,6 +1022,59 @@ export class IPAssetClient {
       }
     } catch (error) {
       handleError(error, "Failed to mint and register IP and make derivative");
+    }
+  }
+  /**
+   * Batch mint an NFT from a collection and register it as a derivative IP without license tokens.
+   * @param request - The request object that contains all data needed to batch mint and register ip and make derivative.
+   *  @param {Array} request.args The array of mint and register IP requests.
+   *   @param request.args.spgNftContract The address of the NFT collection.
+   *   @param request.args.derivData The derivative data to be used for registerDerivative.
+   *     @param request.args.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
+   *     @param request.args.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
+   *     @param request.args.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
+   *   @param request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *     @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *     @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *     @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *     @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
+   *  @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes child ip id and token id.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   */
+  public async batchMintAndRegisterIpAndMakeDerivative(
+    request: BatchMintAndRegisterIpAndMakeDerivativeRequest,
+  ): Promise<BatchMintAndRegisterIpAndMakeDerivativeResponse> {
+    try {
+      const calldata: Hex[] = [];
+      for (const arg of request.args) {
+        const result = await this.mintAndRegisterIpAndMakeDerivative({
+          ...arg,
+          txOptions: { encodedTxDataOnly: true },
+        });
+        calldata.push(result.encodedTxData!.data);
+      }
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData: this.derivativeWorkflowsClient.multicallEncode({ data: calldata }),
+        };
+      } else {
+        const txHash = await this.derivativeWorkflowsClient.multicall({ data: calldata });
+        if (request.txOptions?.waitForTransaction) {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash: txHash,
+          });
+          return {
+            txHash,
+            results: this.getIpIdAndTokenIdFromEvent(txReceipt),
+          };
+        }
+        return { txHash };
+      }
+    } catch (error) {
+      handleError(error, "Failed to batch mint and register IP and make derivative");
     }
   }
   /**

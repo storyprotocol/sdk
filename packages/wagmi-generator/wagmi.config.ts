@@ -242,6 +242,7 @@ export default defineConfig(async () => {
             "mintAndRegisterIpAndMakeDerivative",
             "registerIpAndMakeDerivativeWithLicenseTokens",
             "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+            "multicall",
           ],
           RegistrationWorkflows: [
             "createCollection",

@@ -62,6 +62,8 @@ describe("Test IpAssetClient", () => {
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (ipAssetClient.licenseAttachmentWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (ipAssetClient.licenseTemplateClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
 
   afterEach(() => {
@@ -1961,24 +1963,170 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test ipAssetClient.isRegistered", async () => {
-    beforeEach(() => {
+  describe("Test ipAssetClient.batchMintAndRegisterIpAndMakeDerivative", async () => {
+    it("should throw ipId and licenseTerms error when batchMintAndRegisterIpAndMakeDerivative given ipId and licenseTerms is not match", async () => {
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(false);
+      try {
+        await ipAssetClient.batchMintAndRegisterIpAndMakeDerivative({
+          args: [
+            {
+              spgNftContract,
+              recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+              derivData: {
+                parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+                licenseTermsIds: ["1"],
+              },
+              ipMetadata: {
+                ipMetadataURI: "https://",
+                nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+              },
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to batch mint and register IP and make derivative: Failed to mint and register IP and make derivative: License terms id 1 must be attached to the parent ipId 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 before registering derivative.",
+        );
+      }
+    });
+
+    it("should return txHash when batchMintAndRegisterIpAndMakeDerivative given correct args", async () => {
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.derivativeWorkflowsClient, "mintAndRegisterIpAndMakeDerivative")
+        .resolves(txHash);
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.derivativeWorkflowsClient, "multicall").resolves(txHash);
+
+      const result = await ipAssetClient.batchMintAndRegisterIpAndMakeDerivative({
+        args: [
+          {
+            spgNftContract,
+            recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+            derivData: {
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: ["1"],
+            },
+            ipMetadata: {
+              ipMetadataURI: "https://",
+              nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            },
+          },
+        ],
+      });
+
+      expect(result.txHash).to.equal(txHash);
     });
-    it("should return true if IP asset is registered", async () => {
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
-      expect(await ipAssetClient.isRegistered("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c")).to.be
-        .true;
+    it("should return txHash and ipId when batchMintAndRegisterIpAndMakeDerivative given correct args and waitForTransaction of true", async () => {
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.derivativeWorkflowsClient, "mintAndRegisterIpAndMakeDerivative")
+        .resolves(txHash);
+      sinon.stub(ipAssetClient.derivativeWorkflowsClient, "multicall").resolves(txHash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+        {
+          ipId: "0x11aAE3197Bc469Cb97B9171a460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 2n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+
+      const result = await ipAssetClient.batchMintAndRegisterIpAndMakeDerivative({
+        args: [
+          {
+            spgNftContract,
+            recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+            derivData: {
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: ["1"],
+            },
+            ipMetadata: {
+              ipMetadataURI: "https://",
+              nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            },
+          },
+          {
+            spgNftContract,
+            recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+            derivData: {
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: ["1"],
+            },
+            ipMetadata: {
+              ipMetadataURI: "https://",
+              nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            },
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      expect(result.txHash).to.equal(txHash);
+      expect(result.results).to.deep.equal([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+        },
+        {
+          ipId: "0x11aAE3197Bc469Cb97B9171a460a12dD95c6627c",
+          tokenId: 2n,
+        },
+      ]);
     });
 
-    it("should return false if IP asset is not registered", async () => {
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+    it("should return encoded tx data when batchMintAndRegisterIpAndMakeDerivative given correct args and encodedTxDataOnly of true", async () => {
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.derivativeWorkflowsClient, "mintAndRegisterIpAndMakeDerivative")
+        .resolves(txHash);
 
-      expect(await ipAssetClient.isRegistered("0x2BCAE3197Bc469Cb97B917aa460a12dD95c6538D")).to.be
-        .false;
+      const result = await ipAssetClient.batchMintAndRegisterIpAndMakeDerivative({
+        args: [
+          {
+            spgNftContract,
+            recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+            derivData: {
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: ["1"],
+            },
+            ipMetadata: {
+              ipMetadataURI: "https://",
+              nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            },
+          },
+        ],
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
 });

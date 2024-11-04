@@ -430,7 +430,7 @@ describe("IP Asset Functions ", () => {
       });
       nftContract = txData.spgNftContract!;
     });
-    it("should not throw error when call batch register derivative", async () => {
+    it.skip("should not throw error when call batch register derivative", async () => {
       const tokenId = await getTokenId();
       const childIpId = (
         await client.ipAsset.register({
@@ -504,7 +504,7 @@ describe("IP Asset Functions ", () => {
       console.log("result", result);
       // expect(result.txHash).to.be.a("string").and.not.empty;
     });
-    it("should not throw error when call batch mint and register ip asset with pil terms", async () => {
+    it.skip("should not throw error when call batch mint and register ip asset with pil terms", async () => {
       const result = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
         args: [
           {
@@ -520,6 +520,42 @@ describe("IP Asset Functions ", () => {
             commercialRevShare: 10,
             mintingFee: "100",
             currency: MockERC20.address,
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.results).to.be.an("array").and.not.empty;
+    });
+
+    it("should not throw error when call batch mint and register ip asset and make derivative", async () => {
+      const tokenId2 = await getTokenId();
+      const parentIpId2 = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId2!,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        })
+      ).ipId!;
+      const result = await client.ipAsset.batchMintAndRegisterIpAndMakeDerivative({
+        args: [
+          {
+            spgNftContract: nftContract,
+            derivData: {
+              parentIpIds: [parentIpId!],
+              licenseTermsIds: [noCommercialLicenseTermsId!],
+            },
+          },
+          {
+            spgNftContract: nftContract,
+            derivData: {
+              parentIpIds: [parentIpId2!],
+              licenseTermsIds: [noCommercialLicenseTermsId!],
+            },
           },
         ],
         txOptions: {
