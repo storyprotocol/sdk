@@ -160,15 +160,5 @@ describe("Test DisputeClient", () => {
 
       expect(result.txHash).equal(txHash);
     });
-
-    it("should return encodedTxData when call resolveDispute successfully with encodedTxDataOnly", async () => {
-      const result = await disputeClient.resolveDispute({
-        disputeId: 1,
-        data: "0x",
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
   });
 });

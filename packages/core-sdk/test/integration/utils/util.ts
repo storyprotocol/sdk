@@ -3,9 +3,9 @@ import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
 import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import {
-  licenseTokenAbi,
-  licenseTokenAddress,
   spgnftBeaconAddress,
+  licenseTokenAddress,
+  licenseTokenAbi,
 } from "../../../src/abi/generated";
 export const RPC = "https://odyssey.storyrpc.io";
 export const odyssey = 1516;

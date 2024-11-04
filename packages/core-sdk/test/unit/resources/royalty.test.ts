@@ -1,7 +1,7 @@
 import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { PublicClient, WalletClient, Account } from "viem";
+import { PublicClient, WalletClient, Account, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RoyaltyClient } from "../../../src/resources/royalty";
 const { IpRoyaltyVaultImplClient } = require("../../../src/abi/generated");
