@@ -430,7 +430,7 @@ describe("IP Asset Functions ", () => {
       });
       nftContract = txData.spgNftContract!;
     });
-    it.skip("should not throw error when call batch register derivative", async () => {
+    it("should not throw error when call batch register derivative", async () => {
       const tokenId = await getTokenId();
       const childIpId = (
         await client.ipAsset.register({
@@ -484,18 +484,23 @@ describe("IP Asset Functions ", () => {
       // console.log("response", response);
       // expect(response.txHash).to.be.a("string").and.not.empty;
 
-      const result = await client.ipAsset.batchRegisterDerivative([
-        {
-          childIpId: childIpId,
-          parentIpIds: [parentIpId],
-          licenseTermsIds: [noCommercialLicenseTermsId],
+      const result = await client.ipAsset.batchRegisterDerivative({
+        args: [
+          {
+            childIpId: childIpId,
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [noCommercialLicenseTermsId],
+          },
+          {
+            childIpId: childIpId2,
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [noCommercialLicenseTermsId],
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
         },
-        {
-          childIpId: childIpId2,
-          parentIpIds: [parentIpId],
-          licenseTermsIds: [noCommercialLicenseTermsId],
-        },
-      ]);
+      });
       console.log("result", result);
       // expect(result.txHash).to.be.a("string").and.not.empty;
     });

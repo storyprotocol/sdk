@@ -231,3 +231,9 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
   results?: Omit<RegisterIpResponse, "encodedTxData">[];
   encodedTxData?: EncodedTxData;
 };
+
+export type BatchRegisterDerivativeRequest = {
+  args: RegisterDerivativeRequest[];
+  deadline?: string | number | bigint;
+  txOptions?: TxOptions;
+};

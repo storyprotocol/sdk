@@ -19,6 +19,7 @@ import { handleError } from "../utils/errors";
 import {
   BatchMintAndRegisterIpAssetWithPilTermsRequest,
   BatchMintAndRegisterIpAssetWithPilTermsResponse,
+  BatchRegisterDerivativeRequest,
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
   GenerateCreatorMetadataParam,
@@ -390,40 +391,67 @@ export class IPAssetClient {
       handleError(error, "Failed to register derivative");
     }
   }
-  //TODO: Throw error
-  public async batchRegisterDerivative(requests: RegisterDerivativeRequest[]) {
+  //TODO: Throw invalid signature error
+  public async batchRegisterDerivative(request: BatchRegisterDerivativeRequest) {
     try {
-      const licenseContract = {
-        address: this.licensingModuleClient.address,
-        abi: licensingModuleAbi,
-        functionName: "registerDerivative",
-      } as const;
       const contracts = [];
-      for (const request of requests) {
+      for (const arg of request.args) {
         await this.registerDerivative({
-          ...request,
+          ...arg,
           txOptions: {
             encodedTxDataOnly: true,
           },
         });
-        const req = {
-          childIpId: request.childIpId,
-          parentIpIds: request.parentIpIds,
-          licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
-          licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
-          royaltyContext: zeroAddress,
-        };
-        contracts.push({
-          ...licenseContract,
+        const calculatedDeadline = getDeadline(request.deadline);
+        const ipAccount = new IpAccountImplClient(
+          this.rpcClient,
+          this.wallet,
+          getAddress(arg.childIpId, "arg.childIpId"),
+        );
+        const { result: state } = await ipAccount.state();
+        const signature = await getPermissionSignature({
+          ipId: arg.childIpId,
+          deadline: calculatedDeadline,
+          state,
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: arg.childIpId,
+              //I am not sure address is the correct address
+              signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+              to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function registerDerivative(address,address[],uint256[],address,uint256)",
+            },
+          ],
+        });
+        const data = encodeFunctionData({
+          abi: licensingModuleAbi,
+          functionName: "registerDerivative",
           args: [
-            req.childIpId,
-            req.parentIpIds,
-            req.licenseTermsIds,
-            req.licenseTemplate,
+            arg.childIpId,
+            arg.parentIpIds,
+            arg.licenseTermsIds.map((id) => BigInt(id)),
+            arg.licenseTemplate || this.licenseTemplateClient.address,
             zeroAddress,
           ],
         });
+        contracts.push({
+          abi: ipAccountImplAbi,
+          functionName: "executeWithSig",
+          address: arg.childIpId,
+          args: [
+            arg.childIpId,
+            BigInt(0),
+            data,
+            this.wallet.account!.address,
+            calculatedDeadline,
+            signature,
+          ],
+        });
       }
+
       await this.rpcClient.multicall({ contracts });
     } catch (error) {
       handleError(error, "Failed to batch register derivative");
