@@ -581,7 +581,27 @@ export class IPAssetClient {
       handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
   }
-  //TODO: need add the unit tests
+  /**
+   * Batch mint an NFT from a collection and register it as an IP.
+   * @param request - The request object that contains all data needed to batch mint and register ip.
+   *   @param request.args The array of mint and register IP requests.
+   *     @param request.args.spgNftContract The address of the NFT collection.
+   *     @param request.args.pilType The type of the PIL.
+   *     @param request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *     @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *     @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *     @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *     @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *     @param request.args.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
+   *     @param request.args.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
+   *     @param request.args.mintingFee [Optional] The fee to be paid when minting a license.
+   *     @param request.args.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
+   *     @param request.args.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *    @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, Token ID, License Terms Id.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
+   */
   public async batchMintAndRegisterIpAssetWithPilTerms(
     request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<BatchMintAndRegisterIpAssetWithPilTermsResponse> {
@@ -614,7 +634,10 @@ export class IPAssetClient {
           const licenseTerms = licenseTermsEvent.find((event) => event.ipId === result.ipId);
           return {
             ...result,
-            licenseTermsId: licenseTerms?.licenseTermsId || this.defaultLicenseTermsId,
+            licenseTermsId:
+              licenseTerms?.licenseTermsId === undefined
+                ? this.defaultLicenseTermsId
+                : licenseTerms.licenseTermsId,
           };
         });
         return {
@@ -1365,7 +1388,7 @@ export class IPAssetClient {
     const licenseTermsId =
       licensingModuleLicenseTermsAttachedEvent.length >= 1 &&
       licensingModuleLicenseTermsAttachedEvent[0].licenseTermsId;
-    return licenseTermsId || this.defaultLicenseTermsId;
+    return licenseTermsId === false ? this.defaultLicenseTermsId : licenseTermsId;
   }
 
   private async validateLicenseTokenIds(
