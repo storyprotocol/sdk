@@ -249,6 +249,7 @@ export default defineConfig(async () => {
             "mintAndRegisterIp",
             "registerIp",
             "CollectionCreated",
+            "multicall",
           ],
           LicenseAttachmentWorkflows: [
             "registerPILTermsAndAttach",

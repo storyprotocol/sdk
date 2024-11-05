@@ -2129,4 +2129,25 @@ describe("Test IpAssetClient", () => {
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
+
+  describe("Test ipAssetClient.isRegistered", async () => {
+    beforeEach(() => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+    });
+    it("should return true if IP asset is registered", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      expect(await ipAssetClient.isRegistered("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c")).to.be
+        .true;
+    });
+
+    it("should return false if IP asset is not registered", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      expect(await ipAssetClient.isRegistered("0x2BCAE3197Bc469Cb97B917aa460a12dD95c6538D")).to.be
+        .false;
+    });
+  });
 });

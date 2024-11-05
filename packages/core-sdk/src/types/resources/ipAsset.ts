@@ -239,11 +239,17 @@ export type BatchRegisterDerivativeRequest = {
 };
 
 export type BatchMintAndRegisterIpAndMakeDerivativeRequest = {
-  args: MintAndRegisterIpAndMakeDerivativeRequest[];
+  args: Omit<MintAndRegisterIpAndMakeDerivativeRequest, "txOptions">[];
   txOptions?: TxOptions;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
   txHash?: string;
   results?: { ipId: Address; tokenId: bigint }[];
   encodedTxData?: EncodedTxData;
+};
+
+export type BatchRegisterRequest = {
+  args: Omit<RegisterRequest, "txOptions">[];
+  deadline?: string | number | bigint;
+  txOptions?: TxOptions;
 };

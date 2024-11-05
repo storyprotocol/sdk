@@ -20871,6 +20871,15 @@ export type RegistrationWorkflowsMintAndRegisterIpRequest = {
 };
 
 /**
+ * RegistrationWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type RegistrationWorkflowsMulticallRequest = {
+  data: readonly Hex[];
+};
+
+/**
  * RegistrationWorkflowsRegisterIpRequest
  *
  * @param nftContract address
@@ -21031,6 +21040,42 @@ export class RegistrationWorkflowsClient extends RegistrationWorkflowsEventClien
         abi: registrationWorkflowsAbi,
         functionName: "mintAndRegisterIp",
         args: [request.spgNftContract, request.recipient, request.ipMetadata],
+      }),
+    };
+  }
+
+  /**
+   * method multicall for contract RegistrationWorkflows
+   *
+   * @param request RegistrationWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: RegistrationWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: registrationWorkflowsAbi,
+      address: this.address,
+      functionName: "multicall",
+      account: this.wallet.account,
+      args: [request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method multicall for contract RegistrationWorkflows with only encode
+   *
+   * @param request RegistrationWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(request: RegistrationWorkflowsMulticallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: registrationWorkflowsAbi,
+        functionName: "multicall",
+        args: [request.data],
       }),
     };
   }
