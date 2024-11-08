@@ -238,6 +238,10 @@ export type BatchRegisterDerivativeRequest = {
   txOptions?: TxOptions;
 };
 
+export type BatchRegisterDerivativeResponse = {
+  status: "success" | "failure";
+  error: string;
+};
 export type BatchMintAndRegisterIpAndMakeDerivativeRequest = {
   args: Omit<MintAndRegisterIpAndMakeDerivativeRequest, "txOptions">[];
   txOptions?: TxOptions;
@@ -251,5 +255,12 @@ export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
 export type BatchRegisterRequest = {
   args: Omit<RegisterRequest, "txOptions">[];
   deadline?: string | number | bigint;
-  txOptions?: TxOptions;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type BatchRegisterResponse = {
+  ipId: Address;
+  tokenId: bigint;
+  status: "success" | "failure";
+  error: string;
 };

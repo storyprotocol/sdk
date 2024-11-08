@@ -1,6 +1,19 @@
-import { encodeAbiParameters, encodeFunctionData, keccak256, toFunctionSelector } from "viem";
+import {
+  Address,
+  Hex,
+  WalletClient,
+  encodeAbiParameters,
+  encodeFunctionData,
+  keccak256,
+  toFunctionSelector,
+} from "viem";
 
-import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
+import {
+  SimpleWalletClient,
+  accessControllerAbi,
+  accessControllerAddress,
+  ipAccountImplAbi,
+} from "../abi/generated";
 import { getAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
 import {
@@ -71,7 +84,6 @@ export const getPermissionSignature = async (
       ],
     ),
   );
-
   return await wallet.signTypedData({
     account: wallet.account,
     domain: {
@@ -109,4 +121,71 @@ export const getDeadline = (deadline?: bigint | number | string): bigint => {
   }
   const timestamp = BigInt(Date.now());
   return deadline ? timestamp + BigInt(deadline) : timestamp + 1000n;
+};
+
+export const getSignature = async ({
+  state,
+  to,
+  encodeData,
+  wallet,
+  verifyingContract,
+  deadline,
+  chainId,
+}: {
+  state: Hex;
+  to: Address;
+  encodeData: Hex;
+  wallet: SimpleWalletClient;
+  verifyingContract: Address;
+  deadline: bigint | number | string;
+  chainId: number | bigint | string;
+}): Promise<Hex> => {
+  if (!(wallet as WalletClient).signTypedData) {
+    throw new Error("The wallet client does not support signTypedData, please try again.");
+  }
+  if (!wallet.account) {
+    throw new Error("The wallet client does not have an account, please try again.");
+  }
+  const nonce = keccak256(
+    encodeAbiParameters(
+      [
+        { name: "", type: "bytes32" },
+        { name: "", type: "bytes" },
+      ],
+      [
+        state,
+        encodeFunctionData({
+          abi: ipAccountImplAbi,
+          functionName: "execute",
+          args: [to, 0n, encodeData],
+        }),
+      ],
+    ),
+  );
+  return await (wallet as WalletClient).signTypedData({
+    account: wallet.account,
+    domain: {
+      name: "Story Protocol IP Account",
+      version: "1",
+      chainId: Number(chainId),
+      verifyingContract,
+    },
+    types: {
+      Execute: [
+        { name: "to", type: "address" },
+        { name: "value", type: "uint256" },
+        { name: "data", type: "bytes" },
+        { name: "nonce", type: "bytes32" },
+        { name: "deadline", type: "uint256" },
+      ],
+    },
+    primaryType: "Execute",
+    message: {
+      to,
+      value: BigInt(0),
+      data: encodeData,
+      nonce,
+      deadline: BigInt(deadline),
+    },
+  });
 };

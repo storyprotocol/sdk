@@ -87,13 +87,12 @@ export class IPAccountClient {
 
       const req = {
         to: getAddress(request.to, "request.to"),
-        value: BigInt(0),
+        value: BigInt(request.value || 0),
         data: request.data,
         signer: getAddress(request.signer, "request.signer"),
         deadline: BigInt(request.deadline),
         signature: request.signature,
       };
-
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {

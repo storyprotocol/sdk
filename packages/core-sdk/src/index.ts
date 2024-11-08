@@ -45,6 +45,10 @@ export type {
   BatchMintAndRegisterIpAssetWithPilTermsResponse,
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
   BatchMintAndRegisterIpAndMakeDerivativeResponse,
+  BatchRegisterRequest,
+  BatchRegisterResponse,
+  BatchRegisterDerivativeRequest,
+  BatchRegisterDerivativeResponse,
 } from "./types/resources/ipAsset";
 
 export type {

@@ -32,7 +32,7 @@ describe("IP Asset Functions ", () => {
 
   describe("Create IP Asset", async () => {
     let childIpId: Hex;
-    it.skip("should not throw error when register a IP Asset", async () => {
+    it("should not throw error when register a IP Asset", async () => {
       const tokenId = await getTokenId();
       const waitForTransaction: boolean = true;
       const response = await expect(
@@ -50,7 +50,7 @@ describe("IP Asset Functions ", () => {
       }
     });
 
-    it.skip("should not throw error when register derivative", async () => {
+    it("should not throw error when register derivative", async () => {
       const tokenId = await getTokenId();
       parentIpId = (
         await client.ipAsset.register({
@@ -79,7 +79,7 @@ describe("IP Asset Functions ", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
-    it.skip("should not throw error when register derivative with license tokens", async () => {
+    it("should not throw error when register derivative with license tokens", async () => {
       const tokenId = await getTokenId();
       const ipId = (
         await client.ipAsset.register({
@@ -120,7 +120,7 @@ describe("IP Asset Functions ", () => {
     });
   });
 
-  describe.skip("NFT Client (SPG)", () => {
+  describe("NFT Client (SPG)", () => {
     let nftContract: Hex;
     let parentIpId: Hex;
     let licenseTermsId: bigint;
@@ -430,60 +430,27 @@ describe("IP Asset Functions ", () => {
       });
       nftContract = txData.spgNftContract!;
     });
-    it.skip("should not throw error when call batch register derivative", async () => {
-      const tokenId = await getTokenId();
+    it("should not throw error when call batch register derivative", async () => {
+      const childTokenId = await getTokenId();
       const childIpId = (
         await client.ipAsset.register({
           nftContract: mockERC721,
-          tokenId: tokenId!,
+          tokenId: childTokenId!,
           txOptions: {
             waitForTransaction: true,
           },
         })
       ).ipId!;
-      const tokenId2 = await getTokenId();
+      const childTokenId2 = await getTokenId();
       const childIpId2 = (
         await client.ipAsset.register({
           nftContract: mockERC721,
-          tokenId: tokenId2!,
+          tokenId: childTokenId2!,
           txOptions: {
             waitForTransaction: true,
           },
         })
       ).ipId!;
-      console.log([
-        {
-          childIpId: childIpId,
-          parentIpIds: [parentIpId],
-          licenseTermsIds: [noCommercialLicenseTermsId],
-        },
-        {
-          childIpId: childIpId2,
-          parentIpIds: [parentIpId],
-          licenseTermsIds: [noCommercialLicenseTermsId],
-        },
-      ]);
-
-      // const response2 = await client.ipAsset.registerDerivative({
-      //   childIpId: childIpId,
-      //   parentIpIds: [parentIpId],
-      //   licenseTermsIds: [noCommercialLicenseTermsId],
-      //   txOptions: {
-      //     waitForTransaction: true,
-      //   },
-      // });
-      // expect(response2.txHash).to.be.a("string").and.not.empty;
-      // const response = await client.ipAsset.registerDerivative({
-      //   childIpId: childIpId2,
-      //   parentIpIds: [parentIpId],
-      //   licenseTermsIds: [noCommercialLicenseTermsId],
-      //   txOptions: {
-      //     waitForTransaction: true,
-      //   },
-      // });
-      // console.log("response", response);
-      // expect(response.txHash).to.be.a("string").and.not.empty;
-
       const result = await client.ipAsset.batchRegisterDerivative({
         args: [
           {
@@ -491,20 +458,20 @@ describe("IP Asset Functions ", () => {
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
           },
-          // {
-          //   childIpId: childIpId2,
-          //   parentIpIds: [parentIpId],
-          //   licenseTermsIds: [noCommercialLicenseTermsId],
-          // },
+          {
+            childIpId: childIpId2,
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [noCommercialLicenseTermsId],
+          },
         ],
         txOptions: {
           waitForTransaction: true,
         },
       });
-      console.log("result", result);
-      // expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result[0].status).to.be.equal("success");
+      expect(result[1].status).to.be.equal("success");
     });
-    it.skip("should not throw error when call batch mint and register ip asset with pil terms", async () => {
+    it("should not throw error when call batch mint and register ip asset with pil terms", async () => {
       const result = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
         args: [
           {
@@ -568,51 +535,57 @@ describe("IP Asset Functions ", () => {
 
     it("should not throw error when call batch register giving parameters without ipMetadata", async () => {
       const tokenId = await getTokenId();
-      // const result = await client.ipAsset.register({
-      //   nftContract: mockERC721,
-      //   tokenId: tokenId!,
-      //   txOptions: {
-      //     waitForTransaction: true,
-      //   },
-      // });
-      // console.log("result", result);
-      // const tokenId2 = await getTokenId();
+      const tokenId2 = await getTokenId();
       const result = await client.ipAsset.batchRegister({
         args: [
           {
             nftContract: mockERC721,
             tokenId: tokenId!,
           },
-          // {
-          //   nftContract: mockERC721,
-          //   tokenId: tokenId2!,
-          // },
-        ],
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      // expect(result.results).to.be.an("array").and.not.empty;
-    });
-
-    it("should not throw error when call batch register giving parameters with ipMetadata", async () => {
-      const tokenId = await mintBySpg(nftContract, "test-metadata");
-      const result = await client.ipAsset.batchRegister({
-        args: [
           {
-            nftContract,
-            tokenId: tokenId!,
-            ipMetadata: {
-              ipMetadataURI: "test-uri",
-              ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-              nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-            },
+            nftContract: mockERC721,
+            tokenId: tokenId2!,
           },
         ],
         txOptions: {
           waitForTransaction: true,
         },
       });
+      expect(result[0].status).to.be.equal("success");
+      expect(result[1].status).to.be.equal("success");
+    });
+
+    it("should not throw error when call batch register giving parameters with ipMetadata", async () => {
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
+      const result = client.ipAsset.register({
+        nftContract,
+        tokenId: tokenId!,
+        ipMetadata: {
+          ipMetadataURI: "test-uri",
+          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      console.log("result", result);
+      // const result = await client.ipAsset.batchRegister({
+      //   args: [
+      //     {
+      //       nftContract,
+      //       tokenId: tokenId!,
+      //       ipMetadata: {
+      //         ipMetadataURI: "test-uri",
+      //         ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+      //         nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+      //       },
+      //     },
+      //   ],
+      //   txOptions: {
+      //     waitForTransaction: true,
+      //   },
+      // });
       // expect(result.results).to.be.an("array").and.not.empty;
     });
   });

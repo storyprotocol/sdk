@@ -22,7 +22,9 @@ import {
   BatchMintAndRegisterIpAssetWithPilTermsRequest,
   BatchMintAndRegisterIpAssetWithPilTermsResponse,
   BatchRegisterDerivativeRequest,
+  BatchRegisterDerivativeResponse,
   BatchRegisterRequest,
+  BatchRegisterResponse,
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
   GenerateCreatorMetadataParam,
@@ -75,7 +77,7 @@ import {
   royaltyPolicyLapAddress,
 } from "../abi/generated";
 import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
-import { getDeadline, getPermissionSignature } from "../utils/sign";
+import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission, SetPermissionsRequest } from "../types/resources/permission";
 
 export class IPAssetClient {
@@ -320,105 +322,66 @@ export class IPAssetClient {
       handleError(error, "Failed to register IP");
     }
   }
-
-  public async batchRegister(request: BatchRegisterRequest) {
+  /**
+   * Batch registers an NFT as IP, creating a corresponding IP record.
+   * @param request - The request object that contains all data needed to batch register IP.
+   *  @param {Array} request.args The array of objects containing the data needed to register IP.
+   *   @param request.args.nftContract The address of the NFT.
+   *   @param request.args.tokenId The token identifier of the NFT.
+   *   @param request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *    @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *    @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *    @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *    @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.args.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash`property, without encodedTxDataOnly option.
+   * @returns A Promise that resolves to an array including status, error, IP ID, and token ID.
+   */
+  public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse[]> {
     try {
       let isSpgParameter = false;
-      for (const arg of request.args) {
-        if (arg.ipMetadata) {
-          isSpgParameter = true;
-        }
-        if (!arg.ipMetadata && isSpgParameter) {
-          throw new Error("All IP metadata must be provided if one IP metadata is provided.");
-        }
-      }
       const contracts = [];
       const calldata: Hex[] = [];
       for (const arg of request.args) {
-        const result = await this.register({
-          ...arg,
-          txOptions: {
-            encodedTxDataOnly: true,
-          },
-        });
-        if (!isSpgParameter) {
-          if (!(this.wallet as WalletClient).signTypedData) {
-            throw new Error("The wallet client does not support signTypedData, please try again.");
-          }
-          if (!this.wallet.account) {
-            throw new Error("The wallet client does not have an account, please try again.");
-          }
-          const ipIdAddress = await this.getIpIdAddress(arg.nftContract, arg.tokenId);
-          const calculatedDeadline = getDeadline(request.deadline);
-          const data = encodeFunctionData({
+        if (!arg.ipMetadata && isSpgParameter) {
+          throw new Error("All IP metadata must be provided if one IP metadata is provided.");
+        }
+        if (arg.ipMetadata) {
+          isSpgParameter = true;
+        }
+        let result;
+        try {
+          result = await this.register({
+            ...arg,
+            txOptions: {
+              encodedTxDataOnly: true,
+            },
+          });
+        } catch (error) {
+          throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
+        }
+        if (isSpgParameter) {
+          calldata.push(result.encodedTxData!.data);
+        } else {
+          contracts.push({
             abi: ipAssetRegistryAbi,
             functionName: "register",
+            address: this.ipAssetRegistryClient.address,
             args: [BigInt(this.chainId), arg.nftContract, BigInt(arg.tokenId)],
           });
-          const nonce = keccak256(
-            encodeAbiParameters(
-              [
-                { name: "", type: "bytes32" },
-                { name: "", type: "bytes" },
-              ],
-              [
-                toHex(0, { size: 32 }),
-                encodeFunctionData({
-                  abi: ipAccountImplAbi,
-                  functionName: "execute",
-                  args: [this.ipAssetRegistryClient.address, 0n, data],
-                }),
-              ],
-            ),
-          );
-          const signature = await (this.wallet as WalletClient).signTypedData({
-            account: this.wallet.account,
-            domain: {
-              name: "Story Protocol IP Account",
-              version: "1",
-              chainId: Number(this.chainId),
-              verifyingContract: ipIdAddress,
-            },
-            types: {
-              Execute: [
-                { name: "to", type: "address" },
-                { name: "value", type: "uint256" },
-                { name: "data", type: "bytes" },
-                { name: "nonce", type: "bytes32" },
-                { name: "deadline", type: "uint256" },
-              ],
-            },
-            primaryType: "Execute",
-            message: {
-              to: this.ipAssetRegistryClient.address,
-              value: BigInt(0),
-              data,
-              nonce,
-              deadline: calculatedDeadline,
-            },
-          });
-          contracts.push({
-            abi: ipAccountImplAbi,
-            functionName: "executeWithSig",
-            address: ipIdAddress,
-            args: [
-              ipIdAddress,
-              BigInt(0),
-              data,
-              this.wallet.account.address,
-              calculatedDeadline,
-              signature,
-            ],
-          });
-          // const result = await this.rpcClient.multicall({ contracts });
-          // console.log("result", result);
-        } else {
-          calldata.push(result.encodedTxData!.data);
         }
       }
       if (isSpgParameter) {
-        // const result = await this.registrationWorkflowsClient.multicall({ data: calldata });
-        // console.log("result", result);
+        const result = await this.registrationWorkflowsClient.multicall({ data: calldata });
+        return { results: result } as unknown as BatchRegisterResponse[];
+      } else {
+        const responses = await this.rpcClient.multicall({ contracts });
+        return responses.map((res, index) => ({
+          status: res.status,
+          ipId: res.result as Hex,
+          tokenId: request.args[index].tokenId as bigint,
+          error: res.error?.message || "",
+        }));
       }
     } catch (error) {
       handleError(error, "Failed to batch register IP");
@@ -498,8 +461,20 @@ export class IPAssetClient {
       handleError(error, "Failed to register derivative");
     }
   }
-  //TODO: Throw invalid signature error
-  public async batchRegisterDerivative(request: BatchRegisterDerivativeRequest) {
+
+  /**
+   * Batch registers a derivative directly with parent IP's license terms.
+   * @param request - The request object that contains all data needed to batch register derivative IP.
+   *  @param {Array} request.args The array of objects containing the data needed to register derivative IP.
+   *   @param request.args.childIpId The derivative IP ID.
+   *   @param request.args.parentIpIds The parent IP IDs.
+   *   @param request.args.licenseTermsIds The IDs of the license terms that the parent IP supports.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
+   * @returns A Promise that resolves to an array including status, error.
+   */
+  public async batchRegisterDerivative(
+    request: BatchRegisterDerivativeRequest,
+  ): Promise<BatchRegisterDerivativeResponse[]> {
     try {
       const contracts = [];
       const licenseModuleAddress = getAddress(
@@ -507,12 +482,18 @@ export class IPAssetClient {
         "licensingModuleAddress",
       );
       for (const arg of request.args) {
-        await this.registerDerivative({
-          ...arg,
-          txOptions: {
-            encodedTxDataOnly: true,
-          },
-        });
+        try {
+          await this.registerDerivative({
+            ...arg,
+            txOptions: {
+              encodedTxDataOnly: true,
+            },
+          });
+        } catch (error) {
+          throw new Error(
+            (error as Error).message.replace("Failed to register derivative:", "").trim(),
+          );
+        }
         const calculatedDeadline = getDeadline(request.deadline);
         const ipAccount = new IpAccountImplClient(
           this.rpcClient,
@@ -531,71 +512,35 @@ export class IPAssetClient {
           ],
         });
         const { result: state } = await ipAccount.state();
-        const nonce = keccak256(
-          encodeAbiParameters(
-            [
-              { name: "", type: "bytes32" },
-              { name: "", type: "bytes" },
-            ],
-            [
-              state,
-              encodeFunctionData({
-                abi: ipAccountImplAbi,
-                functionName: "execute",
-                args: [licenseModuleAddress, 0n, data],
-              }),
-            ],
-          ),
-        );
-        if (!(this.wallet as WalletClient).signTypedData) {
-          throw new Error("The wallet client does not support signTypedData, please try again.");
-        }
-        if (!this.wallet.account) {
-          throw new Error("The wallet client does not have an account, please try again.");
-        }
-        const signature = await (this.wallet as WalletClient).signTypedData({
-          account: this.wallet.account,
-          domain: {
-            name: "Story Protocol IP Account",
-            version: "1",
-            chainId: Number(this.chainId),
-            verifyingContract: arg.childIpId,
-          },
-          types: {
-            Execute: [
-              { name: "to", type: "address" },
-              { name: "value", type: "uint256" },
-              { name: "data", type: "bytes" },
-              { name: "nonce", type: "bytes32" },
-              { name: "deadline", type: "uint256" },
-            ],
-          },
-          primaryType: "Execute",
-          message: {
-            to: licenseModuleAddress,
-            value: BigInt(0),
-            data,
-            nonce,
-            deadline: calculatedDeadline,
-          },
+        const signature = await getSignature({
+          state,
+          to: licenseModuleAddress,
+          encodeData: data,
+          wallet: this.wallet,
+          verifyingContract: arg.childIpId,
+          deadline: calculatedDeadline,
+          chainId: chain[this.chainId],
         });
+
         contracts.push({
           abi: ipAccountImplAbi,
           functionName: "executeWithSig",
           address: arg.childIpId,
           args: [
-            arg.childIpId,
+            licenseModuleAddress,
             BigInt(0),
             data,
-            this.wallet.account.address,
+            this.wallet.account!.address,
             calculatedDeadline,
             signature,
           ],
         });
       }
-
-      // const result = await this.rpcClient.multicall({ contracts });
-      // console.log("result", result);
+      const results = await this.rpcClient.multicall({ contracts });
+      return results.map((res) => ({
+        status: res.status,
+        error: res.error?.message || "",
+      }));
     } catch (error) {
       handleError(error, "Failed to batch register derivative");
     }
