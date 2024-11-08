@@ -94,6 +94,8 @@ export type {
   CreateBatchPermissionSignatureRequest,
   PermissionSignatureRequest,
   PermissionSignatureResponse,
+  SignatureRequest,
+  SignatureResponse,
 } from "./types/resources/permission";
 export { AccessPermission } from "./types/resources/permission";
 export type {

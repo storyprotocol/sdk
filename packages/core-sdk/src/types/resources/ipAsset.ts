@@ -77,6 +77,7 @@ export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
+  tokenId?: bigint;
 };
 
 export type RegisterIpAndAttachPilTermsRequest = {
@@ -95,6 +96,7 @@ export type RegisterIpAndAttachPilTermsResponse = {
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   licenseTermsId?: bigint;
+  tokenId?: bigint;
 };
 
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
@@ -223,13 +225,12 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
 
 export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
   args: Omit<CreateIpAssetWithPilTermsRequest, "txOptions">[];
-  txOptions?: TxOptions;
+  txOptions?: Omit<TxOptions, "EncodedTxData">;
 };
 
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
   txHash?: string;
   results?: Omit<RegisterIpResponse, "encodedTxData">[];
-  encodedTxData?: EncodedTxData;
 };
 
 export type BatchRegisterDerivativeRequest = {
@@ -244,12 +245,11 @@ export type BatchRegisterDerivativeResponse = {
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeRequest = {
   args: Omit<MintAndRegisterIpAndMakeDerivativeRequest, "txOptions">[];
-  txOptions?: TxOptions;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
   txHash?: string;
   results?: { ipId: Address; tokenId: bigint }[];
-  encodedTxData?: EncodedTxData;
 };
 
 export type BatchRegisterRequest = {

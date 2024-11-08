@@ -1,6 +1,4 @@
 import {
-  Address,
-  Hex,
   WalletClient,
   encodeAbiParameters,
   encodeFunctionData,
@@ -8,17 +6,14 @@ import {
   toFunctionSelector,
 } from "viem";
 
-import {
-  SimpleWalletClient,
-  accessControllerAbi,
-  accessControllerAddress,
-  ipAccountImplAbi,
-} from "../abi/generated";
+import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
 import { getAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
 import {
   PermissionSignatureRequest,
   PermissionSignatureResponse,
+  SignatureRequest,
+  SignatureResponse,
 } from "../types/resources/permission";
 
 /**
@@ -68,50 +63,14 @@ export const getPermissionSignature = async (
             })),
           ],
   });
-  const nonce = keccak256(
-    encodeAbiParameters(
-      [
-        { name: "", type: "bytes32" },
-        { name: "", type: "bytes" },
-      ],
-      [
-        state,
-        encodeFunctionData({
-          abi: ipAccountImplAbi,
-          functionName: "execute",
-          args: [accessAddress, 0n, data],
-        }),
-      ],
-    ),
-  );
-  return await wallet.signTypedData({
-    account: wallet.account,
-    domain: {
-      name: "Story Protocol IP Account",
-      version: "1",
-      chainId: Number(chainId),
-      verifyingContract: getAddress(ipId, "ipId"),
-    },
-    types: {
-      Execute: [
-        { name: "to", type: "address" },
-        { name: "value", type: "uint256" },
-        { name: "data", type: "bytes" },
-        { name: "nonce", type: "bytes32" },
-        { name: "deadline", type: "uint256" },
-      ],
-    },
-    primaryType: "Execute",
-    message: {
-      to: getAddress(
-        accessControllerAddress[Number(chainId) as keyof typeof accessControllerAddress],
-        "accessControllerAddress",
-      ),
-      value: BigInt(0),
-      data,
-      nonce,
-      deadline: BigInt(deadline),
-    },
+  return await getSignature({
+    state,
+    to: accessAddress,
+    encodeData: data,
+    wallet,
+    verifyingContract: ipId,
+    deadline,
+    chainId,
   });
 };
 
@@ -131,15 +90,7 @@ export const getSignature = async ({
   verifyingContract,
   deadline,
   chainId,
-}: {
-  state: Hex;
-  to: Address;
-  encodeData: Hex;
-  wallet: SimpleWalletClient;
-  verifyingContract: Address;
-  deadline: bigint | number | string;
-  chainId: number | bigint | string;
-}): Promise<Hex> => {
+}: SignatureRequest): Promise<SignatureResponse> => {
   if (!(wallet as WalletClient).signTypedData) {
     throw new Error("The wallet client does not support signTypedData, please try again.");
   }

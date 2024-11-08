@@ -1,7 +1,7 @@
 import { Address, Hex, WalletClient } from "viem";
 
 import { TxOptions } from "../options";
-import { EncodedTxData } from "../../abi/generated";
+import { EncodedTxData, SimpleWalletClient } from "../../abi/generated";
 
 export type SetPermissionsRequest = {
   ipId: Address;
@@ -62,3 +62,15 @@ export type PermissionSignatureRequest = {
 };
 
 export type PermissionSignatureResponse = Hex;
+
+export type SignatureRequest = {
+  state: Hex;
+  to: Address;
+  encodeData: Hex;
+  wallet: SimpleWalletClient;
+  verifyingContract: Address;
+  deadline: bigint | number | string;
+  chainId: number | bigint | string;
+};
+
+export type SignatureResponse = Hex;
