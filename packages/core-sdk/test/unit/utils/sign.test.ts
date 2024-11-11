@@ -14,7 +14,7 @@ describe("Sign", () => {
           ipId: zeroAddress,
           state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
           deadline: 1000n,
-          permissions: [],
+          permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
           wallet: {} as WalletClient,
           chainId: BigInt(odyssey),
         });
@@ -31,7 +31,7 @@ describe("Sign", () => {
           ipId: zeroAddress,
           state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
           deadline: 1000n,
-          permissions: [],
+          permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
           wallet: { signTypedData: () => Promise.resolve("") } as unknown as WalletClient,
           chainId: BigInt(odyssey),
         });
@@ -52,7 +52,42 @@ describe("Sign", () => {
         ipId: zeroAddress,
         state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
         deadline: 1000n,
-        permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
+        permissions: [
+          {
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
+            permission: 0,
+            func: "function setAll(address,string,bytes32,bytes32)",
+          },
+        ],
+        wallet: walletClient,
+        chainId: BigInt(odyssey),
+      });
+      expect(result).is.a("string").and.not.empty;
+    });
+
+    it("should return signature when call getPermissionSignature given account support signTypedData and multiple permissions", async () => {
+      const walletClient = createWalletClient({
+        chain: chainStringToViemChain("odyssey"),
+        transport: http(),
+        account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
+      });
+      const result = await getPermissionSignature({
+        ipId: zeroAddress,
+        state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
+        deadline: 1000n,
+        permissionFunc: "setBatchPermissions",
+        permissions: [
+          { ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 },
+          {
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
+            permission: 0,
+            func: "function setAll(address,string,bytes32,bytes32)",
+          },
+        ],
         wallet: walletClient,
         chainId: BigInt(odyssey),
       });

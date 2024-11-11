@@ -19,11 +19,11 @@ export type IPAccountExecuteResponse = {
 export type IPAccountExecuteWithSigRequest = {
   ipId: Address;
   to: Address;
-  value: number | bigint | string;
   data: Address;
   signer: Address;
   deadline: number | bigint | string;
   signature: Address;
+  value?: number | bigint | string;
   txOptions?: TxOptions;
 };
 

@@ -32,12 +32,6 @@ export const getPermissionSignature = async (
   param: PermissionSignatureRequest,
 ): Promise<PermissionSignatureResponse> => {
   const { ipId, deadline, state, wallet, chainId, permissions, permissionFunc } = param;
-  if (!wallet.signTypedData) {
-    throw new Error("The wallet client does not support signTypedData, please try again.");
-  }
-  if (!wallet.account) {
-    throw new Error("The wallet client does not have an account, please try again.");
-  }
   const permissionFunction = permissionFunc ? permissionFunc : "setPermission";
   const accessAddress =
     accessControllerAddress[Number(chainId) as keyof typeof accessControllerAddress];

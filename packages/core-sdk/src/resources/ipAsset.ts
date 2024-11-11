@@ -334,7 +334,6 @@ export class IPAssetClient {
    *    @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *    @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.args.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash`property, without encodedTxDataOnly option.
    * @returns A Promise that resolves to an array including status, error, IP ID, and token ID.
    */
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse[]> {
@@ -379,7 +378,7 @@ export class IPAssetClient {
         return responses.map((res, index) => ({
           status: res.status,
           ipId: res.result as Hex,
-          tokenId: request.args[index].tokenId as bigint,
+          tokenId: BigInt(request.args[index].tokenId),
           error: res.error?.message || "",
         }));
       }

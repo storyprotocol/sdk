@@ -255,7 +255,6 @@ export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
 export type BatchRegisterRequest = {
   args: Omit<RegisterRequest, "txOptions">[];
   deadline?: string | number | bigint;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
 export type BatchRegisterResponse = {
