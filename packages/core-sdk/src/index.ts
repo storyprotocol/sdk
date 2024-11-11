@@ -140,5 +140,5 @@ export type {
   LicensingModulePredictMintingLicenseFeeResponse,
 } from "./abi/generated";
 
-export { getPermissionSignature } from "./utils/sign";
+export { getPermissionSignature, getSignature } from "./utils/sign";
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
