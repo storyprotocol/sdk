@@ -6,7 +6,7 @@ import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOption } from "../common";
 
 export type RegisterIpResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
@@ -25,7 +25,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
 };
 
 export type RegisterDerivativeWithLicenseTokensResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
 };
 
@@ -38,10 +38,8 @@ export type RegisterDerivativeRequest = {
 };
 
 export type RegisterDerivativeResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
-  childIpId?: Address;
-  tokenId?: bigint;
 };
 
 export type CreateIpAssetWithPilTermsRequest = {
@@ -55,7 +53,7 @@ export type CreateIpAssetWithPilTermsRequest = {
 } & IpMetadataAndTxOption;
 
 export type CreateIpAssetWithPilTermsResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
@@ -74,7 +72,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
 } & IpMetadataAndTxOption;
 
 export type RegisterIpAndMakeDerivativeResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
@@ -92,7 +90,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
 } & IpMetadataAndTxOption;
 
 export type RegisterIpAndAttachPilTermsResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   licenseTermsId?: bigint;
@@ -109,6 +107,12 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   recipient?: Address;
 } & IpMetadataAndTxOption;
 
+export type MintAndRegisterIpAndMakeDerivativeResponse = {
+  txHash?: Hex;
+  encodedTxData?: EncodedTxData;
+  childIpId?: Address;
+  tokenId?: bigint;
+};
 export type IpRelationship = {
   parentIpId: Address;
   type: string;
@@ -205,7 +209,7 @@ export type RegisterPilTermsAndAttachRequest = {
 };
 
 export type RegisterPilTermsAndAttachResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
   licenseTermsId?: bigint;
 };
@@ -229,7 +233,7 @@ export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
 };
 
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
-  txHash?: string;
+  txHash: Hex;
   results?: Omit<RegisterIpResponse, "encodedTxData">[];
 };
 
@@ -240,46 +244,23 @@ export type BatchRegisterDerivativeRequest = {
 };
 
 export type BatchRegisterDerivativeResponse = {
-  status: "success" | "failure";
-  error: string;
+  txHash: Hex;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeRequest = {
   args: Omit<MintAndRegisterIpAndMakeDerivativeRequest, "txOptions">[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
-  txHash?: string;
+  txHash: string;
   results?: { ipId: Address; tokenId: bigint }[];
 };
 
 export type BatchRegisterRequest = {
-  args: { nftContract: Address; tokenId: string | number | bigint }[];
-  deadline?: string | number | bigint;
-};
-
-export type BatchRegisterResponse = {
-  ipId: Address;
-  tokenId: bigint;
-  status: "success" | "failure";
-  error: string;
-};
-
-export type BatchRegisterWithIpMetadataRequest = {
-  args: {
-    nftContract: Address;
-    tokenId: string | number | bigint;
-    deadline?: string | number | bigint;
-    ipMetadata: {
-      ipMetadataURI?: string;
-      ipMetadataHash?: Hex;
-      nftMetadataURI?: string;
-      nftMetadataHash?: Hex;
-    };
-  }[];
+  args: Omit<RegisterRequest, "txOptions">[];
   txOptions?: TxOptions;
 };
 
-export type BatchRegisterWithIpMetadataResponse = {
-  txHash?: string;
+export type BatchRegisterResponse = {
+  txHash: Hex;
   results?: { ipId: Address; tokenId: bigint }[];
 };

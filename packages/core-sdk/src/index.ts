@@ -26,6 +26,7 @@ export type {
   RegisterIpAndAttachPilTermsRequest,
   RegisterIpAndAttachPilTermsResponse,
   MintAndRegisterIpAndMakeDerivativeRequest,
+  MintAndRegisterIpAndMakeDerivativeResponse,
   GenerateCreatorMetadataParam,
   IpCreator,
   GenerateIpMetadataParam,
@@ -49,8 +50,6 @@ export type {
   BatchRegisterResponse,
   BatchRegisterDerivativeRequest,
   BatchRegisterDerivativeResponse,
-  BatchRegisterWithIpMetadataRequest,
-  BatchRegisterWithIpMetadataResponse,
 } from "./types/resources/ipAsset";
 
 export type {

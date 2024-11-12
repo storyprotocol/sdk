@@ -108,8 +108,7 @@ describe("IP Asset Functions ", () => {
     });
 
     it("should return true if IP asset is registered", async () => {
-      const registeredIpId = "0x4197f9d584148cf58cC623a40ac67ce57C0Ec7FA"; // https://explorer.story.foundation/ipa/0x4197f9d584148cf58cC623a40ac67ce57C0Ec7FA
-      const isRegistered = await client.ipAsset.isRegistered(registeredIpId);
+      const isRegistered = await client.ipAsset.isRegistered(parentIpId);
       expect(isRegistered).to.be.true;
     });
 
@@ -468,8 +467,7 @@ describe("IP Asset Functions ", () => {
           waitForTransaction: true,
         },
       });
-      expect(result[0].status).to.be.equal("success");
-      expect(result[1].status).to.be.equal("success");
+      expect(result.txHash).to.be.a("string").and.not.empty;
     });
     it("should not throw error when call batch mint and register ip asset with pil terms", async () => {
       const result = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
@@ -536,6 +534,8 @@ describe("IP Asset Functions ", () => {
     it("should not throw error when call batch register giving parameters without ipMetadata", async () => {
       const tokenId = await getTokenId();
       const tokenId2 = await getTokenId();
+      const spgTokenId1 = await mintBySpg(nftContract, "test-metadata");
+      const spgTokenId2 = await mintBySpg(nftContract, "test-metadata");
       const result = await client.ipAsset.batchRegister({
         args: [
           {
@@ -546,33 +546,22 @@ describe("IP Asset Functions ", () => {
             nftContract: mockERC721,
             tokenId: tokenId2!,
           },
-        ],
-      });
-      expect(result[0].status).to.be.equal("success");
-      expect(result[1].status).to.be.equal("success");
-    });
-
-    it("should not throw error when call batch register giving parameters with ipMetadata", async () => {
-      const tokenId1 = await mintBySpg(nftContract, "test-metadata");
-      const tokenId2 = await mintBySpg(nftContract, "test-metadata");
-      const result = await client.ipAsset.batchRegisterWithIpMetadata({
-        args: [
           {
             nftContract,
-            tokenId: tokenId1!,
-            ipMetadata: {
-              ipMetadataURI: "test-uri",
-              ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-              nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-            },
-          },
-          {
-            nftContract,
-            tokenId: tokenId2!,
+            tokenId: spgTokenId1!,
             ipMetadata: {
               ipMetadataURI: "test-uri2",
               ipMetadataHash: toHex("test-metadata-hash2", { size: 32 }),
               nftMetadataHash: toHex("test-nft-metadata-hash2", { size: 32 }),
+            },
+          },
+          {
+            nftContract,
+            tokenId: spgTokenId2!,
+            ipMetadata: {
+              ipMetadataURI: "test-uri",
+              ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+              nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
             },
           },
         ],

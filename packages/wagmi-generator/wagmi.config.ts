@@ -153,6 +153,12 @@ export default defineConfig(async () => {
         [odysseyChainId]: "0x12A8b0DcC6e3bB0915638361D9D49942Da07F455",
       },
     },
+    {
+      name: "Multicall3",
+      address: {
+        [odysseyChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
+      },
+    },
   ];
   return {
     out: "../core-sdk/src/abi/generated.ts",
@@ -263,6 +269,7 @@ export default defineConfig(async () => {
             "snapshotAndClaimByTokenBatch",
             "snapshotAndClaimBySnapshotBatch",
           ],
+          Multicall3: ["aggregate3"],
         },
       }),
     ],

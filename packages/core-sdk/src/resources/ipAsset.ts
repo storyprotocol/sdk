@@ -25,8 +25,6 @@ import {
   BatchRegisterDerivativeResponse,
   BatchRegisterRequest,
   BatchRegisterResponse,
-  BatchRegisterWithIpMetadataRequest,
-  BatchRegisterWithIpMetadataResponse,
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
   GenerateCreatorMetadataParam,
@@ -49,6 +47,7 @@ import {
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
+  MintAndRegisterIpAndMakeDerivativeResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -67,6 +66,7 @@ import {
   LicenseRegistryReadOnlyClient,
   LicenseTokenReadOnlyClient,
   LicensingModuleClient,
+  Multicall3Client,
   PiLicenseTemplateClient,
   RegistrationWorkflowsClient,
   RegistrationWorkflowsMintAndRegisterIpRequest,
@@ -74,7 +74,6 @@ import {
   SimpleWalletClient,
   accessControllerAbi,
   ipAccountImplAbi,
-  ipAssetRegistryAbi,
   licensingModuleAbi,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
@@ -93,6 +92,7 @@ export class IPAssetClient {
   public registrationWorkflowsClient: RegistrationWorkflowsClient;
   public licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
   public derivativeWorkflowsClient: DerivativeWorkflowsClient;
+  public multicall3Client: Multicall3Client;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -110,6 +110,7 @@ export class IPAssetClient {
     this.registrationWorkflowsClient = new RegistrationWorkflowsClient(rpcClient, wallet);
     this.licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
     this.derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
+    this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -333,76 +334,41 @@ export class IPAssetClient {
    *  @param {Array} request.args The array of objects containing the data needed to register IP.
    *   @param request.args.nftContract The address of the NFT.
    *   @param request.args.tokenId The token identifier of the NFT.
-   * @returns A Promise that resolves to an array including status, error, IP ID, and token ID.
-   */
-  public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse[]> {
-    try {
-      const contracts = [];
-      for (const arg of request.args) {
-        try {
-          await this.register({
-            ...arg,
-            txOptions: {
-              encodedTxDataOnly: true,
-            },
-          });
-        } catch (error) {
-          throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
-        }
-        contracts.push({
-          abi: ipAssetRegistryAbi,
-          functionName: "register",
-          address: this.ipAssetRegistryClient.address,
-          args: [BigInt(this.chainId), arg.nftContract, BigInt(arg.tokenId)],
-        });
-      }
-      const responses = await this.rpcClient.multicall({ contracts });
-      return responses.map((res, index) => ({
-        status: res.status,
-        ipId: res.result as Hex,
-        tokenId: BigInt(request.args[index].tokenId),
-        error: res.error?.message || "",
-      }));
-    } catch (error) {
-      handleError(error, "Failed to batch register IP");
-    }
-  }
-  /**
-   * Batch registers an NFT as IP, creating a corresponding IP record with ip metadata.
-   * @param request - The request object that contains all data needed to batch register IP with ip metadata.
-   *  @param {Array} request.args The array of objects containing the data needed to register IP.
-   *   @param request.args.nftContract The address of the NFT.
-   *   @param request.args.tokenId The token identifier of the NFT.
    *   @param request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *    @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *    @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *    @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *    @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.args.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, includes IP ID, Token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
-  public async batchRegisterWithIpMetadata(
-    request: BatchRegisterWithIpMetadataRequest,
-  ): Promise<BatchRegisterWithIpMetadataResponse> {
+  public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
     try {
-      const calldata: Hex[] = [];
+      const contracts = [];
+      let encodedTxData: Hex;
       for (const arg of request.args) {
-        let result;
         try {
-          result = await this.register({
+          const result = await this.register({
             ...arg,
             txOptions: {
               encodedTxDataOnly: true,
             },
           });
+          encodedTxData = result.encodedTxData!.data;
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
-        calldata.push(result.encodedTxData!.data);
+        const isSpg = !!arg.ipMetadata;
+        contracts.push({
+          target: isSpg
+            ? this.registrationWorkflowsClient.address
+            : this.ipAssetRegistryClient.address,
+          allowFailure: false,
+          callData: encodedTxData,
+        });
       }
-      const txHash = await this.registrationWorkflowsClient.multicall({ data: calldata });
+      const txHash = await this.multicall3Client.aggregate3({ calls: contracts });
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({
           ...request.txOptions,
@@ -418,7 +384,7 @@ export class IPAssetClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to batch register IP with ip metadata");
+      handleError(error, "Failed to batch register IP");
     }
   }
   /**
@@ -432,7 +398,7 @@ export class IPAssetClient {
    *   @param request.parentIpIds The parent IP IDs.
    *   @param request.licenseTermsIds The IDs of the license terms that the parent IP supports.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data.
    */
   public async registerDerivative(
     request: RegisterDerivativeRequest,
@@ -503,12 +469,13 @@ export class IPAssetClient {
    *   @param request.args.childIpId The derivative IP ID.
    *   @param request.args.parentIpIds The parent IP IDs.
    *   @param request.args.licenseTermsIds The IDs of the license terms that the parent IP supports.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
-   * @returns A Promise that resolves to an array including status, error.
+   *  @param request.args.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
+   *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
+   * @returns A Promise that resolves to a transaction hash.
    */
   public async batchRegisterDerivative(
     request: BatchRegisterDerivativeRequest,
-  ): Promise<BatchRegisterDerivativeResponse[]> {
+  ): Promise<BatchRegisterDerivativeResponse> {
     try {
       const contracts = [];
       const licenseModuleAddress = getAddress(
@@ -555,26 +522,33 @@ export class IPAssetClient {
           deadline: calculatedDeadline,
           chainId: chain[this.chainId],
         });
-
         contracts.push({
-          abi: ipAccountImplAbi,
-          functionName: "executeWithSig",
-          address: arg.childIpId,
-          args: [
-            licenseModuleAddress,
-            BigInt(0),
-            data,
-            this.wallet.account!.address,
-            calculatedDeadline,
-            signature,
-          ],
+          target: arg.childIpId,
+          allowFailure: false,
+          callData: encodeFunctionData({
+            abi: ipAccountImplAbi,
+            functionName: "executeWithSig",
+            args: [
+              licenseModuleAddress,
+              BigInt(0),
+              data,
+              this.wallet.account!.address,
+              calculatedDeadline,
+              signature,
+            ],
+          }),
         });
       }
-      const results = await this.rpcClient.multicall({ contracts });
-      return results.map((res) => ({
-        status: res.status,
-        error: res.error?.message || "",
-      }));
+      const txHash = await this.multicall3Client.aggregate3({ calls: contracts });
+      if (request.txOptions?.waitForTransaction) {
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash };
+      } else {
+        return { txHash };
+      }
     } catch (error) {
       handleError(error, "Failed to batch register derivative");
     }
@@ -1079,7 +1053,7 @@ export class IPAssetClient {
    */
   public async mintAndRegisterIpAndMakeDerivative(
     request: MintAndRegisterIpAndMakeDerivativeRequest,
-  ): Promise<RegisterDerivativeResponse> {
+  ): Promise<MintAndRegisterIpAndMakeDerivativeResponse> {
     try {
       if (request.derivData.parentIpIds.length !== request.derivData.licenseTermsIds.length) {
         throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");

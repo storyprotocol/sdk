@@ -2085,7 +2085,7 @@ describe("Test IpAssetClient", () => {
       }
     });
 
-    it("should return results when call batchRegister given correct args without ipMetadata", async () => {
+    it("should return txhash when call batchRegister given correct args", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -2094,7 +2094,7 @@ describe("Test IpAssetClient", () => {
         data: "0x",
         to: "0x",
       });
-
+      sinon.stub(ipAssetClient.multicall3Client, "aggregate3").resolves(txHash);
       const result = await ipAssetClient.batchRegister({
         args: [
           {
@@ -2104,66 +2104,10 @@ describe("Test IpAssetClient", () => {
         ],
       });
 
-      expect(result).to.deep.equal([
-        {
-          error: "",
-          ipId: undefined,
-          status: "success",
-          tokenId: 1n,
-        },
-      ]);
-    });
-  });
-
-  describe("Test ipAssetClient.batchRegisterWithIpMetadata", async () => {
-    it("should throw error when call batchRegisterWithIpMetadata given args have wrong nftContract", async () => {
-      try {
-        await ipAssetClient.batchRegisterWithIpMetadata({
-          args: [
-            {
-              nftContract: "0x",
-              tokenId: "1",
-              ipMetadata: {
-                ipMetadataURI: "",
-                ipMetadataHash: toHex(0, { size: 32 }),
-              },
-            },
-          ],
-        });
-      } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to batch register IP with ip metadata: nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-        );
-      }
-    });
-
-    it("should return results when call batchRegisterWithIpMetadata given correct args", async () => {
-      sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-      sinon.stub(ipAssetClient.registrationWorkflowsClient, "registerIpEncode").returns({
-        data: "0x",
-        to: "0x",
-      });
-      sinon.stub(ipAssetClient.registrationWorkflowsClient, "multicall").resolves(txHash);
-      const result = await ipAssetClient.batchRegisterWithIpMetadata({
-        args: [
-          {
-            nftContract: spgNftContract,
-            tokenId: "1",
-            ipMetadata: {
-              ipMetadataURI: "",
-              ipMetadataHash: toHex(0, { size: 32 }),
-            },
-          },
-        ],
-      });
-
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return results when call batchRegisterWithIpMetadata given correct args and waitForTransaction of true", async () => {
+    it("should return txhash and ipId when call batchRegister given correct args and waitForTransaction of true", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -2172,7 +2116,7 @@ describe("Test IpAssetClient", () => {
         data: "0x",
         to: "0x",
       });
-      sinon.stub(ipAssetClient.registrationWorkflowsClient, "multicall").resolves(txHash);
+      sinon.stub(ipAssetClient.multicall3Client, "aggregate3").resolves(txHash);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -2184,7 +2128,7 @@ describe("Test IpAssetClient", () => {
           registrationDate: 0n,
         },
         {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95a6627c",
+          ipId: "0x1daAE3197Bc469Cb87B917aa460a12dD95c6627c",
           chainId: 0n,
           tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: 2n,
@@ -2193,23 +2137,20 @@ describe("Test IpAssetClient", () => {
           registrationDate: 0n,
         },
       ]);
-
-      const result = await ipAssetClient.batchRegisterWithIpMetadata({
+      const result = await ipAssetClient.batchRegister({
         args: [
           {
             nftContract: spgNftContract,
             tokenId: "1",
-            ipMetadata: {
-              ipMetadataURI: "",
-              ipMetadataHash: toHex(0, { size: 32 }),
-            },
           },
           {
             nftContract: spgNftContract,
-            tokenId: "1",
+            tokenId: "2",
             ipMetadata: {
               ipMetadataURI: "",
               ipMetadataHash: toHex(0, { size: 32 }),
+              nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+              nftMetadataURI: "",
             },
           },
         ],
@@ -2225,7 +2166,7 @@ describe("Test IpAssetClient", () => {
           tokenId: 1n,
         },
         {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95a6627c",
+          ipId: "0x1daAE3197Bc469Cb87B917aa460a12dD95c6627c",
           tokenId: 2n,
         },
       ]);
@@ -2262,6 +2203,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(IpAccountImplClient.prototype, "state")
         .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
+      sinon.stub(ipAssetClient.multicall3Client, "aggregate3").resolves(txHash);
       const result = await ipAssetClient.batchRegisterDerivative({
         args: [
           {
@@ -2272,12 +2214,36 @@ describe("Test IpAssetClient", () => {
         ],
       });
 
-      expect(result).to.deep.equal([
-        {
-          error: "",
-          status: "success",
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should return results when call batchRegisterDerivative given correct args and waitForTransaction of true", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(ipAssetClient.licensingModuleClient, "registerDerivativeEncode").returns({
+        data: "0x",
+        to: "0x",
+      });
+      sinon
+        .stub(IpAccountImplClient.prototype, "state")
+        .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
+      sinon.stub(ipAssetClient.multicall3Client, "aggregate3").resolves(txHash);
+      const result = await ipAssetClient.batchRegisterDerivative({
+        args: [
+          {
+            childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+            parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+            licenseTermsIds: ["1"],
+          },
+        ],
+        txOptions: {
+          waitForTransaction: true,
         },
-      ]);
+      });
+
+      expect(result.txHash).to.equal(txHash);
     });
   });
 
