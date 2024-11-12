@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { PIL_TYPE, RegisterPILTermsRequest } from "./license";
@@ -253,7 +253,7 @@ export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
 };
 
 export type BatchRegisterRequest = {
-  args: Omit<RegisterRequest, "txOptions">[];
+  args: { nftContract: Address; tokenId: string | number | bigint }[];
   deadline?: string | number | bigint;
 };
 
@@ -262,4 +262,24 @@ export type BatchRegisterResponse = {
   tokenId: bigint;
   status: "success" | "failure";
   error: string;
+};
+
+export type BatchRegisterWithIpMetadataRequest = {
+  args: {
+    nftContract: Address;
+    tokenId: string | number | bigint;
+    deadline?: string | number | bigint;
+    ipMetadata: {
+      ipMetadataURI?: string;
+      ipMetadataHash?: Hex;
+      nftMetadataURI?: string;
+      nftMetadataHash?: Hex;
+    };
+  }[];
+  txOptions?: TxOptions;
+};
+
+export type BatchRegisterWithIpMetadataResponse = {
+  txHash?: string;
+  results?: { ipId: Address; tokenId: bigint }[];
 };

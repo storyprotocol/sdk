@@ -49,6 +49,8 @@ export type {
   BatchRegisterResponse,
   BatchRegisterDerivativeRequest,
   BatchRegisterDerivativeResponse,
+  BatchRegisterWithIpMetadataRequest,
+  BatchRegisterWithIpMetadataResponse,
 } from "./types/resources/ipAsset";
 
 export type {

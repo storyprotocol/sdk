@@ -25,6 +25,8 @@ import {
   BatchRegisterDerivativeResponse,
   BatchRegisterRequest,
   BatchRegisterResponse,
+  BatchRegisterWithIpMetadataRequest,
+  BatchRegisterWithIpMetadataResponse,
   CreateIpAssetWithPilTermsRequest,
   CreateIpAssetWithPilTermsResponse,
   GenerateCreatorMetadataParam,
@@ -259,6 +261,33 @@ export class IPAssetClient {
           signature: zeroHash,
         },
       };
+      if (request.ipMetadata) {
+        const calculatedDeadline = getDeadline(request.deadline);
+        const signature = await getPermissionSignature({
+          ipId: ipIdAddress,
+          deadline: calculatedDeadline,
+          state: toHex(0, { size: 32 }),
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(
+                this.registrationWorkflowsClient.address,
+                "registrationWorkflowsClient",
+              ),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
+        });
+        object.sigMetadata = {
+          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          deadline: calculatedDeadline,
+          signature,
+        };
+      }
       if (request.txOptions?.encodedTxDataOnly) {
         if (request.ipMetadata) {
           return { encodedTxData: this.registrationWorkflowsClient.registerIpEncode(object) };
@@ -274,31 +303,6 @@ export class IPAssetClient {
       } else {
         let txHash: Hex;
         if (request.ipMetadata) {
-          const calculatedDeadline = getDeadline(request.deadline);
-          const signature = await getPermissionSignature({
-            ipId: ipIdAddress,
-            deadline: calculatedDeadline,
-            state: toHex(0, { size: 32 }),
-            wallet: this.wallet as WalletClient,
-            chainId: chain[this.chainId],
-            permissions: [
-              {
-                ipId: ipIdAddress,
-                signer: getAddress(
-                  this.registrationWorkflowsClient.address,
-                  "registrationWorkflowsClient",
-                ),
-                to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-                permission: AccessPermission.ALLOW,
-                func: "function setAll(address,string,bytes32,bytes32)",
-              },
-            ],
-          });
-          object.sigMetadata = {
-            signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
-            deadline: calculatedDeadline,
-            signature,
-          };
           txHash = await this.registrationWorkflowsClient.registerIp(object);
         } else {
           txHash = await this.ipAssetRegistryClient.register({
@@ -322,9 +326,50 @@ export class IPAssetClient {
       handleError(error, "Failed to register IP");
     }
   }
+
   /**
    * Batch registers an NFT as IP, creating a corresponding IP record.
    * @param request - The request object that contains all data needed to batch register IP.
+   *  @param {Array} request.args The array of objects containing the data needed to register IP.
+   *   @param request.args.nftContract The address of the NFT.
+   *   @param request.args.tokenId The token identifier of the NFT.
+   * @returns A Promise that resolves to an array including status, error, IP ID, and token ID.
+   */
+  public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse[]> {
+    try {
+      const contracts = [];
+      for (const arg of request.args) {
+        try {
+          await this.register({
+            ...arg,
+            txOptions: {
+              encodedTxDataOnly: true,
+            },
+          });
+        } catch (error) {
+          throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
+        }
+        contracts.push({
+          abi: ipAssetRegistryAbi,
+          functionName: "register",
+          address: this.ipAssetRegistryClient.address,
+          args: [BigInt(this.chainId), arg.nftContract, BigInt(arg.tokenId)],
+        });
+      }
+      const responses = await this.rpcClient.multicall({ contracts });
+      return responses.map((res, index) => ({
+        status: res.status,
+        ipId: res.result as Hex,
+        tokenId: BigInt(request.args[index].tokenId),
+        error: res.error?.message || "",
+      }));
+    } catch (error) {
+      handleError(error, "Failed to batch register IP");
+    }
+  }
+  /**
+   * Batch registers an NFT as IP, creating a corresponding IP record with ip metadata.
+   * @param request - The request object that contains all data needed to batch register IP with ip metadata.
    *  @param {Array} request.args The array of objects containing the data needed to register IP.
    *   @param request.args.nftContract The address of the NFT.
    *   @param request.args.tokenId The token identifier of the NFT.
@@ -334,20 +379,16 @@ export class IPAssetClient {
    *    @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *    @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.args.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
-   * @returns A Promise that resolves to an array including status, error, IP ID, and token ID.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, includes IP ID, Token ID.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
-  public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse[]> {
+  public async batchRegisterWithIpMetadata(
+    request: BatchRegisterWithIpMetadataRequest,
+  ): Promise<BatchRegisterWithIpMetadataResponse> {
     try {
-      let isSpgParameter = false;
-      const contracts = [];
       const calldata: Hex[] = [];
       for (const arg of request.args) {
-        if (!arg.ipMetadata && isSpgParameter) {
-          throw new Error("All IP metadata must be provided if one IP metadata is provided.");
-        }
-        if (arg.ipMetadata) {
-          isSpgParameter = true;
-        }
         let result;
         try {
           result = await this.register({
@@ -359,31 +400,25 @@ export class IPAssetClient {
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
-        if (isSpgParameter) {
-          calldata.push(result.encodedTxData!.data);
-        } else {
-          contracts.push({
-            abi: ipAssetRegistryAbi,
-            functionName: "register",
-            address: this.ipAssetRegistryClient.address,
-            args: [BigInt(this.chainId), arg.nftContract, BigInt(arg.tokenId)],
-          });
-        }
+        calldata.push(result.encodedTxData!.data);
       }
-      if (isSpgParameter) {
-        const result = await this.registrationWorkflowsClient.multicall({ data: calldata });
-        return { results: result } as unknown as BatchRegisterResponse[];
-      } else {
-        const responses = await this.rpcClient.multicall({ contracts });
-        return responses.map((res, index) => ({
-          status: res.status,
-          ipId: res.result as Hex,
-          tokenId: BigInt(request.args[index].tokenId),
-          error: res.error?.message || "",
+      const txHash = await this.registrationWorkflowsClient.multicall({ data: calldata });
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const targetLogs = this.getIpIdAndTokenIdFromEvent(txReceipt);
+        const results = targetLogs.map((log) => ({
+          ipId: log.ipId,
+          tokenId: log.tokenId,
         }));
+        return { txHash: txHash, results };
+      } else {
+        return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to batch register IP");
+      handleError(error, "Failed to batch register IP with ip metadata");
     }
   }
   /**

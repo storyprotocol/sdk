@@ -547,46 +547,41 @@ describe("IP Asset Functions ", () => {
             tokenId: tokenId2!,
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result[0].status).to.be.equal("success");
       expect(result[1].status).to.be.equal("success");
     });
 
     it("should not throw error when call batch register giving parameters with ipMetadata", async () => {
-      const tokenId = await mintBySpg(nftContract, "test-metadata");
-      const result = client.ipAsset.register({
-        nftContract,
-        tokenId: tokenId!,
-        ipMetadata: {
-          ipMetadataURI: "test-uri",
-          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-        },
+      const tokenId1 = await mintBySpg(nftContract, "test-metadata");
+      const tokenId2 = await mintBySpg(nftContract, "test-metadata");
+      const result = await client.ipAsset.batchRegisterWithIpMetadata({
+        args: [
+          {
+            nftContract,
+            tokenId: tokenId1!,
+            ipMetadata: {
+              ipMetadataURI: "test-uri",
+              ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+              nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+            },
+          },
+          {
+            nftContract,
+            tokenId: tokenId2!,
+            ipMetadata: {
+              ipMetadataURI: "test-uri2",
+              ipMetadataHash: toHex("test-metadata-hash2", { size: 32 }),
+              nftMetadataHash: toHex("test-nft-metadata-hash2", { size: 32 }),
+            },
+          },
+        ],
         txOptions: {
           waitForTransaction: true,
         },
       });
-      console.log("result", result);
-      // const result = await client.ipAsset.batchRegister({
-      //   args: [
-      //     {
-      //       nftContract,
-      //       tokenId: tokenId!,
-      //       ipMetadata: {
-      //         ipMetadataURI: "test-uri",
-      //         ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-      //         nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-      //       },
-      //     },
-      //   ],
-      //   txOptions: {
-      //     waitForTransaction: true,
-      //   },
-      // });
-      // expect(result.results).to.be.an("array").and.not.empty;
+      expect(result.results).to.be.an("array").and.not.empty;
+      expect(result.txHash).to.be.a("string").and.not.empty;
     });
   });
 });
