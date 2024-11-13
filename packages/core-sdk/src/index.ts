@@ -26,6 +26,7 @@ export type {
   RegisterIpAndAttachPilTermsRequest,
   RegisterIpAndAttachPilTermsResponse,
   MintAndRegisterIpAndMakeDerivativeRequest,
+  MintAndRegisterIpAndMakeDerivativeResponse,
   GenerateCreatorMetadataParam,
   IpCreator,
   GenerateIpMetadataParam,
@@ -41,6 +42,14 @@ export type {
   RegisterPilTermsAndAttachResponse,
   MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsResponse,
+  BatchMintAndRegisterIpAndMakeDerivativeRequest,
+  BatchMintAndRegisterIpAndMakeDerivativeResponse,
+  BatchRegisterRequest,
+  BatchRegisterResponse,
+  BatchRegisterDerivativeRequest,
+  BatchRegisterDerivativeResponse,
 } from "./types/resources/ipAsset";
 
 export type {
@@ -86,6 +95,8 @@ export type {
   CreateBatchPermissionSignatureRequest,
   PermissionSignatureRequest,
   PermissionSignatureResponse,
+  SignatureRequest,
+  SignatureResponse,
 } from "./types/resources/permission";
 export { AccessPermission } from "./types/resources/permission";
 export type {
@@ -130,5 +141,5 @@ export type {
   LicensingModulePredictMintingLicenseFeeResponse,
 } from "./abi/generated";
 
-export { getPermissionSignature } from "./utils/sign";
+export { getPermissionSignature, getSignature } from "./utils/sign";
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
