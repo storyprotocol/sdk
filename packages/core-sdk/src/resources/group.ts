@@ -104,7 +104,7 @@ export class GroupClient {
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
-   * . @param request.deadline [Optional] The deadline for the signature in milliseconds,default value is 1000ms.
+   * . @param request.deadline [Optional] The deadline for the signature in seconds, default value is 1000s.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -127,7 +127,8 @@ export class GroupClient {
       }
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, groupId);
       const { result: state } = await ipAccount.state();
-      const calculatedDeadline = getDeadline(deadline);
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, deadline);
       const sigAddToGroupSignature = await getPermissionSignature({
         ipId: groupId,
         deadline: calculatedDeadline,
@@ -197,7 +198,7 @@ export class GroupClient {
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
    *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
-   * . @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
+   * . @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -224,7 +225,8 @@ export class GroupClient {
       }
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, request.groupId);
       const { result: state } = await ipAccount.state();
-      const calculatedDeadline = getDeadline(request.deadline);
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
       const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         groupId: request.groupId,

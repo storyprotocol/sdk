@@ -7515,6 +7515,265 @@ export const moduleRegistryConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Multicall3
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const multicall3Abi = [
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "calls",
+        internalType: "struct Multicall3.Call[]",
+        type: "tuple[]",
+        components: [
+          { name: "target", internalType: "address", type: "address" },
+          { name: "callData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "aggregate",
+    outputs: [
+      { name: "blockNumber", internalType: "uint256", type: "uint256" },
+      { name: "returnData", internalType: "bytes[]", type: "bytes[]" },
+    ],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "calls",
+        internalType: "struct Multicall3.Call3[]",
+        type: "tuple[]",
+        components: [
+          { name: "target", internalType: "address", type: "address" },
+          { name: "allowFailure", internalType: "bool", type: "bool" },
+          { name: "callData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "aggregate3",
+    outputs: [
+      {
+        name: "returnData",
+        internalType: "struct Multicall3.Result[]",
+        type: "tuple[]",
+        components: [
+          { name: "success", internalType: "bool", type: "bool" },
+          { name: "returnData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "calls",
+        internalType: "struct Multicall3.Call3Value[]",
+        type: "tuple[]",
+        components: [
+          { name: "target", internalType: "address", type: "address" },
+          { name: "allowFailure", internalType: "bool", type: "bool" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+          { name: "callData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "aggregate3Value",
+    outputs: [
+      {
+        name: "returnData",
+        internalType: "struct Multicall3.Result[]",
+        type: "tuple[]",
+        components: [
+          { name: "success", internalType: "bool", type: "bool" },
+          { name: "returnData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "calls",
+        internalType: "struct Multicall3.Call[]",
+        type: "tuple[]",
+        components: [
+          { name: "target", internalType: "address", type: "address" },
+          { name: "callData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "blockAndAggregate",
+    outputs: [
+      { name: "blockNumber", internalType: "uint256", type: "uint256" },
+      { name: "blockHash", internalType: "bytes32", type: "bytes32" },
+      {
+        name: "returnData",
+        internalType: "struct Multicall3.Result[]",
+        type: "tuple[]",
+        components: [
+          { name: "success", internalType: "bool", type: "bool" },
+          { name: "returnData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getBasefee",
+    outputs: [{ name: "basefee", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "blockNumber", internalType: "uint256", type: "uint256" }],
+    name: "getBlockHash",
+    outputs: [{ name: "blockHash", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getBlockNumber",
+    outputs: [{ name: "blockNumber", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getChainId",
+    outputs: [{ name: "chainid", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getCurrentBlockCoinbase",
+    outputs: [{ name: "coinbase", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getCurrentBlockDifficulty",
+    outputs: [{ name: "difficulty", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getCurrentBlockGasLimit",
+    outputs: [{ name: "gaslimit", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getCurrentBlockTimestamp",
+    outputs: [{ name: "timestamp", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "addr", internalType: "address", type: "address" }],
+    name: "getEthBalance",
+    outputs: [{ name: "balance", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getLastBlockHash",
+    outputs: [{ name: "blockHash", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "requireSuccess", internalType: "bool", type: "bool" },
+      {
+        name: "calls",
+        internalType: "struct Multicall3.Call[]",
+        type: "tuple[]",
+        components: [
+          { name: "target", internalType: "address", type: "address" },
+          { name: "callData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "tryAggregate",
+    outputs: [
+      {
+        name: "returnData",
+        internalType: "struct Multicall3.Result[]",
+        type: "tuple[]",
+        components: [
+          { name: "success", internalType: "bool", type: "bool" },
+          { name: "returnData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "requireSuccess", internalType: "bool", type: "bool" },
+      {
+        name: "calls",
+        internalType: "struct Multicall3.Call[]",
+        type: "tuple[]",
+        components: [
+          { name: "target", internalType: "address", type: "address" },
+          { name: "callData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "tryBlockAndAggregate",
+    outputs: [
+      { name: "blockNumber", internalType: "uint256", type: "uint256" },
+      { name: "blockHash", internalType: "bytes32", type: "bytes32" },
+      {
+        name: "returnData",
+        internalType: "struct Multicall3.Result[]",
+        type: "tuple[]",
+        components: [
+          { name: "success", internalType: "bool", type: "bool" },
+          { name: "returnData", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const multicall3Address = {
+  1516: "0xcA11bde05977b3631167028862bE2a173976CA11",
+} as const;
+
+/**
+ *
+ */
+export const multicall3Config = {
+  address: multicall3Address,
+  abi: multicall3Abi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PILicenseTemplate
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -12350,6 +12609,15 @@ export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseToke
 };
 
 /**
+ * DerivativeWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type DerivativeWorkflowsMulticallRequest = {
+  data: readonly Hex[];
+};
+
+/**
  * DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
  *
  * @param nftContract address
@@ -12518,6 +12786,42 @@ export class DerivativeWorkflowsClient {
           request.ipMetadata,
           request.recipient,
         ],
+      }),
+    };
+  }
+
+  /**
+   * method multicall for contract DerivativeWorkflows
+   *
+   * @param request DerivativeWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: DerivativeWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: derivativeWorkflowsAbi,
+      address: this.address,
+      functionName: "multicall",
+      account: this.wallet.account,
+      args: [request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method multicall for contract DerivativeWorkflows with only encode
+   *
+   * @param request DerivativeWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(request: DerivativeWorkflowsMulticallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "multicall",
+        args: [request.data],
       }),
     };
   }
@@ -16428,6 +16732,15 @@ export type LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest 
 };
 
 /**
+ * LicenseAttachmentWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type LicenseAttachmentWorkflowsMulticallRequest = {
+  data: readonly Hex[];
+};
+
+/**
  * LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest
  *
  * @param nftContract address
@@ -16560,6 +16873,42 @@ export class LicenseAttachmentWorkflowsClient {
         abi: licenseAttachmentWorkflowsAbi,
         functionName: "mintAndRegisterIpAndAttachPILTerms",
         args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
+      }),
+    };
+  }
+
+  /**
+   * method multicall for contract LicenseAttachmentWorkflows
+   *
+   * @param request LicenseAttachmentWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: LicenseAttachmentWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseAttachmentWorkflowsAbi,
+      address: this.address,
+      functionName: "multicall",
+      account: this.wallet.account,
+      args: [request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method multicall for contract LicenseAttachmentWorkflows with only encode
+   *
+   * @param request LicenseAttachmentWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(request: LicenseAttachmentWorkflowsMulticallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseAttachmentWorkflowsAbi,
+        functionName: "multicall",
+        args: [request.data],
       }),
     };
   }
@@ -19402,6 +19751,70 @@ export class ModuleRegistryReadOnlyClient {
   }
 }
 
+// Contract Multicall3 =============================================================
+
+/**
+ * Multicall3Aggregate3Request
+ *
+ * @param calls tuple[]
+ */
+export type Multicall3Aggregate3Request = {
+  calls: {
+    target: Address;
+    allowFailure: boolean;
+    callData: Hex;
+  }[];
+};
+
+/**
+ * contract Multicall3 write method
+ */
+export class Multicall3Client {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(multicall3Address, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method aggregate3 for contract Multicall3
+   *
+   * @param request Multicall3Aggregate3Request
+   * @return Promise<WriteContractReturnType>
+   */
+  public async aggregate3(request: Multicall3Aggregate3Request): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: multicall3Abi,
+      address: this.address,
+      functionName: "aggregate3",
+      account: this.wallet.account,
+      args: [request.calls],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method aggregate3 for contract Multicall3 with only encode
+   *
+   * @param request Multicall3Aggregate3Request
+   * @return EncodedTxData
+   */
+  public aggregate3Encode(request: Multicall3Aggregate3Request): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: multicall3Abi,
+        functionName: "aggregate3",
+        args: [request.calls],
+      }),
+    };
+  }
+}
+
 // Contract PILicenseTemplate =============================================================
 
 /**
@@ -20781,6 +21194,15 @@ export type RegistrationWorkflowsMintAndRegisterIpRequest = {
 };
 
 /**
+ * RegistrationWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type RegistrationWorkflowsMulticallRequest = {
+  data: readonly Hex[];
+};
+
+/**
  * RegistrationWorkflowsRegisterIpRequest
  *
  * @param nftContract address
@@ -20941,6 +21363,42 @@ export class RegistrationWorkflowsClient extends RegistrationWorkflowsEventClien
         abi: registrationWorkflowsAbi,
         functionName: "mintAndRegisterIp",
         args: [request.spgNftContract, request.recipient, request.ipMetadata],
+      }),
+    };
+  }
+
+  /**
+   * method multicall for contract RegistrationWorkflows
+   *
+   * @param request RegistrationWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: RegistrationWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: registrationWorkflowsAbi,
+      address: this.address,
+      functionName: "multicall",
+      account: this.wallet.account,
+      args: [request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method multicall for contract RegistrationWorkflows with only encode
+   *
+   * @param request RegistrationWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(request: RegistrationWorkflowsMulticallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: registrationWorkflowsAbi,
+        functionName: "multicall",
+        args: [request.data],
       }),
     };
   }

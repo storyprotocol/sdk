@@ -115,7 +115,6 @@ describe("Test IPAccountClient", () => {
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
-        value: 2,
         data: "0x11111111111111111111111111111",
         signer: zeroAddress,
         deadline: 20,
