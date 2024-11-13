@@ -234,7 +234,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
+   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
@@ -263,7 +263,8 @@ export class IPAssetClient {
         },
       };
       if (request.ipMetadata) {
-        const calculatedDeadline = getDeadline(request.deadline);
+        const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+        const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
         const signature = await getPermissionSignature({
           ipId: ipIdAddress,
           deadline: calculatedDeadline,
@@ -469,7 +470,7 @@ export class IPAssetClient {
    *   @param request.args.childIpId The derivative IP ID.
    *   @param request.args.parentIpIds The parent IP IDs.
    *   @param request.args.licenseTermsIds The IDs of the license terms that the parent IP supports.
-   *  @param request.args.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
+   *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
    * @returns A Promise that resolves to a transaction hash.
    */
@@ -495,7 +496,8 @@ export class IPAssetClient {
             (error as Error).message.replace("Failed to register derivative:", "").trim(),
           );
         }
-        const calculatedDeadline = getDeadline(request.deadline);
+        const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+        const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
         const ipAccount = new IpAccountImplClient(
           this.rpcClient,
           this.wallet,
@@ -754,7 +756,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
+   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.mintingFee [Optional] The fee to be paid when minting a license.
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
@@ -784,7 +786,8 @@ export class IPAssetClient {
           royaltyPolicyLapAddress[chain[this.chainId]],
         commercialRevShare: request.commercialRevShare,
       });
-      const calculatedDeadline = getDeadline(request.deadline);
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
 
       const sigAttachSignature = await getPermissionSignature({
         ipId: ipIdAddress,
@@ -899,7 +902,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
+   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, token ID if waitForTxn is set to true.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
@@ -936,8 +939,8 @@ export class IPAssetClient {
           );
         }
       }
-      const calculatedDeadline = getDeadline(request.deadline);
-
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
       const sigRegisterSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
@@ -1241,7 +1244,7 @@ export class IPAssetClient {
    *     @param request.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
    *     @param request.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *     @param request.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds,default is 1000ms.
+   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000s.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms id.
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
@@ -1259,7 +1262,8 @@ export class IPAssetClient {
       const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({
         terms: licenseTerms,
       });
-      const calculatedDeadline = getDeadline(request.deadline);
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const { result: state } = await ipAccount.state();
       const sigAttachSignature = await getPermissionSignature({
@@ -1380,12 +1384,12 @@ export class IPAssetClient {
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.licenseTokenIds The IDs of the license tokens to be burned for linking the IP to parent IPs.
    *   @param request.tokenId The ID of the NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID.
    */
@@ -1400,7 +1404,8 @@ export class IPAssetClient {
         throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
       }
       const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
-      const calculatedDeadline = getDeadline(request.deadline);
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
       const sigMetadataSignature = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,

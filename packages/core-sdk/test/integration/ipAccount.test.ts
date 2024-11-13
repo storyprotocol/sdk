@@ -2,25 +2,12 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { AccessPermission, StoryClient } from "../../src";
 import { mockERC721, getStoryClient, getTokenId, odyssey } from "./utils/util";
-import {
-  Hex,
-  WalletClient,
-  encodeAbiParameters,
-  encodeFunctionData,
-  getAddress,
-  keccak256,
-  toFunctionSelector,
-  zeroAddress,
-} from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
   coreMetadataModuleAddress,
-  ipAccountImplAbi,
-  licensingModuleAbi,
 } from "../../src/abi/generated";
-import { getDeadline } from "../../src/utils/sign";
-import { privateKeyToAccount } from "viem/accounts";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

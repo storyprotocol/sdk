@@ -68,12 +68,11 @@ export const getPermissionSignature = async (
   });
 };
 
-export const getDeadline = (deadline?: bigint | number | string): bigint => {
+export const getDeadline = (unixTimestamp: bigint, deadline?: bigint | number | string): bigint => {
   if (deadline && (isNaN(Number(deadline)) || BigInt(deadline) < 0n)) {
     throw new Error("Invalid deadline value.");
   }
-  const timestamp = BigInt(Date.now());
-  return deadline ? timestamp + BigInt(deadline) : timestamp + 1000n;
+  return deadline ? unixTimestamp + BigInt(deadline) : unixTimestamp + 1000n;
 };
 
 /**

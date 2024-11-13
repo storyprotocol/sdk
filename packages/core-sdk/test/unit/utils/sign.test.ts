@@ -95,12 +95,9 @@ describe("Sign", () => {
     });
   });
   describe("Get Deadline", () => {
-    before(() => {
-      sinon.stub(Date, "now").returns(1000);
-    });
     it("should throw invalid deadline value when call getDeadline given deadline is not number", () => {
       try {
-        getDeadline("invalid");
+        getDeadline(12n, "invalid");
       } catch (e) {
         expect((e as Error).message).to.equal("Invalid deadline value.");
       }
@@ -108,20 +105,20 @@ describe("Sign", () => {
 
     it("should throw invalid deadline value when call getDeadline given deadline is less than 0", () => {
       try {
-        getDeadline(-1);
+        getDeadline(12n, -1);
       } catch (e) {
         expect((e as Error).message).to.equal("Invalid deadline value.");
       }
     });
 
     it("should return 2000 when call getDeadline", () => {
-      const result = getDeadline();
-      expect(result).to.equal(2000n);
+      const result = getDeadline(12n);
+      expect(result).to.equal(1012n);
     });
 
     it("should return timestamp plus deadline when call getDeadline given deadline", () => {
-      const result = getDeadline(2000);
-      expect(result).to.equal(3000n);
+      const result = getDeadline(12n, 3000);
+      expect(result).to.equal(3012n);
     });
   });
 });
