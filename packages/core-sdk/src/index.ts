@@ -143,3 +143,5 @@ export type {
 
 export { getPermissionSignature, getSignature } from "./utils/sign";
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
+
+export type { SimpleWalletClient } from "../src/abi/generated.js";
