@@ -157,6 +157,42 @@ jobs:
               exit 1
           fi
 
+  fetch_last_tag:
+    needs:
+      [
+        check_is_publish,
+        extract_branch_name,
+        check_if_version_is_valid_for_branch,
+      ]
+    # Skip this job if the core-sdk and react-sdk don't need to be published
+    # and the event triggering the workflow is a push
+    if: ${{ (needs.check_if_version_is_valid_for_branch.outputs.is_publish_core_sdk == 'true' || needs.check_if_version_is_valid_for_branch.outputs.is_publish_react_sdk == 'true') && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    outputs:
+      CORE_SDK_LATEST_TAG: ${{ steps.get_last_tag.outputs.CORE_SDK_LATEST_TAG }}
+      REACT_SDK_LATEST_TAG: ${{ steps.get_last_tag.outputs.REACT_SDK_LATEST_TAG }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Get last tag
+        id: get_last_tag
+        run: |
+          BRANCH_NAME="${{ needs.extract_branch_name.outputs.branch_name }}"
+
+          git fetch --tags
+          if [[ "$BRANCH_NAME" == "v${{ env.VERSION_1_1 }}"  ]]; then
+          CORE_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/core-sdk@1.1|core-sdk@1.1" | tail -n1)
+          REACT_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/react-sdk@1.1|react-sdk@1.1" | tail -n1)
+          else
+            CORE_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/core-sdk@1.2|core-sdk@1.2" | tail -n1)
+            REACT_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/react-sdk@1.2|react-sdk@1.2" | tail -n1)
+          fi
+          echo "CORE_SDK_LATEST_TAG=$CORE_SDK_LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "REACT_SDK_LATEST_TAG=$REACT_SDK_LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "Last tag for @story-protocol/core-sdk is $CORE_SDK_LATEST_TAG"
+          echo "Last tag for @story-protocol/react-sdk is $REACT_SDK_LATEST_TAG"
+
   build-test-publish:
     needs:
       [
@@ -164,9 +200,9 @@ jobs:
         fetch_latest_version,
         check_is_publish,
         check_if_version_is_valid_for_branch,
+        fetch_last_tag,
       ]
-    # Skip this job if the core-sdk and react-sdk don't need to be published
-    # and the event triggering the workflow is a push
+  
     if: ${{ (needs.check_if_version_is_valid_for_branch.outputs.is_publish_core_sdk == 'true' || needs.check_if_version_is_valid_for_branch.outputs.is_publish_react_sdk == 'true') && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     environment: "beta-sepolia"
@@ -243,19 +279,22 @@ jobs:
         build-test-publish,
         print_version_to_publish,
         check_if_version_is_valid_for_branch,
+        fetch_last_tag,
       ]
     # Skip this job if core-sdk doesn't need to be published
     # and the event triggering the workflow is a push
     if: ${{ github.event_name == 'push' && needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
+    uses: ./.github/workflows/reusable-create-release.yml
     with:
-      tag_name: core-sdk@${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}
+      tag_name: \@story-protocol/core-sdk@${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}
+      is_core_sdk: true
+      last_tag: ${{ needs.fetch_last_tag.outputs.CORE_SDK_LATEST_TAG }}
 
   send_slack_notif-core-sdk:
     needs: [print_version_to_publish, create-release-core-sdk]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
     with:
-      short-desc: "${{ github.repository }}: core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published}}"
+      short-desc: "${{ github.repository }}: @story-protocol/core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published}}"
       title: "Published to Registry"
       img-url: "https://i.imgur.com/JHmKB0s.png"
       img-alt-text: "Published to Registry"
@@ -269,19 +308,22 @@ jobs:
         build-test-publish,
         print_version_to_publish,
         check_if_version_is_valid_for_branch,
+        fetch_last_tag,
       ]
     # Skip this job if react-sdk doesn't need to be published
     # and the event triggering the workflow is a push
     if: ${{  github.event_name == 'push' && needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_REACT_SDK == 'true'}}
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-create-release.yml@main
+    uses: ./.github/workflows/reusable-create-release.yml
     with:
-      tag_name: react-sdk@${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}
+      tag_name: \@story-protocol/react-sdk@${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}
+      is_core_sdk: false
+      last_tag: ${{ needs.fetch_last_tag.outputs.REACT_SDK_LATEST_TAG }}
 
   send_slack_notif-react-sdk:
     needs: [print_version_to_publish, create-release-react-sdk]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
     with:
-      short-desc: "${{ github.repository }}: react-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}"
+      short-desc: "${{ github.repository }}: @story-protocol/react-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}"
       title: "Published to Registry"
       img-url: "https://i.imgur.com/JHmKB0s.png"
       img-alt-text: "Published to Registry"
