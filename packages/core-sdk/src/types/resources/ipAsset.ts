@@ -203,7 +203,7 @@ export type MintAndRegisterIpRequest = {
 
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
-  terms: RegisterPILTermsRequest;
+  terms: RegisterPILTermsRequest[];
   deadline?: string | number | bigint;
   txOptions?: TxOptions;
 };
@@ -211,7 +211,7 @@ export type RegisterPilTermsAndAttachRequest = {
 export type RegisterPilTermsAndAttachResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
-  licenseTermsId?: bigint;
+  licenseTermsIds?: bigint[];
 };
 
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {

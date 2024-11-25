@@ -80,6 +80,7 @@ import {
 import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission, SetPermissionsRequest } from "../types/resources/permission";
+import { LicenseTerms } from "../types/resources/license";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -665,7 +666,7 @@ export class IPAssetClient {
             hash: txHash,
           });
           const iPRegisteredLog = this.getIpIdAndTokenIdFromEvent(txReceipt)[0];
-          const licenseTermsId = this.getLicenseTermsId(txReceipt);
+          const licenseTermsId = this.getLicenseTermsId(txReceipt)[0];
           return {
             txHash: txHash,
             ipId: iPRegisteredLog.ipId,
@@ -874,7 +875,7 @@ export class IPAssetClient {
             hash: txHash,
           });
           const ipRegisterEvent = this.getIpIdAndTokenIdFromEvent(txReceipt)[0];
-          const licenseTermsId = this.getLicenseTermsId(txReceipt);
+          const licenseTermsId = this.getLicenseTermsId(txReceipt)[0];
           return {
             txHash,
             licenseTermsId: licenseTermsId,
@@ -1226,7 +1227,7 @@ export class IPAssetClient {
    * Register Programmable IP License Terms (if unregistered) and attach it to IP.
    * @param request - The request object that contains all data needed to attach license terms.
    *   @param request.ipId The ID of the IP.
-   *   @param request.terms The PIL terms to be registered.
+   *   @param {Array} request.terms The array of license terms to be attached.
    *     @param request.terms.transferable Indicates whether the license is transferable or not.
    *     @param request.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *     @param request.terms.mintingFee The fee to be paid when minting a license.
@@ -1246,7 +1247,7 @@ export class IPAssetClient {
    *     @param request.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000s.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, returns an array containing the license terms ID.
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   public async registerPilTermsAndAttach(
@@ -1258,10 +1259,11 @@ export class IPAssetClient {
       if (!isRegistered) {
         throw new Error(`The IP with id ${ipId} is not registered.`);
       }
-      const licenseTerms = await validateLicenseTerms(terms, this.rpcClient);
-      const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({
-        terms: licenseTerms,
-      });
+      const licenseTerms: LicenseTerms[] = [];
+      for (let i = 0; i < terms.length; i++) {
+        const licenseTerm = await validateLicenseTerms(terms[i], this.rpcClient);
+        licenseTerms.push(licenseTerm);
+      }
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
@@ -1304,11 +1306,12 @@ export class IPAssetClient {
           object,
         );
         if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
             hash: txHash,
           });
-          return { txHash, licenseTermsId: licenseRes.selectedLicenseTermsId };
+          const licenseTermsIds = this.getLicenseTermsId(txReceipt);
+          return { txHash, licenseTermsIds };
         } else {
           return { txHash };
         }
@@ -1538,13 +1541,14 @@ export class IPAssetClient {
     return sigAttachState;
   }
 
-  private getLicenseTermsId(txReceipt: TransactionReceipt): bigint {
+  private getLicenseTermsId(txReceipt: TransactionReceipt): bigint[] {
     const licensingModuleLicenseTermsAttachedEvent =
       this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt);
-    const licenseTermsId =
-      licensingModuleLicenseTermsAttachedEvent.length >= 1 &&
-      licensingModuleLicenseTermsAttachedEvent[0].licenseTermsId;
-    return licenseTermsId === false ? this.defaultLicenseTermsId : licenseTermsId;
+    if (licensingModuleLicenseTermsAttachedEvent.length === 0) {
+      return [this.defaultLicenseTermsId];
+    } else {
+      return licensingModuleLicenseTermsAttachedEvent.map((log) => log.licenseTermsId);
+    }
   }
 
   private async validateLicenseTokenIds(

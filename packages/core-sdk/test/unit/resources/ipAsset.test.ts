@@ -1458,7 +1458,7 @@ describe("Test IpAssetClient", () => {
       try {
         await ipAssetClient.registerPilTermsAndAttach({
           ipId: "0x",
-          terms: licenseTerms,
+          terms: [licenseTerms],
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -1473,7 +1473,7 @@ describe("Test IpAssetClient", () => {
       try {
         await ipAssetClient.registerPilTermsAndAttach({
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          terms: licenseTerms,
+          terms: [licenseTerms],
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -1490,7 +1490,7 @@ describe("Test IpAssetClient", () => {
 
       const result = await ipAssetClient.registerPilTermsAndAttach({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        terms: licenseTerms,
+        terms: [licenseTerms],
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -1509,7 +1509,7 @@ describe("Test IpAssetClient", () => {
         .resolves({ selectedLicenseTermsId: 0n });
       const result = await ipAssetClient.registerPilTermsAndAttach({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        terms: licenseTerms,
+        terms: [licenseTerms],
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -1530,18 +1530,24 @@ describe("Test IpAssetClient", () => {
           licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           licenseTermsId: 0n,
         },
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          caller: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsId: 3n,
+        },
       ]);
 
       const result = await ipAssetClient.registerPilTermsAndAttach({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        terms: licenseTerms,
+        terms: [licenseTerms, licenseTerms],
         txOptions: {
           waitForTransaction: true,
         },
       });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsId).to.equal(0n);
+      expect(result.licenseTermsIds).to.deep.equal([0n, 3n]);
     });
   });
 
