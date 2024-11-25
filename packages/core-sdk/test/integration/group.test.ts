@@ -34,7 +34,7 @@ describe("Group Functions", () => {
     ).spgNftContract!;
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: spgNftContract,
-      pilType: PIL_TYPE.COMMERCIAL_USE,
+      pilTypes: [PIL_TYPE.COMMERCIAL_USE],
       commercialRevShare: 10,
       mintingFee: "0",
       currency: MockERC20.address,
@@ -42,7 +42,7 @@ describe("Group Functions", () => {
         waitForTransaction: true,
       },
     });
-    licenseTermsId = result.licenseTermsId!;
+    licenseTermsId = result.licenseTermsIds![0];
     ipId = result.ipId!;
   });
 

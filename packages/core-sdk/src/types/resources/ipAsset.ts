@@ -42,9 +42,9 @@ export type RegisterDerivativeResponse = {
   encodedTxData?: EncodedTxData;
 };
 
-export type CreateIpAssetWithPilTermsRequest = {
+export type MintAndRegisterIpAssetWithPilTermsRequest = {
   spgNftContract: Address;
-  pilType: PIL_TYPE;
+  pilTypes: PIL_TYPE[];
   currency?: Address;
   mintingFee?: string | number | bigint;
   recipient?: Address;
@@ -52,12 +52,12 @@ export type CreateIpAssetWithPilTermsRequest = {
   royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
 
-export type CreateIpAssetWithPilTermsResponse = {
+export type MintAndRegisterIpAssetWithPilTermsResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
-  licenseTermsId?: bigint;
+  licenseTermsIds?: bigint[];
 };
 
 export type RegisterIpAndMakeDerivativeRequest = {
@@ -228,13 +228,13 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
 } & IpMetadataAndTxOption;
 
 export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
-  args: Omit<CreateIpAssetWithPilTermsRequest, "txOptions">[];
+  args: Omit<MintAndRegisterIpAssetWithPilTermsRequest, "txOptions">[];
   txOptions?: Omit<TxOptions, "EncodedTxData">;
 };
 
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
   txHash: Hex;
-  results?: Omit<RegisterIpResponse, "encodedTxData">[];
+  results?: { ipId: Address; tokenId: bigint; licenseTermsIds: bigint[] }[];
 };
 
 export type BatchRegisterDerivativeRequest = {

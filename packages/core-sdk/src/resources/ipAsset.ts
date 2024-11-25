@@ -25,8 +25,8 @@ import {
   BatchRegisterDerivativeResponse,
   BatchRegisterRequest,
   BatchRegisterResponse,
-  CreateIpAssetWithPilTermsRequest,
-  CreateIpAssetWithPilTermsResponse,
+  MintAndRegisterIpAssetWithPilTermsRequest,
+  MintAndRegisterIpAssetWithPilTermsResponse,
   GenerateCreatorMetadataParam,
   GenerateIpMetadataParam,
   IpCreator,
@@ -60,7 +60,7 @@ import {
   IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
-  LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
+  LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
   LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest,
   LicenseRegistryReadOnlyClient,
@@ -319,10 +319,10 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          const targetLogs = this.getIpIdAndTokenIdFromEvent(txReceipt)[0];
-          return { txHash: txHash, ipId: targetLogs.ipId, tokenId: targetLogs.tokenId };
+          const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+          return { txHash, ...log };
         } else {
-          return { txHash: txHash };
+          return { txHash };
         }
       }
     } catch (error) {
@@ -342,7 +342,7 @@ export class IPAssetClient {
    *    @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *    @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, includes IP ID, Token ID.
+   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, return an array of containing IP ID, Token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
@@ -376,14 +376,10 @@ export class IPAssetClient {
           ...request.txOptions,
           hash: txHash,
         });
-        const targetLogs = this.getIpIdAndTokenIdFromEvent(txReceipt);
-        const results = targetLogs.map((log) => ({
-          ipId: log.ipId,
-          tokenId: log.tokenId,
-        }));
-        return { txHash: txHash, results };
+        const results = this.getIpIdAndTokenIdsFromEvent(txReceipt);
+        return { txHash, results };
       } else {
-        return { txHash: txHash };
+        return { txHash };
       }
     } catch (error) {
       handleError(error, "Failed to batch register IP");
@@ -606,7 +602,7 @@ export class IPAssetClient {
    * Mint an NFT from a collection and register it as an IP.
    * @param request - The request object that contains all data needed to mint and register ip.
    *   @param request.spgNftContract The address of the NFT collection.
-   *   @param request.pilType The type of the PIL.
+   *   @param {Array} request.pilTypes The type of the PILs.
    *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -618,33 +614,32 @@ export class IPAssetClient {
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, Token ID, License Terms Id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, including IP ID, Token ID, License Terms Ids.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   public async mintAndRegisterIpAssetWithPilTerms(
-    request: CreateIpAssetWithPilTermsRequest,
-  ): Promise<CreateIpAssetWithPilTermsResponse> {
+    request: MintAndRegisterIpAssetWithPilTermsRequest,
+  ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      if (request.pilType === undefined || request.pilType === null) {
-        throw new Error("PIL type is required.");
-      }
-      const licenseTerm = getLicenseTermByType(request.pilType, {
-        defaultMintingFee: request.mintingFee,
-        currency: request.currency,
-        commercialRevShare: request.commercialRevShare,
-        royaltyPolicyAddress:
-          (request.royaltyPolicyAddress &&
-            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[chain[this.chainId]],
+      const licenseTerms = request.pilTypes.map((pilType) => {
+        return getLicenseTermByType(pilType, {
+          defaultMintingFee: request.mintingFee,
+          currency: request.currency,
+          commercialRevShare: request.commercialRevShare,
+          royaltyPolicyAddress:
+            (request.royaltyPolicyAddress &&
+              getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
+            royaltyPolicyLapAddress[chain[this.chainId]],
+        });
       });
-      const object: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest = {
+      const object: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request = {
         spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
         recipient:
           (request.recipient && getAddress(request.recipient, "request.recipient")) ||
           this.wallet.account!.address,
 
-        terms: licenseTerm,
+        terms: licenseTerms,
         ipMetadata: {
           ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
           ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
@@ -655,23 +650,22 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
-            this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTermsEncode(object),
+            this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms2Encode(object),
         };
       } else {
         const txHash =
-          await this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(object);
+          await this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms2(object);
         if (request.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
             hash: txHash,
           });
-          const iPRegisteredLog = this.getIpIdAndTokenIdFromEvent(txReceipt)[0];
-          const licenseTermsId = this.getLicenseTermsId(txReceipt)[0];
+          const ipIdAndTokenId = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+          const licenseTermsIds = this.getLicenseTermsId(txReceipt);
           return {
-            txHash: txHash,
-            ipId: iPRegisteredLog.ipId,
-            licenseTermsId,
-            tokenId: iPRegisteredLog.tokenId,
+            txHash,
+            ...ipIdAndTokenId,
+            licenseTermsIds,
           };
         }
         return { txHash };
@@ -697,7 +691,7 @@ export class IPAssetClient {
    *     @param request.args.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *     @param request.args.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *    @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, includes IP ID, Token ID, License Terms Id.
+   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, return an array containing IP ID, Token ID, License Terms Ids.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
@@ -723,15 +717,15 @@ export class IPAssetClient {
         });
         const licenseTermsEvent =
           this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt);
-        let results = this.getIpIdAndTokenIdFromEvent(txReceipt);
-        results = results.map((result) => {
-          const licenseTerms = licenseTermsEvent.find((event) => event.ipId === result.ipId);
+        const ipIdAndTokenIds = this.getIpIdAndTokenIdsFromEvent(txReceipt);
+        const results = ipIdAndTokenIds.map((result) => {
+          const licenseTerms = licenseTermsEvent.filter((event) => event.ipId === result.ipId);
           return {
             ...result,
-            licenseTermsId:
-              licenseTerms?.licenseTermsId === undefined
-                ? this.defaultLicenseTermsId
-                : licenseTerms.licenseTermsId,
+            licenseTermsIds:
+              licenseTerms?.length === 0
+                ? [this.defaultLicenseTermsId]
+                : licenseTerms.map((event) => event.licenseTermsId),
           };
         });
         return {
@@ -762,7 +756,7 @@ export class IPAssetClient {
    *   @param request.commercialRevShare [Optional] Percentage of revenue that must be shared with the licensor.
    *   @param request.currency [Optional] The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID,Token ID, License Terms Id if waitForTxn is set to true.
+   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, including Ip ID, token ID and License terms ID.
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   public async registerIpAndAttachPilTerms(
@@ -874,13 +868,12 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          const ipRegisterEvent = this.getIpIdAndTokenIdFromEvent(txReceipt)[0];
+          const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
           const licenseTermsId = this.getLicenseTermsId(txReceipt)[0];
           return {
             txHash,
-            licenseTermsId: licenseTermsId,
-            ipId: ipRegisterEvent.ipId,
-            tokenId: ipRegisterEvent.tokenId,
+            licenseTermsId,
+            ...log,
           };
         }
         return { txHash };
@@ -905,7 +898,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash and optional IP ID, token ID if waitForTxn is set to true.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, included IP ID, Token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
   public async registerDerivativeIp(
@@ -1027,8 +1020,8 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          const log = this.getIpIdAndTokenIdFromEvent(receipt)[0];
-          return { txHash, ipId: log.ipId, tokenId: log.tokenId };
+          const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
+          return { txHash, ...log };
         }
         return { txHash };
       }
@@ -1052,7 +1045,7 @@ export class IPAssetClient {
    *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes child ip id and token id.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes child IP ID and token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
   public async mintAndRegisterIpAndMakeDerivative(
@@ -1113,7 +1106,7 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          const log = this.getIpIdAndTokenIdFromEvent(receipt)[0];
+          const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
           return { txHash, childIpId: log.ipId, tokenId: log.tokenId };
         }
         return { txHash };
@@ -1138,7 +1131,7 @@ export class IPAssetClient {
    *     @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.arg.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
    *  @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, includes child ip id and token id.
+   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, return an array of containing IP ID and token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    */
   public async batchMintAndRegisterIpAndMakeDerivative(
@@ -1169,7 +1162,7 @@ export class IPAssetClient {
         });
         return {
           txHash,
-          results: this.getIpIdAndTokenIdFromEvent(txReceipt),
+          results: this.getIpIdAndTokenIdsFromEvent(txReceipt),
         };
       }
       return { txHash };
@@ -1214,8 +1207,8 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          const ipRegisterEvent = this.getIpIdAndTokenIdFromEvent(txReceipt);
-          return { txHash, ipId: ipRegisterEvent[0].ipId, tokenId: ipRegisterEvent[0].tokenId };
+          const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+          return { txHash, ...log };
         }
         return { txHash };
       }
@@ -1372,8 +1365,8 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          const log = this.getIpIdAndTokenIdFromEvent(receipt)[0];
-          return { txHash, ipId: log.ipId, tokenId: log.tokenId };
+          const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
+          return { txHash, ...log };
         }
         return { txHash };
       }
@@ -1394,7 +1387,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID.
+   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID, Token ID.
    */
   public async registerIpAndMakeDerivativeWithLicenseTokens(
     request: RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
@@ -1484,8 +1477,8 @@ export class IPAssetClient {
             ...request.txOptions,
             hash: txHash,
           });
-          const log = this.getIpIdAndTokenIdFromEvent(receipt)[0];
-          return { txHash, ipId: log.ipId };
+          const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
+          return { txHash, ...log };
         }
         return { txHash };
       }
@@ -1569,7 +1562,7 @@ export class IPAssetClient {
     return newLicenseTokenIds;
   }
 
-  private getIpIdAndTokenIdFromEvent(txReceipt: TransactionReceipt) {
+  private getIpIdAndTokenIdsFromEvent(txReceipt: TransactionReceipt) {
     const IPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
     return IPRegisteredLog.map((log) => {
       return { ipId: log.ipId, tokenId: log.tokenId };
