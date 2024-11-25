@@ -136,6 +136,12 @@ export default defineConfig(async () => {
       },
     },
     {
+      name: "RoyaltyTokenDistributionWorkflows",
+      address: {
+        [odysseyChainId]: "0x39D9C7a23AA9e33E06aAAf51ebaDd11342b5be50",
+      },
+    },
+    {
       name: "GroupingModule",
       address: {
         [odysseyChainId]: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
@@ -270,6 +276,12 @@ export default defineConfig(async () => {
             "snapshotAndClaimBySnapshotBatch",
           ],
           Multicall3: ["aggregate3"],
+          RoyaltyTokenDistributionWorkflows: [
+            "registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens",
+            "registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens",
+            "mintAndRegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokens",
+            "mintAndRegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens",
+          ],
         },
       }),
     ],
