@@ -340,7 +340,7 @@ export class IPAssetClient {
    *    @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
    *    @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
    *    @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
    * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, includes IP ID, Token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
    */

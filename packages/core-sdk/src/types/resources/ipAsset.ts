@@ -240,7 +240,7 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
 export type BatchRegisterDerivativeRequest = {
   args: RegisterDerivativeRequest[];
   deadline?: string | number | bigint;
-  txOptions?: TxOptions;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
 export type BatchRegisterDerivativeResponse = {
@@ -257,7 +257,7 @@ export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
 
 export type BatchRegisterRequest = {
   args: Omit<RegisterRequest, "txOptions">[];
-  txOptions?: TxOptions;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
 export type BatchRegisterResponse = {
