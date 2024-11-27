@@ -11,7 +11,6 @@ import { getAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
 import {
   PermissionSignatureRequest,
-  PermissionSignatureResponse,
   SignatureRequest,
   SignatureResponse,
 } from "../types/resources/permission";
@@ -30,7 +29,7 @@ import {
  */
 export const getPermissionSignature = async (
   param: PermissionSignatureRequest,
-): Promise<PermissionSignatureResponse> => {
+): Promise<SignatureResponse> => {
   const { ipId, deadline, state, wallet, chainId, permissions, permissionFunc } = param;
   const permissionFunction = permissionFunc ? permissionFunc : "setPermission";
   const accessAddress =
@@ -118,7 +117,7 @@ export const getSignature = async ({
       ],
     ),
   );
-  return await (wallet as WalletClient).signTypedData({
+  const signature = await (wallet as WalletClient).signTypedData({
     account: wallet.account,
     domain: {
       name: "Story Protocol IP Account",
@@ -144,4 +143,5 @@ export const getSignature = async ({
       deadline: BigInt(deadline),
     },
   });
+  return { signature, nonce };
 };

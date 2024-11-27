@@ -124,7 +124,7 @@ export class PermissionClient {
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, deadline);
 
-      const signature = await getPermissionSignature({
+      const { signature } = await getPermissionSignature({
         ipId,
         deadline: calculatedDeadline,
         state,
@@ -293,7 +293,7 @@ export class PermissionClient {
       const { result: state } = await ipAccountClient.state();
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, deadline);
-      const signature = await getPermissionSignature({
+      const { signature } = await getPermissionSignature({
         ipId,
         deadline: calculatedDeadline,
         state,

@@ -30,7 +30,7 @@ describe("IP Asset Functions ", () => {
     noCommercialLicenseTermsId = res.licenseTermsId!;
   });
 
-  describe.skip("Create IP Asset", async () => {
+  describe("Create IP Asset", async () => {
     let childIpId: Hex;
     it("should not throw error when register a IP Asset", async () => {
       const tokenId = await getTokenId();
@@ -158,7 +158,7 @@ describe("IP Asset Functions ", () => {
     });
 
     describe("should not throw error when mint and register ip and attach pil terms", async () => {
-      it.skip("Non-Commercial Remix", async () => {
+      it("Non-Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract: nftContract,
           pilTypes: [PIL_TYPE.NON_COMMERCIAL_REMIX],
@@ -172,7 +172,7 @@ describe("IP Asset Functions ", () => {
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
-      it.skip("Commercial Use", async () => {
+      it("Commercial Use", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract: nftContract,
           pilTypes: [PIL_TYPE.COMMERCIAL_USE],
@@ -194,7 +194,7 @@ describe("IP Asset Functions ", () => {
         expect(result.tokenId).to.be.a("bigint");
       });
 
-      it.skip("Commercial Remix", async () => {
+      it("Commercial Remix", async () => {
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract: nftContract,
           pilTypes: [PIL_TYPE.COMMERCIAL_REMIX],
@@ -232,7 +232,7 @@ describe("IP Asset Functions ", () => {
         expect(result.tokenId).to.be.a("bigint");
       });
     });
-    it.skip("should not throw error when register a IP Asset given metadata", async () => {
+    it("should not throw error when register a IP Asset given metadata", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const response = await client.ipAsset.register({
         nftContract,
@@ -249,7 +249,7 @@ describe("IP Asset Functions ", () => {
       });
       expect(response.ipId).to.be.a("string").and.not.empty;
     });
-    it.skip("should not throw error when register derivative ip", async () => {
+    it("should not throw error when register derivative ip", async () => {
       const tokenChildId = await mintBySpg(nftContract, "test-metadata");
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
@@ -267,7 +267,7 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
 
-    it.skip("should not throw error when register ip and attach pil terms", async () => {
+    it("should not throw error when register ip and attach pil terms", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const deadline = 1000n;
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
@@ -286,7 +286,7 @@ describe("IP Asset Functions ", () => {
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
-    it.skip("should not throw error when mint and register ip and make derivative", async () => {
+    it("should not throw error when mint and register ip and make derivative", async () => {
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract: nftContract,
         derivData: {
@@ -302,7 +302,7 @@ describe("IP Asset Functions ", () => {
       expect(result.tokenId).to.be.a("bigint");
     });
 
-    it.skip("should not throw error when mint and register ip", async () => {
+    it("should not throw error when mint and register ip", async () => {
       const result = await client.ipAsset.mintAndRegisterIp({
         spgNftContract: nftContract,
         ipMetadata: {
@@ -317,7 +317,7 @@ describe("IP Asset Functions ", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
-    it.skip("should not throw error when call register pil terms and attach", async () => {
+    it("should not throw error when call register pil terms and attach", async () => {
       const tokenId = await getTokenId();
       const ipId = (
         await client.ipAsset.register({
@@ -379,7 +379,7 @@ describe("IP Asset Functions ", () => {
       expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
     });
 
-    it.skip("should not throw error when call mint and register ip and make derivative with license tokens", async () => {
+    it("should not throw error when call mint and register ip and make derivative with license tokens", async () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
@@ -408,7 +408,7 @@ describe("IP Asset Functions ", () => {
       expect(result.tokenId).to.be.a("bigint");
     });
 
-    it.skip("should not throw error when call register ip and make derivative with license tokens", async () => {
+    it("should not throw error when call register ip and make derivative with license tokens", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,

@@ -266,7 +266,7 @@ export class IPAssetClient {
       if (request.ipMetadata) {
         const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
         const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
-        const signature = await getPermissionSignature({
+        const { signature } = await getPermissionSignature({
           ipId: ipIdAddress,
           deadline: calculatedDeadline,
           state: toHex(0, { size: 32 }),
@@ -512,7 +512,7 @@ export class IPAssetClient {
           ],
         });
         const { result: state } = await ipAccount.state();
-        const signature = await getSignature({
+        const { signature } = await getSignature({
           state,
           to: licenseModuleAddress,
           encodeData: data,
@@ -783,20 +783,31 @@ export class IPAssetClient {
       });
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
+      const { signature: sigMetadataSignature, nonce: sigMetadataState } =
+        await getPermissionSignature({
+          ipId: ipIdAddress,
+          deadline: calculatedDeadline,
+          state: toHex(0, { size: 32 }),
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(
+                this.licenseAttachmentWorkflowsClient.address,
+                "licenseAttachmentWorkflowsClient",
+              ),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
+        });
 
-      const sigAttachSignature = await getPermissionSignature({
+      const { signature: sigAttachSignature } = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: this.getSigSignatureState({
-          ipId: ipIdAddress,
-          signer: getAddress(
-            this.licenseAttachmentWorkflowsClient.address,
-            "licenseAttachmentWorkflowsClient",
-          ),
-          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-          permission: AccessPermission.ALLOW,
-          func: "function setAll(address,string,bytes32,bytes32)",
-        }),
+        state: sigMetadataState,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -812,26 +823,6 @@ export class IPAssetClient {
           },
         ],
       });
-      const sigMetadataSignature = await getPermissionSignature({
-        ipId: ipIdAddress,
-        deadline: calculatedDeadline,
-        state: toHex(0, { size: 32 }),
-        wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
-        permissions: [
-          {
-            ipId: ipIdAddress,
-            signer: getAddress(
-              this.licenseAttachmentWorkflowsClient.address,
-              "licenseAttachmentWorkflowsClient",
-            ),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-            permission: AccessPermission.ALLOW,
-            func: "function setAll(address,string,bytes32,bytes32)",
-          },
-        ],
-      });
-
       const object: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         tokenId: request.tokenId,
@@ -935,16 +926,30 @@ export class IPAssetClient {
       }
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
-      const sigRegisterSignature = await getPermissionSignature({
+      const { signature: sigMetadataSignature, nonce: sigMetadataState } =
+        await getPermissionSignature({
+          ipId: ipIdAddress,
+          deadline: calculatedDeadline,
+          state: toHex(0, { size: 32 }),
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(
+                this.derivativeWorkflowsClient.address,
+                "derivativeWorkflowsClient",
+              ),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
+        });
+      const { signature: sigRegisterSignature } = await getPermissionSignature({
         ipId: ipIdAddress,
         deadline: calculatedDeadline,
-        state: this.getSigSignatureState({
-          ipId: ipIdAddress,
-          signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
-          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-          permission: AccessPermission.ALLOW,
-          func: "function setAll(address,string,bytes32,bytes32)",
-        }),
+        state: sigMetadataState,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
@@ -988,22 +993,7 @@ export class IPAssetClient {
           signature: zeroHash,
         },
       };
-      const sigMetadataSignature = await getPermissionSignature({
-        ipId: ipIdAddress,
-        deadline: calculatedDeadline,
-        state: toHex(0, { size: 32 }),
-        wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
-        permissions: [
-          {
-            ipId: ipIdAddress,
-            signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-            permission: AccessPermission.ALLOW,
-            func: "function setAll(address,string,bytes32,bytes32)",
-          },
-        ],
-      });
+
       object.sigMetadata = {
         signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
         deadline: calculatedDeadline,
@@ -1261,7 +1251,7 @@ export class IPAssetClient {
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const { result: state } = await ipAccount.state();
-      const sigAttachSignature = await getPermissionSignature({
+      const { signature: sigAttachSignature } = await getPermissionSignature({
         ipId: ipId,
         deadline: calculatedDeadline,
         state,
@@ -1402,32 +1392,30 @@ export class IPAssetClient {
       const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
-      const sigMetadataSignature = await getPermissionSignature({
-        ipId: ipIdAddress,
-        deadline: calculatedDeadline,
-        state: toHex(0, { size: 32 }),
-        wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
-        permissions: [
-          {
-            ipId: ipIdAddress,
-            signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-            permission: AccessPermission.ALLOW,
-            func: "function setAll(address,string,bytes32,bytes32)",
-          },
-        ],
-      });
-      const sigRegisterSignature = await getPermissionSignature({
-        ipId: ipIdAddress,
-        deadline: calculatedDeadline,
-        state: this.getSigSignatureState({
+      const { signature: sigMetadataSignature, nonce: sigMetadataState } =
+        await getPermissionSignature({
           ipId: ipIdAddress,
-          signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
-          to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-          permission: AccessPermission.ALLOW,
-          func: "function setAll(address,string,bytes32,bytes32)",
-        }),
+          deadline: calculatedDeadline,
+          state: toHex(0, { size: 32 }),
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(
+                this.derivativeWorkflowsClient.address,
+                "derivativeWorkflowsClient",
+              ),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
+        });
+      const { signature: sigRegisterSignature } = await getPermissionSignature({
+        ipId: ipIdAddress,
+        deadline: calculatedDeadline,
+        state: sigMetadataState,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
