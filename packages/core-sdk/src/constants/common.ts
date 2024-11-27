@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import { Hex } from "view";
 
 export const AddressZero = "0x0000000000000000000000000000000000000000";
 export const HashZero = "0x0000000000000000000000000000000000000000000000000000000000000000";
