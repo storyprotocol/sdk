@@ -264,3 +264,38 @@ export type BatchRegisterResponse = {
   txHash: Hex;
   results?: { ipId: Address; tokenId: bigint }[];
 };
+
+export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
+  nftContract: Address;
+  tokenId: bigint | string | number;
+  terms: RegisterPILTermsRequest;
+  deadline?: string | number | bigint;
+  royaltyShares: RoyaltyShare[];
+  ipMetadata?: {
+    ipMetadataURI?: string;
+    ipMetadataHash?: Hex;
+    nftMetadataURI?: string;
+    nftMetadataHash?: Hex;
+  };
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
+  registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hex;
+  distributeRoyaltyTokensTxHash: Hex;
+  ipId: Address;
+  licenseTermsId: bigint;
+  ipRoyaltyVault: Address;
+};
+export type DistributeRoyaltyTokens = {
+  ipId: Address;
+  deadline: bigint;
+  state: Hex;
+  ipRoyaltyVault: Address;
+  royaltyShares: RoyaltyShare[];
+  totalAmount: number;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+export type RoyaltyShare = {
+  author: Address;
+  percentage: number;
+};

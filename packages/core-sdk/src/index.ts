@@ -50,6 +50,9 @@ export type {
   BatchRegisterResponse,
   BatchRegisterDerivativeRequest,
   BatchRegisterDerivativeResponse,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  RoyaltyShare,
 } from "./types/resources/ipAsset";
 
 export type {

@@ -16,6 +16,7 @@ import chaiAsPromised from "chai-as-promised";
 import { RegisterIpAndAttachPilTermsRequest } from "../../../src/types/resources/ipAsset";
 import { MockERC20 } from "../../integration/utils/mockERC20";
 import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
+import { RegisterPILTermsRequest } from "../../../src/types/resources/license";
 const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -55,6 +56,8 @@ describe("Test IpAssetClient", () => {
     (ipAssetClient.licenseAttachmentWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (ipAssetClient.licenseTemplateClient as any).address =
+      "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (ipAssetClient.royaltyTokenDistributionWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
   });
 
@@ -2290,6 +2293,200 @@ describe("Test IpAssetClient", () => {
 
       expect(await ipAssetClient.isRegistered("0x2BCAE3197Bc469Cb97B917aa460a12dD95c6538D")).to.be
         .false;
+    });
+  });
+
+  //registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens
+  describe("Test ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens", async () => {
+    const term: RegisterPILTermsRequest = {
+      transferable: true,
+      royaltyPolicy: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+      defaultMintingFee: BigInt(10000),
+      expiration: BigInt(1000),
+      commercialUse: true,
+      commercialAttribution: false,
+      commercializerChecker: zeroAddress,
+      commercializerCheckerData: zeroAddress,
+      commercialRevShare: 0,
+      commercialRevCeiling: BigInt(0),
+      derivativesAllowed: true,
+      derivativesAttribution: true,
+      derivativesApproval: false,
+      derivativesReciprocal: true,
+      derivativeRevCeiling: BigInt(0),
+      currency: MockERC20.address,
+      uri: "test case",
+    };
+    it("should throw commercial terms error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given commercial terms is not false", async () => {
+      try {
+        await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: spgNftContract,
+          tokenId: "1",
+          terms: {
+            ...term,
+            commercialUse: false,
+          },
+          royaltyShares: [
+            {
+              author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+              percentage: 1,
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license terms and distribute royalty tokens: Commercial use is required to deploy a royalty vault.",
+        );
+      }
+    });
+
+    it("should throw percentage error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given percentage is less 0", async () => {
+      try {
+        await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: spgNftContract,
+          tokenId: "1",
+          terms: term,
+          royaltyShares: [{ author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: -1 }],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license terms and distribute royalty tokens: The percentage of the royalty shares must be greater than 0.",
+        );
+      }
+    });
+
+    it("should throw percentage error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given percentage is greater 100", async () => {
+      try {
+        await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: spgNftContract,
+          tokenId: "1",
+          terms: term,
+          royaltyShares: [
+            { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 101 },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license terms and distribute royalty tokens: The percentage of the royalty shares must be less than or equal to 100.",
+        );
+      }
+    });
+
+    it("should throw percentage error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given total percentage is greater 100", async () => {
+      try {
+        await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: spgNftContract,
+          tokenId: "1",
+          terms: term,
+          royaltyShares: [
+            { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 10 },
+            { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license terms and distribute royalty tokens: The sum of the royalty shares cannot exceeds 100.",
+        );
+      }
+    });
+    it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args", async () => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon
+        .stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "registerIpAndAttachPilTermsAndDeployRoyaltyVault",
+        )
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      sinon.stub(ipAssetClient.licensingModuleClient, "parseTxLicenseTermsAttachedEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          caller: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsId: 8n,
+        },
+      ]);
+      sinon
+        .stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent")
+        .returns([
+          {
+            ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+            ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          },
+        ]);
+      sinon
+        .stub(ipAssetClient.royaltyTokenDistributionWorkflowsClient, "distributeRoyaltyTokens")
+        .resolves(txHash);
+
+      const result = await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        nftContract: spgNftContract,
+        tokenId: "1",
+        terms: term,
+        royaltyShares: [{ author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 }],
+      });
+      expect(result).to.deep.equal({
+        registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash:
+          "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+        distributeRoyaltyTokensTxHash: txHash,
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsId: 8n,
+        ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
+    });
+    it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args  and waitForTransaction of true", async () => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon
+        .stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "registerIpAndAttachPilTermsAndDeployRoyaltyVault",
+        )
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      sinon.stub(ipAssetClient.licensingModuleClient, "parseTxLicenseTermsAttachedEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          caller: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsId: 8n,
+        },
+      ]);
+      sinon
+        .stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent")
+        .returns([
+          {
+            ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+            ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          },
+        ]);
+      sinon
+        .stub(ipAssetClient.royaltyTokenDistributionWorkflowsClient, "distributeRoyaltyTokens")
+        .resolves(txHash);
+
+      const result = await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        nftContract: spgNftContract,
+        tokenId: "1",
+        terms: term,
+        royaltyShares: [{ author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 }],
+        ipMetadata: {
+          ipMetadataURI: "",
+          ipMetadataHash: toHex(0, { size: 32 }),
+          nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+          nftMetadataURI: "",
+        },
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result).to.deep.equal({
+        registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash:
+          "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+        distributeRoyaltyTokensTxHash: txHash,
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsId: 8n,
+        ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
     });
   });
 });

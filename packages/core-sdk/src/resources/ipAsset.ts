@@ -6,10 +6,7 @@ import {
   zeroHash,
   WalletClient,
   toHex,
-  encodeAbiParameters,
   encodeFunctionData,
-  keccak256,
-  toFunctionSelector,
   TransactionReceipt,
 } from "viem";
 
@@ -48,6 +45,10 @@ import {
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
   MintAndRegisterIpAndMakeDerivativeResponse,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  DistributeRoyaltyTokens,
+  RoyaltyShare,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -71,15 +72,17 @@ import {
   RegistrationWorkflowsClient,
   RegistrationWorkflowsMintAndRegisterIpRequest,
   RegistrationWorkflowsRegisterIpRequest,
+  RoyaltyModuleEventClient,
+  RoyaltyTokenDistributionWorkflowsClient,
   SimpleWalletClient,
-  accessControllerAbi,
   ipAccountImplAbi,
   licensingModuleAbi,
+  mockErc20Abi,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
 import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
-import { AccessPermission, SetPermissionsRequest } from "../types/resources/permission";
+import { AccessPermission } from "../types/resources/permission";
 import { LicenseTerms } from "../types/resources/license";
 
 export class IPAssetClient {
@@ -94,6 +97,8 @@ export class IPAssetClient {
   public licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
   public derivativeWorkflowsClient: DerivativeWorkflowsClient;
   public multicall3Client: Multicall3Client;
+  public royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
+  public royaltyModuleEventClient: RoyaltyModuleEventClient;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -111,6 +116,11 @@ export class IPAssetClient {
     this.registrationWorkflowsClient = new RegistrationWorkflowsClient(rpcClient, wallet);
     this.licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
     this.derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
+    this.royaltyTokenDistributionWorkflowsClient = new RoyaltyTokenDistributionWorkflowsClient(
+      rpcClient,
+      wallet,
+    );
+    this.royaltyModuleEventClient = new RoyaltyModuleEventClient(rpcClient);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
@@ -1474,7 +1484,206 @@ export class IPAssetClient {
       handleError(error, "Failed to register IP and make derivative with license tokens");
     }
   }
+  /**
+   * Register the given NFT and attach license terms and distribute royalty tokens.
+   * @param request - The request object that contains all data needed to register ip and attach license terms and distribute royalty tokens.
+   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.tokenId The ID of the NFT.
+   *   @param request.terms The array of license terms to be attached.
+   *     @param request.terms.transferable Indicates whether the license is transferable or not.
+   *     @param request.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
+   *     @param request.terms.mintingFee The fee to be paid when minting a license.
+   *     @param request.terms.expiration The expiration period of the license.
+   *     @param request.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
+   *     @param request.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
+   *     @param request.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
+   *     @param request.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
+   *     @param request.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
+   *     @param request.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
+   *     @param request.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
+   *     @param request.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
+   *     @param request.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
+   *     @param request.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
+   *     @param request.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
+   *     @param request.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *     @param request.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *    @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *    @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *    @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *    @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *  @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
+   *    @param request.royaltyShares.author The address of the author.
+   *    @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
+   *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
+   *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
+   * @returns A Promise that resolves to a transaction hashes, IP ID, License terms ID, and IP royalty vault.
+   */
+  public async registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
+    request: RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  ): Promise<RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
+    try {
+      if (!request.terms.commercialUse) {
+        throw new Error("Commercial use is required to deploy a royalty vault.");
+      }
+      const { royaltyShares, totalAmount } = this.getRoyaltyShares(request.royaltyShares);
+      const licenseTerm = await validateLicenseTerms(request.terms, this.rpcClient);
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
+      const ipIdAddress = await this.getIpIdAddress(
+        getAddress(request.nftContract, "request.nftContract"),
+        request.tokenId,
+      );
+      const { signature: sigMetadataSignature, nonce: sigMetadataState } =
+        await getPermissionSignature({
+          ipId: ipIdAddress,
+          deadline: calculatedDeadline,
+          state: toHex(0, { size: 32 }),
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(
+                this.royaltyTokenDistributionWorkflowsClient.address,
+                "royaltyTokenDistributionWorkflowsClient",
+              ),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
+        });
+      const { signature: sigAttachSignature, nonce: sigAttachState } = await getPermissionSignature(
+        {
+          ipId: ipIdAddress,
+          deadline: calculatedDeadline,
+          state: sigMetadataState,
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: this.royaltyTokenDistributionWorkflowsClient.address,
+              to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function attachLicenseTerms(address,address,uint256)",
+            },
+          ],
+        },
+      );
+      const registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash =
+        await this.royaltyTokenDistributionWorkflowsClient.registerIpAndAttachPilTermsAndDeployRoyaltyVault(
+          {
+            nftContract: request.nftContract,
+            tokenId: BigInt(request.tokenId),
+            ipMetadata: {
+              ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+              ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+              nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+              nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
+            },
+            terms: licenseTerm,
+            sigMetadata: {
+              signer: this.wallet.account!.address,
+              deadline: calculatedDeadline,
+              signature: sigMetadataSignature,
+            },
+            sigAttach: {
+              signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+              deadline: calculatedDeadline,
+              signature: sigAttachSignature,
+            },
+          },
+        );
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
+      });
+      //TODO: need to consider to have attached issue
+      const { ipId, licenseTermsId } =
+        this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(txReceipt)[0];
+      const { ipRoyaltyVault } =
+        this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(txReceipt)[0];
+      const distributeRoyaltyTokensTxHash = await this.distributeRoyaltyTokens({
+        ipId,
+        deadline: calculatedDeadline,
+        state: sigAttachState,
+        ipRoyaltyVault,
+        royaltyShares: royaltyShares,
+        totalAmount: totalAmount,
+        txOptions: request.txOptions,
+      });
+      return {
+        registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
+        distributeRoyaltyTokensTxHash,
+        ipId,
+        licenseTermsId,
+        ipRoyaltyVault,
+      };
+    } catch (error) {
+      handleError(
+        error,
+        "Failed to register IP and attach license terms and distribute royalty tokens",
+      );
+    }
+  }
+  private getRoyaltyShares(royaltyShares: RoyaltyShare[]) {
+    const total = 100000000;
+    let actualTotal = 0;
+    let sum = 0;
+    const shares = royaltyShares.map((share) => {
+      if (share.percentage <= 0) {
+        throw new Error("The percentage of the royalty shares must be greater than 0.");
+      }
+      if (share.percentage > 100) {
+        throw new Error("The percentage of the royalty shares must be less than or equal to 100.");
+      }
+      sum += share.percentage;
+      if (sum > 100) {
+        throw new Error("The sum of the royalty shares cannot exceeds 100.");
+      }
+      const value = (share.percentage / 100) * total;
+      actualTotal += value;
+      return { ...share, percentage: value };
+    });
+    return { royaltyShares: shares, totalAmount: actualTotal } as const;
+  }
 
+  private async distributeRoyaltyTokens(request: DistributeRoyaltyTokens): Promise<Hex> {
+    const { ipId, deadline, state, ipRoyaltyVault, totalAmount } = request;
+    const { signature: signatureApproveRoyaltyTokens } = await getSignature({
+      verifyingContract: ipId,
+      deadline: deadline,
+      state: state,
+      wallet: this.wallet as WalletClient,
+      chainId: chain[this.chainId],
+      to: ipRoyaltyVault,
+      encodeData: encodeFunctionData({
+        abi: mockErc20Abi,
+        functionName: "approve",
+        args: [this.royaltyTokenDistributionWorkflowsClient.address, BigInt(totalAmount)],
+      }),
+    });
+    const txHash = await this.royaltyTokenDistributionWorkflowsClient.distributeRoyaltyTokens({
+      ipId,
+      ipRoyaltyVault: ipRoyaltyVault,
+      royaltyShares: request.royaltyShares,
+      sigApproveRoyaltyTokens: {
+        signer: this.wallet.account!.address,
+        deadline: deadline,
+        signature: signatureApproveRoyaltyTokens,
+      },
+    });
+    if (request.txOptions?.waitForTransaction) {
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return txHash;
+    }
+    return txHash;
+  }
   private async getIpIdAddress(
     nftContract: Address,
     tokenId: bigint | string | number,
@@ -1489,37 +1698,6 @@ export class IPAssetClient {
 
   public async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId, "ipId") });
-  }
-
-  private getSigSignatureState(permission: Omit<SetPermissionsRequest, "txOptions">) {
-    const data = encodeFunctionData({
-      abi: accessControllerAbi,
-      functionName: "setPermission",
-      args: [
-        getAddress(permission.ipId, "permission.ipId"),
-        getAddress(permission.signer, "permission.signer"),
-        getAddress(permission.to, "permission.to"),
-        toFunctionSelector(permission.func!),
-        permission.permission,
-      ],
-    });
-    const sigAttachState = keccak256(
-      encodeAbiParameters(
-        [
-          { name: "", type: "bytes32" },
-          { name: "", type: "bytes" },
-        ],
-        [
-          toHex(0, { size: 32 }),
-          encodeFunctionData({
-            abi: ipAccountImplAbi,
-            functionName: "execute",
-            args: [this.accessControllerClient.address, 0n, data],
-          }),
-        ],
-      ),
-    );
-    return sigAttachState;
   }
 
   private getLicenseTermsId(txReceipt: TransactionReceipt): bigint[] {
