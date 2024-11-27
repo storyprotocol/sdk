@@ -22531,6 +22531,17 @@ export class RegistrationWorkflowsClient extends RegistrationWorkflowsEventClien
 // Contract RoyaltyModule =============================================================
 
 /**
+ * RoyaltyModuleIpRoyaltyVaultDeployedEvent
+ *
+ * @param ipId address
+ * @param ipRoyaltyVault address
+ */
+export type RoyaltyModuleIpRoyaltyVaultDeployedEvent = {
+  ipId: Address;
+  ipRoyaltyVault: Address;
+};
+
+/**
  * RoyaltyModuleIpRoyaltyVaultsRequest
  *
  * @param ipId address
@@ -22579,15 +22590,65 @@ export type RoyaltyModulePayRoyaltyOnBehalfRequest = {
 };
 
 /**
- * contract RoyaltyModule readonly method
+ * contract RoyaltyModule event
  */
-export class RoyaltyModuleReadOnlyClient {
+export class RoyaltyModuleEventClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(royaltyModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event IpRoyaltyVaultDeployed for contract RoyaltyModule
+   */
+  public watchIpRoyaltyVaultDeployedEvent(
+    onLogs: (txHash: Hex, ev: Partial<RoyaltyModuleIpRoyaltyVaultDeployedEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: royaltyModuleAbi,
+      address: this.address,
+      eventName: "IpRoyaltyVaultDeployed",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event IpRoyaltyVaultDeployed for contract RoyaltyModule
+   */
+  public parseTxIpRoyaltyVaultDeployedEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<RoyaltyModuleIpRoyaltyVaultDeployedEvent> {
+    const targetLogs: Array<RoyaltyModuleIpRoyaltyVaultDeployedEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: royaltyModuleAbi,
+          eventName: "IpRoyaltyVaultDeployed",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "IpRoyaltyVaultDeployed") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract RoyaltyModule readonly method
+ */
+export class RoyaltyModuleReadOnlyClient extends RoyaltyModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
   }
 
   /**
@@ -23691,6 +23752,460 @@ export class RoyaltyPolicyLrpClient extends RoyaltyPolicyLrpReadOnlyClient {
 }
 
 // Contract RoyaltyTokenDistributionWorkflows =============================================================
+
+/**
+ * RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest
+ *
+ * @param ipId address
+ * @param ipRoyaltyVault address
+ * @param royaltyShares tuple[]
+ * @param sigApproveRoyaltyTokens tuple
+ */
+export type RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest = {
+  ipId: Address;
+  ipRoyaltyVault: Address;
+  royaltyShares: {
+    author: Address;
+    percentage: number;
+  }[];
+  sigApproveRoyaltyTokens: {
+    signer: Address;
+    deadline: bigint;
+    signature: Hex;
+  };
+};
+
+/**
+ * RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest
+ *
+ * @param spgNftContract address
+ * @param recipient address
+ * @param ipMetadata tuple
+ * @param terms tuple
+ * @param royaltyShares tuple[]
+ */
+export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest =
+  {
+    spgNftContract: Address;
+    recipient: Address;
+    ipMetadata: {
+      ipMetadataURI: string;
+      ipMetadataHash: Hex;
+      nftMetadataURI: string;
+      nftMetadataHash: Hex;
+    };
+    terms: {
+      transferable: boolean;
+      royaltyPolicy: Address;
+      defaultMintingFee: bigint;
+      expiration: bigint;
+      commercialUse: boolean;
+      commercialAttribution: boolean;
+      commercializerChecker: Address;
+      commercializerCheckerData: Hex;
+      commercialRevShare: number;
+      commercialRevCeiling: bigint;
+      derivativesAllowed: boolean;
+      derivativesAttribution: boolean;
+      derivativesApproval: boolean;
+      derivativesReciprocal: boolean;
+      derivativeRevCeiling: bigint;
+      currency: Address;
+      uri: string;
+    };
+    royaltyShares: {
+      author: Address;
+      percentage: number;
+    }[];
+  };
+
+/**
+ * RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest
+ *
+ * @param spgNftContract address
+ * @param recipient address
+ * @param ipMetadata tuple
+ * @param derivData tuple
+ * @param royaltyShares tuple[]
+ */
+export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest =
+  {
+    spgNftContract: Address;
+    recipient: Address;
+    ipMetadata: {
+      ipMetadataURI: string;
+      ipMetadataHash: Hex;
+      nftMetadataURI: string;
+      nftMetadataHash: Hex;
+    };
+    derivData: {
+      parentIpIds: readonly Address[];
+      licenseTemplate: Address;
+      licenseTermsIds: readonly bigint[];
+      royaltyContext: Hex;
+    };
+    royaltyShares: {
+      author: Address;
+      percentage: number;
+    }[];
+  };
+
+/**
+ * RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param ipMetadata tuple
+ * @param terms tuple
+ * @param sigMetadata tuple
+ * @param sigAttach tuple
+ */
+export type RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest =
+  {
+    nftContract: Address;
+    tokenId: bigint;
+    ipMetadata: {
+      ipMetadataURI: string;
+      ipMetadataHash: Hex;
+      nftMetadataURI: string;
+      nftMetadataHash: Hex;
+    };
+    terms: {
+      transferable: boolean;
+      royaltyPolicy: Address;
+      defaultMintingFee: bigint;
+      expiration: bigint;
+      commercialUse: boolean;
+      commercialAttribution: boolean;
+      commercializerChecker: Address;
+      commercializerCheckerData: Hex;
+      commercialRevShare: number;
+      commercialRevCeiling: bigint;
+      derivativesAllowed: boolean;
+      derivativesAttribution: boolean;
+      derivativesApproval: boolean;
+      derivativesReciprocal: boolean;
+      derivativeRevCeiling: bigint;
+      currency: Address;
+      uri: string;
+    };
+    sigMetadata: {
+      signer: Address;
+      deadline: bigint;
+      signature: Hex;
+    };
+    sigAttach: {
+      signer: Address;
+      deadline: bigint;
+      signature: Hex;
+    };
+  };
+
+/**
+ * RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
+ *
+ * @param nftContract address
+ * @param tokenId uint256
+ * @param ipMetadata tuple
+ * @param derivData tuple
+ * @param sigMetadata tuple
+ * @param sigRegister tuple
+ */
+export type RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest =
+  {
+    nftContract: Address;
+    tokenId: bigint;
+    ipMetadata: {
+      ipMetadataURI: string;
+      ipMetadataHash: Hex;
+      nftMetadataURI: string;
+      nftMetadataHash: Hex;
+    };
+    derivData: {
+      parentIpIds: readonly Address[];
+      licenseTemplate: Address;
+      licenseTermsIds: readonly bigint[];
+      royaltyContext: Hex;
+    };
+    sigMetadata: {
+      signer: Address;
+      deadline: bigint;
+      signature: Hex;
+    };
+    sigRegister: {
+      signer: Address;
+      deadline: bigint;
+      signature: Hex;
+    };
+  };
+
+/**
+ * contract RoyaltyTokenDistributionWorkflows write method
+ */
+export class RoyaltyTokenDistributionWorkflowsClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address =
+      address || getAddress(royaltyTokenDistributionWorkflowsAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method distributeRoyaltyTokens for contract RoyaltyTokenDistributionWorkflows
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async distributeRoyaltyTokens(
+    request: RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyTokenDistributionWorkflowsAbi,
+      address: this.address,
+      functionName: "distributeRoyaltyTokens",
+      account: this.wallet.account,
+      args: [
+        request.ipId,
+        request.ipRoyaltyVault,
+        request.royaltyShares,
+        request.sigApproveRoyaltyTokens,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method distributeRoyaltyTokens for contract RoyaltyTokenDistributionWorkflows with only encode
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest
+   * @return EncodedTxData
+   */
+  public distributeRoyaltyTokensEncode(
+    request: RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "distributeRoyaltyTokens",
+        args: [
+          request.ipId,
+          request.ipRoyaltyVault,
+          request.royaltyShares,
+          request.sigApproveRoyaltyTokens,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens for contract RoyaltyTokenDistributionWorkflows
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
+    request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyTokenDistributionWorkflowsAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
+      account: this.wallet.account,
+      args: [
+        request.spgNftContract,
+        request.recipient,
+        request.ipMetadata,
+        request.terms,
+        request.royaltyShares,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens for contract RoyaltyTokenDistributionWorkflows with only encode
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensEncode(
+    request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
+        args: [
+          request.spgNftContract,
+          request.recipient,
+          request.ipMetadata,
+          request.terms,
+          request.royaltyShares,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens for contract RoyaltyTokenDistributionWorkflows
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
+    request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyTokenDistributionWorkflowsAbi,
+      address: this.address,
+      functionName: "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+      account: this.wallet.account,
+      args: [
+        request.spgNftContract,
+        request.recipient,
+        request.ipMetadata,
+        request.derivData,
+        request.royaltyShares,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens for contract RoyaltyTokenDistributionWorkflows with only encode
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest
+   * @return EncodedTxData
+   */
+  public mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensEncode(
+    request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+        args: [
+          request.spgNftContract,
+          request.recipient,
+          request.ipMetadata,
+          request.derivData,
+          request.royaltyShares,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method registerIpAndAttachPILTermsAndDeployRoyaltyVault for contract RoyaltyTokenDistributionWorkflows
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndAttachPilTermsAndDeployRoyaltyVault(
+    request: RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyTokenDistributionWorkflowsAbi,
+      address: this.address,
+      functionName: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.ipMetadata,
+        request.terms,
+        request.sigMetadata,
+        request.sigAttach,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndAttachPILTermsAndDeployRoyaltyVault for contract RoyaltyTokenDistributionWorkflows with only encode
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndAttachPilTermsAndDeployRoyaltyVaultEncode(
+    request: RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.ipMetadata,
+          request.terms,
+          request.sigMetadata,
+          request.sigAttach,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method registerIpAndMakeDerivativeAndDeployRoyaltyVault for contract RoyaltyTokenDistributionWorkflows
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async registerIpAndMakeDerivativeAndDeployRoyaltyVault(
+    request: RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyTokenDistributionWorkflowsAbi,
+      address: this.address,
+      functionName: "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+      account: this.wallet.account,
+      args: [
+        request.nftContract,
+        request.tokenId,
+        request.ipMetadata,
+        request.derivData,
+        request.sigMetadata,
+        request.sigRegister,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method registerIpAndMakeDerivativeAndDeployRoyaltyVault for contract RoyaltyTokenDistributionWorkflows with only encode
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
+   * @return EncodedTxData
+   */
+  public registerIpAndMakeDerivativeAndDeployRoyaltyVaultEncode(
+    request: RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+        args: [
+          request.nftContract,
+          request.tokenId,
+          request.ipMetadata,
+          request.derivData,
+          request.sigMetadata,
+          request.sigRegister,
+        ],
+      }),
+    };
+  }
+}
 
 // Contract RoyaltyWorkflows =============================================================
 
