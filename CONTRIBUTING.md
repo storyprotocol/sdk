@@ -22,7 +22,7 @@ Please make sure to read and observe our [Code of Conduct](/CODE_OF_CONDUCT.md).
 
 We welcome feedback with or without pull requests. If you have an idea for how
 to improve the project, great! All we ask is that you take the time to write a
-clear and concise explanation of what need you are trying to solve. If you have
+clear and concise explanation of what need that you are trying to solve. If you have
 thoughts on _how_ it can be solved, include those too!
 
 The best way to see a feature added, however, is to submit a pull request.
