@@ -26,7 +26,7 @@ Use `yarn`:
 yarn add @story-protocol/core-sdk viem@1.21.4
 ```
 
-Besides the Story Protocol SDK package `@story-protocol/core-sdk`, we also require the package `viem` (https://www.npmjs.com/package/viem) to access the DeFi wallet accounts.
+Besides the Story Protocol SDK package `@story-protocol/core-sdk`, we also require the package [viem](https://www.npmjs.com/package/viem) to access the DeFi wallet accounts.
 
 # Initiate SDK Client
 
