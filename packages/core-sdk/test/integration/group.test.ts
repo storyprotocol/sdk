@@ -1,6 +1,6 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Address } from "viem";
+import { Address, zeroAddress } from "viem";
 import { getStoryClient, odyssey, mintBySpg } from "./utils/util";
 import { PIL_TYPE, StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
@@ -34,10 +34,27 @@ describe("Group Functions", () => {
     ).spgNftContract!;
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: spgNftContract,
-      pilTypes: [PIL_TYPE.COMMERCIAL_USE],
-      commercialRevShare: 10,
-      mintingFee: "0",
-      currency: MockERC20.address,
+      terms: [
+        {
+          transferable: true,
+          royaltyPolicy: zeroAddress,
+          defaultMintingFee: BigInt(1),
+          expiration: BigInt(0),
+          commercialUse: false,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 0,
+          commercialRevCeiling: BigInt(0),
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: BigInt(0),
+          currency: MockERC20.address,
+          uri: "",
+        },
+      ],
       txOptions: {
         waitForTransaction: true,
       },

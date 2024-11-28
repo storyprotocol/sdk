@@ -1,7 +1,7 @@
 import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
-import { PIL_TYPE, RegisterPILTermsRequest } from "./license";
+import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOption } from "../common";
 
@@ -44,11 +44,8 @@ export type RegisterDerivativeResponse = {
 
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
   spgNftContract: Address;
-  pilTypes: PIL_TYPE[];
-  currency?: Address;
-  mintingFee?: string | number | bigint;
+  terms: RegisterPILTermsRequest[];
   recipient?: Address;
-  commercialRevShare?: number;
   royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
 
@@ -81,19 +78,15 @@ export type RegisterIpAndMakeDerivativeResponse = {
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  pilType: PIL_TYPE;
-  mintingFee: string | number | bigint;
-  currency: Address;
+  terms: RegisterPILTermsRequest[];
   deadline?: bigint | number | string;
-  commercialRevShare?: number;
-  royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
 
 export type RegisterIpAndAttachPilTermsResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
-  licenseTermsId?: bigint;
+  licenseTermsIds?: bigint[];
   tokenId?: bigint;
 };
 
@@ -231,10 +224,15 @@ export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
   args: Omit<MintAndRegisterIpAssetWithPilTermsRequest, "txOptions">[];
   txOptions?: Omit<TxOptions, "EncodedTxData">;
 };
-
+export type BatchMintAndRegisterIpAssetWithPilTermsResult = {
+  ipId: Address;
+  tokenId: bigint;
+  licenseTermsIds: bigint[];
+  spgNftContract: Address;
+};
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
   txHash: Hex;
-  results?: { ipId: Address; tokenId: bigint; licenseTermsIds: bigint[] }[];
+  results?: BatchMintAndRegisterIpAssetWithPilTermsResult[];
 };
 
 export type BatchRegisterDerivativeRequest = {
@@ -252,7 +250,7 @@ export type BatchMintAndRegisterIpAndMakeDerivativeRequest = {
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
   txHash: string;
-  results?: { ipId: Address; tokenId: bigint }[];
+  results?: IpIdAndTokenId<"spgNftContract">[];
 };
 
 export type BatchRegisterRequest = {
@@ -262,7 +260,7 @@ export type BatchRegisterRequest = {
 
 export type BatchRegisterResponse = {
   txHash: Hex;
-  results?: { ipId: Address; tokenId: bigint }[];
+  results?: IpIdAndTokenId<"nftContract">[];
 };
 
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
@@ -299,3 +297,6 @@ export type RoyaltyShare = {
   author: Address;
   percentage: number;
 };
+export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
+  ? { ipId: Address; tokenId: bigint }
+  : { ipId: Address; tokenId: bigint } & { [T: string]: Address };
