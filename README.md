@@ -45,7 +45,7 @@ const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
 const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
 ```
 
-The preceding code created the `account` object for creating the SDK client.
+The preceding code creates the `account` object for the SDK client.
 
 ## Set up SDK client
 
@@ -81,7 +81,7 @@ Under the `typescript-sdk/packages/core-sdk` directory:
 
 - Navigate to the `core-sdk` directory.
 - Execute `npm run build` to build your latest code.
-- Run `yalc publish`. You should see a message like `@story-protocol/core-sdk@<version> published in store.` (Note: The version number may vary).
+- Run `yalc publish`. You should see a message like `@story-protocol/core-sdk@<version> published in the store.` (Note: The version number may vary).
 
 To set up your testing environment (e.g., a new Next.js project), use `yalc add @story-protocol/core-sdk@<version>` (ensure the version number is updated accordingly).
 
