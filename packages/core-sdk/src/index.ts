@@ -55,6 +55,10 @@ export type {
   RoyaltyShare,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
 } from "./types/resources/ipAsset";
 
 export type {

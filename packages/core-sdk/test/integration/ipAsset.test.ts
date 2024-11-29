@@ -156,7 +156,7 @@ describe("IP Asset Functions ", () => {
             commercialAttribution: false,
             commercializerChecker: zeroAddress,
             commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
+            commercialRevShare: 90,
             commercialRevCeiling: BigInt(0),
             derivativesAllowed: true,
             derivativesAttribution: true,
@@ -491,6 +491,72 @@ describe("IP Asset Functions ", () => {
         result.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash,
       ).to.be.a("string");
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.tokenId).to.be.a("bigint");
+    });
+
+    it("should not throw error when call mint and register ip and attach pil terms and distribute royalty tokens", async () => {
+      const result =
+        await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
+          spgNftContract: nftContract,
+          terms: {
+            transferable: true,
+            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+            defaultMintingFee: BigInt(10000),
+            expiration: BigInt(1000),
+            commercialUse: true,
+            commercialAttribution: false,
+            commercializerChecker: zeroAddress,
+            commercializerCheckerData: zeroAddress,
+            commercialRevShare: 0,
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: true,
+            derivativesAttribution: true,
+            derivativesApproval: false,
+            derivativesReciprocal: true,
+            derivativeRevCeiling: BigInt(0),
+            currency: MockERC20.address,
+            uri: "test case",
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          royaltyShares: [
+            {
+              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              percentage: 10, //100%
+            },
+          ],
+          txOptions: {
+            waitForTransaction: true,
+          },
+        });
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.licenseTermsId).to.be.a("bigint");
+      expect(result.tokenId).to.be.a("bigint");
+    });
+    it("should not throw error when call mint and register ip and make derivative and distribute royalty tokens", async () => {
+      const result =
+        await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+          spgNftContract: nftContract,
+          derivData: {
+            parentIpIds: [parentIpId!],
+            licenseTermsIds: [licenseTermsId],
+          },
+          royaltyShares: [
+            {
+              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              percentage: 100000000, //100%
+            },
+          ],
+          txOptions: {
+            waitForTransaction: true,
+          },
+        });
+      expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.tokenId).to.be.a("bigint");
     });

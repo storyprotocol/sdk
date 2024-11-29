@@ -53,6 +53,10 @@ import {
   IpIdAndTokenId,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -1691,11 +1695,10 @@ export class IPAssetClient {
    *     @param request.royaltyShares.author The address of the author.
    *     @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hashes, IP ID and IP royalty vault.
+   * @returns A Promise that resolves to a transaction hashes, IP ID and IP royalty vault, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
-  //TODO: ERC20: transfer amount exceeds balance
   public async registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
@@ -1780,8 +1783,9 @@ export class IPAssetClient {
         hash: txHash,
       });
       const { ipId, tokenId } = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-      const { ipRoyaltyVault } =
-        this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(txReceipt)[0];
+      const { ipRoyaltyVault } = this.royaltyModuleEventClient
+        .parseTxIpRoyaltyVaultDeployedEvent(txReceipt)
+        .filter((item) => item.ipId === ipId)[0];
       const distributeRoyaltyTokensTxHash = await this.distributeRoyaltyTokens({
         ipId,
         deadline: calculatedDeadline,
@@ -1811,6 +1815,162 @@ export class IPAssetClient {
       );
     }
   }
+
+  /**
+   * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
+   * @param request - The request object that contains all data needed to mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
+   *   @param request.spgNftContract The address of the SPG NFT contract.
+   *   @param request.terms The array of license terms to be attached.
+   *     @param request.terms.transferable Indicates whether the license is transferable or not.
+   *     @param request.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
+   *     @param request.terms.mintingFee The fee to be paid when minting a license.
+   *     @param request.terms.expiration The expiration period of the license.
+   *     @param request.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
+   *     @param request.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
+   *     @param request.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
+   *     @param request.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
+   *     @param request.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
+   *     @param request.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
+   *     @param request.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
+   *     @param request.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
+   *     @param request.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
+   *     @param request.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
+   *     @param request.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
+   *     @param request.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *     @param request.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *    @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *    @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *    @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *    @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *  @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
+   *    @param request.royaltyShares.author The address of the author.
+   *    @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
+   *   @param request.recipient - [Optional] The address to receive the minted NFT,default value is your wallet address.
+   *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
+   * @returns A Promise that resolves to a transaction hash, IP ID, License terms ID, and IP royalty vault, Token ID.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   */
+  public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
+    request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
+  ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
+    try {
+      const licenseTerm = await validateLicenseTerms(request.terms, this.rpcClient);
+      const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
+      const txHash =
+        await this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
+          {
+            spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
+            recipient:
+              (request.recipient && getAddress(request.recipient, "request.recipient")) ||
+              this.wallet.account!.address,
+            ipMetadata: {
+              ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+              ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+              nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+              nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
+            },
+            terms: licenseTerm,
+            royaltyShares,
+          },
+        );
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const { ipId, tokenId } = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+        const licenseTermsId = await this.getLicenseTermsId([licenseTerm]);
+        const { ipRoyaltyVault } =
+          this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(txReceipt)[0];
+        return {
+          txHash,
+          ipId,
+          licenseTermsId: licenseTermsId[0],
+          ipRoyaltyVault,
+          tokenId,
+        };
+      }
+      return { txHash };
+    } catch (error) {
+      handleError(
+        error,
+        "Failed to mint and register IP and attach PIL terms and distribute royalty tokens",
+      );
+    }
+  }
+  /**
+   * Mint an NFT and register the IP, make a derivative, and distribute royalty tokens. In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * a commercial license.
+   * @param request - The request object that contains all data needed to mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
+   *   @param request.spgNftContract The address of the SPG NFT collection.
+   *   @param request.derivData The derivative data to be used for registerDerivative.
+   *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
+   *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
+   *     @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
+   *     @param request.royaltyShares.author The address of the author.
+   *     @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
+   *   @param request.recipient - [Optional] The address to receive the minted NFT,default value is your wallet address.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option..
+   * @returns A Promise that resolves to a transaction hash, IP ID and token ID.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   */
+  public async mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
+    request: MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  ): Promise<MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse> {
+    try {
+      //TODO: check whether the license terms attached to the IP must be a commercial license.
+      const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
+      const txHash =
+        await this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
+          {
+            spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
+            recipient:
+              (request.recipient && getAddress(request.recipient, "request.recipient")) ||
+              this.wallet.account!.address,
+            ipMetadata: {
+              ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+              ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+              nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+              nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
+            },
+            derivData: {
+              ...request.derivData,
+              licenseTemplate:
+                (request.derivData.licenseTemplate &&
+                  getAddress(
+                    request.derivData.licenseTemplate,
+                    "request.derivData.licenseTemplate",
+                  )) ||
+                this.licenseTemplateClient.address,
+              royaltyContext: zeroAddress,
+              licenseTermsIds: request.derivData.licenseTermsIds.map((id) => BigInt(id)),
+            },
+            royaltyShares: royaltyShares,
+          },
+        );
+      if (request.txOptions?.waitForTransaction) {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const { ipId, tokenId } = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+        return { txHash, ipId, tokenId };
+      }
+      return { txHash };
+    } catch (error) {
+      handleError(
+        error,
+        "Failed to mint and register IP and make derivative and distribute royalty tokens",
+      );
+    }
+  }
   private getRoyaltyShares(royaltyShares: RoyaltyShare[]) {
     const total = 100000000;
     let actualTotal = 0;
@@ -1835,6 +1995,7 @@ export class IPAssetClient {
 
   private async distributeRoyaltyTokens(request: DistributeRoyaltyTokens): Promise<Hex> {
     const { ipId, deadline, state, ipRoyaltyVault, totalAmount } = request;
+    //TODO: check amount whether is more than ipAccount balance
     const { signature: signatureApproveRoyaltyTokens } = await getSignature({
       verifyingContract: ipId,
       deadline: deadline,

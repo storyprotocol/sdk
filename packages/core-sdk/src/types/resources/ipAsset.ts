@@ -301,6 +301,14 @@ export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
   ? { ipId: Address; tokenId: bigint }
   : { ipId: Address; tokenId: bigint } & { [T: string]: Address };
 
+type IPMetadataInfo = {
+  ipMetadata?: {
+    ipMetadataURI?: string;
+    ipMetadataHash?: Hex;
+    nftMetadataURI?: string;
+    nftMetadataHash?: Hex;
+  };
+};
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
@@ -311,14 +319,8 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
     licenseTermsIds: bigint[];
   };
   royaltyShares: RoyaltyShare[];
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-};
+} & IPMetadataInfo;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
@@ -326,4 +328,43 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
   ipId: Address;
   tokenId: bigint;
   ipRoyaltyVault: Address;
+};
+
+export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
+  spgNftContract: Address;
+  terms: RegisterPILTermsRequest;
+  royaltyShares: {
+    author: Address;
+    percentage: number;
+  }[];
+  recipient?: Address;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+} & IPMetadataInfo;
+
+export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
+  txHash: Hex;
+  ipId?: Address;
+  licenseTermsId?: bigint;
+  ipRoyaltyVault?: Address;
+  tokenId?: bigint;
+};
+export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
+  spgNftContract: Address;
+  derivData: {
+    parentIpIds: Address[];
+    licenseTermsIds: string[] | bigint[] | number[];
+    licenseTemplate?: Address;
+  };
+  royaltyShares: {
+    author: Address;
+    percentage: number;
+  }[];
+  recipient?: Address;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+} & IPMetadataInfo;
+
+export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {
+  txHash: Hex;
+  ipId?: Address;
+  tokenId?: bigint;
 };
