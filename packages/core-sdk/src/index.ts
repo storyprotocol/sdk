@@ -53,6 +53,8 @@ export type {
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
   RoyaltyShare,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
 } from "./types/resources/ipAsset";
 
 export type {

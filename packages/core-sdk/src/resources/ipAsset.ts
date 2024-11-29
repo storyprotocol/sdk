@@ -51,6 +51,8 @@ import {
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
   BatchMintAndRegisterIpAssetWithPilTermsResult,
   IpIdAndTokenId,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -1549,6 +1551,8 @@ export class IPAssetClient {
    *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
    * @returns A Promise that resolves to a transaction hashes, IP ID, License terms ID, and IP royalty vault.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
   public async registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
@@ -1565,6 +1569,10 @@ export class IPAssetClient {
         getAddress(request.nftContract, "request.nftContract"),
         request.tokenId,
       );
+      const isRegistered = await this.isRegistered(ipIdAddress);
+      if (isRegistered) {
+        throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
+      }
       const { signature: sigMetadataSignature, nonce: sigMetadataState } =
         await getPermissionSignature({
           ipId: ipIdAddress,
@@ -1644,6 +1652,12 @@ export class IPAssetClient {
         totalAmount: totalAmount,
         txOptions: request.txOptions,
       });
+      if (request.txOptions?.waitForTransaction) {
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: distributeRoyaltyTokensTxHash,
+        });
+      }
       return {
         registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
         distributeRoyaltyTokensTxHash,
@@ -1655,6 +1669,145 @@ export class IPAssetClient {
       handleError(
         error,
         "Failed to register IP and attach license terms and distribute royalty tokens",
+      );
+    }
+  }
+  /**
+   * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.
+   * @param request - The request object that contains all data needed to register derivative IP.
+   *   @param request.nftContract The address of the NFT collection.
+   *   @param request.tokenId The ID of the NFT.
+   *   @param request.derivData The derivative data to be used for registerDerivative.
+   *   @param request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
+   *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
+   *     @param request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
+   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
+   *   @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
+   *     @param request.royaltyShares.author The address of the author.
+   *     @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to a transaction hashes, IP ID and IP royalty vault.
+   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
+   */
+  //TODO: ERC20: transfer amount exceeds balance
+  public async registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens(
+    request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  ): Promise<RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
+    try {
+      const { royaltyShares, totalAmount } = this.getRoyaltyShares(request.royaltyShares);
+      const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
+      const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
+      const ipIdAddress = await this.getIpIdAddress(request.nftContract, request.tokenId);
+      const isRegistered = await this.isRegistered(ipIdAddress);
+      if (isRegistered) {
+        throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
+      }
+      const { signature: sigMetadataSignature, nonce: sigMetadataState } =
+        await getPermissionSignature({
+          ipId: ipIdAddress,
+          deadline: calculatedDeadline,
+          state: toHex(0, { size: 32 }),
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: getAddress(
+                this.royaltyTokenDistributionWorkflowsClient.address,
+                "royaltyTokenDistributionWorkflowsClient",
+              ),
+              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function setAll(address,string,bytes32,bytes32)",
+            },
+          ],
+        });
+      const { signature: sigAttachSignature, nonce: sigAttachState } = await getPermissionSignature(
+        {
+          ipId: ipIdAddress,
+          deadline: calculatedDeadline,
+          state: sigMetadataState,
+          wallet: this.wallet as WalletClient,
+          chainId: chain[this.chainId],
+          permissions: [
+            {
+              ipId: ipIdAddress,
+              signer: this.royaltyTokenDistributionWorkflowsClient.address,
+              to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+              permission: AccessPermission.ALLOW,
+              func: "function registerDerivative(address,address[],uint256[],address,bytes)",
+            },
+          ],
+        },
+      );
+      const txHash =
+        await this.royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
+          {
+            nftContract: getAddress(request.nftContract, "request.nftContract"),
+            tokenId: BigInt(request.tokenId),
+            ipMetadata: {
+              ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
+              ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
+              nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
+              nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
+            },
+            derivData: {
+              ...request.derivData,
+              licenseTemplate:
+                request.derivData.licenseTemplate || this.licenseTemplateClient.address,
+              royaltyContext: zeroAddress,
+            },
+            sigMetadata: {
+              signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+              deadline: calculatedDeadline,
+              signature: sigMetadataSignature,
+            },
+            sigRegister: {
+              signer: this.wallet.account!.address,
+              deadline: calculatedDeadline,
+              signature: sigAttachSignature,
+            },
+          },
+        );
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const { ipId, tokenId } = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+      const { ipRoyaltyVault } =
+        this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(txReceipt)[0];
+      const distributeRoyaltyTokensTxHash = await this.distributeRoyaltyTokens({
+        ipId,
+        deadline: calculatedDeadline,
+        state: sigAttachState,
+        ipRoyaltyVault,
+        royaltyShares: royaltyShares,
+        totalAmount: totalAmount,
+        txOptions: request.txOptions,
+      });
+      if (request.txOptions?.waitForTransaction) {
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: distributeRoyaltyTokensTxHash,
+        });
+      }
+      return {
+        registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
+        distributeRoyaltyTokensTxHash,
+        ipId,
+        tokenId,
+        ipRoyaltyVault,
+      };
+    } catch (error) {
+      handleError(
+        error,
+        "Failed to register derivative IP and attach license terms and distribute royalty tokens",
       );
     }
   }

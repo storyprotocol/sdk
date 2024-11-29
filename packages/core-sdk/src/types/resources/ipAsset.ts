@@ -300,3 +300,30 @@ export type RoyaltyShare = {
 export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
   ? { ipId: Address; tokenId: bigint }
   : { ipId: Address; tokenId: bigint } & { [T: string]: Address };
+
+export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
+  nftContract: Address;
+  tokenId: bigint | string | number;
+  deadline?: string | number | bigint;
+  derivData: {
+    parentIpIds: Address[];
+    licenseTemplate?: Address;
+    licenseTermsIds: bigint[];
+  };
+  royaltyShares: RoyaltyShare[];
+  ipMetadata?: {
+    ipMetadataURI?: string;
+    ipMetadataHash?: Hex;
+    nftMetadataURI?: string;
+    nftMetadataHash?: Hex;
+  };
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
+  registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
+  distributeRoyaltyTokensTxHash: Address;
+  ipId: Address;
+  tokenId: bigint;
+  ipRoyaltyVault: Address;
+};
