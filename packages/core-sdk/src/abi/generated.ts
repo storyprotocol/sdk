@@ -17282,6 +17282,17 @@ export type IpRoyaltyVaultImplSnapshotCompletedEvent = {
 };
 
 /**
+ * IpRoyaltyVaultImplBalanceOfRequest
+ *
+ * @param account address
+ */
+export type IpRoyaltyVaultImplBalanceOfRequest = {
+  account: Address;
+};
+
+export type IpRoyaltyVaultImplBalanceOfResponse = bigint;
+
+/**
  * IpRoyaltyVaultImplClaimableRevenueRequest
  *
  * @param account address
@@ -17412,6 +17423,23 @@ export class IpRoyaltyVaultImplEventClient {
 export class IpRoyaltyVaultImplReadOnlyClient extends IpRoyaltyVaultImplEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     super(rpcClient, address);
+  }
+
+  /**
+   * method balanceOf for contract IpRoyaltyVaultImpl
+   *
+   * @param request IpRoyaltyVaultImplBalanceOfRequest
+   * @return Promise<IpRoyaltyVaultImplBalanceOfResponse>
+   */
+  public async balanceOf(
+    request: IpRoyaltyVaultImplBalanceOfRequest,
+  ): Promise<IpRoyaltyVaultImplBalanceOfResponse> {
+    return await this.rpcClient.readContract({
+      abi: ipRoyaltyVaultImplAbi,
+      address: this.address,
+      functionName: "balanceOf",
+      args: [request.account],
+    });
   }
 
   /**

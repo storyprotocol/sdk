@@ -68,6 +68,7 @@ import {
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   IpAccountImplClient,
   IpAssetRegistryClient,
+  IpRoyaltyVaultImplReadOnlyClient,
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request,
@@ -91,6 +92,7 @@ import { validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission } from "../types/resources/permission";
 import { LicenseTerms } from "../types/resources/license";
+import { royaltySharesTotalSupply } from "../constants/common";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -1817,7 +1819,8 @@ export class IPAssetClient {
   }
 
   /**
-   * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
+   * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens. In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * a commercial license.
    * @param request - The request object that contains all data needed to mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
    *   @param request.spgNftContract The address of the SPG NFT contract.
    *   @param request.terms The array of license terms to be attached.
@@ -1855,6 +1858,9 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
     try {
+      if (!request.terms.commercialUse) {
+        throw new Error("Commercial use is required to deploy a royalty vault.");
+      }
       const licenseTerm = await validateLicenseTerms(request.terms, this.rpcClient);
       const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
       const txHash =
@@ -1925,7 +1931,19 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse> {
     try {
-      //TODO: check whether the license terms attached to the IP must be a commercial license.
+      const licenseTerms: bigint[] = [];
+      for (const id of request.derivData.licenseTermsIds) {
+        const licenseTermsId = BigInt(id);
+        const { terms } = await this.licenseTemplateClient.getLicenseTerms({
+          selectedLicenseTermsId: licenseTermsId,
+        });
+        if (!terms.commercialUse) {
+          throw new Error(
+            "The license terms attached to the IP must be a commercial license to distribute royalty tokens.",
+          );
+        }
+        licenseTerms.push(licenseTermsId);
+      }
       const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
       const txHash =
         await this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
@@ -1950,7 +1968,7 @@ export class IPAssetClient {
                   )) ||
                 this.licenseTemplateClient.address,
               royaltyContext: zeroAddress,
-              licenseTermsIds: request.derivData.licenseTermsIds.map((id) => BigInt(id)),
+              licenseTermsIds: licenseTerms,
             },
             royaltyShares: royaltyShares,
           },
@@ -1972,7 +1990,6 @@ export class IPAssetClient {
     }
   }
   private getRoyaltyShares(royaltyShares: RoyaltyShare[]) {
-    const total = 100000000;
     let actualTotal = 0;
     let sum = 0;
     const shares = royaltyShares.map((share) => {
@@ -1986,7 +2003,7 @@ export class IPAssetClient {
       if (sum > 100) {
         throw new Error("The sum of the royalty shares cannot exceeds 100.");
       }
-      const value = (share.percentage / 100) * total;
+      const value = (share.percentage / 100) * royaltySharesTotalSupply;
       actualTotal += value;
       return { ...share, percentage: value };
     });
@@ -1995,7 +2012,13 @@ export class IPAssetClient {
 
   private async distributeRoyaltyTokens(request: DistributeRoyaltyTokens): Promise<Hex> {
     const { ipId, deadline, state, ipRoyaltyVault, totalAmount } = request;
-    //TODO: check amount whether is more than ipAccount balance
+    const ipRoyaltyVaultImpl = new IpRoyaltyVaultImplReadOnlyClient(this.rpcClient, ipRoyaltyVault);
+    const balance = await ipRoyaltyVaultImpl.balanceOf({ account: ipId });
+    if (BigInt(balance) < BigInt(totalAmount)) {
+      throw new Error(
+        `The balance of the IP account in the IP Royalty Vault is insufficient to distribute the royalty tokens.`,
+      );
+    }
     const { signature: signatureApproveRoyaltyTokens } = await getSignature({
       verifyingContract: ipId,
       deadline: deadline,

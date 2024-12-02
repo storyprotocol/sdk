@@ -215,11 +215,13 @@ export default defineConfig(async () => {
             "SnapshotCompleted",
             "RevenueTokenClaimed",
             "claimRevenueOnBehalfBySnapshotBatch",
+            "balanceOf",
           ],
           PiLicenseTemplate: [
             "getLicenseTermsId",
             "registerLicenseTerms",
             "LicenseTermsRegistered",
+            "getLicenseTerms",
           ],
           LicensingModule: [
             "attachLicenseTerms",
