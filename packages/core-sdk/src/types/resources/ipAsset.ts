@@ -158,6 +158,15 @@ export type IPRobotTerms = {
   allow: string;
 };
 
+type IPMetadataInfo = {
+  ipMetadata?: {
+    ipMetadataURI?: string;
+    ipMetadataHash?: Hex;
+    nftMetadataURI?: string;
+    nftMetadataHash?: Hex;
+  };
+};
+
 export type GenerateIpMetadataParam = {
   title?: string;
   description?: string;
@@ -269,14 +278,8 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   terms: RegisterPILTermsRequest;
   deadline?: string | number | bigint;
   royaltyShares: RoyaltyShare[];
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-};
+} & IPMetadataInfo;
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hex;
   distributeRoyaltyTokensTxHash: Hex;
@@ -301,14 +304,6 @@ export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
   ? { ipId: Address; tokenId: bigint }
   : { ipId: Address; tokenId: bigint } & { [T: string]: Address };
 
-type IPMetadataInfo = {
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
-};
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;

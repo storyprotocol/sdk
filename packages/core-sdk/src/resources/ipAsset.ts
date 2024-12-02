@@ -813,7 +813,7 @@ export class IPAssetClient {
    *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, including Ip ID, token ID and License terms IDs.
+   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, including IP ID, token ID and License terms IDs.
    * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
    */
   public async registerIpAndAttachPilTerms(
@@ -1524,7 +1524,8 @@ export class IPAssetClient {
     }
   }
   /**
-   * Register the given NFT and attach license terms and distribute royalty tokens.
+   * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * a commercial license.
    * @param request - The request object that contains all data needed to register ip and attach license terms and distribute royalty tokens.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.tokenId The ID of the NFT.
@@ -1679,8 +1680,9 @@ export class IPAssetClient {
     }
   }
   /**
-   * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.
-   * @param request - The request object that contains all data needed to register derivative IP.
+   * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.  In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * a commercial license.
+   * @param request - The request object that contains all data needed to register derivative IP and distribute royalty tokens.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.tokenId The ID of the NFT.
    *   @param request.derivData The derivative data to be used for registerDerivative.
@@ -1696,7 +1698,7 @@ export class IPAssetClient {
    *   @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
    *     @param request.royaltyShares.author The address of the author.
    *     @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
    * @returns A Promise that resolves to a transaction hashes, IP ID and IP royalty vault, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
@@ -1754,7 +1756,7 @@ export class IPAssetClient {
       const txHash =
         await this.royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
           {
-            nftContract: getAddress(request.nftContract, "request.nftContract"),
+            nftContract: request.nftContract,
             tokenId: BigInt(request.tokenId),
             ipMetadata: {
               ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
