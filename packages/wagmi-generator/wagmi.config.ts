@@ -136,6 +136,12 @@ export default defineConfig(async () => {
       },
     },
     {
+      name: "RoyaltyTokenDistributionWorkflows",
+      address: {
+        [odysseyChainId]: "0x39D9C7a23AA9e33E06aAAf51ebaDd11342b5be50",
+      },
+    },
+    {
       name: "GroupingModule",
       address: {
         [odysseyChainId]: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
@@ -209,11 +215,13 @@ export default defineConfig(async () => {
             "SnapshotCompleted",
             "RevenueTokenClaimed",
             "claimRevenueOnBehalfBySnapshotBatch",
+            "balanceOf",
           ],
           PiLicenseTemplate: [
             "getLicenseTermsId",
             "registerLicenseTerms",
             "LicenseTermsRegistered",
+            "getLicenseTerms",
           ],
           LicensingModule: [
             "attachLicenseTerms",
@@ -232,6 +240,7 @@ export default defineConfig(async () => {
             "isWhitelistedRoyaltyPolicy",
             "isWhitelistedRoyaltyToken",
             "ipRoyaltyVaults",
+            "IpRoyaltyVaultDeployed",
           ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],
@@ -270,6 +279,13 @@ export default defineConfig(async () => {
             "snapshotAndClaimBySnapshotBatch",
           ],
           Multicall3: ["aggregate3"],
+          RoyaltyTokenDistributionWorkflows: [
+            "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
+            "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+            "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
+            "distributeRoyaltyTokens",
+            "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+          ],
         },
       }),
     ],

@@ -19,8 +19,8 @@ export type {
   RegisterDerivativeRequest,
   RegisterDerivativeWithLicenseTokensRequest,
   RegisterDerivativeWithLicenseTokensResponse,
-  CreateIpAssetWithPilTermsRequest,
-  CreateIpAssetWithPilTermsResponse,
+  MintAndRegisterIpAssetWithPilTermsRequest,
+  MintAndRegisterIpAssetWithPilTermsResponse,
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpAndAttachPilTermsRequest,
@@ -50,6 +50,15 @@ export type {
   BatchRegisterResponse,
   BatchRegisterDerivativeRequest,
   BatchRegisterDerivativeResponse,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  RoyaltyShare,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
 } from "./types/resources/ipAsset";
 
 export type {
@@ -67,6 +76,7 @@ export type {
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
 } from "./types/resources/license";
+
 export { PIL_TYPE } from "./types/resources/license";
 
 export type {
@@ -94,11 +104,12 @@ export type {
   SetBatchPermissionsRequest,
   CreateBatchPermissionSignatureRequest,
   PermissionSignatureRequest,
-  PermissionSignatureResponse,
   SignatureRequest,
   SignatureResponse,
 } from "./types/resources/permission";
+
 export { AccessPermission } from "./types/resources/permission";
+
 export type {
   RaiseDisputeRequest,
   RaiseDisputeResponse,
@@ -134,6 +145,7 @@ export type {
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
 } from "./types/resources/group";
+
 export type {
   PiLicenseTemplateGetLicenseTermsResponse,
   IpAccountImplStateResponse,
@@ -142,4 +154,5 @@ export type {
 } from "./abi/generated";
 
 export { getPermissionSignature, getSignature } from "./utils/sign";
+
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
