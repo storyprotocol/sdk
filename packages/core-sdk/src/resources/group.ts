@@ -129,7 +129,7 @@ export class GroupClient {
       const { result: state } = await ipAccount.state();
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, deadline);
-      const sigAddToGroupSignature = await getPermissionSignature({
+      const { signature: sigAddToGroupSignature } = await getPermissionSignature({
         ipId: groupId,
         deadline: calculatedDeadline,
         state,
@@ -227,6 +227,46 @@ export class GroupClient {
       const { result: state } = await ipAccount.state();
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
+      const { signature: sigAddToGroupSignature } = await getPermissionSignature({
+        ipId: getAddress(request.groupId, "request.groupId"),
+        deadline: calculatedDeadline,
+        state,
+        wallet: this.wallet as WalletClient,
+        chainId: chain[this.chainId],
+        permissions: [
+          {
+            ipId: getAddress(request.groupId, "request.groupId"),
+            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
+            to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
+            permission: AccessPermission.ALLOW,
+            func: "function addIp(address,address[])",
+          },
+        ],
+      });
+      const { signature: sigMetadataAndAttachSignature } = await getPermissionSignature({
+        ipId: ipIdAddress,
+        deadline: calculatedDeadline,
+        state: toHex(0, { size: 32 }),
+        wallet: this.wallet as WalletClient,
+        permissionFunc: "setBatchPermissions",
+        chainId: chain[this.chainId],
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
+            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: "function setAll(address,string,bytes32,bytes32)",
+          },
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: "function attachLicenseTerms(address,address,uint256)",
+          },
+        ],
+      });
       const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         groupId: request.groupId,
@@ -245,50 +285,12 @@ export class GroupClient {
         sigAddToGroup: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
           deadline: calculatedDeadline,
-          signature: await getPermissionSignature({
-            ipId: getAddress(request.groupId, "request.groupId"),
-            deadline: calculatedDeadline,
-            state,
-            wallet: this.wallet as WalletClient,
-            chainId: chain[this.chainId],
-            permissions: [
-              {
-                ipId: getAddress(request.groupId, "request.groupId"),
-                signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
-                to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
-                permission: AccessPermission.ALLOW,
-                func: "function addIp(address,address[])",
-              },
-            ],
-          }),
+          signature: sigAddToGroupSignature,
         },
         sigMetadataAndAttach: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
           deadline: calculatedDeadline,
-          signature: await getPermissionSignature({
-            ipId: ipIdAddress,
-            deadline: calculatedDeadline,
-            state: toHex(0, { size: 32 }),
-            wallet: this.wallet as WalletClient,
-            permissionFunc: "setBatchPermissions",
-            chainId: chain[this.chainId],
-            permissions: [
-              {
-                ipId: ipIdAddress,
-                signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
-                to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
-                permission: AccessPermission.ALLOW,
-                func: "function setAll(address,string,bytes32,bytes32)",
-              },
-              {
-                ipId: ipIdAddress,
-                signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
-                to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
-                permission: AccessPermission.ALLOW,
-                func: "function attachLicenseTerms(address,address,uint256)",
-              },
-            ],
-          }),
+          signature: sigMetadataAndAttachSignature,
         },
       };
       if (request.txOptions?.encodedTxDataOnly) {

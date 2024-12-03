@@ -1,17 +1,17 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Address } from "viem";
+import { Address, zeroAddress } from "viem";
 import { getStoryClient, odyssey, mintBySpg } from "./utils/util";
 import { PIL_TYPE, StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
-import { evenSplitGroupPoolAddress } from "../../src/abi/generated";
+import { evenSplitGroupPoolAddress, royaltyPolicyLapAddress } from "../../src/abi/generated";
 
 const groupPoolAddress = evenSplitGroupPoolAddress[odyssey];
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 describe("Group Functions", () => {
-  let groupId: Address = "0xd275eCFe9b4754Ed7D80a6d667E15Ef5bb6F68e8";
+  let groupId: Address;
   let client: StoryClient;
   let spgNftContract: Address;
   let licenseTermsId: bigint;
@@ -34,15 +34,32 @@ describe("Group Functions", () => {
     ).spgNftContract!;
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: spgNftContract,
-      pilType: PIL_TYPE.COMMERCIAL_USE,
-      commercialRevShare: 10,
-      mintingFee: "0",
-      currency: MockERC20.address,
+      terms: [
+        {
+          transferable: true,
+          royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+          defaultMintingFee: 0n,
+          expiration: BigInt(1000),
+          commercialUse: true,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 0,
+          commercialRevCeiling: BigInt(0),
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: BigInt(0),
+          currency: MockERC20.address,
+          uri: "test case",
+        },
+      ],
       txOptions: {
         waitForTransaction: true,
       },
     });
-    licenseTermsId = result.licenseTermsId!;
+    licenseTermsId = result.licenseTermsIds![0];
     ipId = result.ipId!;
   });
 

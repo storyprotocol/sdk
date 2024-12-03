@@ -61,8 +61,6 @@ export type PermissionSignatureRequest = {
   permissionFunc?: "setPermission" | "setBatchPermissions";
 };
 
-export type PermissionSignatureResponse = Hex;
-
 export type SignatureRequest = {
   state: Hex;
   to: Address;
@@ -73,4 +71,4 @@ export type SignatureRequest = {
   chainId: number | bigint | string;
 };
 
-export type SignatureResponse = Hex;
+export type SignatureResponse = { signature: Hex; nonce: Hex };

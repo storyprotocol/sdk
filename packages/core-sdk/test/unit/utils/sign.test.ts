@@ -64,7 +64,8 @@ describe("Sign", () => {
         wallet: walletClient,
         chainId: BigInt(odyssey),
       });
-      expect(result).is.a("string").and.not.empty;
+      expect(result.signature).is.a("string").and.not.empty;
+      expect(result.nonce).is.a("string").and.not.empty;
     });
 
     it("should return signature when call getPermissionSignature given account support signTypedData and multiple permissions", async () => {
@@ -91,7 +92,8 @@ describe("Sign", () => {
         wallet: walletClient,
         chainId: BigInt(odyssey),
       });
-      expect(result).is.a("string").and.not.empty;
+      expect(result.signature).is.a("string").and.not.empty;
+      expect(result.nonce).is.a("string").and.not.empty;
     });
   });
   describe("Get Deadline", () => {
