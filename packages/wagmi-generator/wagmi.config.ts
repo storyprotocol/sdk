@@ -136,6 +136,12 @@ export default defineConfig(async () => {
       },
     },
     {
+      name: "RoyaltyTokenDistributionWorkflows",
+      address: {
+        [odysseyChainId]: "0x39D9C7a23AA9e33E06aAAf51ebaDd11342b5be50",
+      },
+    },
+    {
       name: "GroupingModule",
       address: {
         [odysseyChainId]: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
@@ -151,6 +157,12 @@ export default defineConfig(async () => {
       name: "MockERC20",
       address: {
         [odysseyChainId]: "0x12A8b0DcC6e3bB0915638361D9D49942Da07F455",
+      },
+    },
+    {
+      name: "Multicall3",
+      address: {
+        [odysseyChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
       },
     },
   ];
@@ -203,11 +215,13 @@ export default defineConfig(async () => {
             "SnapshotCompleted",
             "RevenueTokenClaimed",
             "claimRevenueOnBehalfBySnapshotBatch",
+            "balanceOf",
           ],
           PiLicenseTemplate: [
             "getLicenseTermsId",
             "registerLicenseTerms",
             "LicenseTermsRegistered",
+            "getLicenseTerms",
           ],
           LicensingModule: [
             "attachLicenseTerms",
@@ -226,6 +240,7 @@ export default defineConfig(async () => {
             "isWhitelistedRoyaltyPolicy",
             "isWhitelistedRoyaltyToken",
             "ipRoyaltyVaults",
+            "IpRoyaltyVaultDeployed",
           ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],
@@ -242,23 +257,34 @@ export default defineConfig(async () => {
             "mintAndRegisterIpAndMakeDerivative",
             "registerIpAndMakeDerivativeWithLicenseTokens",
             "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+            "multicall",
           ],
           RegistrationWorkflows: [
             "createCollection",
             "mintAndRegisterIp",
             "registerIp",
             "CollectionCreated",
+            "multicall",
           ],
           LicenseAttachmentWorkflows: [
             "registerPILTermsAndAttach",
             "registerIpAndAttachPILTerms",
             "mintAndRegisterIpAndAttachPILTerms",
+            "multicall",
           ],
           RoyaltyWorkflows: [
             "transferToVaultAndSnapshotAndClaimByTokenBatch",
             "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
             "snapshotAndClaimByTokenBatch",
             "snapshotAndClaimBySnapshotBatch",
+          ],
+          Multicall3: ["aggregate3"],
+          RoyaltyTokenDistributionWorkflows: [
+            "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
+            "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+            "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
+            "distributeRoyaltyTokens",
+            "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
           ],
         },
       }),

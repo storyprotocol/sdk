@@ -19,13 +19,14 @@ export type {
   RegisterDerivativeRequest,
   RegisterDerivativeWithLicenseTokensRequest,
   RegisterDerivativeWithLicenseTokensResponse,
-  CreateIpAssetWithPilTermsRequest,
-  CreateIpAssetWithPilTermsResponse,
+  MintAndRegisterIpAssetWithPilTermsRequest,
+  MintAndRegisterIpAssetWithPilTermsResponse,
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpAndAttachPilTermsRequest,
   RegisterIpAndAttachPilTermsResponse,
   MintAndRegisterIpAndMakeDerivativeRequest,
+  MintAndRegisterIpAndMakeDerivativeResponse,
   GenerateCreatorMetadataParam,
   IpCreator,
   GenerateIpMetadataParam,
@@ -41,6 +42,23 @@ export type {
   RegisterPilTermsAndAttachResponse,
   MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsResponse,
+  BatchMintAndRegisterIpAndMakeDerivativeRequest,
+  BatchMintAndRegisterIpAndMakeDerivativeResponse,
+  BatchRegisterRequest,
+  BatchRegisterResponse,
+  BatchRegisterDerivativeRequest,
+  BatchRegisterDerivativeResponse,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  RoyaltyShare,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
 } from "./types/resources/ipAsset";
 
 export type {
@@ -58,6 +76,7 @@ export type {
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
 } from "./types/resources/license";
+
 export { PIL_TYPE } from "./types/resources/license";
 
 export type {
@@ -85,9 +104,12 @@ export type {
   SetBatchPermissionsRequest,
   CreateBatchPermissionSignatureRequest,
   PermissionSignatureRequest,
-  PermissionSignatureResponse,
+  SignatureRequest,
+  SignatureResponse,
 } from "./types/resources/permission";
+
 export { AccessPermission } from "./types/resources/permission";
+
 export type {
   RaiseDisputeRequest,
   RaiseDisputeResponse,
@@ -123,6 +145,7 @@ export type {
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
 } from "./types/resources/group";
+
 export type {
   PiLicenseTemplateGetLicenseTermsResponse,
   IpAccountImplStateResponse,
@@ -130,5 +153,6 @@ export type {
   LicensingModulePredictMintingLicenseFeeResponse,
 } from "./abi/generated";
 
-export { getPermissionSignature } from "./utils/sign";
+export { getPermissionSignature, getSignature } from "./utils/sign";
+
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
