@@ -22,7 +22,7 @@ jobs:
 
   build_and_test:
     needs: [Timestamp]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@origin/bpolania/workflows
     with:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "odyssey"
