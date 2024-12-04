@@ -4,7 +4,7 @@ on:
   pull_request_target:
     types: [opened, synchronize]
     branches:
-      origin/dev-polania/workflows
+      origin/dev-bpolania/workflows
 
 jobs:
   Timestamp_PR_CREATED:
