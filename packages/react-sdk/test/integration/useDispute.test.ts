@@ -51,7 +51,7 @@ describe("useDispute Functions", () => {
         expect.objectContaining({
           txHash: expect.any(String),
           disputeId: expect.any(BigInt),
-        })
+        }),
       );
     });
   });
@@ -59,11 +59,11 @@ describe("useDispute Functions", () => {
   it("should success when cancel dispute", async () => {
     await act(async () => {
       await expect(
-        disputeHook.cancelDispute({ disputeId: disputedId })
+        disputeHook.cancelDispute({ disputeId: disputedId }),
       ).resolves.toEqual(
         expect.objectContaining({
           txHash: expect.any(String),
-        })
+        }),
       );
     });
   });

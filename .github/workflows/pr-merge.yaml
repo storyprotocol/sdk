@@ -1,8 +1,7 @@
 name: Workflow for External PRs with Unit Tests
 
 on:
-  pull_request_target:
-    types: [opened, synchronize]
+  push:
     branches:
       - dev
       - dev_v1.1
@@ -12,7 +11,6 @@ jobs:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
   authorize:
-    if: github.event.pull_request.head.repo.full_name != github.repository
     needs: [Timestamp_PR_CREATED]
     environment: "external"
     runs-on: ubuntu-latest
@@ -25,7 +23,6 @@ jobs:
 
   build_and_test:
     needs: [authorize, Timestamp_PR_APPROVED]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
+    uses: storyprotocol/gha-workflows/.github/workflows/rreusable-build-integration-test-workflow.yml@main
     with:
-      sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "odyssey"

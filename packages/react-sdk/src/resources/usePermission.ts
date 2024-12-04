@@ -55,7 +55,7 @@ const usePermission = () => {
     "setPermission",
     client.permission.setPermission.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -78,7 +78,7 @@ const usePermission = () => {
     "createSetPermissionSignature",
     client.permission.createSetPermissionSignature.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -98,7 +98,7 @@ const usePermission = () => {
     "setAllPermissions",
     client.permission.setAllPermissions.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -122,7 +122,7 @@ const usePermission = () => {
     "setBatchPermissions",
     client.permission.setBatchPermissions.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -146,7 +146,7 @@ const usePermission = () => {
     "createBatchPermissionSignature",
     client.permission.createBatchPermissionSignature.bind(client.permission),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
