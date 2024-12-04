@@ -3,8 +3,7 @@ name: Workflow for External PRs with Unit Tests
 on:
   push:
     branches:
-      - dev
-      - dev_v1.1
+      - origin/dev-polania/workflows
 
 jobs:
   Timestamp_PR_CREATED:

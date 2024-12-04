@@ -3,17 +3,11 @@ name: Workflow for internal PRs
 on:
   push:
     branches:
-      - main
-      - dev
-      - v1.1
-      - dev_v1.1
+      origin/dev-polania/workflows
 
   pull_request:
     branches:
-      - main
-      - dev
-      - v1.1
-      - dev_v1.1
+      origin/dev-polania/workflows
 
 jobs:
   Timestamp:
