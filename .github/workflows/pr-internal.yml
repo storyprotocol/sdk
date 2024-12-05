@@ -13,10 +13,19 @@ jobs:
   Timestamp:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
-
+    
+  debug_sha:
+    needs: [Timestamp]
+    runs-on: ubuntu-latest
+    steps:
+      - run: | 
+          echo SHA: ${{ github.event.pull_request.head.sha }}
+  
   build_and_test:
     needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@origin/bpolania/workflows
     with:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "odyssey"
+    
+    
