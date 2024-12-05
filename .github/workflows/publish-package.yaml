@@ -4,27 +4,21 @@ on:
   push:
     branches:
       - main
-      - v1.1
+
   pull_request:
     branches:
       - main
-      - v1.1
-env:
-  VERSION_1_1: "1.1"
-  VERSION_1_2: "1.2"
-  MAIN: "main"
-  DEV: "dev"
 
 jobs:
-  Timestamp:
+  timestamp:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
   print_version_to_publish:
-    needs: [Timestamp]
+    needs: [timestamp]
     runs-on: ubuntu-latest
     outputs:
-      core_sdk_version_to_be_published: ${{ steps.get_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}
-      react_sdk_version_to_be_published: ${{ steps.get_version_to_publish.outputs.REACT_SDK_VERSION_TO_BE_PUBLISHED }}
+      CORE_SDK_VERSION_TO_BE_PUBLISHED: ${{ steps.get_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}
+      REACT_SDK_VERSION_TO_BE_PUBLISHED: ${{ steps.get_version_to_publish.outputs.REACT_SDK_VERSION_TO_BE_PUBLISHED }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -37,136 +31,66 @@ jobs:
           content=$(cat packages/react-sdk/package.json)
           echo "REACT_SDK_VERSION_TO_BE_PUBLISHED=$(echo $content | jq -r '.version')" >> $GITHUB_OUTPUT
 
-  extract_branch_name:
-    needs: [Timestamp]
-    runs-on: ubuntu-latest
-    outputs:
-      branch_name: ${{ steps.extract_branch_name.outputs.BRANCH_NAME }}
-    steps:
-      - name: Extract branch name
-        id: extract_branch_name
-        run: |
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-          else
-          echo "BRANCH_NAME=${GITHUB_BASE_REF}" >> $GITHUB_OUTPUT
-          fi
   # Fetch the latest version from NPM
   fetch_latest_version:
-    needs: [Timestamp, extract_branch_name]
+    needs: [timestamp, print_version_to_publish]
     runs-on: ubuntu-latest
     outputs:
-      core_sdk_latest_version: ${{ steps.get_latest_version.outputs.CORE_SDK_LATEST_VERSION }}
-      react_sdk_latest_version: ${{ steps.get_latest_version.outputs.REACT_SDK_LATEST_VERSION }}
+      CORE_SDK_LATEST_VERSION: ${{ steps.get_latest_version.outputs.CORE_SDK_LATEST_VERSION }}
+      REACT_SDK_LATEST_VERSION: ${{ steps.get_latest_version.outputs.REACT_SDK_LATEST_VERSION }}
     steps:
       - name: Get latest package version
         id: get_latest_version
         run: |
-          get_latest_version() {
-            prefix=$1
-            package_name=$2
-            variable_key=$3
-            all_versions=$(npm view "$package_name" versions --json)
-            if [[ "$all_versions" == "["* ]]; then
-              filtered_versions=$(echo "$all_versions" | jq -r "[.[] | select(startswith(\"$prefix\"))]")
-              echo "filtered_versions1: $filtered_versions"
-            else
-              filtered_versions=$(echo "[$all_versions]" | jq -r "[.[] | select(startswith(\"$prefix\"))]") 
-              echo "filtered_versions2: $filtered_versions"
-            fi
-            latest_version=$(echo "$filtered_versions" | jq -r '.[-1]')
-            if [ "$latest_version" == "null" ]; then
-              latest_version="Not_Published"
-            fi
-            echo "Latest version of $package_name on NPMJS with prefix $prefix is $latest_version"
-            echo "$variable_key=$latest_version" >> $GITHUB_OUTPUT    
-          }
+          CORE_SDK_LATEST_VERSION=$(npm view @story-protocol/core-sdk version --silent)
+          REACT_SDK_LATEST_VERSION=$(npm view @story-protocol/react-sdk version --silent)
+          echo "Latest version of @story-protocol/core-sdk on NPMJS is $CORE_SDK_LATEST_VERSION"
+          echo "CORE_SDK_LATEST_VERSION=$CORE_SDK_LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "Latest version of @story-protocol/react-sdk on NPMJS is $REACT_SDK_LATEST_VERSION"
+          echo "REACT_SDK_LATEST_VERSION=$REACT_SDK_LATEST_VERSION" >> $GITHUB_OUTPUT
 
-          BRANCH_NAME="${{ needs.extract_branch_name.outputs.branch_name }}"
-          if [[ "$BRANCH_NAME" == "v${{ env.VERSION_1_1 }}" || "$BRANCH_NAME" == "dev_v${{ env.VERSION_1_1 }}" ]]; then
-            get_latest_version "${{ env.VERSION_1_1 }}" "@story-protocol/core-sdk" "CORE_SDK_LATEST_VERSION"
-            get_latest_version "${{ env.VERSION_1_1 }}" "@story-protocol/react-sdk" "REACT_SDK_LATEST_VERSION"
-          elif [[ "$BRANCH_NAME" == "${{ env.MAIN }}" || "$BRANCH_NAME" == ${{ env.DEV }} ]]; then        
-            get_latest_version "${{ env.VERSION_1_2 }}" "@story-protocol/core-sdk" "CORE_SDK_LATEST_VERSION"
-            get_latest_version "${{ env.VERSION_1_2 }}" "@story-protocol/react-sdk" "REACT_SDK_LATEST_VERSION"
-          fi
-  # Fail if the version including react-sdk and core-sdk does not match the branch strategy
-  check_if_version_is_valid_for_branch:
-    needs: [extract_branch_name, print_version_to_publish, fetch_latest_version]
+  # Fail the PR if the version to be published is the same as the latest version on NPM
+  fail_if_version_is_same:
+    needs: [print_version_to_publish, fetch_latest_version]
     runs-on: ubuntu-latest
     outputs:
-      is_publish_core_sdk: ${{ steps.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_CORE_SDK }}
-      is_publish_react_sdk: ${{ steps.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_REACT_SDK }}
+      IS_PUBLISH_CORE_SDK: ${{ steps.check_publish_condition.outputs.IS_PUBLISH_CORE_SDK }}
+      IS_PUBLISH_REACT_SDK: ${{ steps.check_publish_condition.outputs.IS_PUBLISH_REACT_SDK }}
     steps:
-      - name: Check if version is valid for branch
-        id: check_if_version_is_valid_for_branch
+      - name: check publish condition
+        id: check_publish_condition
         run: |
-          BRANCH_NAME="${{ needs.extract_branch_name.outputs.branch_name }}"
-          CORE_SDK_PUBLISH_VERSION="${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}"
-          REACT_SDK_PUBLISH_VERSION="${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}"
-          CORE_SDK_LATEST_VERSION="${{ needs.fetch_latest_version.outputs.core_sdk_latest_version }}"
-          REACT_SDK_LATEST_VERSION="${{ needs.fetch_latest_version.outputs.react_sdk_latest_version }}"
+          CORE_SDK_LATEST_VERSION="${{ needs.fetch_latest_version.outputs.CORE_SDK_LATEST_VERSION }}"
+          CORE_SDK_VERSION_TO_BE_PUBLISHED="${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}"
+          REACT_SDK_LATEST_VERSION="${{ needs.fetch_latest_version.outputs.REACT_SDK_LATEST_VERSION }}"
+          REACT_SDK_VERSION_TO_BE_PUBLISHED="${{ needs.print_version_to_publish.outputs.REACT_SDK_VERSION_TO_BE_PUBLISHED }}"
 
-          if [[ "$BRANCH_NAME" == "v${{ env.VERSION_1_1 }}" || "$BRANCH_NAME" == "dev_v${{ env.VERSION_1_1 }}" ]]; then
-            if ! [[ "$CORE_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_1 }} ]] && ! [[ "$REACT_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_1 }} ]]; then
-              echo "Error: Invalid version @story-protocol/core-sdk@$CORE_SDK_PUBLISH_VERSION and @story-protocol/react-sdk@$REACT_SDK_PUBLISH_VERSION for branch 'v${{ env.VERSION_1_1 }}', only versions starting with '${{ env.VERSION_1_1 }}' are allowed in v${{ env.VERSION_1_1 }} branch"
-              exit 1
-            fi
-            if [[ "$CORE_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_1 }} && "$CORE_SDK_PUBLISH_VERSION" != "$CORE_SDK_LATEST_VERSION" ]]; then
-              echo "IS_PUBLISH_CORE_SDK=true" >> $GITHUB_OUTPUT
-            fi
-            if [[ "$REACT_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_1 }} && "$REACT_SDK_PUBLISH_VERSION" != "$REACT_SDK_LATEST_VERSION" ]]; then
-              echo "IS_PUBLISH_REACT_SDK=true" >> $GITHUB_OUTPUT
-            fi
-          elif [[ "$BRANCH_NAME" == "${{ env.MAIN }}" || "$BRANCH_NAME" == "${{ env.DEV }}" ]]; then          
-            if ! [[ "$CORE_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_2 }} ]] && ! [[ "$REACT_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_2 }} ]]; then
-               echo "Error: Invalid version @story-protocol/core-sdk@$CORE_SDK_PUBLISH_VERSION and @story-protocol/react-sdk@$REACT_SDK_PUBLISH_VERSION for branch '${{ env.MAIN }}', only versions starting with '${{ env.VERSION_1_2 }}' are allowed in ${{ env.MAIN }} branch"            
-               exit 1
-            fi
-            if [[ "$CORE_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_2 }} && "$CORE_SDK_PUBLISH_VERSION" != "$CORE_SDK_LATEST_VERSION" ]]; then
-              echo "IS_PUBLISH_CORE_SDK=true" >> $GITHUB_OUTPUT
-            fi
-            if [[ "$REACT_SDK_PUBLISH_VERSION" =~ ^${{ env.VERSION_1_2 }} && "$REACT_SDK_PUBLISH_VERSION" != "$REACT_SDK_LATEST_VERSION" ]]; then
-              echo "IS_PUBLISH_REACT_SDK=true" >> $GITHUB_OUTPUT
-            fi
+          IS_PUBLISH_CORE_SDK=false
+          IS_PUBLISH_REACT_SDK=false
+
+          if [ "$CORE_SDK_LATEST_VERSION" == "$CORE_SDK_VERSION_TO_BE_PUBLISHED" ]; then
+            echo "The @story-protocol/core-sdk version to be published is the same as the latest version on NPM."
+          else
+            IS_PUBLISH_CORE_SDK=true
           fi
 
-  # Fail react-sdk and core-sdk don't need to be published
-  check_is_publish:
-    needs:
-      [
-        print_version_to_publish,
-        fetch_latest_version,
-        check_if_version_is_valid_for_branch,
-        extract_branch_name,
-      ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fail if version is the same
-        run: |
-          IS_PUBLISH_CORE_SDK="${{ needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_CORE_SDK }}"
-          IS_PUBLISH_REACT_SDK="${{ needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_REACT_SDK }}"
-          BRANCH_NAME="${{ needs.extract_branch_name.outputs.branch_name }}"
-          CORE_SDK_PUBLISH_VERSION="${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}"
-          REACT_SDK_PUBLISH_VERSION="${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}"
-          CORE_SDK_LATEST_VERSION="${{ needs.fetch_latest_version.outputs.core_sdk_latest_version }}"
-          REACT_SDK_LATEST_VERSION="${{ needs.fetch_latest_version.outputs.react_sdk_latest_version }}"
-          BRANCH_DESCRIPTION=$([[ "$BRANCH_NAME" == "${{ env.MAIN }}" || "$BRANCH_NAME" == "${{ env.DEV }}" ]] && echo "v${{ env.VERSION_1_2 }}" || echo "v${{ env.VERSION_1_1 }}")       
-          if [ "$IS_PUBLISH_CORE_SDK" != "true" ] && [ "$IS_PUBLISH_REACT_SDK" != "true" ]; then
-              echo "This is $BRANCH_DESCRIPTION branch, The @story-protocol/core-sdk cannot be published, because the latest version on NPM is $CORE_SDK_LATEST_VERSION and the version to be published is $CORE_SDK_PUBLISH_VERSION. The @story-protocol/react-sdk cannot be published, because the latest version on NPM is $REACT_SDK_LATEST_VERSION and the version to be published is $REACT_SDK_PUBLISH_VERSION."
-              exit 1
+          if [ "$REACT_SDK_LATEST_VERSION" == "$REACT_SDK_VERSION_TO_BE_PUBLISHED" ]; then
+            echo "The @story-protocol/react-sdk version to be published is the same as the latest version on NPM."
+          else
+            IS_PUBLISH_REACT_SDK=true
           fi
+
+          if [ "$CORE_SDK_LATEST_VERSION" == "$CORE_SDK_VERSION_TO_BE_PUBLISHED" ] && [ "$REACT_SDK_LATEST_VERSION" == "$REACT_SDK_VERSION_TO_BE_PUBLISHED" ]; then
+            echo "The @story-protocol/core-sdk and @story-protocol/react-sdk versions to be published are the same as the latest versions on NPM."
+            exit 1
+          fi
+
+          echo "IS_PUBLISH_CORE_SDK=$IS_PUBLISH_CORE_SDK" >> $GITHUB_OUTPUT
+          echo "IS_PUBLISH_REACT_SDK=$IS_PUBLISH_REACT_SDK" >> $GITHUB_OUTPUT
 
   fetch_last_tag:
-    needs:
-      [
-        check_is_publish,
-        extract_branch_name,
-        check_if_version_is_valid_for_branch,
-      ]
-    # Skip this job if the core-sdk and react-sdk don't need to be published
-    # and the event triggering the workflow is a push
-    if: ${{ (needs.check_if_version_is_valid_for_branch.outputs.is_publish_core_sdk == 'true' || needs.check_if_version_is_valid_for_branch.outputs.is_publish_react_sdk == 'true') && github.event_name == 'push' }}
+    needs: [fail_if_version_is_same]
+    if: ${{ (needs.fail_if_version_is_same.outputs.IS_PUBLISH_CORE_SDK == 'true' || needs.fail_if_version_is_same.outputs.IS_PUBLISH_REACT_SDK == 'true') && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     outputs:
       CORE_SDK_LATEST_TAG: ${{ steps.get_last_tag.outputs.CORE_SDK_LATEST_TAG }}
@@ -178,45 +102,24 @@ jobs:
       - name: Get last tag
         id: get_last_tag
         run: |
-          BRANCH_NAME="${{ needs.extract_branch_name.outputs.branch_name }}"
-
           git fetch --tags
-          if [[ "$BRANCH_NAME" == "v${{ env.VERSION_1_1 }}"  ]]; then
-          CORE_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/core-sdk@1.1|core-sdk@1.1" | tail -n1)
-          REACT_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/react-sdk@1.1|react-sdk@1.1" | tail -n1)
-          else
-            CORE_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/core-sdk@1.2|core-sdk@1.2" | tail -n1)
-            REACT_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/react-sdk@1.2|react-sdk@1.2" | tail -n1)
-          fi
+          CORE_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/core-sdk|core-sdk" | tail -n1)
+          REACT_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/react-sdk|react-sdk" | tail -n1)
           echo "CORE_SDK_LATEST_TAG=$CORE_SDK_LATEST_TAG" >> $GITHUB_OUTPUT
           echo "REACT_SDK_LATEST_TAG=$REACT_SDK_LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Last tag for @story-protocol/core-sdk is $CORE_SDK_LATEST_TAG"
           echo "Last tag for @story-protocol/react-sdk is $REACT_SDK_LATEST_TAG"
 
   build-test-publish:
-    needs:
-      [
-        print_version_to_publish,
-        fetch_latest_version,
-        check_is_publish,
-        check_if_version_is_valid_for_branch,
-        fetch_last_tag,
-      ]
-
-    if: ${{ (needs.check_if_version_is_valid_for_branch.outputs.is_publish_core_sdk == 'true' || needs.check_if_version_is_valid_for_branch.outputs.is_publish_react_sdk == 'true') && github.event_name == 'push' }}
+    needs: [fail_if_version_is_same, fetch_last_tag]
+    # Skip this job if the core-sdk and react-sdk don't need to be published
+    # and the event triggering the workflow is a push
+    if: ${{ (needs.fail_if_version_is_same.outputs.is_publish_core_sdk == 'true' || needs.fail_if_version_is_same.outputs.is_publish_react_sdk == 'true') && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     environment: "beta-sepolia"
     env:
-      RPC_PROVIDER_URL: ${{ secrets.RPC_PROVIDER_URL }}
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
-      SEPOLIA_RPC_PROVIDER_URL: ${{ secrets.SEPOLIA_RPC_PROVIDER_URL }}
-      TEST_SEPOLIA_RPC_PROVIDER_URL: ${{ secrets.TEST_SEPOLIA_RPC_PROVIDER_URL }}
-      SEPOLIA_WALLET_PRIVATE_KEY: ${{ secrets.SEPOLIA_WALLET_PRIVATE_KEY }}
-      SEPOLIA_TEST_WALLET_ADDRESS: ${{ secrets.SEPOLIA_TEST_WALLET_ADDRESS }}
-      STORY_TEST_NET_RPC_PROVIDER_URL: ${{ secrets.STORY_TEST_NET_RPC_PROVIDER_URL }}
-      STORY_TEST_NET_WALLET_PRIVATE_KEY: ${{ secrets.STORY_TEST_NET_WALLET_PRIVATE_KEY }}
-      STORY_TEST_NET_TEST_WALLET_ADDRESS: ${{ secrets.STORY_TEST_NET_TEST_WALLET_ADDRESS }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -232,33 +135,14 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org/
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
       - name: Install dependencies
         run: pnpm install
-
-      - name: Fix
-        run: pnpm fix
-
-      - name: Run Anvil
-        id: run_anvil
-        run: anvil --fork-url ${SEPOLIA_RPC_PROVIDER_URL}  --silent &
-
-      - name: Check on Run Anvil
-        if: steps.run_anvil.outcome != 'success'
-        run: exit 1
-
-      - name: Test
-        run: pnpm test
 
       - name: Build
         run: pnpm build
 
       - name: Publish core-sdk package to npm
-        if: ${{ github.event_name == 'push' && needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
+        if: ${{ github.event_name == 'push' && needs.fail_if_version_is_same.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
         run: |
           cd packages/core-sdk
           npm publish
@@ -266,7 +150,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish react-sdk package to npm
-        if: ${{ github.event_name == 'push' && needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_REACT_SDK == 'true'}}
+        if: ${{ github.event_name == 'push' && needs.fail_if_version_is_same.outputs.IS_PUBLISH_REACT_SDK == 'true'}}
         run: |
           cd packages/react-sdk
           npm publish
@@ -277,14 +161,14 @@ jobs:
     needs:
       [
         build-test-publish,
-        print_version_to_publish,
-        check_if_version_is_valid_for_branch,
         fetch_last_tag,
+        fail_if_version_is_same,
+        print_version_to_publish,
       ]
     # Skip this job if core-sdk doesn't need to be published
     # and the event triggering the workflow is a push
-    if: ${{ github.event_name == 'push' && needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
-    uses: ./.github/workflows/reusable-create-release.yml
+    if: ${{ github.event_name == 'push' && needs.fail_if_version_is_same.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
+    uses: ./.github/workflows/create-release.yml
     with:
       tag_name: "@story-protocol/core-sdk@${{ needs.print_version_to_publish.outputs.core_sdk_version_to_be_published }}"
       is_core_sdk: true
@@ -307,13 +191,13 @@ jobs:
       [
         build-test-publish,
         print_version_to_publish,
-        check_if_version_is_valid_for_branch,
+        fail_if_version_is_same,
         fetch_last_tag,
       ]
     # Skip this job if react-sdk doesn't need to be published
     # and the event triggering the workflow is a push
-    if: ${{  github.event_name == 'push' && needs.check_if_version_is_valid_for_branch.outputs.IS_PUBLISH_REACT_SDK == 'true'}}
-    uses: ./.github/workflows/reusable-create-release.yml
+    if: ${{  github.event_name == 'push' && needs.fail_if_version_is_same.outputs.IS_PUBLISH_REACT_SDK == 'true'}}
+    uses: ./.github/workflows/create-release.yml
     with:
       tag_name: "@story-protocol/react-sdk@${{ needs.print_version_to_publish.outputs.react_sdk_version_to_be_published }}"
       is_core_sdk: false
