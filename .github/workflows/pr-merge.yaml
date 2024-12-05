@@ -24,4 +24,6 @@ jobs:
     needs: [authorize, Timestamp_PR_APPROVED]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@origin/bpolania/workflows
     with:
-      ENVIRONMENT: "odyssey"
+      sha: ${{ github.sha }}
+      ENVIRONMENT: "beta-sepolia"
+    
