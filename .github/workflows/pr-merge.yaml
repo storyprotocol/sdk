@@ -1,4 +1,4 @@
-name: Workflow for External PRs with Unit Tests
+name: Workflow for Merge
 
 on:
   push:
