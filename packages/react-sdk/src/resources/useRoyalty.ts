@@ -51,7 +51,7 @@ const useRoyalty = () => {
     "collectRoyaltyTokens",
     client.royalty.collectRoyaltyTokens.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -71,7 +71,7 @@ const useRoyalty = () => {
     "payRoyaltyOnBehalf",
     client.royalty.payRoyaltyOnBehalf.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -90,7 +90,7 @@ const useRoyalty = () => {
     "claimableRevenue",
     client.royalty.claimableRevenue.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -111,7 +111,7 @@ const useRoyalty = () => {
     "claimRevenue",
     client.royalty.claimRevenue.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -126,7 +126,7 @@ const useRoyalty = () => {
     "snapshot",
     client.royalty.snapshot.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   /**
@@ -138,7 +138,7 @@ const useRoyalty = () => {
     "getRoyaltyVaultAddress",
     client.royalty.getRoyaltyVaultAddress.bind(client.royalty),
     setLoadings,
-    setErrors
+    setErrors,
   );
 
   return {
