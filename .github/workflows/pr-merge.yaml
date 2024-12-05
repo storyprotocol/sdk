@@ -26,4 +26,6 @@ jobs:
     with:
       sha: ${{ github.sha }}
       ENVIRONMENT: "beta-sepolia"
+    secrets:
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
     
