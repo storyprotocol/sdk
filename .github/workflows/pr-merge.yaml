@@ -22,6 +22,6 @@ jobs:
 
   build_and_test:
     needs: [authorize, Timestamp_PR_APPROVED]
-    uses: storyprotocol/gha-workflows/.github/workflows/rreusable-build-integration-test-workflow.yml@origin/bpolania/workflows
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@origin/bpolania/workflows
     with:
       ENVIRONMENT: "odyssey"
