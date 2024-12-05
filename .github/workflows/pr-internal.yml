@@ -22,6 +22,5 @@ jobs:
       ENVIRONMENT: "beta-sepolia"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      SEPOLIA_WALLET_PRIVATE_KEY: ${{ secrets.SEPOLIA_WALLET_PRIVATE_KEY }}
       STORY_TEST_NET_WALLET_PRIVATE_KEY: ${{ secrets.STORY_TEST_NET_WALLET_PRIVATE_KEY }}
     
