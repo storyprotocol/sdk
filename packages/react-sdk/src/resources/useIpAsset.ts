@@ -58,7 +58,7 @@ const useIpAsset = () => {
    * @returns An `IpCreator` object containing the provided details.
    */
   const generateCreatorMetadata = (
-    param: GenerateCreatorMetadataParam,
+    param: GenerateCreatorMetadataParam
   ): IpCreator => {
     return client.ipAsset.generateCreatorMetadata(param);
   };
@@ -128,7 +128,7 @@ const useIpAsset = () => {
     "register",
     client.ipAsset.register.bind(client.ipAsset),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -151,7 +151,7 @@ const useIpAsset = () => {
     "registerDerivative",
     client.ipAsset.registerDerivative.bind(client.ipAsset),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -172,7 +172,7 @@ const useIpAsset = () => {
     "registerDerivativeWithLicenseTokens",
     client.ipAsset.registerDerivativeWithLicenseTokens.bind(client.ipAsset),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -201,7 +201,7 @@ const useIpAsset = () => {
     "mintAndRegisterIpAssetWithPilTerms",
     client.ipAsset.mintAndRegisterIpAssetWithPilTerms.bind(client.ipAsset),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -230,7 +230,7 @@ const useIpAsset = () => {
     "registerIpAndAttachPilTerms",
     client.ipAsset.registerIpAndAttachPilTerms.bind(client.ipAsset),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -259,7 +259,7 @@ const useIpAsset = () => {
     "registerDerivativeIp",
     client.ipAsset.registerDerivativeIp.bind(client.ipAsset),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -287,7 +287,7 @@ const useIpAsset = () => {
     "mintAndRegisterIpAndMakeDerivative",
     client.ipAsset.mintAndRegisterIpAndMakeDerivative.bind(client.ipAsset),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   return {

@@ -40,7 +40,7 @@ const useIpAccount = () => {
     "execute",
     client.ipAccount.execute.bind(client.ipAccount),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /** Executes a transaction from the IP Account.
@@ -62,7 +62,7 @@ const useIpAccount = () => {
     "executeWithSig",
     client.ipAccount.executeWithSig.bind(client.ipAccount),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /** Returns the IPAccount&#39;s internal nonce for transaction ordering.
@@ -76,7 +76,7 @@ const useIpAccount = () => {
     "getIpAccountNonce",
     client.ipAccount.getIpAccountNonce.bind(client.ipAccount),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   return {

@@ -12,7 +12,7 @@ export const withLoadingErrorHandling =
     actionName: string,
     method: AsyncFunction<T, U>,
     setLoadings: SetLoadings,
-    setErrors: SetErrors,
+    setErrors: SetErrors
   ) =>
   async (request: T): Promise<U> => {
     try {

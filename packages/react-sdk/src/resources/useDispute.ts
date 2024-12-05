@@ -47,7 +47,7 @@ const useDispute = () => {
     "raiseDispute",
     client.dispute.raiseDispute.bind(client.dispute),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -70,7 +70,7 @@ const useDispute = () => {
     "cancelDispute",
     client.dispute.cancelDispute.bind(client.dispute),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -91,7 +91,7 @@ const useDispute = () => {
     "resolveDispute",
     client.dispute.resolveDispute.bind(client.dispute),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   return {
