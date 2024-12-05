@@ -10,6 +10,7 @@
     "lint": "turbo run lint",
     "fix": "turbo run fix",
     "test": "turbo run test --no-cache --concurrency=1",
+    "test:unit": "turbo run test:unit --no-cache --concurrency=1",
     "prepare": "husky install"
   },
   "devDependencies": {
