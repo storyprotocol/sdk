@@ -17,6 +17,9 @@ describe("Test DisputeClient", () => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     disputeClient = new DisputeClient(rpcMock, walletMock);
+    if (!process.env.WALLET_PRIVATE_KEY) {
+      throw new Error("WALLET_PRIVATE_KEY environment variable is not set.");
+    }
   });
 
   afterEach(() => {
