@@ -3,20 +3,18 @@ name: Workflow for Merge
 on:
   push:
     branches:
-      origin/dev-bpolania/workflows
+      - origin/dev-bpolania/workflows
 
 jobs:
-  Timestamp_PR_CREATED:
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
-
-  Timestamp_PR_APPROVED:
+  Timestamp:
+    if: ${{ github.repository.full_name == github.repository }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
   build_and_test:
-    needs: [Timestamp_PR_APPROVED]
+    needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@origin/bpolania/workflows
     with:
-      sha: ${{ github.sha  }}
+      sha: ${{ github.sha }}
       ENVIRONMENT: "beta-sepolia"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
