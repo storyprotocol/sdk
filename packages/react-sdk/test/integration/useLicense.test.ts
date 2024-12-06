@@ -34,7 +34,7 @@ describe("useLicense Functions", () => {
       await act(async () => {
         await expect(
           licenseHook.registerCommercialUsePIL({
-            mintingFee: "1",
+            defaultMintingFee: "1",
             currency: mockERC20Address,
             txOptions: {
               waitForTransaction: true,
@@ -52,7 +52,7 @@ describe("useLicense Functions", () => {
       await act(async () => {
         await expect(
           licenseHook.registerCommercialRemixPIL({
-            mintingFee: "1",
+            defaultMintingFee: "1",
             commercialRevShare: 100,
             currency: mockERC20Address,
             txOptions: {

@@ -1,0 +1,68 @@
+name: Reusable workflow to create release in GitHub
+
+on:
+  workflow_call:
+    inputs:
+      tag_name:
+        type: string
+        required: true
+        description: "Tag name to be published"
+      is_core_sdk:
+        type: boolean
+        description: "Flag to indicate if this is a core SDK release"
+        required: true
+      last_tag:
+        type: string
+        description: "last tag name"
+        required: true
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+
+      - name: Tag and Push
+        id: tag_and_push
+        run: |
+          TAG_NAME=${{ inputs.tag_name}}
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git tag -a $TAG_NAME -m "Release $TAG_NAME"
+          git push origin $TAG_NAME
+          echo "The tag $TAG_NAME has been created and pushed to the repository"
+          echo "The tag $LATEST_TAG has been created and pushed to the repository"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Configuration File
+        id: set_config
+        run: |
+          if [ "${{ inputs.is_core_sdk }}" = "true" ]; then
+            echo "config_file=configs/configuration.json" >> $GITHUB_ENV
+          else
+            echo "config_file=configs/configuration_react.json" >> $GITHUB_ENV
+          fi
+
+      - name: "Build Changelog"
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@a57c1b7c90e56d9c8b26a6ed5d1eed159369e117
+        with:
+          configuration: ${{ env.config_file }}
+          toTag: ${{ inputs.tag_name}}
+          fromTag: ${{ inputs.last_tag}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: mikepenz/action-gh-release@01570a1f39cb168c169c802c3bceb9e93fb10974
+        with:
+          body: ${{steps.github_release.outputs.changelog}}
+          tag_name: ${{ inputs.tag_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

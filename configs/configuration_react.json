@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "title": "## 🚀 Features",
+      "labels": ["enhancement-react"]
+    },
+    {
+      "title": "## 🐛 Fixes",
+      "labels": ["bug-react"]
+    },
+    {
+      "key": "tests",
+      "title": "## 🧪 Tests",
+      "labels": ["test-react"]
+    },
+    {
+      "key": "Others",
+      "title": "## 💬 Others",
+      "labels": ["documentation-react", "other-react"]
+    },
+    {
+      "key": "Dependencies",
+      "title": "## 📦 Dependencies",
+      "labels": ["dependency-react"]
+    }
+  ],
+  "ignore_labels": ["ignore"],
+  "pr_template": "- #{{TITLE}}\n   - PR: ##{{NUMBER}}",
+  "sort": {
+    "order": "ASC",
+    "on_property": "mergedAt"
+  },
+  "template": "#{{CHANGELOG}}\n## Contributors:\n- #{{CONTRIBUTORS}}"
+}
