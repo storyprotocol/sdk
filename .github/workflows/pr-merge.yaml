@@ -6,12 +6,7 @@ on:
       - origin/dev-bpolania/workflows
 
 jobs:
-  Timestamp:
-    if: ${{ github.repository.full_name == github.repository }}
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
-
   build_and_test:
-    needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@origin/bpolania/workflows
     with:
       sha: ${{ github.sha }}
