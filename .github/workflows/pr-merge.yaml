@@ -5,6 +5,10 @@ on:
     branches:
       - origin/dev-bpolania/workflows
 
+  pull_request:
+    branches:
+      origin/dev-bpolania/workflows
+
 jobs:
   Timestamp_PR_CREATED:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
@@ -16,7 +20,7 @@ jobs:
     needs: [Timestamp_PR_APPROVED]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@origin/bpolania/workflows
     with:
-      sha: ${{ github.sha }}
+      sha: ${{ github.event.pull_request.head.sha  }}
       ENVIRONMENT: "beta-sepolia"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
