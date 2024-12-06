@@ -9,6 +9,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   timestamp:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
