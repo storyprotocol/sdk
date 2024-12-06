@@ -112,7 +112,6 @@ describe("Test royalty Functions", () => {
       });
       await transferToken();
     });
-
     it("should not throw error when pay royalty on behalf", async () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: parentIpId,
