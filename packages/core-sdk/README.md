@@ -6,7 +6,7 @@ Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for d
 
 ### Install Story Protocol core SDK
 
-Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following command to install the package:
+Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following commands to install the package:
 
 Use `npm`:
 
@@ -112,7 +112,7 @@ In your testing environment:
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change. Details see: [CONTRIBUTING](/CONTRIBUTING.md)
+to discuss what you would like to change. See details in: [CONTRIBUTING](/CONTRIBUTING.md)
 
 Please make sure to update tests as appropriate.
 
