@@ -1,0 +1,96 @@
+name: Sync Labels from Issue to PR
+
+on:
+  pull_request:
+    types: [edited, opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  sync-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get associated issue number
+        id: get_issue_number
+        run: |
+          ISSUE_NUMBERS=$(echo "${{ github.event.pull_request.body }}" | grep -oE "#[0-9]+" | tr -d "#" | tr '\n' ',')
+          ISSUE_NUMBERS=$(echo $ISSUE_NUMBERS | sed 's/,$//')
+          echo "ISSUE_NUMBERS=$ISSUE_NUMBERS" >> $GITHUB_ENV
+          echo "Issue numbers are $ISSUE_NUMBERS"
+
+      - name: Get labels from issue
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7
+        id: get_issue_labels
+        with:
+          script: |
+            const issueNumbers = process.env.ISSUE_NUMBERS.split(",");
+            let allLabels = new Set();
+            for (const issueNumber of issueNumbers) {
+              try {
+                const { data: { labels } } = await github.rest.issues.get({
+                  issue_number: issueNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                });
+                labels.forEach(label => allLabels.add(label.name));
+              } catch (error) {
+                console.error(`Error fetching labels for issue #${issueNumber}: `, error);
+              }
+            }
+            if (allLabels.size === 0) {
+              core.setOutput('labels', '');
+            } else {
+              const sortedLabels = Array.from(allLabels).sort().join(",");
+              core.setOutput('labels', sortedLabels);
+            }
+
+      - name: Check if labels are the same
+        id: check_labels_are_same
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7
+        with:
+          script: |
+            const issueLabels = "${{ steps.get_issue_labels.outputs.labels }}";
+            const prLabels = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const prLabelsNames = prLabels.data.map(label => label.name).sort();
+            const isSame = issueLabels === prLabelsNames.join(",");
+            core.setOutput('isSame', isSame.toString());
+            core.setOutput('labels', issueLabels);
+
+      - name: Apply labels to PR
+        if: steps.check_labels_are_same.outputs.isSame == 'false'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7
+        with:
+          script: |
+            const isSame = "${{ steps.check_labels_are_same.outputs.isSame }}";
+            const labels = "${{ steps.check_labels_are_same.outputs.labels }}" === "" ? [] : "${{ steps.check_labels_are_same.outputs.labels }}".split(",");
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.issue.number;
+
+            if (labels.length === 0) {
+              const prLabels = await github.rest.issues.listLabelsOnIssue({
+                owner: owner,
+                repo: repo,
+                issue_number: issue_number,
+              });
+              for (const label of prLabels.data) {
+                await github.rest.issues.removeLabel({
+                  owner: owner,
+                  repo: repo,
+                  issue_number: issue_number,
+                  name: label.name,
+                });
+              }
+            } else {
+              await github.rest.issues.setLabels({
+                owner: owner,
+                repo: repo,
+                issue_number: issue_number,
+                labels: labels,
+              });
+            }

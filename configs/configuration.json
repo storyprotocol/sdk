@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "title": "## 🚀 Features",
+      "labels": ["enhancement"]
+    },
+    {
+      "title": "## 🐛 Fixes",
+      "labels": ["bug"]
+    },
+    {
+      "key": "tests",
+      "title": "## 🧪 Tests",
+      "labels": ["test"]
+    },
+    {
+      "key": "Others",
+      "title": "## 💬 Others",
+      "labels": ["documentation", "other"]
+    },
+    {
+      "key": "Dependencies",
+      "title": "## 📦 Dependencies",
+      "labels": ["dependency"]
+    }
+  ],
+  "ignore_labels": ["ignore"],
+  "pr_template": "- #{{TITLE}}\n   - PR: ##{{NUMBER}}",
+  "sort": {
+    "order": "ASC",
+    "on_property": "mergedAt"
+  },
+  "template": "#{{CHANGELOG}}\n## Contributors:\n- #{{CONTRIBUTORS}}"
+}

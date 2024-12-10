@@ -144,7 +144,7 @@ export class IPAssetClient {
    *   @param params.image [Optional] The URL or path to an image representing the creator.
    *   @param params.socialMedia [Optional] An array of social media profiles associated with the creator.
    *     @param params.socialMedia[].platform The name of the social media platform.
-   *     @param params.socialMedia[].url The URL to t3he creator's profile on the platform.
+   *     @param params.socialMedia[].url The URL to the creator's profile on the platform.
    *  @param params.contributionPercent The percentage of contribution by the creator, must add up to 100.
    *  @param params.role [Optional] The role of the creator in relation to the IP.
    * @returns An `IpCreator` object containing the provided details.
