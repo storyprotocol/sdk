@@ -19,11 +19,11 @@ describe("useNftClient Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
+        })
       ).resolves.toEqual(
         expect.objectContaining({
           nftContract: expect.any(String),
-        }),
+        })
       );
     });
   });

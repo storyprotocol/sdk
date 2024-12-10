@@ -1,6 +1,7 @@
 import {
-  RegisterNonComSocialRemixingPILRequest,
+  RegisterPILTermsRequest,
   RegisterPILResponse,
+  RegisterNonComSocialRemixingPILRequest,
   RegisterCommercialUsePILRequest,
   RegisterCommercialRemixPILRequest,
   AttachLicenseTermsRequest,
@@ -18,6 +19,7 @@ import { withLoadingErrorHandling } from "../withLoadingErrorHandling";
 const useLicense = () => {
   const client = useStoryContext();
   const [loadings, setLoadings] = useState<Record<string, boolean>>({
+    registerPILTerms: false,
     registerNonComSocialRemixingPIL: false,
     registerCommercialUsePIL: false,
     registerCommercialRemixPIL: false,
@@ -26,6 +28,7 @@ const useLicense = () => {
     getLicenseTerms: false,
   });
   const [errors, setErrors] = useState<Record<string, string | null>>({
+    registerPILTerms: null,
     registerNonComSocialRemixingPIL: null,
     registerCommercialUsePIL: null,
     registerCommercialRemixPIL: null,
@@ -33,6 +36,40 @@ const useLicense = () => {
     mintLicenseTokens: null,
     getLicenseTerms: null,
   });
+
+  /**
+   * Registers new license terms and return the ID of the newly registered license terms.
+   * @param request - The request object that contains all data needed to register a license term.
+   *   @param request.transferable Indicates whether the license is transferable or not.
+   *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
+   *   @param request.mintingFee The fee to be paid when minting a license.
+   *   @param request.expiration The expiration period of the license.
+   *   @param request.commercialUse Indicates whether the work can be used commercially or not.
+   *   @param request.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
+   *   @param request.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
+   *   @param request.commercializerCheckerData The data to be passed to the commercializer checker contract.
+   *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
+   *   @param request.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
+   *   @param request.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
+   *   @param request.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
+   *   @param request.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
+   *   @param request.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
+   *   @param request.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
+   *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
+   *   @param request.uri The URI of the license terms, which can be used to fetch the offchain license terms.
+   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * @returns A Promise that resolves to an object containing the optional transaction hash, optional transaction encodedTxData and optional license terms Id.
+   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
+   */
+  const registerPILTerms = withLoadingErrorHandling<
+    RegisterPILTermsRequest,
+    RegisterPILResponse
+  >(
+    "registerPILTerms",
+    client.license.registerPILTerms.bind(client.license),
+    setLoadings,
+    setErrors
+  );
 
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
@@ -48,13 +85,13 @@ const useLicense = () => {
     "registerNonComSocialRemixingPIL",
     client.license.registerNonComSocialRemixingPIL.bind(client.license),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
    * Convenient function to register a PIL commercial use license to the registry.
    * @param request - The request object that contains all data needed to register a PIL commercial use license.
-   *   @param request.mintingFee The fee to be paid when minting a license.
+   *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the optional transaction hash and optional license terms Id.
@@ -67,13 +104,13 @@ const useLicense = () => {
     "registerCommercialUsePIL",
     client.license.registerCommercialUsePIL.bind(client.license),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
    * Convenient function to register a PIL commercial Remix license to the registry.
    * @param request - The request object that contains all data needed to register license.
-   *   @param request.mintingFee The fee to be paid when minting a license.
+   *   @param request.defaultMintingFee The fee to be paid when minting a license.
    *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
    *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
@@ -87,7 +124,7 @@ const useLicense = () => {
     "registerCommercialRemixPIL",
     client.license.registerCommercialRemixPIL.bind(client.license),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -106,7 +143,7 @@ const useLicense = () => {
     "attachLicenseTerms",
     client.license.attachLicenseTerms.bind(client.license),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -138,7 +175,7 @@ const useLicense = () => {
     "mintLicenseTokens",
     client.license.mintLicenseTokens.bind(client.license),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   /**
@@ -153,12 +190,13 @@ const useLicense = () => {
     "getLicenseTerms",
     client.license.getLicenseTerms.bind(client.license),
     setLoadings,
-    setErrors,
+    setErrors
   );
 
   return {
     loadings,
     errors,
+    registerPILTerms,
     registerNonComSocialRemixingPIL,
     registerCommercialUsePIL,
     registerCommercialRemixPIL,
