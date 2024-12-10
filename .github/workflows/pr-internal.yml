@@ -1,10 +1,6 @@
 name: Workflow for internal PRs
 
 on:
-  push:
-    branches:
-      origin/dev-bpolania/workflows
-
   pull_request:
     branches:
       origin/dev-bpolania/workflows
@@ -21,6 +17,6 @@ jobs:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "beta-sepolia"
     secrets:
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }},
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
     
