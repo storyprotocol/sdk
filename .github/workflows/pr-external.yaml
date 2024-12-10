@@ -4,7 +4,7 @@ on:
   pull_request_target:
     types: [opened, synchronize]
     branches:
-      origin/dev-bpolania/workflows
+      - dev
 
 jobs:
   Timestamp_PR_CREATED:
@@ -24,7 +24,7 @@ jobs:
     
   build_and_test:
     needs: [authorize, Timestamp_PR_APPROVED]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@origin/bpolania/workflows
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "beta-sepolia"

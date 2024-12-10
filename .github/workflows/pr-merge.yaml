@@ -3,7 +3,7 @@ name: Workflow for Merge
 on:
   push:
     branches:
-      - origin/dev-bpolania/workflows
+      - dev
 
 jobs:
   build_and_test:

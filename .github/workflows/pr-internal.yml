@@ -3,7 +3,8 @@ name: Workflow for internal PRs
 on:
   pull_request:
     branches:
-      origin/dev-bpolania/workflows
+      - main
+      - dev
 
 jobs:
   Timestamp:
@@ -12,7 +13,7 @@ jobs:
     
   build_and_test:
     needs: [Timestamp]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@origin/bpolania/workflows
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "beta-sepolia"
