@@ -3,10 +3,11 @@ name: Conditional Workflow
 on:
   pull_request:
     branches:
-      - origin/dev-bpolania/workflows
+      - main
+      - dev
   push:
     branches:
-      - origin/dev-bpolania/workflows
+      - dev
 
 jobs:
   Timestamp:
