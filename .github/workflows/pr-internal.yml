@@ -21,5 +21,6 @@ jobs:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "beta-sepolia"
     secrets:
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }},
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
     
