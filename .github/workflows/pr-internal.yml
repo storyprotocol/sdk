@@ -26,7 +26,6 @@ jobs:
 
   push_build_and_test:
     if: github.event_name == 'push'
-    needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
     with:
       sha: ${{ github.sha }}
