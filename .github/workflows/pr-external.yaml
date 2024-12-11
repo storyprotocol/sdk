@@ -1,4 +1,4 @@
-name: Workflow for External PRs
+name: Workflow for External PRs with Unit Tests
 
 on:
   pull_request_target:
@@ -21,10 +21,10 @@ jobs:
   Timestamp_PR_APPROVED:
     needs: [authorize]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
-
+    
   build_and_test:
     needs: [authorize, Timestamp_PR_APPROVED]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-test-workflow.yml@main
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "beta-sepolia"

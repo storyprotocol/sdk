@@ -1,14 +1,12 @@
-name: Workflow for internal PRs
+name: Conditional Workflow
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-
   pull_request:
     branches:
       - main
+      - dev
+  push:
+    branches:
       - dev
 
 jobs:
@@ -16,11 +14,22 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
-  build_and_test:
+  pr_build_and_test:
+    if: github.event_name == 'pull_request'
     needs: [Timestamp]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-test-workflow.yml@main
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}
+      ENVIRONMENT: "beta-sepolia"
+    secrets:
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+
+  push_build_and_test:
+    if: github.event_name == 'push'
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
+    with:
+      sha: ${{ github.sha }}
       ENVIRONMENT: "beta-sepolia"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}

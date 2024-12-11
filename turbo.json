@@ -11,6 +11,7 @@
     "lint": {},
     "lint:fix": {},
     "test": {},
+    "test:integration": {},
     "dev": {
       "cache": false,
       "persistent": true
