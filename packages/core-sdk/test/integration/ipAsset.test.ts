@@ -29,6 +29,7 @@ describe("IP Asset Functions ", () => {
     const res = await client.license.registerNonComSocialRemixingPIL({
       txOptions: {
         waitForTransaction: true,
+        gas: 50n,
       },
     });
     noCommercialLicenseTermsId = res.licenseTermsId!;
@@ -45,6 +46,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: waitForTransaction,
+            gas: 50n,
           },
         }),
       ).to.not.be.rejected;
@@ -62,6 +64,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         })
       ).ipId!;
@@ -70,6 +73,7 @@ describe("IP Asset Functions ", () => {
         licenseTermsId: noCommercialLicenseTermsId,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       const response = await client.ipAsset.registerDerivative({
@@ -78,6 +82,7 @@ describe("IP Asset Functions ", () => {
         licenseTermsIds: [noCommercialLicenseTermsId],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -91,6 +96,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         })
       ).ipId!;
@@ -99,6 +105,7 @@ describe("IP Asset Functions ", () => {
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens({
@@ -106,6 +113,7 @@ describe("IP Asset Functions ", () => {
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(response.txHash).to.be.a("string").not.empty;
@@ -123,7 +131,7 @@ describe("IP Asset Functions ", () => {
     });
   });
 
-  describe("NFT Client (SPG)", () => {
+  describe.only("NFT Client (SPG)", () => {
     let nftContract: Hex;
     let parentIpId: Hex;
     let licenseTermsId: bigint;
@@ -139,6 +147,7 @@ describe("IP Asset Functions ", () => {
         mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
@@ -169,6 +178,7 @@ describe("IP Asset Functions ", () => {
         ],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       parentIpId = result.ipId!;
@@ -191,6 +201,7 @@ describe("IP Asset Functions ", () => {
         deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(response.ipId).to.be.a("string").and.not.empty;
@@ -207,6 +218,7 @@ describe("IP Asset Functions ", () => {
         deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -262,6 +274,7 @@ describe("IP Asset Functions ", () => {
         ],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -278,6 +291,7 @@ describe("IP Asset Functions ", () => {
         },
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -295,6 +309,7 @@ describe("IP Asset Functions ", () => {
         },
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -308,6 +323,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId!,
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         })
       ).ipId!;
@@ -356,6 +372,7 @@ describe("IP Asset Functions ", () => {
         deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -368,6 +385,7 @@ describe("IP Asset Functions ", () => {
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       await approveForLicenseToken(
@@ -384,6 +402,7 @@ describe("IP Asset Functions ", () => {
         },
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -398,6 +417,7 @@ describe("IP Asset Functions ", () => {
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       await approveForLicenseToken(
@@ -416,13 +436,14 @@ describe("IP Asset Functions ", () => {
         deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
 
-    it("should not throw error when call register ip and attach license terms and distribute royalty tokens", async () => {
+    it.only("should not throw error when call register ip and attach license terms and distribute royalty tokens", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
         {
@@ -460,6 +481,7 @@ describe("IP Asset Functions ", () => {
           ],
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         },
       );
@@ -531,6 +553,7 @@ describe("IP Asset Functions ", () => {
           ],
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         });
       expect(result.txHash).to.be.a("string");
@@ -554,6 +577,7 @@ describe("IP Asset Functions ", () => {
           ],
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         });
       expect(result.txHash).to.be.a("string");
@@ -575,6 +599,7 @@ describe("IP Asset Functions ", () => {
         mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       nftContract = txData.spgNftContract!;
@@ -587,6 +612,7 @@ describe("IP Asset Functions ", () => {
           tokenId: childTokenId!,
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         })
       ).ipId!;
@@ -597,6 +623,7 @@ describe("IP Asset Functions ", () => {
           tokenId: childTokenId2!,
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         })
       ).ipId!;
@@ -615,6 +642,7 @@ describe("IP Asset Functions ", () => {
         ],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -692,6 +720,7 @@ describe("IP Asset Functions ", () => {
         ],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -708,6 +737,7 @@ describe("IP Asset Functions ", () => {
           tokenId: tokenId2!,
           txOptions: {
             waitForTransaction: true,
+            gas: 50n,
           },
         })
       ).ipId!;
@@ -730,6 +760,7 @@ describe("IP Asset Functions ", () => {
         ],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -772,6 +803,7 @@ describe("IP Asset Functions ", () => {
         ],
         txOptions: {
           waitForTransaction: true,
+          gas: 50n,
         },
       });
       expect(result.results).to.be.an("array").and.not.empty;

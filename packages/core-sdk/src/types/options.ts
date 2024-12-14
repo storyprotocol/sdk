@@ -9,6 +9,8 @@ export interface TxOptions extends Omit<WaitForTransactionReceiptParameters, "ha
   // not submit and execute, it will only encode the abi and
   // function data and return.
   encodedTxDataOnly?: boolean;
+  // We should have the option to set a minimum gas
+  gas?: bigint;
 }
 
 export type WithTxOptions<T> = T & {
