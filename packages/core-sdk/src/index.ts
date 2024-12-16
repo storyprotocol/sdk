@@ -65,6 +65,7 @@ export type {
   RegisterNonComSocialRemixingPILRequest,
   RegisterCommercialUsePILRequest,
   RegisterCommercialRemixPILRequest,
+  RegisterPILTermsRequest,
   RegisterPILResponse,
   AttachLicenseTermsRequest,
   AttachLicenseTermsResponse,
@@ -156,3 +157,5 @@ export type {
 export { getPermissionSignature, getSignature } from "./utils/sign";
 
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
+
+export type { TxOptions } from "./types/options";
