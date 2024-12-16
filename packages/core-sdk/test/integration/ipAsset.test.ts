@@ -475,7 +475,7 @@ describe("IP Asset Functions ", () => {
     it("should not throw error when call register derivative and attach license terms and distribute royalty tokens", async () => {
       const tokenId = await getTokenId();
       const result =
-        await client.ipAsset.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        await client.ipAsset.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: mockERC721,
           tokenId: tokenId!,
           derivData: {
@@ -490,7 +490,7 @@ describe("IP Asset Functions ", () => {
           ],
         });
       expect(
-        result.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash,
+        result.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash,
       ).to.be.a("string");
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");

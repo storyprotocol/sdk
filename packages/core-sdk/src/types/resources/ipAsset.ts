@@ -318,7 +318,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
 } & IPMetadataInfo;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
-  registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
+  registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
   distributeRoyaltyTokensTxHash: Address;
   ipId: Address;
   tokenId: bigint;

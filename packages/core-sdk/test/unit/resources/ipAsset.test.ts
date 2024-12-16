@@ -2462,7 +2462,7 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       try {
-        await ipAssetClient.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],
@@ -2517,7 +2517,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
       const result =
-        await ipAssetClient.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],
@@ -2575,7 +2575,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
       const result =
-        await ipAssetClient.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],

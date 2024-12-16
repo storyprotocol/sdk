@@ -1708,7 +1708,7 @@ export class IPAssetClient {
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
-  public async registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens(
+  public async registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
     try {
@@ -1811,7 +1811,7 @@ export class IPAssetClient {
         });
       }
       return {
-        registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
         distributeRoyaltyTokensTxHash,
         ipId,
         tokenId,
