@@ -2529,7 +2529,7 @@ describe("Test IpAssetClient", () => {
           tokenId: "1",
         });
       expect(result).to.deep.equal({
-        registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
           "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -2596,7 +2596,7 @@ describe("Test IpAssetClient", () => {
           },
         });
       expect(result).to.deep.equal({
-        registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
           "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
