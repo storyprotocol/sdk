@@ -275,7 +275,7 @@ export type BatchRegisterResponse = {
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  terms: RegisterPILTermsRequest;
+  terms: RegisterPILTermsRequest[];
   deadline?: string | number | bigint;
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
@@ -284,7 +284,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
   registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hex;
   distributeRoyaltyTokensTxHash: Hex;
   ipId: Address;
-  licenseTermsId: bigint;
+  licenseTermsIds: bigint[];
   ipRoyaltyVault: Address;
 };
 export type DistributeRoyaltyTokens = {
@@ -327,7 +327,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
-  terms: RegisterPILTermsRequest;
+  terms: RegisterPILTermsRequest[];
   royaltyShares: {
     author: Address;
     percentage: number;
@@ -339,7 +339,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
   txHash: Hex;
   ipId?: Address;
-  licenseTermsId?: bigint;
+  licenseTermsIds?: bigint[];
   ipRoyaltyVault?: Address;
   tokenId?: bigint;
 };

@@ -428,25 +428,27 @@ describe("IP Asset Functions ", () => {
         {
           nftContract: nftContract,
           tokenId: tokenId!,
-          terms: {
-            transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-            defaultMintingFee: BigInt(10000),
-            expiration: BigInt(1000),
-            commercialUse: true,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
-            uri: "test case",
-          },
+          terms: [
+            {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+              defaultMintingFee: BigInt(10000),
+              expiration: BigInt(1000),
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: BigInt(0),
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: BigInt(0),
+              currency: MockERC20.address,
+              uri: "test case",
+            },
+          ],
           ipMetadata: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -467,7 +469,7 @@ describe("IP Asset Functions ", () => {
         .not.empty;
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
-      expect(result.licenseTermsId).to.be.a("bigint");
+      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
     });
 
     it("should not throw error when call register derivative and attach license terms and distribute royalty tokens", async () => {
@@ -499,25 +501,27 @@ describe("IP Asset Functions ", () => {
       const result =
         await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract: nftContract,
-          terms: {
-            transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-            defaultMintingFee: BigInt(10000),
-            expiration: BigInt(1000),
-            commercialUse: true,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
-            uri: "test case",
-          },
+          terms: [
+            {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+              defaultMintingFee: BigInt(10000),
+              expiration: BigInt(1000),
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: BigInt(0),
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: BigInt(0),
+              currency: MockERC20.address,
+              uri: "test case",
+            },
+          ],
           ipMetadata: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -535,7 +539,7 @@ describe("IP Asset Functions ", () => {
         });
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsId).to.be.a("bigint");
+      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
       expect(result.tokenId).to.be.a("bigint");
     });
     it("should not throw error when call mint and register ip and make derivative and distribute royalty tokens", async () => {
