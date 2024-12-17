@@ -1524,7 +1524,7 @@ export class IPAssetClient {
     }
   }
   /**
-   * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the first license terms attached to the IP must be
    * a commercial license.
    * @param request - The request object that contains all data needed to register ip and attach license terms and distribute royalty tokens.
    *   @param request.nftContract The address of the NFT collection.
@@ -1569,8 +1569,8 @@ export class IPAssetClient {
       const licenseTerms: LicenseTerms[] = [];
       for (let i = 0; i < request.terms.length; i++) {
         const term = request.terms[i];
-        if (!term.commercialUse) {
-          throw new Error("Commercial use is required to deploy a royalty vault.");
+        if (i === 0 && !term.commercialUse) {
+          throw new Error("The first license term must be a commercial license.");
         }
         const licenseTerm = await validateLicenseTerms(term, this.rpcClient);
         licenseTerms.push(licenseTerm);
@@ -1826,7 +1826,7 @@ export class IPAssetClient {
   }
 
   /**
-   * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens. In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens. In order to successfully distribute royalty tokens, First the license terms attached to the IP must be
    * a commercial license.
    * @param request - The request object that contains all data needed to mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
    *   @param request.spgNftContract The address of the SPG NFT contract.
@@ -1869,8 +1869,8 @@ export class IPAssetClient {
       const licenseTerms: LicenseTerms[] = [];
       for (let i = 0; i < request.terms.length; i++) {
         const term = request.terms[i];
-        if (!term.commercialUse) {
-          throw new Error("Commercial use is required to deploy a royalty vault.");
+        if (i === 0 && !term.commercialUse) {
+          throw new Error("First license term must be a commercial license.");
         }
         const licenseTerm = await validateLicenseTerms(term, this.rpcClient);
         licenseTerms.push(licenseTerm);

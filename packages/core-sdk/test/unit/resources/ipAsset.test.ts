@@ -2230,7 +2230,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register IP and attach license terms and distribute royalty tokens: Commercial use is required to deploy a royalty vault.",
+          "Failed to register IP and attach license terms and distribute royalty tokens: The first license term must be a commercial license.",
         );
       }
     });
@@ -2626,7 +2626,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: Commercial use is required to deploy a royalty vault.",
+          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: First license term must be a commercial license.",
         );
       }
     });
