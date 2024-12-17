@@ -370,20 +370,6 @@ export class LicenseClient {
       if (!isExisted) {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
       }
-      const isAttachedLicenseTerms =
-        await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
-          ipId: request.licensorIpId,
-          licenseTemplate:
-            (request.licenseTemplate &&
-              getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-            this.licenseTemplateClient.address,
-          licenseTermsId: request.licenseTermsId,
-        });
-      if (!isAttachedLicenseTerms) {
-        throw new Error(
-          `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}.`,
-        );
-      }
       const amount = BigInt(request.amount || 1);
       const req = {
         licensorIpId: request.licensorIpId,
