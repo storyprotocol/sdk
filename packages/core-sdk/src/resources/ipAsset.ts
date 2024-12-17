@@ -1524,12 +1524,12 @@ export class IPAssetClient {
     }
   }
   /**
-   * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the first license terms attached to the IP must be
    * a commercial license.
    * @param request - The request object that contains all data needed to register ip and attach license terms and distribute royalty tokens.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.tokenId The ID of the NFT.
-   *   @param request.terms The array of license terms to be attached.
+   *   @param {Array} request.terms The array of license terms to be attached.
    *     @param request.terms.transferable Indicates whether the license is transferable or not.
    *     @param request.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *     @param request.terms.mintingFee The fee to be paid when minting a license.
@@ -1557,7 +1557,7 @@ export class IPAssetClient {
    *    @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
    *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hashes, IP ID, License terms ID, and IP royalty vault.
+   * @returns A Promise that resolves to a transaction hashes, IP ID, IP royalty vault and an array containing the license terms ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
@@ -1565,11 +1565,16 @@ export class IPAssetClient {
     request: RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
     try {
-      if (!request.terms.commercialUse) {
-        throw new Error("Commercial use is required to deploy a royalty vault.");
-      }
       const { royaltyShares, totalAmount } = this.getRoyaltyShares(request.royaltyShares);
-      const licenseTerm = await validateLicenseTerms(request.terms, this.rpcClient);
+      const licenseTerms: LicenseTerms[] = [];
+      for (let i = 0; i < request.terms.length; i++) {
+        const term = request.terms[i];
+        if (i === 0 && !term.commercialUse) {
+          throw new Error("The first license term must be a commercial license.");
+        }
+        const licenseTerm = await validateLicenseTerms(term, this.rpcClient);
+        licenseTerms.push(licenseTerm);
+      }
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
       const ipIdAddress = await this.getIpIdAddress(
@@ -1629,7 +1634,7 @@ export class IPAssetClient {
               nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
               nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
             },
-            terms: licenseTerm,
+            terms: licenseTerms,
             sigMetadata: {
               signer: this.wallet.account!.address,
               deadline: calculatedDeadline,
@@ -1647,7 +1652,7 @@ export class IPAssetClient {
         hash: registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
       });
       const { ipId } = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-      const licenseTermsId = await this.getLicenseTermsId([licenseTerm]);
+      const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
       const { ipRoyaltyVault } =
         this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(txReceipt)[0];
       const distributeRoyaltyTokensTxHash = await this.distributeRoyaltyTokens({
@@ -1669,7 +1674,7 @@ export class IPAssetClient {
         registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
         distributeRoyaltyTokensTxHash,
         ipId,
-        licenseTermsId: licenseTermsId[0],
+        licenseTermsIds,
         ipRoyaltyVault,
       };
     } catch (error) {
@@ -1703,7 +1708,7 @@ export class IPAssetClient {
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
    * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
-  public async registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens(
+  public async registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
     try {
@@ -1806,7 +1811,7 @@ export class IPAssetClient {
         });
       }
       return {
-        registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
         distributeRoyaltyTokensTxHash,
         ipId,
         tokenId,
@@ -1821,11 +1826,11 @@ export class IPAssetClient {
   }
 
   /**
-   * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens. In order to successfully distribute royalty tokens, the license terms attached to the IP must be
+   * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens. In order to successfully distribute royalty tokens, First the license terms attached to the IP must be
    * a commercial license.
    * @param request - The request object that contains all data needed to mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
    *   @param request.spgNftContract The address of the SPG NFT contract.
-   *   @param request.terms The array of license terms to be attached.
+   *   @param {Array} request.terms The array of license terms to be attached.
    *     @param request.terms.transferable Indicates whether the license is transferable or not.
    *     @param request.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
    *     @param request.terms.mintingFee The fee to be paid when minting a license.
@@ -1853,17 +1858,23 @@ export class IPAssetClient {
    *    @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
    *   @param request.recipient - [Optional] The address to receive the minted NFT,default value is your wallet address.
    *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hash, IP ID, License terms ID, and IP royalty vault, Token ID.
+   * @returns A Promise that resolves to a transaction hash, IP ID, IP royalty vault, Token ID, and an array containing the license terms ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
     try {
-      if (!request.terms.commercialUse) {
-        throw new Error("Commercial use is required to deploy a royalty vault.");
+      const licenseTerms: LicenseTerms[] = [];
+      for (let i = 0; i < request.terms.length; i++) {
+        const term = request.terms[i];
+        if (i === 0 && !term.commercialUse) {
+          throw new Error("First license term must be a commercial license.");
+        }
+        const licenseTerm = await validateLicenseTerms(term, this.rpcClient);
+        licenseTerms.push(licenseTerm);
       }
-      const licenseTerm = await validateLicenseTerms(request.terms, this.rpcClient);
       const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
       const txHash =
         await this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
@@ -1878,7 +1889,7 @@ export class IPAssetClient {
               nftMetadataURI: request.ipMetadata?.nftMetadataURI || "",
               nftMetadataHash: request.ipMetadata?.nftMetadataHash || zeroHash,
             },
-            terms: licenseTerm,
+            terms: licenseTerms,
             royaltyShares,
           },
         );
@@ -1888,13 +1899,13 @@ export class IPAssetClient {
           hash: txHash,
         });
         const { ipId, tokenId } = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-        const licenseTermsId = await this.getLicenseTermsId([licenseTerm]);
+        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
         const { ipRoyaltyVault } =
           this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(txReceipt)[0];
         return {
           txHash,
           ipId,
-          licenseTermsId: licenseTermsId[0],
+          licenseTermsIds,
           ipRoyaltyVault,
           tokenId,
         };
