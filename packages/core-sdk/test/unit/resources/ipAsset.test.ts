@@ -2195,7 +2195,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
           tokenId: "1",
-          terms: licenseTerms,
+          terms: [licenseTerms],
           royaltyShares: [
             {
               author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -2215,10 +2215,12 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
           tokenId: "1",
-          terms: {
-            ...licenseTerms,
-            commercialUse: false,
-          },
+          terms: [
+            {
+              ...licenseTerms,
+              commercialUse: false,
+            },
+          ],
           royaltyShares: [
             {
               author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -2228,7 +2230,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register IP and attach license terms and distribute royalty tokens: Commercial use is required to deploy a royalty vault.",
+          "Failed to register IP and attach license terms and distribute royalty tokens: The first license term must be a commercial license.",
         );
       }
     });
@@ -2239,7 +2241,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
           tokenId: "1",
-          terms: licenseTerms,
+          terms: [licenseTerms],
           royaltyShares: [{ author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: -1 }],
         });
       } catch (err) {
@@ -2255,7 +2257,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
           tokenId: "1",
-          terms: licenseTerms,
+          terms: [licenseTerms],
           royaltyShares: [
             { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 101 },
           ],
@@ -2274,7 +2276,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
           tokenId: "1",
-          terms: licenseTerms,
+          terms: [licenseTerms],
           royaltyShares: [
             { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 10 },
             { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
@@ -2325,7 +2327,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
         nftContract: spgNftContract,
         tokenId: "1",
-        terms: licenseTerms,
+        terms: [licenseTerms],
         royaltyShares: [{ author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 }],
       });
       expect(result).to.deep.equal({
@@ -2333,7 +2335,7 @@ describe("Test IpAssetClient", () => {
           "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: 8n,
+        licenseTermsIds: [8n],
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
     });
@@ -2379,7 +2381,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
           tokenId: "1",
-          terms: licenseTerms,
+          terms: [licenseTerms],
           royaltyShares: [
             { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
           ],
@@ -2430,7 +2432,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
         nftContract: spgNftContract,
         tokenId: "1",
-        terms: licenseTerms,
+        terms: [licenseTerms, licenseTerms],
         royaltyShares: [{ author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 }],
         ipMetadata: {
           ipMetadataURI: "",
@@ -2447,7 +2449,7 @@ describe("Test IpAssetClient", () => {
           "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: 8n,
+        licenseTermsIds: [8n, 8n],
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
     });
@@ -2460,7 +2462,7 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       try {
-        await ipAssetClient.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],
@@ -2515,7 +2517,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
       const result =
-        await ipAssetClient.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],
@@ -2527,7 +2529,7 @@ describe("Test IpAssetClient", () => {
           tokenId: "1",
         });
       expect(result).to.deep.equal({
-        registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
           "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -2573,7 +2575,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
       const result =
-        await ipAssetClient.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],
@@ -2594,7 +2596,7 @@ describe("Test IpAssetClient", () => {
           },
         });
       expect(result).to.deep.equal({
-        registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
           "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -2609,10 +2611,12 @@ describe("Test IpAssetClient", () => {
       try {
         await ipAssetClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract,
-          terms: {
-            ...licenseTerms,
-            commercialUse: false,
-          },
+          terms: [
+            {
+              ...licenseTerms,
+              commercialUse: false,
+            },
+          ],
           royaltyShares: [
             {
               author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -2622,7 +2626,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: Commercial use is required to deploy a royalty vault.",
+          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: First license term must be a commercial license.",
         );
       }
     });
@@ -2637,7 +2641,7 @@ describe("Test IpAssetClient", () => {
       const result =
         await ipAssetClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract,
-          terms: licenseTerms,
+          terms: [licenseTerms],
           royaltyShares: [
             { author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
           ],
@@ -2685,7 +2689,7 @@ describe("Test IpAssetClient", () => {
       const result =
         await ipAssetClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract,
-          terms: licenseTerms,
+          terms: [licenseTerms],
           royaltyShares: [
             {
               author: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
@@ -2700,7 +2704,7 @@ describe("Test IpAssetClient", () => {
         txHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 0n,
-        licenseTermsId: 5n,
+        licenseTermsIds: [5n],
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
     });

@@ -10946,8 +10946,8 @@ export const royaltyTokenDistributionWorkflowsAbi = [
       },
       {
         name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
+        internalType: "struct PILTerms[]",
+        type: "tuple[]",
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
@@ -11010,7 +11010,7 @@ export const royaltyTokenDistributionWorkflowsAbi = [
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
     ],
     stateMutability: "nonpayable",
   },
@@ -11094,8 +11094,8 @@ export const royaltyTokenDistributionWorkflowsAbi = [
       },
       {
         name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
+        internalType: "struct PILTerms[]",
+        type: "tuple[]",
         components: [
           { name: "transferable", internalType: "bool", type: "bool" },
           { name: "royaltyPolicy", internalType: "address", type: "address" },
@@ -11168,7 +11168,7 @@ export const royaltyTokenDistributionWorkflowsAbi = [
     name: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "ipRoyaltyVault", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
@@ -23809,7 +23809,7 @@ export type RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest = {
  * @param spgNftContract address
  * @param recipient address
  * @param ipMetadata tuple
- * @param terms tuple
+ * @param terms tuple[]
  * @param royaltyShares tuple[]
  */
 export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest =
@@ -23840,7 +23840,7 @@ export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsA
       derivativeRevCeiling: bigint;
       currency: Address;
       uri: string;
-    };
+    }[];
     royaltyShares: {
       author: Address;
       percentage: number;
@@ -23884,7 +23884,7 @@ export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeA
  * @param nftContract address
  * @param tokenId uint256
  * @param ipMetadata tuple
- * @param terms tuple
+ * @param terms tuple[]
  * @param sigMetadata tuple
  * @param sigAttach tuple
  */
@@ -23916,7 +23916,7 @@ export type RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeplo
       derivativeRevCeiling: bigint;
       currency: Address;
       uri: string;
-    };
+    }[];
     sigMetadata: {
       signer: Address;
       deadline: bigint;
