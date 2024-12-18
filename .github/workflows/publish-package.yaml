@@ -120,7 +120,7 @@ jobs:
     # and the event triggering the workflow is a push
     if: ${{ (needs.fail_if_version_is_same.outputs.is_publish_core_sdk == 'true' || needs.fail_if_version_is_same.outputs.is_publish_react_sdk == 'true') && github.event_name == 'push' }}
     runs-on: ubuntu-latest
-    environment: "beta-sepolia"
+    environment: "odyssey"
     env:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
