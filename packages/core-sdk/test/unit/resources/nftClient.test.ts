@@ -40,7 +40,7 @@ describe("Test NftClient", () => {
         });
       } catch (e) {
         expect((e as Error).message).equal(
-          "Failed to create a SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
+          "Failed to create an SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
         );
       }
     });
@@ -59,7 +59,7 @@ describe("Test NftClient", () => {
         });
       } catch (e) {
         expect((e as Error).message).equal(
-          "Failed to create a SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
+          "Failed to create an SPG NFT collection: Invalid mint fee token address, mint fee is greater than 0.",
         );
       }
     });
