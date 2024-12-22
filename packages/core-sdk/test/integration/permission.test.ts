@@ -56,7 +56,7 @@ describe("Permission Functions", () => {
 
   it("should not throw error when create set permission signature", async () => {
     const response = await client.permission.createSetPermissionSignature({
-      ipId: "0xE54028E60070223a9b77097D9385933340D10691",
+      ipId: ipId,
       signer: process.env.TEST_WALLET_ADDRESS as Address,
       to: coreMetadataModule,
       func: "function setAll(address,string,bytes32,bytes32)",
