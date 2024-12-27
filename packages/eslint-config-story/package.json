@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/eslint-config",
-  "version": "0.1.0",
+  "version": "0.1.00",
   "private": true,
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^6.2.0",
