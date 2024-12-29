@@ -358,7 +358,7 @@ export class GroupClient {
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    * @param request - The request object containing necessary data to register group and attach license and add ips.
-   *   @param request.pIds must have the same PIL terms as the group IP.
+   *   @param request.ipIds must have the same PIL terms as the group IP.
    *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
    *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
