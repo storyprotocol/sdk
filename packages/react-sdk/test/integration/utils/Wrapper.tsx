@@ -8,7 +8,7 @@ type Props = { children: ReactNode };
 const Wrapper = ({ children }: Props) => (
   <StoryProvider
     config={{
-      transport: http("https://testnet.storyrpc.io"),
+      transport: http("https://rpc.odyssey.storyrpc.io/"),
       account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY! as Address),
     }}
   >

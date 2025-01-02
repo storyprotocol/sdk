@@ -131,7 +131,7 @@ describe("IP Asset Functions ", () => {
     });
   });
 
-  describe.only("NFT Client (SPG)", () => {
+  describe("NFT Client (SPG)", () => {
     let nftContract: Hex;
     let parentIpId: Hex;
     let licenseTermsId: bigint;
@@ -443,7 +443,7 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
 
-    it.only("should not throw error when call register ip and attach license terms and distribute royalty tokens", async () => {
+    it("should not throw error when call register ip and attach license terms and distribute royalty tokens", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
         {

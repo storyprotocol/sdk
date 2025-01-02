@@ -8,7 +8,7 @@ import {
   defineChain,
 } from "viem";
 
-export const RPC = "https://testnet.storyrpc.io";
+export const RPC = "https://rpc.odyssey.storyrpc.io/";
 export const mockERC721Address = "0x322813fd9a801c5507c9de605d63cea4f2ce6c44";
 export const mockERC20Address = "0x91f6F05B08c16769d3c85867548615d270C42fC7";
 export const iliad = defineChain({
@@ -17,7 +17,7 @@ export const iliad = defineChain({
   nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ["https://testnet.storyrpc.io"],
+      http: ["https://rpc.odyssey.storyrpc.io/"],
       webSocket: ["wss://story-network.rpc.caldera.xyz/ws"],
     },
   },
