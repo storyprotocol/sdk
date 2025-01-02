@@ -1,6 +1,14 @@
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
+import {
+  http,
+  createPublicClient,
+  createWalletClient,
+  Hex,
+  Address,
+  zeroAddress,
+  zeroHash,
+} from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import {
   licenseTokenAbi,
@@ -60,8 +68,18 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
           },
           {
             internalType: "string",
-            name: "nftMetadata",
+            name: "nftMetadataURI",
             type: "string",
+          },
+          {
+            internalType: "bytes32",
+            name: "nftMetadataHash",
+            type: "bytes32",
+          },
+          {
+            internalType: "bool",
+            name: "allowDuplicates",
+            type: "bool",
           },
         ],
         name: "mint",
@@ -78,7 +96,7 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
     ],
     address: nftContract,
     functionName: "mint",
-    args: [process.env.TEST_WALLET_ADDRESS! as Address, nftMetadata],
+    args: [process.env.TEST_WALLET_ADDRESS! as Address, nftMetadata, zeroHash, true],
     account: walletClient.account,
   });
   const hash = await walletClient.writeContract(request);

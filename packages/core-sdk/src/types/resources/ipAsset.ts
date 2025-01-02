@@ -21,6 +21,7 @@ export type RegisterRequest = {
 export type RegisterDerivativeWithLicenseTokensRequest = {
   childIpId: Address;
   licenseTokenIds: string[] | bigint[] | number[];
+  maxRts: number | string;
   txOptions?: TxOptions;
 };
 
@@ -33,6 +34,9 @@ export type RegisterDerivativeRequest = {
   childIpId: Address;
   parentIpIds: Address[];
   licenseTermsIds: string[] | bigint[] | number[];
+  maxMintingFee: bigint | string | number;
+  maxRts: number | string;
+  maxRevenueShare: number | string;
   licenseTemplate?: Address;
   txOptions?: TxOptions;
 };
@@ -219,6 +223,8 @@ export type RegisterPilTermsAndAttachResponse = {
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
   licenseTokenIds: string[] | bigint[] | number[];
+  allowDuplicates: boolean;
+  maxRts: number;
   recipient?: Address;
 } & IpMetadataAndTxOption;
 
@@ -290,14 +296,13 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
 export type DistributeRoyaltyTokens = {
   ipId: Address;
   deadline: bigint;
-  state: Hex;
   ipRoyaltyVault: Address;
   royaltyShares: RoyaltyShare[];
   totalAmount: number;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 export type RoyaltyShare = {
-  author: Address;
+  recipient: Address;
   percentage: number;
 };
 export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
@@ -312,6 +317,9 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
     parentIpIds: Address[];
     licenseTemplate?: Address;
     licenseTermsIds: bigint[];
+    maxMintingFee: number | string | bigint;
+    maxRts: number | string;
+    maxRevenueShare: number | string;
   };
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
@@ -328,10 +336,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
   terms: RegisterPILTermsRequest[];
-  royaltyShares: {
-    author: Address;
-    percentage: number;
-  }[];
+  royaltyShares: RoyaltyShare[];
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo;
@@ -349,11 +354,12 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
     parentIpIds: Address[];
     licenseTermsIds: string[] | bigint[] | number[];
     licenseTemplate?: Address;
+    maxMintingFee: number | string | bigint;
+    maxRts: number | string;
+    maxRevenueShare: number | string;
   };
-  royaltyShares: {
-    author: Address;
-    percentage: number;
-  }[];
+  royaltyShares: RoyaltyShare[];
+  allowDuplicates: boolean;
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo;

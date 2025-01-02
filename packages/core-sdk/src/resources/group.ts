@@ -6,9 +6,9 @@ import {
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
   GroupingWorkflowsClient,
-  GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
-  GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
-  GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroup2Request,
+  GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIps2Request,
+  GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroup2Request,
   IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
@@ -97,7 +97,9 @@ export class GroupClient {
       handleError(error, "Failed to register group");
     }
   }
-  /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
+  //TODO: Need to add the new method
+  /** @deprecated This method is deprecated and will be removed in a future version */
+  /**  Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
    * @param request - The request object containing necessary data to mint and register Ip and attach license and add to group.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
@@ -146,7 +148,7 @@ export class GroupClient {
         ],
       });
 
-      const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
+      const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroup2Request = {
         ...request,
         spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
         recipient:
@@ -170,13 +172,15 @@ export class GroupClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
-            this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode(
+            this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup2Encode(
               object,
             ),
         };
       } else {
         const txHash =
-          await this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup(object);
+          await this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup2(
+            object,
+          );
         if (request.txOptions?.waitForTransaction) {
           const receipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
@@ -191,6 +195,8 @@ export class GroupClient {
       handleError(error, "Failed to mint and register IP and attach license and add to group");
     }
   }
+  //TODO: Need to add the new method
+  /** @deprecated This method is deprecated and will be removed in a future version */
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
    * @param request - The request object containing necessary data to register ip and attach license and add to group.
    *   @param request.spgNftContract The address of the NFT collection.
@@ -267,7 +273,7 @@ export class GroupClient {
           },
         ],
       });
-      const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
+      const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroup2Request = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         groupId: request.groupId,
         licenseTemplate:
@@ -287,7 +293,7 @@ export class GroupClient {
           deadline: calculatedDeadline,
           signature: sigAddToGroupSignature,
         },
-        sigMetadataAndAttach: {
+        sigMetadataAndAttachAndConfig: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
           deadline: calculatedDeadline,
           signature: sigMetadataAndAttachSignature,
@@ -296,10 +302,10 @@ export class GroupClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
-            this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroupEncode(object),
+            this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup2Encode(object),
         };
       }
-      const txHash = await this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup(
+      const txHash = await this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup2(
         object,
       );
       if (request.txOptions?.waitForTransaction) {
@@ -356,6 +362,8 @@ export class GroupClient {
       handleError(error, "Failed to register group and attach license");
     }
   }
+  //TODO: Need to add the new method
+  /** @deprecated This method is deprecated and will be removed in a future version */
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    * @param request - The request object containing necessary data to register group and attach license and add ips.
    *   @param request.pIds must have the same PIL terms as the group IP.
@@ -396,7 +404,7 @@ export class GroupClient {
           );
         }
       }
-      const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
+      const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIps2Request = {
         groupPool: getAddress(request.groupPool, "request.groupPool"),
         ipIds: request.ipIds,
         licenseTemplate: request.licenseTemplate,
@@ -405,10 +413,10 @@ export class GroupClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
-            this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIpsEncode(object),
+            this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps2Encode(object),
         };
       }
-      const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps(
+      const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps2(
         object,
       );
       if (request.txOptions?.waitForTransaction) {

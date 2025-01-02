@@ -115,6 +115,8 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
+        maxMintingFee: "1",
+        maxRevenueShare: "1",
         txOptions: {
           waitForTransaction: true,
         },
@@ -149,6 +151,10 @@ describe("License Functions", () => {
           isSet: true,
           licensingHook: zeroAddress,
           hookData: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",
+          commercialRevShare: "1",
+          disabled: false,
+          expectMinimumGroupRewardShare: "1",
+          expectGroupRewardPool: zeroAddress,
         },
         txOptions: {
           waitForTransaction: true,

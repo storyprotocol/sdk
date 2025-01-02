@@ -9,13 +9,12 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { RPC, odyssey } from "./util";
-import { mockErc20Address } from "../../../src/abi/generated";
+import { RPC } from "./util";
 
 export class MockERC20 {
   private publicClient: PublicClient;
   private walletClient: WalletClient;
-  static address: Hex = mockErc20Address[odyssey];
+  static address: Hex = "0x505F4FD2857fEF5667A68153C9b6955a8039537e";
 
   constructor() {
     const baseConfig = {

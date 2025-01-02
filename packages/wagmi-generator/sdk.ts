@@ -423,7 +423,7 @@ function generateContract(config: SDKConfig, contract: Contract): string {
 
   let file: Array<string> = [];
   let types: Array<string> = [];
-
+  console.log(abiEvents);
   if (abiEvents.length) {
     addImport("viem", "PublicClient", "Address");
 

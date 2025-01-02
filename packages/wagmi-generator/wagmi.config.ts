@@ -12,153 +12,153 @@ export default defineConfig(async () => {
     {
       name: "AccessController",
       address: {
-        [odysseyChainId]: "0xf709c8001E94e2ca6F98b7fFBCd5BD3943E46D81",
+        [odysseyChainId]: "0x36c307E6eAa3663a06386c6f3D3f9909Cb0c1DfA",
       },
     },
     {
       name: "DisputeModule",
       address: {
-        [odysseyChainId]: "0x692B47fa72eE7Ac0Ec617ea384a0cAD41098F712",
+        [odysseyChainId]: "0xA5758EbB764816a338BD2E0339454fdeD61FEDCC",
       },
     },
     {
       name: "IPAccountImpl",
       address: {
-        [odysseyChainId]: "0x24F08796561d6E1AC08e82b68BF4d9500B374Af6",
+        [odysseyChainId]: "0x252118ce469EFeA3a210817620AB77216b001C1e",
       },
     },
     {
       name: "IPAssetRegistry",
       address: {
-        [odysseyChainId]: "0x28E59E91C0467e89fd0f0438D47Ca839cDfEc095",
+        [odysseyChainId]: "0xe9FDB3D7c6AB31eD5eEA45f547Ca19C5de4244Af",
       },
     },
     {
       name: "IpRoyaltyVaultImpl",
       address: {
-        [odysseyChainId]: "0x1081250219B16cc3903Aa2d2d1403A75c6A2F9f5",
+        [odysseyChainId]: "0xFcbaF5Ae5eFF8b21E68759402952F28404e48704",
       },
     },
     {
       name: "LicenseRegistry",
       address: {
-        [odysseyChainId]: "0xBda3992c49E98392e75E78d82B934F3598bA495f",
+        [odysseyChainId]: "0xDEF65942605C0c1d8eBcf3249AFBa3b8204BA8A9",
       },
     },
     {
       name: "LicenseToken",
       address: {
-        [odysseyChainId]: "0xB138aEd64814F2845554f9DBB116491a077eEB2D",
+        [odysseyChainId]: "0x6A875Bba3F710e05D9c5a9C74AC4f511ae948Df5",
       },
     },
     {
       name: "LicensingModule",
       address: {
-        [odysseyChainId]: "0x5a7D9Fa17DE09350F481A53B470D798c1c1aabae",
+        [odysseyChainId]: "0x98fBba1415369D67f0E8B9D4eD04Ed9A9cdE3152",
       },
     },
     {
       name: "PILicenseTemplate",
       address: {
-        [odysseyChainId]: "0x58E2c909D557Cd23EF90D14f8fd21667A5Ae7a93",
+        [odysseyChainId]: "0x2412341DFC214763dDCFCE76acf2Da09Bc7b4F7E",
       },
     },
     {
       name: "ModuleRegistry",
       address: {
-        [odysseyChainId]: "0x9F18c5723BC4Ee447CF9B01a8543D3b08b7F09C7",
+        [odysseyChainId]: "0x6159Be97753e5a31fc2e25e2D189678eEebE8861",
       },
     },
     {
       name: "RoyaltyModule",
       address: {
-        [odysseyChainId]: "0xEa6eD700b11DfF703665CCAF55887ca56134Ae3B",
+        [odysseyChainId]: "0xdCe2468a64D8D88a00074c47760C2b6AaEDbEDc8",
       },
     },
     {
       name: "RoyaltyPolicyLAP",
       address: {
-        [odysseyChainId]: "0x28b4F70ffE5ba7A26aEF979226f77Eb57fb9Fdb6",
+        [odysseyChainId]: "0x80244b027E2296fb8fb4dFd05FaCc7A36C12e29a",
       },
     },
     {
       name: "RoyaltyPolicyLRP",
       address: {
-        [odysseyChainId]: "0x7D2d9af4E4ab14Afcfd86436BC348928B40963Dd",
+        [odysseyChainId]: "0x85E38f84128B97F9C7C50b1B912D8Af159d49e29",
       },
     },
     {
       name: "SPGNFTBeacon",
       address: {
-        [odysseyChainId]: "0x4b913A9da52806A0fd0b031bdf32fa33634d082a",
+        [odysseyChainId]: "0xC8774113B8FbD1741Ab5CDCd39389be4269C7a12",
       },
     },
     {
       name: "SPGNFTImpl",
       address: {
-        [odysseyChainId]: "0x32c03CD2B4CC3456aCD86C7d5BA8E0405665DbF9",
+        [odysseyChainId]: "0x00D0f71B99eB5c5eb3fbd9feFA5996329A8db3Ae",
       },
     },
     {
       name: "CoreMetadataModule",
       address: {
-        [odysseyChainId]: "0x89630Ccf23277417FBdfd3076C702F5248267e78",
+        [odysseyChainId]: "0x6aeDf1fEBF4c8c764019C6F90e94aB9D94324c50",
       },
     },
     {
       name: "DerivativeWorkflows",
       address: {
-        [odysseyChainId]: "0xa8815CEB96857FFb8f5F8ce920b1Ae6D70254C7B",
+        [odysseyChainId]: "0x2dC1cB61ac23257e99C716932756FE2e0f7aaDeB",
       },
     },
     {
       name: "GroupingWorkflows",
       address: {
-        [odysseyChainId]: "0xcd754994eBE5Ce16D432C1f936f98ac0d4aABA0e",
+        [odysseyChainId]: "0xDA49FFefbc20311d86E275741D152942C3EB5412",
       },
     },
     {
       name: "RegistrationWorkflows",
       address: {
-        [odysseyChainId]: "0xde13Be395E1cd753471447Cf6A656979ef87881c",
+        [odysseyChainId]: "0x1F67Da99E9b3aB4557941258624730db9f9098a4",
       },
     },
     {
       name: "RoyaltyWorkflows",
       address: {
-        [odysseyChainId]: "0xAf922379B8e1abc6B0D78547128579221C7F7A22",
+        [odysseyChainId]: "0x90F7c98EfB9Dd19e88c9C30C5a298C54276a47E3",
       },
     },
     {
       name: "LicenseAttachmentWorkflows",
       address: {
-        [odysseyChainId]: "0x44Bad1E4035a44eAC1606B222873E4a85E8b7D9c",
+        [odysseyChainId]: "0x928fD7A75EF7C14bf87Ee6b7d507d109a9E72603",
       },
     },
     {
       name: "RoyaltyTokenDistributionWorkflows",
       address: {
-        [odysseyChainId]: "0x39D9C7a23AA9e33E06aAAf51ebaDd11342b5be50",
+        [odysseyChainId]: "0x7f6b16C0c065F3F5349EA8BE35f6f23310D7397F",
       },
     },
     {
       name: "GroupingModule",
       address: {
-        [odysseyChainId]: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
+        [odysseyChainId]: "0x06884216bB51FD881EB255fCAcBBA626D5191C1e",
       },
     },
     {
       name: "EvenSplitGroupPool",
       address: {
-        [odysseyChainId]: "0xC384B56fD62d6679Cd62A2fE0dA3fe4560f33391",
+        [odysseyChainId]: "0xF4cE2a628b60b51DEE641d4392f88850F14EFdeF",
       },
     },
-    {
-      name: "MockERC20",
-      address: {
-        [odysseyChainId]: "0x12A8b0DcC6e3bB0915638361D9D49942Da07F455",
-      },
-    },
+    // {
+    //   name: "MockERC20",
+    //   address: {
+    //     [odysseyChainId]: "0x505F4FD2857fEF5667A68153C9b6955a8039537e",
+    //   },
+    // },
     {
       name: "Multicall3",
       address: {
@@ -206,15 +206,10 @@ export default defineConfig(async () => {
             "IPAccountRegistered",
           ],
           IpRoyaltyVaultImpl: [
-            "claimRevenueByTokenBatch",
             "claimableRevenue",
-            "collectRoyaltyTokens",
             "ipId",
             "RoyaltyTokensCollected",
-            "snapshot",
-            "SnapshotCompleted",
             "RevenueTokenClaimed",
-            "claimRevenueOnBehalfBySnapshotBatch",
             "balanceOf",
           ],
           PiLicenseTemplate: [
