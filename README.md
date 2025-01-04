@@ -121,3 +121,6 @@ Please make sure to update tests as appropriate.
 [MIT License](/LICENSE.md)
 
 ## Contact Us
+
+[![Join Our Discord](https://img.shields.io/badge/Join%20Our%20Discord-Click%20Here-blue)](https://discord.gg/storyprotocol)
+[![Contact Us](https://img.shields.io/badge/Contact%20Us-Click%20Here-blue)](https://us12.list-manage.com/contact-form?u=31e9becc054689c22a9946af4&form_id=2745f1aa221b6ccc31aa51f1c5b44366)
