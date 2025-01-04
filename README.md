@@ -120,7 +120,6 @@ Please make sure to update tests as appropriate.
 
 [MIT License](/LICENSE.md)
 
-## Contact Us
 
 ## Contact Us
 
