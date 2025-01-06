@@ -149,7 +149,6 @@ describe("IP Asset Functions ", () => {
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
       nftContract = txData.spgNftContract!;
-      console.log(nftContract);
 
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: nftContract,
@@ -180,7 +179,6 @@ describe("IP Asset Functions ", () => {
       });
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
-      console.log("result", result);
       const mockERC20 = new MockERC20();
       await mockERC20.approve(derivativeWorkflowsAddress[odyssey]);
       await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[odyssey]);
@@ -204,7 +202,7 @@ describe("IP Asset Functions ", () => {
       expect(response.ipId).to.be.a("string").and.not.empty;
     });
     it("should not throw error when register derivative ip", async () => {
-      const tokenChildId = await mintBySpg(nftContract, "test-metadata");
+      const tokenChildId = await mintBySpg(nftContract);
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
         tokenId: tokenChildId!,
@@ -392,8 +390,6 @@ describe("IP Asset Functions ", () => {
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
-        allowDuplicates: true,
-        maxRts: 10 * 10 ** 6, //10%
         txOptions: {
           waitForTransaction: true,
         },
@@ -402,7 +398,6 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
       expect(result.tokenId).to.be.a("bigint");
     });
-
     it("should not throw error when call register ip and make derivative with license tokens", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
@@ -485,7 +480,6 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
       expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
     });
-
     it("should not throw error when call register derivative and attach license terms and distribute royalty tokens", async () => {
       const tokenId = await getTokenId();
       const result =

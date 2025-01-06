@@ -223,8 +223,6 @@ export type RegisterPilTermsAndAttachResponse = {
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
   licenseTokenIds: string[] | bigint[] | number[];
-  allowDuplicates: boolean;
-  maxRts: number;
   recipient?: Address;
 } & IpMetadataAndTxOption;
 

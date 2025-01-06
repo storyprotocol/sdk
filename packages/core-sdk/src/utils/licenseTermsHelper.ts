@@ -60,9 +60,6 @@ export function getLicenseTermByType(
         "DefaultMintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );
     }
-    if (term.commercialRevShare < 0 || term.commercialRevShare > 100) {
-      throw new Error("CommercialRevShare should be between 0 and 100.");
-    }
     licenseTerms.royaltyPolicy = getAddress(
       term.royaltyPolicyAddress,
       "term.royaltyPolicyLAPAddress",
@@ -71,7 +68,7 @@ export function getLicenseTermByType(
     licenseTerms.commercialUse = true;
     licenseTerms.commercialAttribution = true;
 
-    licenseTerms.commercialRevShare = (term.commercialRevShare / 100) * 100000000;
+    licenseTerms.commercialRevShare = getRevenueShare(term.commercialRevShare);
     licenseTerms.derivativesReciprocal = true;
     licenseTerms.currency = getAddress(term.currency, "term.currency");
     return licenseTerms;
@@ -163,4 +160,12 @@ const verifyDerivatives = (terms: LicenseTerms) => {
       throw new Error("Cannot add derivative revenue ceiling when derivative use is disabled.");
     }
   }
+};
+
+export const getRevenueShare = (revShare: number | string) => {
+  const revShareNumber = Number(revShare);
+  if (revShareNumber < 0 || revShareNumber > 100) {
+    throw new Error("CommercialRevShare should be between 0 and 100.");
+  }
+  return (revShareNumber / 100) * 100000000;
 };

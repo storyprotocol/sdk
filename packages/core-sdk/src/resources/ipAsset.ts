@@ -89,7 +89,7 @@ import {
   ipRoyaltyVaultImplAbi,
   licensingModuleAbi,
 } from "../abi/generated";
-import { validateLicenseTerms } from "../utils/licenseTermsHelper";
+import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission } from "../types/resources/permission";
 import { LicenseTerms } from "../types/resources/license";
@@ -409,8 +409,8 @@ export class IPAssetClient {
    *   @param {Array} request.parentIpIds The parent IP IDs.
    *   @param {Array} request.licenseTermsIds The IDs of the license terms that the parent IP supports.
    *   @param request.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *   @param request.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies.
-   *   @param request.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens.
+   *   @param request.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100000000).
+   *   @param request.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
    *   @param request.licenseTemplate [Optional] The license template address.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data.
@@ -430,10 +430,13 @@ export class IPAssetClient {
         royaltyContext: zeroAddress,
         maxMintingFee: BigInt(request.maxMintingFee),
         maxRts: Number(request.maxRts),
-        maxRevenueShare: Number(request.maxRevenueShare),
+        maxRevenueShare: getRevenueShare(request.maxRevenueShare),
       } as const;
+      if (req.maxMintingFee < 0) {
+        throw new Error(`maxMintingFee must be greater than 0.`);
+      }
       if (req.maxRts < 0 || req.maxRts > MAX_ROYALTY_TOKEN) {
-        throw new Error(`maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}`);
+        throw new Error(`maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
       }
       const isChildIpIdRegistered = await this.isRegistered(req.childIpId);
       if (!isChildIpIdRegistered) {
@@ -454,7 +457,6 @@ export class IPAssetClient {
           licenseTemplate: req.licenseTemplate,
           licenseTermsId: req.licenseTermsIds[i],
         });
-        //TODO: Confirm maxRevenueShare is percentage ans maxMintingFee range
         if (req.maxRevenueShare !== 0 && royaltyPercent > req.maxRevenueShare) {
           throw new Error(
             `The royalty percent for the parent IP with id ${parentId} is greater than the maximum revenue share ${req.maxRevenueShare}.`,
@@ -506,8 +508,8 @@ export class IPAssetClient {
    *    @param {Array} request.args.parentIpIds The parent IP IDs.
    *    @param {Array} request.args.licenseTermsIds The IDs of the license terms that the parent IP supports.
    *    @param request.args.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *    @param request.args.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies.
-   *    @param request.args.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens.
+   *    @param request.args.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100000000).
+   *    @param request.args.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
    *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
    * @returns A Promise that resolves to a transaction hash.
@@ -552,7 +554,7 @@ export class IPAssetClient {
             zeroAddress,
             BigInt(arg.maxMintingFee),
             Number(arg.maxRts),
-            Number(arg.maxRevenueShare),
+            getRevenueShare(arg.maxRevenueShare),
           ],
         });
         const { result: state } = await ipAccount.state();
@@ -603,7 +605,7 @@ export class IPAssetClient {
    * @param request - The request object that contains all data needed to register derivative license tokens.
    *   @param request.childIpId The derivative IP ID.
    *   @param {Array} request.licenseTokenIds The IDs of the license tokens.
-   *   @param request.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies.
+   *    @param request.args.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100000000).
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the transaction hash.
    */
@@ -611,8 +613,14 @@ export class IPAssetClient {
     request: RegisterDerivativeWithLicenseTokensRequest,
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> {
     try {
-      if (Number(request.maxRts) < 0 || Number(request.maxRts) > MAX_ROYALTY_TOKEN) {
-        throw new Error(`maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}`);
+      const req = {
+        childIpId: getAddress(request.childIpId, "request.childIpId"),
+        licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
+        royaltyContext: zeroAddress,
+        maxRts: Number(request.maxRts),
+      };
+      if (req.maxRts < 0 || req.maxRts > MAX_ROYALTY_TOKEN) {
+        throw new Error(`maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
       }
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
@@ -622,12 +630,7 @@ export class IPAssetClient {
         throw new Error("licenseTokenIds must be provided.");
       }
       request.licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
-      const req = {
-        childIpId: getAddress(request.childIpId, "request.childIpId"),
-        licenseTokenIds: request.licenseTokenIds,
-        royaltyContext: zeroAddress,
-        maxRts: Number(request.maxRts),
-      };
+
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData: this.licensingModuleClient.registerDerivativeWithLicenseTokensEncode(req),
@@ -1683,8 +1686,8 @@ export class IPAssetClient {
    *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
    *     @param {Array} request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
    *     @param request.derivData.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *     @param request.derivData.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies.
-   *     @param request.derivData.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens.
+   *     @param request.derivData.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100000000).
+   *     @param request.derivData.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -1745,7 +1748,7 @@ export class IPAssetClient {
           royaltyContext: zeroAddress,
           maxMintingFee: BigInt(request.derivData.maxMintingFee),
           maxRts: Number(request.derivData.maxRts),
-          maxRevenueShare: Number(request.derivData.maxRevenueShare),
+          maxRevenueShare: getRevenueShare(request.derivData.maxRevenueShare),
         },
         sigMetadataAndRegister: {
           signer: this.wallet.account!.address,
@@ -1753,6 +1756,12 @@ export class IPAssetClient {
           signature: signature,
         },
       } as const;
+      if (req.derivData.maxRts < 0 || req.derivData.maxRts > MAX_ROYALTY_TOKEN) {
+        throw new Error(`maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
+      }
+      if (req.derivData.maxMintingFee < 0) {
+        throw new Error(`maxMintingFee must be greater than 0.`);
+      }
       const { royaltyShares, totalAmount } = this.getRoyaltyShares(request.royaltyShares);
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
