@@ -1,7 +1,9 @@
 import { PublicClient, WalletClient, toHex, zeroHash } from "viem";
 
 import {
+  coreMetadataModuleAbi,
   CoreMetadataModuleClient,
+  groupingModuleAbi,
   GroupingModuleClient,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
@@ -13,6 +15,7 @@ import {
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
   LicenseTokenReadOnlyClient,
+  licensingModuleAbi,
   LicensingModuleClient,
   PiLicenseTemplateClient,
   SimpleWalletClient,
@@ -34,6 +37,7 @@ import {
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
 } from "../types/resources/group";
+import { getFunctionSignature } from "../utils/getFunctionSignature";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -97,7 +101,6 @@ export class GroupClient {
       handleError(error, "Failed to register group");
     }
   }
-  //TODO: Need to add the new method
   /** @deprecated This method is deprecated and will be removed in a future version */
   /**  Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
    * @param request - The request object containing necessary data to mint and register Ip and attach license and add to group.
@@ -195,7 +198,6 @@ export class GroupClient {
       handleError(error, "Failed to mint and register IP and attach license and add to group");
     }
   }
-  //TODO: Need to add the new method
   /** @deprecated This method is deprecated and will be removed in a future version */
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
    * @param request - The request object containing necessary data to register ip and attach license and add to group.
@@ -205,11 +207,11 @@ export class GroupClient {
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
    *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
    * . @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
@@ -233,6 +235,7 @@ export class GroupClient {
       const { result: state } = await ipAccount.state();
       const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
+
       const { signature: sigAddToGroupSignature } = await getPermissionSignature({
         ipId: getAddress(request.groupId, "request.groupId"),
         deadline: calculatedDeadline,
@@ -242,10 +245,10 @@ export class GroupClient {
         permissions: [
           {
             ipId: getAddress(request.groupId, "request.groupId"),
-            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
-            to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
+            signer: this.groupingWorkflowsClient.address,
+            to: this.groupingModuleClient.address,
             permission: AccessPermission.ALLOW,
-            func: "function addIp(address,address[])",
+            func: getFunctionSignature(groupingModuleAbi, "addIp"),
           },
         ],
       });
@@ -259,17 +262,24 @@ export class GroupClient {
         permissions: [
           {
             ipId: ipIdAddress,
-            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
+            signer: this.groupingWorkflowsClient.address,
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: "function setAll(address,string,bytes32,bytes32)",
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
-            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
+            signer: this.groupingWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: "function attachLicenseTerms(address,address,uint256)",
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.groupingWorkflowsClient.address,
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
         ],
       });
@@ -362,7 +372,6 @@ export class GroupClient {
       handleError(error, "Failed to register group and attach license");
     }
   }
-  //TODO: Need to add the new method
   /** @deprecated This method is deprecated and will be removed in a future version */
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    * @param request - The request object containing necessary data to register group and attach license and add ips.

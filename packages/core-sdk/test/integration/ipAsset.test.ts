@@ -101,7 +101,7 @@ describe("IP Asset Functions ", () => {
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
         maxMintingFee: "0",
-        maxRevenueShare: 10 * 10 ** 6,
+        maxRevenueShare: 1,
         txOptions: {
           waitForTransaction: true,
         },
@@ -373,7 +373,7 @@ describe("IP Asset Functions ", () => {
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
         maxMintingFee: "0",
-        maxRevenueShare: 10 * 10 ** 6,
+        maxRevenueShare: 1,
         txOptions: {
           waitForTransaction: true,
         },
@@ -403,7 +403,7 @@ describe("IP Asset Functions ", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
         maxMintingFee: "0",
-        maxRevenueShare: 10 * 10 ** 6,
+        maxRevenueShare: 1,
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
