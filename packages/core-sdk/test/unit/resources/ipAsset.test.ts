@@ -483,7 +483,9 @@ describe("Test IpAssetClient", () => {
         .resolves(true)
         .onCall(1)
         .resolves(true);
-
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
       try {
         await ipAssetClient.registerDerivative({
           childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -495,12 +497,13 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative: Parent IP IDs and License terms IDs must be provided in pairs.",
+          "Failed to register derivative: The number of parent IP IDs must match the number of license terms IDs.",
         );
       }
     });
     it("should throw maxMintingFee error when registerDerivative given maxMintingFee is less than 0", async () => {
       try {
+        sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
         await ipAssetClient.registerDerivative({
           childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -515,7 +518,8 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-    it("should throw maxRts error when registerDerivative given maxRts is greater than 100000000", async () => {
+    it(`should throw maxRts error when registerDerivative given maxRts is greater than ${MAX_ROYALTY_TOKEN}`, async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await ipAssetClient.registerDerivative({
           childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -541,7 +545,9 @@ describe("Test IpAssetClient", () => {
         .resolves(true)
         .onCall(1)
         .resolves(true);
-
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
       try {
         await ipAssetClient.registerDerivative({
           childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -2643,6 +2649,10 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
@@ -2664,10 +2674,14 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-    it("should throw maxRts error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given maxRts is greater than MAX_ROYALTY_TOKEN", async () => {
+    it("should throw maxRts error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given maxRts is greater than 100000000", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
@@ -2693,6 +2707,10 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
@@ -2719,6 +2737,9 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent")
+        .resolves({ royaltyPercent: 100 });
       try {
         await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: spgNftContract,
@@ -2739,7 +2760,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative IP and attach license terms and distribute royalty tokens: Parent IP IDs and License terms IDs must be provided in pairs.",
+          "Failed to register derivative IP and attach license terms and distribute royalty tokens: The number of parent IP IDs must match the number of license terms IDs.",
         );
       }
     });
@@ -2782,6 +2803,9 @@ describe("Test IpAssetClient", () => {
         .onFirstCall()
         .resolves(false)
         .onSecondCall()
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
       try {
         await ipAssetClient.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
@@ -2835,6 +2859,9 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(ipAssetClient.royaltyTokenDistributionWorkflowsClient, "distributeRoyaltyTokens")
         .resolves(txHash);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -2904,7 +2931,9 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
-
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
       sinon
         .stub(ipAssetClient.royaltyTokenDistributionWorkflowsClient, "distributeRoyaltyTokens")
         .resolves(txHash);
@@ -3059,14 +3088,72 @@ describe("Test IpAssetClient", () => {
   });
 
   describe("Test ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens", async () => {
-    it("should throw commercial terms error when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given license terms id is not commercial", async () => {
+    it("should throw parent ip id error when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given parent ip id is empty", async () => {
+      sinon.stub(ipAssetClient.licenseTemplateClient, "getLicenseTerms").resolves({
+        terms: {
+          ...licenseTerms,
+          commercialUse: true,
+        },
+      });
       try {
-        sinon.stub(ipAssetClient.licenseTemplateClient, "getLicenseTerms").resolves({
-          terms: {
-            ...licenseTerms,
-            commercialUse: false,
+        await ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+          spgNftContract,
+          allowDuplicates: false,
+          royaltyShares: [
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          ],
+          derivData: {
+            parentIpIds: [],
+            licenseTermsIds: [1n],
+            maxMintingFee: 100,
+            maxRts: 100,
+            maxRevenueShare: 100,
           },
         });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: The parent IP IDs must be provided.",
+        );
+      }
+    });
+
+    it("should throw license terms id error when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given license terms id is empty", async () => {
+      sinon.stub(ipAssetClient.licenseTemplateClient, "getLicenseTerms").resolves({
+        terms: {
+          ...licenseTerms,
+          commercialUse: true,
+        },
+      });
+      try {
+        await ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+          spgNftContract,
+          allowDuplicates: false,
+          royaltyShares: [
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          ],
+          derivData: {
+            parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+            licenseTermsIds: [],
+            maxMintingFee: 100,
+            maxRts: 100,
+            maxRevenueShare: 100,
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: The license terms IDs must be provided.",
+        );
+      }
+    });
+
+    it("should throw maxRevenueShare error when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given maxRevenueShare is greater than 100", async () => {
+      sinon.stub(ipAssetClient.licenseTemplateClient, "getLicenseTerms").resolves({
+        terms: {
+          ...licenseTerms,
+          commercialUse: true,
+        },
+      });
+      try {
         await ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
           spgNftContract,
           allowDuplicates: false,
@@ -3078,17 +3165,52 @@ describe("Test IpAssetClient", () => {
             licenseTermsIds: [1n],
             maxMintingFee: 100,
             maxRts: 100,
-            maxRevenueShare: 100,
+            maxRevenueShare: 101,
           },
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative and distribute royalty tokens: The license terms attached to the IP must be a commercial license to distribute royalty tokens.",
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: CommercialRevShare should be between 0 and 100.",
+        );
+      }
+    });
+    it("should throw maxRevenueShare error when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given maxRevenueShare is less than 0", async () => {
+      sinon.stub(ipAssetClient.licenseTemplateClient, "getLicenseTerms").resolves({
+        terms: {
+          ...licenseTerms,
+          commercialUse: true,
+        },
+      });
+      try {
+        await ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+          spgNftContract,
+          allowDuplicates: false,
+          royaltyShares: [
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          ],
+          derivData: {
+            parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+            licenseTermsIds: [1n],
+            maxMintingFee: 100,
+            maxRts: 100,
+            maxRevenueShare: -1,
+          },
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: CommercialRevShare should be between 0 and 100.",
         );
       }
     });
 
     it("should return txHash when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given correct args", async () => {
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(
           ipAssetClient.royaltyTokenDistributionWorkflowsClient,
@@ -3120,6 +3242,13 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given correct args and waitForTransaction of true", async () => {
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(
           ipAssetClient.royaltyTokenDistributionWorkflowsClient,

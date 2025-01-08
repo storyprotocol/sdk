@@ -57,6 +57,7 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
+  InternalDerivativeData,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -76,6 +77,7 @@ import {
   LicenseRegistryReadOnlyClient,
   LicenseTokenReadOnlyClient,
   LicensingModuleClient,
+  LicensingModuleRegisterDerivativeRequest,
   Multicall3Client,
   PiLicenseTemplateClient,
   RegistrationWorkflowsClient,
@@ -83,6 +85,8 @@ import {
   RegistrationWorkflowsRegisterIpRequest,
   RoyaltyModuleEventClient,
   RoyaltyTokenDistributionWorkflowsClient,
+  RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
   coreMetadataModuleAbi,
   ipAccountImplAbi,
@@ -419,7 +423,7 @@ export class IPAssetClient {
     request: RegisterDerivativeRequest,
   ): Promise<RegisterDerivativeResponse> {
     try {
-      const req = {
+      const object: LicensingModuleRegisterDerivativeRequest = {
         childIpId: getAddress(request.childIpId, "request.childIpId"),
         parentIpIds: request.parentIpIds,
         licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
@@ -432,59 +436,17 @@ export class IPAssetClient {
         maxRts: Number(request.maxRts),
         maxRevenueShare: getRevenueShare(request.maxRevenueShare),
       } as const;
-      if (req.maxMintingFee < 0) {
-        throw new Error(`The maxMintingFee must be greater than 0.`);
-      }
-      if (req.maxRts < 0 || req.maxRts > MAX_ROYALTY_TOKEN) {
-        throw new Error(`The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
-      }
-      const isChildIpIdRegistered = await this.isRegistered(req.childIpId);
+      const isChildIpIdRegistered = await this.isRegistered(object.childIpId);
       if (!isChildIpIdRegistered) {
-        throw new Error(`The child IP with id ${req.childIpId} is not registered.`);
+        throw new Error(`The child IP with id ${object.childIpId} is not registered.`);
       }
-      if (req.parentIpIds.length !== req.licenseTermsIds.length) {
-        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");
-      }
-      for (const [i, parentId] of req.parentIpIds.entries()) {
-        const isParentIpIdRegistered = await this.isRegistered(
-          getAddress(parentId, "request.parentIpIds"),
-        );
-        if (!isParentIpIdRegistered) {
-          throw new Error(`The parent IP with id ${parentId} is not registered.`);
-        }
-        const { royaltyPercent } = await this.licenseRegistryReadOnlyClient.getRoyaltyPercent({
-          ipId: getAddress(parentId, "request.parentIpIds"),
-          licenseTemplate: req.licenseTemplate,
-          licenseTermsId: req.licenseTermsIds[i],
-        });
-        if (req.maxRevenueShare !== 0 && royaltyPercent > req.maxRevenueShare) {
-          throw new Error(
-            `The royalty percent for the parent IP with id ${parentId} is greater than the maximum revenue share ${req.maxRevenueShare}.`,
-          );
-        }
-      }
-
-      for (let i = 0; i < request.parentIpIds.length; i++) {
-        const isAttachedLicenseTerms =
-          await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
-            ipId: getAddress(request.parentIpIds[i], "request.parentIpIds"),
-            licenseTemplate:
-              (request.licenseTemplate &&
-                getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-              this.licenseTemplateClient.address,
-            licenseTermsId: BigInt(request.licenseTermsIds[i]),
-          });
-        if (!isAttachedLicenseTerms) {
-          throw new Error(
-            `License terms id ${request.licenseTermsIds[i]} must be attached to the parent ipId ${request.parentIpIds[i]} before registering derivative.`,
-          );
-        }
-      }
-
+      await this.validateDerivativeData({
+        ...object,
+      });
       if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.licensingModuleClient.registerDerivativeEncode(req) };
+        return { encodedTxData: this.licensingModuleClient.registerDerivativeEncode(object) };
       } else {
-        const txHash = await this.licensingModuleClient.registerDerivative(req);
+        const txHash = await this.licensingModuleClient.registerDerivative(object);
         if (request.txOptions?.waitForTransaction) {
           await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
@@ -508,7 +470,7 @@ export class IPAssetClient {
    *    @param {Array} request.args.parentIpIds The parent IP IDs.
    *    @param {Array} request.args.licenseTermsIds The IDs of the license terms that the parent IP supports.
    *    @param request.args.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *    @param request.args.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100000000).
+   *    @param request.args.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
    *    @param request.args.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
    *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
@@ -1735,60 +1697,44 @@ export class IPAssetClient {
           },
         ],
       });
-      const req = {
-        nftContract: request.nftContract,
-        tokenId: BigInt(request.tokenId),
-        ipMetadata: this.getIpMetadata(request.ipMetadata),
-        derivData: {
-          ...request.derivData,
-          licenseTemplate:
-            (request.derivData.licenseTemplate &&
-              getAddress(request.derivData.licenseTemplate, "request.derivData.licenseTemplate")) ||
-            this.licenseTemplateClient.address,
-          royaltyContext: zeroAddress,
-          maxMintingFee: BigInt(request.derivData.maxMintingFee),
-          maxRts: Number(request.derivData.maxRts),
-          maxRevenueShare: getRevenueShare(request.derivData.maxRevenueShare),
-        },
-        sigMetadataAndRegister: {
-          signer: this.wallet.account!.address,
-          deadline: calculatedDeadline,
-          signature: signature,
-        },
-      } as const;
-      if (req.derivData.maxRts < 0 || req.derivData.maxRts > MAX_ROYALTY_TOKEN) {
-        throw new Error(`The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
-      }
-      if (req.derivData.maxMintingFee < 0) {
-        throw new Error(`The maxMintingFee must be greater than 0.`);
-      }
+      const object: RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest =
+        {
+          nftContract: request.nftContract,
+          tokenId: BigInt(request.tokenId),
+          ipMetadata: this.getIpMetadata(request.ipMetadata),
+          derivData: {
+            ...request.derivData,
+            licenseTemplate:
+              (request.derivData.licenseTemplate &&
+                getAddress(
+                  request.derivData.licenseTemplate,
+                  "request.derivData.licenseTemplate",
+                )) ||
+              this.licenseTemplateClient.address,
+            royaltyContext: zeroAddress,
+            maxMintingFee: BigInt(request.derivData.maxMintingFee),
+            maxRts: Number(request.derivData.maxRts),
+            maxRevenueShare: getRevenueShare(request.derivData.maxRevenueShare),
+            parentIpIds: request.derivData.parentIpIds.map((id) =>
+              getAddress(id, "request.derivData.parentIpIds"),
+            ),
+            licenseTermsIds: request.derivData.licenseTermsIds.map((id) => BigInt(id)),
+          },
+          sigMetadataAndRegister: {
+            signer: this.wallet.account!.address,
+            deadline: calculatedDeadline,
+            signature: signature,
+          },
+        } as const;
       const { royaltyShares, totalAmount } = this.getRoyaltyShares(request.royaltyShares);
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
-      if (request.derivData.parentIpIds.length !== request.derivData.licenseTermsIds.length) {
-        throw new Error("Parent IP IDs and License terms IDs must be provided in pairs.");
-      }
-      for (const [i, parentId] of request.derivData.parentIpIds.entries()) {
-        const isParentIpRegistered = await this.isRegistered(parentId);
-        if (!isParentIpRegistered) {
-          throw new Error(`The parent IP with id ${parentId} is not registered.`);
-        }
-        const { royaltyPercent } = await this.licenseRegistryReadOnlyClient.getRoyaltyPercent({
-          ipId: getAddress(parentId, "request.parentIpIds"),
-          licenseTemplate: req.derivData.licenseTemplate,
-          licenseTermsId: req.derivData.licenseTermsIds[i],
-        });
-        if (req.derivData.maxRevenueShare !== 0 && royaltyPercent > req.derivData.maxRevenueShare) {
-          throw new Error(
-            `The royalty percent for the parent IP with id ${parentId} is greater than the maximum revenue share ${req.derivData.maxRevenueShare}.`,
-          );
-        }
-      }
+      await this.validateDerivativeData(object.derivData);
       const txHash =
         await this.royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
-          req,
+          object,
         );
       const txReceipt = await this.rpcClient.waitForTransactionReceipt({
         ...request.txOptions,
@@ -1925,8 +1871,8 @@ export class IPAssetClient {
    *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking, default value is Programmable IP License.
    *     @param {Array} request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
    *     @param request.derivData.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *     @param request.derivData.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies.
-   *     @param request.derivData.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens.
+   *     @param request.derivData.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
+   *     @param request.derivData.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -1959,32 +1905,38 @@ export class IPAssetClient {
         licenseTerms.push(licenseTermsId);
       }
       const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
+      const object: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest =
+        {
+          spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
+          recipient:
+            (request.recipient && getAddress(request.recipient, "request.recipient")) ||
+            this.wallet.account!.address,
+          ipMetadata: this.getIpMetadata(request.ipMetadata),
+          derivData: {
+            ...request.derivData,
+            licenseTemplate:
+              (request.derivData.licenseTemplate &&
+                getAddress(
+                  request.derivData.licenseTemplate,
+                  "request.derivData.licenseTemplate",
+                )) ||
+              this.licenseTemplateClient.address,
+            royaltyContext: zeroAddress,
+            licenseTermsIds: licenseTerms,
+            maxMintingFee: BigInt(request.derivData.maxMintingFee),
+            maxRts: Number(request.derivData.maxRts),
+            maxRevenueShare: getRevenueShare(request.derivData.maxRevenueShare),
+            parentIpIds: request.derivData.parentIpIds.map((id) =>
+              getAddress(id, "request.derivData.parentIpIds"),
+            ),
+          },
+          royaltyShares: royaltyShares,
+          allowDuplicates: request.allowDuplicates,
+        };
+      await this.validateDerivativeData(object.derivData);
       const txHash =
         await this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
-          {
-            spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
-            recipient:
-              (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-              this.wallet.account!.address,
-            ipMetadata: this.getIpMetadata(request.ipMetadata),
-            derivData: {
-              ...request.derivData,
-              licenseTemplate:
-                (request.derivData.licenseTemplate &&
-                  getAddress(
-                    request.derivData.licenseTemplate,
-                    "request.derivData.licenseTemplate",
-                  )) ||
-                this.licenseTemplateClient.address,
-              royaltyContext: zeroAddress,
-              licenseTermsIds: licenseTerms,
-              maxMintingFee: BigInt(request.derivData.maxMintingFee),
-              maxRts: Number(request.derivData.maxRts),
-              maxRevenueShare: Number(request.derivData.maxRevenueShare),
-            },
-            royaltyShares: royaltyShares,
-            allowDuplicates: request.allowDuplicates,
-          },
+          object,
         );
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({
@@ -2148,5 +2100,51 @@ export class IPAssetClient {
   private async getCalculatedDeadline(requestDeadline?: string | number | bigint): Promise<bigint> {
     const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
     return getDeadline(blockTimestamp, requestDeadline);
+  }
+
+  private async validateDerivativeData(derivativeData: InternalDerivativeData) {
+    if (derivativeData.parentIpIds.length === 0) {
+      throw new Error("The parent IP IDs must be provided.");
+    }
+    if (derivativeData.licenseTermsIds.length === 0) {
+      throw new Error("The license terms IDs must be provided.");
+    }
+    if (derivativeData.parentIpIds.length !== derivativeData.licenseTermsIds.length) {
+      throw new Error("The number of parent IP IDs must match the number of license terms IDs.");
+    }
+    if (derivativeData.maxRts < 0 || derivativeData.maxRts > MAX_ROYALTY_TOKEN) {
+      throw new Error(`The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
+    }
+    if (derivativeData.maxMintingFee < 0) {
+      throw new Error(`The maxMintingFee must be greater than 0.`);
+    }
+    for (let i = 0; i < derivativeData.parentIpIds.length; i++) {
+      const parentId = derivativeData.parentIpIds[i];
+      const isParentIpRegistered = await this.isRegistered(parentId);
+      if (!isParentIpRegistered) {
+        throw new Error(`The parent IP with id ${parentId} is not registered.`);
+      }
+      const isAttachedLicenseTerms =
+        await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+          ipId: parentId,
+          licenseTemplate: derivativeData.licenseTemplate,
+          licenseTermsId: derivativeData.licenseTermsIds[i],
+        });
+      if (!isAttachedLicenseTerms) {
+        throw new Error(
+          `License terms id ${derivativeData.licenseTermsIds[i]} must be attached to the parent ipId ${derivativeData.parentIpIds[i]} before registering derivative.`,
+        );
+      }
+      const { royaltyPercent } = await this.licenseRegistryReadOnlyClient.getRoyaltyPercent({
+        ipId: parentId,
+        licenseTemplate: derivativeData.licenseTemplate,
+        licenseTermsId: derivativeData.licenseTermsIds[i],
+      });
+      if (derivativeData.maxRevenueShare !== 0 && royaltyPercent > derivativeData.maxRevenueShare) {
+        throw new Error(
+          `The royalty percent for the parent IP with id ${parentId} is greater than the maximum revenue share ${derivativeData.maxRevenueShare}.`,
+        );
+      }
+    }
   }
 }

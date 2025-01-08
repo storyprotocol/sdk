@@ -5,6 +5,23 @@ import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOption } from "../common";
 
+export type DerivativeData = {
+  parentIpIds: Address[];
+  licenseTermsIds: bigint[] | string[] | number[];
+  maxMintingFee: bigint | string | number;
+  maxRts: number | string;
+  maxRevenueShare: number | string;
+  licenseTemplate?: Address;
+};
+export type InternalDerivativeData = {
+  parentIpIds: readonly Address[];
+  licenseTermsIds: readonly bigint[];
+  royaltyContext: Hex;
+  maxMintingFee: bigint;
+  maxRts: number;
+  maxRevenueShare: number;
+  licenseTemplate: Address;
+};
 export type RegisterIpResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
@@ -31,15 +48,9 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
 };
 
 export type RegisterDerivativeRequest = {
-  childIpId: Address;
-  parentIpIds: Address[];
-  licenseTermsIds: string[] | bigint[] | number[];
-  maxMintingFee: bigint | string | number;
-  maxRts: number | string;
-  maxRevenueShare: number | string;
-  licenseTemplate?: Address;
   txOptions?: TxOptions;
-};
+  childIpId: Address;
+} & DerivativeData;
 
 export type RegisterDerivativeResponse = {
   txHash?: Hex;
@@ -311,14 +322,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   nftContract: Address;
   tokenId: bigint | string | number;
   deadline?: string | number | bigint;
-  derivData: {
-    parentIpIds: Address[];
-    licenseTemplate?: Address;
-    licenseTermsIds: bigint[];
-    maxMintingFee: number | string | bigint;
-    maxRts: number | string;
-    maxRevenueShare: number | string;
-  };
+  derivData: DerivativeData;
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo;
@@ -348,14 +352,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
 };
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
-  derivData: {
-    parentIpIds: Address[];
-    licenseTermsIds: string[] | bigint[] | number[];
-    licenseTemplate?: Address;
-    maxMintingFee: number | string | bigint;
-    maxRts: number | string;
-    maxRevenueShare: number | string;
-  };
+  derivData: DerivativeData;
   royaltyShares: RoyaltyShare[];
   allowDuplicates: boolean;
   recipient?: Address;

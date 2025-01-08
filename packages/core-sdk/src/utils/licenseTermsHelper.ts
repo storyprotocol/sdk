@@ -3,6 +3,7 @@ import { Address, PublicClient, zeroAddress } from "viem";
 import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
 import { getAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
+import { MAX_ROYALTY_TOKEN } from "../constants/common";
 
 export function getLicenseTermByType(
   type: PIL_TYPE,
@@ -167,5 +168,5 @@ export const getRevenueShare = (revShare: number | string) => {
   if (revShareNumber < 0 || revShareNumber > 100) {
     throw new Error("CommercialRevShare should be between 0 and 100.");
   }
-  return (revShareNumber / 100) * 100000000;
+  return (revShareNumber / 100) * MAX_ROYALTY_TOKEN;
 };
