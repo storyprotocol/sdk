@@ -511,7 +511,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative: maxMintingFee must be greater than 0.",
+          "Failed to register derivative: The maxMintingFee must be greater than 0.",
         );
       }
     });
@@ -527,7 +527,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to register derivative: maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`,
+          `Failed to register derivative: The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`,
         );
       }
     });
@@ -706,7 +706,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative with license tokens: maxRts must be greater than 0 and less than 100000000.",
+          "Failed to register derivative with license tokens: The maxRts must be greater than 0 and less than 100000000.",
         );
       }
     });
@@ -719,7 +719,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative with license tokens: maxRts must be greater than 0 and less than 100000000.",
+          "Failed to register derivative with license tokens: The maxRts must be greater than 0 and less than 100000000.",
         );
       }
     });
@@ -738,7 +738,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative with license tokens: licenseTokenIds must be provided.",
+          "Failed to register derivative with license tokens: The licenseTokenIds must be provided.",
         );
       }
     });
@@ -2660,7 +2660,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative IP and attach license terms and distribute royalty tokens: maxRts must be greater than 0 and less than 100000000.",
+          "Failed to register derivative IP and attach license terms and distribute royalty tokens: The maxRts must be greater than 0 and less than 100000000.",
         );
       }
     });
@@ -2685,7 +2685,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative IP and attach license terms and distribute royalty tokens: maxRts must be greater than 0 and less than 100000000.",
+          "Failed to register derivative IP and attach license terms and distribute royalty tokens: The maxRts must be greater than 0 and less than 100000000.",
         );
       }
     });
@@ -2710,7 +2710,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register derivative IP and attach license terms and distribute royalty tokens: maxMintingFee must be greater than 0.",
+          "Failed to register derivative IP and attach license terms and distribute royalty tokens: The maxMintingFee must be greater than 0.",
         );
       }
     });

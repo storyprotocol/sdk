@@ -57,7 +57,7 @@ export async function waitTxAndFilterLog<
     }
   }
   if (targetLogs.length === 0) {
-    throw new Error(`not found event ${params.eventName} in target transaction`);
+    throw new Error(`Not found event ${params.eventName} in target transaction`);
   }
   return targetLogs;
 }
@@ -83,7 +83,7 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     case "odyssey":
       return odyssey;
     default:
-      throw new Error(`chainId ${chainId as string} not supported`);
+      throw new Error(`ChainId ${chainId as string} not supported`);
   }
 }
 

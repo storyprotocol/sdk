@@ -623,7 +623,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to mint license tokens: maxMintingFee must be greater than 0.",
+          "Failed to mint license tokens: The maxMintingFee must be greater than 0.",
         );
       }
     });
@@ -1013,7 +1013,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to set licensing config: Minting fee must be greater than 0.",
+          "Failed to set licensing config: The minting fee must be greater than 0.",
         );
       }
     });
@@ -1066,7 +1066,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to set licensing config: license template is zero address but license terms id is zero.",
+          "Failed to set licensing config: The license template is zero address but license terms id is not zero.",
         );
       }
     });
@@ -1092,7 +1092,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to set licensing config: license Template cannot be zero address if commercial revenue share is not zero.",
+          "Failed to set licensing config: The license template cannot be zero address if commercial revenue share is not zero.",
         );
       }
     });

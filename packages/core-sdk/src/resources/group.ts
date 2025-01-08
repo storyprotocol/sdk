@@ -108,13 +108,13 @@ export class GroupClient {
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
    * . @param request.deadline [Optional] The deadline for the signature in seconds, default value is 1000s.
-   *   @param request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *   @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *   @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *   @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *   @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
+   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
+   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
+   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
+   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
+   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
    * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
@@ -146,7 +146,7 @@ export class GroupClient {
             signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
             to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: "function addIp(address,address[])",
+            func: getFunctionSignature(groupingModuleAbi, "addIp"),
           },
         ],
       });
@@ -205,7 +205,7 @@ export class GroupClient {
    *   @param request.tokenId The ID of the NFT.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
    * . @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
@@ -375,10 +375,10 @@ export class GroupClient {
   /** @deprecated This method is deprecated and will be removed in a future version */
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    * @param request - The request object containing necessary data to register group and attach license and add ips.
-   *   @param request.pIds must have the same PIL terms as the group IP.
+   *   @param request.ipIds The IP IDs of the IPs to be added to the group.
    *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
    *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP,default value is Programmable IP License.
+   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
    *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
    * @emits PGroupRegistered (groupId, groupPool);

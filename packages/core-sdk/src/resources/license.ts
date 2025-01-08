@@ -277,7 +277,7 @@ export class LicenseClient {
    * Attaches license terms to an IP.
    * @param request - The request object that contains all data needed to attach license terms.
    *   @param request.ipId The address of the IP to which the license terms are attached.
-   *   @param request.licenseTemplate The address of the license template.
+   *   @param request.licenseTemplate The address of the license template, default value is Programmable IP License.
    *   @param request.licenseTermsId The ID of the license terms.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes success.
@@ -350,7 +350,7 @@ export class LicenseClient {
    * configure the minting fee module to determine the minting fee.
    * @param request - The request object that contains all data needed to mint license tokens.
    *   @param request.licensorIpId The licensor IP ID.
-   *   @param request.licenseTemplate The address of the license template.
+   *   @param request.licenseTemplate The address of the license template, default value is Programmable IP License.
    *   @param request.licenseTermsId The ID of the license terms within the license template.
    *   @param request.amount The amount of license tokens to mint.
    *   @param request.receiver The address of the receiver.
@@ -380,7 +380,7 @@ export class LicenseClient {
         maxRevenueShare: getRevenueShare(request.maxRevenueShare),
       } as const;
       if (req.maxMintingFee < 0) {
-        throw new Error(`maxMintingFee must be greater than 0.`);
+        throw new Error(`The maxMintingFee must be greater than 0.`);
       }
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(request.licensorIpId, "request.licensorIpId"),
@@ -456,7 +456,7 @@ export class LicenseClient {
    *   @param request.licensorIpId The IP ID of the licensor.
    *   @param request.licenseTermsId The ID of the license terms.
    *   @param request.amount The amount of license tokens to mint.
-   *   @param request.licenseTemplate [Optional] The address of the license template,default value is Programmable IP License.
+   *   @param request.licenseTemplate [Optional] The address of the license template, default value is Programmable IP License.
    *   @param request.receiver [Optional] The address of the receiver,default value is your wallet address.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the currency token and token amount.
@@ -542,14 +542,14 @@ export class LicenseClient {
         },
       };
       if (req.licensingConfig.mintingFee < 0) {
-        throw new Error("Minting fee must be greater than 0.");
+        throw new Error("The minting fee must be greater than 0.");
       }
       if (
         request.licenseTemplate === zeroAddress &&
         request.licensingConfig.commercialRevShare !== 0
       ) {
         throw new Error(
-          "license Template cannot be zero address if commercial revenue share is not zero.",
+          "The license template cannot be zero address if commercial revenue share is not zero.",
         );
       }
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
@@ -573,7 +573,7 @@ export class LicenseClient {
         }
       }
       if (request.licenseTemplate === zeroAddress && request.licenseTermsId !== 0n) {
-        throw new Error("license template is zero address but license terms id is zero.");
+        throw new Error("The license template is zero address but license terms id is not zero.");
       }
 
       if (request.txOptions?.encodedTxDataOnly) {
