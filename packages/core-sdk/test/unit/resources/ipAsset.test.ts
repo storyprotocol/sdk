@@ -3202,7 +3202,34 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-
+    it("should throw commercial terms error when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given license terms id is not commercial", async () => {
+      try {
+        sinon.stub(ipAssetClient.licenseTemplateClient, "getLicenseTerms").resolves({
+          terms: {
+            ...licenseTerms,
+            commercialUse: false,
+          },
+        });
+        await ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+          spgNftContract,
+          royaltyShares: [
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          ],
+          derivData: {
+            parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+            licenseTermsIds: [1n],
+            maxRevenueShare: 100,
+            maxMintingFee: 100,
+            maxRts: 100,
+          },
+          allowDuplicates: false,
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: The license terms attached to the IP must be a commercial license to distribute royalty tokens.",
+        );
+      }
+    });
     it("should return txHash when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given correct args", async () => {
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,

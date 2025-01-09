@@ -165,6 +165,9 @@ const verifyDerivatives = (terms: LicenseTerms) => {
 
 export const getRevenueShare = (revShare: number | string) => {
   const revShareNumber = Number(revShare);
+  if (isNaN(revShareNumber)) {
+    throw new Error("CommercialRevShare must be a valid number.");
+  }
   if (revShareNumber < 0 || revShareNumber > 100) {
     throw new Error("CommercialRevShare should be between 0 and 100.");
   }
