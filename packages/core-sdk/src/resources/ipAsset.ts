@@ -756,7 +756,6 @@ export class IPAssetClient {
         calldata.push(result.encodedTxData!.data);
       }
       const txHash = await this.licenseAttachmentWorkflowsClient.multicall({ data: calldata });
-
       if (request.txOptions?.waitForTransaction) {
         const txReceipt = await this.rpcClient.waitForTransactionReceipt({
           ...request.txOptions,
@@ -865,6 +864,26 @@ export class IPAssetClient {
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(
+              this.licenseAttachmentWorkflowsClient.address,
+              "licenseAttachmentWorkflowsClient",
+            ),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(
+              this.licenseAttachmentWorkflowsClient.address,
+              "licenseAttachmentWorkflowsClient",
+            ),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
         ],
       });
@@ -1222,6 +1241,16 @@ export class IPAssetClient {
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
+          {
+            ipId: ipId,
+            signer: getAddress(
+              this.licenseAttachmentWorkflowsClient.address,
+              "licenseAttachmentWorkflowsClient",
+            ),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+          },
         ],
       });
       const object: LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest = {
@@ -1319,7 +1348,6 @@ export class IPAssetClient {
     }
   }
   /**
-   * @deprecated This method is deprecated and will be removed in the future.
    * Register the given NFT as a derivative IP using license tokens.
    * @param request - The request object that contains all data needed to register ip and make derivative with license tokens.
    *   @param request.nftContract The address of the NFT collection.
@@ -1359,6 +1387,13 @@ export class IPAssetClient {
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "registerDerivativeWithLicenseTokens"),
           },
         ],
       });
@@ -1484,6 +1519,26 @@ export class IPAssetClient {
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(
+              this.royaltyTokenDistributionWorkflowsClient.address,
+              "royaltyTokenDistributionWorkflowsClient",
+            ),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: getAddress(
+              this.royaltyTokenDistributionWorkflowsClient.address,
+              "royaltyTokenDistributionWorkflowsClient",
+            ),
+            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+          },
         ],
       });
       const registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash =
@@ -1575,7 +1630,6 @@ export class IPAssetClient {
         state: toHex(0, { size: 32 }),
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
-        permissionFunc: "setBatchPermissions",
         permissions: [
           {
             ipId: ipIdAddress,
