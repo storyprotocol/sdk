@@ -8,9 +8,10 @@ import {
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
   GroupingWorkflowsClient,
-  GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroup2Request,
-  GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIps2Request,
-  GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroup2Request,
+  GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
+  GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
+  GroupingWorkflowsRegisterGroupAndAttachLicenseRequest,
+  GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest,
   IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
@@ -26,6 +27,8 @@ import { getPermissionSignature, getDeadline } from "../utils/sign";
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 import {
+  InnerLicenseData,
+  LicenseData,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
   RegisterGroupAndAttachLicenseAndAddIpsRequest,
@@ -38,6 +41,7 @@ import {
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
+import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -101,14 +105,26 @@ export class GroupClient {
       handleError(error, "Failed to register group");
     }
   }
-  /** @deprecated This method is deprecated and will be removed in a future version */
   /**  Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
    * @param request - The request object containing necessary data to mint and register Ip and attach license and add to group.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
-   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
+   *    @param {Array} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
+   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
+   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
+   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
+   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
+   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
+   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
+   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
+   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
+   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
+   *   @param request.allowDuplicates Set to true to allow minting an NFT with a duplicate metadata hash.
    *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
    * . @param request.deadline [Optional] The deadline for the signature in seconds, default value is 1000s.
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
@@ -123,7 +139,7 @@ export class GroupClient {
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   ): Promise<MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse> {
     try {
-      const { groupId, recipient, spgNftContract, deadline, licenseTemplate } = request;
+      const { groupId, recipient, spgNftContract, deadline } = request;
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(groupId, "groupId"),
       });
@@ -150,16 +166,12 @@ export class GroupClient {
           },
         ],
       });
-
-      const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroup2Request = {
+      const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         ...request,
         spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
         recipient:
           (recipient && getAddress(recipient, "request.recipient")) || this.wallet.account!.address,
-        licenseTemplate:
-          (licenseTemplate && getAddress(licenseTemplate, "request.licenseTemplate")) ||
-          this.licenseTemplateClient.address,
-        licenseTermsId: BigInt(request.licenseTermsId),
+        licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: {
           ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
           ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
@@ -175,15 +187,13 @@ export class GroupClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
-            this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup2Encode(
+            this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode(
               object,
             ),
         };
       } else {
         const txHash =
-          await this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup2(
-            object,
-          );
+          await this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup(object);
         if (request.txOptions?.waitForTransaction) {
           const receipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
@@ -198,14 +208,26 @@ export class GroupClient {
       handleError(error, "Failed to mint and register IP and attach license and add to group");
     }
   }
-  /** @deprecated This method is deprecated and will be removed in a future version */
+
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
    * @param request - The request object containing necessary data to register ip and attach license and add to group.
    *   @param request.spgNftContract The address of the NFT collection.
    *   @param request.tokenId The ID of the NFT.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
-   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new IP.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
+   *    @param {Array} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
+   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
+   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
+   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
+   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
+   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
+   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
+   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
+   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
+   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    * . @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
@@ -283,14 +305,10 @@ export class GroupClient {
           },
         ],
       });
-      const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroup2Request = {
+      const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         nftContract: getAddress(request.nftContract, "request.nftContract"),
         groupId: request.groupId,
-        licenseTemplate:
-          (request.licenseTemplate &&
-            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-          this.licenseTemplateClient.address,
-        licenseTermsId: BigInt(request.licenseTermsId),
+        licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: {
           ipMetadataURI: request.ipMetadata?.ipMetadataURI || "",
           ipMetadataHash: request.ipMetadata?.ipMetadataHash || zeroHash,
@@ -312,10 +330,10 @@ export class GroupClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
-            this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup2Encode(object),
+            this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroupEncode(object),
         };
       }
-      const txHash = await this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup2(
+      const txHash = await this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup(
         object,
       );
       if (request.txOptions?.waitForTransaction) {
@@ -334,8 +352,20 @@ export class GroupClient {
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
    * @param request - The request object containing necessary data to register group and attach license.
    *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
-   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
+   *    @param {Object} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
+   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
+   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
+   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
+   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
+   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
+   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
+   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
+   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
+   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
    * @emits PGroupRegistered (groupId, groupPool);
@@ -344,13 +374,9 @@ export class GroupClient {
     request: RegisterGroupAndAttachLicenseRequest,
   ): Promise<RegisterGroupAndAttachLicenseResponse> {
     try {
-      const object = {
+      const object: GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
         groupPool: getAddress(request.groupPool, "request.groupPool"),
-        licenseTemplate:
-          (request.licenseTemplate &&
-            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-          this.licenseTemplateClient.address,
-        licenseTermsId: BigInt(request.licenseTermsId),
+        licenseData: this.getLicenseData([request.licenseData])[0],
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return {
@@ -372,13 +398,24 @@ export class GroupClient {
       handleError(error, "Failed to register group and attach license");
     }
   }
-  /** @deprecated This method is deprecated and will be removed in a future version */
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    * @param request - The request object containing necessary data to register group and attach license and add ips.
    *   @param request.ipIds The IP IDs of the IPs to be added to the group.
    *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
-   *   @param request.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
-   *   @param request.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
+   *    @param {Object} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
+   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
+   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
+   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
+   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
+   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
+   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
+   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
+   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
+   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
+   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
    * @emits PGroupRegistered (groupId, groupPool);
@@ -387,6 +424,11 @@ export class GroupClient {
     request: RegisterGroupAndAttachLicenseAndAddIpsRequest,
   ): Promise<RegisterGroupAndAttachLicenseAndAddIpsResponse> {
     try {
+      const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
+        groupPool: getAddress(request.groupPool, "request.groupPool"),
+        ipIds: request.ipIds,
+        licenseData: this.getLicenseData([request.licenseData])[0],
+      };
       for (let i = 0; i < request.ipIds.length; i++) {
         const isRegistered = await this.ipAssetRegistryClient.isRegistered({
           id: getAddress(request.ipIds[i], `request.ipIds${i}`),
@@ -395,17 +437,12 @@ export class GroupClient {
           throw new Error(`IP ${request.ipIds[i]} is not registered.`);
         }
       }
-
-      request.licenseTemplate =
-        (request.licenseTemplate &&
-          getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-        this.licenseTemplateClient.address;
       for (let i = 0; i < request.ipIds.length; i++) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
             ipId: request.ipIds[i],
-            licenseTemplate: request.licenseTemplate,
-            licenseTermsId: BigInt(request.licenseTermsId),
+            licenseTemplate: object.licenseData.licenseTemplate,
+            licenseTermsId: BigInt(object.licenseData.licenseTermsId),
           });
         if (!isAttachedLicenseTerms) {
           throw new Error(
@@ -413,19 +450,14 @@ export class GroupClient {
           );
         }
       }
-      const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIps2Request = {
-        groupPool: getAddress(request.groupPool, "request.groupPool"),
-        ipIds: request.ipIds,
-        licenseTemplate: request.licenseTemplate,
-        licenseTermsId: BigInt(request.licenseTermsId),
-      };
+
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
-            this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps2Encode(object),
+            this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIpsEncode(object),
         };
       }
-      const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps2(
+      const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps(
         object,
       );
       if (request.txOptions?.waitForTransaction) {
@@ -441,5 +473,16 @@ export class GroupClient {
     } catch (error) {
       handleError(error, "Failed to register group and attach license and add ips");
     }
+  }
+
+  private getLicenseData(licenseData: LicenseData[]): InnerLicenseData[] {
+    return licenseData.map((item, index) => ({
+      licenseTemplate:
+        (item.licenseTemplate &&
+          getAddress(item.licenseTemplate, `request.licenseData.licenseTemplate[${index}]`)) ||
+        this.licenseTemplateClient.address,
+      licenseTermsId: BigInt(item.licenseTermsId),
+      licensingConfig: validateLicenseConfig(item.licensingConfig),
+    }));
   }
 }
