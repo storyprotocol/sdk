@@ -279,7 +279,6 @@ export class GroupClient {
         deadline: calculatedDeadline,
         state: toHex(0, { size: 32 }),
         wallet: this.wallet as WalletClient,
-        permissionFunc: "setBatchPermissions",
         chainId: chain[this.chainId],
         permissions: [
           {
@@ -376,7 +375,7 @@ export class GroupClient {
     try {
       const object: GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
         groupPool: getAddress(request.groupPool, "request.groupPool"),
-        licenseData: this.getLicenseData([request.licenseData])[0],
+        licenseData: this.getLicenseData(request.licenseData)[0],
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return {
@@ -427,7 +426,7 @@ export class GroupClient {
       const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
         groupPool: getAddress(request.groupPool, "request.groupPool"),
         ipIds: request.ipIds,
-        licenseData: this.getLicenseData([request.licenseData])[0],
+        licenseData: this.getLicenseData(request.licenseData)[0],
       };
       for (let i = 0; i < request.ipIds.length; i++) {
         const isRegistered = await this.ipAssetRegistryClient.isRegistered({
@@ -475,11 +474,19 @@ export class GroupClient {
     }
   }
 
-  private getLicenseData(licenseData: LicenseData[]): InnerLicenseData[] {
-    return licenseData.map((item, index) => ({
+  private getLicenseData(licenseData: LicenseData[] | LicenseData): InnerLicenseData[] {
+    const isArray = Array.isArray(licenseData);
+    if ((isArray && licenseData.length === 0) || !licenseData) {
+      throw new Error("License data is required.");
+    }
+    const licenseDataArray = isArray ? licenseData : [licenseData];
+    return licenseDataArray.map((item, index) => ({
       licenseTemplate:
         (item.licenseTemplate &&
-          getAddress(item.licenseTemplate, `request.licenseData.licenseTemplate[${index}]`)) ||
+          getAddress(
+            item.licenseTemplate,
+            `request.licenseData.licenseTemplate${isArray ? `[${index}]` : ""}`,
+          )) ||
         this.licenseTemplateClient.address,
       licenseTermsId: BigInt(item.licenseTermsId),
       licensingConfig: validateLicenseConfig(item.licensingConfig),

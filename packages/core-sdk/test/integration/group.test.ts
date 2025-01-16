@@ -38,25 +38,38 @@ describe("Group Functions", () => {
     ).spgNftContract!;
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: spgNftContract,
-      terms: [
+      allowDuplicates: false,
+      licenseTermsData: [
         {
-          transferable: true,
-          royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-          defaultMintingFee: 0n,
-          expiration: BigInt(1000),
-          commercialUse: true,
-          commercialAttribution: false,
-          commercializerChecker: zeroAddress,
-          commercializerCheckerData: zeroAddress,
-          commercialRevShare: 0,
-          commercialRevCeiling: BigInt(0),
-          derivativesAllowed: true,
-          derivativesAttribution: true,
-          derivativesApproval: false,
-          derivativesReciprocal: true,
-          derivativeRevCeiling: BigInt(0),
-          currency: MockERC20.address,
-          uri: "test case",
+          terms: {
+            transferable: true,
+            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+            defaultMintingFee: 0n,
+            expiration: BigInt(1000),
+            commercialUse: true,
+            commercialAttribution: false,
+            commercializerChecker: zeroAddress,
+            commercializerCheckerData: zeroAddress,
+            commercialRevShare: 0,
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: true,
+            derivativesAttribution: true,
+            derivativesApproval: false,
+            derivativesReciprocal: true,
+            derivativeRevCeiling: BigInt(0),
+            currency: MockERC20.address,
+            uri: "test case",
+          },
+          licensingConfig: {
+            isSet: true,
+            mintingFee: 0n,
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: groupPoolAddress,
+          },
         },
       ],
       txOptions: {
@@ -74,7 +87,7 @@ describe("Group Functions", () => {
         isSet: true,
         mintingFee: 0n,
         licensingHook: zeroAddress,
-        hookData: "0x",
+        hookData: zeroAddress,
         commercialRevShare: 0,
         disabled: false,
         expectMinimumGroupRewardShare: 0,
@@ -97,7 +110,19 @@ describe("Group Functions", () => {
   it("should success when register group and attach license", async () => {
     const result = await client.groupClient.registerGroupAndAttachLicense({
       groupPool: groupPoolAddress,
-      licenseTermsId: licenseTermsId!,
+      licenseData: {
+        licenseTermsId: licenseTermsId!,
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 0n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
+        },
+      },
       txOptions: {
         waitForTransaction: true,
       },
@@ -112,7 +137,22 @@ describe("Group Functions", () => {
     const result = await client.groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
       groupId,
       spgNftContract: spgNftContract,
-      licenseTermsId: licenseTermsId!,
+      licenseData: [
+        {
+          licenseTermsId: licenseTermsId!,
+          licensingConfig: {
+            isSet: true,
+            mintingFee: 0n,
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: groupPoolAddress,
+          },
+        },
+      ],
+      allowDuplicates: true,
       txOptions: {
         waitForTransaction: true,
       },
@@ -126,7 +166,21 @@ describe("Group Functions", () => {
       groupId,
       nftContract: spgNftContract,
       tokenId: tokenId!,
-      licenseTermsId: licenseTermsId!,
+      licenseData: [
+        {
+          licenseTermsId: licenseTermsId!,
+          licensingConfig: {
+            isSet: true,
+            mintingFee: 0n,
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: groupPoolAddress,
+          },
+        },
+      ],
       txOptions: {
         waitForTransaction: true,
       },
@@ -139,7 +193,19 @@ describe("Group Functions", () => {
     const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
       groupPool: groupPoolAddress,
       ipIds: [ipId],
-      licenseTermsId: licenseTermsId!,
+      licenseData: {
+        licenseTermsId: licenseTermsId!,
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 0n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
+        },
+      },
       txOptions: {
         waitForTransaction: true,
       },
