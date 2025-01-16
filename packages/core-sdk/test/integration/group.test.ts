@@ -1,10 +1,14 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Address, zeroAddress } from "viem";
+import { Address, zeroAddress, zeroHash } from "viem";
 import { getStoryClient, odyssey, mintBySpg } from "./utils/util";
-import { PIL_TYPE, StoryClient } from "../../src";
+import { StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
-import { evenSplitGroupPoolAddress, royaltyPolicyLapAddress } from "../../src/abi/generated";
+import {
+  evenSplitGroupPoolAddress,
+  piLicenseTemplateAddress,
+  royaltyPolicyLapAddress,
+} from "../../src/abi/generated";
 
 const groupPoolAddress = evenSplitGroupPoolAddress[odyssey];
 
@@ -60,7 +64,23 @@ describe("Group Functions", () => {
       },
     });
     licenseTermsId = result.licenseTermsIds![0];
+
     ipId = result.ipId!;
+    await client.license.setLicensingConfig({
+      ipId: ipId,
+      licenseTermsId: licenseTermsId,
+      licenseTemplate: piLicenseTemplateAddress[odyssey],
+      licensingConfig: {
+        isSet: true,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: "0x",
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: groupPoolAddress,
+      },
+    });
   });
 
   it("should success when register group", async () => {
@@ -70,10 +90,24 @@ describe("Group Functions", () => {
         waitForTransaction: true,
       },
     });
-    groupId = result.groupId!;
+
     expect(result.txHash).to.be.a("string").and.not.empty;
     expect(result.groupId).to.be.a("string").and.not.empty;
   });
+  it("should success when register group and attach license", async () => {
+    const result = await client.groupClient.registerGroupAndAttachLicense({
+      groupPool: groupPoolAddress,
+      licenseTermsId: licenseTermsId!,
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+    groupId = result.groupId!;
+
+    expect(result.txHash).to.be.a("string").and.not.empty;
+    expect(result.groupId).to.be.a("string").and.not.empty;
+  });
+
   it("should success when mint and register ip and attach license and add to group", async () => {
     const result = await client.groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
       groupId,
@@ -99,18 +133,6 @@ describe("Group Functions", () => {
     });
     expect(result.txHash).to.be.a("string").and.not.empty;
     expect(result.ipId).to.be.a("string").and.not.empty;
-  });
-
-  it("should success when register group and attach license", async () => {
-    const result = await client.groupClient.registerGroupAndAttachLicense({
-      groupPool: groupPoolAddress,
-      licenseTermsId: licenseTermsId!,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-    expect(result.txHash).to.be.a("string").and.not.empty;
-    expect(result.groupId).to.be.a("string").and.not.empty;
   });
 
   it("should success when register group and attach license and add ips", async () => {

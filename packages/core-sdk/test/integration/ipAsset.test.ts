@@ -76,6 +76,9 @@ describe("IP Asset Functions ", () => {
         childIpId: childIpId,
         parentIpIds: [parentIpId],
         licenseTermsIds: [noCommercialLicenseTermsId],
+        maxMintingFee: "0",
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: "0",
         txOptions: {
           waitForTransaction: true,
         },
@@ -97,6 +100,8 @@ describe("IP Asset Functions ", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
+        maxMintingFee: "0",
+        maxRevenueShare: 1,
         txOptions: {
           waitForTransaction: true,
         },
@@ -104,6 +109,7 @@ describe("IP Asset Functions ", () => {
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens({
         childIpId: ipId,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+        maxRts: 5 * 10 ** 6,
         txOptions: {
           waitForTransaction: true,
         },
@@ -196,7 +202,7 @@ describe("IP Asset Functions ", () => {
       expect(response.ipId).to.be.a("string").and.not.empty;
     });
     it("should not throw error when register derivative ip", async () => {
-      const tokenChildId = await mintBySpg(nftContract, "test-metadata");
+      const tokenChildId = await mintBySpg(nftContract);
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
         tokenId: tokenChildId!,
@@ -366,6 +372,8 @@ describe("IP Asset Functions ", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
+        maxMintingFee: "0",
+        maxRevenueShare: 1,
         txOptions: {
           waitForTransaction: true,
         },
@@ -390,11 +398,12 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
       expect(result.tokenId).to.be.a("bigint");
     });
-
     it("should not throw error when call register ip and make derivative with license tokens", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
+        maxMintingFee: "0",
+        maxRevenueShare: 1,
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
@@ -456,7 +465,7 @@ describe("IP Asset Functions ", () => {
           },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 1,
             },
           ],
@@ -471,7 +480,6 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
       expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
     });
-
     it("should not throw error when call register derivative and attach license terms and distribute royalty tokens", async () => {
       const tokenId = await getTokenId();
       const result =
@@ -481,10 +489,13 @@ describe("IP Asset Functions ", () => {
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [licenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 10, //100%
             },
           ],
@@ -529,7 +540,7 @@ describe("IP Asset Functions ", () => {
           },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 10, //100%
             },
           ],
@@ -549,13 +560,17 @@ describe("IP Asset Functions ", () => {
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [licenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 10, //100%
             },
           ],
+          allowDuplicates: true,
           txOptions: {
             waitForTransaction: true,
           },
@@ -610,11 +625,17 @@ describe("IP Asset Functions ", () => {
             childIpId: childIpId,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
           {
             childIpId: childIpId2,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
         ],
         txOptions: {

@@ -60,6 +60,7 @@ describe("Test DisputeClient", () => {
           disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           targetTag: "0x",
           data: "0x",
+          disputeTimestamp: 1715000000n,
         },
       ]);
       const result = await disputeClient.raiseDispute({

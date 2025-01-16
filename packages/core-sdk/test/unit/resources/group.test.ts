@@ -207,7 +207,7 @@ describe("Test IpAssetClient", () => {
         .resolves(true);
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
+        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps2")
         .resolves(txHash);
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -223,7 +223,7 @@ describe("Test IpAssetClient", () => {
         .resolves(true);
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
+        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps2")
         .resolves(txHash);
       sinon.stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
         {
@@ -263,7 +263,10 @@ describe("Test IpAssetClient", () => {
     it("should return txHash when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given correct args", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
+        .stub(
+          groupClient.groupingWorkflowsClient,
+          "mintAndRegisterIpAndAttachLicenseAndAddToGroup2",
+        )
         .resolves(txHash);
 
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
@@ -277,7 +280,10 @@ describe("Test IpAssetClient", () => {
     it("should return txHash when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given correct args with waitForTransaction of true", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
+        .stub(
+          groupClient.groupingWorkflowsClient,
+          "mintAndRegisterIpAndAttachLicenseAndAddToGroup2",
+        )
         .resolves(txHash);
       sinon.stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
@@ -308,7 +314,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(
           groupClient.groupingWorkflowsClient,
-          "mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode",
+          "mintAndRegisterIpAndAttachLicenseAndAddToGroup2Encode",
         )
         .returns({
           data: "0x11111111111111111111111111111",
@@ -379,7 +385,7 @@ describe("Test IpAssetClient", () => {
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup")
+        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup2")
         .resolves(txHash);
       const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -396,7 +402,7 @@ describe("Test IpAssetClient", () => {
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup")
+        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup2")
         .resolves(txHash);
       sinon.stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
@@ -428,7 +434,7 @@ describe("Test IpAssetClient", () => {
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroupEncode")
+        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup2Encode")
         .returns({
           data: "0x11111111111111111111111111111",
           to: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",

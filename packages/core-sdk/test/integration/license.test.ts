@@ -115,6 +115,8 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
+        maxMintingFee: "1",
+        maxRevenueShare: "100",
         txOptions: {
           waitForTransaction: true,
         },
@@ -139,7 +141,6 @@ describe("License Functions", () => {
     });
 
     it("should not throw error when set licensing config", async () => {
-      const licenseModule = licensingModuleAddress[odyssey];
       const result = await client.license.setLicensingConfig({
         ipId: ipId,
         licenseTermsId: 0n,
@@ -149,6 +150,10 @@ describe("License Functions", () => {
           isSet: true,
           licensingHook: zeroAddress,
           hookData: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: "1",
+          expectGroupRewardPool: zeroAddress,
         },
         txOptions: {
           waitForTransaction: true,

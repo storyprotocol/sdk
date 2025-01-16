@@ -61,7 +61,7 @@ describe("Test waitTxAndFilterLog", () => {
       await waitTxAndFilterLog(rpcMock, txHash, params);
     } catch (err) {
       expect((err as Error).message).includes(
-        "not found event TransferSingle in target transaction",
+        "Not found event TransferSingle in target transaction",
       );
     }
   });
@@ -148,7 +148,7 @@ describe("Test chainStringToViemChain", () => {
     try {
       chainStringToViemChain("invalid id" as SupportedChainIds);
     } catch (err) {
-      expect((err as Error).message).includes("chainId invalid id not supported");
+      expect((err as Error).message).includes("ChainId invalid id not supported");
     }
   });
 

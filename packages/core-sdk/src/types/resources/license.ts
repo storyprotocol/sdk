@@ -107,6 +107,8 @@ export type MintLicenseTokensRequest = {
   licensorIpId: Address;
   licenseTermsId: string | number | bigint;
   licenseTemplate?: Address;
+  maxMintingFee: bigint | string | number;
+  maxRevenueShare: number | string;
   amount?: number | string | bigint;
   receiver?: Address;
   txOptions?: TxOptions;
@@ -143,6 +145,10 @@ export type SetLicensingConfigRequest = {
     mintingFee: bigint | string | number;
     licensingHook: Address;
     hookData: Hex;
+    commercialRevShare: number | string;
+    disabled: boolean;
+    expectMinimumGroupRewardShare: number | string;
+    expectGroupRewardPool: Address;
   };
   licenseTemplate: Address;
   txOptions?: TxOptions;

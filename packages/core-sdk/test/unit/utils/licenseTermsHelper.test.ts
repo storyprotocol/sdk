@@ -1,6 +1,10 @@
 import { Hex, PublicClient, zeroAddress } from "viem";
 import { LicenseTerms, PIL_TYPE } from "../../../src/types/resources/license";
-import { getLicenseTermByType, validateLicenseTerms } from "../../../src/utils/licenseTermsHelper";
+import {
+  getLicenseTermByType,
+  getRevenueShare,
+  validateLicenseTerms,
+} from "../../../src/utils/licenseTermsHelper";
 import { expect } from "chai";
 import { MockERC20 } from "../../integration/utils/mockERC20";
 import sinon from "sinon";
@@ -504,6 +508,28 @@ describe("License Terms Helper", () => {
           "Cannot add derivative revenue ceiling when derivative use is disabled.",
         );
       });
+    });
+  });
+
+  describe("getRevenueShare", () => {
+    it("should throw error when call getRevenueShare given revShare is not a number", async () => {
+      expect(() => getRevenueShare("not a number")).to.throw(
+        "CommercialRevShare must be a valid number.",
+      );
+    });
+
+    it("should throw error when call getRevenueShare given revShare is less than 0", async () => {
+      expect(() => getRevenueShare(-1)).to.throw("CommercialRevShare should be between 0 and 100.");
+    });
+
+    it("should throw error when call getRevenueShare given revShare is greater than 100", async () => {
+      expect(() => getRevenueShare(101)).to.throw(
+        "CommercialRevShare should be between 0 and 100.",
+      );
+    });
+
+    it("should return correct value when call getRevenueShare given revShare is 10", async () => {
+      expect(getRevenueShare(10)).to.equal(10000000);
     });
   });
 });

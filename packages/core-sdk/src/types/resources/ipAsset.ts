@@ -5,6 +5,23 @@ import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOption } from "../common";
 
+export type DerivativeData = {
+  parentIpIds: Address[];
+  licenseTermsIds: bigint[] | string[] | number[];
+  maxMintingFee: bigint | string | number;
+  maxRts: number | string;
+  maxRevenueShare: number | string;
+  licenseTemplate?: Address;
+};
+export type InternalDerivativeData = {
+  parentIpIds: readonly Address[];
+  licenseTermsIds: readonly bigint[];
+  royaltyContext: Hex;
+  maxMintingFee: bigint;
+  maxRts: number;
+  maxRevenueShare: number;
+  licenseTemplate: Address;
+};
 export type RegisterIpResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
@@ -21,6 +38,7 @@ export type RegisterRequest = {
 export type RegisterDerivativeWithLicenseTokensRequest = {
   childIpId: Address;
   licenseTokenIds: string[] | bigint[] | number[];
+  maxRts: number | string;
   txOptions?: TxOptions;
 };
 
@@ -30,12 +48,9 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
 };
 
 export type RegisterDerivativeRequest = {
-  childIpId: Address;
-  parentIpIds: Address[];
-  licenseTermsIds: string[] | bigint[] | number[];
-  licenseTemplate?: Address;
   txOptions?: TxOptions;
-};
+  childIpId: Address;
+} & DerivativeData;
 
 export type RegisterDerivativeResponse = {
   txHash?: Hex;
@@ -290,14 +305,13 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
 export type DistributeRoyaltyTokens = {
   ipId: Address;
   deadline: bigint;
-  state: Hex;
   ipRoyaltyVault: Address;
   royaltyShares: RoyaltyShare[];
   totalAmount: number;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 export type RoyaltyShare = {
-  author: Address;
+  recipient: Address;
   percentage: number;
 };
 export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
@@ -308,11 +322,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   nftContract: Address;
   tokenId: bigint | string | number;
   deadline?: string | number | bigint;
-  derivData: {
-    parentIpIds: Address[];
-    licenseTemplate?: Address;
-    licenseTermsIds: bigint[];
-  };
+  derivData: DerivativeData;
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo;
@@ -328,10 +338,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
   terms: RegisterPILTermsRequest[];
-  royaltyShares: {
-    author: Address;
-    percentage: number;
-  }[];
+  royaltyShares: RoyaltyShare[];
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo;
@@ -345,15 +352,9 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
 };
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
-  derivData: {
-    parentIpIds: Address[];
-    licenseTermsIds: string[] | bigint[] | number[];
-    licenseTemplate?: Address;
-  };
-  royaltyShares: {
-    author: Address;
-    percentage: number;
-  }[];
+  derivData: DerivativeData;
+  royaltyShares: RoyaltyShare[];
+  allowDuplicates: boolean;
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo;
