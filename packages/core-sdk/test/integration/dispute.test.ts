@@ -8,6 +8,7 @@ import { MockERC20 } from "./utils/mockERC20";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+//TODO: Need to check with devnet whether is working or not
 // It won’t work in current version, so skip this test
 describe.skip("Dispute Functions", () => {
   let clientA: StoryClient;

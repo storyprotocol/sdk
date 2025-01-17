@@ -1,6 +1,7 @@
 import { Address, Hex } from "viem";
 
 import { TxOptions } from "./options";
+import { IpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 
 export type TypedData = {
   interface: string;
@@ -8,12 +9,7 @@ export type TypedData = {
 };
 
 export type IpMetadataAndTxOption = {
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
+  ipMetadata?: Partial<IpMetadataForWorkflow>;
   txOptions?: TxOptions;
 };
 

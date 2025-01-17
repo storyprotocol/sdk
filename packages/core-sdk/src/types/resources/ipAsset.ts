@@ -4,6 +4,7 @@ import { TxOptions } from "../options";
 import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOption, LicensingConfig } from "../common";
+import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
 
 export type DerivativeData = {
   parentIpIds: Address[];
@@ -330,8 +331,9 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   deadline?: string | number | bigint;
   derivData: DerivativeData;
   royaltyShares: RoyaltyShare[];
+  ipMetadata?: IpMetadataForWorkflow;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo;
+};
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
