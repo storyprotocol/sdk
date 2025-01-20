@@ -17,7 +17,6 @@ import {
   royaltyPolicyLapAddress,
 } from "../abi/generated";
 import {
-  LicenseTerms,
   RegisterNonComSocialRemixingPILRequest,
   RegisterPILResponse,
   RegisterCommercialUsePILRequest,
@@ -29,10 +28,11 @@ import {
   PIL_TYPE,
   AttachLicenseTermsResponse,
   LicenseTermsId,
-  RegisterPILTermsRequest,
+  InnerLicenseTerms,
   PredictMintingLicenseFeeRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
+  RegisterPILTermsRequest,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import {
@@ -593,7 +593,7 @@ export class LicenseClient {
       handleError(error, "Failed to set licensing config");
     }
   }
-  private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
+  private async getLicenseTermsId(request: InnerLicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;
   }

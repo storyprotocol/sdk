@@ -1,7 +1,7 @@
 import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
-import { RegisterPILTermsRequest } from "./license";
+import { LicenseTerms } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOption, LicensingConfig } from "../common";
 import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
@@ -64,7 +64,7 @@ export type LicenseTermsData<T, U> = {
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
   spgNftContract: Address;
   allowDuplicates: boolean;
-  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<LicenseTerms, LicensingConfig>[];
   recipient?: Address;
   royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
@@ -99,7 +99,7 @@ export type RegisterIpAndMakeDerivativeResponse = {
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<LicenseTerms, LicensingConfig>[];
   deadline?: bigint | number | string;
 } & IpMetadataAndTxOption;
 
@@ -224,7 +224,7 @@ export type MintAndRegisterIpRequest = {
 
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
-  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<LicenseTerms, LicensingConfig>[];
   deadline?: string | number | bigint;
   txOptions?: TxOptions;
 };
@@ -297,7 +297,7 @@ export type BatchRegisterResponse = {
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<LicenseTerms, LicensingConfig>[];
   deadline?: string | number | bigint;
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
@@ -347,7 +347,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   spgNftContract: Address;
   allowDuplicates: boolean;
   licenseTermsData: {
-    terms: RegisterPILTermsRequest;
+    terms: LicenseTerms;
     licensingConfig: LicensingConfig;
   }[];
   royaltyShares: RoyaltyShare[];

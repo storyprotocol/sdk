@@ -97,11 +97,7 @@ import {
 import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission } from "../types/resources/permission";
-import {
-  InnerLicensingConfig,
-  LicenseTerms,
-  RegisterPILTermsRequest,
-} from "../types/resources/license";
+import { InnerLicensingConfig, InnerLicenseTerms } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { LicensingConfig } from "../types/common";
@@ -773,7 +769,7 @@ export class IPAssetClient {
           }));
         // Due to emit event log by sequence, we need to get license terms id from request.args
         for (let j = 0; j < request.args.length; j++) {
-          const licenseTerms: LicenseTerms[] = [];
+          const licenseTerms: InnerLicenseTerms[] = [];
           const licenseTermsData = request.args[j].licenseTermsData;
           for (let i = 0; i < licenseTermsData.length; i++) {
             const licenseTerm = await validateLicenseTerms(
@@ -1946,7 +1942,7 @@ export class IPAssetClient {
     return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId, "ipId") });
   }
 
-  private async getLicenseTermsId(licenseTerms: LicenseTerms[]): Promise<bigint[]> {
+  private async getLicenseTermsId(licenseTerms: InnerLicenseTerms[]): Promise<bigint[]> {
     const licenseTermsIds: bigint[] = [];
     for (const licenseTerm of licenseTerms) {
       const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({
@@ -2070,13 +2066,14 @@ export class IPAssetClient {
   }
 
   private async validateLicenseTermsData(
-    licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[],
+    licenseTermsData: LicenseTermsData<InnerLicenseTerms, LicensingConfig>[],
   ): Promise<{
-    licenseTerms: LicenseTerms[];
-    licenseTermsData: LicenseTermsData<LicenseTerms, InnerLicensingConfig>[];
+    licenseTerms: InnerLicenseTerms[];
+    licenseTermsData: LicenseTermsData<InnerLicenseTerms, InnerLicensingConfig>[];
   }> {
-    const licenseTerms: LicenseTerms[] = [];
-    const processedLicenseTermsData: LicenseTermsData<LicenseTerms, InnerLicensingConfig>[] = [];
+    const licenseTerms: InnerLicenseTerms[] = [];
+    const processedLicenseTermsData: LicenseTermsData<InnerLicenseTerms, InnerLicensingConfig>[] =
+      [];
     for (let i = 0; i < licenseTermsData.length; i++) {
       const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
       licenseTerms.push(licenseTerm);

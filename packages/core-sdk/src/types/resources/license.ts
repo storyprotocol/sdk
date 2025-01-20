@@ -28,9 +28,9 @@ export type LicenseTerms = {
   /*The address of the royalty policy contract which required to StoryProtocol in advance.*/
   royaltyPolicy: Address;
   /*The default minting fee to be paid when minting a license.*/
-  defaultMintingFee: bigint;
+  defaultMintingFee: bigint | string | number;
   /*The expiration period of the license.*/
-  expiration: bigint;
+  expiration: bigint | string | number;
   /*Indicates whether the work can be used commercially or not.*/
   commercialUse: boolean;
   /*Whether attribution is required when reproducing the work commercially or not.*/
@@ -42,7 +42,7 @@ export type LicenseTerms = {
   /*Percentage of revenue that must be shared with the licensor.*/
   commercialRevShare: number;
   /*The maximum revenue that can be generated from the commercial use of the work.*/
-  commercialRevCeiling: bigint;
+  commercialRevCeiling: bigint | string | number;
   /*Indicates whether the licensee can create derivatives of his work or not.*/
   derivativesAllowed: boolean;
   /*Indicates whether attribution is required for derivatives of the work or not.*/
@@ -52,21 +52,24 @@ export type LicenseTerms = {
   /*Indicates whether the licensee must license derivatives of the work under the same terms or not.*/
   derivativesReciprocal: boolean;
   /*The maximum revenue that can be generated from the derivative use of the work.*/
-  derivativeRevCeiling: bigint;
+  derivativeRevCeiling: bigint | string | number;
   /*The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.*/
   currency: Address;
   /*The URI of the license terms, which can be used to fetch the offchain license terms.*/
   uri: string;
 };
-export type RegisterPILTermsRequest = Omit<
+export type RegisterPILTermsRequest = LicenseTerms & {
+  txOptions?: TxOptions;
+};
+
+export type InnerLicenseTerms = Omit<
   LicenseTerms,
   "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
 > & {
-  defaultMintingFee: bigint | string | number;
-  expiration: bigint | string | number;
-  commercialRevCeiling: bigint | string | number;
-  derivativeRevCeiling: bigint | string | number;
-  txOptions?: TxOptions;
+  defaultMintingFee: bigint;
+  expiration: bigint;
+  commercialRevCeiling: bigint;
+  derivativeRevCeiling: bigint;
 };
 export type LicenseTermsIdResponse = bigint;
 

@@ -1,6 +1,6 @@
 import { Address, PublicClient, zeroAddress } from "viem";
 
-import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
+import { PIL_TYPE, InnerLicenseTerms, LicenseTerms } from "../types/resources/license";
 import { getAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
@@ -13,8 +13,8 @@ export function getLicenseTermByType(
     royaltyPolicyAddress: Address;
     commercialRevShare?: number;
   },
-): LicenseTerms {
-  const licenseTerms: LicenseTerms = {
+): InnerLicenseTerms {
+  const licenseTerms: InnerLicenseTerms = {
     transferable: true,
     royaltyPolicy: zeroAddress,
     defaultMintingFee: BigInt(0),
@@ -77,9 +77,9 @@ export function getLicenseTermByType(
 }
 
 export async function validateLicenseTerms(
-  params: RegisterPILTermsRequest,
+  params: LicenseTerms,
   rpcClient: PublicClient,
-): Promise<LicenseTerms> {
+): Promise<InnerLicenseTerms> {
   const { royaltyPolicy, currency } = params;
   const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
   if (getAddress(royaltyPolicy, "params.royaltyPolicy") !== zeroAddress) {
@@ -117,7 +117,7 @@ export async function validateLicenseTerms(
   return object;
 }
 
-const verifyCommercialUse = (terms: LicenseTerms) => {
+const verifyCommercialUse = (terms: InnerLicenseTerms) => {
   if (!terms.commercialUse) {
     if (terms.commercialAttribution) {
       throw new Error("Cannot add commercial attribution when commercial use is disabled.");
@@ -146,7 +146,7 @@ const verifyCommercialUse = (terms: LicenseTerms) => {
   }
 };
 
-const verifyDerivatives = (terms: LicenseTerms) => {
+const verifyDerivatives = (terms: InnerLicenseTerms) => {
   if (!terms.derivativesAllowed) {
     if (terms.derivativesAttribution) {
       throw new Error("Cannot add derivative attribution when derivative use is disabled.");
