@@ -14,13 +14,9 @@ import {
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
   SimpleWalletClient,
-  royaltyPolicyLapAddress,
 } from "../abi/generated";
 import {
-  RegisterNonComSocialRemixingPILRequest,
   RegisterPILResponse,
-  RegisterCommercialUsePILRequest,
-  RegisterCommercialRemixPILRequest,
   AttachLicenseTermsRequest,
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
@@ -28,20 +24,20 @@ import {
   PIL_TYPE,
   AttachLicenseTermsResponse,
   LicenseTermsId,
-  InnerLicenseTerms,
+  InnerPILTerms,
   PredictMintingLicenseFeeRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
   RegisterPILTermsRequest,
+  CommercialLicenseTerms,
+  CommercialRemixLicenseTerms,
+  PILTerms,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
-import {
-  getLicenseTermByType,
-  getRevenueShare,
-  validateLicenseTerms,
-} from "../utils/licenseTermsHelper";
-import { chain, getAddress } from "../utils/utils";
+import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
+import { getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
+import { PILFlavor } from "./PILFlavor";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -69,44 +65,35 @@ export class LicenseClient {
   }
   /**
    * Registers new license terms and return the ID of the newly registered license terms.
-   * @param request - The request object that contains all data needed to register a license term.
-   *   @param request.transferable Indicates whether the license is transferable or not.
-   *   @param request.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
-   *   @param request.mintingFee The fee to be paid when minting a license.
-   *   @param request.expiration The expiration period of the license.
-   *   @param request.commercialUse Indicates whether the work can be used commercially or not.
-   *   @param request.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
-   *   @param request.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
-   *   @param request.commercializerCheckerData The data to be passed to the commercializer checker contract.
-   *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *   @param request.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
-   *   @param request.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
-   *   @param request.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
-   *   @param request.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
-   *   @param request.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
-   *   @param request.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
-   *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *   @param request.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
+   * If terms and type are both not provided, it will return the license terms ID of the no commercial license terms.
+   * It will emit LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms).
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
-   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
    */
-  public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
+  public async registerPILTerms<const PILType extends PIL_TYPE>(
+    request: RegisterPILTermsRequest<PILType>,
+  ): Promise<RegisterPILResponse> {
     try {
-      const object = await validateLicenseTerms(request, this.rpcClient);
-      const licenseTermsId = await this.getLicenseTermsId(object);
+      let terms: InnerPILTerms;
+      if (!request.terms && !request.PILType) {
+        terms = PILFlavor.nonComSocialRemixingPIL();
+      } else if (request.PILType !== undefined) {
+        terms = this.createTerms(request.PILType, request.terms);
+      } else {
+        terms = await validateLicenseTerms(request.terms as PILTerms, this.rpcClient);
+      }
+      const licenseTermsId = await this.getLicenseTermsId(terms);
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      if (request?.txOptions?.encodedTxDataOnly) {
+      if (request?.txOptions?.encodedTxDataOnly === true) {
         return {
           encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: object,
+            terms: terms,
           }),
         };
       } else {
         const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: object,
+          terms: terms,
         });
         if (request?.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({
@@ -115,161 +102,13 @@ export class LicenseClient {
           });
           const targetLogs =
             this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+          return { txHash, licenseTermsId: targetLogs[0].licenseTermsId };
         } else {
-          return { txHash: txHash };
+          return { txHash };
         }
       }
     } catch (error) {
       handleError(error, "Failed to register license terms");
-    }
-  }
-  /**
-   * Convenient function to register a PIL non commercial social remix license to the registry
-   * @param request - [Optional] The request object that contains all data needed to register a PIL non commercial social remix license.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
-   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
-   */
-  public async registerNonComSocialRemixingPIL(
-    request?: RegisterNonComSocialRemixingPILRequest,
-  ): Promise<RegisterPILResponse> {
-    try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      if (request?.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: licenseTerms,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: licenseTerms,
-        });
-        if (request?.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
-    } catch (error) {
-      handleError(error, "Failed to register non commercial social remixing PIL");
-    }
-  }
-  /**
-   * Convenient function to register a PIL commercial use license to the registry.
-   * @param request - The request object that contains all data needed to register a PIL commercial use license.
-   *   @param request.defaultMintingFee The fee to be paid when minting a license.
-   *   @param request.currency The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol.
-   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
-   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
-   */
-  public async registerCommercialUsePIL(
-    request: RegisterCommercialUsePILRequest,
-  ): Promise<RegisterPILResponse> {
-    try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-        defaultMintingFee: request.defaultMintingFee,
-        currency: request.currency,
-        royaltyPolicyAddress:
-          (request.royaltyPolicyAddress &&
-            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[chain[this.chainId]],
-      });
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: licenseTerms,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: licenseTerms,
-        });
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
-    } catch (error) {
-      handleError(error, "Failed to register commercial use PIL");
-    }
-  }
-  /**
-   * Convenient function to register a PIL commercial Remix license to the registry.
-   * @param request - The request object that contains all data needed to register license.
-   *   @param request.defaultMintingFee The fee to be paid when minting a license.
-   *   @param request.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *   @param request.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *   @param request.royaltyPolicyAddress [Optional] The address of the royalty policy contract, default value is LAP.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license terms Id.
-   * @emits LicenseTermsRegistered (licenseTermsId, licenseTemplate, licenseTerms);
-   */
-  public async registerCommercialRemixPIL(
-    request: RegisterCommercialRemixPILRequest,
-  ): Promise<RegisterPILResponse> {
-    try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-        defaultMintingFee: request.defaultMintingFee,
-        currency: request.currency,
-        royaltyPolicyAddress:
-          (request.royaltyPolicyAddress &&
-            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[chain[this.chainId]],
-        commercialRevShare: request.commercialRevShare,
-      });
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: licenseTerms,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: licenseTerms,
-        });
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
-    } catch (error) {
-      handleError(error, "Failed to register commercial remix PIL");
     }
   }
 
@@ -593,8 +432,35 @@ export class LicenseClient {
       handleError(error, "Failed to set licensing config");
     }
   }
-  private async getLicenseTermsId(request: InnerLicenseTerms): Promise<LicenseTermsIdResponse> {
+  private async getLicenseTermsId(request: InnerPILTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;
+  }
+  private createTerms(
+    PILType: PIL_TYPE,
+    terms: RegisterPILTermsRequest<PIL_TYPE>["terms"],
+  ): InnerPILTerms {
+    let innerTerms: InnerPILTerms;
+    switch (PILType) {
+      case PIL_TYPE.NON_COMMERCIAL_REMIX:
+        innerTerms = PILFlavor.nonComSocialRemixingPIL();
+        break;
+      case PIL_TYPE.COMMERCIAL_USE:
+        innerTerms = PILFlavor.commercialUsePIL(
+          (terms as CommercialLicenseTerms).defaultMintingFee,
+          (terms as CommercialLicenseTerms).currency,
+          (terms as CommercialLicenseTerms).royaltyPolicy,
+        );
+        break;
+      case PIL_TYPE.COMMERCIAL_REMIX:
+        innerTerms = PILFlavor.commercialRemixPIL(
+          (terms as CommercialRemixLicenseTerms).defaultMintingFee,
+          (terms as CommercialRemixLicenseTerms).royaltyPolicy,
+          (terms as CommercialRemixLicenseTerms).currency,
+          (terms as CommercialRemixLicenseTerms).commercialRevShare,
+        );
+        break;
+    }
+    return innerTerms;
   }
 }

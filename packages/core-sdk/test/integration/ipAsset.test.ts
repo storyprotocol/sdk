@@ -1,5 +1,5 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
+import { PIL_TYPE, StoryClient } from "../../src";
 import { Address, Hex, toHex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import {
@@ -28,7 +28,8 @@ describe("IP Asset Functions ", () => {
   let parentIpId: Hex;
   before(async () => {
     client = getStoryClient();
-    const res = await client.license.registerNonComSocialRemixingPIL({
+    const res = await client.license.registerPILTerms<PIL_TYPE.NON_COMMERCIAL_REMIX>({
+      terms: undefined,
       txOptions: {
         waitForTransaction: true,
       },
