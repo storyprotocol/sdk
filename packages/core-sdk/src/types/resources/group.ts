@@ -2,15 +2,27 @@ import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
-import { IpMetadataAndTxOption } from "../common";
+import { InnerLicensingConfig, IpMetadataAndTxOption, LicensingConfig } from "../common";
+
+export type LicenseData = {
+  licenseTermsId: string | bigint | number;
+  licensingConfig: LicensingConfig;
+  licenseTemplate?: Address;
+};
+
+export type InnerLicenseData = {
+  licenseTermsId: bigint;
+  licensingConfig: InnerLicensingConfig;
+  licenseTemplate: Address;
+};
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   spgNftContract: Address;
-  licenseTermsId: string | bigint | number;
   groupId: Address;
+  allowDuplicates: boolean;
   recipient?: Address;
-  licenseTemplate?: Address;
   deadline?: string | number | bigint;
+  licenseData: LicenseData[];
 } & IpMetadataAndTxOption;
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -34,9 +46,8 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   groupId: Address;
-  licenseTermsId: bigint | string | number;
-  licenseTemplate?: Address;
   deadline?: bigint;
+  licenseData: LicenseData[];
 } & IpMetadataAndTxOption;
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -47,8 +58,7 @@ export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
 };
 export type RegisterGroupAndAttachLicenseRequest = {
   groupPool: Address;
-  licenseTermsId: bigint | string | number;
-  licenseTemplate?: Address;
+  licenseData: LicenseData;
   txOptions?: TxOptions;
 };
 
@@ -61,8 +71,7 @@ export type RegisterGroupAndAttachLicenseResponse = {
 export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
   groupPool: Address;
   ipIds: Address[];
-  licenseTermsId: bigint | string | number;
-  licenseTemplate?: Address;
+  licenseData: LicenseData;
   txOptions?: TxOptions;
 };
 

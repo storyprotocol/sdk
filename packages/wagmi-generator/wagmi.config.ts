@@ -153,13 +153,12 @@ export default defineConfig(async () => {
         [odysseyChainId]: "0xF4cE2a628b60b51DEE641d4392f88850F14EFdeF",
       },
     },
-    //TODO: Waiting for the contract to be verified
-    // {
-    //   name: "MockERC20",
-    //   address: {
-    //     [odysseyChainId]: "0x505F4FD2857fEF5667A68153C9b6955a8039537e",
-    //   },
-    // },
+    {
+      name: "MockERC20",
+      address: {
+        [odysseyChainId]: "0xC0F6E387aC0B324Ec18EAcf22EE7271207dCE3d5",
+      },
+    },
     {
       name: "Multicall3",
       address: {

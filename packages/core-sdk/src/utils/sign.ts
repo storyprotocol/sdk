@@ -23,38 +23,36 @@ import {
  * @param param.nonce - The nonce.
  * @param param.wallet - The wallet client.
  * @param param.chainId - The chain ID.
- * @param param.permissions - The permissions.
  * @param param.permissionFunc - The permission function,default function is setPermission.
  * @returns A Promise that resolves to the signature.
  */
 export const getPermissionSignature = async (
   param: PermissionSignatureRequest,
 ): Promise<SignatureResponse> => {
-  const { ipId, deadline, state, wallet, chainId, permissions, permissionFunc } = param;
-  const permissionFunction = permissionFunc ? permissionFunc : "setPermission";
+  const { ipId, deadline, state, wallet, chainId, permissions } = param;
   const accessAddress =
     accessControllerAddress[Number(chainId) as keyof typeof accessControllerAddress];
+  const isBatchPermissionFunction = permissions.length >= 2;
   const data = encodeFunctionData({
     abi: accessControllerAbi,
-    functionName: permissionFunc ? permissionFunc : "setPermission",
-    args:
-      permissionFunction === "setPermission"
-        ? [
-            getAddress(permissions[0].ipId, "permissions[0].ipId"),
-            getAddress(permissions[0].signer, "permissions[0].signer"),
-            getAddress(permissions[0].to, "permissions[0].to"),
-            permissions[0].func ? toFunctionSelector(permissions[0].func) : defaultFunctionSelector,
-            permissions[0].permission,
-          ]
-        : [
-            permissions.map((item, index) => ({
-              ipAccount: getAddress(item.ipId, `permissions[${index}].ipId`),
-              signer: getAddress(item.signer, `permissions[${index}].signer`),
-              to: getAddress(item.to, `permissions[${index}].to`),
-              func: item.func ? toFunctionSelector(item.func) : defaultFunctionSelector,
-              permission: item.permission,
-            })),
-          ],
+    functionName: isBatchPermissionFunction ? "setBatchPermissions" : "setPermission",
+    args: isBatchPermissionFunction
+      ? [
+          permissions.map((item, index) => ({
+            ipAccount: getAddress(item.ipId, `permissions[${index}].ipId`),
+            signer: getAddress(item.signer, `permissions[${index}].signer`),
+            to: getAddress(item.to, `permissions[${index}].to`),
+            func: item.func ? toFunctionSelector(item.func) : defaultFunctionSelector,
+            permission: item.permission,
+          })),
+        ]
+      : [
+          getAddress(permissions[0].ipId, "permissions[0].ipId"),
+          getAddress(permissions[0].signer, "permissions[0].signer"),
+          getAddress(permissions[0].to, "permissions[0].to"),
+          permissions[0].func ? toFunctionSelector(permissions[0].func) : defaultFunctionSelector,
+          permissions[0].permission,
+        ],
   });
   return await getSignature({
     state,

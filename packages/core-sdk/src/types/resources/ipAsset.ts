@@ -3,7 +3,8 @@ import { Address, Hex } from "viem";
 import { TxOptions } from "../options";
 import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
-import { IpMetadataAndTxOption } from "../common";
+import { IpMetadataAndTxOption, LicensingConfig } from "../common";
+import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
 
 export type DerivativeData = {
   parentIpIds: Address[];
@@ -56,10 +57,14 @@ export type RegisterDerivativeResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
 };
-
+export type LicenseTermsData<T, U> = {
+  terms: T;
+  licensingConfig: U;
+};
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
   spgNftContract: Address;
-  terms: RegisterPILTermsRequest[];
+  allowDuplicates: boolean;
+  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
   recipient?: Address;
   royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
@@ -76,10 +81,11 @@ export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
   tokenId: string | number | bigint;
   deadline?: string | number | bigint;
-  derivData: {
-    parentIpIds: Address[];
-    licenseTermsIds: string[] | bigint[] | number[];
-    licenseTemplate?: Address;
+  derivData: DerivativeData;
+  sigMetadataAndRegister?: {
+    signer: Address;
+    deadline: bigint | string | number;
+    signature: Hex;
   };
 } & IpMetadataAndTxOption;
 
@@ -93,7 +99,7 @@ export type RegisterIpAndMakeDerivativeResponse = {
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  terms: RegisterPILTermsRequest[];
+  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
   deadline?: bigint | number | string;
 } & IpMetadataAndTxOption;
 
@@ -107,12 +113,9 @@ export type RegisterIpAndAttachPilTermsResponse = {
 
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
-  derivData: {
-    parentIpIds: Address[];
-    licenseTermsIds: string[] | bigint[] | number[];
-    licenseTemplate?: Address;
-  };
+  derivData: DerivativeData;
   recipient?: Address;
+  allowDuplicates: boolean;
 } & IpMetadataAndTxOption;
 
 export type MintAndRegisterIpAndMakeDerivativeResponse = {
@@ -216,11 +219,12 @@ export type IpMetadata = {
 export type MintAndRegisterIpRequest = {
   spgNftContract: Address;
   recipient?: Address;
+  allowDuplicates: boolean;
 } & IpMetadataAndTxOption;
 
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
-  terms: RegisterPILTermsRequest[];
+  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
   deadline?: string | number | bigint;
   txOptions?: TxOptions;
 };
@@ -235,6 +239,8 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
   licenseTokenIds: string[] | bigint[] | number[];
   recipient?: Address;
+  maxRts: number | string;
+  allowDuplicates: boolean;
 } & IpMetadataAndTxOption;
 
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
@@ -242,6 +248,7 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   tokenId: string | number | bigint;
   licenseTokenIds: string[] | bigint[] | number[];
   deadline?: string | number | bigint;
+  maxRts: number | string;
 } & IpMetadataAndTxOption;
 
 export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
@@ -290,7 +297,7 @@ export type BatchRegisterResponse = {
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  terms: RegisterPILTermsRequest[];
+  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
   deadline?: string | number | bigint;
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
@@ -324,8 +331,9 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   deadline?: string | number | bigint;
   derivData: DerivativeData;
   royaltyShares: RoyaltyShare[];
+  ipMetadata?: IpMetadataForWorkflow;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo;
+};
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
@@ -337,7 +345,11 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
-  terms: RegisterPILTermsRequest[];
+  allowDuplicates: boolean;
+  licenseTermsData: {
+    terms: RegisterPILTermsRequest;
+    licensingConfig: LicensingConfig;
+  }[];
   royaltyShares: RoyaltyShare[];
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;

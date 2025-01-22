@@ -300,7 +300,6 @@ export class PermissionClient {
         permissions,
         chainId: chain[this.chainId],
         wallet: this.wallet as WalletClient,
-        permissionFunc: "setBatchPermissions",
       });
       const req = {
         to: getAddress(this.accessControllerClient.address, "accessControllerAddress"),
