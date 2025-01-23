@@ -63,9 +63,7 @@ export async function resolveProxyContracts(config: Config): Promise<ProxyMap> {
         ],
       }),
     });
-    console.log("resp", resp);
     const rpcResponse: RpcResponse = await resp.json();
-    console.log("rpcResponse", rpcResponse);
     if (!/^0x0+$/[Symbol.match](rpcResponse.result)) {
       proxyContractsMap[address] = `0x${rpcResponse.result.substring(
         rpcResponse.result.length - 40

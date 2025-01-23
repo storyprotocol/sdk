@@ -384,7 +384,7 @@ export const accessControllerAbi = [
  *
  */
 export const accessControllerAddress = {
-  1516: "0x36c307E6eAa3663a06386c6f3D3f9909Cb0c1DfA",
+  1315: "0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a",
 } as const;
 
 /**
@@ -679,7 +679,7 @@ export const coreMetadataModuleAbi = [
  *
  */
 export const coreMetadataModuleAddress = {
-  1516: "0x6aeDf1fEBF4c8c764019C6F90e94aB9D94324c50",
+  1315: "0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16",
 } as const;
 
 /**
@@ -1109,7 +1109,7 @@ export const derivativeWorkflowsAbi = [
  *
  */
 export const derivativeWorkflowsAddress = {
-  1516: "0x2dC1cB61ac23257e99C716932756FE2e0f7aaDeB",
+  1315: "0x9e2d496f72C547C2C535B167e06ED8729B374a4f",
 } as const;
 
 /**
@@ -1134,6 +1134,7 @@ export const disputeModuleAbi = [
       { name: "accessController", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -1165,6 +1166,16 @@ export const disputeModuleAbi = [
     type: "error",
     inputs: [{ name: "target", internalType: "address", type: "address" }],
     name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "DisputeModule__CannotBlacklistBaseArbitrationPolicy",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "DisputeModule__DisputeAlreadyPropagated",
   },
   { type: "error", inputs: [], name: "DisputeModule__NotAbleToResolve" },
   { type: "error", inputs: [], name: "DisputeModule__NotAllowedToWhitelist" },
@@ -1201,6 +1212,7 @@ export const disputeModuleAbi = [
   { type: "error", inputs: [], name: "DisputeModule__ZeroDisputeEvidenceHash" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroDisputeTag" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroIPAssetRegistry" },
+  { type: "error", inputs: [], name: "DisputeModule__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroLicenseRegistry" },
   {
     type: "error",
@@ -1527,6 +1539,13 @@ export const disputeModuleAbi = [
   {
     type: "function",
     inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
     stateMutability: "view",
@@ -1843,7 +1862,7 @@ export const disputeModuleAbi = [
  *
  */
 export const disputeModuleAddress = {
-  1516: "0xA5758EbB764816a338BD2E0339454fdeD61FEDCC",
+  1315: "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5",
 } as const;
 
 /**
@@ -1911,6 +1930,11 @@ export const evenSplitGroupPoolAbi = [
     inputs: [{ name: "caller", internalType: "address", type: "address" }],
     name: "EvenSplitGroupPool__CallerIsNotGroupingModule",
   },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "EvenSplitGroupPool__DepositWithZeroTokenAddress",
+  },
   { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroGroupingModule" },
   {
     type: "error",
@@ -1920,9 +1944,26 @@ export const evenSplitGroupPoolAbi = [
   { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroRoyaltyModule" },
   { type: "error", inputs: [], name: "ExpectedPause" },
   { type: "error", inputs: [], name: "FailedInnerCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupCurrentToken", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__TokenNotMatchGroupRevenueToken",
+  },
   { type: "error", inputs: [], name: "GroupingModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [
+      { name: "bits", internalType: "uint8", type: "uint8" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "SafeCastOverflowedUintDowncast",
+  },
   {
     type: "error",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
@@ -2017,6 +2058,13 @@ export const evenSplitGroupPoolAbi = [
         type: "address",
       },
     ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "MAX_GROUP_SIZE",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
     stateMutability: "view",
   },
   {
@@ -2135,14 +2183,14 @@ export const evenSplitGroupPoolAbi = [
   {
     type: "function",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
-    name: "getTotalIps",
+    name: "getTotalAllocatedRewardShare",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
-    name: "getTotalMinimumRewardShare",
+    name: "getTotalIps",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
@@ -2231,7 +2279,7 @@ export const evenSplitGroupPoolAbi = [
  *
  */
 export const evenSplitGroupPoolAddress = {
-  1516: "0xF4cE2a628b60b51DEE641d4392f88850F14EFdeF",
+  1315: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
 } as const;
 
 /**
@@ -2317,6 +2365,21 @@ export const groupingModuleAbi = [
   {
     type: "error",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__DisputedGroupCannotAddIp",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__DisputedGroupCannotClaimReward",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__DisputedGroupCannotCollectRoyalties",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
     name: "GroupingModule__GroupFrozenDueToAlreadyMintLicenseTokens",
   },
   {
@@ -2326,22 +2389,13 @@ export const groupingModuleAbi = [
   },
   {
     type: "error",
-    inputs: [
-      { name: "groupId", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "GroupingModule__GroupIPHasMintingFee",
-  },
-  {
-    type: "error",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
     name: "GroupingModule__GroupIPHasNoLicenseTerms",
   },
   {
     type: "error",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
-    name: "GroupingModule__GroupIPShouldHasNonDefaultLicenseTerms",
+    name: "GroupingModule__GroupIPLicenseHasNotSpecifyRevenueToken",
   },
   {
     type: "error",
@@ -2353,13 +2407,55 @@ export const groupingModuleAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
-    name: "GroupingModule__GroupRoyaltyVaultNotCreated",
+    inputs: [{ name: "groupNFT", internalType: "address", type: "address" }],
+    name: "GroupingModule__InvalidGroupNFT",
   },
   {
     type: "error",
-    inputs: [{ name: "groupNFT", internalType: "address", type: "address" }],
-    name: "GroupingModule__InvalidGroupNFT",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
+        name: "expectGroupRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "GroupingModule__IpExpectedShareExceedsMaxAllowedShare",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "GroupingModule__MaxAllowedRewardShareExceeds100Percent",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "royaltyToken", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__RoyaltyTokenNotWhitelisted",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupCurrentToken", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__TokenNotMatchGroupRevenueToken",
   },
   {
     type: "error",
@@ -2655,6 +2751,11 @@ export const groupingModuleAbi = [
     inputs: [
       { name: "groupIpId", internalType: "address", type: "address" },
       { name: "ipIds", internalType: "address[]", type: "address[]" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
     ],
     name: "addIp",
     outputs: [],
@@ -2805,7 +2906,7 @@ export const groupingModuleAbi = [
  *
  */
 export const groupingModuleAddress = {
-  1516: "0x06884216bB51FD881EB255fCAcBBA626D5191C1e",
+  1315: "0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac",
 } as const;
 
 /**
@@ -3046,6 +3147,11 @@ export const groupingWorkflowsAbi = [
       { name: "groupId", internalType: "address", type: "address" },
       { name: "recipient", internalType: "address", type: "address" },
       {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
         name: "licensesData",
         internalType: "struct WorkflowStructs.LicenseData[]",
         type: "tuple[]",
@@ -3196,6 +3302,11 @@ export const groupingWorkflowsAbi = [
       { name: "groupPool", internalType: "address", type: "address" },
       { name: "ipIds", internalType: "address[]", type: "address[]" },
       {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
         name: "licenseData",
         internalType: "struct WorkflowStructs.LicenseData",
         type: "tuple",
@@ -3246,6 +3357,11 @@ export const groupingWorkflowsAbi = [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       { name: "groupId", internalType: "address", type: "address" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
       {
         name: "licensesData",
         internalType: "struct WorkflowStructs.LicenseData[]",
@@ -3345,7 +3461,7 @@ export const groupingWorkflowsAbi = [
  *
  */
 export const groupingWorkflowsAddress = {
-  1516: "0xDA49FFefbc20311d86E275741D152942C3EB5412",
+  1315: "0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd",
 } as const;
 
 /**
@@ -3389,6 +3505,7 @@ export const ipAccountImplAbi = [
   { type: "error", inputs: [], name: "IPAccount__InvalidOperation" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSignature" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSigner" },
+  { type: "error", inputs: [], name: "IPAccount__UUPSUpgradeDisabled" },
   { type: "error", inputs: [], name: "IPAccount__ZeroAccessController" },
   { type: "error", inputs: [], name: "OperationNotSupported" },
   { type: "error", inputs: [], name: "SelfOwnDetected" },
@@ -3769,7 +3886,7 @@ export const ipAccountImplAbi = [
  *
  */
 export const ipAccountImplAddress = {
-  1516: "0x252118ce469EFeA3a210817620AB77216b001C1e",
+  1315: "0x7343646585443F1c3F64E4F08b708788527e1C77",
 } as const;
 
 /**
@@ -3794,6 +3911,7 @@ export const ipAssetRegistryAbi = [
       { name: "erc6551Registry", internalType: "address", type: "address" },
       { name: "ipAccountImpl", internalType: "address", type: "address" },
       { name: "groupingModule", internalType: "address", type: "address" },
+      { name: "ipAccountImplBeacon", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -3861,6 +3979,11 @@ export const ipAssetRegistryAbi = [
   },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroERC6551Registry" },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroIpAccountImpl" },
+  {
+    type: "error",
+    inputs: [],
+    name: "IPAccountRegistry_ZeroIpAccountImplBeacon",
+  },
   {
     type: "error",
     inputs: [
@@ -4127,6 +4250,13 @@ export const ipAssetRegistryAbi = [
   {
     type: "function",
     inputs: [],
+    name: "IP_ACCOUNT_IMPL_UPGRADEABLE_BEACON",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "IP_ACCOUNT_SALT",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
@@ -4370,6 +4500,13 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "newIpAccountImpl", internalType: "address", type: "address" }],
+    name: "upgradeIPAccountImpl",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
       { name: "data", internalType: "bytes", type: "bytes" },
@@ -4394,7 +4531,7 @@ export const ipAssetRegistryAbi = [
  *
  */
 export const ipAssetRegistryAddress = {
-  1516: "0xe9FDB3D7c6AB31eD5eEA45f547Ca19C5de4244Af",
+  1315: "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
 } as const;
 
 /**
@@ -4576,6 +4713,31 @@ export const ipRoyaltyVaultImplAbi = [
       },
     ],
     name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "claimer",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "revenueDebt",
+        internalType: "int256",
+        type: "int256",
+        indexed: false,
+      },
+    ],
+    name: "RevenueDebtUpdated",
   },
   {
     type: "event",
@@ -4846,7 +5008,7 @@ export const ipRoyaltyVaultImplAbi = [
  *
  */
 export const ipRoyaltyVaultImplAddress = {
-  1516: "0xFcbaF5Ae5eFF8b21E68759402952F28404e48704",
+  1315: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
 } as const;
 
 /**
@@ -5493,7 +5655,7 @@ export const licenseAttachmentWorkflowsAbi = [
  *
  */
 export const licenseAttachmentWorkflowsAddress = {
-  1516: "0x928fD7A75EF7C14bf87Ee6b7d507d109a9E72603",
+  1315: "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
 } as const;
 
 /**
@@ -5725,6 +5887,14 @@ export const licenseRegistryAbi = [
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
+    name: "LicenseRegistry__LicenseTermsCannotAttachToGroupIp",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
     name: "LicenseRegistry__LicenseTermsNotExists",
   },
   {
@@ -5761,6 +5931,11 @@ export const licenseRegistryAbi = [
   },
   {
     type: "error",
+    inputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__ParentIpNotRegistered",
+  },
+  {
+    type: "error",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "LicenseRegistry__ParentIpTagged",
   },
@@ -5771,6 +5946,24 @@ export const licenseRegistryAbi = [
       { name: "licenseTemplate", internalType: "address", type: "address" },
     ],
     name: "LicenseRegistry__ParentIpUnmatchedLicenseTemplate",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestors", internalType: "uint256", type: "uint256" },
+      { name: "maxAncestors", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__TooManyAncestors",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parents", internalType: "uint256", type: "uint256" },
+      { name: "maxParents", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__TooManyParents",
   },
   {
     type: "error",
@@ -5806,6 +5999,7 @@ export const licenseRegistryAbi = [
     name: "LicensingModule__LicenseTermsNotFound",
   },
   { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "RoyaltyModule__CallFailed" },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -6032,6 +6226,20 @@ export const licenseRegistryAbi = [
   {
     type: "function",
     inputs: [],
+    name: "MAX_ANCESTORS",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "MAX_PARENTS",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
@@ -6063,6 +6271,13 @@ export const licenseRegistryAbi = [
     name: "exists",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getAncestorsCount",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -6228,6 +6443,16 @@ export const licenseRegistryAbi = [
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "isDefaultLicense",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
@@ -6480,7 +6705,7 @@ export const licenseRegistryAbi = [
  *
  */
 export const licenseRegistryAddress = {
-  1516: "0xDEF65942605C0c1d8eBcf3249AFBa3b8204BA8A9",
+  1315: "0x529a750E02d8E2f15649c13D69a465286a780e24",
 } as const;
 
 /**
@@ -6618,6 +6843,11 @@ export const licenseTokenAbi = [
     name: "LicenseToken__CallerAndChildIPNotTokenOwner",
   },
   { type: "error", inputs: [], name: "LicenseToken__CallerNotLicensingModule" },
+  {
+    type: "error",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicenseToken__ChildIPAlreadyHasBeenMintedLicenseTokens",
+  },
   {
     type: "error",
     inputs: [
@@ -7152,7 +7382,7 @@ export const licenseTokenAbi = [
  *
  */
 export const licenseTokenAddress = {
-  1516: "0x6A875Bba3F710e05D9c5a9C74AC4f511ae948Df5",
+  1315: "0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC",
 } as const;
 
 /**
@@ -7181,6 +7411,7 @@ export const licensingModuleAbi = [
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "licenseToken", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -7241,6 +7472,11 @@ export const licensingModuleAbi = [
       { name: "newRoyaltyPercent", internalType: "uint32", type: "uint32" },
     ],
     name: "LicensingModule__CurrentLicenseNotAllowOverrideRoyaltyPercent",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicensingModule__DerivativeAlreadyHasBeenMintedLicenseTokens",
   },
   { type: "error", inputs: [], name: "LicensingModule__DisputedIpId" },
   {
@@ -7359,6 +7595,11 @@ export const licensingModuleAbi = [
     ],
     name: "LicensingModule__MintingFeeExceedMaxMintingFee",
   },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicensingModule__MintingFeeRequiresRoyaltyPolicy",
+  },
   { type: "error", inputs: [], name: "LicensingModule__NoLicenseToken" },
   { type: "error", inputs: [], name: "LicensingModule__NoParentIp" },
   { type: "error", inputs: [], name: "LicensingModule__ReceiverZeroAddress" },
@@ -7374,8 +7615,18 @@ export const licensingModuleAbi = [
     ],
     name: "LicensingModule__RoyaltyPolicyMismatch",
   },
+  {
+    type: "error",
+    inputs: [
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "ancestors", internalType: "uint256", type: "uint256" },
+      { name: "maxAncestors", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicensingModule__TooManyAncestorsForMintingLicenseTokenAllowRegisterDerivative",
+  },
   { type: "error", inputs: [], name: "LicensingModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "LicensingModule__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroLicenseRegistry" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroLicenseToken" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroModuleRegistry" },
@@ -7595,6 +7846,13 @@ export const licensingModuleAbi = [
   {
     type: "function",
     inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "LICENSE_NFT",
     outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
     stateMutability: "view",
@@ -7631,6 +7889,13 @@ export const licensingModuleAbi = [
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "attachDefaultLicenseTerms",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -7830,7 +8095,7 @@ export const licensingModuleAbi = [
  *
  */
 export const licensingModuleAddress = {
-  1516: "0x98fBba1415369D67f0E8B9D4eD04Ed9A9cdE3152",
+  1315: "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
 } as const;
 
 /**
@@ -8030,7 +8295,7 @@ export const mockErc20Abi = [
  *
  */
 export const mockErc20Address = {
-  1516: "0xC0F6E387aC0B324Ec18EAcf22EE7271207dCE3d5",
+  1315: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
 } as const;
 
 /**
@@ -8335,7 +8600,7 @@ export const moduleRegistryAbi = [
  *
  */
 export const moduleRegistryAddress = {
-  1516: "0x6159Be97753e5a31fc2e25e2D189678eEebE8861",
+  1315: "0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5",
 } as const;
 
 /**
@@ -8594,7 +8859,7 @@ export const multicall3Abi = [
  *
  */
 export const multicall3Address = {
-  1516: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  1315: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as const;
 
 /**
@@ -8620,6 +8885,7 @@ export const piLicenseTemplateAbi = [
       { name: "ipAccountRegistry", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "moduleRegistry", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -8703,6 +8969,17 @@ export const piLicenseTemplateAbi = [
   },
   {
     type: "error",
+    inputs: [
+      {
+        name: "commercializerChecker",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "PILicenseTemplate__CommercializerCheckerNotRegistered",
+  },
+  {
+    type: "error",
     inputs: [],
     name: "PILicenseTemplate__CurrencyTokenNotWhitelisted",
   },
@@ -8725,6 +9002,11 @@ export const piLicenseTemplateAbi = [
     type: "error",
     inputs: [],
     name: "PILicenseTemplate__DerivativesDisabled_CantAddReciprocal",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__MintingFeeRequiresRoyaltyPolicy",
   },
   {
     type: "error",
@@ -8855,6 +9137,13 @@ export const piLicenseTemplateAbi = [
   {
     type: "function",
     inputs: [],
+    name: "MODULE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IModuleRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "ROYALTY_MODULE",
     outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
     stateMutability: "view",
@@ -8875,9 +9164,23 @@ export const piLicenseTemplateAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "allowDerivativeRegistration",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "canAttachToGroupIp",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
@@ -9272,7 +9575,7 @@ export const piLicenseTemplateAbi = [
       { name: "childIpId", internalType: "address", type: "address" },
       { name: "parentIpIds", internalType: "address[]", type: "address[]" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "childIpOwner", internalType: "address", type: "address" },
+      { name: "caller", internalType: "address", type: "address" },
     ],
     name: "verifyRegisterDerivativeForAllParents",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -9284,7 +9587,7 @@ export const piLicenseTemplateAbi = [
  *
  */
 export const piLicenseTemplateAddress = {
-  1516: "0x2412341DFC214763dDCFCE76acf2Da09Bc7b4F7E",
+  1315: "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
 } as const;
 
 /**
@@ -9636,7 +9939,7 @@ export const registrationWorkflowsAbi = [
  *
  */
 export const registrationWorkflowsAddress = {
-  1516: "0x1F67Da99E9b3aB4557941258624730db9f9098a4",
+  1315: "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
 } as const;
 
 /**
@@ -9662,6 +9965,7 @@ export const royaltyModuleAbi = [
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -9710,10 +10014,8 @@ export const royaltyModuleAbi = [
     inputs: [],
     name: "RoyaltyModule__AboveAccumulatedRoyaltyPoliciesLimit",
   },
-  { type: "error", inputs: [], name: "RoyaltyModule__AboveAncestorsLimit" },
   { type: "error", inputs: [], name: "RoyaltyModule__AboveMaxPercent" },
   { type: "error", inputs: [], name: "RoyaltyModule__AboveMaxRts" },
-  { type: "error", inputs: [], name: "RoyaltyModule__AboveParentLimit" },
   { type: "error", inputs: [], name: "RoyaltyModule__CallFailed" },
   {
     type: "error",
@@ -9730,11 +10032,6 @@ export const royaltyModuleAbi = [
   },
   { type: "error", inputs: [], name: "RoyaltyModule__IpExpired" },
   { type: "error", inputs: [], name: "RoyaltyModule__IpIsTagged" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyModule__LastPositionNotAbleToMintLicense",
-  },
   { type: "error", inputs: [], name: "RoyaltyModule__NoParentsOnLinking" },
   { type: "error", inputs: [], name: "RoyaltyModule__NotAllowedCaller" },
   {
@@ -9746,6 +10043,12 @@ export const royaltyModuleAbi = [
     type: "error",
     inputs: [],
     name: "RoyaltyModule__NotWhitelistedRoyaltyToken",
+  },
+  { type: "error", inputs: [], name: "RoyaltyModule__PaymentAmountIsTooLow" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__PolicyAlreadyRegisteredAsExternalRoyaltyPolicy",
   },
   {
     type: "error",
@@ -9762,10 +10065,9 @@ export const royaltyModuleAbi = [
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroAmount" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroDisputeModule" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroIpAssetRegistry" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroIpGraphAcl" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicenseRegistry" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicensingModule" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroMaxAncestors" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroMaxParents" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroParentIpId" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroReceiverVault" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyPolicy" },
@@ -9825,31 +10127,6 @@ export const royaltyModuleAbi = [
       },
     ],
     name: "Initialized",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "maxParents",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "maxAncestors",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "accumulatedRoyaltyPoliciesLimit",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "IpGraphLimitsUpdated",
   },
   {
     type: "event",
@@ -10006,6 +10283,19 @@ export const royaltyModuleAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "accumulatedRoyaltyPoliciesLimit",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RoyaltyLimitsUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "receiverIpId",
         internalType: "address",
         type: "address",
@@ -10141,6 +10431,13 @@ export const royaltyModuleAbi = [
   {
     type: "function",
     inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
     stateMutability: "view",
@@ -10190,13 +10487,6 @@ export const royaltyModuleAbi = [
   {
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "getAncestorsCount",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "globalRoyaltyStack",
     outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
     stateMutability: "view",
@@ -10215,8 +10505,6 @@ export const royaltyModuleAbi = [
     type: "function",
     inputs: [
       { name: "accessManager", internalType: "address", type: "address" },
-      { name: "parentLimit", internalType: "uint256", type: "uint256" },
-      { name: "ancestorLimit", internalType: "uint256", type: "uint256" },
       {
         name: "accumulatedRoyaltyPoliciesLimit",
         internalType: "uint256",
@@ -10421,21 +10709,6 @@ export const royaltyModuleAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "parentLimit", internalType: "uint256", type: "uint256" },
-      { name: "ancestorLimit", internalType: "uint256", type: "uint256" },
-      {
-        name: "accumulatedRoyaltyPoliciesLimit",
-        internalType: "uint256",
-        type: "uint256",
-      },
-    ],
-    name: "setIpGraphLimits",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "beacon", internalType: "address", type: "address" }],
     name: "setIpRoyaltyVaultBeacon",
     outputs: [],
@@ -10445,6 +10718,19 @@ export const royaltyModuleAbi = [
     type: "function",
     inputs: [{ name: "royaltyFeePercent", internalType: "uint32", type: "uint32" }],
     name: "setRoyaltyFeePercent",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "accumulatedRoyaltyPoliciesLimit",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "setRoyaltyLimits",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -10460,6 +10746,17 @@ export const royaltyModuleAbi = [
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+    ],
+    name: "totalRevenueTokensAccounted",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
@@ -10529,7 +10826,7 @@ export const royaltyModuleAbi = [
  *
  */
 export const royaltyModuleAddress = {
-  1516: "0xdCe2468a64D8D88a00074c47760C2b6AaEDbEDc8",
+  1315: "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
 } as const;
 
 /**
@@ -10806,6 +11103,13 @@ export const royaltyPolicyLapAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "isSupportGroup",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licensePercent", internalType: "uint32", type: "uint32" },
@@ -10894,7 +11198,7 @@ export const royaltyPolicyLapAbi = [
  *
  */
 export const royaltyPolicyLapAddress = {
-  1516: "0x80244b027E2296fb8fb4dFd05FaCc7A36C12e29a",
+  1315: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
 } as const;
 
 /**
@@ -11186,6 +11490,13 @@ export const royaltyPolicyLrpAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "isSupportGroup",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licensePercent", internalType: "uint32", type: "uint32" },
@@ -11274,7 +11585,7 @@ export const royaltyPolicyLrpAbi = [
  *
  */
 export const royaltyPolicyLrpAddress = {
-  1516: "0x85E38f84128B97F9C7C50b1B912D8Af159d49e29",
+  1315: "0x9156e603C949481883B1d3355c6f1132D191fC41",
 } as const;
 
 /**
@@ -11976,7 +12287,7 @@ export const royaltyTokenDistributionWorkflowsAbi = [
  *
  */
 export const royaltyTokenDistributionWorkflowsAddress = {
-  1516: "0x7f6b16C0c065F3F5349EA8BE35f6f23310D7397F",
+  1315: "0xa38f42B8d33809917f23997B8423054aAB97322C",
 } as const;
 
 /**
@@ -12029,7 +12340,7 @@ export const royaltyWorkflowsAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "RoyaltyWorkflows__ZeroAddressParam" },
@@ -12163,7 +12474,7 @@ export const royaltyWorkflowsAbi = [
  *
  */
 export const royaltyWorkflowsAddress = {
-  1516: "0x90F7c98EfB9Dd19e88c9C30C5a298C54276a47E3",
+  1315: "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
 } as const;
 
 /**
@@ -12278,7 +12589,7 @@ export const spgnftBeaconAbi = [
  *
  */
 export const spgnftBeaconAddress = {
-  1516: "0xC8774113B8FbD1741Ab5CDCd39389be4269C7a12",
+  1315: "0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218",
 } as const;
 
 /**
@@ -12942,7 +13253,7 @@ export const spgnftImplAbi = [
  *
  */
 export const spgnftImplAddress = {
-  1516: "0x00D0f71B99eB5c5eb3fbd9feFA5996329A8db3Ae",
+  1315: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
 } as const;
 
 /**
@@ -14844,6 +15155,8 @@ export type EvenSplitGroupPoolGroupingModuleResponse = Address;
 
 export type EvenSplitGroupPoolGroupIpAssetRegistryResponse = Address;
 
+export type EvenSplitGroupPoolMaxGroupSizeResponse = number;
+
 export type EvenSplitGroupPoolRoyaltyModuleResponse = Address;
 
 export type EvenSplitGroupPoolUpgradeInterfaceVersionResponse = string;
@@ -14907,6 +15220,17 @@ export type EvenSplitGroupPoolGetMinimumRewardShareRequest = {
 export type EvenSplitGroupPoolGetMinimumRewardShareResponse = bigint;
 
 /**
+ * EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest
+ *
+ * @param groupId address
+ */
+export type EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest = {
+  groupId: Address;
+};
+
+export type EvenSplitGroupPoolGetTotalAllocatedRewardShareResponse = bigint;
+
+/**
  * EvenSplitGroupPoolGetTotalIpsRequest
  *
  * @param groupId address
@@ -14916,17 +15240,6 @@ export type EvenSplitGroupPoolGetTotalIpsRequest = {
 };
 
 export type EvenSplitGroupPoolGetTotalIpsResponse = bigint;
-
-/**
- * EvenSplitGroupPoolGetTotalMinimumRewardShareRequest
- *
- * @param groupId address
- */
-export type EvenSplitGroupPoolGetTotalMinimumRewardShareRequest = {
-  groupId: Address;
-};
-
-export type EvenSplitGroupPoolGetTotalMinimumRewardShareResponse = bigint;
 
 export type EvenSplitGroupPoolIsConsumingScheduledOpResponse = Hex;
 
@@ -15288,6 +15601,20 @@ export class EvenSplitGroupPoolReadOnlyClient extends EvenSplitGroupPoolEventCli
   }
 
   /**
+   * method MAX_GROUP_SIZE for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolMaxGroupSizeRequest
+   * @return Promise<EvenSplitGroupPoolMaxGroupSizeResponse>
+   */
+  public async maxGroupSize(): Promise<EvenSplitGroupPoolMaxGroupSizeResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "MAX_GROUP_SIZE",
+    });
+  }
+
+  /**
    * method ROYALTY_MODULE for contract EvenSplitGroupPool
    *
    * @param request EvenSplitGroupPoolRoyaltyModuleRequest
@@ -15398,6 +15725,23 @@ export class EvenSplitGroupPoolReadOnlyClient extends EvenSplitGroupPoolEventCli
   }
 
   /**
+   * method getTotalAllocatedRewardShare for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest
+   * @return Promise<EvenSplitGroupPoolGetTotalAllocatedRewardShareResponse>
+   */
+  public async getTotalAllocatedRewardShare(
+    request: EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest,
+  ): Promise<EvenSplitGroupPoolGetTotalAllocatedRewardShareResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "getTotalAllocatedRewardShare",
+      args: [request.groupId],
+    });
+  }
+
+  /**
    * method getTotalIps for contract EvenSplitGroupPool
    *
    * @param request EvenSplitGroupPoolGetTotalIpsRequest
@@ -15410,23 +15754,6 @@ export class EvenSplitGroupPoolReadOnlyClient extends EvenSplitGroupPoolEventCli
       abi: evenSplitGroupPoolAbi,
       address: this.address,
       functionName: "getTotalIps",
-      args: [request.groupId],
-    });
-  }
-
-  /**
-   * method getTotalMinimumRewardShare for contract EvenSplitGroupPool
-   *
-   * @param request EvenSplitGroupPoolGetTotalMinimumRewardShareRequest
-   * @return Promise<EvenSplitGroupPoolGetTotalMinimumRewardShareResponse>
-   */
-  public async getTotalMinimumRewardShare(
-    request: EvenSplitGroupPoolGetTotalMinimumRewardShareRequest,
-  ): Promise<EvenSplitGroupPoolGetTotalMinimumRewardShareResponse> {
-    return await this.rpcClient.readContract({
-      abi: evenSplitGroupPoolAbi,
-      address: this.address,
-      functionName: "getTotalMinimumRewardShare",
       args: [request.groupId],
     });
   }
@@ -16035,10 +16362,12 @@ export type GroupingModuleProtocolPausableInitRequest = {
  *
  * @param groupIpId address
  * @param ipIds address[]
+ * @param maxAllowedRewardShare uint256
  */
 export type GroupingModuleAddIpRequest = {
   groupIpId: Address;
   ipIds: readonly Address[];
+  maxAllowedRewardShare: bigint;
 };
 
 /**
@@ -16842,7 +17171,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       address: this.address,
       functionName: "addIp",
       account: this.wallet.account,
-      args: [request.groupIpId, request.ipIds],
+      args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16859,7 +17188,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       data: encodeFunctionData({
         abi: groupingModuleAbi,
         functionName: "addIp",
-        args: [request.groupIpId, request.ipIds],
+        args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
       }),
     };
   }
@@ -17225,6 +17554,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
  * @param spgNftContract address
  * @param groupId address
  * @param recipient address
+ * @param maxAllowedRewardShare uint256
  * @param licensesData tuple[]
  * @param ipMetadata tuple
  * @param sigAddToGroup tuple
@@ -17234,6 +17564,7 @@ export type GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupReque
   spgNftContract: Address;
   groupId: Address;
   recipient: Address;
+  maxAllowedRewardShare: bigint;
   licensesData: {
     licenseTemplate: Address;
     licenseTermsId: bigint;
@@ -17291,11 +17622,13 @@ export type GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
  *
  * @param groupPool address
  * @param ipIds address[]
+ * @param maxAllowedRewardShare uint256
  * @param licenseData tuple
  */
 export type GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
   groupPool: Address;
   ipIds: readonly Address[];
+  maxAllowedRewardShare: bigint;
   licenseData: {
     licenseTemplate: Address;
     licenseTermsId: bigint;
@@ -17318,6 +17651,7 @@ export type GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
  * @param nftContract address
  * @param tokenId uint256
  * @param groupId address
+ * @param maxAllowedRewardShare uint256
  * @param licensesData tuple[]
  * @param ipMetadata tuple
  * @param sigMetadataAndAttachAndConfig tuple
@@ -17327,6 +17661,7 @@ export type GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   nftContract: Address;
   tokenId: bigint;
   groupId: Address;
+  maxAllowedRewardShare: bigint;
   licensesData: {
     licenseTemplate: Address;
     licenseTermsId: bigint;
@@ -17391,6 +17726,7 @@ export class GroupingWorkflowsClient {
         request.spgNftContract,
         request.groupId,
         request.recipient,
+        request.maxAllowedRewardShare,
         request.licensesData,
         request.ipMetadata,
         request.sigAddToGroup,
@@ -17418,6 +17754,7 @@ export class GroupingWorkflowsClient {
           request.spgNftContract,
           request.groupId,
           request.recipient,
+          request.maxAllowedRewardShare,
           request.licensesData,
           request.ipMetadata,
           request.sigAddToGroup,
@@ -17479,7 +17816,7 @@ export class GroupingWorkflowsClient {
       address: this.address,
       functionName: "registerGroupAndAttachLicenseAndAddIps",
       account: this.wallet.account,
-      args: [request.groupPool, request.ipIds, request.licenseData],
+      args: [request.groupPool, request.ipIds, request.maxAllowedRewardShare, request.licenseData],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -17498,7 +17835,12 @@ export class GroupingWorkflowsClient {
       data: encodeFunctionData({
         abi: groupingWorkflowsAbi,
         functionName: "registerGroupAndAttachLicenseAndAddIps",
-        args: [request.groupPool, request.ipIds, request.licenseData],
+        args: [
+          request.groupPool,
+          request.ipIds,
+          request.maxAllowedRewardShare,
+          request.licenseData,
+        ],
       }),
     };
   }
@@ -17521,6 +17863,7 @@ export class GroupingWorkflowsClient {
         request.nftContract,
         request.tokenId,
         request.groupId,
+        request.maxAllowedRewardShare,
         request.licensesData,
         request.ipMetadata,
         request.sigMetadataAndAttachAndConfig,
@@ -17548,6 +17891,7 @@ export class GroupingWorkflowsClient {
           request.nftContract,
           request.tokenId,
           request.groupId,
+          request.maxAllowedRewardShare,
           request.licensesData,
           request.ipMetadata,
           request.sigMetadataAndAttachAndConfig,
@@ -18683,6 +19027,10 @@ export type LicenseRegistryIpGraphAclResponse = Address;
 
 export type LicenseRegistryLicensingModuleResponse = Address;
 
+export type LicenseRegistryMaxAncestorsResponse = bigint;
+
+export type LicenseRegistryMaxParentsResponse = bigint;
+
 export type LicenseRegistryUpgradeInterfaceVersionResponse = string;
 
 export type LicenseRegistryAuthorityResponse = Address;
@@ -18914,6 +19262,19 @@ export type LicenseRegistryHasIpAttachedLicenseTermsResponse = boolean;
 export type LicenseRegistryIsConsumingScheduledOpResponse = Hex;
 
 /**
+ * LicenseRegistryIsDefaultLicenseRequest
+ *
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryIsDefaultLicenseRequest = {
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+export type LicenseRegistryIsDefaultLicenseResponse = boolean;
+
+/**
  * LicenseRegistryIsDerivativeIpRequest
  *
  * @param childIpId address
@@ -19033,6 +19394,15 @@ export type LicenseRegistryAttachLicenseTermsToIpRequest = {
   ipId: Address;
   licenseTemplate: Address;
   licenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryGetAncestorsCountRequest
+ *
+ * @param ipId address
+ */
+export type LicenseRegistryGetAncestorsCountRequest = {
+  ipId: Address;
 };
 
 /**
@@ -19577,6 +19947,34 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
   }
 
   /**
+   * method MAX_ANCESTORS for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryMaxAncestorsRequest
+   * @return Promise<LicenseRegistryMaxAncestorsResponse>
+   */
+  public async maxAncestors(): Promise<LicenseRegistryMaxAncestorsResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "MAX_ANCESTORS",
+    });
+  }
+
+  /**
+   * method MAX_PARENTS for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryMaxParentsRequest
+   * @return Promise<LicenseRegistryMaxParentsResponse>
+   */
+  public async maxParents(): Promise<LicenseRegistryMaxParentsResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "MAX_PARENTS",
+    });
+  }
+
+  /**
    * method UPGRADE_INTERFACE_VERSION for contract LicenseRegistry
    *
    * @param request LicenseRegistryUpgradeInterfaceVersionRequest
@@ -19875,6 +20273,23 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
   }
 
   /**
+   * method isDefaultLicense for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryIsDefaultLicenseRequest
+   * @return Promise<LicenseRegistryIsDefaultLicenseResponse>
+   */
+  public async isDefaultLicense(
+    request: LicenseRegistryIsDefaultLicenseRequest,
+  ): Promise<LicenseRegistryIsDefaultLicenseResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "isDefaultLicense",
+      args: [request.licenseTemplate, request.licenseTermsId],
+    });
+  }
+
+  /**
    * method isDerivativeIp for contract LicenseRegistry
    *
    * @param request LicenseRegistryIsDerivativeIpRequest
@@ -20050,6 +20465,42 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
         abi: licenseRegistryAbi,
         functionName: "attachLicenseTermsToIp",
         args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
+  }
+
+  /**
+   * method getAncestorsCount for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetAncestorsCountRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async getAncestorsCount(
+    request: LicenseRegistryGetAncestorsCountRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getAncestorsCount",
+      account: this.wallet.account,
+      args: [request.ipId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method getAncestorsCount for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistryGetAncestorsCountRequest
+   * @return EncodedTxData
+   */
+  public getAncestorsCountEncode(request: LicenseRegistryGetAncestorsCountRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "getAncestorsCount",
+        args: [request.ipId],
       }),
     };
   }
@@ -21617,13 +22068,37 @@ export type PiLicenseTemplateIpAssetRegistryResponse = Address;
 
 export type PiLicenseTemplateLicenseRegistryResponse = Address;
 
+export type PiLicenseTemplateModuleRegistryResponse = Address;
+
 export type PiLicenseTemplateRoyaltyModuleResponse = Address;
 
 export type PiLicenseTemplateTermsRendererResponse = Address;
 
 export type PiLicenseTemplateUpgradeInterfaceVersionResponse = string;
 
+/**
+ * PiLicenseTemplateAllowDerivativeRegistrationRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateAllowDerivativeRegistrationRequest = {
+  licenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateAllowDerivativeRegistrationResponse = boolean;
+
 export type PiLicenseTemplateAuthorityResponse = Address;
+
+/**
+ * PiLicenseTemplateCanAttachToGroupIpRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateCanAttachToGroupIpRequest = {
+  licenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateCanAttachToGroupIpResponse = boolean;
 
 /**
  * PiLicenseTemplateCanOverrideRoyaltyPercentRequest
@@ -21962,13 +22437,13 @@ export type PiLicenseTemplateVerifyRegisterDerivativeRequest = {
  * @param childIpId address
  * @param parentIpIds address[]
  * @param licenseTermsIds uint256[]
- * @param childIpOwner address
+ * @param caller address
  */
 export type PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest = {
   childIpId: Address;
   parentIpIds: readonly Address[];
   licenseTermsIds: readonly bigint[];
-  childIpOwner: Address;
+  caller: Address;
 };
 
 /**
@@ -22240,6 +22715,20 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
   }
 
   /**
+   * method MODULE_REGISTRY for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateModuleRegistryRequest
+   * @return Promise<PiLicenseTemplateModuleRegistryResponse>
+   */
+  public async moduleRegistry(): Promise<PiLicenseTemplateModuleRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "MODULE_REGISTRY",
+    });
+  }
+
+  /**
    * method ROYALTY_MODULE for contract PILicenseTemplate
    *
    * @param request PiLicenseTemplateRoyaltyModuleRequest
@@ -22282,6 +22771,23 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
   }
 
   /**
+   * method allowDerivativeRegistration for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateAllowDerivativeRegistrationRequest
+   * @return Promise<PiLicenseTemplateAllowDerivativeRegistrationResponse>
+   */
+  public async allowDerivativeRegistration(
+    request: PiLicenseTemplateAllowDerivativeRegistrationRequest,
+  ): Promise<PiLicenseTemplateAllowDerivativeRegistrationResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "allowDerivativeRegistration",
+      args: [request.licenseTermsId],
+    });
+  }
+
+  /**
    * method authority for contract PILicenseTemplate
    *
    * @param request PiLicenseTemplateAuthorityRequest
@@ -22292,6 +22798,23 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
       abi: piLicenseTemplateAbi,
       address: this.address,
       functionName: "authority",
+    });
+  }
+
+  /**
+   * method canAttachToGroupIp for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateCanAttachToGroupIpRequest
+   * @return Promise<PiLicenseTemplateCanAttachToGroupIpResponse>
+   */
+  public async canAttachToGroupIp(
+    request: PiLicenseTemplateCanAttachToGroupIpRequest,
+  ): Promise<PiLicenseTemplateCanAttachToGroupIpResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "canAttachToGroupIp",
+      args: [request.licenseTermsId],
     });
   }
 
@@ -22882,7 +23405,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       address: this.address,
       functionName: "verifyRegisterDerivativeForAllParents",
       account: this.wallet.account,
-      args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.childIpOwner],
+      args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.caller],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -22901,12 +23424,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       data: encodeFunctionData({
         abi: piLicenseTemplateAbi,
         functionName: "verifyRegisterDerivativeForAllParents",
-        args: [
-          request.childIpId,
-          request.parentIpIds,
-          request.licenseTermsIds,
-          request.childIpOwner,
-        ],
+        args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.caller],
       }),
     };
   }
@@ -23561,6 +24079,8 @@ export type RoyaltyPolicyLrpGetTransferredTokensResponse = bigint;
 
 export type RoyaltyPolicyLrpIsConsumingScheduledOpResponse = Hex;
 
+export type RoyaltyPolicyLrpIsSupportGroupResponse = boolean;
+
 export type RoyaltyPolicyLrpPausedResponse = boolean;
 
 export type RoyaltyPolicyLrpProxiableUuidResponse = Hex;
@@ -24060,6 +24580,20 @@ export class RoyaltyPolicyLrpReadOnlyClient extends RoyaltyPolicyLrpEventClient 
       abi: royaltyPolicyLrpAbi,
       address: this.address,
       functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method isSupportGroup for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIsSupportGroupRequest
+   * @return Promise<RoyaltyPolicyLrpIsSupportGroupResponse>
+   */
+  public async isSupportGroup(): Promise<RoyaltyPolicyLrpIsSupportGroupResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "isSupportGroup",
     });
   }
 

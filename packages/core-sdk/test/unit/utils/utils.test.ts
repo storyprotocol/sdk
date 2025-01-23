@@ -10,7 +10,7 @@ import {
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
-import { odyssey } from "../../../src";
+import { devnet } from "../../../src";
 
 describe("Test waitTxAndFilterLog", () => {
   const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -152,13 +152,13 @@ describe("Test chainStringToViemChain", () => {
     }
   });
 
-  it("should return iliad testnet if id is 1516", () => {
-    const chain = chainStringToViemChain("1516");
-    expect(chain).to.equal(odyssey);
+  it("should return iliad testnet if id is 1315", () => {
+    const chain = chainStringToViemChain("1315");
+    expect(chain).to.equal(devnet);
   });
   it("should return iliad testnet if id is iliad", () => {
-    const chain = chainStringToViemChain("odyssey");
-    expect(chain).to.equal(odyssey);
+    const chain = chainStringToViemChain("devnet");
+    expect(chain).to.equal(devnet);
   });
 });
 

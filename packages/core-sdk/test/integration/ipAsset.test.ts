@@ -7,8 +7,8 @@ import {
   getStoryClient,
   getTokenId,
   mintBySpg,
-  odyssey,
   approveForLicenseToken,
+  devnet,
 } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
@@ -21,7 +21,7 @@ import {
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const pool = evenSplitGroupPoolAddress[odyssey];
+const pool = evenSplitGroupPoolAddress[devnet];
 describe("IP Asset Functions ", () => {
   let client: StoryClient;
   let noCommercialLicenseTermsId: bigint;
@@ -159,7 +159,7 @@ describe("IP Asset Functions ", () => {
           {
             terms: {
               transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+              royaltyPolicy: royaltyPolicyLapAddress[devnet],
               defaultMintingFee: BigInt(1),
               expiration: BigInt(0),
               commercialUse: true,
@@ -195,8 +195,8 @@ describe("IP Asset Functions ", () => {
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(derivativeWorkflowsAddress[odyssey]);
-      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[odyssey]);
+      await mockERC20.approve(derivativeWorkflowsAddress[devnet]);
+      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[devnet]);
       await mockERC20.mint();
     });
     it("should not throw error when register a IP Asset given metadata", async () => {
@@ -279,7 +279,7 @@ describe("IP Asset Functions ", () => {
           {
             terms: {
               transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+              royaltyPolicy: royaltyPolicyLapAddress[devnet],
               defaultMintingFee: BigInt(10000),
               expiration: BigInt(1000),
               commercialUse: true,
@@ -401,7 +401,7 @@ describe("IP Asset Functions ", () => {
           {
             terms: {
               transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+              royaltyPolicy: royaltyPolicyLapAddress[devnet],
               defaultMintingFee: BigInt(10000),
               expiration: BigInt(1000),
               commercialUse: true,
@@ -441,7 +441,7 @@ describe("IP Asset Functions ", () => {
 
     it("should not throw error when call mint and register ip and make derivative with license tokens", async () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-        licenseTermsId: noCommercialLicenseTermsId,
+        licenseTermsId: licenseTermsId,
         licensorIpId: parentIpId,
         maxMintingFee: "0",
         maxRevenueShare: 1,
@@ -450,7 +450,7 @@ describe("IP Asset Functions ", () => {
         },
       });
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[odyssey],
+        derivativeWorkflowsAddress[devnet],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
@@ -474,7 +474,7 @@ describe("IP Asset Functions ", () => {
     it("should not throw error when call register ip and make derivative with license tokens", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-        licenseTermsId: noCommercialLicenseTermsId,
+        licenseTermsId: licenseTermsId,
         maxMintingFee: "0",
         maxRevenueShare: 1,
         licensorIpId: parentIpId,
@@ -483,7 +483,7 @@ describe("IP Asset Functions ", () => {
         },
       });
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[odyssey],
+        derivativeWorkflowsAddress[devnet],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
       const result = await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({
@@ -515,7 +515,7 @@ describe("IP Asset Functions ", () => {
             {
               terms: {
                 transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+                royaltyPolicy: royaltyPolicyLapAddress[devnet],
                 defaultMintingFee: BigInt(10000),
                 expiration: BigInt(1000),
                 commercialUse: true,
@@ -603,7 +603,7 @@ describe("IP Asset Functions ", () => {
             {
               terms: {
                 transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+                royaltyPolicy: royaltyPolicyLapAddress[devnet],
                 defaultMintingFee: BigInt(10000),
                 expiration: BigInt(1000),
                 commercialUse: true,
@@ -634,7 +634,7 @@ describe("IP Asset Functions ", () => {
             {
               terms: {
                 transferable: false,
-                royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+                royaltyPolicy: royaltyPolicyLapAddress[devnet],
                 defaultMintingFee: BigInt(10000),
                 expiration: BigInt(1000),
                 commercialUse: true,

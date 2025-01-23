@@ -36,7 +36,7 @@ describe("Test IpAssetClient", () => {
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-    groupClient = new GroupClient(rpcMock, walletMock, "1516");
+    groupClient = new GroupClient(rpcMock, walletMock, "1315");
     (groupClient.groupingWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (groupClient.groupingModuleClient as any).address =
@@ -176,6 +176,7 @@ describe("Test IpAssetClient", () => {
         await groupClient.registerGroupAndAttachLicenseAndAddIps({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+          maxAllowedRewardShare: 5,
           licenseData: {
             ...mockLicenseData,
             licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -195,6 +196,7 @@ describe("Test IpAssetClient", () => {
         sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
         await groupClient.registerGroupAndAttachLicenseAndAddIps({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          maxAllowedRewardShare: 5,
           ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
           licenseData: {
             ...mockLicenseData,
@@ -217,6 +219,7 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+        maxAllowedRewardShare: 5,
         licenseData: {
           ...mockLicenseData,
           licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -237,6 +240,7 @@ describe("Test IpAssetClient", () => {
         .resolves(txHash);
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
         licenseData: mockLicenseData,
       });
@@ -259,6 +263,7 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
         licenseData: mockLicenseData,
         txOptions: {
@@ -276,6 +281,7 @@ describe("Test IpAssetClient", () => {
       try {
         await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          maxAllowedRewardShare: 5,
           spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           licenseData: [mockLicenseData],
           allowDuplicates: true,
@@ -295,6 +301,7 @@ describe("Test IpAssetClient", () => {
 
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         licenseData: [mockLicenseData],
         allowDuplicates: true,
@@ -321,6 +328,7 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         licenseData: [mockLicenseData],
         allowDuplicates: true,
         txOptions: {
@@ -347,6 +355,7 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         licenseData: [
           {
             ...mockLicenseData,
@@ -381,6 +390,7 @@ describe("Test IpAssetClient", () => {
           nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "100",
           licenseData: [mockLicenseData],
+          maxAllowedRewardShare: 5,
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -399,6 +409,7 @@ describe("Test IpAssetClient", () => {
           nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "100",
           licenseData: [],
+          maxAllowedRewardShare: 5,
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -418,6 +429,7 @@ describe("Test IpAssetClient", () => {
           nftContract: "0x",
           tokenId: "100",
           licenseData: [mockLicenseData],
+          maxAllowedRewardShare: 5,
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -439,6 +451,7 @@ describe("Test IpAssetClient", () => {
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "100",
         licenseData: [mockLicenseData],
+        maxAllowedRewardShare: 5,
       });
       expect(result.txHash).equal(txHash);
     });
@@ -467,6 +480,7 @@ describe("Test IpAssetClient", () => {
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "100",
         licenseData: [mockLicenseData],
+        maxAllowedRewardShare: 5,
         txOptions: {
           waitForTransaction: true,
         },
@@ -489,6 +503,7 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         tokenId: "100",
         licenseData: [
           {

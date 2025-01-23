@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, odyssey } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, devnet } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import { licensingModuleAddress } from "../../src/abi/generated";
 
@@ -87,7 +87,7 @@ describe("License Functions", () => {
         },
       });
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(licensingModuleAddress[odyssey]);
+      await mockERC20.approve(licensingModuleAddress[devnet]);
       ipId = registerResult.ipId!;
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "1",

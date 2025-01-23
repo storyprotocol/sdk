@@ -15,15 +15,15 @@ import {
   licenseTokenAddress,
   spgnftBeaconAddress,
 } from "../../../src/abi/generated";
-export const RPC = "https://odyssey.storyrpc.io";
-export const odyssey = 1516;
+export const RPC = "https://devnet.storyrpc.io";
+export const devnet = 1315;
 
-export const mockERC721 = "0xd7eb01052362e9fb13f624c17b4ead08e0eaae17";
-export const licenseToken = licenseTokenAddress[odyssey];
-export const spgNftBeacon = spgnftBeaconAddress[odyssey];
+export const mockERC721 = "0xa1119092ea911202E0a65B743a13AE28C5CF2f21";
+export const licenseToken = licenseTokenAddress[devnet];
+export const spgNftBeacon = spgnftBeaconAddress[devnet];
 
 const baseConfig = {
-  chain: chainStringToViemChain("odyssey"),
+  chain: chainStringToViemChain("devnet"),
   transport: http(RPC),
 } as const;
 export const publicClient = createPublicClient(baseConfig);
@@ -130,7 +130,7 @@ export const approveForLicenseToken = async (address: Address, tokenId: bigint) 
 };
 export const getStoryClient = (): StoryClient => {
   const config: StoryConfig = {
-    chainId: "odyssey",
+    chainId: "devnet",
     transport: http(RPC),
     account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
   };
