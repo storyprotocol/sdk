@@ -24,14 +24,14 @@ import {
   PIL_TYPE,
   AttachLicenseTermsResponse,
   LicenseTermsId,
-  InnerPILTerms,
+  PILTerms,
   PredictMintingLicenseFeeRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
   RegisterPILTermsRequest,
   CommercialLicenseTerms,
   CommercialRemixLicenseTerms,
-  PILTerms,
+  PILTermsInput,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
@@ -73,13 +73,13 @@ export class LicenseClient {
     request: RegisterPILTermsRequest<PILType>,
   ): Promise<RegisterPILResponse> {
     try {
-      let terms: InnerPILTerms;
+      let terms: PILTerms;
       if (!request.terms && !request.PILType) {
         terms = PILFlavor.nonComSocialRemixingPIL();
       } else if (request.PILType !== undefined) {
         terms = this.createTerms(request.PILType, request.terms);
       } else {
-        terms = await validateLicenseTerms(request.terms as PILTerms, this.rpcClient);
+        terms = await validateLicenseTerms(request.terms as PILTermsInput, this.rpcClient);
       }
       const licenseTermsId = await this.getLicenseTermsId(terms);
       if (licenseTermsId !== 0n) {
@@ -432,15 +432,15 @@ export class LicenseClient {
       handleError(error, "Failed to set licensing config");
     }
   }
-  private async getLicenseTermsId(request: InnerPILTerms): Promise<LicenseTermsIdResponse> {
+  private async getLicenseTermsId(request: PILTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;
   }
   private createTerms(
     PILType: PIL_TYPE,
     terms: RegisterPILTermsRequest<PIL_TYPE>["terms"],
-  ): InnerPILTerms {
-    let innerTerms: InnerPILTerms;
+  ): PILTerms {
+    let innerTerms: PILTerms;
     switch (PILType) {
       case PIL_TYPE.NON_COMMERCIAL_REMIX:
         innerTerms = PILFlavor.nonComSocialRemixingPIL();

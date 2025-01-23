@@ -1,7 +1,7 @@
 import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
-import { PILTerms } from "./license";
+import { PILTermsInput } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOption, LicensingConfig } from "../common";
 import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
@@ -64,7 +64,7 @@ export type LicenseTermsData<T, U> = {
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
   spgNftContract: Address;
   allowDuplicates: boolean;
-  licenseTermsData: LicenseTermsData<PILTerms, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<PILTermsInput, LicensingConfig>[];
   recipient?: Address;
   royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOption;
@@ -99,7 +99,7 @@ export type RegisterIpAndMakeDerivativeResponse = {
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  licenseTermsData: LicenseTermsData<PILTerms, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<PILTermsInput, LicensingConfig>[];
   deadline?: bigint | number | string;
 } & IpMetadataAndTxOption;
 
@@ -224,7 +224,7 @@ export type MintAndRegisterIpRequest = {
 
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
-  licenseTermsData: LicenseTermsData<PILTerms, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<PILTermsInput, LicensingConfig>[];
   deadline?: string | number | bigint;
   txOptions?: TxOptions;
 };
@@ -297,7 +297,7 @@ export type BatchRegisterResponse = {
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
-  licenseTermsData: LicenseTermsData<PILTerms, LicensingConfig>[];
+  licenseTermsData: LicenseTermsData<PILTermsInput, LicensingConfig>[];
   deadline?: string | number | bigint;
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
@@ -347,7 +347,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   spgNftContract: Address;
   allowDuplicates: boolean;
   licenseTermsData: {
-    terms: PILTerms;
+    terms: PILTermsInput;
     licensingConfig: LicensingConfig;
   }[];
   royaltyShares: RoyaltyShare[];

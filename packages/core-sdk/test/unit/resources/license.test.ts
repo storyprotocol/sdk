@@ -5,7 +5,7 @@ import { LicenseClient } from "../../../src";
 import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { PiLicenseTemplateGetLicenseTermsResponse } from "../../../src/abi/generated";
-import { PILTerms, PIL_TYPE } from "../../../src/types/resources/license";
+import { PILTermsInput, PIL_TYPE } from "../../../src/types/resources/license";
 import { MockERC20 } from "../../integration/utils/mockERC20";
 const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
 
@@ -38,7 +38,7 @@ describe("Test LicenseClient", () => {
         .resolves(true);
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon.stub().resolves(true);
     });
-    const licenseTerms: PILTerms = {
+    const licenseTerms: PILTermsInput = {
       defaultMintingFee: 3n,
       currency: MockERC20.address,
       royaltyPolicy: zeroAddress,

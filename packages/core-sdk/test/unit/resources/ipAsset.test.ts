@@ -18,7 +18,7 @@ import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
 import { LicensingConfig } from "../../../src/types/common";
 import { DerivativeData } from "../../../src/types/resources/ipAsset";
-import { InnerPILTerms } from "../../../src/types/resources/license";
+import { PILTerms } from "../../../src/types/resources/license";
 const {
   RoyaltyModuleReadOnlyClient,
   IpRoyaltyVaultImplReadOnlyClient,
@@ -27,7 +27,7 @@ const {
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const licenseTerms: InnerPILTerms = {
+const licenseTerms: PILTerms = {
   transferable: true,
   royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
   defaultMintingFee: BigInt(1),

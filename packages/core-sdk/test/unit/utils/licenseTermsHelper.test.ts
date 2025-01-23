@@ -1,5 +1,5 @@
 import { PublicClient, zeroAddress } from "viem";
-import { PILTerms } from "../../../src/types/resources/license";
+import { PILTermsInput } from "../../../src/types/resources/license";
 import { getRevenueShare, validateLicenseTerms } from "../../../src/utils/licenseTermsHelper";
 import { expect } from "chai";
 import { MockERC20 } from "../../integration/utils/mockERC20";
@@ -13,7 +13,7 @@ describe("License Terms Helper", () => {
     beforeEach(() => {
       rpcMock = createMock<PublicClient>();
     });
-    const licenseTerms: PILTerms = {
+    const licenseTerms: PILTermsInput = {
       defaultMintingFee: 1513n,
       currency: MockERC20.address,
       royaltyPolicy: zeroAddress,

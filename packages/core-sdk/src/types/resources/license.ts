@@ -19,9 +19,8 @@ export interface CommercialRemixLicenseTerms extends CommercialLicenseTerms {
 
 /**
  * This structure defines the terms for a Programmable IP License (PIL). These terms can be attached to IP Assets. The legal document of the PIL can be found in this repository.
- * @type PILTerms
  **/
-export interface PILTerms extends CommercialLicenseTerms, CommercialRemixLicenseTerms {
+export interface PILTermsInput extends CommercialLicenseTerms, CommercialRemixLicenseTerms {
   /** Indicates whether the license is transferable or not.*/
   transferable: boolean;
   /** The expiration period of the license.*/
@@ -58,7 +57,7 @@ export type RegisterPILTermsRequest<PILType extends PIL_TYPE> = {
     | (PILType extends PIL_TYPE.COMMERCIAL_USE ? CommercialLicenseTerms : never)
     | (PILType extends PIL_TYPE.COMMERCIAL_REMIX ? CommercialRemixLicenseTerms : never)
     | (PILType extends PIL_TYPE.NON_COMMERCIAL_REMIX ? undefined : never)
-    | PILTerms;
+    | PILTermsInput;
   /** The type of the license terms to be registered, including no-commercial, commercial,commercial remix. */
   PILType?: PILType;
   /** This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property. */
@@ -72,8 +71,8 @@ export type RegisterPILResponse = {
   /** The encoded transaction data of the register PIL terms. */
   encodedTxData?: EncodedTxData;
 };
-export type InnerPILTerms = Omit<
-  PILTerms,
+export type PILTerms = Omit<
+  PILTermsInput,
   | "defaultMintingFee"
   | "expiration"
   | "commercialRevCeiling"

@@ -70,6 +70,7 @@ export type {
   MintLicenseTokensResponse,
   LicenseTermsId,
   PILTerms,
+  PILTermsInput,
   PredictMintingLicenseFeeRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,

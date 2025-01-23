@@ -1,14 +1,14 @@
 import { PublicClient, zeroAddress } from "viem";
 
-import { InnerPILTerms, PILTerms } from "../types/resources/license";
+import { PILTerms, PILTermsInput } from "../types/resources/license";
 import { getAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 
 export async function validateLicenseTerms(
-  params: PILTerms,
+  params: PILTermsInput,
   rpcClient: PublicClient,
-): Promise<InnerPILTerms> {
+): Promise<PILTerms> {
   const { royaltyPolicy, currency } = params;
   const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
   if (getAddress(royaltyPolicy, "params.royaltyPolicy") !== zeroAddress) {
@@ -42,7 +42,7 @@ export async function validateLicenseTerms(
   return object;
 }
 
-const verifyCommercialUse = (terms: InnerPILTerms) => {
+const verifyCommercialUse = (terms: PILTerms) => {
   if (!terms.commercialUse) {
     if (terms.commercialAttribution) {
       throw new Error("Cannot add commercial attribution when commercial use is disabled.");
@@ -71,7 +71,7 @@ const verifyCommercialUse = (terms: InnerPILTerms) => {
   }
 };
 
-const verifyDerivatives = (terms: InnerPILTerms) => {
+const verifyDerivatives = (terms: PILTerms) => {
   if (!terms.derivativesAllowed) {
     if (terms.derivativesAttribution) {
       throw new Error("Cannot add derivative attribution when derivative use is disabled.");

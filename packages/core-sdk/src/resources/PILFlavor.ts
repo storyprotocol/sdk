@@ -1,11 +1,11 @@
 import { Address, zeroAddress } from "viem";
 
-import { InnerPILTerms } from "../types/resources/license";
+import { PILTerms } from "../types/resources/license";
 import { getAddress } from "../utils/utils";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
 
 export class PILFlavor {
-  static nonComSocialRemixingPIL(): InnerPILTerms {
+  static nonComSocialRemixingPIL(): PILTerms {
     return {
       transferable: true,
       royaltyPolicy: zeroAddress,
@@ -31,7 +31,7 @@ export class PILFlavor {
     defaultMintingFee: bigint | number | string,
     royaltyPolicy: Address,
     currency: Address,
-  ): InnerPILTerms {
+  ): PILTerms {
     if (defaultMintingFee === undefined || currency === undefined || royaltyPolicy === undefined) {
       throw new Error(
         "DefaultMintingFee, currency and royaltyPolicy are required for commercial use PIL.",
@@ -63,7 +63,7 @@ export class PILFlavor {
     royaltyPolicy: Address,
     currency: Address,
     commercialRevShare: number | string,
-  ): InnerPILTerms {
+  ): PILTerms {
     return {
       transferable: true,
       royaltyPolicy: getAddress(royaltyPolicy, "royaltyPolicyLAPAddress"),
