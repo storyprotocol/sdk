@@ -62,9 +62,6 @@ export type {
 } from "./types/resources/ipAsset";
 
 export type {
-  RegisterNonComSocialRemixingPILRequest,
-  RegisterCommercialUsePILRequest,
-  RegisterCommercialRemixPILRequest,
   RegisterPILTermsRequest,
   RegisterPILResponse,
   AttachLicenseTermsRequest,
@@ -72,7 +69,8 @@ export type {
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
   LicenseTermsId,
-  LicenseTerms,
+  PILTerms,
+  PILTermsInput,
   PredictMintingLicenseFeeRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,

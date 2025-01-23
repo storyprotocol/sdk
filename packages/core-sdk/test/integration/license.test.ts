@@ -1,28 +1,30 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
+import { PIL_TYPE, StoryClient } from "../../src";
 import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { mockERC721, getStoryClient, getTokenId, odyssey } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
-import { licensingModuleAddress } from "../../src/abi/generated";
+import { licensingModuleAddress, royaltyPolicyLapAddress } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe("License Functions", () => {
   let client: StoryClient;
+  let licenseId: bigint;
 
   before(() => {
     client = getStoryClient();
   });
-  describe("register license with different types", async () => {
-    it("should not throw error when register license ", async () => {
-      const result = await client.license.registerPILTerms({
+
+  it("should not throw error when register license ", async () => {
+    const result = await client.license.registerPILTerms({
+      terms: {
         defaultMintingFee: "1",
         currency: MockERC20.address,
         transferable: false,
-        royaltyPolicy: zeroAddress,
-        commercialUse: false,
+        royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+        commercialUse: true,
         commercialAttribution: false,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: "0x",
@@ -35,47 +37,16 @@ describe("License Functions", () => {
         expiration: "",
         commercialRevCeiling: "",
         derivativeRevCeiling: "",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
+      },
+      txOptions: {
+        waitForTransaction: true,
+      },
     });
-    it("should not throw error when register license with non commercial social remixing PIL", async () => {
-      const result = await client.license.registerNonComSocialRemixingPIL({
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
-    it("should not throw error when register license with commercial use", async () => {
-      const result = await client.license.registerCommercialUsePIL({
-        defaultMintingFee: "1",
-        currency: MockERC20.address,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
-
-    it("should not throw error when register license with commercial Remix use", async () => {
-      const result = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
-        commercialRevShare: 100,
-        currency: MockERC20.address,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
+    expect(result.licenseTermsId).to.be.a("bigint");
+    licenseId = result.licenseTermsId!;
   });
-
   describe("attach License Terms and mint license tokens", async () => {
     let ipId: Hex;
-    let licenseId: bigint;
     let tokenId;
     before(async () => {
       tokenId = await getTokenId();
@@ -89,15 +60,6 @@ describe("License Functions", () => {
       const mockERC20 = new MockERC20();
       await mockERC20.approve(licensingModuleAddress[odyssey]);
       ipId = registerResult.ipId!;
-      const registerLicenseResult = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
-        commercialRevShare: 100,
-        currency: MockERC20.address,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      licenseId = registerLicenseResult.licenseTermsId!;
     });
 
     it("should not throw error when attach License Terms", async () => {

@@ -1,5 +1,5 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
+import { PIL_TYPE, StoryClient } from "../../src";
 import { Address, Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { mockERC721, getTokenId, getStoryClient } from "./utils/util";
@@ -30,10 +30,13 @@ describe("Test royalty Functions", () => {
       return response.ipId! as Hex;
     };
     const getCommercialPolicyId = async (): Promise<bigint> => {
-      const response = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "100000",
-        currency: MockERC20.address,
-        commercialRevShare: 10,
+      const response = await client.license.registerPILTerms<PIL_TYPE.COMMERCIAL_USE>({
+        terms: {
+          defaultMintingFee: "100000",
+          currency: MockERC20.address,
+          royaltyPolicy: "0x",
+        },
+        PILType: PIL_TYPE.COMMERCIAL_USE,
         txOptions: {
           waitForTransaction: true,
         },
