@@ -4,7 +4,11 @@ import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { mockERC721, getStoryClient, getTokenId, devnet } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
-import { licensingModuleAddress } from "../../src/abi/generated";
+import {
+  licensingModuleAddress,
+  royaltyPolicyLapAddress,
+  royaltyPolicyLapConfig,
+} from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

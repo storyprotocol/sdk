@@ -248,7 +248,7 @@ describe("IP Asset Functions ", () => {
           {
             terms: {
               transferable: true,
-              royaltyPolicy: zeroAddress,
+              royaltyPolicy: royaltyPolicyLapAddress[devnet],
               defaultMintingFee: BigInt(1),
               expiration: BigInt(0),
               commercialUse: false,
@@ -354,23 +354,13 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
     it("should not throw error when call register pil terms and attach", async () => {
-      const tokenId = await getTokenId();
-      const ipId = (
-        await client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          txOptions: {
-            waitForTransaction: true,
-          },
-        })
-      ).ipId!;
       const result = await client.ipAsset.registerPilTermsAndAttach({
         ipId: parentIpId,
         licenseTermsData: [
           {
             terms: {
               transferable: true,
-              royaltyPolicy: zeroAddress,
+              royaltyPolicy: royaltyPolicyLapAddress[devnet],
               defaultMintingFee: BigInt(1),
               expiration: BigInt(0),
               commercialUse: false,
@@ -444,7 +434,7 @@ describe("IP Asset Functions ", () => {
         licenseTermsId: licenseTermsId,
         licensorIpId: parentIpId,
         maxMintingFee: "0",
-        maxRevenueShare: 1,
+        maxRevenueShare: 100,
         txOptions: {
           waitForTransaction: true,
         },
@@ -476,7 +466,7 @@ describe("IP Asset Functions ", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: licenseTermsId,
         maxMintingFee: "0",
-        maxRevenueShare: 1,
+        maxRevenueShare: 100,
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
@@ -778,7 +768,7 @@ describe("IP Asset Functions ", () => {
               {
                 terms: {
                   transferable: true,
-                  royaltyPolicy: zeroAddress,
+                  royaltyPolicy: royaltyPolicyLapAddress[devnet],
                   defaultMintingFee: BigInt(8),
                   expiration: BigInt(0),
                   commercialUse: false,
@@ -809,7 +799,7 @@ describe("IP Asset Functions ", () => {
               {
                 terms: {
                   transferable: true,
-                  royaltyPolicy: zeroAddress,
+                  royaltyPolicy: royaltyPolicyLapAddress[devnet],
                   defaultMintingFee: BigInt(1),
                   expiration: BigInt(0),
                   commercialUse: false,
@@ -899,6 +889,13 @@ describe("IP Asset Functions ", () => {
           },
         })
       ).ipId!;
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId2,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
       const result = await client.ipAsset.batchMintAndRegisterIpAndMakeDerivative({
         args: [
           {
