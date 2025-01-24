@@ -82,6 +82,12 @@ export default defineConfig(async () => {
       },
     },
     {
+      name: "ArbitrationPolicyUMA",
+      address: {
+        [devnetChainId]: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936",
+      },
+    },
+    {
       name: "RoyaltyPolicyLRP",
       address: {
         [devnetChainId]: "0x9156e603C949481883B1d3355c6f1132D191fC41",
@@ -160,6 +166,12 @@ export default defineConfig(async () => {
       },
     },
     {
+      name: "ERC20Token",
+      address: {
+        [devnetChainId]: "0x1514000000000000000000000000000000000000",
+      },
+    },
+    {
       name: "Multicall3",
       address: {
         [devnetChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
@@ -196,6 +208,7 @@ export default defineConfig(async () => {
             "cancelDispute",
             "raiseDispute",
             "resolveDispute",
+            "isWhitelistedDisputeTag",
           ],
           IPAccountImpl: ["execute", "executeWithSig", "state", "token"],
           IPAssetRegistry: [
@@ -281,6 +294,8 @@ export default defineConfig(async () => {
             "distributeRoyaltyTokens",
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
           ],
+          ArbitrationPolicyUMA: ["maxBonds", "maxLiveness", "minLiveness"],
+          AA: ["deposit", "approve"],
         },
       }),
     ],

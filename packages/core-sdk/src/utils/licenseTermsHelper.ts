@@ -107,6 +107,12 @@ export async function validateLicenseTerms(
     commercialRevCeiling: BigInt(params.commercialRevCeiling),
     derivativeRevCeiling: BigInt(params.derivativeRevCeiling),
   };
+  if (object.defaultMintingFee < 0) {
+    throw new Error("DefaultMintingFee should be greater than or equal to 0.");
+  }
+  if (object.defaultMintingFee > 0 && object.royaltyPolicy === zeroAddress) {
+    throw new Error("Royalty policy is required when defaultMintingFee is greater than 0.");
+  }
   verifyCommercialUse(object);
   verifyDerivatives(object);
   if (object.commercialRevShare < 0 || object.commercialRevShare > 100) {
@@ -145,6 +151,9 @@ const verifyCommercialUse = (terms: LicenseTerms) => {
     }
   }
 };
+
+//defaultMintingFee, commercial,royaltyPolicy
+// defaultMintingFee-> not zero ,royaltyPolicy-> not zero, commercial->true
 
 const verifyDerivatives = (terms: LicenseTerms) => {
   if (!terms.derivativesAllowed) {

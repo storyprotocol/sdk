@@ -14,9 +14,9 @@ import { mockErc20Address } from "../../../src/abi/generated";
 export class MockERC20 {
   private publicClient: PublicClient;
   private walletClient: WalletClient;
-  static address: Hex = mockErc20Address[devnet];
+  public address: Address = mockErc20Address[devnet];
 
-  constructor() {
+  constructor(address?: Address) {
     const baseConfig = {
       chain: chainStringToViemChain("devnet"),
       transport: http(RPC),
@@ -26,6 +26,7 @@ export class MockERC20 {
       ...baseConfig,
       account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
     });
+    this.address = address || mockErc20Address[devnet];
   }
 
   public async approve(contract: Address): Promise<void> {
@@ -57,7 +58,7 @@ export class MockERC20 {
     ];
     const { request: call } = await this.publicClient.simulateContract({
       abi: abi,
-      address: MockERC20.address,
+      address: this.address,
       functionName: "approve",
       args: [contract, BigInt(100000 * 10 ** 6)],
       account: this.walletClient.account,
@@ -88,7 +89,7 @@ export class MockERC20 {
           type: "function",
         },
       ],
-      address: MockERC20.address,
+      address: this.address,
       functionName: "mint",
       account: this.walletClient.account,
       args: [process.env.TEST_WALLET_ADDRESS! as Address, BigInt(100000 * 10 ** 6)],

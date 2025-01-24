@@ -157,7 +157,7 @@ export class StoryClient {
    */
   public get dispute(): DisputeClient {
     if (this._dispute === null) {
-      this._dispute = new DisputeClient(this.rpcClient, this.wallet);
+      this._dispute = new DisputeClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._dispute;

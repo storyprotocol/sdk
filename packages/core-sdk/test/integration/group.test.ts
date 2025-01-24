@@ -6,8 +6,9 @@ import { StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   evenSplitGroupPoolAddress,
+  mockErc20Address,
   piLicenseTemplateAddress,
-  royaltyPolicyLapAddress,
+  royaltyPolicyLrpAddress,
 } from "../../src/abi/generated";
 
 const groupPoolAddress = evenSplitGroupPoolAddress[devnet];
@@ -43,7 +44,7 @@ describe("Group Functions", () => {
         {
           terms: {
             transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[devnet],
+            royaltyPolicy: royaltyPolicyLrpAddress[devnet],
             defaultMintingFee: 0n,
             expiration: BigInt(1000),
             commercialUse: true,
@@ -57,7 +58,7 @@ describe("Group Functions", () => {
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
+            currency: mockErc20Address[devnet],
             uri: "test case",
           },
           licensingConfig: {

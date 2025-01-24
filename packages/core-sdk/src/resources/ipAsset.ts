@@ -2079,10 +2079,16 @@ export class IPAssetClient {
     const processedLicenseTermsData: LicenseTermsData<LicenseTerms, InnerLicensingConfig>[] = [];
     for (let i = 0; i < licenseTermsData.length; i++) {
       const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
+      const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
+      if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
+        throw new Error(
+          "A royalty policy must be provided when the minting fee is greater than 0.",
+        );
+      }
       licenseTerms.push(licenseTerm);
       processedLicenseTermsData.push({
         terms: licenseTerm,
-        licensingConfig: validateLicenseConfig(licenseTermsData[i].licensingConfig),
+        licensingConfig: licensingConfig,
       });
     }
     return { licenseTerms, licenseTermsData: processedLicenseTermsData };

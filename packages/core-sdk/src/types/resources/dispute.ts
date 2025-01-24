@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
@@ -7,7 +7,8 @@ export type RaiseDisputeRequest = {
   targetIpId: Address;
   cid: string;
   targetTag: string;
-  data?: Hex;
+  liveness: bigint | number | string;
+  bond: bigint | number | string;
   txOptions?: TxOptions;
 };
 

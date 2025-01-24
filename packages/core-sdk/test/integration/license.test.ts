@@ -6,6 +6,8 @@ import { mockERC721, getStoryClient, getTokenId, devnet } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   licensingModuleAddress,
+  mockErc20Address,
+  piLicenseTemplateAddress,
   royaltyPolicyLapAddress,
   royaltyPolicyLapConfig,
 } from "../../src/abi/generated";
@@ -22,8 +24,8 @@ describe("License Functions", () => {
   describe("register license with different types", async () => {
     it("should not throw error when register license ", async () => {
       const result = await client.license.registerPILTerms({
-        defaultMintingFee: "1",
-        currency: MockERC20.address,
+        defaultMintingFee: 0,
+        currency: mockErc20Address[devnet],
         transferable: false,
         royaltyPolicy: zeroAddress,
         commercialUse: false,
@@ -56,7 +58,7 @@ describe("License Functions", () => {
     it("should not throw error when register license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: MockERC20.address,
+        currency: mockErc20Address[devnet],
         txOptions: {
           waitForTransaction: true,
         },
@@ -68,7 +70,7 @@ describe("License Functions", () => {
       const result = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: MockERC20.address,
+        currency: mockErc20Address[devnet],
         txOptions: {
           waitForTransaction: true,
         },
@@ -94,9 +96,9 @@ describe("License Functions", () => {
       await mockERC20.approve(licensingModuleAddress[devnet]);
       ipId = registerResult.ipId!;
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 0,
         commercialRevShare: 100,
-        currency: MockERC20.address,
+        currency: mockErc20Address[devnet],
         txOptions: {
           waitForTransaction: true,
         },
@@ -147,10 +149,10 @@ describe("License Functions", () => {
     it("should not throw error when set licensing config", async () => {
       const result = await client.license.setLicensingConfig({
         ipId: ipId,
-        licenseTermsId: 0n,
-        licenseTemplate: zeroAddress,
+        licenseTermsId: licenseId,
+        licenseTemplate: piLicenseTemplateAddress[devnet],
         licensingConfig: {
-          mintingFee: "1",
+          mintingFee: 0,
           isSet: true,
           licensingHook: zeroAddress,
           hookData: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",

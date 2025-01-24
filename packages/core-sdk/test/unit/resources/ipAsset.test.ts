@@ -42,7 +42,7 @@ const licenseTerms: LicenseTerms = {
   derivativesApproval: false,
   derivativesReciprocal: true,
   derivativeRevCeiling: BigInt(0),
-  currency: MockERC20.address,
+  currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
   uri: "",
 };
 
@@ -2540,7 +2540,34 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-
+    it("should throw royaltyPolicy and mintFee match error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given royaltyPolicy is zero address and mint fee is more than zero", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      try {
+        await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: spgNftContract,
+          tokenId: "1",
+          licenseTermsData: [
+            {
+              terms: {
+                ...licenseTerms,
+                royaltyPolicy: zeroAddress,
+                defaultMintingFee: 0,
+                commercialUse: false,
+              },
+              licensingConfig,
+            },
+          ],
+          royaltyShares: [
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 10 },
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 10 },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license terms and distribute royalty tokens: A royalty policy must be provided when the minting fee is greater than 0.",
+        );
+      }
+    });
     it("should throw percentage error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given total percentage is greater 100", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 

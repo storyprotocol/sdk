@@ -1,4 +1,4 @@
-import { PublicClient, stringToHex } from "viem";
+import { PublicClient, encodeAbiParameters, stringToHex } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -9,17 +9,27 @@ import {
   ResolveDisputeRequest,
   ResolveDisputeResponse,
 } from "../types/resources/dispute";
-import { DisputeModuleClient, SimpleWalletClient } from "../abi/generated";
-import { getAddress } from "../utils/utils";
+import {
+  ArbitrationPolicyUmaReadOnlyClient,
+  DisputeModuleClient,
+  SimpleWalletClient,
+  erc20TokenAddress,
+} from "../abi/generated";
+import { chain, getAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
+import { SupportedChainIds } from "../types/config";
 
 export class DisputeClient {
-  private readonly rpcClient: PublicClient;
   public disputeModuleClient: DisputeModuleClient;
+  public arbitrationPolicyUmaReadOnlyClient: ArbitrationPolicyUmaReadOnlyClient;
+  private readonly rpcClient: PublicClient;
+  private readonly chainId: SupportedChainIds;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.rpcClient = rpcClient;
     this.disputeModuleClient = new DisputeModuleClient(rpcClient, wallet);
+    this.arbitrationPolicyUmaReadOnlyClient = new ArbitrationPolicyUmaReadOnlyClient(rpcClient);
+    this.chainId = chainId;
   }
 
   /**
@@ -28,7 +38,9 @@ export class DisputeClient {
    *   @param request.targetIpId The IP ID that is the target of the dispute.
    *   @param request.targetTag The target tag of the dispute.
    *   @param request.cid CID (Content Identifier) is a unique identifier in IPFS, including CID v0 (base58) and CID v1 (base32).
-   *   @param request.data The data to initialize the policy
+  //TODO: need to update the doc 
+  *   @param request.liveness The time in seconds that the dispute will be active.
+   *  q@param request.bond The amount of tokens to be locked as a bond.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a RaiseDisputeResponse containing the transaction hash.
    * @throws `NotRegisteredIpId` if targetIpId is not registered in the IPA Registry.
@@ -39,15 +51,45 @@ export class DisputeClient {
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
+      const liveness = BigInt(request.liveness);
+      const bonds = BigInt(request.bond);
+      const tokenAddress = erc20TokenAddress[chain[this.chainId]];
+      const [minLiveness, maxLiveness] = await Promise.all([
+        this.arbitrationPolicyUmaReadOnlyClient.minLiveness(),
+        this.arbitrationPolicyUmaReadOnlyClient.maxLiveness(),
+      ]);
+
+      const tag = stringToHex(request.targetTag, { size: 32 });
+      if (liveness < minLiveness || liveness > maxLiveness) {
+        throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
+      }
+
+      const maxBonds = await this.arbitrationPolicyUmaReadOnlyClient.maxBonds({
+        token: tokenAddress,
+      });
+      if (bonds > maxBonds) {
+        throw new Error(`Bonds must be less than ${maxBonds}.`);
+      }
+      const data = encodeAbiParameters(
+        [
+          { name: "", type: "uint64" },
+          { name: "", type: "address" },
+          { name: "", type: "uint256" },
+        ],
+        [liveness, tokenAddress, bonds],
+      );
+      const { allowed: isWhiteList } = await this.disputeModuleClient.isWhitelistedDisputeTag({
+        tag,
+      });
+      if (!isWhiteList) {
+        throw new Error(`The target tag ${request.targetTag} is not whitelisted.`);
+      }
       const req = {
         targetIpId: getAddress(request.targetIpId, "request.targetIpId"),
-        targetTag: stringToHex(request.targetTag, { size: 32 }),
-        data:
-          request.data ||
-          "0x00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000278d0000000000000000000000000091f6f05b08c16769d3c85867548615d270c42fc700000000000000000000000000000000000000000000000000000000000000004153534552545f54525554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a7465737420636c61696d00000000000000000000000000000000000000000000",
+        targetTag: tag,
         disputeEvidenceHash: convertCIDtoHashIPFS(request.cid),
+        data,
       };
-
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.disputeModuleClient.raiseDisputeEncode(req) };
       } else {
