@@ -39,7 +39,7 @@ export class DisputeClient {
    *   @param request.targetTag The target tag of the dispute.
    *   @param request.cid CID (Content Identifier) is a unique identifier in IPFS, including CID v0 (base58) and CID v1 (base32).
    *   @param request.liveness The liveness time.
-   *  q@param request.bond The bond size.
+   *   @param request.bond The bond size.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a RaiseDisputeResponse containing the transaction hash.
    * @throws `NotRegisteredIpId` if targetIpId is not registered in the IPA Registry.

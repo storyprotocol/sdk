@@ -842,7 +842,6 @@ describe("IP Asset Functions ", () => {
           waitForTransaction: true,
         },
       });
-      console.log("result", result.results);
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.results).to.be.an("array").and.not.empty;
       expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(1);

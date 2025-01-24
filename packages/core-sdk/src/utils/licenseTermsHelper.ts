@@ -152,9 +152,6 @@ const verifyCommercialUse = (terms: LicenseTerms) => {
   }
 };
 
-//defaultMintingFee, commercial,royaltyPolicy
-// defaultMintingFee-> not zero ,royaltyPolicy-> not zero, commercial->true
-
 const verifyDerivatives = (terms: LicenseTerms) => {
   if (!terms.derivativesAllowed) {
     if (terms.derivativesAttribution) {
