@@ -1,12 +1,17 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
-import { getStoryClient, odyssey, mintBySpg } from "./utils/util";
-import { PIL_TYPE, StoryClient } from "../../src";
+import { homer, getStoryClient, mintBySpg } from "./utils/util";
+import { StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
-import { evenSplitGroupPoolAddress, royaltyPolicyLapAddress } from "../../src/abi/generated";
+import {
+  evenSplitGroupPoolAddress,
+  mockErc20Address,
+  piLicenseTemplateAddress,
+  royaltyPolicyLrpAddress,
+} from "../../src/abi/generated";
 
-const groupPoolAddress = evenSplitGroupPoolAddress[odyssey];
+const groupPoolAddress = evenSplitGroupPoolAddress[homer];
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -34,25 +39,38 @@ describe("Group Functions", () => {
     ).spgNftContract!;
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract: spgNftContract,
-      terms: [
+      allowDuplicates: false,
+      licenseTermsData: [
         {
-          transferable: true,
-          royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-          defaultMintingFee: 0n,
-          expiration: BigInt(1000),
-          commercialUse: true,
-          commercialAttribution: false,
-          commercializerChecker: zeroAddress,
-          commercializerCheckerData: zeroAddress,
-          commercialRevShare: 0,
-          commercialRevCeiling: BigInt(0),
-          derivativesAllowed: true,
-          derivativesAttribution: true,
-          derivativesApproval: false,
-          derivativesReciprocal: true,
-          derivativeRevCeiling: BigInt(0),
-          currency: MockERC20.address,
-          uri: "test case",
+          terms: {
+            transferable: true,
+            royaltyPolicy: royaltyPolicyLrpAddress[homer],
+            defaultMintingFee: 0n,
+            expiration: BigInt(1000),
+            commercialUse: true,
+            commercialAttribution: false,
+            commercializerChecker: zeroAddress,
+            commercializerCheckerData: zeroAddress,
+            commercialRevShare: 0,
+            commercialRevCeiling: BigInt(0),
+            derivativesAllowed: true,
+            derivativesAttribution: true,
+            derivativesApproval: false,
+            derivativesReciprocal: true,
+            derivativeRevCeiling: BigInt(0),
+            currency: mockErc20Address[homer],
+            uri: "test case",
+          },
+          licensingConfig: {
+            isSet: true,
+            mintingFee: 0n,
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: groupPoolAddress,
+          },
         },
       ],
       txOptions: {
@@ -60,7 +78,23 @@ describe("Group Functions", () => {
       },
     });
     licenseTermsId = result.licenseTermsIds![0];
+
     ipId = result.ipId!;
+    await client.license.setLicensingConfig({
+      ipId: ipId,
+      licenseTermsId: licenseTermsId,
+      licenseTemplate: piLicenseTemplateAddress[homer],
+      licensingConfig: {
+        isSet: true,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: zeroAddress,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: groupPoolAddress,
+      },
+    });
   });
 
   it("should success when register group", async () => {
@@ -70,15 +104,57 @@ describe("Group Functions", () => {
         waitForTransaction: true,
       },
     });
-    groupId = result.groupId!;
+
     expect(result.txHash).to.be.a("string").and.not.empty;
     expect(result.groupId).to.be.a("string").and.not.empty;
   });
+  it("should success when register group and attach license", async () => {
+    const result = await client.groupClient.registerGroupAndAttachLicense({
+      groupPool: groupPoolAddress,
+      licenseData: {
+        licenseTermsId: licenseTermsId!,
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 0n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
+        },
+      },
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+    groupId = result.groupId!;
+
+    expect(result.txHash).to.be.a("string").and.not.empty;
+    expect(result.groupId).to.be.a("string").and.not.empty;
+  });
+
   it("should success when mint and register ip and attach license and add to group", async () => {
     const result = await client.groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
       groupId,
       spgNftContract: spgNftContract,
-      licenseTermsId: licenseTermsId!,
+      licenseData: [
+        {
+          licenseTermsId: licenseTermsId!,
+          licensingConfig: {
+            isSet: true,
+            mintingFee: 0n,
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: groupPoolAddress,
+          },
+        },
+      ],
+      allowDuplicates: true,
+      maxAllowedRewardShare: 5,
       txOptions: {
         waitForTransaction: true,
       },
@@ -92,7 +168,22 @@ describe("Group Functions", () => {
       groupId,
       nftContract: spgNftContract,
       tokenId: tokenId!,
-      licenseTermsId: licenseTermsId!,
+      maxAllowedRewardShare: 5,
+      licenseData: [
+        {
+          licenseTermsId: licenseTermsId!,
+          licensingConfig: {
+            isSet: true,
+            mintingFee: 0n,
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: groupPoolAddress,
+          },
+        },
+      ],
       txOptions: {
         waitForTransaction: true,
       },
@@ -101,23 +192,24 @@ describe("Group Functions", () => {
     expect(result.ipId).to.be.a("string").and.not.empty;
   });
 
-  it("should success when register group and attach license", async () => {
-    const result = await client.groupClient.registerGroupAndAttachLicense({
-      groupPool: groupPoolAddress,
-      licenseTermsId: licenseTermsId!,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-    expect(result.txHash).to.be.a("string").and.not.empty;
-    expect(result.groupId).to.be.a("string").and.not.empty;
-  });
-
   it("should success when register group and attach license and add ips", async () => {
     const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
       groupPool: groupPoolAddress,
+      maxAllowedRewardShare: 5,
       ipIds: [ipId],
-      licenseTermsId: licenseTermsId!,
+      licenseData: {
+        licenseTermsId: licenseTermsId!,
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 0n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
+        },
+      },
       txOptions: {
         waitForTransaction: true,
       },

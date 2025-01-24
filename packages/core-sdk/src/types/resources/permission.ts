@@ -58,7 +58,6 @@ export type PermissionSignatureRequest = {
   wallet: WalletClient;
   chainId: string | number | bigint;
   permissions: Omit<SetPermissionsRequest, "txOptions">[];
-  permissionFunc?: "setPermission" | "setBatchPermissions";
 };
 
 export type SignatureRequest = {

@@ -2,9 +2,15 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, odyssey } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, homer } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
-import { licensingModuleAddress } from "../../src/abi/generated";
+import {
+  licensingModuleAddress,
+  mockErc20Address,
+  piLicenseTemplateAddress,
+  royaltyPolicyLapAddress,
+  royaltyPolicyLapConfig,
+} from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -18,8 +24,8 @@ describe("License Functions", () => {
   describe("register license with different types", async () => {
     it("should not throw error when register license ", async () => {
       const result = await client.license.registerPILTerms({
-        defaultMintingFee: "1",
-        currency: MockERC20.address,
+        defaultMintingFee: 0,
+        currency: mockErc20Address[homer],
         transferable: false,
         royaltyPolicy: zeroAddress,
         commercialUse: false,
@@ -52,7 +58,7 @@ describe("License Functions", () => {
     it("should not throw error when register license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: MockERC20.address,
+        currency: mockErc20Address[homer],
         txOptions: {
           waitForTransaction: true,
         },
@@ -64,7 +70,7 @@ describe("License Functions", () => {
       const result = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: MockERC20.address,
+        currency: mockErc20Address[homer],
         txOptions: {
           waitForTransaction: true,
         },
@@ -87,12 +93,12 @@ describe("License Functions", () => {
         },
       });
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(licensingModuleAddress[odyssey]);
+      await mockERC20.approve(licensingModuleAddress[homer]);
       ipId = registerResult.ipId!;
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 0,
         commercialRevShare: 100,
-        currency: MockERC20.address,
+        currency: mockErc20Address[homer],
         txOptions: {
           waitForTransaction: true,
         },
@@ -115,6 +121,8 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
+        maxMintingFee: "1",
+        maxRevenueShare: "100",
         txOptions: {
           waitForTransaction: true,
         },
@@ -139,16 +147,19 @@ describe("License Functions", () => {
     });
 
     it("should not throw error when set licensing config", async () => {
-      const licenseModule = licensingModuleAddress[odyssey];
       const result = await client.license.setLicensingConfig({
         ipId: ipId,
-        licenseTermsId: 0n,
-        licenseTemplate: zeroAddress,
+        licenseTermsId: licenseId,
+        licenseTemplate: piLicenseTemplateAddress[homer],
         licensingConfig: {
-          mintingFee: "1",
+          mintingFee: 0,
           isSet: true,
           licensingHook: zeroAddress,
           hookData: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: "1",
+          expectGroupRewardPool: zeroAddress,
         },
         txOptions: {
           waitForTransaction: true,

@@ -5,6 +5,7 @@ import {
   LicenseRegistryEventClient,
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
+  LicensingModuleMintLicenseTokensRequest,
   LicensingModulePredictMintingLicenseFeeRequest,
   LicensingModulePredictMintingLicenseFeeResponse,
   LicensingModuleSetLicensingConfigRequest,
@@ -34,7 +35,11 @@ import {
   SetLicensingConfigResponse,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
-import { getLicenseTermByType, validateLicenseTerms } from "../utils/licenseTermsHelper";
+import {
+  getLicenseTermByType,
+  getRevenueShare,
+  validateLicenseTerms,
+} from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
 
@@ -272,7 +277,7 @@ export class LicenseClient {
    * Attaches license terms to an IP.
    * @param request - The request object that contains all data needed to attach license terms.
    *   @param request.ipId The address of the IP to which the license terms are attached.
-   *   @param request.licenseTemplate The address of the license template.
+   *   @param request.licenseTemplate The address of the license template, default value is Programmable IP License.
    *   @param request.licenseTermsId The ID of the license terms.
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes success.
@@ -345,10 +350,12 @@ export class LicenseClient {
    * configure the minting fee module to determine the minting fee.
    * @param request - The request object that contains all data needed to mint license tokens.
    *   @param request.licensorIpId The licensor IP ID.
-   *   @param request.licenseTemplate The address of the license template.
+   *   @param request.licenseTemplate The address of the license template, default value is Programmable IP License.
    *   @param request.licenseTermsId The ID of the license terms within the license template.
    *   @param request.amount The amount of license tokens to mint.
    *   @param request.receiver The address of the receiver.
+   *   @param request.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
+   *   @param request.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
    *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes license token IDs.
    * @emits LicenseTokensMinted (msg.sender, licensorIpId, licenseTemplate, licenseTermsId, amount, receiver, startLicenseTokenId);
@@ -357,7 +364,24 @@ export class LicenseClient {
     request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> {
     try {
-      request.licenseTermsId = BigInt(request.licenseTermsId);
+      const req: LicensingModuleMintLicenseTokensRequest = {
+        licensorIpId: getAddress(request.licensorIpId, "request.licensorIpId"),
+        licenseTemplate:
+          (request.licenseTemplate &&
+            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
+          this.licenseTemplateClient.address,
+        licenseTermsId: BigInt(request.licenseTermsId),
+        amount: BigInt(request.amount || 1),
+        receiver:
+          (request.receiver && getAddress(request.receiver, "request.receiver")) ||
+          this.wallet.account!.address,
+        royaltyContext: zeroAddress,
+        maxMintingFee: BigInt(request.maxMintingFee),
+        maxRevenueShare: getRevenueShare(request.maxRevenueShare),
+      } as const;
+      if (req.maxMintingFee < 0) {
+        throw new Error(`The maxMintingFee must be greater than 0.`);
+      }
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(request.licensorIpId, "request.licensorIpId"),
       });
@@ -365,7 +389,7 @@ export class LicenseClient {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
       }
       const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
-        licenseTermsId: request.licenseTermsId,
+        licenseTermsId: req.licenseTermsId,
       });
       if (!isExisted) {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
@@ -377,24 +401,13 @@ export class LicenseClient {
             (request.licenseTemplate &&
               getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
             this.licenseTemplateClient.address,
-          licenseTermsId: request.licenseTermsId,
+          licenseTermsId: req.licenseTermsId,
         });
       if (!isAttachedLicenseTerms) {
         throw new Error(
           `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}.`,
         );
       }
-      const amount = BigInt(request.amount || 1);
-      const req = {
-        licensorIpId: request.licensorIpId,
-        licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
-        licenseTermsId: request.licenseTermsId,
-        amount,
-        receiver:
-          (request.receiver && getAddress(request.receiver, "request.receiver")) ||
-          this.wallet.account!.address,
-        royaltyContext: zeroAddress,
-      };
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData: this.licensingModuleClient.mintLicenseTokensEncode(req) };
       } else {
@@ -407,7 +420,7 @@ export class LicenseClient {
           const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
           const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
           const licenseTokenIds = [];
-          for (let i = 0; i < amount; i++) {
+          for (let i = 0; i < req.amount; i++) {
             licenseTokenIds.push(startLicenseTokenId + BigInt(i));
           }
           return { txHash: txHash, licenseTokenIds: licenseTokenIds };
@@ -443,7 +456,7 @@ export class LicenseClient {
    *   @param request.licensorIpId The IP ID of the licensor.
    *   @param request.licenseTermsId The ID of the license terms.
    *   @param request.amount The amount of license tokens to mint.
-   *   @param request.licenseTemplate [Optional] The address of the license template,default value is Programmable IP License.
+   *   @param request.licenseTemplate [Optional] The address of the license template, default value is Programmable IP License.
    *   @param request.receiver [Optional] The address of the receiver,default value is your wallet address.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to an object containing the currency token and token amount.
@@ -495,6 +508,12 @@ export class LicenseClient {
    *   @param request.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
    *   @param request.licensingConfig.hookData The data to be used by the licensing hook.
    *   @param request.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none.
+   *   @param request.licensingConfig.commercialRevShare The commercial revenue share percentage.
+   *   @param request.licensingConfig.disabled Whether the license is disabled or not.
+   *   @param request.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *    If the remaining reward share in the group is less than the minimumGroupRewardShare, the IP cannot be added to the group.
+   *   @param request.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address,
+   *    or address(0) if the IP does not want to be added to any group.
    *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
    * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes success.
    */
@@ -502,15 +521,45 @@ export class LicenseClient {
     request: SetLicensingConfigRequest,
   ): Promise<SetLicensingConfigResponse> {
     try {
+      const req: LicensingModuleSetLicensingConfigRequest = {
+        ipId: request.ipId,
+        licenseTemplate: getAddress(request.licenseTemplate, "request.licenseTemplate"),
+        licenseTermsId: BigInt(request.licenseTermsId),
+        licensingConfig: {
+          isSet: request.licensingConfig.isSet,
+          mintingFee: BigInt(request.licensingConfig.mintingFee),
+          hookData: request.licensingConfig.hookData,
+          licensingHook: request.licensingConfig.licensingHook,
+          disabled: request.licensingConfig.disabled,
+          commercialRevShare: getRevenueShare(request.licensingConfig.commercialRevShare),
+          expectGroupRewardPool: getAddress(
+            request.licensingConfig.expectGroupRewardPool,
+            "request.licensingConfig.expectGroupRewardPool",
+          ),
+          expectMinimumGroupRewardShare: Number(
+            request.licensingConfig.expectMinimumGroupRewardShare,
+          ),
+        },
+      };
+      if (req.licensingConfig.mintingFee < 0) {
+        throw new Error("The minting fee must be greater than 0.");
+      }
+      if (
+        request.licenseTemplate === zeroAddress &&
+        request.licensingConfig.commercialRevShare !== 0
+      ) {
+        throw new Error(
+          "The license template cannot be zero address if commercial revenue share is not zero.",
+        );
+      }
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: getAddress(request.ipId, "request.ipId"),
       });
       if (!isLicenseIpIdRegistered) {
         throw new Error(`The licensor IP with id ${request.ipId} is not registered.`);
       }
-      const licenseTermsId = BigInt(request.licenseTermsId);
       const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
-        licenseTermsId,
+        licenseTermsId: req.licenseTermsId,
       });
       if (!isExisted) {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
@@ -523,25 +572,14 @@ export class LicenseClient {
           throw new Error("The licensing hook is not registered.");
         }
       }
-
       if (request.licenseTemplate === zeroAddress && request.licenseTermsId !== 0n) {
-        throw new Error("licenseTemplate is zero address but licenseTermsId is zero.");
+        throw new Error("The license template is zero address but license terms id is not zero.");
       }
-      const object: LicensingModuleSetLicensingConfigRequest = {
-        ipId: request.ipId,
-        licenseTemplate: getAddress(request.licenseTemplate, "request.licenseTemplate"),
-        licenseTermsId,
-        licensingConfig: {
-          isSet: request.licensingConfig.isSet,
-          mintingFee: BigInt(request.licensingConfig.mintingFee),
-          hookData: request.licensingConfig.hookData,
-          licensingHook: request.licensingConfig.licensingHook,
-        },
-      };
+
       if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.licensingModuleClient.setLicensingConfigEncode(object) };
+        return { encodedTxData: this.licensingModuleClient.setLicensingConfigEncode(req) };
       } else {
-        const txHash = await this.licensingModuleClient.setLicensingConfig(object);
+        const txHash = await this.licensingModuleClient.setLicensingConfig(req);
         if (request.txOptions?.waitForTransaction) {
           await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,

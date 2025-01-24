@@ -1,6 +1,10 @@
 import { Hex, PublicClient, zeroAddress } from "viem";
 import { LicenseTerms, PIL_TYPE } from "../../../src/types/resources/license";
-import { getLicenseTermByType, validateLicenseTerms } from "../../../src/utils/licenseTermsHelper";
+import {
+  getLicenseTermByType,
+  getRevenueShare,
+  validateLicenseTerms,
+} from "../../../src/utils/licenseTermsHelper";
 import { expect } from "chai";
 import { MockERC20 } from "../../integration/utils/mockERC20";
 import sinon from "sinon";
@@ -223,8 +227,8 @@ describe("License Terms Helper", () => {
     });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
-      currency: MockERC20.address,
-      royaltyPolicy: zeroAddress,
+      currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       transferable: false,
       expiration: 0n,
       commercialUse: false,
@@ -241,7 +245,7 @@ describe("License Terms Helper", () => {
       uri: "",
     };
 
-    it("should throw royalty error when call registerRILTerms with invalid royalty policy address", async () => {
+    it("should throw royalty error when call validateLicenseTerms with invalid royalty policy address", async () => {
       await expect(
         validateLicenseTerms(
           {
@@ -254,8 +258,31 @@ describe("License Terms Helper", () => {
         "params.royaltyPolicy address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
       );
     });
+    it("should throw defaultMintingFee error when call validateLicenseTerms given defaultMintingFee is less than 0", async () => {
+      await expect(
+        validateLicenseTerms(
+          {
+            ...licenseTerms,
+            defaultMintingFee: -1n,
+          },
+          rpcMock,
+        ),
+      ).to.be.rejectedWith("DefaultMintingFee should be greater than or equal to 0.");
+    });
 
-    it("should throw royalty whitelist error when call registerRILTerms with invalid royalty whitelist address", async () => {
+    it("should throw defaultMintingFee and royalty error when call validateLicenseTerms given defaultMintingFee is 0 and royaltyPolicy is zero address", async () => {
+      await expect(
+        validateLicenseTerms(
+          {
+            ...licenseTerms,
+            defaultMintingFee: 1n,
+            royaltyPolicy: zeroAddress,
+          },
+          rpcMock,
+        ),
+      ).to.be.rejectedWith("Royalty policy is required when defaultMintingFee is greater than 0.");
+    });
+    it("should throw royalty whitelist error when call validateLicenseTerms with invalid royalty whitelist address", async () => {
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
         .stub()
         .resolves(false);
@@ -270,10 +297,10 @@ describe("License Terms Helper", () => {
       ).to.be.rejectedWith("The royalty policy is not whitelisted.");
     });
 
-    it("should throw currency error when call registerRILTerms with invalid currency address", async () => {
+    it("should throw currency error when call validateLicenseTerms with invalid currency address", async () => {
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
         .stub()
-        .resolves(false);
+        .resolves(true);
       await expect(
         validateLicenseTerms(
           {
@@ -287,10 +314,10 @@ describe("License Terms Helper", () => {
       );
     });
 
-    it("should throw currency whitelist error when call registerRILTerms with invalid currency whitelist address", async () => {
+    it("should throw currency whitelist error when call validateLicenseTerms with invalid currency whitelist address", async () => {
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
         .stub()
-        .resolves(false);
+        .resolves(true);
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon
         .stub()
         .resolves(false);
@@ -298,14 +325,14 @@ describe("License Terms Helper", () => {
         validateLicenseTerms(
           {
             ...licenseTerms,
-            currency: MockERC20.address,
+            currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           },
           rpcMock,
         ),
       ).to.be.rejectedWith("The currency token is not whitelisted.");
     });
 
-    it("should throw royalty policy requires currency token error when call registerRILTerms given royaltyPolicy is not zero address and current is zero address", async () => {
+    it("should throw royalty policy requires currency token error when call validateLicenseTerms given royaltyPolicy is not zero address and current is zero address", async () => {
       RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
         .stub()
         .resolves(true);
@@ -331,7 +358,7 @@ describe("License Terms Helper", () => {
           .stub()
           .resolves(true);
       });
-      it("should throw commercialAttribution error when call registerRILTerms given commercialUse is false and commercialAttribution is true", async () => {
+      it("should throw commercialAttribution error when call validateLicenseTerms given commercialUse is false and commercialAttribution is true", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -344,7 +371,7 @@ describe("License Terms Helper", () => {
         ).to.be.rejectedWith("Cannot add commercial attribution when commercial use is disabled.");
       });
 
-      it("should throw commercializerChecker error when call registerRILTerms given commercialUse is false and commercialChecker is not zero address", async () => {
+      it("should throw commercializerChecker error when call validateLicenseTerms given commercialUse is false and commercialChecker is not zero address", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -356,7 +383,7 @@ describe("License Terms Helper", () => {
           ),
         ).to.be.rejectedWith("Cannot add commercializerChecker when commercial use is disabled.");
       });
-      it("should throw commercialRevShare error when call registerRILTerms given commercialUse is false and commercialRevShare is more than 0 ", async () => {
+      it("should throw commercialRevShare error when call validateLicenseTerms given commercialUse is false and commercialRevShare is more than 0 ", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -372,7 +399,7 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("should throw commercialRevCeiling error when call registerRILTerms given commercialUse is false and commercialRevCeiling is more than 0", async () => {
+      it("should throw commercialRevCeiling error when call validateLicenseTerms given commercialUse is false and commercialRevCeiling is more than 0", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -388,7 +415,7 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("should throw derivativeRevCeiling error when call registerRILTerms given commercialUse is false and derivativeRevCeiling is more than 0", async () => {
+      it("should throw derivativeRevCeiling error when call validateLicenseTerms given commercialUse is false and derivativeRevCeiling is more than 0", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -404,7 +431,7 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("should throw royaltyPolicy error when call registerRILTerms given commercialUse is false and royaltyPolicy is not zero address", async () => {
+      it("should throw royaltyPolicy error when call validateLicenseTerms given commercialUse is false and royaltyPolicy is not zero address", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -420,13 +447,14 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("should throw royaltyPolicy error when call registerRILTerms given commercialUse is true and royaltyPolicy is zero address", async () => {
+      it("should throw royaltyPolicy error when call validateLicenseTerms given commercialUse is true and royaltyPolicy is zero address", async () => {
         await expect(
           validateLicenseTerms(
             {
               ...licenseTerms,
               commercialUse: true,
               royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
             },
             rpcMock,
           ),
@@ -443,7 +471,7 @@ describe("License Terms Helper", () => {
           .stub()
           .resolves(true);
       });
-      it("should throw derivativesAttribution error when call registerRILTerms given derivativesAllowed is false and derivativesAttribution is true", async () => {
+      it("should throw derivativesAttribution error when call validateLicenseTerms given derivativesAllowed is false and derivativesAttribution is true", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -458,7 +486,7 @@ describe("License Terms Helper", () => {
         ).to.be.rejectedWith("Cannot add derivative attribution when derivative use is disabled.");
       });
 
-      it("should throw derivativesApproval error when call registerRILTerms given derivativesAllowed is false and derivativesApproval is true", async () => {
+      it("should throw derivativesApproval error when call validateLicenseTerms given derivativesAllowed is false and derivativesApproval is true", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -473,7 +501,7 @@ describe("License Terms Helper", () => {
         ).to.be.rejectedWith("Cannot add derivative approval when derivative use is disabled.");
       });
 
-      it("should throw derivativesReciprocal error when call registerRILTerms given derivativesAllowed is false and derivativesReciprocal is true", async () => {
+      it("should throw derivativesReciprocal error when call validateLicenseTerms given derivativesAllowed is false and derivativesReciprocal is true", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -488,7 +516,7 @@ describe("License Terms Helper", () => {
         ).to.be.rejectedWith("Cannot add derivative reciprocal when derivative use is disabled.");
       });
 
-      it("should throw derivativeRevCeiling error when call registerRILTerms given derivativesAllowed is false and derivativeRevCeiling is more than 0", async () => {
+      it("should throw derivativeRevCeiling error when call validateLicenseTerms given derivativesAllowed is false and derivativeRevCeiling is more than 0", async () => {
         await expect(
           validateLicenseTerms(
             {
@@ -504,6 +532,28 @@ describe("License Terms Helper", () => {
           "Cannot add derivative revenue ceiling when derivative use is disabled.",
         );
       });
+    });
+  });
+
+  describe("getRevenueShare", () => {
+    it("should throw error when call getRevenueShare given revShare is not a number", async () => {
+      expect(() => getRevenueShare("not a number")).to.throw(
+        "CommercialRevShare must be a valid number.",
+      );
+    });
+
+    it("should throw error when call getRevenueShare given revShare is less than 0", async () => {
+      expect(() => getRevenueShare(-1)).to.throw("CommercialRevShare should be between 0 and 100.");
+    });
+
+    it("should throw error when call getRevenueShare given revShare is greater than 100", async () => {
+      expect(() => getRevenueShare(101)).to.throw(
+        "CommercialRevShare should be between 0 and 100.",
+      );
+    });
+
+    it("should return correct value when call getRevenueShare given revShare is 10", async () => {
+      expect(getRevenueShare(10)).to.equal(10000000);
     });
   });
 });

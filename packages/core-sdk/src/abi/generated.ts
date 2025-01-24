@@ -219,14 +219,8 @@ export const accessControllerAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [
-      {
-        name: "",
-        internalType: "contract IIPAccountRegistry",
-        type: "address",
-      },
-    ],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -390,7 +384,7 @@ export const accessControllerAbi = [
  *
  */
 export const accessControllerAddress = {
-  1516: "0xf709c8001E94e2ca6F98b7fFBCd5BD3943E46D81",
+  1315: "0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a",
 } as const;
 
 /**
@@ -399,6 +393,589 @@ export const accessControllerAddress = {
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ArbitrationPolicyUMA
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const arbitrationPolicyUmaAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "disputeModule", internalType: "address", type: "address" },
+      { name: "royaltyModule", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "authority", internalType: "address", type: "address" }],
+    name: "AccessManagedInvalidAuthority",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "delay", internalType: "uint32", type: "uint32" },
+    ],
+    name: "AccessManagedRequiredDelay",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "caller", internalType: "address", type: "address" }],
+    name: "AccessManagedUnauthorized",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__BondAboveMax" },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__CannotCancel" },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__CannotDisputeAssertionIfTagIsInherited",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__CurrencyNotWhitelisted",
+  },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__DisputeNotFound" },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__IpOwnerTimePercentAboveMax",
+  },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__LivenessAboveMax" },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__LivenessBelowMin" },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__MaxBondBelowMinimumBond",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__MinLivenessAboveMax",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__NoCounterEvidence",
+  },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__NotDisputeModule" },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__NotOOV3" },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__OnlyDisputePolicyUMA",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "elapsedTime", internalType: "uint64", type: "uint64" },
+      { name: "liveness", internalType: "uint64", type: "uint64" },
+      { name: "caller", internalType: "address", type: "address" },
+    ],
+    name: "ArbitrationPolicyUMA__OnlyTargetIpIdCanDisputeWithinTimeWindow",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__ZeroAccessManager",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__ZeroDisputeModule",
+  },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__ZeroMaxLiveness" },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__ZeroMinLiveness" },
+  { type: "error", inputs: [], name: "ArbitrationPolicyUMA__ZeroOOV3" },
+  {
+    type: "error",
+    inputs: [],
+    name: "ArbitrationPolicyUMA__ZeroRoyaltyModule",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "implementation", internalType: "address", type: "address" }],
+    name: "ERC1967InvalidImplementation",
+  },
+  { type: "error", inputs: [], name: "ERC1967NonPayable" },
+  { type: "error", inputs: [], name: "EnforcedPause" },
+  { type: "error", inputs: [], name: "ExpectedPause" },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
+  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
+  {
+    type: "error",
+    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
+    name: "UUPSUnsupportedProxiableUUID",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "assertionId",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+      {
+        name: "counterEvidenceHash",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+    ],
+    name: "AssertionDisputed",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "authority",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AuthorityUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "disputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "caller",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "liveness",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+      {
+        name: "currency",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "bond",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "DisputeRaisedUMA",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
+    name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "minLiveness",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+      {
+        name: "maxLiveness",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+      {
+        name: "ipOwnerTimePercent",
+        internalType: "uint32",
+        type: "uint32",
+        indexed: false,
+      },
+    ],
+    name: "LivenessSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "maxBond",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "MaxBondSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "oov3",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "OOV3Set",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Paused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "Unpaused",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "implementation",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "Upgraded",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ROYALTY_MODULE",
+    outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "__ProtocolPausable_init",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "assertionId", internalType: "bytes32", type: "bytes32" }],
+    name: "assertionDisputedCallback",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "assertionId", internalType: "bytes32", type: "bytes32" }],
+    name: "assertionIdToDisputeId",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "assertionId", internalType: "bytes32", type: "bytes32" },
+      { name: "assertedTruthfully", internalType: "bool", type: "bool" },
+    ],
+    name: "assertionResolvedCallback",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "authority",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "assertionId", internalType: "bytes32", type: "bytes32" },
+      { name: "counterEvidenceHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "disputeAssertion",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "disputeId", internalType: "uint256", type: "uint256" }],
+    name: "disputeIdToAssertionId",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ipOwnerTimePercent",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "disputeId", internalType: "uint256", type: "uint256" }],
+    name: "ipOwnerTimePercents",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isConsumingScheduledOp",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "maxBonds",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "maxLiveness",
+    outputs: [{ name: "", internalType: "uint64", type: "uint64" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "minLiveness",
+    outputs: [{ name: "", internalType: "uint64", type: "uint64" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onDisputeCancel",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "decision", internalType: "bool", type: "bool" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onDisputeJudgement",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "targetIpId", internalType: "address", type: "address" },
+      { name: "disputeEvidenceHash", internalType: "bytes32", type: "bytes32" },
+      { name: "targetTag", internalType: "bytes32", type: "bytes32" },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onRaiseDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "disputeId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onResolveDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "oov3",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "paused",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "minLiveness", internalType: "uint64", type: "uint64" },
+      { name: "maxLiveness", internalType: "uint64", type: "uint64" },
+      { name: "ipOwnerTimePercent", internalType: "uint32", type: "uint32" },
+    ],
+    name: "setLiveness",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "maxBond", internalType: "uint256", type: "uint256" },
+    ],
+    name: "setMaxBond",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "oov3", internalType: "address", type: "address" }],
+    name: "setOOV3",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "newImplementation", internalType: "address", type: "address" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+  },
+] as const;
+
+/**
+ *
+ */
+export const arbitrationPolicyUmaAddress = {
+  1315: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936",
+} as const;
+
+/**
+ *
+ */
+export const arbitrationPolicyUmaConfig = {
+  address: arbitrationPolicyUmaAddress,
+  abi: arbitrationPolicyUmaAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -562,14 +1139,8 @@ export const coreMetadataModuleAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [
-      {
-        name: "",
-        internalType: "contract IIPAccountRegistry",
-        type: "address",
-      },
-    ],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -691,7 +1262,7 @@ export const coreMetadataModuleAbi = [
  *
  */
 export const coreMetadataModuleAddress = {
-  1516: "0x89630Ccf23277417FBdfd3076C702F5248267e78",
+  1315: "0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16",
 } as const;
 
 /**
@@ -749,11 +1320,6 @@ export const derivativeWorkflowsAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       { name: "caller", internalType: "address", type: "address" },
@@ -773,7 +1339,7 @@ export const derivativeWorkflowsAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   {
@@ -940,6 +1506,9 @@ export const derivativeWorkflowsAbi = [
             type: "uint256[]",
           },
           { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+          { name: "maxMintingFee", internalType: "uint256", type: "uint256" },
+          { name: "maxRts", internalType: "uint32", type: "uint32" },
+          { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
         ],
       },
       {
@@ -954,8 +1523,37 @@ export const derivativeWorkflowsAbi = [
         ],
       },
       { name: "recipient", internalType: "address", type: "address" },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
     ],
     name: "mintAndRegisterIpAndMakeDerivative",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: "maxRts", internalType: "uint32", type: "uint32" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      { name: "recipient", internalType: "address", type: "address" },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
+    ],
+    name: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -981,7 +1579,46 @@ export const derivativeWorkflowsAbi = [
       },
       { name: "recipient", internalType: "address", type: "address" },
     ],
-    name: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+    name: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens_deprecated",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      {
+        name: "derivData",
+        internalType: "struct WorkflowStructs.MakeDerivativeDEPR",
+        type: "tuple",
+        components: [
+          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          {
+            name: "licenseTermsIds",
+            internalType: "uint256[]",
+            type: "uint256[]",
+          },
+          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      { name: "recipient", internalType: "address", type: "address" },
+    ],
+    name: "mintAndRegisterIpAndMakeDerivative_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -1032,6 +1669,9 @@ export const derivativeWorkflowsAbi = [
             type: "uint256[]",
           },
           { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+          { name: "maxMintingFee", internalType: "uint256", type: "uint256" },
+          { name: "maxRts", internalType: "uint32", type: "uint32" },
+          { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
         ],
       },
       {
@@ -1046,17 +1686,7 @@ export const derivativeWorkflowsAbi = [
         ],
       },
       {
-        name: "sigMetadata",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigRegister",
+        name: "sigMetadataAndRegister",
         internalType: "struct WorkflowStructs.SignatureData",
         type: "tuple",
         components: [
@@ -1067,6 +1697,40 @@ export const derivativeWorkflowsAbi = [
       },
     ],
     name: "registerIpAndMakeDerivative",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: "maxRts", internalType: "uint32", type: "uint32" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadataAndRegister",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndMakeDerivativeWithLicenseTokens",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
@@ -1109,7 +1773,63 @@ export const derivativeWorkflowsAbi = [
         ],
       },
     ],
-    name: "registerIpAndMakeDerivativeWithLicenseTokens",
+    name: "registerIpAndMakeDerivativeWithLicenseTokens_deprecated",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      {
+        name: "derivData",
+        internalType: "struct WorkflowStructs.MakeDerivativeDEPR",
+        type: "tuple",
+        components: [
+          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          {
+            name: "licenseTermsIds",
+            internalType: "uint256[]",
+            type: "uint256[]",
+          },
+          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadata",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "sigRegister",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndMakeDerivative_deprecated",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
@@ -1117,19 +1837,6 @@ export const derivativeWorkflowsAbi = [
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "newNftContractBeacon",
-        internalType: "address",
-        type: "address",
-      },
-    ],
-    name: "setNftContractBeacon",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -1149,7 +1856,7 @@ export const derivativeWorkflowsAbi = [
  *
  */
 export const derivativeWorkflowsAddress = {
-  1516: "0xa8815CEB96857FFb8f5F8ce920b1Ae6D70254C7B",
+  1315: "0x9e2d496f72C547C2C535B167e06ED8729B374a4f",
 } as const;
 
 /**
@@ -1174,6 +1881,7 @@ export const disputeModuleAbi = [
       { name: "accessController", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -1206,8 +1914,19 @@ export const disputeModuleAbi = [
     inputs: [{ name: "target", internalType: "address", type: "address" }],
     name: "AddressEmptyCode",
   },
+  {
+    type: "error",
+    inputs: [],
+    name: "DisputeModule__CannotBlacklistBaseArbitrationPolicy",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "DisputeModule__DisputeAlreadyPropagated",
+  },
   { type: "error", inputs: [], name: "DisputeModule__NotAbleToResolve" },
   { type: "error", inputs: [], name: "DisputeModule__NotAllowedToWhitelist" },
+  { type: "error", inputs: [], name: "DisputeModule__NotArbitrationRelayer" },
   { type: "error", inputs: [], name: "DisputeModule__NotDerivative" },
   { type: "error", inputs: [], name: "DisputeModule__NotDisputeInitiator" },
   { type: "error", inputs: [], name: "DisputeModule__NotInDisputeState" },
@@ -1216,11 +1935,6 @@ export const disputeModuleAbi = [
     type: "error",
     inputs: [],
     name: "DisputeModule__NotWhitelistedArbitrationPolicy",
-  },
-  {
-    type: "error",
-    inputs: [],
-    name: "DisputeModule__NotWhitelistedArbitrationRelayer",
   },
   {
     type: "error",
@@ -1237,10 +1951,15 @@ export const disputeModuleAbi = [
   { type: "error", inputs: [], name: "DisputeModule__ZeroAccessController" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroArbitrationPolicy" },
-  { type: "error", inputs: [], name: "DisputeModule__ZeroArbitrationRelayer" },
+  {
+    type: "error",
+    inputs: [],
+    name: "DisputeModule__ZeroArbitrationPolicyCooldown",
+  },
   { type: "error", inputs: [], name: "DisputeModule__ZeroDisputeEvidenceHash" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroDisputeTag" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroIPAssetRegistry" },
+  { type: "error", inputs: [], name: "DisputeModule__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroLicenseRegistry" },
   {
     type: "error",
@@ -1265,6 +1984,19 @@ export const disputeModuleAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "cooldown",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "ArbitrationPolicyCooldownUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "ipId",
         internalType: "address",
         type: "address",
@@ -1274,6 +2006,12 @@ export const disputeModuleAbi = [
         name: "arbitrationPolicy",
         internalType: "address",
         type: "address",
+        indexed: false,
+      },
+      {
+        name: "nextArbitrationUpdateTimestamp",
+        internalType: "uint256",
+        type: "uint256",
         indexed: false,
       },
     ],
@@ -1309,9 +2047,8 @@ export const disputeModuleAbi = [
         type: "address",
         indexed: false,
       },
-      { name: "allowed", internalType: "bool", type: "bool", indexed: false },
     ],
-    name: "ArbitrationRelayerWhitelistUpdated",
+    name: "ArbitrationRelayerUpdated",
   },
   {
     type: "event",
@@ -1362,6 +2099,12 @@ export const disputeModuleAbi = [
         indexed: false,
       },
       { name: "tag", internalType: "bytes32", type: "bytes32", indexed: false },
+      {
+        name: "disputeTimestamp",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
     ],
     name: "DerivativeTaggedOnParentInfringement",
   },
@@ -1417,6 +2160,12 @@ export const disputeModuleAbi = [
         indexed: false,
       },
       {
+        name: "disputeTimestamp",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
         name: "arbitrationPolicy",
         internalType: "address",
         type: "address",
@@ -1448,6 +2197,7 @@ export const disputeModuleAbi = [
         type: "uint256",
         indexed: false,
       },
+      { name: "data", internalType: "bytes", type: "bytes", indexed: false },
     ],
     name: "DisputeResolved",
   },
@@ -1529,21 +2279,15 @@ export const disputeModuleAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [
-      {
-        name: "",
-        internalType: "contract IIPAccountRegistry",
-        type: "address",
-      },
-    ],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
     inputs: [],
-    name: "IP_ASSET_REGISTRY",
-    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -1572,6 +2316,20 @@ export const disputeModuleAbi = [
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "arbitrationPolicies",
     outputs: [{ name: "policy", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "arbitrationPolicyCooldown",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
+    name: "arbitrationRelayer",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -1612,6 +2370,7 @@ export const disputeModuleAbi = [
     outputs: [
       { name: "targetIpId", internalType: "address", type: "address" },
       { name: "disputeInitiator", internalType: "address", type: "address" },
+      { name: "disputeTimestamp", internalType: "uint256", type: "uint256" },
       { name: "arbitrationPolicy", internalType: "address", type: "address" },
       { name: "disputeEvidenceHash", internalType: "bytes32", type: "bytes32" },
       { name: "targetTag", internalType: "bytes32", type: "bytes32" },
@@ -1650,16 +2409,6 @@ export const disputeModuleAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "arbitrationPolicy", internalType: "address", type: "address" },
-      { name: "arbitrationRelayer", internalType: "address", type: "address" },
-    ],
-    name: "isWhitelistedArbitrationRelayer",
-    outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [{ name: "tag", internalType: "bytes32", type: "bytes32" }],
     name: "isWhitelistedDisputeTag",
     outputs: [{ name: "allowed", internalType: "bool", type: "bool" }],
@@ -1677,6 +2426,20 @@ export const disputeModuleAbi = [
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "nextArbitrationPolicies",
+    outputs: [{ name: "policy", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "nextArbitrationUpdateTimestamps",
+    outputs: [{ name: "timestamp", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
@@ -1726,9 +2489,30 @@ export const disputeModuleAbi = [
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
-      { name: "arbitrationPolicy", internalType: "address", type: "address" },
+      {
+        name: "nextArbitrationPolicy",
+        internalType: "address",
+        type: "address",
+      },
     ],
     name: "setArbitrationPolicy",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "cooldown", internalType: "uint256", type: "uint256" }],
+    name: "setArbitrationPolicyCooldown",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "arbitrationPolicy", internalType: "address", type: "address" },
+      { name: "arbPolicyRelayer", internalType: "address", type: "address" },
+    ],
+    name: "setArbitrationRelayer",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -1784,6 +2568,13 @@ export const disputeModuleAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "updateActiveArbitrationPolicy",
+    outputs: [{ name: "arbitrationPolicy", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
       { name: "data", internalType: "bytes", type: "bytes" },
@@ -1805,17 +2596,6 @@ export const disputeModuleAbi = [
   {
     type: "function",
     inputs: [
-      { name: "arbitrationPolicy", internalType: "address", type: "address" },
-      { name: "arbPolicyRelayer", internalType: "address", type: "address" },
-      { name: "allowed", internalType: "bool", type: "bool" },
-    ],
-    name: "whitelistArbitrationRelayer",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
       { name: "tag", internalType: "bytes32", type: "bytes32" },
       { name: "allowed", internalType: "bool", type: "bool" },
     ],
@@ -1829,7 +2609,7 @@ export const disputeModuleAbi = [
  *
  */
 export const disputeModuleAddress = {
-  1516: "0x692B47fa72eE7Ac0Ec617ea384a0cAD41098F712",
+  1315: "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5",
 } as const;
 
 /**
@@ -1838,6 +2618,238 @@ export const disputeModuleAddress = {
 export const disputeModuleConfig = {
   address: disputeModuleAddress,
   abi: disputeModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ERC20Token
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ */
+export const erc20TokenAbi = [
+  { type: "error", inputs: [], name: "AllowanceOverflow" },
+  { type: "error", inputs: [], name: "AllowanceUnderflow" },
+  {
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidReceiver",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "spender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSpender",
+  },
+  { type: "error", inputs: [], name: "IPTransferFailed" },
+  { type: "error", inputs: [], name: "InsufficientAllowance" },
+  { type: "error", inputs: [], name: "InsufficientBalance" },
+  { type: "error", inputs: [], name: "InvalidPermit" },
+  { type: "error", inputs: [], name: "Permit2AllowanceIsFixedAtInfinity" },
+  { type: "error", inputs: [], name: "PermitExpired" },
+  { type: "error", inputs: [], name: "TotalSupplyOverflow" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "spender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Approval",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Deposit",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Transfer",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Withdrawal",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DOMAIN_SEPARATOR",
+    outputs: [{ name: "result", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "decimals",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "deposit",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "nonces",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "deadline", internalType: "uint256", type: "uint256" },
+      { name: "v", internalType: "uint8", type: "uint8" },
+      { name: "r", internalType: "bytes32", type: "bytes32" },
+      { name: "s", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "permit",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "value", internalType: "uint256", type: "uint256" }],
+    name: "withdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "receive", stateMutability: "payable" },
+] as const;
+
+/**
+ *
+ */
+export const erc20TokenAddress = {
+  1315: "0x1514000000000000000000000000000000000000",
+} as const;
+
+/**
+ *
+ */
+export const erc20TokenConfig = {
+  address: erc20TokenAddress,
+  abi: erc20TokenAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1882,6 +2894,11 @@ export const evenSplitGroupPoolAbi = [
   },
   {
     type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
@@ -1892,6 +2909,11 @@ export const evenSplitGroupPoolAbi = [
     inputs: [{ name: "caller", internalType: "address", type: "address" }],
     name: "EvenSplitGroupPool__CallerIsNotGroupingModule",
   },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "EvenSplitGroupPool__DepositWithZeroTokenAddress",
+  },
   { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroGroupingModule" },
   {
     type: "error",
@@ -1901,9 +2923,31 @@ export const evenSplitGroupPoolAbi = [
   { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroRoyaltyModule" },
   { type: "error", inputs: [], name: "ExpectedPause" },
   { type: "error", inputs: [], name: "FailedInnerCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupCurrentToken", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__TokenNotMatchGroupRevenueToken",
+  },
   { type: "error", inputs: [], name: "GroupingModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [
+      { name: "bits", internalType: "uint8", type: "uint8" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "SafeCastOverflowedUintDowncast",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -1998,6 +3042,13 @@ export const evenSplitGroupPoolAbi = [
   {
     type: "function",
     inputs: [],
+    name: "MAX_GROUP_SIZE",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "ROYALTY_MODULE",
     outputs: [{ name: "", internalType: "contract IRoyaltyModule", type: "address" }],
     stateMutability: "view",
@@ -2021,9 +3072,20 @@ export const evenSplitGroupPoolAbi = [
     inputs: [
       { name: "groupId", internalType: "address", type: "address" },
       { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "minimumGroupRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
     ],
     name: "addIp",
-    outputs: [],
+    outputs: [
+      {
+        name: "totalGroupRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
   },
   {
@@ -2084,6 +3146,23 @@ export const evenSplitGroupPoolAbi = [
       { name: "ipId", internalType: "address", type: "address" },
     ],
     name: "getIpRewardDebt",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+    ],
+    name: "getMinimumRewardShare",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "getTotalAllocatedRewardShare",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
@@ -2179,7 +3258,7 @@ export const evenSplitGroupPoolAbi = [
  *
  */
 export const evenSplitGroupPoolAddress = {
-  1516: "0xC384B56fD62d6679Cd62A2fE0dA3fe4560f33391",
+  1315: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
 } as const;
 
 /**
@@ -2207,6 +3286,7 @@ export const groupingModuleAbi = [
       { name: "licenseToken", internalType: "address", type: "address" },
       { name: "groupNFT", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "disputeModule", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -2250,11 +3330,31 @@ export const groupingModuleAbi = [
   { type: "error", inputs: [], name: "FailedInnerCall" },
   {
     type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "GroupingModule__CannotAddDisputedIpToGroup",
+  },
+  {
+    type: "error",
     inputs: [
       { name: "groupId", internalType: "address", type: "address" },
       { name: "childGroupId", internalType: "address", type: "address" },
     ],
     name: "GroupingModule__CannotAddGroupToGroup",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__DisputedGroupCannotAddIp",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__DisputedGroupCannotClaimReward",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "GroupingModule__DisputedGroupCannotCollectRoyalties",
   },
   {
     type: "error",
@@ -2268,22 +3368,21 @@ export const groupingModuleAbi = [
   },
   {
     type: "error",
-    inputs: [
-      { name: "groupId", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "GroupingModule__GroupIPHasMintingFee",
-  },
-  {
-    type: "error",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
     name: "GroupingModule__GroupIPHasNoLicenseTerms",
   },
   {
     type: "error",
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
-    name: "GroupingModule__GroupRoyaltyVaultNotCreated",
+    name: "GroupingModule__GroupIPLicenseHasNotSpecifyRevenueToken",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupRewardPool", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__GroupRewardPoolNotWhitelisted",
   },
   {
     type: "error",
@@ -2294,10 +3393,66 @@ export const groupingModuleAbi = [
     type: "error",
     inputs: [
       { name: "groupId", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
+        name: "expectGroupRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
     ],
-    name: "GroupingModule__IpHasNoGroupLicenseTerms",
+    name: "GroupingModule__IpExpectedShareExceedsMaxAllowedShare",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "GroupingModule__MaxAllowedRewardShareExceeds100Percent",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "royaltyToken", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__RoyaltyTokenNotWhitelisted",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupCurrentToken", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+    ],
+    name: "GroupingModule__TokenNotMatchGroupRevenueToken",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      {
+        name: "totalGroupRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "expectGroupRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "GroupingModule__TotalGroupRewardShareExceeds100Percent",
   },
   { type: "error", inputs: [], name: "GroupingModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "GroupingModule__ZeroGroupNFT" },
@@ -2399,12 +3554,6 @@ export const groupingModuleAbi = [
         name: "amount",
         internalType: "uint256",
         type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "snapshots",
-        internalType: "uint256[]",
-        type: "uint256[]",
         indexed: false,
       },
     ],
@@ -2510,6 +3659,13 @@ export const groupingModuleAbi = [
   {
     type: "function",
     inputs: [],
+    name: "DISPUTE_MODULE",
+    outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "GROUP_IP_ASSET_REGISTRY",
     outputs: [
       {
@@ -2530,14 +3686,8 @@ export const groupingModuleAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [
-      {
-        name: "",
-        internalType: "contract IIPAccountRegistry",
-        type: "address",
-      },
-    ],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -2580,6 +3730,11 @@ export const groupingModuleAbi = [
     inputs: [
       { name: "groupIpId", internalType: "address", type: "address" },
       { name: "ipIds", internalType: "address[]", type: "address[]" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
     ],
     name: "addIp",
     outputs: [],
@@ -2608,7 +3763,6 @@ export const groupingModuleAbi = [
     inputs: [
       { name: "groupId", internalType: "address", type: "address" },
       { name: "token", internalType: "address", type: "address" },
-      { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
     ],
     name: "collectRoyalties",
     outputs: [{ name: "royalties", internalType: "uint256", type: "uint256" }],
@@ -2717,7 +3871,10 @@ export const groupingModuleAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "rewardPool", internalType: "address", type: "address" }],
+    inputs: [
+      { name: "rewardPool", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
+    ],
     name: "whitelistGroupRewardPool",
     outputs: [],
     stateMutability: "nonpayable",
@@ -2728,7 +3885,7 @@ export const groupingModuleAbi = [
  *
  */
 export const groupingModuleAddress = {
-  1516: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
+  1315: "0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac",
 } as const;
 
 /**
@@ -2791,7 +3948,8 @@ export const groupingWorkflowsAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
+  { type: "error", inputs: [], name: "GroupingWorkflows__NoLicenseData" },
   { type: "error", inputs: [], name: "GroupingWorkflows__ZeroAddressParam" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
@@ -2935,6 +4093,23 @@ export const groupingWorkflowsAbi = [
     inputs: [
       { name: "groupIpId", internalType: "address", type: "address" },
       { name: "currencyTokens", internalType: "address[]", type: "address[]" },
+      { name: "memberIpIds", internalType: "address[]", type: "address[]" },
+    ],
+    name: "collectRoyaltiesAndClaimReward",
+    outputs: [
+      {
+        name: "collectedRoyalties",
+        internalType: "uint256[]",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupIpId", internalType: "address", type: "address" },
+      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
       {
         name: "groupSnapshotIds",
         internalType: "uint256[]",
@@ -2942,7 +4117,7 @@ export const groupingWorkflowsAbi = [
       },
       { name: "memberIpIds", internalType: "address[]", type: "address[]" },
     ],
-    name: "collectRoyaltiesAndClaimReward",
+    name: "collectRoyaltiesAndClaimReward_deprecated",
     outputs: [
       {
         name: "collectedRoyalties",
@@ -2965,6 +4140,87 @@ export const groupingWorkflowsAbi = [
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "recipient", internalType: "address", type: "address" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
+        name: "licensesData",
+        internalType: "struct WorkflowStructs.LicenseData[]",
+        type: "tuple[]",
+        components: [
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigAddToGroup",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
+    ],
+    name: "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -2996,7 +4252,7 @@ export const groupingWorkflowsAbi = [
         ],
       },
     ],
-    name: "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+    name: "mintAndRegisterIpAndAttachLicenseAndAddToGroup_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -3012,6 +4268,18 @@ export const groupingWorkflowsAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onERC721Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
@@ -3021,10 +4289,103 @@ export const groupingWorkflowsAbi = [
     type: "function",
     inputs: [
       { name: "groupPool", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      {
+        name: "licenseData",
+        internalType: "struct WorkflowStructs.LicenseData",
+        type: "tuple",
+        components: [
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
     ],
     name: "registerGroupAndAttachLicense",
+    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupPool", internalType: "address", type: "address" },
+      { name: "ipIds", internalType: "address[]", type: "address[]" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
+        name: "licenseData",
+        internalType: "struct WorkflowStructs.LicenseData",
+        type: "tuple",
+        components: [
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    name: "registerGroupAndAttachLicenseAndAddIps",
     outputs: [{ name: "groupId", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
@@ -3036,7 +4397,18 @@ export const groupingWorkflowsAbi = [
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
-    name: "registerGroupAndAttachLicenseAndAddIps",
+    name: "registerGroupAndAttachLicenseAndAddIps_deprecated",
+    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "groupPool", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "registerGroupAndAttachLicense_deprecated",
     outputs: [{ name: "groupId", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
@@ -3046,8 +4418,51 @@ export const groupingWorkflowsAbi = [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       { name: "groupId", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      {
+        name: "maxAllowedRewardShare",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
+        name: "licensesData",
+        internalType: "struct WorkflowStructs.LicenseData[]",
+        type: "tuple[]",
+        components: [
+          { name: "licenseTemplate", internalType: "address", type: "address" },
+          { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
       {
         name: "ipMetadata",
         internalType: "struct WorkflowStructs.IPMetadata",
@@ -3060,7 +4475,7 @@ export const groupingWorkflowsAbi = [
         ],
       },
       {
-        name: "sigMetadataAndAttach",
+        name: "sigMetadataAndAttachAndConfig",
         internalType: "struct WorkflowStructs.SignatureData",
         type: "tuple",
         components: [
@@ -3086,21 +4501,52 @@ export const groupingWorkflowsAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
-    name: "setAuthority",
-    outputs: [],
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadataAndAttachAndConfig",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+      {
+        name: "sigAddToGroup",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndAttachLicenseAndAddToGroup_deprecated",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
-    inputs: [
-      {
-        name: "newNftContractBeacon",
-        internalType: "address",
-        type: "address",
-      },
-    ],
-    name: "setNftContractBeacon",
+    inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
+    name: "setAuthority",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -3120,7 +4566,7 @@ export const groupingWorkflowsAbi = [
  *
  */
 export const groupingWorkflowsAddress = {
-  1516: "0xcd754994eBE5Ce16D432C1f936f98ac0d4aABA0e",
+  1315: "0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd",
 } as const;
 
 /**
@@ -3164,6 +4610,7 @@ export const ipAccountImplAbi = [
   { type: "error", inputs: [], name: "IPAccount__InvalidOperation" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSignature" },
   { type: "error", inputs: [], name: "IPAccount__InvalidSigner" },
+  { type: "error", inputs: [], name: "IPAccount__UUPSUpgradeDisabled" },
   { type: "error", inputs: [], name: "IPAccount__ZeroAccessController" },
   { type: "error", inputs: [], name: "OperationNotSupported" },
   { type: "error", inputs: [], name: "SelfOwnDetected" },
@@ -3544,7 +4991,7 @@ export const ipAccountImplAbi = [
  *
  */
 export const ipAccountImplAddress = {
-  1516: "0x24F08796561d6E1AC08e82b68BF4d9500B374Af6",
+  1315: "0x7343646585443F1c3F64E4F08b708788527e1C77",
 } as const;
 
 /**
@@ -3569,6 +5016,7 @@ export const ipAssetRegistryAbi = [
       { name: "erc6551Registry", internalType: "address", type: "address" },
       { name: "ipAccountImpl", internalType: "address", type: "address" },
       { name: "groupingModule", internalType: "address", type: "address" },
+      { name: "ipAccountImplBeacon", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -3636,7 +5084,11 @@ export const ipAssetRegistryAbi = [
   },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroERC6551Registry" },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroIpAccountImpl" },
-  { type: "error", inputs: [], name: "IPAssetRegistry__AlreadyRegistered" },
+  {
+    type: "error",
+    inputs: [],
+    name: "IPAccountRegistry_ZeroIpAccountImplBeacon",
+  },
   {
     type: "error",
     inputs: [
@@ -3903,6 +5355,13 @@ export const ipAssetRegistryAbi = [
   {
     type: "function",
     inputs: [],
+    name: "IP_ACCOUNT_IMPL_UPGRADEABLE_BEACON",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "IP_ACCOUNT_SALT",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
@@ -4089,6 +5548,7 @@ export const ipAssetRegistryAbi = [
       { name: "groupNft", internalType: "address", type: "address" },
       { name: "groupNftId", internalType: "uint256", type: "uint256" },
       { name: "rewardPool", internalType: "address", type: "address" },
+      { name: "registerFeePayer", internalType: "address", type: "address" },
     ],
     name: "registerGroup",
     outputs: [{ name: "groupId", internalType: "address", type: "address" }],
@@ -4145,6 +5605,13 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "newIpAccountImpl", internalType: "address", type: "address" }],
+    name: "upgradeIPAccountImpl",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
       { name: "data", internalType: "bytes", type: "bytes" },
@@ -4155,7 +5622,10 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "rewardPool", internalType: "address", type: "address" }],
+    inputs: [
+      { name: "rewardPool", internalType: "address", type: "address" },
+      { name: "allowed", internalType: "bool", type: "bool" },
+    ],
     name: "whitelistGroupRewardPool",
     outputs: [],
     stateMutability: "nonpayable",
@@ -4166,7 +5636,7 @@ export const ipAssetRegistryAbi = [
  *
  */
 export const ipAssetRegistryAddress = {
-  1516: "0x28E59E91C0467e89fd0f0438D47Ca839cDfEc095",
+  1315: "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
 } as const;
 
 /**
@@ -4190,22 +5660,83 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "groupingModule", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
+  {
+    type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "allowance", internalType: "uint256", type: "uint256" },
+      { name: "needed", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC20InsufficientAllowance",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "sender", internalType: "address", type: "address" },
+      { name: "balance", internalType: "uint256", type: "uint256" },
+      { name: "needed", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC20InsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "approver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidApprover",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidReceiver",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "sender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSender",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "spender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSpender",
+  },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__EnforcedPause" },
   {
     type: "error",
     inputs: [],
-    name: "IpRoyaltyVault__InsufficientTimeElapsedSinceLastSnapshot",
+    name: "IpRoyaltyVault__GroupPoolMustClaimViaGroupingModule",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "account", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "IpRoyaltyVault__InsufficientBalance",
   },
   { type: "error", inputs: [], name: "IpRoyaltyVault__InvalidTargetIpId" },
-  { type: "error", inputs: [], name: "IpRoyaltyVault__NoClaimableTokens" },
   {
     type: "error",
     inputs: [],
-    name: "IpRoyaltyVault__NoNewRevenueSinceLastSnapshot",
+    name: "IpRoyaltyVault__NegativeValueUnsafeCastingToUint256",
   },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__NoClaimableTokens" },
   {
     type: "error",
     inputs: [],
@@ -4218,13 +5749,38 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "error",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "from", internalType: "address", type: "address" },
+    ],
+    name: "IpRoyaltyVault__SameFromToAddress",
+  },
+  {
+    type: "error",
     inputs: [],
     name: "IpRoyaltyVault__VaultDoesNotBelongToAnAncestor",
   },
   { type: "error", inputs: [], name: "IpRoyaltyVault__VaultsMustClaimAsSelf" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroAmount" },
+  {
+    type: "error",
+    inputs: [
+      { name: "vault", internalType: "address", type: "address" },
+      { name: "account", internalType: "address", type: "address" },
+    ],
+    name: "IpRoyaltyVault__ZeroBalance",
+  },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroGroupingModule" },
+  { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroIpAssetRegistry" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__ZeroRoyaltyModule" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
   {
     type: "event",
     anonymous: false,
@@ -4253,8 +5809,40 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "event",
     anonymous: false,
-    inputs: [{ name: "version", internalType: "uint8", type: "uint8", indexed: false }],
+    inputs: [
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
+    ],
     name: "Initialized",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "claimer",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "revenueDebt",
+        internalType: "int256",
+        type: "int256",
+        indexed: false,
+      },
+    ],
+    name: "RevenueDebtUpdated",
   },
   {
     type: "event",
@@ -4303,31 +5891,6 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "event",
     anonymous: false,
-    inputs: [{ name: "id", internalType: "uint256", type: "uint256", indexed: false }],
-    name: "Snapshot",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "snapshotId",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "snapshotTimestamp",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "SnapshotCompleted",
-  },
-  {
-    type: "event",
-    anonymous: false,
     inputs: [
       { name: "from", internalType: "address", type: "address", indexed: true },
       { name: "to", internalType: "address", type: "address", indexed: true },
@@ -4345,6 +5908,26 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [],
     name: "DISPUTE_MODULE",
     outputs: [{ name: "", internalType: "contract IDisputeModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUPING_MODULE",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGroupIPAssetRegistry",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
   },
   {
@@ -4368,7 +5951,7 @@ export const ipRoyaltyVaultImplAbi = [
     type: "function",
     inputs: [
       { name: "spender", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "value", internalType: "uint256", type: "uint256" },
     ],
     name: "approve",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -4384,28 +5967,6 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "function",
     inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "balanceOfAt",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "token", internalType: "address", type: "address" },
-      { name: "targetIpId", internalType: "address", type: "address" },
-    ],
-    name: "claimBySnapshotBatchAsSelf",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
       { name: "tokenList", internalType: "address[]", type: "address[]" },
       { name: "targetIpId", internalType: "address", type: "address" },
     ],
@@ -4416,20 +5977,18 @@ export const ipRoyaltyVaultImplAbi = [
   {
     type: "function",
     inputs: [
-      { name: "snapshotIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "token", internalType: "address", type: "address" },
       { name: "claimer", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
     ],
-    name: "claimRevenueOnBehalfBySnapshotBatch",
+    name: "claimRevenueOnBehalf",
     outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     inputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-      { name: "tokenList", internalType: "address[]", type: "address[]" },
       { name: "claimer", internalType: "address", type: "address" },
+      { name: "tokenList", internalType: "address[]", type: "address[]" },
     ],
     name: "claimRevenueOnBehalfByTokenBatch",
     outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
@@ -4437,26 +5996,8 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "claimVaultAmount",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-      { name: "token", internalType: "address", type: "address" },
-    ],
-    name: "claimableAtSnapshot",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
+      { name: "claimer", internalType: "address", type: "address" },
       { name: "token", internalType: "address", type: "address" },
     ],
     name: "claimableRevenue",
@@ -4465,37 +6006,20 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
-    inputs: [],
-    name: "decimals",
-    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
-    stateMutability: "pure",
-  },
-  {
-    type: "function",
     inputs: [
-      { name: "spender", internalType: "address", type: "address" },
-      { name: "subtractedValue", internalType: "uint256", type: "uint256" },
+      { name: "claimer", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
     ],
-    name: "decreaseAllowance",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "getCurrentSnapshotId",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: "claimerRevenueDebt",
+    outputs: [{ name: "", internalType: "int256", type: "int256" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [
-      { name: "spender", internalType: "address", type: "address" },
-      { name: "addedValue", internalType: "uint256", type: "uint256" },
-    ],
-    name: "increaseAllowance",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
+    inputs: [],
+    name: "decimals",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "pure",
   },
   {
     type: "function",
@@ -4519,42 +6043,10 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-      { name: "claimer", internalType: "address", type: "address" },
-      { name: "token", internalType: "address", type: "address" },
-    ],
-    name: "isClaimedAtSnapshot",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "lastSnapshotTimestamp",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "pendingVaultAmount",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "snapshot",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -4579,16 +6071,9 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "snapshotId", internalType: "uint256", type: "uint256" }],
-    name: "totalSupplyAt",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "value", internalType: "uint256", type: "uint256" },
     ],
     name: "transfer",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -4599,7 +6084,7 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [
       { name: "from", internalType: "address", type: "address" },
       { name: "to", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "value", internalType: "uint256", type: "uint256" },
     ],
     name: "transferFrom",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -4615,13 +6100,20 @@ export const ipRoyaltyVaultImplAbi = [
     outputs: [],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "vaultAccBalances",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
 ] as const;
 
 /**
  *
  */
 export const ipRoyaltyVaultImplAddress = {
-  1516: "0x1081250219B16cc3903Aa2d2d1403A75c6A2F9f5",
+  1315: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
 } as const;
 
 /**
@@ -4681,8 +6173,13 @@ export const licenseAttachmentWorkflowsAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicenseAttachmentWorkflows__NoLicenseTermsData",
+  },
   {
     type: "error",
     inputs: [],
@@ -4834,6 +6331,142 @@ export const licenseAttachmentWorkflowsAbi = [
         ],
       },
       {
+        name: "licenseTermsData",
+        internalType: "struct WorkflowStructs.LicenseTermsData[]",
+        type: "tuple[]",
+        components: [
+          {
+            name: "terms",
+            internalType: "struct PILTerms",
+            type: "tuple",
+            components: [
+              { name: "transferable", internalType: "bool", type: "bool" },
+              {
+                name: "royaltyPolicy",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "defaultMintingFee",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "expiration", internalType: "uint256", type: "uint256" },
+              { name: "commercialUse", internalType: "bool", type: "bool" },
+              {
+                name: "commercialAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "commercializerChecker",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "commercializerCheckerData",
+                internalType: "bytes",
+                type: "bytes",
+              },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "commercialRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              {
+                name: "derivativesAllowed",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesApproval",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesReciprocal",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativeRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "currency", internalType: "address", type: "address" },
+              { name: "uri", internalType: "string", type: "string" },
+            ],
+          },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
+    ],
+    name: "mintAndRegisterIpAndAttachPILTerms",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "recipient", internalType: "address", type: "address" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
         name: "terms",
         internalType: "struct PILTerms",
         type: "tuple",
@@ -4886,7 +6519,7 @@ export const licenseAttachmentWorkflowsAbi = [
         ],
       },
     ],
-    name: "mintAndRegisterIpAndAttachPILTerms",
+    name: "mintAndRegisterIpAndAttachPILTerms_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -4963,7 +6596,7 @@ export const licenseAttachmentWorkflowsAbi = [
         ],
       },
     ],
-    name: "mintAndRegisterIpAndAttachPILTerms",
+    name: "mintAndRegisterIpAndAttachPILTerms_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -4984,6 +6617,150 @@ export const licenseAttachmentWorkflowsAbi = [
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "licenseTermsData",
+        internalType: "struct WorkflowStructs.LicenseTermsData[]",
+        type: "tuple[]",
+        components: [
+          {
+            name: "terms",
+            internalType: "struct PILTerms",
+            type: "tuple",
+            components: [
+              { name: "transferable", internalType: "bool", type: "bool" },
+              {
+                name: "royaltyPolicy",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "defaultMintingFee",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "expiration", internalType: "uint256", type: "uint256" },
+              { name: "commercialUse", internalType: "bool", type: "bool" },
+              {
+                name: "commercialAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "commercializerChecker",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "commercializerCheckerData",
+                internalType: "bytes",
+                type: "bytes",
+              },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "commercialRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              {
+                name: "derivativesAllowed",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesApproval",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesReciprocal",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativeRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "currency", internalType: "address", type: "address" },
+              { name: "uri", internalType: "string", type: "string" },
+            ],
+          },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "sigMetadataAndAttachAndConfig",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndAttachPILTerms",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -5074,7 +6851,7 @@ export const licenseAttachmentWorkflowsAbi = [
         ],
       },
     ],
-    name: "registerIpAndAttachPILTerms",
+    name: "registerIpAndAttachPILTerms_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
@@ -5170,11 +6947,140 @@ export const licenseAttachmentWorkflowsAbi = [
         ],
       },
     ],
-    name: "registerIpAndAttachPILTerms",
+    name: "registerIpAndAttachPILTerms_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
     ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "licenseTermsData",
+        internalType: "struct WorkflowStructs.LicenseTermsData[]",
+        type: "tuple[]",
+        components: [
+          {
+            name: "terms",
+            internalType: "struct PILTerms",
+            type: "tuple",
+            components: [
+              { name: "transferable", internalType: "bool", type: "bool" },
+              {
+                name: "royaltyPolicy",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "defaultMintingFee",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "expiration", internalType: "uint256", type: "uint256" },
+              { name: "commercialUse", internalType: "bool", type: "bool" },
+              {
+                name: "commercialAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "commercializerChecker",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "commercializerCheckerData",
+                internalType: "bytes",
+                type: "bytes",
+              },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "commercialRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              {
+                name: "derivativesAllowed",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesApproval",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesReciprocal",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativeRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "currency", internalType: "address", type: "address" },
+              { name: "uri", internalType: "string", type: "string" },
+            ],
+          },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "sigAttachAndConfig",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerPILTermsAndAttach",
+    outputs: [{ name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" }],
     stateMutability: "nonpayable",
   },
   {
@@ -5244,7 +7150,7 @@ export const licenseAttachmentWorkflowsAbi = [
         ],
       },
     ],
-    name: "registerPILTermsAndAttach",
+    name: "registerPILTermsAndAttach_deprecated",
     outputs: [{ name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" }],
     stateMutability: "nonpayable",
   },
@@ -5315,7 +7221,7 @@ export const licenseAttachmentWorkflowsAbi = [
         ],
       },
     ],
-    name: "registerPILTermsAndAttach",
+    name: "registerPILTermsAndAttach_deprecated",
     outputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
@@ -5323,19 +7229,6 @@ export const licenseAttachmentWorkflowsAbi = [
     type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      {
-        name: "newNftContractBeacon",
-        internalType: "address",
-        type: "address",
-      },
-    ],
-    name: "setNftContractBeacon",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -5355,7 +7248,7 @@ export const licenseAttachmentWorkflowsAbi = [
  *
  */
 export const licenseAttachmentWorkflowsAddress = {
-  1516: "0x44Bad1E4035a44eAC1606B222873E4a85E8b7D9c",
+  1315: "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
 } as const;
 
 /**
@@ -5377,6 +7270,11 @@ export const licenseRegistryAbi = [
   {
     type: "constructor",
     inputs: [
+      {
+        name: "groupIpAssetRegistry",
+        internalType: "address",
+        type: "address",
+      },
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "ipGraphAcl", internalType: "address", type: "address" },
@@ -5422,10 +7320,16 @@ export const licenseRegistryAbi = [
     ],
     name: "LicenseRegistry__AddParentIpToIPGraphFailed",
   },
+  { type: "error", inputs: [], name: "LicenseRegistry__CallFailed" },
   {
     type: "error",
     inputs: [],
     name: "LicenseRegistry__CallerNotLicensingModule",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__CannotAddIpWithExpirationToGroup",
   },
   {
     type: "error",
@@ -5451,10 +7355,37 @@ export const licenseRegistryAbi = [
     type: "error",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "parentIpId", internalType: "address", type: "address" },
     ],
-    name: "LicenseRegistry__DuplicateLicense",
+    name: "LicenseRegistry__DuplicateParentIp",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__EmptyGroupCannotMintLicenseToken",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__GroupCannotHasParentIp",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__GroupIpAlreadyHasLicenseTerms",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "ipCommercialRevShare", internalType: "uint32", type: "uint32" },
+      {
+        name: "groupCommercialRevShare",
+        internalType: "uint32",
+        type: "uint32",
+      },
+    ],
+    name: "LicenseRegistry__GroupIpCommercialRevShareConfigMustNotLessThanIp",
   },
   {
     type: "error",
@@ -5467,8 +7398,72 @@ export const licenseRegistryAbi = [
   },
   {
     type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "expectGroupRewardPool",
+        internalType: "address",
+        type: "address",
+      },
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupRewardPool", internalType: "address", type: "address" },
+    ],
+    name: "LicenseRegistry__IpExpectGroupRewardPoolNotMatch",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__IpExpectGroupRewardPoolNotSet",
+  },
+  {
+    type: "error",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "LicenseRegistry__IpExpired",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__IpHasNoGroupLicenseTerms",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__IpLicenseDisabled",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "hookData", internalType: "bytes", type: "bytes" },
+      { name: "groupHookData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "LicenseRegistry__IpLicensingHookDataNotMatchWithGroup",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licensingHook", internalType: "address", type: "address" },
+      { name: "groupLicensingHook", internalType: "address", type: "address" },
+    ],
+    name: "LicenseRegistry__IpLicensingHookNotMatchWithGroup",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "mintingFee", internalType: "uint256", type: "uint256" },
+      { name: "groupMintingFee", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__IpMintingFeeNotMatchWithGroup",
   },
   {
     type: "error",
@@ -5478,6 +7473,14 @@ export const licenseRegistryAbi = [
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
     ],
     name: "LicenseRegistry__LicenseTermsAlreadyAttached",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__LicenseTermsCannotAttachToGroupIp",
   },
   {
     type: "error",
@@ -5516,6 +7519,16 @@ export const licenseRegistryAbi = [
   },
   {
     type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__ParentIpIsEmptyGroup",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__ParentIpNotRegistered",
+  },
+  {
+    type: "error",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "LicenseRegistry__ParentIpTagged",
   },
@@ -5526,6 +7539,24 @@ export const licenseRegistryAbi = [
       { name: "licenseTemplate", internalType: "address", type: "address" },
     ],
     name: "LicenseRegistry__ParentIpUnmatchedLicenseTemplate",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "ancestors", internalType: "uint256", type: "uint256" },
+      { name: "maxAncestors", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__TooManyAncestors",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "parents", internalType: "uint256", type: "uint256" },
+      { name: "maxParents", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseRegistry__TooManyParents",
   },
   {
     type: "error",
@@ -5543,6 +7574,7 @@ export const licenseRegistryAbi = [
   },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroAccessManager" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "LicenseRegistry__ZeroGroupIpRegistry" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicenseTemplate" },
   { type: "error", inputs: [], name: "LicenseRegistry__ZeroLicensingModule" },
@@ -5560,6 +7592,7 @@ export const licenseRegistryAbi = [
     name: "LicensingModule__LicenseTermsNotFound",
   },
   { type: "error", inputs: [], name: "NotInitializing" },
+  { type: "error", inputs: [], name: "RoyaltyModule__CallFailed" },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -5652,6 +7685,22 @@ export const licenseRegistryAbi = [
           { name: "mintingFee", internalType: "uint256", type: "uint256" },
           { name: "licensingHook", internalType: "address", type: "address" },
           { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
         ],
         indexed: false,
       },
@@ -5674,6 +7723,34 @@ export const licenseRegistryAbi = [
         internalType: "uint256",
         type: "uint256",
         indexed: true,
+      },
+      {
+        name: "licensingConfig",
+        internalType: "struct Licensing.LicensingConfig",
+        type: "tuple",
+        components: [
+          { name: "isSet", internalType: "bool", type: "bool" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "licensingHook", internalType: "address", type: "address" },
+          { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
+        ],
+        indexed: false,
       },
     ],
     name: "LicensingConfigSetForLicense",
@@ -5708,6 +7785,19 @@ export const licenseRegistryAbi = [
   {
     type: "function",
     inputs: [],
+    name: "GROUP_IP_ASSET_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGroupIPAssetRegistry",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "IP_GRAPH",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
@@ -5724,6 +7814,20 @@ export const licenseRegistryAbi = [
     inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "MAX_ANCESTORS",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "MAX_PARENTS",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
@@ -5760,6 +7864,13 @@ export const licenseRegistryAbi = [
     name: "exists",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "getAncestorsCount",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -5833,6 +7944,22 @@ export const licenseRegistryAbi = [
           { name: "mintingFee", internalType: "uint256", type: "uint256" },
           { name: "licensingHook", internalType: "address", type: "address" },
           { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
         ],
       },
     ],
@@ -5870,6 +7997,17 @@ export const licenseRegistryAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "getRoyaltyPercent",
+    outputs: [{ name: "royaltyPercent", internalType: "uint32", type: "uint32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [{ name: "parentIpId", internalType: "address", type: "address" }],
     name: "hasDerivativeIps",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -5898,6 +8036,16 @@ export const licenseRegistryAbi = [
     inputs: [],
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "isDefaultLicense",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
@@ -5988,6 +8136,22 @@ export const licenseRegistryAbi = [
           { name: "mintingFee", internalType: "uint256", type: "uint256" },
           { name: "licensingHook", internalType: "address", type: "address" },
           { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
         ],
       },
     ],
@@ -6010,6 +8174,22 @@ export const licenseRegistryAbi = [
           { name: "mintingFee", internalType: "uint256", type: "uint256" },
           { name: "licensingHook", internalType: "address", type: "address" },
           { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
         ],
       },
     ],
@@ -6030,6 +8210,51 @@ export const licenseRegistryAbi = [
   {
     type: "function",
     inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupRewardPool", internalType: "address", type: "address" },
+      { name: "ipId", internalType: "address", type: "address" },
+      {
+        name: "groupLicenseTemplate",
+        internalType: "address",
+        type: "address",
+      },
+      { name: "groupLicenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "verifyGroupAddIp",
+    outputs: [
+      {
+        name: "ipLicensingConfig",
+        internalType: "struct Licensing.LicensingConfig",
+        type: "tuple",
+        components: [
+          { name: "isSet", internalType: "bool", type: "bool" },
+          { name: "mintingFee", internalType: "uint256", type: "uint256" },
+          { name: "licensingHook", internalType: "address", type: "address" },
+          { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
       { name: "licensorIpId", internalType: "address", type: "address" },
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
@@ -6046,6 +8271,22 @@ export const licenseRegistryAbi = [
           { name: "mintingFee", internalType: "uint256", type: "uint256" },
           { name: "licensingHook", internalType: "address", type: "address" },
           { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
         ],
       },
     ],
@@ -6057,7 +8298,7 @@ export const licenseRegistryAbi = [
  *
  */
 export const licenseRegistryAddress = {
-  1516: "0xBda3992c49E98392e75E78d82B934F3598bA495f",
+  1315: "0x529a750E02d8E2f15649c13D69a465286a780e24",
 } as const;
 
 /**
@@ -6081,6 +8322,7 @@ export const licenseTokenAbi = [
     inputs: [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
+      { name: "licenseRegistry", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -6194,6 +8436,36 @@ export const licenseTokenAbi = [
     name: "LicenseToken__CallerAndChildIPNotTokenOwner",
   },
   { type: "error", inputs: [], name: "LicenseToken__CallerNotLicensingModule" },
+  {
+    type: "error",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicenseToken__ChildIPAlreadyHasBeenMintedLicenseTokens",
+  },
+  {
+    type: "error",
+    inputs: [
+      {
+        name: "commercialRevenueShare",
+        internalType: "uint32",
+        type: "uint32",
+      },
+      { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseToken__CommercialRevenueShareExceedMaxRevenueShare",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "invalidRoyaltyPercent", internalType: "uint32", type: "uint32" },
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicenseToken__InvalidRoyaltyPercent",
+  },
   { type: "error", inputs: [], name: "LicenseToken__NotTransferable" },
   {
     type: "error",
@@ -6369,8 +8641,22 @@ export const licenseTokenAbi = [
   {
     type: "function",
     inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "LICENSING_MODULE",
     outputs: [{ name: "", internalType: "contract ILicensingModule", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "MAX_COMMERCIAL_REVENUE_SHARE",
+    outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
     stateMutability: "view",
   },
   {
@@ -6449,6 +8735,11 @@ export const licenseTokenAbi = [
           { name: "licenseTemplate", internalType: "address", type: "address" },
           { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
           { name: "transferable", internalType: "bool", type: "bool" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
         ],
       },
     ],
@@ -6511,6 +8802,7 @@ export const licenseTokenAbi = [
       { name: "amount", internalType: "uint256", type: "uint256" },
       { name: "minter", internalType: "address", type: "address" },
       { name: "receiver", internalType: "address", type: "address" },
+      { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
     ],
     name: "mintLicenseTokens",
     outputs: [{ name: "startLicenseTokenId", internalType: "uint256", type: "uint256" }],
@@ -6669,6 +8961,11 @@ export const licenseTokenAbi = [
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licensorIpIds", internalType: "address[]", type: "address[]" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+      {
+        name: "commercialRevShares",
+        internalType: "uint32[]",
+        type: "uint32[]",
+      },
     ],
     stateMutability: "view",
   },
@@ -6678,7 +8975,7 @@ export const licenseTokenAbi = [
  *
  */
 export const licenseTokenAddress = {
-  1516: "0xB138aEd64814F2845554f9DBB116491a077eEB2D",
+  1315: "0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC",
 } as const;
 
 /**
@@ -6707,6 +9004,7 @@ export const licensingModuleAbi = [
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "licenseToken", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -6749,7 +9047,76 @@ export const licensingModuleAbi = [
   { type: "error", inputs: [], name: "ExpectedPause" },
   { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicenseRegistry__LicenseTemplateCannotBeZeroAddress",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "licenseTemplate", internalType: "address", type: "address" }],
+    name: "LicenseRegistry__UnregisteredLicenseTemplate",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "newRoyaltyPercent", internalType: "uint32", type: "uint32" },
+    ],
+    name: "LicensingModule__CurrentLicenseNotAllowOverrideRoyaltyPercent",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
+    name: "LicensingModule__DerivativeAlreadyHasBeenMintedLicenseTokens",
+  },
   { type: "error", inputs: [], name: "LicensingModule__DisputedIpId" },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "revenueShare", internalType: "uint32", type: "uint32" },
+      { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
+    ],
+    name: "LicensingModule__ExceedMaxRevenueShare",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicensingModule__GroupIpCannotChangeHookData",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicensingModule__GroupIpCannotChangeIsSet",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicensingModule__GroupIpCannotChangeLicensingHook",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicensingModule__GroupIpCannotChangeMintingFee",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "newRoyaltyPercent", internalType: "uint32", type: "uint32" },
+      { name: "oldRoyaltyPercent", internalType: "uint32", type: "uint32" },
+    ],
+    name: "LicensingModule__GroupIpCannotDecreaseRoyalty",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "groupId", internalType: "address", type: "address" }],
+    name: "LicensingModule__GroupIpCannotSetExpectGroupRewardPool",
+  },
   {
     type: "error",
     inputs: [
@@ -6774,8 +9141,22 @@ export const licensingModuleAbi = [
   },
   {
     type: "error",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicensingModule__LicenseDisabled",
+  },
+  {
+    type: "error",
     inputs: [{ name: "childIpId", internalType: "address", type: "address" }],
     name: "LicensingModule__LicenseNotCompatibleForDerivative",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicensingModule__LicenseTemplateCannotBeZeroAddressToOverrideRoyaltyPercent",
   },
   {
     type: "error",
@@ -6799,11 +9180,46 @@ export const licensingModuleAbi = [
     name: "LicensingModule__LicensorIpNotRegistered",
   },
   { type: "error", inputs: [], name: "LicensingModule__MintAmountZero" },
+  {
+    type: "error",
+    inputs: [
+      { name: "mintingFee", internalType: "uint256", type: "uint256" },
+      { name: "maxMintingFee", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicensingModule__MintingFeeExceedMaxMintingFee",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicensingModule__MintingFeeRequiresRoyaltyPolicy",
+  },
   { type: "error", inputs: [], name: "LicensingModule__NoLicenseToken" },
   { type: "error", inputs: [], name: "LicensingModule__NoParentIp" },
   { type: "error", inputs: [], name: "LicensingModule__ReceiverZeroAddress" },
+  {
+    type: "error",
+    inputs: [
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+      {
+        name: "anotherRoyaltyPolicy",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "LicensingModule__RoyaltyPolicyMismatch",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "ancestors", internalType: "uint256", type: "uint256" },
+      { name: "maxAncestors", internalType: "uint256", type: "uint256" },
+    ],
+    name: "LicensingModule__TooManyAncestorsForMintingLicenseTokenAllowRegisterDerivative",
+  },
   { type: "error", inputs: [], name: "LicensingModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroDisputeModule" },
+  { type: "error", inputs: [], name: "LicensingModule__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroLicenseRegistry" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroLicenseToken" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroModuleRegistry" },
@@ -7016,14 +9432,15 @@ export const licensingModuleAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [
-      {
-        name: "",
-        internalType: "contract IIPAccountRegistry",
-        type: "address",
-      },
-    ],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -7070,6 +9487,13 @@ export const licensingModuleAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    name: "attachDefaultLicenseTerms",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licenseTemplate", internalType: "address", type: "address" },
@@ -7109,6 +9533,8 @@ export const licensingModuleAbi = [
       { name: "amount", internalType: "uint256", type: "uint256" },
       { name: "receiver", internalType: "address", type: "address" },
       { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: "maxMintingFee", internalType: "uint256", type: "uint256" },
+      { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
     ],
     name: "mintLicenseTokens",
     outputs: [{ name: "startLicenseTokenId", internalType: "uint256", type: "uint256" }],
@@ -7167,6 +9593,9 @@ export const licensingModuleAbi = [
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: "maxMintingFee", internalType: "uint256", type: "uint256" },
+      { name: "maxRts", internalType: "uint32", type: "uint32" },
+      { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
     ],
     name: "registerDerivative",
     outputs: [],
@@ -7178,6 +9607,7 @@ export const licensingModuleAbi = [
       { name: "childIpId", internalType: "address", type: "address" },
       { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
       { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+      { name: "maxRts", internalType: "uint32", type: "uint32" },
     ],
     name: "registerDerivativeWithLicenseTokens",
     outputs: [],
@@ -7205,6 +9635,22 @@ export const licensingModuleAbi = [
           { name: "mintingFee", internalType: "uint256", type: "uint256" },
           { name: "licensingHook", internalType: "address", type: "address" },
           { name: "hookData", internalType: "bytes", type: "bytes" },
+          {
+            name: "commercialRevShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          { name: "disabled", internalType: "bool", type: "bool" },
+          {
+            name: "expectMinimumGroupRewardShare",
+            internalType: "uint32",
+            type: "uint32",
+          },
+          {
+            name: "expectGroupRewardPool",
+            internalType: "address",
+            type: "address",
+          },
         ],
       },
     ],
@@ -7242,7 +9688,7 @@ export const licensingModuleAbi = [
  *
  */
 export const licensingModuleAddress = {
-  1516: "0x5a7D9Fa17DE09350F481A53B470D798c1c1aabae",
+  1315: "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
 } as const;
 
 /**
@@ -7442,7 +9888,7 @@ export const mockErc20Abi = [
  *
  */
 export const mockErc20Address = {
-  1516: "0x12A8b0DcC6e3bB0915638361D9D49942Da07F455",
+  1315: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
 } as const;
 
 /**
@@ -7747,7 +10193,7 @@ export const moduleRegistryAbi = [
  *
  */
 export const moduleRegistryAddress = {
-  1516: "0x9F18c5723BC4Ee447CF9B01a8543D3b08b7F09C7",
+  1315: "0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5",
 } as const;
 
 /**
@@ -8006,7 +10452,7 @@ export const multicall3Abi = [
  *
  */
 export const multicall3Address = {
-  1516: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  1315: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as const;
 
 /**
@@ -8032,6 +10478,7 @@ export const piLicenseTemplateAbi = [
       { name: "ipAccountRegistry", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "moduleRegistry", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -8115,6 +10562,17 @@ export const piLicenseTemplateAbi = [
   },
   {
     type: "error",
+    inputs: [
+      {
+        name: "commercializerChecker",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    name: "PILicenseTemplate__CommercializerCheckerNotRegistered",
+  },
+  {
+    type: "error",
     inputs: [],
     name: "PILicenseTemplate__CurrencyTokenNotWhitelisted",
   },
@@ -8137,6 +10595,11 @@ export const piLicenseTemplateAbi = [
     type: "error",
     inputs: [],
     name: "PILicenseTemplate__DerivativesDisabled_CantAddReciprocal",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "PILicenseTemplate__MintingFeeRequiresRoyaltyPolicy",
   },
   {
     type: "error",
@@ -8253,14 +10716,8 @@ export const piLicenseTemplateAbi = [
   {
     type: "function",
     inputs: [],
-    name: "IP_ACCOUNT_REGISTRY",
-    outputs: [
-      {
-        name: "",
-        internalType: "contract IIPAccountRegistry",
-        type: "address",
-      },
-    ],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -8268,6 +10725,13 @@ export const piLicenseTemplateAbi = [
     inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "MODULE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IModuleRegistry", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -8293,9 +10757,33 @@ export const piLicenseTemplateAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "allowDerivativeRegistration",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "authority",
     outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
+    name: "canAttachToGroupIp",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "newRoyaltyPercent", internalType: "uint32", type: "uint32" },
+    ],
+    name: "canOverrideRoyaltyPercent",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
@@ -8680,7 +11168,7 @@ export const piLicenseTemplateAbi = [
       { name: "childIpId", internalType: "address", type: "address" },
       { name: "parentIpIds", internalType: "address[]", type: "address[]" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "childIpOwner", internalType: "address", type: "address" },
+      { name: "caller", internalType: "address", type: "address" },
     ],
     name: "verifyRegisterDerivativeForAllParents",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -8692,7 +11180,7 @@ export const piLicenseTemplateAbi = [
  *
  */
 export const piLicenseTemplateAddress = {
-  1516: "0x58E2c909D557Cd23EF90D14f8fd21667A5Ae7a93",
+  1315: "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
 } as const;
 
 /**
@@ -8752,7 +11240,7 @@ export const registrationWorkflowsAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   {
@@ -8947,8 +11435,33 @@ export const registrationWorkflowsAbi = [
           { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
         ],
       },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
     ],
     name: "mintAndRegisterIp",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "recipient", internalType: "address", type: "address" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+    ],
+    name: "mintAndRegisterIp_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -9043,7 +11556,7 @@ export const registrationWorkflowsAbi = [
  *
  */
 export const registrationWorkflowsAddress = {
-  1516: "0xde13Be395E1cd753471447Cf6A656979ef87881c",
+  1315: "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
 } as const;
 
 /**
@@ -9069,6 +11582,7 @@ export const royaltyModuleAbi = [
       { name: "disputeModule", internalType: "address", type: "address" },
       { name: "licenseRegistry", internalType: "address", type: "address" },
       { name: "ipAssetRegistry", internalType: "address", type: "address" },
+      { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -9117,15 +11631,24 @@ export const royaltyModuleAbi = [
     inputs: [],
     name: "RoyaltyModule__AboveAccumulatedRoyaltyPoliciesLimit",
   },
-  { type: "error", inputs: [], name: "RoyaltyModule__AboveAncestorsLimit" },
   { type: "error", inputs: [], name: "RoyaltyModule__AboveMaxPercent" },
-  { type: "error", inputs: [], name: "RoyaltyModule__AboveParentLimit" },
-  { type: "error", inputs: [], name: "RoyaltyModule__IpIsTagged" },
+  { type: "error", inputs: [], name: "RoyaltyModule__AboveMaxRts" },
+  { type: "error", inputs: [], name: "RoyaltyModule__CallFailed" },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "rewardPool", internalType: "address", type: "address" },
+    ],
+    name: "RoyaltyModule__GroupRewardPoolNotWhitelisted",
+  },
   {
     type: "error",
     inputs: [],
-    name: "RoyaltyModule__LastPositionNotAbleToMintLicense",
+    name: "RoyaltyModule__InvalidExternalRoyaltyPolicy",
   },
+  { type: "error", inputs: [], name: "RoyaltyModule__IpExpired" },
+  { type: "error", inputs: [], name: "RoyaltyModule__IpIsTagged" },
   { type: "error", inputs: [], name: "RoyaltyModule__NoParentsOnLinking" },
   { type: "error", inputs: [], name: "RoyaltyModule__NotAllowedCaller" },
   {
@@ -9137,6 +11660,12 @@ export const royaltyModuleAbi = [
     type: "error",
     inputs: [],
     name: "RoyaltyModule__NotWhitelistedRoyaltyToken",
+  },
+  { type: "error", inputs: [], name: "RoyaltyModule__PaymentAmountIsTooLow" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyModule__PolicyAlreadyRegisteredAsExternalRoyaltyPolicy",
   },
   {
     type: "error",
@@ -9153,10 +11682,9 @@ export const royaltyModuleAbi = [
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroAmount" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroDisputeModule" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroIpAssetRegistry" },
+  { type: "error", inputs: [], name: "RoyaltyModule__ZeroIpGraphAcl" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicenseRegistry" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroLicensingModule" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroMaxAncestors" },
-  { type: "error", inputs: [], name: "RoyaltyModule__ZeroMaxParents" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroParentIpId" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroReceiverVault" },
   { type: "error", inputs: [], name: "RoyaltyModule__ZeroRoyaltyPolicy" },
@@ -9216,31 +11744,6 @@ export const royaltyModuleAbi = [
       },
     ],
     name: "Initialized",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "maxParents",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "maxAncestors",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      {
-        name: "accumulatedRoyaltyPoliciesLimit",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "IpGraphLimitsUpdated",
   },
   {
     type: "event",
@@ -9397,6 +11900,19 @@ export const royaltyModuleAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "accumulatedRoyaltyPoliciesLimit",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RoyaltyLimitsUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "receiverIpId",
         internalType: "address",
         type: "address",
@@ -9532,6 +12048,13 @@ export const royaltyModuleAbi = [
   {
     type: "function",
     inputs: [],
+    name: "IP_GRAPH_ACL",
+    outputs: [{ name: "", internalType: "contract IPGraphACL", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "LICENSE_REGISTRY",
     outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
     stateMutability: "view",
@@ -9581,13 +12104,6 @@ export const royaltyModuleAbi = [
   {
     type: "function",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    name: "getAncestorsCount",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "globalRoyaltyStack",
     outputs: [{ name: "", internalType: "uint32", type: "uint32" }],
     stateMutability: "view",
@@ -9606,8 +12122,6 @@ export const royaltyModuleAbi = [
     type: "function",
     inputs: [
       { name: "accessManager", internalType: "address", type: "address" },
-      { name: "parentLimit", internalType: "uint256", type: "uint256" },
-      { name: "ancestorLimit", internalType: "uint256", type: "uint256" },
       {
         name: "accumulatedRoyaltyPoliciesLimit",
         internalType: "uint256",
@@ -9732,6 +12246,7 @@ export const royaltyModuleAbi = [
       },
       { name: "licensesPercent", internalType: "uint32[]", type: "uint32[]" },
       { name: "externalData", internalType: "bytes", type: "bytes" },
+      { name: "maxRts", internalType: "uint32", type: "uint32" },
     ],
     name: "onLinkToParents",
     outputs: [],
@@ -9811,21 +12326,6 @@ export const royaltyModuleAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "parentLimit", internalType: "uint256", type: "uint256" },
-      { name: "ancestorLimit", internalType: "uint256", type: "uint256" },
-      {
-        name: "accumulatedRoyaltyPoliciesLimit",
-        internalType: "uint256",
-        type: "uint256",
-      },
-    ],
-    name: "setIpGraphLimits",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "beacon", internalType: "address", type: "address" }],
     name: "setIpRoyaltyVaultBeacon",
     outputs: [],
@@ -9840,8 +12340,14 @@ export const royaltyModuleAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "timestampInterval", internalType: "uint256", type: "uint256" }],
-    name: "setSnapshotInterval",
+    inputs: [
+      {
+        name: "accumulatedRoyaltyPoliciesLimit",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "setRoyaltyLimits",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -9854,16 +12360,20 @@ export const royaltyModuleAbi = [
   },
   {
     type: "function",
-    inputs: [],
-    name: "snapshotInterval",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
-    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
-    name: "supportsInterface",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "royaltyPolicy", internalType: "address", type: "address" },
+    ],
+    name: "totalRevenueTokensAccounted",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
@@ -9933,7 +12443,7 @@ export const royaltyModuleAbi = [
  *
  */
 export const royaltyModuleAddress = {
-  1516: "0xEa6eD700b11DfF703665CCAF55887ca56134Ae3B",
+  1315: "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
 } as const;
 
 /**
@@ -10001,14 +12511,9 @@ export const royaltyPolicyLapAbi = [
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveMaxPercent" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLAP__ExceedsClaimableRoyalty",
-  },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__CallFailed" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroAccessManager" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroAmount" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroClaimableRoyalty" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroRoyaltyModule" },
@@ -10215,6 +12720,13 @@ export const royaltyPolicyLapAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "isSupportGroup",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licensePercent", internalType: "uint32", type: "uint32" },
@@ -10275,10 +12787,9 @@ export const royaltyPolicyLapAbi = [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "ancestorIpId", internalType: "address", type: "address" },
       { name: "token", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
     name: "transferToVault",
-    outputs: [],
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
   {
@@ -10304,7 +12815,7 @@ export const royaltyPolicyLapAbi = [
  *
  */
 export const royaltyPolicyLapAddress = {
-  1516: "0x28b4F70ffE5ba7A26aEF979226f77Eb57fb9Fdb6",
+  1315: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
 } as const;
 
 /**
@@ -10327,6 +12838,7 @@ export const royaltyPolicyLrpAbi = [
     type: "constructor",
     inputs: [
       { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "royaltyPolicyLAP", internalType: "address", type: "address" },
       { name: "ipGraphAcl", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
@@ -10372,17 +12884,13 @@ export const royaltyPolicyLrpAbi = [
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__AboveMaxPercent" },
-  {
-    type: "error",
-    inputs: [],
-    name: "RoyaltyPolicyLRP__ExceedsClaimableRoyalty",
-  },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__CallFailed" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__NotRoyaltyModule" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroAccessManager" },
-  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroAmount" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroClaimableRoyalty" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroRoyaltyModule" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroRoyaltyPolicyLAP" },
   {
     type: "error",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
@@ -10514,6 +13022,19 @@ export const royaltyPolicyLrpAbi = [
   {
     type: "function",
     inputs: [],
+    name: "ROYALTY_POLICY_LAP",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGraphAwareRoyaltyPolicy",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
@@ -10586,6 +13107,13 @@ export const royaltyPolicyLrpAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "isSupportGroup",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licensePercent", internalType: "uint32", type: "uint32" },
@@ -10646,10 +13174,9 @@ export const royaltyPolicyLrpAbi = [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "ancestorIpId", internalType: "address", type: "address" },
       { name: "token", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
     ],
     name: "transferToVault",
-    outputs: [],
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
   {
@@ -10675,7 +13202,7 @@ export const royaltyPolicyLrpAbi = [
  *
  */
 export const royaltyPolicyLrpAddress = {
-  1516: "0x7D2d9af4E4ab14Afcfd86436BC348928B40963Dd",
+  1315: "0x9156e603C949481883B1d3355c6f1132D191fC41",
 } as const;
 
 /**
@@ -10704,6 +13231,8 @@ export const royaltyTokenDistributionWorkflowsAbi = [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "pilTemplate", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
+      { name: "royaltyPolicyLAP", internalType: "address", type: "address" },
+      { name: "wip", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -10732,18 +13261,18 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [],
+    name: "RoyaltyTokenDistributionWorkflows__NoLicenseTermsData",
+  },
   {
     type: "error",
     inputs: [],
@@ -10751,8 +13280,11 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   },
   {
     type: "error",
-    inputs: [],
-    name: "RoyaltyTokenDistributionWorkflows__TotalPercentagesExceeds100Percent",
+    inputs: [
+      { name: "totalShares", internalType: "uint32", type: "uint32" },
+      { name: "ipAccountBalance", internalType: "uint32", type: "uint32" },
+    ],
+    name: "RoyaltyTokenDistributionWorkflows__TotalSharesExceedsIPAccountBalance",
   },
   {
     type: "error",
@@ -10874,8 +13406,22 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   {
     type: "function",
     inputs: [],
+    name: "ROYALTY_POLICY_LAP",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "WIP",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
   {
@@ -10889,13 +13435,12 @@ export const royaltyTokenDistributionWorkflowsAbi = [
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
-      { name: "ipRoyaltyVault", internalType: "address", type: "address" },
       {
         name: "royaltyShares",
         internalType: "struct WorkflowStructs.RoyaltyShare[]",
         type: "tuple[]",
         components: [
-          { name: "author", internalType: "address", type: "address" },
+          { name: "recipient", internalType: "address", type: "address" },
           { name: "percentage", internalType: "uint32", type: "uint32" },
         ],
       },
@@ -10927,6 +13472,151 @@ export const royaltyTokenDistributionWorkflowsAbi = [
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "recipient", internalType: "address", type: "address" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "licenseTermsData",
+        internalType: "struct WorkflowStructs.LicenseTermsData[]",
+        type: "tuple[]",
+        components: [
+          {
+            name: "terms",
+            internalType: "struct PILTerms",
+            type: "tuple",
+            components: [
+              { name: "transferable", internalType: "bool", type: "bool" },
+              {
+                name: "royaltyPolicy",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "defaultMintingFee",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "expiration", internalType: "uint256", type: "uint256" },
+              { name: "commercialUse", internalType: "bool", type: "bool" },
+              {
+                name: "commercialAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "commercializerChecker",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "commercializerCheckerData",
+                internalType: "bytes",
+                type: "bytes",
+              },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "commercialRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              {
+                name: "derivativesAllowed",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesApproval",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesReciprocal",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativeRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "currency", internalType: "address", type: "address" },
+              { name: "uri", internalType: "string", type: "string" },
+            ],
+          },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "royaltyShares",
+        internalType: "struct WorkflowStructs.RoyaltyShare[]",
+        type: "tuple[]",
+        components: [
+          { name: "recipient", internalType: "address", type: "address" },
+          { name: "percentage", internalType: "uint32", type: "uint32" },
+        ],
+      },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
+    ],
+    name: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -11001,12 +13691,12 @@ export const royaltyTokenDistributionWorkflowsAbi = [
         internalType: "struct WorkflowStructs.RoyaltyShare[]",
         type: "tuple[]",
         components: [
-          { name: "author", internalType: "address", type: "address" },
+          { name: "recipient", internalType: "address", type: "address" },
           { name: "percentage", internalType: "uint32", type: "uint32" },
         ],
       },
     ],
-    name: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
+    name: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -11043,6 +13733,9 @@ export const royaltyTokenDistributionWorkflowsAbi = [
             type: "uint256[]",
           },
           { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+          { name: "maxMintingFee", internalType: "uint256", type: "uint256" },
+          { name: "maxRts", internalType: "uint32", type: "uint32" },
+          { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
         ],
       },
       {
@@ -11050,10 +13743,11 @@ export const royaltyTokenDistributionWorkflowsAbi = [
         internalType: "struct WorkflowStructs.RoyaltyShare[]",
         type: "tuple[]",
         components: [
-          { name: "author", internalType: "address", type: "address" },
+          { name: "recipient", internalType: "address", type: "address" },
           { name: "percentage", internalType: "uint32", type: "uint32" },
         ],
       },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
     ],
     name: "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
     outputs: [
@@ -11075,6 +13769,151 @@ export const royaltyTokenDistributionWorkflowsAbi = [
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "licenseTermsData",
+        internalType: "struct WorkflowStructs.LicenseTermsData[]",
+        type: "tuple[]",
+        components: [
+          {
+            name: "terms",
+            internalType: "struct PILTerms",
+            type: "tuple",
+            components: [
+              { name: "transferable", internalType: "bool", type: "bool" },
+              {
+                name: "royaltyPolicy",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "defaultMintingFee",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "expiration", internalType: "uint256", type: "uint256" },
+              { name: "commercialUse", internalType: "bool", type: "bool" },
+              {
+                name: "commercialAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "commercializerChecker",
+                internalType: "address",
+                type: "address",
+              },
+              {
+                name: "commercializerCheckerData",
+                internalType: "bytes",
+                type: "bytes",
+              },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "commercialRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              {
+                name: "derivativesAllowed",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesAttribution",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesApproval",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativesReciprocal",
+                internalType: "bool",
+                type: "bool",
+              },
+              {
+                name: "derivativeRevCeiling",
+                internalType: "uint256",
+                type: "uint256",
+              },
+              { name: "currency", internalType: "address", type: "address" },
+              { name: "uri", internalType: "string", type: "string" },
+            ],
+          },
+          {
+            name: "licensingConfig",
+            internalType: "struct Licensing.LicensingConfig",
+            type: "tuple",
+            components: [
+              { name: "isSet", internalType: "bool", type: "bool" },
+              { name: "mintingFee", internalType: "uint256", type: "uint256" },
+              {
+                name: "licensingHook",
+                internalType: "address",
+                type: "address",
+              },
+              { name: "hookData", internalType: "bytes", type: "bytes" },
+              {
+                name: "commercialRevShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              { name: "disabled", internalType: "bool", type: "bool" },
+              {
+                name: "expectMinimumGroupRewardShare",
+                internalType: "uint32",
+                type: "uint32",
+              },
+              {
+                name: "expectGroupRewardPool",
+                internalType: "address",
+                type: "address",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "sigMetadataAndAttachAndConfig",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
+      { name: "ipRoyaltyVault", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -11165,7 +14004,7 @@ export const royaltyTokenDistributionWorkflowsAbi = [
         ],
       },
     ],
-    name: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
+    name: "registerIpAndAttachPILTermsAndDeployRoyaltyVault_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
@@ -11202,20 +14041,13 @@ export const royaltyTokenDistributionWorkflowsAbi = [
             type: "uint256[]",
           },
           { name: "royaltyContext", internalType: "bytes", type: "bytes" },
+          { name: "maxMintingFee", internalType: "uint256", type: "uint256" },
+          { name: "maxRts", internalType: "uint32", type: "uint32" },
+          { name: "maxRevenueShare", internalType: "uint32", type: "uint32" },
         ],
       },
       {
-        name: "sigMetadata",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigRegister",
+        name: "sigMetadataAndRegister",
         internalType: "struct WorkflowStructs.SignatureData",
         type: "tuple",
         components: [
@@ -11242,19 +14074,6 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   {
     type: "function",
     inputs: [
-      {
-        name: "newNftContractBeacon",
-        internalType: "address",
-        type: "address",
-      },
-    ],
-    name: "setNftContractBeacon",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
       { name: "data", internalType: "bytes", type: "bytes" },
     ],
@@ -11268,7 +14087,7 @@ export const royaltyTokenDistributionWorkflowsAbi = [
  *
  */
 export const royaltyTokenDistributionWorkflowsAddress = {
-  1516: "0x39D9C7a23AA9e33E06aAAf51ebaDd11342b5be50",
+  1315: "0xa38f42B8d33809917f23997B8423054aAB97322C",
 } as const;
 
 /**
@@ -11321,7 +14140,7 @@ export const royaltyWorkflowsAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "RoyaltyWorkflows__ZeroAddressParam" },
@@ -11393,6 +14212,19 @@ export const royaltyWorkflowsAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "ancestorIpId", internalType: "address", type: "address" },
+      { name: "claimer", internalType: "address", type: "address" },
+      { name: "childIpIds", internalType: "address[]", type: "address[]" },
+      { name: "royaltyPolicies", internalType: "address[]", type: "address[]" },
+      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
+    ],
+    name: "claimAllRevenue",
+    outputs: [{ name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
@@ -11429,92 +14261,6 @@ export const royaltyWorkflowsAbi = [
   {
     type: "function",
     inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "claimer", internalType: "address", type: "address" },
-      {
-        name: "unclaimedSnapshotIds",
-        internalType: "uint256[]",
-        type: "uint256[]",
-      },
-      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
-    ],
-    name: "snapshotAndClaimBySnapshotBatch",
-    outputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "claimer", internalType: "address", type: "address" },
-      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
-    ],
-    name: "snapshotAndClaimByTokenBatch",
-    outputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ancestorIpId", internalType: "address", type: "address" },
-      { name: "claimer", internalType: "address", type: "address" },
-      {
-        name: "unclaimedSnapshotIds",
-        internalType: "uint256[]",
-        type: "uint256[]",
-      },
-      {
-        name: "royaltyClaimDetails",
-        internalType: "struct IRoyaltyWorkflows.RoyaltyClaimDetails[]",
-        type: "tuple[]",
-        components: [
-          { name: "childIpId", internalType: "address", type: "address" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "currencyToken", internalType: "address", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    name: "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
-    outputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ancestorIpId", internalType: "address", type: "address" },
-      { name: "claimer", internalType: "address", type: "address" },
-      {
-        name: "royaltyClaimDetails",
-        internalType: "struct IRoyaltyWorkflows.RoyaltyClaimDetails[]",
-        type: "tuple[]",
-        components: [
-          { name: "childIpId", internalType: "address", type: "address" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          { name: "currencyToken", internalType: "address", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    name: "transferToVaultAndSnapshotAndClaimByTokenBatch",
-    outputs: [
-      { name: "snapshotId", internalType: "uint256", type: "uint256" },
-      { name: "amountsClaimed", internalType: "uint256[]", type: "uint256[]" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
       { name: "newImplementation", internalType: "address", type: "address" },
       { name: "data", internalType: "bytes", type: "bytes" },
     ],
@@ -11528,7 +14274,7 @@ export const royaltyWorkflowsAbi = [
  *
  */
 export const royaltyWorkflowsAddress = {
-  1516: "0xAf922379B8e1abc6B0D78547128579221C7F7A22",
+  1315: "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
 } as const;
 
 /**
@@ -11643,7 +14389,7 @@ export const spgnftBeaconAbi = [
  *
  */
 export const spgnftBeaconAddress = {
-  1516: "0x4b913A9da52806A0fd0b031bdf32fa33634d082a",
+  1315: "0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218",
 } as const;
 
 /**
@@ -11674,6 +14420,11 @@ export const spgnftImplAbi = [
       },
       {
         name: "registrationWorkflows",
+        internalType: "address",
+        type: "address",
+      },
+      {
+        name: "royaltyTokenDistributionWorkflows",
         internalType: "address",
         type: "address",
       },
@@ -11740,6 +14491,15 @@ export const spgnftImplAbi = [
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipient" },
   { type: "error", inputs: [], name: "SPGNFT__CallerNotPeripheryContract" },
+  {
+    type: "error",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "SPGNFT__DuplicatedNFTMetadataHash",
+  },
   { type: "error", inputs: [], name: "SPGNFT__MaxSupplyReached" },
   { type: "error", inputs: [], name: "SPGNFT__MintingClosed" },
   { type: "error", inputs: [], name: "SPGNFT__MintingDenied" },
@@ -11948,6 +14708,13 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "ROYALTY_TOKEN_DISTRIBUTION_WORKFLOWS_ADDRESS",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "to", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -11989,6 +14756,13 @@ export const spgnftImplAbi = [
     inputs: [{ name: "role", internalType: "bytes32", type: "bytes32" }],
     name: "getRoleAdmin",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" }],
+    name: "getTokenIdByMetadataHash",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
     stateMutability: "view",
   },
   {
@@ -12056,6 +14830,8 @@ export const spgnftImplAbi = [
     inputs: [
       { name: "to", internalType: "address", type: "address" },
       { name: "nftMetadataURI", internalType: "string", type: "string" },
+      { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
     ],
     name: "mint",
     outputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
@@ -12067,6 +14843,8 @@ export const spgnftImplAbi = [
       { name: "to", internalType: "address", type: "address" },
       { name: "payer", internalType: "address", type: "address" },
       { name: "nftMetadataURI", internalType: "string", type: "string" },
+      { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
     ],
     name: "mintByPeriphery",
     outputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
@@ -12275,7 +15053,7 @@ export const spgnftImplAbi = [
  *
  */
 export const spgnftImplAddress = {
-  1516: "0x32c03CD2B4CC3456aCD86C7d5BA8E0405665DbF9",
+  1315: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
 } as const;
 
 /**
@@ -12555,6 +15333,81 @@ export class AccessControllerClient extends AccessControllerEventClient {
   }
 }
 
+// Contract ArbitrationPolicyUMA =============================================================
+
+/**
+ * ArbitrationPolicyUmaMaxBondsRequest
+ *
+ * @param token address
+ */
+export type ArbitrationPolicyUmaMaxBondsRequest = {
+  token: Address;
+};
+
+export type ArbitrationPolicyUmaMaxBondsResponse = bigint;
+
+export type ArbitrationPolicyUmaMaxLivenessResponse = bigint;
+
+export type ArbitrationPolicyUmaMinLivenessResponse = bigint;
+
+/**
+ * contract ArbitrationPolicyUMA readonly method
+ */
+export class ArbitrationPolicyUmaReadOnlyClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(arbitrationPolicyUmaAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method maxBonds for contract ArbitrationPolicyUMA
+   *
+   * @param request ArbitrationPolicyUmaMaxBondsRequest
+   * @return Promise<ArbitrationPolicyUmaMaxBondsResponse>
+   */
+  public async maxBonds(
+    request: ArbitrationPolicyUmaMaxBondsRequest,
+  ): Promise<ArbitrationPolicyUmaMaxBondsResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicyUmaAbi,
+      address: this.address,
+      functionName: "maxBonds",
+      args: [request.token],
+    });
+  }
+
+  /**
+   * method maxLiveness for contract ArbitrationPolicyUMA
+   *
+   * @param request ArbitrationPolicyUmaMaxLivenessRequest
+   * @return Promise<ArbitrationPolicyUmaMaxLivenessResponse>
+   */
+  public async maxLiveness(): Promise<ArbitrationPolicyUmaMaxLivenessResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicyUmaAbi,
+      address: this.address,
+      functionName: "maxLiveness",
+    });
+  }
+
+  /**
+   * method minLiveness for contract ArbitrationPolicyUMA
+   *
+   * @param request ArbitrationPolicyUmaMinLivenessRequest
+   * @return Promise<ArbitrationPolicyUmaMinLivenessResponse>
+   */
+  public async minLiveness(): Promise<ArbitrationPolicyUmaMinLivenessResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicyUmaAbi,
+      address: this.address,
+      functionName: "minLiveness",
+    });
+  }
+}
+
 // Contract CoreMetadataModule =============================================================
 
 /**
@@ -12621,7 +15474,7 @@ export type CoreMetadataModuleUpgradedEvent = {
 
 export type CoreMetadataModuleAccessControllerResponse = Address;
 
-export type CoreMetadataModuleIpAccountRegistryResponse = Address;
+export type CoreMetadataModuleIpAssetRegistryResponse = Address;
 
 export type CoreMetadataModuleUpgradeInterfaceVersionResponse = string;
 
@@ -13014,16 +15867,16 @@ export class CoreMetadataModuleReadOnlyClient extends CoreMetadataModuleEventCli
   }
 
   /**
-   * method IP_ACCOUNT_REGISTRY for contract CoreMetadataModule
+   * method IP_ASSET_REGISTRY for contract CoreMetadataModule
    *
-   * @param request CoreMetadataModuleIpAccountRegistryRequest
-   * @return Promise<CoreMetadataModuleIpAccountRegistryResponse>
+   * @param request CoreMetadataModuleIpAssetRegistryRequest
+   * @return Promise<CoreMetadataModuleIpAssetRegistryResponse>
    */
-  public async ipAccountRegistry(): Promise<CoreMetadataModuleIpAccountRegistryResponse> {
+  public async ipAssetRegistry(): Promise<CoreMetadataModuleIpAssetRegistryResponse> {
     return await this.rpcClient.readContract({
       abi: coreMetadataModuleAbi,
       address: this.address,
-      functionName: "IP_ACCOUNT_REGISTRY",
+      functionName: "IP_ASSET_REGISTRY",
     });
   }
 
@@ -13405,6 +16258,7 @@ export class CoreMetadataModuleClient extends CoreMetadataModuleReadOnlyClient {
  * @param derivData tuple
  * @param ipMetadata tuple
  * @param recipient address
+ * @param allowDuplicates bool
  */
 export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
@@ -13413,6 +16267,9 @@ export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
     licenseTemplate: Address;
     licenseTermsIds: readonly bigint[];
     royaltyContext: Hex;
+    maxMintingFee: bigint;
+    maxRts: number;
+    maxRevenueShare: number;
   };
   ipMetadata: {
     ipMetadataURI: string;
@@ -13421,6 +16278,7 @@ export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
     nftMetadataHash: Hex;
   };
   recipient: Address;
+  allowDuplicates: boolean;
 };
 
 /**
@@ -13429,13 +16287,16 @@ export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
  * @param spgNftContract address
  * @param licenseTokenIds uint256[]
  * @param royaltyContext bytes
+ * @param maxRts uint32
  * @param ipMetadata tuple
  * @param recipient address
+ * @param allowDuplicates bool
  */
 export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
   licenseTokenIds: readonly bigint[];
   royaltyContext: Hex;
+  maxRts: number;
   ipMetadata: {
     ipMetadataURI: string;
     ipMetadataHash: Hex;
@@ -13443,6 +16304,7 @@ export type DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseToke
     nftMetadataHash: Hex;
   };
   recipient: Address;
+  allowDuplicates: boolean;
 };
 
 /**
@@ -13461,8 +16323,7 @@ export type DerivativeWorkflowsMulticallRequest = {
  * @param tokenId uint256
  * @param derivData tuple
  * @param ipMetadata tuple
- * @param sigMetadata tuple
- * @param sigRegister tuple
+ * @param sigMetadataAndRegister tuple
  */
 export type DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
@@ -13472,6 +16333,9 @@ export type DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest = {
     licenseTemplate: Address;
     licenseTermsIds: readonly bigint[];
     royaltyContext: Hex;
+    maxMintingFee: bigint;
+    maxRts: number;
+    maxRevenueShare: number;
   };
   ipMetadata: {
     ipMetadataURI: string;
@@ -13479,12 +16343,7 @@ export type DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest = {
     nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-  sigRegister: {
+  sigMetadataAndRegister: {
     signer: Address;
     deadline: bigint;
     signature: Hex;
@@ -13498,27 +16357,23 @@ export type DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest = {
  * @param tokenId uint256
  * @param licenseTokenIds uint256[]
  * @param royaltyContext bytes
+ * @param maxRts uint32
  * @param ipMetadata tuple
- * @param sigMetadata tuple
- * @param sigRegister tuple
+ * @param sigMetadataAndRegister tuple
  */
 export type DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
   tokenId: bigint;
   licenseTokenIds: readonly bigint[];
   royaltyContext: Hex;
+  maxRts: number;
   ipMetadata: {
     ipMetadataURI: string;
     ipMetadataHash: Hex;
     nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-  sigRegister: {
+  sigMetadataAndRegister: {
     signer: Address;
     deadline: bigint;
     signature: Hex;
@@ -13553,7 +16408,13 @@ export class DerivativeWorkflowsClient {
       address: this.address,
       functionName: "mintAndRegisterIpAndMakeDerivative",
       account: this.wallet.account,
-      args: [request.spgNftContract, request.derivData, request.ipMetadata, request.recipient],
+      args: [
+        request.spgNftContract,
+        request.derivData,
+        request.ipMetadata,
+        request.recipient,
+        request.allowDuplicates,
+      ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -13572,7 +16433,13 @@ export class DerivativeWorkflowsClient {
       data: encodeFunctionData({
         abi: derivativeWorkflowsAbi,
         functionName: "mintAndRegisterIpAndMakeDerivative",
-        args: [request.spgNftContract, request.derivData, request.ipMetadata, request.recipient],
+        args: [
+          request.spgNftContract,
+          request.derivData,
+          request.ipMetadata,
+          request.recipient,
+          request.allowDuplicates,
+        ],
       }),
     };
   }
@@ -13595,8 +16462,10 @@ export class DerivativeWorkflowsClient {
         request.spgNftContract,
         request.licenseTokenIds,
         request.royaltyContext,
+        request.maxRts,
         request.ipMetadata,
         request.recipient,
+        request.allowDuplicates,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -13620,8 +16489,10 @@ export class DerivativeWorkflowsClient {
           request.spgNftContract,
           request.licenseTokenIds,
           request.royaltyContext,
+          request.maxRts,
           request.ipMetadata,
           request.recipient,
+          request.allowDuplicates,
         ],
       }),
     };
@@ -13682,8 +16553,7 @@ export class DerivativeWorkflowsClient {
         request.tokenId,
         request.derivData,
         request.ipMetadata,
-        request.sigMetadata,
-        request.sigRegister,
+        request.sigMetadataAndRegister,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -13708,8 +16578,7 @@ export class DerivativeWorkflowsClient {
           request.tokenId,
           request.derivData,
           request.ipMetadata,
-          request.sigMetadata,
-          request.sigRegister,
+          request.sigMetadataAndRegister,
         ],
       }),
     };
@@ -13734,9 +16603,9 @@ export class DerivativeWorkflowsClient {
         request.tokenId,
         request.licenseTokenIds,
         request.royaltyContext,
+        request.maxRts,
         request.ipMetadata,
-        request.sigMetadata,
-        request.sigRegister,
+        request.sigMetadataAndRegister,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -13761,9 +16630,9 @@ export class DerivativeWorkflowsClient {
           request.tokenId,
           request.licenseTokenIds,
           request.royaltyContext,
+          request.maxRts,
           request.ipMetadata,
-          request.sigMetadata,
-          request.sigRegister,
+          request.sigMetadataAndRegister,
         ],
       }),
     };
@@ -13789,6 +16658,7 @@ export type DisputeModuleDisputeCancelledEvent = {
  * @param disputeId uint256
  * @param targetIpId address
  * @param disputeInitiator address
+ * @param disputeTimestamp uint256
  * @param arbitrationPolicy address
  * @param disputeEvidenceHash bytes32
  * @param targetTag bytes32
@@ -13798,6 +16668,7 @@ export type DisputeModuleDisputeRaisedEvent = {
   disputeId: bigint;
   targetIpId: Address;
   disputeInitiator: Address;
+  disputeTimestamp: bigint;
   arbitrationPolicy: Address;
   disputeEvidenceHash: Hex;
   targetTag: Hex;
@@ -13808,9 +16679,29 @@ export type DisputeModuleDisputeRaisedEvent = {
  * DisputeModuleDisputeResolvedEvent
  *
  * @param disputeId uint256
+ * @param data bytes
  */
 export type DisputeModuleDisputeResolvedEvent = {
   disputeId: bigint;
+  data: Hex;
+};
+
+/**
+ * DisputeModuleIsWhitelistedDisputeTagRequest
+ *
+ * @param tag bytes32
+ */
+export type DisputeModuleIsWhitelistedDisputeTagRequest = {
+  tag: Hex;
+};
+
+/**
+ * DisputeModuleIsWhitelistedDisputeTagResponse
+ *
+ * @param allowed bool
+ */
+export type DisputeModuleIsWhitelistedDisputeTagResponse = {
+  allowed: boolean;
 };
 
 /**
@@ -13987,9 +16878,38 @@ export class DisputeModuleEventClient {
 }
 
 /**
+ * contract DisputeModule readonly method
+ */
+export class DisputeModuleReadOnlyClient extends DisputeModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method isWhitelistedDisputeTag for contract DisputeModule
+   *
+   * @param request DisputeModuleIsWhitelistedDisputeTagRequest
+   * @return Promise<DisputeModuleIsWhitelistedDisputeTagResponse>
+   */
+  public async isWhitelistedDisputeTag(
+    request: DisputeModuleIsWhitelistedDisputeTagRequest,
+  ): Promise<DisputeModuleIsWhitelistedDisputeTagResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: disputeModuleAbi,
+      address: this.address,
+      functionName: "isWhitelistedDisputeTag",
+      args: [request.tag],
+    });
+    return {
+      allowed: result,
+    };
+  }
+}
+
+/**
  * contract DisputeModule write method
  */
-export class DisputeModuleClient extends DisputeModuleEventClient {
+export class DisputeModuleClient extends DisputeModuleReadOnlyClient {
   protected readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
@@ -14106,6 +17026,745 @@ export class DisputeModuleClient extends DisputeModuleEventClient {
   }
 }
 
+// Contract ERC20Token =============================================================
+
+/**
+ * Erc20TokenApprovalEvent
+ *
+ * @param owner address
+ * @param spender address
+ * @param amount uint256
+ */
+export type Erc20TokenApprovalEvent = {
+  owner: Address;
+  spender: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TokenDepositEvent
+ *
+ * @param from address
+ * @param amount uint256
+ */
+export type Erc20TokenDepositEvent = {
+  from: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TokenTransferEvent
+ *
+ * @param from address
+ * @param to address
+ * @param amount uint256
+ */
+export type Erc20TokenTransferEvent = {
+  from: Address;
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TokenWithdrawalEvent
+ *
+ * @param to address
+ * @param amount uint256
+ */
+export type Erc20TokenWithdrawalEvent = {
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TokenDomainSeparatorResponse
+ *
+ * @param result bytes32
+ */
+export type Erc20TokenDomainSeparatorResponse = {
+  result: Hex;
+};
+
+/**
+ * Erc20TokenAllowanceRequest
+ *
+ * @param owner address
+ * @param spender address
+ */
+export type Erc20TokenAllowanceRequest = {
+  owner: Address;
+  spender: Address;
+};
+
+/**
+ * Erc20TokenAllowanceResponse
+ *
+ * @param result uint256
+ */
+export type Erc20TokenAllowanceResponse = {
+  result: bigint;
+};
+
+/**
+ * Erc20TokenBalanceOfRequest
+ *
+ * @param owner address
+ */
+export type Erc20TokenBalanceOfRequest = {
+  owner: Address;
+};
+
+/**
+ * Erc20TokenBalanceOfResponse
+ *
+ * @param result uint256
+ */
+export type Erc20TokenBalanceOfResponse = {
+  result: bigint;
+};
+
+export type Erc20TokenDecimalsResponse = number;
+
+export type Erc20TokenNameResponse = string;
+
+/**
+ * Erc20TokenNoncesRequest
+ *
+ * @param owner address
+ */
+export type Erc20TokenNoncesRequest = {
+  owner: Address;
+};
+
+/**
+ * Erc20TokenNoncesResponse
+ *
+ * @param result uint256
+ */
+export type Erc20TokenNoncesResponse = {
+  result: bigint;
+};
+
+export type Erc20TokenSymbolResponse = string;
+
+/**
+ * Erc20TokenTotalSupplyResponse
+ *
+ * @param result uint256
+ */
+export type Erc20TokenTotalSupplyResponse = {
+  result: bigint;
+};
+
+/**
+ * Erc20TokenApproveRequest
+ *
+ * @param spender address
+ * @param amount uint256
+ */
+export type Erc20TokenApproveRequest = {
+  spender: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TokenPermitRequest
+ *
+ * @param owner address
+ * @param spender address
+ * @param value uint256
+ * @param deadline uint256
+ * @param v uint8
+ * @param r bytes32
+ * @param s bytes32
+ */
+export type Erc20TokenPermitRequest = {
+  owner: Address;
+  spender: Address;
+  value: bigint;
+  deadline: bigint;
+  v: number;
+  r: Hex;
+  s: Hex;
+};
+
+/**
+ * Erc20TokenTransferRequest
+ *
+ * @param to address
+ * @param amount uint256
+ */
+export type Erc20TokenTransferRequest = {
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TokenTransferFromRequest
+ *
+ * @param from address
+ * @param to address
+ * @param amount uint256
+ */
+export type Erc20TokenTransferFromRequest = {
+  from: Address;
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TokenWithdrawRequest
+ *
+ * @param value uint256
+ */
+export type Erc20TokenWithdrawRequest = {
+  value: bigint;
+};
+
+/**
+ * contract ERC20Token event
+ */
+export class Erc20TokenEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(erc20TokenAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event Approval for contract ERC20Token
+   */
+  public watchApprovalEvent(
+    onLogs: (txHash: Hex, ev: Partial<Erc20TokenApprovalEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: erc20TokenAbi,
+      address: this.address,
+      eventName: "Approval",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Approval for contract ERC20Token
+   */
+  public parseTxApprovalEvent(txReceipt: TransactionReceipt): Array<Erc20TokenApprovalEvent> {
+    const targetLogs: Array<Erc20TokenApprovalEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: erc20TokenAbi,
+          eventName: "Approval",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Approval") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Deposit for contract ERC20Token
+   */
+  public watchDepositEvent(
+    onLogs: (txHash: Hex, ev: Partial<Erc20TokenDepositEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: erc20TokenAbi,
+      address: this.address,
+      eventName: "Deposit",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Deposit for contract ERC20Token
+   */
+  public parseTxDepositEvent(txReceipt: TransactionReceipt): Array<Erc20TokenDepositEvent> {
+    const targetLogs: Array<Erc20TokenDepositEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: erc20TokenAbi,
+          eventName: "Deposit",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Deposit") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Transfer for contract ERC20Token
+   */
+  public watchTransferEvent(
+    onLogs: (txHash: Hex, ev: Partial<Erc20TokenTransferEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: erc20TokenAbi,
+      address: this.address,
+      eventName: "Transfer",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Transfer for contract ERC20Token
+   */
+  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<Erc20TokenTransferEvent> {
+    const targetLogs: Array<Erc20TokenTransferEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: erc20TokenAbi,
+          eventName: "Transfer",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Transfer") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Withdrawal for contract ERC20Token
+   */
+  public watchWithdrawalEvent(
+    onLogs: (txHash: Hex, ev: Partial<Erc20TokenWithdrawalEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: erc20TokenAbi,
+      address: this.address,
+      eventName: "Withdrawal",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Withdrawal for contract ERC20Token
+   */
+  public parseTxWithdrawalEvent(txReceipt: TransactionReceipt): Array<Erc20TokenWithdrawalEvent> {
+    const targetLogs: Array<Erc20TokenWithdrawalEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: erc20TokenAbi,
+          eventName: "Withdrawal",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Withdrawal") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract ERC20Token readonly method
+ */
+export class Erc20TokenReadOnlyClient extends Erc20TokenEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method DOMAIN_SEPARATOR for contract ERC20Token
+   *
+   * @param request Erc20TokenDomainSeparatorRequest
+   * @return Promise<Erc20TokenDomainSeparatorResponse>
+   */
+  public async domainSeparator(): Promise<Erc20TokenDomainSeparatorResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "DOMAIN_SEPARATOR",
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method allowance for contract ERC20Token
+   *
+   * @param request Erc20TokenAllowanceRequest
+   * @return Promise<Erc20TokenAllowanceResponse>
+   */
+  public async allowance(
+    request: Erc20TokenAllowanceRequest,
+  ): Promise<Erc20TokenAllowanceResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "allowance",
+      args: [request.owner, request.spender],
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method balanceOf for contract ERC20Token
+   *
+   * @param request Erc20TokenBalanceOfRequest
+   * @return Promise<Erc20TokenBalanceOfResponse>
+   */
+  public async balanceOf(
+    request: Erc20TokenBalanceOfRequest,
+  ): Promise<Erc20TokenBalanceOfResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "balanceOf",
+      args: [request.owner],
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method decimals for contract ERC20Token
+   *
+   * @param request Erc20TokenDecimalsRequest
+   * @return Promise<Erc20TokenDecimalsResponse>
+   */
+  public async decimals(): Promise<Erc20TokenDecimalsResponse> {
+    return await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "decimals",
+    });
+  }
+
+  /**
+   * method name for contract ERC20Token
+   *
+   * @param request Erc20TokenNameRequest
+   * @return Promise<Erc20TokenNameResponse>
+   */
+  public async name(): Promise<Erc20TokenNameResponse> {
+    return await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method nonces for contract ERC20Token
+   *
+   * @param request Erc20TokenNoncesRequest
+   * @return Promise<Erc20TokenNoncesResponse>
+   */
+  public async nonces(request: Erc20TokenNoncesRequest): Promise<Erc20TokenNoncesResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "nonces",
+      args: [request.owner],
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method symbol for contract ERC20Token
+   *
+   * @param request Erc20TokenSymbolRequest
+   * @return Promise<Erc20TokenSymbolResponse>
+   */
+  public async symbol(): Promise<Erc20TokenSymbolResponse> {
+    return await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "symbol",
+    });
+  }
+
+  /**
+   * method totalSupply for contract ERC20Token
+   *
+   * @param request Erc20TokenTotalSupplyRequest
+   * @return Promise<Erc20TokenTotalSupplyResponse>
+   */
+  public async totalSupply(): Promise<Erc20TokenTotalSupplyResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "totalSupply",
+    });
+    return {
+      result: result,
+    };
+  }
+}
+
+/**
+ * contract ERC20Token write method
+ */
+export class Erc20TokenClient extends Erc20TokenReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method approve for contract ERC20Token
+   *
+   * @param request Erc20TokenApproveRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async approve(request: Erc20TokenApproveRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "approve",
+      account: this.wallet.account,
+      args: [request.spender, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method approve for contract ERC20Token with only encode
+   *
+   * @param request Erc20TokenApproveRequest
+   * @return EncodedTxData
+   */
+  public approveEncode(request: Erc20TokenApproveRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20TokenAbi,
+        functionName: "approve",
+        args: [request.spender, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method deposit for contract ERC20Token
+   *
+   * @param request Erc20TokenDepositRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async deposit(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "deposit",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method deposit for contract ERC20Token with only encode
+   *
+   * @param request Erc20TokenDepositRequest
+   * @return EncodedTxData
+   */
+  public depositEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20TokenAbi,
+        functionName: "deposit",
+      }),
+    };
+  }
+
+  /**
+   * method permit for contract ERC20Token
+   *
+   * @param request Erc20TokenPermitRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async permit(request: Erc20TokenPermitRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "permit",
+      account: this.wallet.account,
+      args: [
+        request.owner,
+        request.spender,
+        request.value,
+        request.deadline,
+        request.v,
+        request.r,
+        request.s,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method permit for contract ERC20Token with only encode
+   *
+   * @param request Erc20TokenPermitRequest
+   * @return EncodedTxData
+   */
+  public permitEncode(request: Erc20TokenPermitRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20TokenAbi,
+        functionName: "permit",
+        args: [
+          request.owner,
+          request.spender,
+          request.value,
+          request.deadline,
+          request.v,
+          request.r,
+          request.s,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method transfer for contract ERC20Token
+   *
+   * @param request Erc20TokenTransferRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transfer(request: Erc20TokenTransferRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "transfer",
+      account: this.wallet.account,
+      args: [request.to, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transfer for contract ERC20Token with only encode
+   *
+   * @param request Erc20TokenTransferRequest
+   * @return EncodedTxData
+   */
+  public transferEncode(request: Erc20TokenTransferRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20TokenAbi,
+        functionName: "transfer",
+        args: [request.to, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method transferFrom for contract ERC20Token
+   *
+   * @param request Erc20TokenTransferFromRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferFrom(
+    request: Erc20TokenTransferFromRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "transferFrom",
+      account: this.wallet.account,
+      args: [request.from, request.to, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferFrom for contract ERC20Token with only encode
+   *
+   * @param request Erc20TokenTransferFromRequest
+   * @return EncodedTxData
+   */
+  public transferFromEncode(request: Erc20TokenTransferFromRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20TokenAbi,
+        functionName: "transferFrom",
+        args: [request.from, request.to, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method withdraw for contract ERC20Token
+   *
+   * @param request Erc20TokenWithdrawRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async withdraw(request: Erc20TokenWithdrawRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20TokenAbi,
+      address: this.address,
+      functionName: "withdraw",
+      account: this.wallet.account,
+      args: [request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method withdraw for contract ERC20Token with only encode
+   *
+   * @param request Erc20TokenWithdrawRequest
+   * @return EncodedTxData
+   */
+  public withdrawEncode(request: Erc20TokenWithdrawRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20TokenAbi,
+        functionName: "withdraw",
+        args: [request.value],
+      }),
+    };
+  }
+}
+
 // Contract EvenSplitGroupPool =============================================================
 
 /**
@@ -14157,6 +17816,8 @@ export type EvenSplitGroupPoolGroupingModuleResponse = Address;
 
 export type EvenSplitGroupPoolGroupIpAssetRegistryResponse = Address;
 
+export type EvenSplitGroupPoolMaxGroupSizeResponse = number;
+
 export type EvenSplitGroupPoolRoyaltyModuleResponse = Address;
 
 export type EvenSplitGroupPoolUpgradeInterfaceVersionResponse = string;
@@ -14207,6 +17868,30 @@ export type EvenSplitGroupPoolGetIpRewardDebtRequest = {
 export type EvenSplitGroupPoolGetIpRewardDebtResponse = bigint;
 
 /**
+ * EvenSplitGroupPoolGetMinimumRewardShareRequest
+ *
+ * @param groupId address
+ * @param ipId address
+ */
+export type EvenSplitGroupPoolGetMinimumRewardShareRequest = {
+  groupId: Address;
+  ipId: Address;
+};
+
+export type EvenSplitGroupPoolGetMinimumRewardShareResponse = bigint;
+
+/**
+ * EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest
+ *
+ * @param groupId address
+ */
+export type EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest = {
+  groupId: Address;
+};
+
+export type EvenSplitGroupPoolGetTotalAllocatedRewardShareResponse = bigint;
+
+/**
  * EvenSplitGroupPoolGetTotalIpsRequest
  *
  * @param groupId address
@@ -14250,10 +17935,12 @@ export type EvenSplitGroupPoolProtocolPausableInitRequest = {
  *
  * @param groupId address
  * @param ipId address
+ * @param minimumGroupRewardShare uint256
  */
 export type EvenSplitGroupPoolAddIpRequest = {
   groupId: Address;
   ipId: Address;
+  minimumGroupRewardShare: bigint;
 };
 
 /**
@@ -14575,6 +18262,20 @@ export class EvenSplitGroupPoolReadOnlyClient extends EvenSplitGroupPoolEventCli
   }
 
   /**
+   * method MAX_GROUP_SIZE for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolMaxGroupSizeRequest
+   * @return Promise<EvenSplitGroupPoolMaxGroupSizeResponse>
+   */
+  public async maxGroupSize(): Promise<EvenSplitGroupPoolMaxGroupSizeResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "MAX_GROUP_SIZE",
+    });
+  }
+
+  /**
    * method ROYALTY_MODULE for contract EvenSplitGroupPool
    *
    * @param request EvenSplitGroupPoolRoyaltyModuleRequest
@@ -14664,6 +18365,40 @@ export class EvenSplitGroupPoolReadOnlyClient extends EvenSplitGroupPoolEventCli
       address: this.address,
       functionName: "getIpRewardDebt",
       args: [request.groupId, request.token, request.ipId],
+    });
+  }
+
+  /**
+   * method getMinimumRewardShare for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGetMinimumRewardShareRequest
+   * @return Promise<EvenSplitGroupPoolGetMinimumRewardShareResponse>
+   */
+  public async getMinimumRewardShare(
+    request: EvenSplitGroupPoolGetMinimumRewardShareRequest,
+  ): Promise<EvenSplitGroupPoolGetMinimumRewardShareResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "getMinimumRewardShare",
+      args: [request.groupId, request.ipId],
+    });
+  }
+
+  /**
+   * method getTotalAllocatedRewardShare for contract EvenSplitGroupPool
+   *
+   * @param request EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest
+   * @return Promise<EvenSplitGroupPoolGetTotalAllocatedRewardShareResponse>
+   */
+  public async getTotalAllocatedRewardShare(
+    request: EvenSplitGroupPoolGetTotalAllocatedRewardShareRequest,
+  ): Promise<EvenSplitGroupPoolGetTotalAllocatedRewardShareResponse> {
+    return await this.rpcClient.readContract({
+      abi: evenSplitGroupPoolAbi,
+      address: this.address,
+      functionName: "getTotalAllocatedRewardShare",
+      args: [request.groupId],
     });
   }
 
@@ -14805,7 +18540,7 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
       address: this.address,
       functionName: "addIp",
       account: this.wallet.account,
-      args: [request.groupId, request.ipId],
+      args: [request.groupId, request.ipId, request.minimumGroupRewardShare],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -14822,7 +18557,7 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
       data: encodeFunctionData({
         abi: evenSplitGroupPoolAbi,
         functionName: "addIp",
-        args: [request.groupId, request.ipId],
+        args: [request.groupId, request.ipId, request.minimumGroupRewardShare],
       }),
     };
   }
@@ -15154,14 +18889,12 @@ export type GroupingModuleClaimedRewardEvent = {
  * @param token address
  * @param pool address
  * @param amount uint256
- * @param snapshots uint256[]
  */
 export type GroupingModuleCollectedRoyaltiesToGroupPoolEvent = {
   groupId: Address;
   token: Address;
   pool: Address;
   amount: bigint;
-  snapshots: readonly bigint[];
 };
 
 /**
@@ -15224,11 +18957,13 @@ export type GroupingModuleUpgradedEvent = {
 
 export type GroupingModuleAccessControllerResponse = Address;
 
+export type GroupingModuleDisputeModuleResponse = Address;
+
 export type GroupingModuleGroupIpAssetRegistryResponse = Address;
 
 export type GroupingModuleGroupNftResponse = Address;
 
-export type GroupingModuleIpAccountRegistryResponse = Address;
+export type GroupingModuleIpAssetRegistryResponse = Address;
 
 export type GroupingModuleLicenseRegistryResponse = Address;
 
@@ -15288,10 +19023,12 @@ export type GroupingModuleProtocolPausableInitRequest = {
  *
  * @param groupIpId address
  * @param ipIds address[]
+ * @param maxAllowedRewardShare uint256
  */
 export type GroupingModuleAddIpRequest = {
   groupIpId: Address;
   ipIds: readonly Address[];
+  maxAllowedRewardShare: bigint;
 };
 
 /**
@@ -15312,12 +19049,10 @@ export type GroupingModuleClaimRewardRequest = {
  *
  * @param groupId address
  * @param token address
- * @param snapshotIds uint256[]
  */
 export type GroupingModuleCollectRoyaltiesRequest = {
   groupId: Address;
   token: Address;
-  snapshotIds: readonly bigint[];
 };
 
 /**
@@ -15373,9 +19108,11 @@ export type GroupingModuleUpgradeToAndCallRequest = {
  * GroupingModuleWhitelistGroupRewardPoolRequest
  *
  * @param rewardPool address
+ * @param allowed bool
  */
 export type GroupingModuleWhitelistGroupRewardPoolRequest = {
   rewardPool: Address;
+  allowed: boolean;
 };
 
 /**
@@ -15818,6 +19555,20 @@ export class GroupingModuleReadOnlyClient extends GroupingModuleEventClient {
   }
 
   /**
+   * method DISPUTE_MODULE for contract GroupingModule
+   *
+   * @param request GroupingModuleDisputeModuleRequest
+   * @return Promise<GroupingModuleDisputeModuleResponse>
+   */
+  public async disputeModule(): Promise<GroupingModuleDisputeModuleResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "DISPUTE_MODULE",
+    });
+  }
+
+  /**
    * method GROUP_IP_ASSET_REGISTRY for contract GroupingModule
    *
    * @param request GroupingModuleGroupIpAssetRegistryRequest
@@ -15846,16 +19597,16 @@ export class GroupingModuleReadOnlyClient extends GroupingModuleEventClient {
   }
 
   /**
-   * method IP_ACCOUNT_REGISTRY for contract GroupingModule
+   * method IP_ASSET_REGISTRY for contract GroupingModule
    *
-   * @param request GroupingModuleIpAccountRegistryRequest
-   * @return Promise<GroupingModuleIpAccountRegistryResponse>
+   * @param request GroupingModuleIpAssetRegistryRequest
+   * @return Promise<GroupingModuleIpAssetRegistryResponse>
    */
-  public async ipAccountRegistry(): Promise<GroupingModuleIpAccountRegistryResponse> {
+  public async ipAssetRegistry(): Promise<GroupingModuleIpAssetRegistryResponse> {
     return await this.rpcClient.readContract({
       abi: groupingModuleAbi,
       address: this.address,
-      functionName: "IP_ACCOUNT_REGISTRY",
+      functionName: "IP_ASSET_REGISTRY",
     });
   }
 
@@ -16081,7 +19832,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       address: this.address,
       functionName: "addIp",
       account: this.wallet.account,
-      args: [request.groupIpId, request.ipIds],
+      args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16098,7 +19849,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       data: encodeFunctionData({
         abi: groupingModuleAbi,
         functionName: "addIp",
-        args: [request.groupIpId, request.ipIds],
+        args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
       }),
     };
   }
@@ -16153,7 +19904,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       address: this.address,
       functionName: "collectRoyalties",
       account: this.wallet.account,
-      args: [request.groupId, request.token, request.snapshotIds],
+      args: [request.groupId, request.token],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16170,7 +19921,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       data: encodeFunctionData({
         abi: groupingModuleAbi,
         functionName: "collectRoyalties",
-        args: [request.groupId, request.token, request.snapshotIds],
+        args: [request.groupId, request.token],
       }),
     };
   }
@@ -16431,7 +20182,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       address: this.address,
       functionName: "whitelistGroupRewardPool",
       account: this.wallet.account,
-      args: [request.rewardPool],
+      args: [request.rewardPool, request.allowed],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16450,7 +20201,7 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
       data: encodeFunctionData({
         abi: groupingModuleAbi,
         functionName: "whitelistGroupRewardPool",
-        args: [request.rewardPool],
+        args: [request.rewardPool, request.allowed],
       }),
     };
   }
@@ -16464,17 +20215,31 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
  * @param spgNftContract address
  * @param groupId address
  * @param recipient address
- * @param licenseTemplate address
- * @param licenseTermsId uint256
+ * @param maxAllowedRewardShare uint256
+ * @param licensesData tuple[]
  * @param ipMetadata tuple
  * @param sigAddToGroup tuple
+ * @param allowDuplicates bool
  */
 export type GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   spgNftContract: Address;
   groupId: Address;
   recipient: Address;
-  licenseTemplate: Address;
-  licenseTermsId: bigint;
+  maxAllowedRewardShare: bigint;
+  licensesData: {
+    licenseTemplate: Address;
+    licenseTermsId: bigint;
+    licensingConfig: {
+      isSet: boolean;
+      mintingFee: bigint;
+      licensingHook: Address;
+      hookData: Hex;
+      commercialRevShare: number;
+      disabled: boolean;
+      expectMinimumGroupRewardShare: number;
+      expectGroupRewardPool: Address;
+    };
+  }[];
   ipMetadata: {
     ipMetadataURI: string;
     ipMetadataHash: Hex;
@@ -16486,19 +20251,31 @@ export type GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupReque
     deadline: bigint;
     signature: Hex;
   };
+  allowDuplicates: boolean;
 };
 
 /**
  * GroupingWorkflowsRegisterGroupAndAttachLicenseRequest
  *
  * @param groupPool address
- * @param licenseTemplate address
- * @param licenseTermsId uint256
+ * @param licenseData tuple
  */
 export type GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
   groupPool: Address;
-  licenseTemplate: Address;
-  licenseTermsId: bigint;
+  licenseData: {
+    licenseTemplate: Address;
+    licenseTermsId: bigint;
+    licensingConfig: {
+      isSet: boolean;
+      mintingFee: bigint;
+      licensingHook: Address;
+      hookData: Hex;
+      commercialRevShare: number;
+      disabled: boolean;
+      expectMinimumGroupRewardShare: number;
+      expectGroupRewardPool: Address;
+    };
+  };
 };
 
 /**
@@ -16506,14 +20283,27 @@ export type GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
  *
  * @param groupPool address
  * @param ipIds address[]
- * @param licenseTemplate address
- * @param licenseTermsId uint256
+ * @param maxAllowedRewardShare uint256
+ * @param licenseData tuple
  */
 export type GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
   groupPool: Address;
   ipIds: readonly Address[];
-  licenseTemplate: Address;
-  licenseTermsId: bigint;
+  maxAllowedRewardShare: bigint;
+  licenseData: {
+    licenseTemplate: Address;
+    licenseTermsId: bigint;
+    licensingConfig: {
+      isSet: boolean;
+      mintingFee: bigint;
+      licensingHook: Address;
+      hookData: Hex;
+      commercialRevShare: number;
+      disabled: boolean;
+      expectMinimumGroupRewardShare: number;
+      expectGroupRewardPool: Address;
+    };
+  };
 };
 
 /**
@@ -16522,25 +20312,38 @@ export type GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
  * @param nftContract address
  * @param tokenId uint256
  * @param groupId address
- * @param licenseTemplate address
- * @param licenseTermsId uint256
+ * @param maxAllowedRewardShare uint256
+ * @param licensesData tuple[]
  * @param ipMetadata tuple
- * @param sigMetadataAndAttach tuple
+ * @param sigMetadataAndAttachAndConfig tuple
  * @param sigAddToGroup tuple
  */
 export type GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   nftContract: Address;
   tokenId: bigint;
   groupId: Address;
-  licenseTemplate: Address;
-  licenseTermsId: bigint;
+  maxAllowedRewardShare: bigint;
+  licensesData: {
+    licenseTemplate: Address;
+    licenseTermsId: bigint;
+    licensingConfig: {
+      isSet: boolean;
+      mintingFee: bigint;
+      licensingHook: Address;
+      hookData: Hex;
+      commercialRevShare: number;
+      disabled: boolean;
+      expectMinimumGroupRewardShare: number;
+      expectGroupRewardPool: Address;
+    };
+  }[];
   ipMetadata: {
     ipMetadataURI: string;
     ipMetadataHash: Hex;
     nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
-  sigMetadataAndAttach: {
+  sigMetadataAndAttachAndConfig: {
     signer: Address;
     deadline: bigint;
     signature: Hex;
@@ -16584,10 +20387,11 @@ export class GroupingWorkflowsClient {
         request.spgNftContract,
         request.groupId,
         request.recipient,
-        request.licenseTemplate,
-        request.licenseTermsId,
+        request.maxAllowedRewardShare,
+        request.licensesData,
         request.ipMetadata,
         request.sigAddToGroup,
+        request.allowDuplicates,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -16611,10 +20415,11 @@ export class GroupingWorkflowsClient {
           request.spgNftContract,
           request.groupId,
           request.recipient,
-          request.licenseTemplate,
-          request.licenseTermsId,
+          request.maxAllowedRewardShare,
+          request.licensesData,
           request.ipMetadata,
           request.sigAddToGroup,
+          request.allowDuplicates,
         ],
       }),
     };
@@ -16634,7 +20439,7 @@ export class GroupingWorkflowsClient {
       address: this.address,
       functionName: "registerGroupAndAttachLicense",
       account: this.wallet.account,
-      args: [request.groupPool, request.licenseTemplate, request.licenseTermsId],
+      args: [request.groupPool, request.licenseData],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16653,7 +20458,7 @@ export class GroupingWorkflowsClient {
       data: encodeFunctionData({
         abi: groupingWorkflowsAbi,
         functionName: "registerGroupAndAttachLicense",
-        args: [request.groupPool, request.licenseTemplate, request.licenseTermsId],
+        args: [request.groupPool, request.licenseData],
       }),
     };
   }
@@ -16672,7 +20477,7 @@ export class GroupingWorkflowsClient {
       address: this.address,
       functionName: "registerGroupAndAttachLicenseAndAddIps",
       account: this.wallet.account,
-      args: [request.groupPool, request.ipIds, request.licenseTemplate, request.licenseTermsId],
+      args: [request.groupPool, request.ipIds, request.maxAllowedRewardShare, request.licenseData],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -16691,7 +20496,12 @@ export class GroupingWorkflowsClient {
       data: encodeFunctionData({
         abi: groupingWorkflowsAbi,
         functionName: "registerGroupAndAttachLicenseAndAddIps",
-        args: [request.groupPool, request.ipIds, request.licenseTemplate, request.licenseTermsId],
+        args: [
+          request.groupPool,
+          request.ipIds,
+          request.maxAllowedRewardShare,
+          request.licenseData,
+        ],
       }),
     };
   }
@@ -16714,10 +20524,10 @@ export class GroupingWorkflowsClient {
         request.nftContract,
         request.tokenId,
         request.groupId,
-        request.licenseTemplate,
-        request.licenseTermsId,
+        request.maxAllowedRewardShare,
+        request.licensesData,
         request.ipMetadata,
-        request.sigMetadataAndAttach,
+        request.sigMetadataAndAttachAndConfig,
         request.sigAddToGroup,
       ],
     });
@@ -16742,10 +20552,10 @@ export class GroupingWorkflowsClient {
           request.nftContract,
           request.tokenId,
           request.groupId,
-          request.licenseTemplate,
-          request.licenseTermsId,
+          request.maxAllowedRewardShare,
+          request.licensesData,
           request.ipMetadata,
-          request.sigMetadataAndAttach,
+          request.sigMetadataAndAttachAndConfig,
           request.sigAddToGroup,
         ],
       }),
@@ -17271,17 +21081,6 @@ export type IpRoyaltyVaultImplRevenueTokenClaimedEvent = {
 };
 
 /**
- * IpRoyaltyVaultImplSnapshotCompletedEvent
- *
- * @param snapshotId uint256
- * @param snapshotTimestamp uint256
- */
-export type IpRoyaltyVaultImplSnapshotCompletedEvent = {
-  snapshotId: bigint;
-  snapshotTimestamp: bigint;
-};
-
-/**
  * IpRoyaltyVaultImplBalanceOfRequest
  *
  * @param account address
@@ -17295,32 +21094,17 @@ export type IpRoyaltyVaultImplBalanceOfResponse = bigint;
 /**
  * IpRoyaltyVaultImplClaimableRevenueRequest
  *
- * @param account address
- * @param snapshotId uint256
+ * @param claimer address
  * @param token address
  */
 export type IpRoyaltyVaultImplClaimableRevenueRequest = {
-  account: Address;
-  snapshotId: bigint;
+  claimer: Address;
   token: Address;
 };
 
 export type IpRoyaltyVaultImplClaimableRevenueResponse = bigint;
 
 export type IpRoyaltyVaultImplIpIdResponse = Address;
-
-/**
- * IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest
- *
- * @param snapshotIds uint256[]
- * @param token address
- * @param claimer address
- */
-export type IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest = {
-  snapshotIds: readonly bigint[];
-  token: Address;
-  claimer: Address;
-};
 
 /**
  * contract IpRoyaltyVaultImpl event
@@ -17374,47 +21158,6 @@ export class IpRoyaltyVaultImplEventClient {
     }
     return targetLogs;
   }
-
-  /**
-   * event SnapshotCompleted for contract IpRoyaltyVaultImpl
-   */
-  public watchSnapshotCompletedEvent(
-    onLogs: (txHash: Hex, ev: Partial<IpRoyaltyVaultImplSnapshotCompletedEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: ipRoyaltyVaultImplAbi,
-      address: this.address,
-      eventName: "SnapshotCompleted",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event SnapshotCompleted for contract IpRoyaltyVaultImpl
-   */
-  public parseTxSnapshotCompletedEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<IpRoyaltyVaultImplSnapshotCompletedEvent> {
-    const targetLogs: Array<IpRoyaltyVaultImplSnapshotCompletedEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: ipRoyaltyVaultImplAbi,
-          eventName: "SnapshotCompleted",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "SnapshotCompleted") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
 }
 
 /**
@@ -17455,7 +21198,7 @@ export class IpRoyaltyVaultImplReadOnlyClient extends IpRoyaltyVaultImplEventCli
       abi: ipRoyaltyVaultImplAbi,
       address: this.address,
       functionName: "claimableRevenue",
-      args: [request.account, request.snapshotId, request.token],
+      args: [request.claimer, request.token],
     });
   }
 
@@ -17474,88 +21217,6 @@ export class IpRoyaltyVaultImplReadOnlyClient extends IpRoyaltyVaultImplEventCli
   }
 }
 
-/**
- * contract IpRoyaltyVaultImpl write method
- */
-export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method claimRevenueOnBehalfBySnapshotBatch for contract IpRoyaltyVaultImpl
-   *
-   * @param request IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async claimRevenueOnBehalfBySnapshotBatch(
-    request: IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: ipRoyaltyVaultImplAbi,
-      address: this.address,
-      functionName: "claimRevenueOnBehalfBySnapshotBatch",
-      account: this.wallet.account,
-      args: [request.snapshotIds, request.token, request.claimer],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method claimRevenueOnBehalfBySnapshotBatch for contract IpRoyaltyVaultImpl with only encode
-   *
-   * @param request IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest
-   * @return EncodedTxData
-   */
-  public claimRevenueOnBehalfBySnapshotBatchEncode(
-    request: IpRoyaltyVaultImplClaimRevenueOnBehalfBySnapshotBatchRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: ipRoyaltyVaultImplAbi,
-        functionName: "claimRevenueOnBehalfBySnapshotBatch",
-        args: [request.snapshotIds, request.token, request.claimer],
-      }),
-    };
-  }
-
-  /**
-   * method snapshot for contract IpRoyaltyVaultImpl
-   *
-   * @param request IpRoyaltyVaultImplSnapshotRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async snapshot(): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: ipRoyaltyVaultImplAbi,
-      address: this.address,
-      functionName: "snapshot",
-      account: this.wallet.account,
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method snapshot for contract IpRoyaltyVaultImpl with only encode
-   *
-   * @param request IpRoyaltyVaultImplSnapshotRequest
-   * @return EncodedTxData
-   */
-  public snapshotEncode(): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: ipRoyaltyVaultImplAbi,
-        functionName: "snapshot",
-      }),
-    };
-  }
-}
-
 // Contract LicenseAttachmentWorkflows =============================================================
 
 /**
@@ -17564,7 +21225,8 @@ export class IpRoyaltyVaultImplClient extends IpRoyaltyVaultImplReadOnlyClient {
  * @param spgNftContract address
  * @param recipient address
  * @param ipMetadata tuple
- * @param terms tuple
+ * @param licenseTermsData tuple[]
+ * @param allowDuplicates bool
  */
 export type LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest = {
   spgNftContract: Address;
@@ -17575,63 +21237,38 @@ export type LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest 
     nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
-  };
-};
-
-/**
- * LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request
- *
- * @param spgNftContract address
- * @param recipient address
- * @param ipMetadata tuple
- * @param terms tuple[]
- */
-export type LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request = {
-  spgNftContract: Address;
-  recipient: Address;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
+  licenseTermsData: {
+    terms: {
+      transferable: boolean;
+      royaltyPolicy: Address;
+      defaultMintingFee: bigint;
+      expiration: bigint;
+      commercialUse: boolean;
+      commercialAttribution: boolean;
+      commercializerChecker: Address;
+      commercializerCheckerData: Hex;
+      commercialRevShare: number;
+      commercialRevCeiling: bigint;
+      derivativesAllowed: boolean;
+      derivativesAttribution: boolean;
+      derivativesApproval: boolean;
+      derivativesReciprocal: boolean;
+      derivativeRevCeiling: bigint;
+      currency: Address;
+      uri: string;
+    };
+    licensingConfig: {
+      isSet: boolean;
+      mintingFee: bigint;
+      licensingHook: Address;
+      hookData: Hex;
+      commercialRevShare: number;
+      disabled: boolean;
+      expectMinimumGroupRewardShare: number;
+      expectGroupRewardPool: Address;
+    };
   }[];
+  allowDuplicates: boolean;
 };
 
 /**
@@ -17649,9 +21286,8 @@ export type LicenseAttachmentWorkflowsMulticallRequest = {
  * @param nftContract address
  * @param tokenId uint256
  * @param ipMetadata tuple
- * @param terms tuple
- * @param sigMetadata tuple
- * @param sigAttach tuple
+ * @param licenseTermsData tuple[]
+ * @param sigMetadataAndAttachAndConfig tuple
  */
 export type LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
@@ -17662,81 +21298,38 @@ export type LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest = {
     nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
-  };
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-  sigAttach: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-};
-
-/**
- * LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request
- *
- * @param nftContract address
- * @param tokenId uint256
- * @param ipMetadata tuple
- * @param terms tuple[]
- * @param sigMetadata tuple
- * @param sigAttach tuple
- */
-export type LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request = {
-  nftContract: Address;
-  tokenId: bigint;
-  ipMetadata: {
-    ipMetadataURI: string;
-    ipMetadataHash: Hex;
-    nftMetadataURI: string;
-    nftMetadataHash: Hex;
-  };
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
+  licenseTermsData: {
+    terms: {
+      transferable: boolean;
+      royaltyPolicy: Address;
+      defaultMintingFee: bigint;
+      expiration: bigint;
+      commercialUse: boolean;
+      commercialAttribution: boolean;
+      commercializerChecker: Address;
+      commercializerCheckerData: Hex;
+      commercialRevShare: number;
+      commercialRevCeiling: bigint;
+      derivativesAllowed: boolean;
+      derivativesAttribution: boolean;
+      derivativesApproval: boolean;
+      derivativesReciprocal: boolean;
+      derivativeRevCeiling: bigint;
+      currency: Address;
+      uri: string;
+    };
+    licensingConfig: {
+      isSet: boolean;
+      mintingFee: bigint;
+      licensingHook: Address;
+      hookData: Hex;
+      commercialRevShare: number;
+      disabled: boolean;
+      expectMinimumGroupRewardShare: number;
+      expectGroupRewardPool: Address;
+    };
   }[];
-  sigMetadata: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-  sigAttach: {
+  sigMetadataAndAttachAndConfig: {
     signer: Address;
     deadline: bigint;
     signature: Hex;
@@ -17747,66 +21340,43 @@ export type LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request = {
  * LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest
  *
  * @param ipId address
- * @param terms tuple[]
- * @param sigAttach tuple
+ * @param licenseTermsData tuple[]
+ * @param sigAttachAndConfig tuple
  */
 export type LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest = {
   ipId: Address;
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
+  licenseTermsData: {
+    terms: {
+      transferable: boolean;
+      royaltyPolicy: Address;
+      defaultMintingFee: bigint;
+      expiration: bigint;
+      commercialUse: boolean;
+      commercialAttribution: boolean;
+      commercializerChecker: Address;
+      commercializerCheckerData: Hex;
+      commercialRevShare: number;
+      commercialRevCeiling: bigint;
+      derivativesAllowed: boolean;
+      derivativesAttribution: boolean;
+      derivativesApproval: boolean;
+      derivativesReciprocal: boolean;
+      derivativeRevCeiling: bigint;
+      currency: Address;
+      uri: string;
+    };
+    licensingConfig: {
+      isSet: boolean;
+      mintingFee: bigint;
+      licensingHook: Address;
+      hookData: Hex;
+      commercialRevShare: number;
+      disabled: boolean;
+      expectMinimumGroupRewardShare: number;
+      expectGroupRewardPool: Address;
+    };
   }[];
-  sigAttach: {
-    signer: Address;
-    deadline: bigint;
-    signature: Hex;
-  };
-};
-
-/**
- * LicenseAttachmentWorkflowsRegisterPilTermsAndAttach2Request
- *
- * @param ipId address
- * @param terms tuple
- * @param sigAttach tuple
- */
-export type LicenseAttachmentWorkflowsRegisterPilTermsAndAttach2Request = {
-  ipId: Address;
-  terms: {
-    transferable: boolean;
-    royaltyPolicy: Address;
-    defaultMintingFee: bigint;
-    expiration: bigint;
-    commercialUse: boolean;
-    commercialAttribution: boolean;
-    commercializerChecker: Address;
-    commercializerCheckerData: Hex;
-    commercialRevShare: number;
-    commercialRevCeiling: bigint;
-    derivativesAllowed: boolean;
-    derivativesAttribution: boolean;
-    derivativesApproval: boolean;
-    derivativesReciprocal: boolean;
-    derivativeRevCeiling: bigint;
-    currency: Address;
-    uri: string;
-  };
-  sigAttach: {
+  sigAttachAndConfig: {
     signer: Address;
     deadline: bigint;
     signature: Hex;
@@ -17841,7 +21411,13 @@ export class LicenseAttachmentWorkflowsClient {
       address: this.address,
       functionName: "mintAndRegisterIpAndAttachPILTerms",
       account: this.wallet.account,
-      args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
+      args: [
+        request.spgNftContract,
+        request.recipient,
+        request.ipMetadata,
+        request.licenseTermsData,
+        request.allowDuplicates,
+      ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -17860,45 +21436,13 @@ export class LicenseAttachmentWorkflowsClient {
       data: encodeFunctionData({
         abi: licenseAttachmentWorkflowsAbi,
         functionName: "mintAndRegisterIpAndAttachPILTerms",
-        args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
-      }),
-    };
-  }
-
-  /**
-   * method mintAndRegisterIpAndAttachPILTerms for contract LicenseAttachmentWorkflows
-   *
-   * @param request LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request
-   * @return Promise<WriteContractReturnType>
-   */
-  public async mintAndRegisterIpAndAttachPilTerms2(
-    request: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licenseAttachmentWorkflowsAbi,
-      address: this.address,
-      functionName: "mintAndRegisterIpAndAttachPILTerms",
-      account: this.wallet.account,
-      args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method mintAndRegisterIpAndAttachPILTerms for contract LicenseAttachmentWorkflows with only encode
-   *
-   * @param request LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request
-   * @return EncodedTxData
-   */
-  public mintAndRegisterIpAndAttachPilTerms2Encode(
-    request: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTerms2Request,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: licenseAttachmentWorkflowsAbi,
-        functionName: "mintAndRegisterIpAndAttachPILTerms",
-        args: [request.spgNftContract, request.recipient, request.ipMetadata, request.terms],
+        args: [
+          request.spgNftContract,
+          request.recipient,
+          request.ipMetadata,
+          request.licenseTermsData,
+          request.allowDuplicates,
+        ],
       }),
     };
   }
@@ -17957,9 +21501,8 @@ export class LicenseAttachmentWorkflowsClient {
         request.nftContract,
         request.tokenId,
         request.ipMetadata,
-        request.terms,
-        request.sigMetadata,
-        request.sigAttach,
+        request.licenseTermsData,
+        request.sigMetadataAndAttachAndConfig,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -17983,61 +21526,8 @@ export class LicenseAttachmentWorkflowsClient {
           request.nftContract,
           request.tokenId,
           request.ipMetadata,
-          request.terms,
-          request.sigMetadata,
-          request.sigAttach,
-        ],
-      }),
-    };
-  }
-
-  /**
-   * method registerIpAndAttachPILTerms for contract LicenseAttachmentWorkflows
-   *
-   * @param request LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerIpAndAttachPilTerms2(
-    request: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licenseAttachmentWorkflowsAbi,
-      address: this.address,
-      functionName: "registerIpAndAttachPILTerms",
-      account: this.wallet.account,
-      args: [
-        request.nftContract,
-        request.tokenId,
-        request.ipMetadata,
-        request.terms,
-        request.sigMetadata,
-        request.sigAttach,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerIpAndAttachPILTerms for contract LicenseAttachmentWorkflows with only encode
-   *
-   * @param request LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request
-   * @return EncodedTxData
-   */
-  public registerIpAndAttachPilTerms2Encode(
-    request: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTerms2Request,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: licenseAttachmentWorkflowsAbi,
-        functionName: "registerIpAndAttachPILTerms",
-        args: [
-          request.nftContract,
-          request.tokenId,
-          request.ipMetadata,
-          request.terms,
-          request.sigMetadata,
-          request.sigAttach,
+          request.licenseTermsData,
+          request.sigMetadataAndAttachAndConfig,
         ],
       }),
     };
@@ -18057,7 +21547,7 @@ export class LicenseAttachmentWorkflowsClient {
       address: this.address,
       functionName: "registerPILTermsAndAttach",
       account: this.wallet.account,
-      args: [request.ipId, request.terms, request.sigAttach],
+      args: [request.ipId, request.licenseTermsData, request.sigAttachAndConfig],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -18076,45 +21566,7 @@ export class LicenseAttachmentWorkflowsClient {
       data: encodeFunctionData({
         abi: licenseAttachmentWorkflowsAbi,
         functionName: "registerPILTermsAndAttach",
-        args: [request.ipId, request.terms, request.sigAttach],
-      }),
-    };
-  }
-
-  /**
-   * method registerPILTermsAndAttach for contract LicenseAttachmentWorkflows
-   *
-   * @param request LicenseAttachmentWorkflowsRegisterPilTermsAndAttach2Request
-   * @return Promise<WriteContractReturnType>
-   */
-  public async registerPilTermsAndAttach2(
-    request: LicenseAttachmentWorkflowsRegisterPilTermsAndAttach2Request,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licenseAttachmentWorkflowsAbi,
-      address: this.address,
-      functionName: "registerPILTermsAndAttach",
-      account: this.wallet.account,
-      args: [request.ipId, request.terms, request.sigAttach],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method registerPILTermsAndAttach for contract LicenseAttachmentWorkflows with only encode
-   *
-   * @param request LicenseAttachmentWorkflowsRegisterPilTermsAndAttach2Request
-   * @return EncodedTxData
-   */
-  public registerPilTermsAndAttach2Encode(
-    request: LicenseAttachmentWorkflowsRegisterPilTermsAndAttach2Request,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: licenseAttachmentWorkflowsAbi,
-        functionName: "registerPILTermsAndAttach",
-        args: [request.ipId, request.terms, request.sigAttach],
+        args: [request.ipId, request.licenseTermsData, request.sigAttachAndConfig],
       }),
     };
   }
@@ -18184,6 +21636,10 @@ export type LicenseRegistryLicensingConfigSetForIpEvent = {
     mintingFee: bigint;
     licensingHook: Address;
     hookData: Hex;
+    commercialRevShare: number;
+    disabled: boolean;
+    expectMinimumGroupRewardShare: number;
+    expectGroupRewardPool: Address;
   };
 };
 
@@ -18193,11 +21649,22 @@ export type LicenseRegistryLicensingConfigSetForIpEvent = {
  * @param ipId address
  * @param licenseTemplate address
  * @param licenseTermsId uint256
+ * @param licensingConfig tuple
  */
 export type LicenseRegistryLicensingConfigSetForLicenseEvent = {
   ipId: Address;
   licenseTemplate: Address;
   licenseTermsId: bigint;
+  licensingConfig: {
+    isSet: boolean;
+    mintingFee: bigint;
+    licensingHook: Address;
+    hookData: Hex;
+    commercialRevShare: number;
+    disabled: boolean;
+    expectMinimumGroupRewardShare: number;
+    expectGroupRewardPool: Address;
+  };
 };
 
 /**
@@ -18213,11 +21680,17 @@ export type LicenseRegistryDisputeModuleResponse = Address;
 
 export type LicenseRegistryExpirationTimeResponse = Hex;
 
+export type LicenseRegistryGroupIpAssetRegistryResponse = Address;
+
 export type LicenseRegistryIpGraphResponse = Address;
 
 export type LicenseRegistryIpGraphAclResponse = Address;
 
 export type LicenseRegistryLicensingModuleResponse = Address;
+
+export type LicenseRegistryMaxAncestorsResponse = bigint;
+
+export type LicenseRegistryMaxParentsResponse = bigint;
 
 export type LicenseRegistryUpgradeInterfaceVersionResponse = string;
 
@@ -18340,6 +21813,10 @@ export type LicenseRegistryGetLicensingConfigResponse = {
   mintingFee: bigint;
   licensingHook: Address;
   hookData: Hex;
+  commercialRevShare: number;
+  disabled: boolean;
+  expectMinimumGroupRewardShare: number;
+  expectGroupRewardPool: Address;
 };
 
 /**
@@ -18396,6 +21873,28 @@ export type LicenseRegistryGetParentLicenseTermsResponse = {
 };
 
 /**
+ * LicenseRegistryGetRoyaltyPercentRequest
+ *
+ * @param ipId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryGetRoyaltyPercentRequest = {
+  ipId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryGetRoyaltyPercentResponse
+ *
+ * @param royaltyPercent uint32
+ */
+export type LicenseRegistryGetRoyaltyPercentResponse = {
+  royaltyPercent: number;
+};
+
+/**
  * LicenseRegistryHasDerivativeIpsRequest
  *
  * @param parentIpId address
@@ -18422,6 +21921,19 @@ export type LicenseRegistryHasIpAttachedLicenseTermsRequest = {
 export type LicenseRegistryHasIpAttachedLicenseTermsResponse = boolean;
 
 export type LicenseRegistryIsConsumingScheduledOpResponse = Hex;
+
+/**
+ * LicenseRegistryIsDefaultLicenseRequest
+ *
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type LicenseRegistryIsDefaultLicenseRequest = {
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+export type LicenseRegistryIsDefaultLicenseResponse = boolean;
 
 /**
  * LicenseRegistryIsDerivativeIpRequest
@@ -18472,6 +21984,41 @@ export type LicenseRegistryIsRegisteredLicenseTemplateResponse = boolean;
 export type LicenseRegistryProxiableUuidResponse = Hex;
 
 /**
+ * LicenseRegistryVerifyGroupAddIpRequest
+ *
+ * @param groupId address
+ * @param groupRewardPool address
+ * @param ipId address
+ * @param groupLicenseTemplate address
+ * @param groupLicenseTermsId uint256
+ */
+export type LicenseRegistryVerifyGroupAddIpRequest = {
+  groupId: Address;
+  groupRewardPool: Address;
+  ipId: Address;
+  groupLicenseTemplate: Address;
+  groupLicenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryVerifyGroupAddIpResponse
+ *
+ * @param ipLicensingConfig tuple
+ */
+export type LicenseRegistryVerifyGroupAddIpResponse = {
+  ipLicensingConfig: {
+    isSet: boolean;
+    mintingFee: bigint;
+    licensingHook: Address;
+    hookData: Hex;
+    commercialRevShare: number;
+    disabled: boolean;
+    expectMinimumGroupRewardShare: number;
+    expectGroupRewardPool: Address;
+  };
+};
+
+/**
  * LicenseRegistryVerifyMintLicenseTokenRequest
  *
  * @param licensorIpId address
@@ -18491,6 +22038,10 @@ export type LicenseRegistryVerifyMintLicenseTokenResponse = {
   mintingFee: bigint;
   licensingHook: Address;
   hookData: Hex;
+  commercialRevShare: number;
+  disabled: boolean;
+  expectMinimumGroupRewardShare: number;
+  expectGroupRewardPool: Address;
 };
 
 /**
@@ -18504,6 +22055,15 @@ export type LicenseRegistryAttachLicenseTermsToIpRequest = {
   ipId: Address;
   licenseTemplate: Address;
   licenseTermsId: bigint;
+};
+
+/**
+ * LicenseRegistryGetAncestorsCountRequest
+ *
+ * @param ipId address
+ */
+export type LicenseRegistryGetAncestorsCountRequest = {
+  ipId: Address;
 };
 
 /**
@@ -18574,6 +22134,10 @@ export type LicenseRegistrySetLicensingConfigForIpRequest = {
     mintingFee: bigint;
     licensingHook: Address;
     hookData: Hex;
+    commercialRevShare: number;
+    disabled: boolean;
+    expectMinimumGroupRewardShare: number;
+    expectGroupRewardPool: Address;
   };
 };
 
@@ -18594,6 +22158,10 @@ export type LicenseRegistrySetLicensingConfigForLicenseRequest = {
     mintingFee: bigint;
     licensingHook: Address;
     hookData: Hex;
+    commercialRevShare: number;
+    disabled: boolean;
+    expectMinimumGroupRewardShare: number;
+    expectGroupRewardPool: Address;
   };
 };
 
@@ -18984,6 +22552,20 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
   }
 
   /**
+   * method GROUP_IP_ASSET_REGISTRY for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGroupIpAssetRegistryRequest
+   * @return Promise<LicenseRegistryGroupIpAssetRegistryResponse>
+   */
+  public async groupIpAssetRegistry(): Promise<LicenseRegistryGroupIpAssetRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "GROUP_IP_ASSET_REGISTRY",
+    });
+  }
+
+  /**
    * method IP_GRAPH for contract LicenseRegistry
    *
    * @param request LicenseRegistryIpGraphRequest
@@ -19022,6 +22604,34 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
       abi: licenseRegistryAbi,
       address: this.address,
       functionName: "LICENSING_MODULE",
+    });
+  }
+
+  /**
+   * method MAX_ANCESTORS for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryMaxAncestorsRequest
+   * @return Promise<LicenseRegistryMaxAncestorsResponse>
+   */
+  public async maxAncestors(): Promise<LicenseRegistryMaxAncestorsResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "MAX_ANCESTORS",
+    });
+  }
+
+  /**
+   * method MAX_PARENTS for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryMaxParentsRequest
+   * @return Promise<LicenseRegistryMaxParentsResponse>
+   */
+  public async maxParents(): Promise<LicenseRegistryMaxParentsResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "MAX_PARENTS",
     });
   }
 
@@ -19256,6 +22866,26 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
   }
 
   /**
+   * method getRoyaltyPercent for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetRoyaltyPercentRequest
+   * @return Promise<LicenseRegistryGetRoyaltyPercentResponse>
+   */
+  public async getRoyaltyPercent(
+    request: LicenseRegistryGetRoyaltyPercentRequest,
+  ): Promise<LicenseRegistryGetRoyaltyPercentResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getRoyaltyPercent",
+      args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+    });
+    return {
+      royaltyPercent: result,
+    };
+  }
+
+  /**
    * method hasDerivativeIps for contract LicenseRegistry
    *
    * @param request LicenseRegistryHasDerivativeIpsRequest
@@ -19300,6 +22930,23 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
       abi: licenseRegistryAbi,
       address: this.address,
       functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method isDefaultLicense for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryIsDefaultLicenseRequest
+   * @return Promise<LicenseRegistryIsDefaultLicenseResponse>
+   */
+  public async isDefaultLicense(
+    request: LicenseRegistryIsDefaultLicenseRequest,
+  ): Promise<LicenseRegistryIsDefaultLicenseResponse> {
+    return await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "isDefaultLicense",
+      args: [request.licenseTemplate, request.licenseTermsId],
     });
   }
 
@@ -19386,6 +23033,32 @@ export class LicenseRegistryReadOnlyClient extends LicenseRegistryEventClient {
   }
 
   /**
+   * method verifyGroupAddIp for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryVerifyGroupAddIpRequest
+   * @return Promise<LicenseRegistryVerifyGroupAddIpResponse>
+   */
+  public async verifyGroupAddIp(
+    request: LicenseRegistryVerifyGroupAddIpRequest,
+  ): Promise<LicenseRegistryVerifyGroupAddIpResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "verifyGroupAddIp",
+      args: [
+        request.groupId,
+        request.groupRewardPool,
+        request.ipId,
+        request.groupLicenseTemplate,
+        request.groupLicenseTermsId,
+      ],
+    });
+    return {
+      ipLicensingConfig: result,
+    };
+  }
+
+  /**
    * method verifyMintLicenseToken for contract LicenseRegistry
    *
    * @param request LicenseRegistryVerifyMintLicenseTokenRequest
@@ -19453,6 +23126,42 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
         abi: licenseRegistryAbi,
         functionName: "attachLicenseTermsToIp",
         args: [request.ipId, request.licenseTemplate, request.licenseTermsId],
+      }),
+    };
+  }
+
+  /**
+   * method getAncestorsCount for contract LicenseRegistry
+   *
+   * @param request LicenseRegistryGetAncestorsCountRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async getAncestorsCount(
+    request: LicenseRegistryGetAncestorsCountRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: licenseRegistryAbi,
+      address: this.address,
+      functionName: "getAncestorsCount",
+      account: this.wallet.account,
+      args: [request.ipId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method getAncestorsCount for contract LicenseRegistry with only encode
+   *
+   * @param request LicenseRegistryGetAncestorsCountRequest
+   * @return EncodedTxData
+   */
+  public getAncestorsCountEncode(request: LicenseRegistryGetAncestorsCountRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: licenseRegistryAbi,
+        functionName: "getAncestorsCount",
+        args: [request.ipId],
       }),
     };
   }
@@ -19909,6 +23618,8 @@ export type LicensingModuleAttachLicenseTermsRequest = {
  * @param amount uint256
  * @param receiver address
  * @param royaltyContext bytes
+ * @param maxMintingFee uint256
+ * @param maxRevenueShare uint32
  */
 export type LicensingModuleMintLicenseTokensRequest = {
   licensorIpId: Address;
@@ -19917,6 +23628,8 @@ export type LicensingModuleMintLicenseTokensRequest = {
   amount: bigint;
   receiver: Address;
   royaltyContext: Hex;
+  maxMintingFee: bigint;
+  maxRevenueShare: number;
 };
 
 /**
@@ -19927,6 +23640,9 @@ export type LicensingModuleMintLicenseTokensRequest = {
  * @param licenseTermsIds uint256[]
  * @param licenseTemplate address
  * @param royaltyContext bytes
+ * @param maxMintingFee uint256
+ * @param maxRts uint32
+ * @param maxRevenueShare uint32
  */
 export type LicensingModuleRegisterDerivativeRequest = {
   childIpId: Address;
@@ -19934,6 +23650,9 @@ export type LicensingModuleRegisterDerivativeRequest = {
   licenseTermsIds: readonly bigint[];
   licenseTemplate: Address;
   royaltyContext: Hex;
+  maxMintingFee: bigint;
+  maxRts: number;
+  maxRevenueShare: number;
 };
 
 /**
@@ -19942,11 +23661,13 @@ export type LicensingModuleRegisterDerivativeRequest = {
  * @param childIpId address
  * @param licenseTokenIds uint256[]
  * @param royaltyContext bytes
+ * @param maxRts uint32
  */
 export type LicensingModuleRegisterDerivativeWithLicenseTokensRequest = {
   childIpId: Address;
   licenseTokenIds: readonly bigint[];
   royaltyContext: Hex;
+  maxRts: number;
 };
 
 /**
@@ -19966,6 +23687,10 @@ export type LicensingModuleSetLicensingConfigRequest = {
     mintingFee: bigint;
     licensingHook: Address;
     hookData: Hex;
+    commercialRevShare: number;
+    disabled: boolean;
+    expectMinimumGroupRewardShare: number;
+    expectGroupRewardPool: Address;
   };
 };
 
@@ -20171,6 +23896,8 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
         request.amount,
         request.receiver,
         request.royaltyContext,
+        request.maxMintingFee,
+        request.maxRevenueShare,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -20195,6 +23922,8 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
           request.amount,
           request.receiver,
           request.royaltyContext,
+          request.maxMintingFee,
+          request.maxRevenueShare,
         ],
       }),
     };
@@ -20220,6 +23949,9 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
         request.licenseTermsIds,
         request.licenseTemplate,
         request.royaltyContext,
+        request.maxMintingFee,
+        request.maxRts,
+        request.maxRevenueShare,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -20245,6 +23977,9 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
           request.licenseTermsIds,
           request.licenseTemplate,
           request.royaltyContext,
+          request.maxMintingFee,
+          request.maxRts,
+          request.maxRevenueShare,
         ],
       }),
     };
@@ -20264,7 +23999,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
       address: this.address,
       functionName: "registerDerivativeWithLicenseTokens",
       account: this.wallet.account,
-      args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
+      args: [request.childIpId, request.licenseTokenIds, request.royaltyContext, request.maxRts],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -20283,7 +24018,7 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
       data: encodeFunctionData({
         abi: licensingModuleAbi,
         functionName: "registerDerivativeWithLicenseTokens",
-        args: [request.childIpId, request.licenseTokenIds, request.royaltyContext],
+        args: [request.childIpId, request.licenseTokenIds, request.royaltyContext, request.maxRts],
       }),
     };
   }
@@ -20990,9 +24725,11 @@ export type PiLicenseTemplateUpgradedEvent = {
 
 export type PiLicenseTemplateAccessControllerResponse = Address;
 
-export type PiLicenseTemplateIpAccountRegistryResponse = Address;
+export type PiLicenseTemplateIpAssetRegistryResponse = Address;
 
 export type PiLicenseTemplateLicenseRegistryResponse = Address;
+
+export type PiLicenseTemplateModuleRegistryResponse = Address;
 
 export type PiLicenseTemplateRoyaltyModuleResponse = Address;
 
@@ -21000,7 +24737,42 @@ export type PiLicenseTemplateTermsRendererResponse = Address;
 
 export type PiLicenseTemplateUpgradeInterfaceVersionResponse = string;
 
+/**
+ * PiLicenseTemplateAllowDerivativeRegistrationRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateAllowDerivativeRegistrationRequest = {
+  licenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateAllowDerivativeRegistrationResponse = boolean;
+
 export type PiLicenseTemplateAuthorityResponse = Address;
+
+/**
+ * PiLicenseTemplateCanAttachToGroupIpRequest
+ *
+ * @param licenseTermsId uint256
+ */
+export type PiLicenseTemplateCanAttachToGroupIpRequest = {
+  licenseTermsId: bigint;
+};
+
+export type PiLicenseTemplateCanAttachToGroupIpResponse = boolean;
+
+/**
+ * PiLicenseTemplateCanOverrideRoyaltyPercentRequest
+ *
+ * @param licenseTermsId uint256
+ * @param newRoyaltyPercent uint32
+ */
+export type PiLicenseTemplateCanOverrideRoyaltyPercentRequest = {
+  licenseTermsId: bigint;
+  newRoyaltyPercent: number;
+};
+
+export type PiLicenseTemplateCanOverrideRoyaltyPercentResponse = boolean;
 
 /**
  * PiLicenseTemplateExistsRequest
@@ -21326,13 +25098,13 @@ export type PiLicenseTemplateVerifyRegisterDerivativeRequest = {
  * @param childIpId address
  * @param parentIpIds address[]
  * @param licenseTermsIds uint256[]
- * @param childIpOwner address
+ * @param caller address
  */
 export type PiLicenseTemplateVerifyRegisterDerivativeForAllParentsRequest = {
   childIpId: Address;
   parentIpIds: readonly Address[];
   licenseTermsIds: readonly bigint[];
-  childIpOwner: Address;
+  caller: Address;
 };
 
 /**
@@ -21576,16 +25348,16 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
   }
 
   /**
-   * method IP_ACCOUNT_REGISTRY for contract PILicenseTemplate
+   * method IP_ASSET_REGISTRY for contract PILicenseTemplate
    *
-   * @param request PiLicenseTemplateIpAccountRegistryRequest
-   * @return Promise<PiLicenseTemplateIpAccountRegistryResponse>
+   * @param request PiLicenseTemplateIpAssetRegistryRequest
+   * @return Promise<PiLicenseTemplateIpAssetRegistryResponse>
    */
-  public async ipAccountRegistry(): Promise<PiLicenseTemplateIpAccountRegistryResponse> {
+  public async ipAssetRegistry(): Promise<PiLicenseTemplateIpAssetRegistryResponse> {
     return await this.rpcClient.readContract({
       abi: piLicenseTemplateAbi,
       address: this.address,
-      functionName: "IP_ACCOUNT_REGISTRY",
+      functionName: "IP_ASSET_REGISTRY",
     });
   }
 
@@ -21600,6 +25372,20 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
       abi: piLicenseTemplateAbi,
       address: this.address,
       functionName: "LICENSE_REGISTRY",
+    });
+  }
+
+  /**
+   * method MODULE_REGISTRY for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateModuleRegistryRequest
+   * @return Promise<PiLicenseTemplateModuleRegistryResponse>
+   */
+  public async moduleRegistry(): Promise<PiLicenseTemplateModuleRegistryResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "MODULE_REGISTRY",
     });
   }
 
@@ -21646,6 +25432,23 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
   }
 
   /**
+   * method allowDerivativeRegistration for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateAllowDerivativeRegistrationRequest
+   * @return Promise<PiLicenseTemplateAllowDerivativeRegistrationResponse>
+   */
+  public async allowDerivativeRegistration(
+    request: PiLicenseTemplateAllowDerivativeRegistrationRequest,
+  ): Promise<PiLicenseTemplateAllowDerivativeRegistrationResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "allowDerivativeRegistration",
+      args: [request.licenseTermsId],
+    });
+  }
+
+  /**
    * method authority for contract PILicenseTemplate
    *
    * @param request PiLicenseTemplateAuthorityRequest
@@ -21656,6 +25459,40 @@ export class PiLicenseTemplateReadOnlyClient extends PiLicenseTemplateEventClien
       abi: piLicenseTemplateAbi,
       address: this.address,
       functionName: "authority",
+    });
+  }
+
+  /**
+   * method canAttachToGroupIp for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateCanAttachToGroupIpRequest
+   * @return Promise<PiLicenseTemplateCanAttachToGroupIpResponse>
+   */
+  public async canAttachToGroupIp(
+    request: PiLicenseTemplateCanAttachToGroupIpRequest,
+  ): Promise<PiLicenseTemplateCanAttachToGroupIpResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "canAttachToGroupIp",
+      args: [request.licenseTermsId],
+    });
+  }
+
+  /**
+   * method canOverrideRoyaltyPercent for contract PILicenseTemplate
+   *
+   * @param request PiLicenseTemplateCanOverrideRoyaltyPercentRequest
+   * @return Promise<PiLicenseTemplateCanOverrideRoyaltyPercentResponse>
+   */
+  public async canOverrideRoyaltyPercent(
+    request: PiLicenseTemplateCanOverrideRoyaltyPercentRequest,
+  ): Promise<PiLicenseTemplateCanOverrideRoyaltyPercentResponse> {
+    return await this.rpcClient.readContract({
+      abi: piLicenseTemplateAbi,
+      address: this.address,
+      functionName: "canOverrideRoyaltyPercent",
+      args: [request.licenseTermsId, request.newRoyaltyPercent],
     });
   }
 
@@ -22229,7 +26066,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       address: this.address,
       functionName: "verifyRegisterDerivativeForAllParents",
       account: this.wallet.account,
-      args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.childIpOwner],
+      args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.caller],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -22248,12 +26085,7 @@ export class PiLicenseTemplateClient extends PiLicenseTemplateReadOnlyClient {
       data: encodeFunctionData({
         abi: piLicenseTemplateAbi,
         functionName: "verifyRegisterDerivativeForAllParents",
-        args: [
-          request.childIpId,
-          request.parentIpIds,
-          request.licenseTermsIds,
-          request.childIpOwner,
-        ],
+        args: [request.childIpId, request.parentIpIds, request.licenseTermsIds, request.caller],
       }),
     };
   }
@@ -22297,6 +26129,7 @@ export type RegistrationWorkflowsCreateCollectionRequest = {
  * @param spgNftContract address
  * @param recipient address
  * @param ipMetadata tuple
+ * @param allowDuplicates bool
  */
 export type RegistrationWorkflowsMintAndRegisterIpRequest = {
   spgNftContract: Address;
@@ -22307,6 +26140,7 @@ export type RegistrationWorkflowsMintAndRegisterIpRequest = {
     nftMetadataURI: string;
     nftMetadataHash: Hex;
   };
+  allowDuplicates: boolean;
 };
 
 /**
@@ -22459,7 +26293,12 @@ export class RegistrationWorkflowsClient extends RegistrationWorkflowsEventClien
       address: this.address,
       functionName: "mintAndRegisterIp",
       account: this.wallet.account,
-      args: [request.spgNftContract, request.recipient, request.ipMetadata],
+      args: [
+        request.spgNftContract,
+        request.recipient,
+        request.ipMetadata,
+        request.allowDuplicates,
+      ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -22478,7 +26317,12 @@ export class RegistrationWorkflowsClient extends RegistrationWorkflowsEventClien
       data: encodeFunctionData({
         abi: registrationWorkflowsAbi,
         functionName: "mintAndRegisterIp",
-        args: [request.spgNftContract, request.recipient, request.ipMetadata],
+        args: [
+          request.spgNftContract,
+          request.recipient,
+          request.ipMetadata,
+          request.allowDuplicates,
+        ],
       }),
     };
   }
@@ -22849,6 +26693,8 @@ export type RoyaltyPolicyLrpIpGraphAclResponse = Address;
 
 export type RoyaltyPolicyLrpRoyaltyModuleResponse = Address;
 
+export type RoyaltyPolicyLrpRoyaltyPolicyLapResponse = Address;
+
 export type RoyaltyPolicyLrpUpgradeInterfaceVersionResponse = string;
 
 export type RoyaltyPolicyLrpAuthorityResponse = Address;
@@ -22893,6 +26739,8 @@ export type RoyaltyPolicyLrpGetTransferredTokensRequest = {
 export type RoyaltyPolicyLrpGetTransferredTokensResponse = bigint;
 
 export type RoyaltyPolicyLrpIsConsumingScheduledOpResponse = Hex;
+
+export type RoyaltyPolicyLrpIsSupportGroupResponse = boolean;
 
 export type RoyaltyPolicyLrpPausedResponse = boolean;
 
@@ -22968,13 +26816,11 @@ export type RoyaltyPolicyLrpSetAuthorityRequest = {
  * @param ipId address
  * @param ancestorIpId address
  * @param token address
- * @param amount uint256
  */
 export type RoyaltyPolicyLrpTransferToVaultRequest = {
   ipId: Address;
   ancestorIpId: Address;
   token: Address;
-  amount: bigint;
 };
 
 /**
@@ -23292,6 +27138,20 @@ export class RoyaltyPolicyLrpReadOnlyClient extends RoyaltyPolicyLrpEventClient 
   }
 
   /**
+   * method ROYALTY_POLICY_LAP for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpRoyaltyPolicyLapRequest
+   * @return Promise<RoyaltyPolicyLrpRoyaltyPolicyLapResponse>
+   */
+  public async royaltyPolicyLap(): Promise<RoyaltyPolicyLrpRoyaltyPolicyLapResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "ROYALTY_POLICY_LAP",
+    });
+  }
+
+  /**
    * method UPGRADE_INTERFACE_VERSION for contract RoyaltyPolicyLRP
    *
    * @param request RoyaltyPolicyLrpUpgradeInterfaceVersionRequest
@@ -23381,6 +27241,20 @@ export class RoyaltyPolicyLrpReadOnlyClient extends RoyaltyPolicyLrpEventClient 
       abi: royaltyPolicyLrpAbi,
       address: this.address,
       functionName: "isConsumingScheduledOp",
+    });
+  }
+
+  /**
+   * method isSupportGroup for contract RoyaltyPolicyLRP
+   *
+   * @param request RoyaltyPolicyLrpIsSupportGroupRequest
+   * @return Promise<RoyaltyPolicyLrpIsSupportGroupResponse>
+   */
+  public async isSupportGroup(): Promise<RoyaltyPolicyLrpIsSupportGroupResponse> {
+    return await this.rpcClient.readContract({
+      abi: royaltyPolicyLrpAbi,
+      address: this.address,
+      functionName: "isSupportGroup",
     });
   }
 
@@ -23688,7 +27562,7 @@ export class RoyaltyPolicyLrpClient extends RoyaltyPolicyLrpReadOnlyClient {
       address: this.address,
       functionName: "transferToVault",
       account: this.wallet.account,
-      args: [request.ipId, request.ancestorIpId, request.token, request.amount],
+      args: [request.ipId, request.ancestorIpId, request.token],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -23705,7 +27579,7 @@ export class RoyaltyPolicyLrpClient extends RoyaltyPolicyLrpReadOnlyClient {
       data: encodeFunctionData({
         abi: royaltyPolicyLrpAbi,
         functionName: "transferToVault",
-        args: [request.ipId, request.ancestorIpId, request.token, request.amount],
+        args: [request.ipId, request.ancestorIpId, request.token],
       }),
     };
   }
@@ -23785,15 +27659,13 @@ export class RoyaltyPolicyLrpClient extends RoyaltyPolicyLrpReadOnlyClient {
  * RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest
  *
  * @param ipId address
- * @param ipRoyaltyVault address
  * @param royaltyShares tuple[]
  * @param sigApproveRoyaltyTokens tuple
  */
 export type RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest = {
   ipId: Address;
-  ipRoyaltyVault: Address;
   royaltyShares: {
-    author: Address;
+    recipient: Address;
     percentage: number;
   }[];
   sigApproveRoyaltyTokens: {
@@ -23809,8 +27681,9 @@ export type RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest = {
  * @param spgNftContract address
  * @param recipient address
  * @param ipMetadata tuple
- * @param terms tuple[]
+ * @param licenseTermsData tuple[]
  * @param royaltyShares tuple[]
+ * @param allowDuplicates bool
  */
 export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest =
   {
@@ -23822,29 +27695,42 @@ export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsA
       nftMetadataURI: string;
       nftMetadataHash: Hex;
     };
-    terms: {
-      transferable: boolean;
-      royaltyPolicy: Address;
-      defaultMintingFee: bigint;
-      expiration: bigint;
-      commercialUse: boolean;
-      commercialAttribution: boolean;
-      commercializerChecker: Address;
-      commercializerCheckerData: Hex;
-      commercialRevShare: number;
-      commercialRevCeiling: bigint;
-      derivativesAllowed: boolean;
-      derivativesAttribution: boolean;
-      derivativesApproval: boolean;
-      derivativesReciprocal: boolean;
-      derivativeRevCeiling: bigint;
-      currency: Address;
-      uri: string;
+    licenseTermsData: {
+      terms: {
+        transferable: boolean;
+        royaltyPolicy: Address;
+        defaultMintingFee: bigint;
+        expiration: bigint;
+        commercialUse: boolean;
+        commercialAttribution: boolean;
+        commercializerChecker: Address;
+        commercializerCheckerData: Hex;
+        commercialRevShare: number;
+        commercialRevCeiling: bigint;
+        derivativesAllowed: boolean;
+        derivativesAttribution: boolean;
+        derivativesApproval: boolean;
+        derivativesReciprocal: boolean;
+        derivativeRevCeiling: bigint;
+        currency: Address;
+        uri: string;
+      };
+      licensingConfig: {
+        isSet: boolean;
+        mintingFee: bigint;
+        licensingHook: Address;
+        hookData: Hex;
+        commercialRevShare: number;
+        disabled: boolean;
+        expectMinimumGroupRewardShare: number;
+        expectGroupRewardPool: Address;
+      };
     }[];
     royaltyShares: {
-      author: Address;
+      recipient: Address;
       percentage: number;
     }[];
+    allowDuplicates: boolean;
   };
 
 /**
@@ -23855,6 +27741,7 @@ export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsA
  * @param ipMetadata tuple
  * @param derivData tuple
  * @param royaltyShares tuple[]
+ * @param allowDuplicates bool
  */
 export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest =
   {
@@ -23871,11 +27758,15 @@ export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeA
       licenseTemplate: Address;
       licenseTermsIds: readonly bigint[];
       royaltyContext: Hex;
+      maxMintingFee: bigint;
+      maxRts: number;
+      maxRevenueShare: number;
     };
     royaltyShares: {
-      author: Address;
+      recipient: Address;
       percentage: number;
     }[];
+    allowDuplicates: boolean;
   };
 
 /**
@@ -23884,9 +27775,8 @@ export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeA
  * @param nftContract address
  * @param tokenId uint256
  * @param ipMetadata tuple
- * @param terms tuple[]
- * @param sigMetadata tuple
- * @param sigAttach tuple
+ * @param licenseTermsData tuple[]
+ * @param sigMetadataAndAttachAndConfig tuple
  */
 export type RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest =
   {
@@ -23898,31 +27788,38 @@ export type RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeplo
       nftMetadataURI: string;
       nftMetadataHash: Hex;
     };
-    terms: {
-      transferable: boolean;
-      royaltyPolicy: Address;
-      defaultMintingFee: bigint;
-      expiration: bigint;
-      commercialUse: boolean;
-      commercialAttribution: boolean;
-      commercializerChecker: Address;
-      commercializerCheckerData: Hex;
-      commercialRevShare: number;
-      commercialRevCeiling: bigint;
-      derivativesAllowed: boolean;
-      derivativesAttribution: boolean;
-      derivativesApproval: boolean;
-      derivativesReciprocal: boolean;
-      derivativeRevCeiling: bigint;
-      currency: Address;
-      uri: string;
+    licenseTermsData: {
+      terms: {
+        transferable: boolean;
+        royaltyPolicy: Address;
+        defaultMintingFee: bigint;
+        expiration: bigint;
+        commercialUse: boolean;
+        commercialAttribution: boolean;
+        commercializerChecker: Address;
+        commercializerCheckerData: Hex;
+        commercialRevShare: number;
+        commercialRevCeiling: bigint;
+        derivativesAllowed: boolean;
+        derivativesAttribution: boolean;
+        derivativesApproval: boolean;
+        derivativesReciprocal: boolean;
+        derivativeRevCeiling: bigint;
+        currency: Address;
+        uri: string;
+      };
+      licensingConfig: {
+        isSet: boolean;
+        mintingFee: bigint;
+        licensingHook: Address;
+        hookData: Hex;
+        commercialRevShare: number;
+        disabled: boolean;
+        expectMinimumGroupRewardShare: number;
+        expectGroupRewardPool: Address;
+      };
     }[];
-    sigMetadata: {
-      signer: Address;
-      deadline: bigint;
-      signature: Hex;
-    };
-    sigAttach: {
+    sigMetadataAndAttachAndConfig: {
       signer: Address;
       deadline: bigint;
       signature: Hex;
@@ -23936,8 +27833,7 @@ export type RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeplo
  * @param tokenId uint256
  * @param ipMetadata tuple
  * @param derivData tuple
- * @param sigMetadata tuple
- * @param sigRegister tuple
+ * @param sigMetadataAndRegister tuple
  */
 export type RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest =
   {
@@ -23954,13 +27850,11 @@ export type RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeplo
       licenseTemplate: Address;
       licenseTermsIds: readonly bigint[];
       royaltyContext: Hex;
+      maxMintingFee: bigint;
+      maxRts: number;
+      maxRevenueShare: number;
     };
-    sigMetadata: {
-      signer: Address;
-      deadline: bigint;
-      signature: Hex;
-    };
-    sigRegister: {
+    sigMetadataAndRegister: {
       signer: Address;
       deadline: bigint;
       signature: Hex;
@@ -23996,12 +27890,7 @@ export class RoyaltyTokenDistributionWorkflowsClient {
       address: this.address,
       functionName: "distributeRoyaltyTokens",
       account: this.wallet.account,
-      args: [
-        request.ipId,
-        request.ipRoyaltyVault,
-        request.royaltyShares,
-        request.sigApproveRoyaltyTokens,
-      ],
+      args: [request.ipId, request.royaltyShares, request.sigApproveRoyaltyTokens],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -24020,12 +27909,7 @@ export class RoyaltyTokenDistributionWorkflowsClient {
       data: encodeFunctionData({
         abi: royaltyTokenDistributionWorkflowsAbi,
         functionName: "distributeRoyaltyTokens",
-        args: [
-          request.ipId,
-          request.ipRoyaltyVault,
-          request.royaltyShares,
-          request.sigApproveRoyaltyTokens,
-        ],
+        args: [request.ipId, request.royaltyShares, request.sigApproveRoyaltyTokens],
       }),
     };
   }
@@ -24048,8 +27932,9 @@ export class RoyaltyTokenDistributionWorkflowsClient {
         request.spgNftContract,
         request.recipient,
         request.ipMetadata,
-        request.terms,
+        request.licenseTermsData,
         request.royaltyShares,
+        request.allowDuplicates,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -24073,8 +27958,9 @@ export class RoyaltyTokenDistributionWorkflowsClient {
           request.spgNftContract,
           request.recipient,
           request.ipMetadata,
-          request.terms,
+          request.licenseTermsData,
           request.royaltyShares,
+          request.allowDuplicates,
         ],
       }),
     };
@@ -24100,6 +27986,7 @@ export class RoyaltyTokenDistributionWorkflowsClient {
         request.ipMetadata,
         request.derivData,
         request.royaltyShares,
+        request.allowDuplicates,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -24125,6 +28012,7 @@ export class RoyaltyTokenDistributionWorkflowsClient {
           request.ipMetadata,
           request.derivData,
           request.royaltyShares,
+          request.allowDuplicates,
         ],
       }),
     };
@@ -24148,9 +28036,8 @@ export class RoyaltyTokenDistributionWorkflowsClient {
         request.nftContract,
         request.tokenId,
         request.ipMetadata,
-        request.terms,
-        request.sigMetadata,
-        request.sigAttach,
+        request.licenseTermsData,
+        request.sigMetadataAndAttachAndConfig,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -24174,9 +28061,8 @@ export class RoyaltyTokenDistributionWorkflowsClient {
           request.nftContract,
           request.tokenId,
           request.ipMetadata,
-          request.terms,
-          request.sigMetadata,
-          request.sigAttach,
+          request.licenseTermsData,
+          request.sigMetadataAndAttachAndConfig,
         ],
       }),
     };
@@ -24201,8 +28087,7 @@ export class RoyaltyTokenDistributionWorkflowsClient {
         request.tokenId,
         request.ipMetadata,
         request.derivData,
-        request.sigMetadata,
-        request.sigRegister,
+        request.sigMetadataAndRegister,
       ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
@@ -24227,8 +28112,7 @@ export class RoyaltyTokenDistributionWorkflowsClient {
           request.tokenId,
           request.ipMetadata,
           request.derivData,
-          request.sigMetadata,
-          request.sigRegister,
+          request.sigMetadataAndRegister,
         ],
       }),
     };
@@ -24236,249 +28120,6 @@ export class RoyaltyTokenDistributionWorkflowsClient {
 }
 
 // Contract RoyaltyWorkflows =============================================================
-
-/**
- * RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest
- *
- * @param ipId address
- * @param claimer address
- * @param unclaimedSnapshotIds uint256[]
- * @param currencyTokens address[]
- */
-export type RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest = {
-  ipId: Address;
-  claimer: Address;
-  unclaimedSnapshotIds: readonly bigint[];
-  currencyTokens: readonly Address[];
-};
-
-/**
- * RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest
- *
- * @param ipId address
- * @param claimer address
- * @param currencyTokens address[]
- */
-export type RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest = {
-  ipId: Address;
-  claimer: Address;
-  currencyTokens: readonly Address[];
-};
-
-/**
- * RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest
- *
- * @param ancestorIpId address
- * @param claimer address
- * @param unclaimedSnapshotIds uint256[]
- * @param royaltyClaimDetails tuple[]
- */
-export type RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest = {
-  ancestorIpId: Address;
-  claimer: Address;
-  unclaimedSnapshotIds: readonly bigint[];
-  royaltyClaimDetails: {
-    childIpId: Address;
-    royaltyPolicy: Address;
-    currencyToken: Address;
-    amount: bigint;
-  }[];
-};
-
-/**
- * RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest
- *
- * @param ancestorIpId address
- * @param claimer address
- * @param royaltyClaimDetails tuple[]
- */
-export type RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest = {
-  ancestorIpId: Address;
-  claimer: Address;
-  royaltyClaimDetails: {
-    childIpId: Address;
-    royaltyPolicy: Address;
-    currencyToken: Address;
-    amount: bigint;
-  }[];
-};
-
-/**
- * contract RoyaltyWorkflows write method
- */
-export class RoyaltyWorkflowsClient {
-  protected readonly wallet: SimpleWalletClient;
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    this.address = address || getAddress(royaltyWorkflowsAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-    this.wallet = wallet;
-  }
-
-  /**
-   * method snapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows
-   *
-   * @param request RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async snapshotAndClaimBySnapshotBatch(
-    request: RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: royaltyWorkflowsAbi,
-      address: this.address,
-      functionName: "snapshotAndClaimBySnapshotBatch",
-      account: this.wallet.account,
-      args: [request.ipId, request.claimer, request.unclaimedSnapshotIds, request.currencyTokens],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method snapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows with only encode
-   *
-   * @param request RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest
-   * @return EncodedTxData
-   */
-  public snapshotAndClaimBySnapshotBatchEncode(
-    request: RoyaltyWorkflowsSnapshotAndClaimBySnapshotBatchRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: royaltyWorkflowsAbi,
-        functionName: "snapshotAndClaimBySnapshotBatch",
-        args: [request.ipId, request.claimer, request.unclaimedSnapshotIds, request.currencyTokens],
-      }),
-    };
-  }
-
-  /**
-   * method snapshotAndClaimByTokenBatch for contract RoyaltyWorkflows
-   *
-   * @param request RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async snapshotAndClaimByTokenBatch(
-    request: RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: royaltyWorkflowsAbi,
-      address: this.address,
-      functionName: "snapshotAndClaimByTokenBatch",
-      account: this.wallet.account,
-      args: [request.ipId, request.claimer, request.currencyTokens],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method snapshotAndClaimByTokenBatch for contract RoyaltyWorkflows with only encode
-   *
-   * @param request RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest
-   * @return EncodedTxData
-   */
-  public snapshotAndClaimByTokenBatchEncode(
-    request: RoyaltyWorkflowsSnapshotAndClaimByTokenBatchRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: royaltyWorkflowsAbi,
-        functionName: "snapshotAndClaimByTokenBatch",
-        args: [request.ipId, request.claimer, request.currencyTokens],
-      }),
-    };
-  }
-
-  /**
-   * method transferToVaultAndSnapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows
-   *
-   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transferToVaultAndSnapshotAndClaimBySnapshotBatch(
-    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: royaltyWorkflowsAbi,
-      address: this.address,
-      functionName: "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
-      account: this.wallet.account,
-      args: [
-        request.ancestorIpId,
-        request.claimer,
-        request.unclaimedSnapshotIds,
-        request.royaltyClaimDetails,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transferToVaultAndSnapshotAndClaimBySnapshotBatch for contract RoyaltyWorkflows with only encode
-   *
-   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest
-   * @return EncodedTxData
-   */
-  public transferToVaultAndSnapshotAndClaimBySnapshotBatchEncode(
-    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: royaltyWorkflowsAbi,
-        functionName: "transferToVaultAndSnapshotAndClaimBySnapshotBatch",
-        args: [
-          request.ancestorIpId,
-          request.claimer,
-          request.unclaimedSnapshotIds,
-          request.royaltyClaimDetails,
-        ],
-      }),
-    };
-  }
-
-  /**
-   * method transferToVaultAndSnapshotAndClaimByTokenBatch for contract RoyaltyWorkflows
-   *
-   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transferToVaultAndSnapshotAndClaimByTokenBatch(
-    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: royaltyWorkflowsAbi,
-      address: this.address,
-      functionName: "transferToVaultAndSnapshotAndClaimByTokenBatch",
-      account: this.wallet.account,
-      args: [request.ancestorIpId, request.claimer, request.royaltyClaimDetails],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transferToVaultAndSnapshotAndClaimByTokenBatch for contract RoyaltyWorkflows with only encode
-   *
-   * @param request RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest
-   * @return EncodedTxData
-   */
-  public transferToVaultAndSnapshotAndClaimByTokenBatchEncode(
-    request: RoyaltyWorkflowsTransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: royaltyWorkflowsAbi,
-        functionName: "transferToVaultAndSnapshotAndClaimByTokenBatch",
-        args: [request.ancestorIpId, request.claimer, request.royaltyClaimDetails],
-      }),
-    };
-  }
-}
 
 // Contract SPGNFTBeacon =============================================================
 
@@ -24887,6 +28528,8 @@ export type SpgnftImplLicenseAttachmentWorkflowsAddressResponse = Address;
 
 export type SpgnftImplRegistrationWorkflowsAddressResponse = Address;
 
+export type SpgnftImplRoyaltyTokenDistributionWorkflowsAddressResponse = Address;
+
 /**
  * SpgnftImplBalanceOfRequest
  *
@@ -24923,6 +28566,17 @@ export type SpgnftImplGetRoleAdminRequest = {
 };
 
 export type SpgnftImplGetRoleAdminResponse = Hex;
+
+/**
+ * SpgnftImplGetTokenIdByMetadataHashRequest
+ *
+ * @param nftMetadataHash bytes32
+ */
+export type SpgnftImplGetTokenIdByMetadataHashRequest = {
+  nftMetadataHash: Hex;
+};
+
+export type SpgnftImplGetTokenIdByMetadataHashResponse = bigint;
 
 /**
  * SpgnftImplHasRoleRequest
@@ -25047,10 +28701,14 @@ export type SpgnftImplInitializeRequest = {
  *
  * @param to address
  * @param nftMetadataURI string
+ * @param nftMetadataHash bytes32
+ * @param allowDuplicates bool
  */
 export type SpgnftImplMintRequest = {
   to: Address;
   nftMetadataURI: string;
+  nftMetadataHash: Hex;
+  allowDuplicates: boolean;
 };
 
 /**
@@ -25059,11 +28717,15 @@ export type SpgnftImplMintRequest = {
  * @param to address
  * @param payer address
  * @param nftMetadataURI string
+ * @param nftMetadataHash bytes32
+ * @param allowDuplicates bool
  */
 export type SpgnftImplMintByPeripheryRequest = {
   to: Address;
   payer: Address;
   nftMetadataURI: string;
+  nftMetadataHash: Hex;
+  allowDuplicates: boolean;
 };
 
 /**
@@ -25663,6 +29325,20 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
   }
 
   /**
+   * method ROYALTY_TOKEN_DISTRIBUTION_WORKFLOWS_ADDRESS for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplRoyaltyTokenDistributionWorkflowsAddressRequest
+   * @return Promise<SpgnftImplRoyaltyTokenDistributionWorkflowsAddressResponse>
+   */
+  public async royaltyTokenDistributionWorkflowsAddress(): Promise<SpgnftImplRoyaltyTokenDistributionWorkflowsAddressResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "ROYALTY_TOKEN_DISTRIBUTION_WORKFLOWS_ADDRESS",
+    });
+  }
+
+  /**
    * method balanceOf for contract SPGNFTImpl
    *
    * @param request SpgnftImplBalanceOfRequest
@@ -25738,6 +29414,23 @@ export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
       address: this.address,
       functionName: "getRoleAdmin",
       args: [request.role],
+    });
+  }
+
+  /**
+   * method getTokenIdByMetadataHash for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplGetTokenIdByMetadataHashRequest
+   * @return Promise<SpgnftImplGetTokenIdByMetadataHashResponse>
+   */
+  public async getTokenIdByMetadataHash(
+    request: SpgnftImplGetTokenIdByMetadataHashRequest,
+  ): Promise<SpgnftImplGetTokenIdByMetadataHashResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "getTokenIdByMetadataHash",
+      args: [request.nftMetadataHash],
     });
   }
 
@@ -26058,7 +29751,7 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       address: this.address,
       functionName: "mint",
       account: this.wallet.account,
-      args: [request.to, request.nftMetadataURI],
+      args: [request.to, request.nftMetadataURI, request.nftMetadataHash, request.allowDuplicates],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -26075,7 +29768,12 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       data: encodeFunctionData({
         abi: spgnftImplAbi,
         functionName: "mint",
-        args: [request.to, request.nftMetadataURI],
+        args: [
+          request.to,
+          request.nftMetadataURI,
+          request.nftMetadataHash,
+          request.allowDuplicates,
+        ],
       }),
     };
   }
@@ -26094,7 +29792,13 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       address: this.address,
       functionName: "mintByPeriphery",
       account: this.wallet.account,
-      args: [request.to, request.payer, request.nftMetadataURI],
+      args: [
+        request.to,
+        request.payer,
+        request.nftMetadataURI,
+        request.nftMetadataHash,
+        request.allowDuplicates,
+      ],
     });
     return await this.wallet.writeContract(call as WriteContractParameters);
   }
@@ -26111,7 +29815,13 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
       data: encodeFunctionData({
         abi: spgnftImplAbi,
         functionName: "mintByPeriphery",
-        args: [request.to, request.payer, request.nftMetadataURI],
+        args: [
+          request.to,
+          request.payer,
+          request.nftMetadataURI,
+          request.nftMetadataHash,
+          request.allowDuplicates,
+        ],
       }),
     };
   }

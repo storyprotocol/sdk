@@ -7,12 +7,14 @@ import {
   getStoryClient,
   getTokenId,
   mintBySpg,
-  odyssey,
   approveForLicenseToken,
+  homer,
 } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   derivativeWorkflowsAddress,
+  evenSplitGroupPoolAddress,
+  mockErc20Address,
   royaltyPolicyLapAddress,
   royaltyTokenDistributionWorkflowsAddress,
 } from "../../src/abi/generated";
@@ -20,6 +22,7 @@ import {
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
+const pool = evenSplitGroupPoolAddress[homer];
 describe("IP Asset Functions ", () => {
   let client: StoryClient;
   let noCommercialLicenseTermsId: bigint;
@@ -76,6 +79,9 @@ describe("IP Asset Functions ", () => {
         childIpId: childIpId,
         parentIpIds: [parentIpId],
         licenseTermsIds: [noCommercialLicenseTermsId],
+        maxMintingFee: "0",
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: "0",
         txOptions: {
           waitForTransaction: true,
         },
@@ -97,6 +103,8 @@ describe("IP Asset Functions ", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
+        maxMintingFee: "0",
+        maxRevenueShare: 1,
         txOptions: {
           waitForTransaction: true,
         },
@@ -104,6 +112,7 @@ describe("IP Asset Functions ", () => {
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens({
         childIpId: ipId,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+        maxRts: 5 * 10 ** 6,
         txOptions: {
           waitForTransaction: true,
         },
@@ -146,25 +155,38 @@ describe("IP Asset Functions ", () => {
 
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: nftContract,
-        terms: [
+        allowDuplicates: false,
+        licenseTermsData: [
           {
-            transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-            defaultMintingFee: BigInt(1),
-            expiration: BigInt(0),
-            commercialUse: true,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 90,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
-            uri: "",
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[homer],
+              defaultMintingFee: 1n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 90,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: mockErc20Address[homer],
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: "0x",
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: pool,
+            },
           },
         ],
         txOptions: {
@@ -174,8 +196,8 @@ describe("IP Asset Functions ", () => {
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(derivativeWorkflowsAddress[odyssey]);
-      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[odyssey]);
+      await mockERC20.approve(derivativeWorkflowsAddress[homer]);
+      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[homer]);
       await mockERC20.mint();
     });
     it("should not throw error when register a IP Asset given metadata", async () => {
@@ -196,13 +218,16 @@ describe("IP Asset Functions ", () => {
       expect(response.ipId).to.be.a("string").and.not.empty;
     });
     it("should not throw error when register derivative ip", async () => {
-      const tokenChildId = await mintBySpg(nftContract, "test-metadata");
+      const tokenChildId = await mintBySpg(nftContract);
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
         tokenId: tokenChildId!,
         derivData: {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
         },
         deadline: 1000n,
         txOptions: {
@@ -220,44 +245,68 @@ describe("IP Asset Functions ", () => {
         nftContract: nftContract,
         tokenId: tokenId!,
         deadline,
-        terms: [
+        licenseTermsData: [
           {
-            transferable: true,
-            royaltyPolicy: zeroAddress,
-            defaultMintingFee: BigInt(1),
-            expiration: BigInt(0),
-            commercialUse: false,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
-            uri: "",
+            terms: {
+              transferable: true,
+              royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: mockErc20Address[homer],
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
           },
           {
-            transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-            defaultMintingFee: BigInt(10000),
-            expiration: BigInt(1000),
-            commercialUse: true,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
-            uri: "test case",
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[homer],
+              defaultMintingFee: 10000n,
+              expiration: 1000n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: mockErc20Address[homer],
+              uri: "test case",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 10000n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
           },
         ],
         txOptions: {
@@ -275,7 +324,11 @@ describe("IP Asset Functions ", () => {
         derivData: {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
         },
+        allowDuplicates: true,
         txOptions: {
           waitForTransaction: true,
         },
@@ -293,6 +346,7 @@ describe("IP Asset Functions ", () => {
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
+        allowDuplicates: false,
         txOptions: {
           waitForTransaction: true,
         },
@@ -301,56 +355,70 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
     });
     it("should not throw error when call register pil terms and attach", async () => {
-      const tokenId = await getTokenId();
-      const ipId = (
-        await client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          txOptions: {
-            waitForTransaction: true,
-          },
-        })
-      ).ipId!;
       const result = await client.ipAsset.registerPilTermsAndAttach({
         ipId: parentIpId,
-        terms: [
+        licenseTermsData: [
           {
-            transferable: true,
-            royaltyPolicy: zeroAddress,
-            defaultMintingFee: BigInt(1),
-            expiration: BigInt(0),
-            commercialUse: false,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
-            uri: "",
+            terms: {
+              transferable: true,
+              royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: mockErc20Address[homer],
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
           },
           {
-            transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-            defaultMintingFee: BigInt(10000),
-            expiration: BigInt(1000),
-            commercialUse: true,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
-            uri: "test case",
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[homer],
+              defaultMintingFee: 10000n,
+              expiration: 1000n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: mockErc20Address[homer],
+              uri: "test case",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 10000n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
           },
         ],
         deadline: 1000n,
@@ -364,14 +432,16 @@ describe("IP Asset Functions ", () => {
 
     it("should not throw error when call mint and register ip and make derivative with license tokens", async () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-        licenseTermsId: noCommercialLicenseTermsId,
+        licenseTermsId: licenseTermsId,
         licensorIpId: parentIpId,
+        maxMintingFee: "0",
+        maxRevenueShare: 100,
         txOptions: {
           waitForTransaction: true,
         },
       });
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[odyssey],
+        derivativeWorkflowsAddress[homer],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
@@ -382,6 +452,8 @@ describe("IP Asset Functions ", () => {
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
+        maxRts: 5 * 10 ** 6,
+        allowDuplicates: true,
         txOptions: {
           waitForTransaction: true,
         },
@@ -390,18 +462,19 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
       expect(result.tokenId).to.be.a("bigint");
     });
-
     it("should not throw error when call register ip and make derivative with license tokens", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-        licenseTermsId: noCommercialLicenseTermsId,
+        licenseTermsId: licenseTermsId,
+        maxMintingFee: "0",
+        maxRevenueShare: 100,
         licensorIpId: parentIpId,
         txOptions: {
           waitForTransaction: true,
         },
       });
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[odyssey],
+        derivativeWorkflowsAddress[homer],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
       const result = await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({
@@ -413,6 +486,7 @@ describe("IP Asset Functions ", () => {
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
+        maxRts: 5 * 10 ** 6,
         deadline: 1000n,
         txOptions: {
           waitForTransaction: true,
@@ -428,25 +502,37 @@ describe("IP Asset Functions ", () => {
         {
           nftContract: nftContract,
           tokenId: tokenId!,
-          terms: [
+          licenseTermsData: [
             {
-              transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-              defaultMintingFee: BigInt(10000),
-              expiration: BigInt(1000),
-              commercialUse: true,
-              commercialAttribution: false,
-              commercializerChecker: zeroAddress,
-              commercializerCheckerData: zeroAddress,
-              commercialRevShare: 0,
-              commercialRevCeiling: BigInt(0),
-              derivativesAllowed: true,
-              derivativesAttribution: true,
-              derivativesApproval: false,
-              derivativesReciprocal: true,
-              derivativeRevCeiling: BigInt(0),
-              currency: MockERC20.address,
-              uri: "test case",
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[homer],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[homer],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
             },
           ],
           ipMetadata: {
@@ -456,7 +542,7 @@ describe("IP Asset Functions ", () => {
           },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 1,
             },
           ],
@@ -471,7 +557,6 @@ describe("IP Asset Functions ", () => {
       expect(result.ipId).to.be.a("string").and.not.empty;
       expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
     });
-
     it("should not throw error when call register derivative and attach license terms and distribute royalty tokens", async () => {
       const tokenId = await getTokenId();
       const result =
@@ -481,10 +566,13 @@ describe("IP Asset Functions ", () => {
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [licenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 10, //100%
             },
           ],
@@ -501,35 +589,74 @@ describe("IP Asset Functions ", () => {
       const result =
         await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract: nftContract,
-          terms: [
+          allowDuplicates: true,
+          licenseTermsData: [
             {
-              transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[odyssey],
-              defaultMintingFee: BigInt(10000),
-              expiration: BigInt(1000),
-              commercialUse: true,
-              commercialAttribution: false,
-              commercializerChecker: zeroAddress,
-              commercializerCheckerData: zeroAddress,
-              commercialRevShare: 0,
-              commercialRevCeiling: BigInt(0),
-              derivativesAllowed: true,
-              derivativesAttribution: true,
-              derivativesApproval: false,
-              derivativesReciprocal: true,
-              derivativeRevCeiling: BigInt(0),
-              currency: MockERC20.address,
-              uri: "test case",
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[homer],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[homer],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 10000n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+            {
+              terms: {
+                transferable: false,
+                royaltyPolicy: royaltyPolicyLapAddress[homer],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[homer],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 10000n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
             },
           ],
-          ipMetadata: {
-            ipMetadataURI: "test-uri",
-            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 10, //100%
             },
           ],
@@ -549,13 +676,17 @@ describe("IP Asset Functions ", () => {
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [licenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
           royaltyShares: [
             {
-              author: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
               percentage: 10, //100%
             },
           ],
+          allowDuplicates: true,
           txOptions: {
             waitForTransaction: true,
           },
@@ -610,11 +741,17 @@ describe("IP Asset Functions ", () => {
             childIpId: childIpId,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
           {
             childIpId: childIpId2,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
           },
         ],
         txOptions: {
@@ -628,70 +765,77 @@ describe("IP Asset Functions ", () => {
         args: [
           {
             spgNftContract: nftContract,
-            terms: [
+            licenseTermsData: [
               {
-                transferable: true,
-                royaltyPolicy: zeroAddress,
-                defaultMintingFee: BigInt(8),
-                expiration: BigInt(0),
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: BigInt(0),
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: BigInt(0),
-                currency: MockERC20.address,
-                uri: "",
-              },
-              {
-                transferable: true,
-                royaltyPolicy: zeroAddress,
-                defaultMintingFee: BigInt(1),
-                expiration: BigInt(0),
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: BigInt(0),
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: BigInt(0),
-                currency: MockERC20.address,
-                uri: "",
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLapAddress[homer],
+                  defaultMintingFee: 8n,
+                  expiration: 0n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 0,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: mockErc20Address[homer],
+                  uri: "",
+                },
+                licensingConfig: {
+                  isSet: true,
+                  mintingFee: 8n,
+                  licensingHook: zeroAddress,
+                  hookData: zeroAddress,
+                  commercialRevShare: 0,
+                  disabled: false,
+                  expectMinimumGroupRewardShare: 0,
+                  expectGroupRewardPool: zeroAddress,
+                },
               },
             ],
+            allowDuplicates: true,
           },
           {
             spgNftContract: nftContract,
-            terms: [
+            licenseTermsData: [
               {
-                transferable: true,
-                royaltyPolicy: zeroAddress,
-                defaultMintingFee: BigInt(1),
-                expiration: BigInt(0),
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: BigInt(0),
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: BigInt(0),
-                currency: MockERC20.address,
-                uri: "",
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLapAddress[homer],
+                  defaultMintingFee: 8n,
+                  expiration: 0n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 0,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: mockErc20Address[homer],
+                  uri: "",
+                },
+                licensingConfig: {
+                  isSet: true,
+                  mintingFee: 8n,
+                  licensingHook: zeroAddress,
+                  hookData: zeroAddress,
+                  commercialRevShare: 0,
+                  disabled: false,
+                  expectMinimumGroupRewardShare: 0,
+                  expectGroupRewardPool: zeroAddress,
+                },
               },
             ],
+            allowDuplicates: true,
           },
         ],
         txOptions: {
@@ -700,7 +844,7 @@ describe("IP Asset Functions ", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.results).to.be.an("array").and.not.empty;
-      expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(2);
+      expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(1);
       expect(result.results![1].licenseTermsIds).to.be.an("array").and.length(1);
     });
 
@@ -715,6 +859,13 @@ describe("IP Asset Functions ", () => {
           },
         })
       ).ipId!;
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId2,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
       const result = await client.ipAsset.batchMintAndRegisterIpAndMakeDerivative({
         args: [
           {
@@ -722,14 +873,22 @@ describe("IP Asset Functions ", () => {
             derivData: {
               parentIpIds: [parentIpId!],
               licenseTermsIds: [noCommercialLicenseTermsId!],
+              maxMintingFee: "0",
+              maxRts: 5 * 10 ** 6,
+              maxRevenueShare: "0",
             },
+            allowDuplicates: true,
           },
           {
             spgNftContract: nftContract,
             derivData: {
               parentIpIds: [parentIpId2!],
               licenseTermsIds: [noCommercialLicenseTermsId!],
+              maxMintingFee: "0",
+              maxRts: 5 * 10 ** 6,
+              maxRevenueShare: "0",
             },
+            allowDuplicates: true,
           },
         ],
         txOptions: {
