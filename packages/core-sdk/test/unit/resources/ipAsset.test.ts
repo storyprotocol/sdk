@@ -42,7 +42,7 @@ const licenseTerms: LicenseTerms = {
   derivativesApproval: false,
   derivativesReciprocal: true,
   derivativeRevCeiling: BigInt(0),
-  currency: MockERC20.address,
+  currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
   uri: "",
 };
 
@@ -73,7 +73,7 @@ describe("Test IpAssetClient", () => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
-    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1516");
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1315");
     walletMock.account = accountMock;
     sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getDefaultLicenseTerms").resolves({
       licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -259,7 +259,7 @@ describe("Test IpAssetClient", () => {
     it("should throw account error when register given wallet have no signTypedData ", async () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
-      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "odyssey");
+      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "homer");
       (ipAssetClient.registrationWorkflowsClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       (ipAssetClient.coreMetadataModuleClient as any).address =
@@ -2540,7 +2540,34 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-
+    it("should throw royaltyPolicy and mintFee match error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given royaltyPolicy is zero address and mint fee is more than zero", async () => {
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      try {
+        await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: spgNftContract,
+          tokenId: "1",
+          licenseTermsData: [
+            {
+              terms: {
+                ...licenseTerms,
+                royaltyPolicy: zeroAddress,
+                defaultMintingFee: 0,
+                commercialUse: false,
+              },
+              licensingConfig,
+            },
+          ],
+          royaltyShares: [
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 10 },
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 10 },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license terms and distribute royalty tokens: A royalty policy must be provided when the minting fee is greater than 0.",
+        );
+      }
+    });
     it("should throw percentage error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given total percentage is greater 100", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 

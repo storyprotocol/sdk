@@ -20,9 +20,10 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   spgNftContract: Address;
   groupId: Address;
   allowDuplicates: boolean;
+  maxAllowedRewardShare: number | string;
+  licenseData: LicenseData[];
   recipient?: Address;
   deadline?: string | number | bigint;
-  licenseData: LicenseData[];
 } & IpMetadataAndTxOption;
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -48,6 +49,7 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   groupId: Address;
   deadline?: bigint;
   licenseData: LicenseData[];
+  maxAllowedRewardShare: number | string;
 } & IpMetadataAndTxOption;
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -72,6 +74,7 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
   groupPool: Address;
   ipIds: Address[];
   licenseData: LicenseData;
+  maxAllowedRewardShare: number | string;
   txOptions?: TxOptions;
 };
 

@@ -24,7 +24,7 @@ describe("Test LicenseClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    licenseClient = new LicenseClient(rpcMock, walletMock, "1516");
+    licenseClient = new LicenseClient(rpcMock, walletMock, "1315");
   });
 
   afterEach(() => {
@@ -40,11 +40,11 @@ describe("Test LicenseClient", () => {
     });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
-      currency: MockERC20.address,
-      royaltyPolicy: zeroAddress,
+      currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       transferable: false,
       expiration: 0n,
-      commercialUse: false,
+      commercialUse: true,
       commercialAttribution: false,
       commercializerChecker: zeroAddress,
       commercializerCheckerData: "0x",
@@ -77,7 +77,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: MockERC20.address,
+          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           commercialRevShare: 101,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -94,7 +94,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: MockERC20.address,
+          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           commercialRevShare: -1,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -163,7 +163,7 @@ describe("Test LicenseClient", () => {
         ...licenseTerms,
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: MockERC20.address,
+        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         commercialRevShare: 90,
         royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         txOptions: {

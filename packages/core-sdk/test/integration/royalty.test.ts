@@ -2,8 +2,9 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Address, Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getTokenId, getStoryClient } from "./utils/util";
+import { mockERC721, getTokenId, getStoryClient, homer } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
+import { mockErc20Address } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -32,7 +33,7 @@ describe("Test royalty Functions", () => {
     const getCommercialPolicyId = async (): Promise<bigint> => {
       const response = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "100000",
-        currency: MockERC20.address,
+        currency: mockErc20Address[homer],
         commercialRevShare: 10,
         txOptions: {
           waitForTransaction: true,
@@ -118,7 +119,7 @@ describe("Test royalty Functions", () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: parentIpId,
         payerIpId: childIpId,
-        token: MockERC20.address,
+        token: mockErc20Address[homer],
         amount: 10 * 10 ** 2,
         txOptions: {
           waitForTransaction: true,
@@ -131,7 +132,7 @@ describe("Test royalty Functions", () => {
       const response = await client.royalty.claimableRevenue({
         royaltyVaultIpId: parentIpId,
         claimer: process.env.TEST_WALLET_ADDRESS as Address,
-        token: MockERC20.address,
+        token: mockErc20Address[homer],
       });
       expect(response).to.be.a("bigint");
     });

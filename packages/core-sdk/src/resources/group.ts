@@ -43,6 +43,7 @@ import {
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
+import { getRevenueShare } from "../utils/licenseTermsHelper";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -110,7 +111,8 @@ export class GroupClient {
    * @param request - The request object containing necessary data to mint and register Ip and attach license and add to group.
    *   @param request.nftContract The address of the NFT collection.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
-   *    @param {Array} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
+   *   @param request.maxAllowedRewardShare The maximum reward share percentage that can be allocated to each member IP.
+   *   @param {Array} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
    *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
    *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
    *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
@@ -172,6 +174,7 @@ export class GroupClient {
         spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
         recipient:
           (recipient && getAddress(recipient, "request.recipient")) || this.wallet.account!.address,
+        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigAddToGroup: {
@@ -209,6 +212,7 @@ export class GroupClient {
    * @param request - The request object containing necessary data to register ip and attach license and add to group.
    *   @param request.spgNftContract The address of the NFT collection.
    *   @param request.tokenId The ID of the NFT.
+   *   @param request.maxAllowedRewardShare The maximum reward share percentage that can be allocated to each member IP.
    *   @param request.groupId The ID of the group IP to add the newly registered IP.
    *    @param {Array} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
    *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
@@ -306,6 +310,7 @@ export class GroupClient {
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         tokenId: BigInt(request.tokenId),
+        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
         sigAddToGroup: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
           deadline: calculatedDeadline,
@@ -392,7 +397,8 @@ export class GroupClient {
    * @param request - The request object containing necessary data to register group and attach license and add ips.
    *   @param request.ipIds The IP IDs of the IPs to be added to the group.
    *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
-   *    @param {Object} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
+   *   @param request.maxAllowedRewardShare The maximum reward share percentage that can be allocated to each member IP.
+   *   @param {Object} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
    *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
    *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
    *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
@@ -418,6 +424,7 @@ export class GroupClient {
         groupPool: getAddress(request.groupPool, "request.groupPool"),
         ipIds: request.ipIds,
         licenseData: this.getLicenseData(request.licenseData)[0],
+        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
       };
       for (let i = 0; i < request.ipIds.length; i++) {
         const isRegistered = await this.ipAssetRegistryClient.isRegistered({

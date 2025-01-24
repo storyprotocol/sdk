@@ -1,16 +1,17 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Address, zeroAddress, zeroHash } from "viem";
-import { getStoryClient, odyssey, mintBySpg } from "./utils/util";
+import { Address, zeroAddress } from "viem";
+import { homer, getStoryClient, mintBySpg } from "./utils/util";
 import { StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   evenSplitGroupPoolAddress,
+  mockErc20Address,
   piLicenseTemplateAddress,
-  royaltyPolicyLapAddress,
+  royaltyPolicyLrpAddress,
 } from "../../src/abi/generated";
 
-const groupPoolAddress = evenSplitGroupPoolAddress[odyssey];
+const groupPoolAddress = evenSplitGroupPoolAddress[homer];
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,7 +44,7 @@ describe("Group Functions", () => {
         {
           terms: {
             transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[odyssey],
+            royaltyPolicy: royaltyPolicyLrpAddress[homer],
             defaultMintingFee: 0n,
             expiration: BigInt(1000),
             commercialUse: true,
@@ -57,7 +58,7 @@ describe("Group Functions", () => {
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
-            currency: MockERC20.address,
+            currency: mockErc20Address[homer],
             uri: "test case",
           },
           licensingConfig: {
@@ -82,7 +83,7 @@ describe("Group Functions", () => {
     await client.license.setLicensingConfig({
       ipId: ipId,
       licenseTermsId: licenseTermsId,
-      licenseTemplate: piLicenseTemplateAddress[odyssey],
+      licenseTemplate: piLicenseTemplateAddress[homer],
       licensingConfig: {
         isSet: true,
         mintingFee: 0n,
@@ -153,6 +154,7 @@ describe("Group Functions", () => {
         },
       ],
       allowDuplicates: true,
+      maxAllowedRewardShare: 5,
       txOptions: {
         waitForTransaction: true,
       },
@@ -166,6 +168,7 @@ describe("Group Functions", () => {
       groupId,
       nftContract: spgNftContract,
       tokenId: tokenId!,
+      maxAllowedRewardShare: 5,
       licenseData: [
         {
           licenseTermsId: licenseTermsId!,
@@ -192,6 +195,7 @@ describe("Group Functions", () => {
   it("should success when register group and attach license and add ips", async () => {
     const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
       groupPool: groupPoolAddress,
+      maxAllowedRewardShare: 5,
       ipIds: [ipId],
       licenseData: {
         licenseTermsId: licenseTermsId!,
