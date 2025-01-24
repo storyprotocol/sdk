@@ -13,7 +13,7 @@ import {
 } from "viem";
 
 import { SupportedChainIds } from "../types/config";
-import { devnet } from "./chain";
+import { homer } from "./chain";
 
 export async function waitTxAndFilterLog<
   const TAbi extends Abi | readonly unknown[],
@@ -80,15 +80,15 @@ export async function waitTx(
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId.toString()) {
     case "1315":
-    case "devnet":
-      return devnet;
+    case "homer":
+      return homer;
     default:
       throw new Error(`ChainId ${chainId as string} not supported`);
   }
 }
 
 export const chain: { [key in SupportedChainIds]: "1315" } = {
-  devnet: "1315",
+  homer: "1315",
   1315: "1315",
 };
 

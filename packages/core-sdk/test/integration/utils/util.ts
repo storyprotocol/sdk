@@ -16,14 +16,14 @@ import {
   spgnftBeaconAddress,
 } from "../../../src/abi/generated";
 export const RPC = "https://devnet.storyrpc.io";
-export const devnet = 1315;
+export const homer = 1315;
 
 export const mockERC721 = "0xa1119092ea911202E0a65B743a13AE28C5CF2f21";
-export const licenseToken = licenseTokenAddress[devnet];
-export const spgNftBeacon = spgnftBeaconAddress[devnet];
+export const licenseToken = licenseTokenAddress[homer];
+export const spgNftBeacon = spgnftBeaconAddress[homer];
 
 const baseConfig = {
-  chain: chainStringToViemChain("devnet"),
+  chain: chainStringToViemChain("homer"),
   transport: http(RPC),
 } as const;
 export const publicClient = createPublicClient(baseConfig);
@@ -130,7 +130,7 @@ export const approveForLicenseToken = async (address: Address, tokenId: bigint) 
 };
 export const getStoryClient = (): StoryClient => {
   const config: StoryConfig = {
-    chainId: "devnet",
+    chainId: "homer",
     transport: http(RPC),
     account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
   };

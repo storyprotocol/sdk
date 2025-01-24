@@ -1,7 +1,7 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
-import { devnet, getStoryClient, mintBySpg } from "./utils/util";
+import { homer, getStoryClient, mintBySpg } from "./utils/util";
 import { StoryClient } from "../../src";
 import { MockERC20 } from "./utils/mockERC20";
 import {
@@ -11,7 +11,7 @@ import {
   royaltyPolicyLrpAddress,
 } from "../../src/abi/generated";
 
-const groupPoolAddress = evenSplitGroupPoolAddress[devnet];
+const groupPoolAddress = evenSplitGroupPoolAddress[homer];
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -44,7 +44,7 @@ describe("Group Functions", () => {
         {
           terms: {
             transferable: true,
-            royaltyPolicy: royaltyPolicyLrpAddress[devnet],
+            royaltyPolicy: royaltyPolicyLrpAddress[homer],
             defaultMintingFee: 0n,
             expiration: BigInt(1000),
             commercialUse: true,
@@ -58,7 +58,7 @@ describe("Group Functions", () => {
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
-            currency: mockErc20Address[devnet],
+            currency: mockErc20Address[homer],
             uri: "test case",
           },
           licensingConfig: {
@@ -83,7 +83,7 @@ describe("Group Functions", () => {
     await client.license.setLicensingConfig({
       ipId: ipId,
       licenseTermsId: licenseTermsId,
-      licenseTemplate: piLicenseTemplateAddress[devnet],
+      licenseTemplate: piLicenseTemplateAddress[homer],
       licensingConfig: {
         isSet: true,
         mintingFee: 0n,

@@ -1,8 +1,8 @@
 import { defineChain } from "viem/utils";
 
-export const devnet = defineChain({
+export const homer = defineChain({
   id: 13_15,
-  name: "devnet",
+  name: "homer",
   nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
   rpcUrls: {
     default: {

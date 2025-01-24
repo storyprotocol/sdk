@@ -259,7 +259,7 @@ describe("Test IpAssetClient", () => {
     it("should throw account error when register given wallet have no signTypedData ", async () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
-      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "devnet");
+      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "homer");
       (ipAssetClient.registrationWorkflowsClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       (ipAssetClient.coreMetadataModuleClient as any).address =

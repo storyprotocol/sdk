@@ -1,7 +1,7 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
-import { mockERC721, getStoryClient, getTokenId, devnet } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, homer } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
 import { Address } from "viem";
 import { MockERC20 } from "./utils/mockERC20";
@@ -17,8 +17,8 @@ describe("Dispute Functions", () => {
   before(async () => {
     clientA = getStoryClient();
     clientB = getStoryClient();
-    const mockERC20 = new MockERC20(erc20TokenAddress[devnet]);
-    await mockERC20.approve(arbitrationPolicyUmaAddress[devnet]);
+    const mockERC20 = new MockERC20(erc20TokenAddress[homer]);
+    await mockERC20.approve(arbitrationPolicyUmaAddress[homer]);
     const tokenId = await getTokenId();
     ipIdB = (
       await clientB.ipAsset.register({

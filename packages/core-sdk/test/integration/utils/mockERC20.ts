@@ -9,16 +9,16 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { RPC, devnet } from "./util";
+import { RPC, homer } from "./util";
 import { mockErc20Address } from "../../../src/abi/generated";
 export class MockERC20 {
   private publicClient: PublicClient;
   private walletClient: WalletClient;
-  public address: Address = mockErc20Address[devnet];
+  public address: Address = mockErc20Address[homer];
 
   constructor(address?: Address) {
     const baseConfig = {
-      chain: chainStringToViemChain("devnet"),
+      chain: chainStringToViemChain("homer"),
       transport: http(RPC),
     } as const;
     this.publicClient = createPublicClient(baseConfig);
@@ -26,7 +26,7 @@ export class MockERC20 {
       ...baseConfig,
       account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
     });
-    this.address = address || mockErc20Address[devnet];
+    this.address = address || mockErc20Address[homer];
   }
 
   public async approve(contract: Address): Promise<void> {
