@@ -46,4 +46,76 @@ describe("Dispute Functions", () => {
     expect(response.txHash).to.be.a("string").and.not.empty;
     expect(response.disputeId).to.be.a("bigint");
   });
+
+  it("should throw error when liveness is out of bounds", async () => {
+    const minLiveness = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.minLiveness();
+    const raiseDisputeRequest: RaiseDisputeRequest = {
+      targetIpId: ipIdB,
+      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+      targetTag: "IMPROPER_REGISTRATION",
+      liveness: Number(minLiveness) - 1, // Below minimum
+      bond: 0,
+      txOptions: { waitForTransaction: true },
+    };
+
+    await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+      `Liveness must be between`,
+    );
+  });
+
+  it("should throw error when bond exceeds maximum", async () => {
+    const maxBonds = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.maxBonds({
+      token: erc20TokenAddress[homer],
+    });
+
+    const raiseDisputeRequest: RaiseDisputeRequest = {
+      targetIpId: ipIdB,
+      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+      targetTag: "IMPROPER_REGISTRATION",
+      liveness: 2592000,
+      bond: 2000000000000000000,
+      txOptions: {
+        waitForTransaction: true,
+      },
+    };
+
+    await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+      `Bonds must be less than`,
+    );
+  });
+
+  it("should throw error for non-whitelisted dispute tag", async () => {
+    const raiseDisputeRequest: RaiseDisputeRequest = {
+      targetIpId: ipIdB,
+      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+      targetTag: "INVALID_TAG",
+      liveness: 2592000,
+      bond: 0,
+      txOptions: { waitForTransaction: true },
+    };
+
+    await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+      `The target tag INVALID_TAG is not whitelisted`,
+    );
+  });
+
+  it("it should cancel a dispute", async () => {
+    // First raise a dispute
+    const raiseResponse = await clientA.dispute.raiseDispute({
+      targetIpId: ipIdB,
+      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+      targetTag: "IMPROPER_REGISTRATION",
+      liveness: 2592000,
+      bond: 0,
+      txOptions: { waitForTransaction: true },
+    });
+
+    // Then you shouldnn't be able to cancel it
+    expect(
+      clientA.dispute.cancelDispute({
+        disputeId: raiseResponse.disputeId!,
+        txOptions: { waitForTransaction: true },
+      }),
+    ).to.be.rejected;
+  });
 });
