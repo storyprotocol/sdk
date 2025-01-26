@@ -95,7 +95,7 @@ describe("Test IpAssetClient", () => {
       address: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" as Address,
       description: "Author",
       image: "https://example.com/jane.jpg",
-      socialMedia: [{ platform: "Twitter", url: "https://twitter.com/janedoe" }],
+      socialMedia: [{ platform: "Twitter", url: "https://x.com/janedoe" }],
       contributionPercent: 100,
       role: "Author",
     };
@@ -139,7 +139,7 @@ describe("Test IpAssetClient", () => {
         expect(creator)
           .to.have.property("socialMedia")
           .that.is.an("array")
-          .that.deep.equals([{ platform: "Twitter", url: "https://twitter.com/janedoe" }]);
+          .that.deep.equals([{ platform: "Twitter", url: "https://x.com/janedoe" }]);
         expect(creator).to.have.property("contributionPercent", 100);
         expect(creator).to.have.property("role", "Author");
       });
