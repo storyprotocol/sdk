@@ -47,7 +47,9 @@ export class NftClient {
     try {
       if (
         request.mintFee !== undefined &&
-        (request.mintFee < 0n || !isAddress(request.mintFeeToken || ""))
+        (request.mintFee < 0n ||
+          request.mintFeeToken === zeroAddress ||
+          !isAddress(request.mintFeeToken || ""))
       ) {
         throw new Error("Invalid mint fee token address, mint fee is greater than 0.");
       }
