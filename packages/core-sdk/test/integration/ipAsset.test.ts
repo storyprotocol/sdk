@@ -124,7 +124,7 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe.only("SPG NFT Operations", () => {
+  describe("SPG NFT Operations", () => {
     let nftContract: Hex;
     let licenseTermsId: bigint;
 
