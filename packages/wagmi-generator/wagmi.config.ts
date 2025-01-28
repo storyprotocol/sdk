@@ -4,7 +4,7 @@ import type { Evaluate } from "@wagmi/cli/src/types";
 import type { ContractConfig } from "@wagmi/cli/src/config";
 import { resolveProxyContracts } from "./resolveProxyContracts";
 import { optimizedBlockExplorer } from "./optimizedBlockExplorer";
-const odysseyChainId = 1516;
+const homerChainId = 1315;
 import "dotenv/config";
 
 export default defineConfig(async () => {
@@ -12,157 +12,169 @@ export default defineConfig(async () => {
     {
       name: "AccessController",
       address: {
-        [odysseyChainId]: "0xf709c8001E94e2ca6F98b7fFBCd5BD3943E46D81",
+        [homerChainId]: "0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a",
       },
     },
     {
       name: "DisputeModule",
       address: {
-        [odysseyChainId]: "0x692B47fa72eE7Ac0Ec617ea384a0cAD41098F712",
+        [homerChainId]: "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5",
       },
     },
     {
       name: "IPAccountImpl",
       address: {
-        [odysseyChainId]: "0x24F08796561d6E1AC08e82b68BF4d9500B374Af6",
+        [homerChainId]: "0x7343646585443F1c3F64E4F08b708788527e1C77",
       },
     },
     {
       name: "IPAssetRegistry",
       address: {
-        [odysseyChainId]: "0x28E59E91C0467e89fd0f0438D47Ca839cDfEc095",
+        [homerChainId]: "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
       },
     },
     {
       name: "IpRoyaltyVaultImpl",
       address: {
-        [odysseyChainId]: "0x1081250219B16cc3903Aa2d2d1403A75c6A2F9f5",
+        [homerChainId]: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
       },
     },
     {
       name: "LicenseRegistry",
       address: {
-        [odysseyChainId]: "0xBda3992c49E98392e75E78d82B934F3598bA495f",
+        [homerChainId]: "0x529a750E02d8E2f15649c13D69a465286a780e24",
       },
     },
     {
       name: "LicenseToken",
       address: {
-        [odysseyChainId]: "0xB138aEd64814F2845554f9DBB116491a077eEB2D",
+        [homerChainId]: "0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC",
       },
     },
     {
       name: "LicensingModule",
       address: {
-        [odysseyChainId]: "0x5a7D9Fa17DE09350F481A53B470D798c1c1aabae",
+        [homerChainId]: "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
       },
     },
     {
       name: "PILicenseTemplate",
       address: {
-        [odysseyChainId]: "0x58E2c909D557Cd23EF90D14f8fd21667A5Ae7a93",
+        [homerChainId]: "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
       },
     },
     {
       name: "ModuleRegistry",
       address: {
-        [odysseyChainId]: "0x9F18c5723BC4Ee447CF9B01a8543D3b08b7F09C7",
+        [homerChainId]: "0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5",
       },
     },
     {
       name: "RoyaltyModule",
       address: {
-        [odysseyChainId]: "0xEa6eD700b11DfF703665CCAF55887ca56134Ae3B",
+        [homerChainId]: "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
       },
     },
     {
       name: "RoyaltyPolicyLAP",
       address: {
-        [odysseyChainId]: "0x28b4F70ffE5ba7A26aEF979226f77Eb57fb9Fdb6",
+        [homerChainId]: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+      },
+    },
+    {
+      name: "ArbitrationPolicyUMA",
+      address: {
+        [homerChainId]: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936",
       },
     },
     {
       name: "RoyaltyPolicyLRP",
       address: {
-        [odysseyChainId]: "0x7D2d9af4E4ab14Afcfd86436BC348928B40963Dd",
+        [homerChainId]: "0x9156e603C949481883B1d3355c6f1132D191fC41",
       },
     },
     {
       name: "SPGNFTBeacon",
       address: {
-        [odysseyChainId]: "0x4b913A9da52806A0fd0b031bdf32fa33634d082a",
+        [homerChainId]: "0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218",
       },
     },
     {
       name: "SPGNFTImpl",
       address: {
-        [odysseyChainId]: "0x32c03CD2B4CC3456aCD86C7d5BA8E0405665DbF9",
+        [homerChainId]: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
       },
     },
     {
       name: "CoreMetadataModule",
       address: {
-        [odysseyChainId]: "0x89630Ccf23277417FBdfd3076C702F5248267e78",
+        [homerChainId]: "0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16",
       },
     },
     {
       name: "DerivativeWorkflows",
       address: {
-        [odysseyChainId]: "0xa8815CEB96857FFb8f5F8ce920b1Ae6D70254C7B",
+        [homerChainId]: "0x9e2d496f72C547C2C535B167e06ED8729B374a4f",
       },
     },
     {
       name: "GroupingWorkflows",
       address: {
-        [odysseyChainId]: "0xcd754994eBE5Ce16D432C1f936f98ac0d4aABA0e",
+        [homerChainId]: "0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd",
       },
     },
     {
       name: "RegistrationWorkflows",
       address: {
-        [odysseyChainId]: "0xde13Be395E1cd753471447Cf6A656979ef87881c",
+        [homerChainId]: "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
       },
     },
     {
       name: "RoyaltyWorkflows",
       address: {
-        [odysseyChainId]: "0xAf922379B8e1abc6B0D78547128579221C7F7A22",
+        [homerChainId]: "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
       },
     },
     {
       name: "LicenseAttachmentWorkflows",
       address: {
-        [odysseyChainId]: "0x44Bad1E4035a44eAC1606B222873E4a85E8b7D9c",
+        [homerChainId]: "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
       },
     },
     {
       name: "RoyaltyTokenDistributionWorkflows",
       address: {
-        [odysseyChainId]: "0x39D9C7a23AA9e33E06aAAf51ebaDd11342b5be50",
+        [homerChainId]: "0xa38f42B8d33809917f23997B8423054aAB97322C",
       },
     },
     {
       name: "GroupingModule",
       address: {
-        [odysseyChainId]: "0xa731948cfE05135ad77d48C71f75066333Da78Bf",
+        [homerChainId]: "0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac",
       },
     },
     {
       name: "EvenSplitGroupPool",
       address: {
-        [odysseyChainId]: "0xC384B56fD62d6679Cd62A2fE0dA3fe4560f33391",
+        [homerChainId]: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
       },
     },
     {
       name: "MockERC20",
       address: {
-        [odysseyChainId]: "0x12A8b0DcC6e3bB0915638361D9D49942Da07F455",
+        [homerChainId]: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
+      },
+    },
+    {
+      name: "ERC20Token",
+      address: {
+        [homerChainId]: "0x1514000000000000000000000000000000000000",
       },
     },
     {
       name: "Multicall3",
       address: {
-        [odysseyChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
+        [homerChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
       },
     },
   ];
@@ -171,12 +183,12 @@ export default defineConfig(async () => {
     contracts: [],
     plugins: [
       optimizedBlockExplorer({
-        baseUrl: "https://odyssey-testnet-explorer.storyscan.xyz/api",
-        name: "Odyssey",
+        baseUrl: "https://devnet.storyscan.xyz/api",
+        name: "homer",
         getAddress: await resolveProxyContracts({
-          baseUrl: "https://odyssey.storyrpc.io/",
+          baseUrl: "https://devnet.storyrpc.io",
           contracts: contracts,
-          chainId: odysseyChainId,
+          chainId: homerChainId,
         }),
         contracts: contracts,
       }),
@@ -196,6 +208,7 @@ export default defineConfig(async () => {
             "cancelDispute",
             "raiseDispute",
             "resolveDispute",
+            "isWhitelistedDisputeTag",
           ],
           IPAccountImpl: ["execute", "executeWithSig", "state", "token"],
           IPAssetRegistry: [
@@ -206,15 +219,10 @@ export default defineConfig(async () => {
             "IPAccountRegistered",
           ],
           IpRoyaltyVaultImpl: [
-            "claimRevenueByTokenBatch",
             "claimableRevenue",
-            "collectRoyaltyTokens",
             "ipId",
             "RoyaltyTokensCollected",
-            "snapshot",
-            "SnapshotCompleted",
             "RevenueTokenClaimed",
-            "claimRevenueOnBehalfBySnapshotBatch",
             "balanceOf",
           ],
           PiLicenseTemplate: [
@@ -286,6 +294,8 @@ export default defineConfig(async () => {
             "distributeRoyaltyTokens",
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
           ],
+          ArbitrationPolicyUMA: ["maxBonds", "maxLiveness", "minLiveness"],
+          AA: ["deposit", "approve"],
         },
       }),
     ],

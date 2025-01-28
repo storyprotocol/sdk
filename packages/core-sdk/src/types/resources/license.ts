@@ -1,7 +1,8 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
+import { LicensingConfig } from "../common";
 
 export type LicenseApiResponse = {
   data: License;
@@ -107,6 +108,8 @@ export type MintLicenseTokensRequest = {
   licensorIpId: Address;
   licenseTermsId: string | number | bigint;
   licenseTemplate?: Address;
+  maxMintingFee: bigint | string | number;
+  maxRevenueShare: number | string;
   amount?: number | string | bigint;
   receiver?: Address;
   txOptions?: TxOptions;
@@ -135,15 +138,15 @@ export type PredictMintingLicenseFeeRequest = {
   txOptions?: TxOptions;
 };
 
+export type InnerLicensingConfig = {
+  mintingFee: bigint;
+  commercialRevShare: number;
+  expectMinimumGroupRewardShare: number;
+} & LicensingConfig;
 export type SetLicensingConfigRequest = {
   ipId: Address;
   licenseTermsId: string | number | bigint;
-  licensingConfig: {
-    isSet: boolean;
-    mintingFee: bigint | string | number;
-    licensingHook: Address;
-    hookData: Hex;
-  };
+  licensingConfig: LicensingConfig;
   licenseTemplate: Address;
   txOptions?: TxOptions;
 };

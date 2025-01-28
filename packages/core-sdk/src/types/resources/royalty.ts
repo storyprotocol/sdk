@@ -32,8 +32,7 @@ export type RoyaltyData = [
 
 export type ClaimableRevenueRequest = {
   royaltyVaultIpId: Address;
-  account: Address;
-  snapshotId: string | number | bigint;
+  claimer: Address;
   token: Address;
 };
 

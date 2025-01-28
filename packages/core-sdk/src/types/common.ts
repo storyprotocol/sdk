@@ -1,6 +1,7 @@
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "./options";
+import { IpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 
 export type TypedData = {
   interface: string;
@@ -8,11 +9,23 @@ export type TypedData = {
 };
 
 export type IpMetadataAndTxOption = {
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
+  ipMetadata?: Partial<IpMetadataForWorkflow>;
   txOptions?: TxOptions;
 };
+
+export type LicensingConfig = {
+  isSet: boolean;
+  mintingFee: bigint | string | number;
+  licensingHook: Address;
+  hookData: Hex;
+  commercialRevShare: number | string;
+  disabled: boolean;
+  expectMinimumGroupRewardShare: number | string;
+  expectGroupRewardPool: Address;
+};
+
+export type InnerLicensingConfig = {
+  mintingFee: bigint;
+  commercialRevShare: number;
+  expectMinimumGroupRewardShare: number;
+} & LicensingConfig;

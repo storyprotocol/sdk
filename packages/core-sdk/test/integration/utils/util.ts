@@ -1,21 +1,29 @@
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { http, createPublicClient, createWalletClient, Hex, Address } from "viem";
+import {
+  http,
+  createPublicClient,
+  createWalletClient,
+  Hex,
+  Address,
+  zeroAddress,
+  zeroHash,
+} from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import {
   licenseTokenAbi,
   licenseTokenAddress,
   spgnftBeaconAddress,
 } from "../../../src/abi/generated";
-export const RPC = "https://odyssey.storyrpc.io";
-export const odyssey = 1516;
+export const RPC = "https://devnet.storyrpc.io";
+export const homer = 1315;
 
-export const mockERC721 = "0xd7eb01052362e9fb13f624c17b4ead08e0eaae17";
-export const licenseToken = licenseTokenAddress[odyssey];
-export const spgNftBeacon = spgnftBeaconAddress[odyssey];
+export const mockERC721 = "0xa1119092ea911202E0a65B743a13AE28C5CF2f21";
+export const licenseToken = licenseTokenAddress[homer];
+export const spgNftBeacon = spgnftBeaconAddress[homer];
 
 const baseConfig = {
-  chain: chainStringToViemChain("odyssey"),
+  chain: chainStringToViemChain("homer"),
   transport: http(RPC),
 } as const;
 export const publicClient = createPublicClient(baseConfig);
@@ -48,7 +56,11 @@ export const getTokenId = async (): Promise<number | undefined> => {
     return parseInt(logs[0].topics[3], 16);
   }
 };
-export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
+export const mintBySpg = async (
+  nftContract: Hex,
+  nftMetadataURI?: string,
+  nftMetadataHash?: Hex,
+) => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -60,8 +72,18 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
           },
           {
             internalType: "string",
-            name: "nftMetadata",
+            name: "nftMetadataURI",
             type: "string",
+          },
+          {
+            internalType: "bytes32",
+            name: "nftMetadataHash",
+            type: "bytes32",
+          },
+          {
+            internalType: "bool",
+            name: "allowDuplicates",
+            type: "bool",
           },
         ],
         name: "mint",
@@ -78,7 +100,12 @@ export const mintBySpg = async (nftContract: Hex, nftMetadata: string) => {
     ],
     address: nftContract,
     functionName: "mint",
-    args: [process.env.TEST_WALLET_ADDRESS! as Address, nftMetadata],
+    args: [
+      process.env.TEST_WALLET_ADDRESS! as Address,
+      nftMetadataURI || "",
+      nftMetadataHash || zeroHash,
+      true,
+    ],
     account: walletClient.account,
   });
   const hash = await walletClient.writeContract(request);
@@ -103,7 +130,7 @@ export const approveForLicenseToken = async (address: Address, tokenId: bigint) 
 };
 export const getStoryClient = (): StoryClient => {
   const config: StoryConfig = {
-    chainId: "odyssey",
+    chainId: "homer",
     transport: http(RPC),
     account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
   };

@@ -2,8 +2,7 @@ import { expect } from "chai";
 import { getDeadline, getPermissionSignature } from "../../../src/utils/sign";
 import { Hex, WalletClient, createWalletClient, http, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { odyssey } from "../../integration/utils/util";
-import sinon from "sinon";
+import { homer } from "../../integration/utils/util";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 
 describe("Sign", () => {
@@ -16,7 +15,7 @@ describe("Sign", () => {
           deadline: 1000n,
           permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
           wallet: {} as WalletClient,
-          chainId: BigInt(odyssey),
+          chainId: BigInt(homer),
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -33,7 +32,7 @@ describe("Sign", () => {
           deadline: 1000n,
           permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
           wallet: { signTypedData: () => Promise.resolve("") } as unknown as WalletClient,
-          chainId: BigInt(odyssey),
+          chainId: BigInt(homer),
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -44,7 +43,7 @@ describe("Sign", () => {
 
     it("should return signature when call getPermissionSignature given account support signTypedData", async () => {
       const walletClient = createWalletClient({
-        chain: chainStringToViemChain("odyssey"),
+        chain: chainStringToViemChain("homer"),
         transport: http(),
         account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
       });
@@ -62,7 +61,7 @@ describe("Sign", () => {
           },
         ],
         wallet: walletClient,
-        chainId: BigInt(odyssey),
+        chainId: BigInt(homer),
       });
       expect(result.signature).is.a("string").and.not.empty;
       expect(result.nonce).is.a("string").and.not.empty;
@@ -70,7 +69,7 @@ describe("Sign", () => {
 
     it("should return signature when call getPermissionSignature given account support signTypedData and multiple permissions", async () => {
       const walletClient = createWalletClient({
-        chain: chainStringToViemChain("odyssey"),
+        chain: chainStringToViemChain("homer"),
         transport: http(),
         account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
       });
@@ -78,7 +77,6 @@ describe("Sign", () => {
         ipId: zeroAddress,
         state: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
         deadline: 1000n,
-        permissionFunc: "setBatchPermissions",
         permissions: [
           { ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 },
           {
@@ -90,7 +88,7 @@ describe("Sign", () => {
           },
         ],
         wallet: walletClient,
-        chainId: BigInt(odyssey),
+        chainId: BigInt(homer),
       });
       expect(result.signature).is.a("string").and.not.empty;
       expect(result.nonce).is.a("string").and.not.empty;

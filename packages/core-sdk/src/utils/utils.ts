@@ -13,7 +13,7 @@ import {
 } from "viem";
 
 import { SupportedChainIds } from "../types/config";
-import { odyssey } from "./chain";
+import { homer } from "./chain";
 
 export async function waitTxAndFilterLog<
   const TAbi extends Abi | readonly unknown[],
@@ -57,7 +57,7 @@ export async function waitTxAndFilterLog<
     }
   }
   if (targetLogs.length === 0) {
-    throw new Error(`not found event ${params.eventName} in target transaction`);
+    throw new Error(`Not found event ${params.eventName} in target transaction`);
   }
   return targetLogs;
 }
@@ -79,17 +79,17 @@ export async function waitTx(
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId.toString()) {
-    case "1516":
-    case "odyssey":
-      return odyssey;
+    case "1315":
+    case "homer":
+      return homer;
     default:
-      throw new Error(`chainId ${chainId as string} not supported`);
+      throw new Error(`ChainId ${chainId as string} not supported`);
   }
 }
 
-export const chain: { [key in SupportedChainIds]: "1516" } = {
-  odyssey: "1516",
-  1516: "1516",
+export const chain: { [key in SupportedChainIds]: "1315" } = {
+  homer: "1315",
+  1315: "1315",
 };
 
 export const getAddress = (address: string, name: string, chainId?: number): Address => {

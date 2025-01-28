@@ -10,7 +10,7 @@ import {
 } from "../../../src/utils/utils";
 import { createMock } from "../testUtils";
 import { licensingModuleAbi } from "../../../src/abi/generated";
-import { odyssey } from "../../../src";
+import { homer } from "../../../src";
 
 describe("Test waitTxAndFilterLog", () => {
   const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -61,7 +61,7 @@ describe("Test waitTxAndFilterLog", () => {
       await waitTxAndFilterLog(rpcMock, txHash, params);
     } catch (err) {
       expect((err as Error).message).includes(
-        "not found event TransferSingle in target transaction",
+        "Not found event TransferSingle in target transaction",
       );
     }
   });
@@ -148,17 +148,17 @@ describe("Test chainStringToViemChain", () => {
     try {
       chainStringToViemChain("invalid id" as SupportedChainIds);
     } catch (err) {
-      expect((err as Error).message).includes("chainId invalid id not supported");
+      expect((err as Error).message).includes("ChainId invalid id not supported");
     }
   });
 
-  it("should return iliad testnet if id is 1516", () => {
-    const chain = chainStringToViemChain("1516");
-    expect(chain).to.equal(odyssey);
+  it("should return homer testnet if id is 1315", () => {
+    const chain = chainStringToViemChain("1315");
+    expect(chain).to.equal(homer);
   });
-  it("should return iliad testnet if id is iliad", () => {
-    const chain = chainStringToViemChain("odyssey");
-    expect(chain).to.equal(odyssey);
+  it("should return homer testnet if id is iliad", () => {
+    const chain = chainStringToViemChain("homer");
+    expect(chain).to.equal(homer);
   });
 });
 

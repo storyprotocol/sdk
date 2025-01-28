@@ -3,6 +3,7 @@ import { Address, PublicClient, zeroAddress } from "viem";
 import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
 import { getAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
+import { MAX_ROYALTY_TOKEN } from "../constants/common";
 
 export function getLicenseTermByType(
   type: PIL_TYPE,
@@ -60,9 +61,6 @@ export function getLicenseTermByType(
         "DefaultMintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );
     }
-    if (term.commercialRevShare < 0 || term.commercialRevShare > 100) {
-      throw new Error("CommercialRevShare should be between 0 and 100.");
-    }
     licenseTerms.royaltyPolicy = getAddress(
       term.royaltyPolicyAddress,
       "term.royaltyPolicyLAPAddress",
@@ -71,7 +69,7 @@ export function getLicenseTermByType(
     licenseTerms.commercialUse = true;
     licenseTerms.commercialAttribution = true;
 
-    licenseTerms.commercialRevShare = (term.commercialRevShare / 100) * 100000000;
+    licenseTerms.commercialRevShare = getRevenueShare(term.commercialRevShare);
     licenseTerms.derivativesReciprocal = true;
     licenseTerms.currency = getAddress(term.currency, "term.currency");
     return licenseTerms;
@@ -109,6 +107,12 @@ export async function validateLicenseTerms(
     commercialRevCeiling: BigInt(params.commercialRevCeiling),
     derivativeRevCeiling: BigInt(params.derivativeRevCeiling),
   };
+  if (object.defaultMintingFee < 0) {
+    throw new Error("DefaultMintingFee should be greater than or equal to 0.");
+  }
+  if (object.defaultMintingFee > 0 && object.royaltyPolicy === zeroAddress) {
+    throw new Error("Royalty policy is required when defaultMintingFee is greater than 0.");
+  }
   verifyCommercialUse(object);
   verifyDerivatives(object);
   if (object.commercialRevShare < 0 || object.commercialRevShare > 100) {
@@ -163,4 +167,15 @@ const verifyDerivatives = (terms: LicenseTerms) => {
       throw new Error("Cannot add derivative revenue ceiling when derivative use is disabled.");
     }
   }
+};
+
+export const getRevenueShare = (revShare: number | string) => {
+  const revShareNumber = Number(revShare);
+  if (isNaN(revShareNumber)) {
+    throw new Error("CommercialRevShare must be a valid number.");
+  }
+  if (revShareNumber < 0 || revShareNumber > 100) {
+    throw new Error("CommercialRevShare should be between 0 and 100.");
+  }
+  return (revShareNumber / 100) * MAX_ROYALTY_TOKEN;
 };
