@@ -22,7 +22,7 @@ describe("License Functions", () => {
     client = getStoryClient();
   });
   describe("register license with different types", async () => {
-    it("should not throw error when register license ", async () => {
+    it("should register license ", async () => {
       const result = await client.license.registerPILTerms({
         defaultMintingFee: 0,
         currency: mockErc20Address[homer],
@@ -47,7 +47,7 @@ describe("License Functions", () => {
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
-    it("should not throw error when register license with non commercial social remixing PIL", async () => {
+    it("should register license with non commercial social remixing PIL", async () => {
       const result = await client.license.registerNonComSocialRemixingPIL({
         txOptions: {
           waitForTransaction: true,
@@ -55,7 +55,7 @@ describe("License Functions", () => {
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
-    it("should not throw error when register license with commercial use", async () => {
+    it("should register license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "1",
         currency: mockErc20Address[homer],
@@ -66,7 +66,7 @@ describe("License Functions", () => {
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
-    it("should not throw error when register license with commercial Remix use", async () => {
+    it("should register license with commercial Remix use", async () => {
       const result = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
@@ -106,7 +106,7 @@ describe("License Functions", () => {
       licenseId = registerLicenseResult.licenseTermsId!;
     });
 
-    it("should not throw error when attach License Terms", async () => {
+    it("should attach License Terms", async () => {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseId,
@@ -117,7 +117,7 @@ describe("License Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
 
-    it("should not throw error when mint license tokens", async () => {
+    it("should mint license tokens", async () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
@@ -131,12 +131,12 @@ describe("License Functions", () => {
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
     });
 
-    it("should not throw error when get license terms", async () => {
+    it("should get license terms", async () => {
       const result = await client.license.getLicenseTerms(licenseId);
       expect(result).not.empty;
     });
 
-    it("should not throw error when predict minting license fee", async () => {
+    it("should predict minting license fee", async () => {
       const result = await client.license.predictMintingLicenseFee({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
@@ -146,7 +146,7 @@ describe("License Functions", () => {
       expect(result.tokenAmount).to.be.a("bigint");
     });
 
-    it("should not throw error when set licensing config", async () => {
+    it("should set licensing config", async () => {
       const result = await client.license.setLicensingConfig({
         ipId: ipId,
         licenseTermsId: licenseId,
