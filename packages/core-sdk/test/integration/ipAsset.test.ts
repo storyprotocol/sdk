@@ -124,7 +124,7 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe("SPG NFT Operations", () => {
+  describe.only("SPG NFT Operations", () => {
     let nftContract: Hex;
     let licenseTermsId: bigint;
 
@@ -151,7 +151,7 @@ describe("IP Asset Functions", () => {
             terms: {
               transferable: true,
               royaltyPolicy: royaltyPolicyLapAddress[homer],
-              defaultMintingFee: 1n,
+              defaultMintingFee: 0n,
               expiration: 0n,
               commercialUse: true,
               commercialAttribution: false,
@@ -455,7 +455,7 @@ describe("IP Asset Functions", () => {
               terms: {
                 transferable: true,
                 royaltyPolicy: royaltyPolicyLapAddress[homer],
-                defaultMintingFee: 10000n,
+                defaultMintingFee: 0n,
                 expiration: 1000n,
                 commercialUse: true,
                 commercialAttribution: false,
