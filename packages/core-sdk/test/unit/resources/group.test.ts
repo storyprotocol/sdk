@@ -1,14 +1,28 @@
 import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { PublicClient, WalletClient, Account } from "viem";
+import { PublicClient, WalletClient, Account, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { GroupClient } from "../../../src";
+import { LicenseData } from "../../../src/types/resources/group";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e";
+const mockLicenseData: LicenseData = {
+  licenseTermsId: "100",
+  licensingConfig: {
+    isSet: true,
+    mintingFee: 0n,
+    licensingHook: zeroAddress,
+    hookData: zeroAddress,
+    commercialRevShare: 0,
+    disabled: false,
+    expectMinimumGroupRewardShare: 0,
+    expectGroupRewardPool: zeroAddress,
+  },
+};
 describe("Test IpAssetClient", () => {
   let groupClient: GroupClient;
   let rpcMock: PublicClient;
@@ -22,7 +36,7 @@ describe("Test IpAssetClient", () => {
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-    groupClient = new GroupClient(rpcMock, walletMock, "1516");
+    groupClient = new GroupClient(rpcMock, walletMock, "1315");
     (groupClient.groupingWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (groupClient.groupingModuleClient as any).address =
@@ -92,12 +106,14 @@ describe("Test IpAssetClient", () => {
       try {
         await groupClient.registerGroupAndAttachLicense({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          licenseTermsId: "0x123",
-          licenseTemplate: "0x123",
+          licenseData: {
+            ...mockLicenseData,
+            licenseTemplate: "0x123",
+          },
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register group and attach license: request.licenseTemplate address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to register group and attach license: request.licenseData.licenseTemplate address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
         );
       }
     });
@@ -107,7 +123,7 @@ describe("Test IpAssetClient", () => {
         .resolves(txHash);
       const result = await groupClient.registerGroupAndAttachLicense({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: "100",
+        licenseData: mockLicenseData,
       });
       expect(result.txHash).equal(txHash);
     });
@@ -124,8 +140,10 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.registerGroupAndAttachLicense({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: "100",
-        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseData: {
+          ...mockLicenseData,
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
         txOptions: {
           waitForTransaction: true,
         },
@@ -137,8 +155,10 @@ describe("Test IpAssetClient", () => {
     it("should return encodedData when call registerGroupAndAttachLicense successfully with encodedTxDataOnly of true", async () => {
       const result = await groupClient.registerGroupAndAttachLicense({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: "100",
-        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseData: {
+          ...mockLicenseData,
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -156,8 +176,11 @@ describe("Test IpAssetClient", () => {
         await groupClient.registerGroupAndAttachLicenseAndAddIps({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-          licenseTermsId: "100",
-          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          maxAllowedRewardShare: 5,
+          licenseData: {
+            ...mockLicenseData,
+            licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          },
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -173,9 +196,12 @@ describe("Test IpAssetClient", () => {
         sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
         await groupClient.registerGroupAndAttachLicenseAndAddIps({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          maxAllowedRewardShare: 5,
           ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-          licenseTermsId: "100",
-          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseData: {
+            ...mockLicenseData,
+            licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          },
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -193,8 +219,11 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        licenseTermsId: "100",
-        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
+        licenseData: {
+          ...mockLicenseData,
+          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -211,8 +240,9 @@ describe("Test IpAssetClient", () => {
         .resolves(txHash);
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        licenseTermsId: "100",
+        licenseData: mockLicenseData,
       });
       expect(result.txHash).equal(txHash);
     });
@@ -233,8 +263,9 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        licenseTermsId: "100",
+        licenseData: mockLicenseData,
         txOptions: {
           waitForTransaction: true,
         },
@@ -250,8 +281,10 @@ describe("Test IpAssetClient", () => {
       try {
         await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          maxAllowedRewardShare: 5,
           spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          licenseTermsId: "100",
+          licenseData: [mockLicenseData],
+          allowDuplicates: true,
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -268,8 +301,10 @@ describe("Test IpAssetClient", () => {
 
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: "100",
+        licenseData: [mockLicenseData],
+        allowDuplicates: true,
       });
       expect(result.txHash).equal(txHash);
     });
@@ -293,7 +328,9 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: "100",
+        maxAllowedRewardShare: 5,
+        licenseData: [mockLicenseData],
+        allowDuplicates: true,
         txOptions: {
           waitForTransaction: true,
         },
@@ -318,9 +355,15 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsId: "100",
+        maxAllowedRewardShare: 5,
+        licenseData: [
+          {
+            ...mockLicenseData,
+            licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          },
+        ],
+        allowDuplicates: true,
         recipient: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         ipMetadata: {
           ipMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -346,7 +389,8 @@ describe("Test IpAssetClient", () => {
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           tokenId: "100",
-          licenseTermsId: "100",
+          licenseData: [mockLicenseData],
+          maxAllowedRewardShare: 5,
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -354,6 +398,26 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
+    it("should throw licenseData error when call registerIpAndAttachLicenseAndAddToGroup given licenseData is empty", async () => {
+      sinon
+        .stub(groupClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      try {
+        await groupClient.registerIpAndAttachLicenseAndAddToGroup({
+          groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: "100",
+          licenseData: [],
+          maxAllowedRewardShare: 5,
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register IP and attach license and add to group: License data is required.",
+        );
+      }
+    });
+
     it("should throw nft contract error when call registerIpAndAttachLicenseAndAddToGroup given nft contract address is invalid", async () => {
       sinon
         .stub(groupClient.ipAssetRegistryClient, "ipId")
@@ -364,7 +428,8 @@ describe("Test IpAssetClient", () => {
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           nftContract: "0x",
           tokenId: "100",
-          licenseTermsId: "100",
+          licenseData: [mockLicenseData],
+          maxAllowedRewardShare: 5,
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -385,7 +450,8 @@ describe("Test IpAssetClient", () => {
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "100",
-        licenseTermsId: "100",
+        licenseData: [mockLicenseData],
+        maxAllowedRewardShare: 5,
       });
       expect(result.txHash).equal(txHash);
     });
@@ -413,7 +479,8 @@ describe("Test IpAssetClient", () => {
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "100",
-        licenseTermsId: "100",
+        licenseData: [mockLicenseData],
+        maxAllowedRewardShare: 5,
         txOptions: {
           waitForTransaction: true,
         },
@@ -436,9 +503,14 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
         tokenId: "100",
-        licenseTermsId: "100",
-        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseData: [
+          {
+            ...mockLicenseData,
+            licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          },
+        ],
         ipMetadata: {
           ipMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",

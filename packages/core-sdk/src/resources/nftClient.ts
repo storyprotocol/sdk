@@ -31,7 +31,7 @@ export class NftClient {
    * 	 @param request.isPublicMinting - If true, anyone can mint from the collection. If false, only the addresses with the minter role can mint.
    * 	 @param request.mintOpen Whether the collection is open for minting on creation.
    *   @param request.mintFeeRecipient - The address to receive mint fees.
-   *   @param request.mintFeeRecipient - The contract URI for the collection. Follows ERC-7572 standard. See https://eips.ethereum.org/EIPS/eip-7572
+   *   @param request.contractURI - The contract URI for the collection. Follows ERC-7572 standard. See https://eips.ethereum.org/EIPS/eip-7572
    * 	 @param request.baseURI - [Optional] The base URI for the collection. If baseURI is not empty, tokenURI will be either baseURI + token ID (if nftMetadataURI is empty) or baseURI + nftMetadataURI.
    * 	 @param request.maxSupply - [Optional] The maximum supply of the collection.
    * 	 @param request.mintFee - [Optional] The cost to mint a token.
@@ -47,7 +47,9 @@ export class NftClient {
     try {
       if (
         request.mintFee !== undefined &&
-        (request.mintFee < 0n || !isAddress(request.mintFeeToken || ""))
+        (request.mintFee < 0n ||
+          request.mintFeeToken === zeroAddress ||
+          !isAddress(request.mintFeeToken || ""))
       ) {
         throw new Error("Invalid mint fee token address, mint fee is greater than 0.");
       }

@@ -43,7 +43,7 @@ export class StoryClient {
   private constructor(config: StoryConfig) {
     this.config = {
       ...config,
-      chainId: chain[config.chainId || "odyssey"],
+      chainId: chain[config.chainId || "homer"],
     };
     if (!this.config.transport) {
       throw new Error(
@@ -157,7 +157,7 @@ export class StoryClient {
    */
   public get dispute(): DisputeClient {
     if (this._dispute === null) {
-      this._dispute = new DisputeClient(this.rpcClient, this.wallet);
+      this._dispute = new DisputeClient(this.rpcClient, this.wallet, this.config.chainId);
     }
 
     return this._dispute;

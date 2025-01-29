@@ -24,7 +24,7 @@ describe("Test LicenseClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    licenseClient = new LicenseClient(rpcMock, walletMock, "1516");
+    licenseClient = new LicenseClient(rpcMock, walletMock, "1315");
   });
 
   afterEach(() => {
@@ -40,11 +40,11 @@ describe("Test LicenseClient", () => {
     });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
-      currency: MockERC20.address,
-      royaltyPolicy: zeroAddress,
+      currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       transferable: false,
       expiration: 0n,
-      commercialUse: false,
+      commercialUse: true,
       commercialAttribution: false,
       commercializerChecker: zeroAddress,
       commercializerCheckerData: "0x",
@@ -77,7 +77,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: MockERC20.address,
+          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           commercialRevShare: 101,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -94,7 +94,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: MockERC20.address,
+          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           commercialRevShare: -1,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -163,7 +163,7 @@ describe("Test LicenseClient", () => {
         ...licenseTerms,
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: MockERC20.address,
+        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         commercialRevShare: 90,
         royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         txOptions: {
@@ -599,6 +599,8 @@ describe("Test LicenseClient", () => {
         await licenseClient.mintLicenseTokens({
           licensorIpId: zeroAddress,
           licenseTermsId: "1",
+          maxMintingFee: 1,
+          maxRevenueShare: 1,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -607,6 +609,24 @@ describe("Test LicenseClient", () => {
       }
     });
 
+    it("should throw minting fee error when call mintLicenseTokens given minting fee is less than 0", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+
+      try {
+        await licenseClient.mintLicenseTokens({
+          licensorIpId: zeroAddress,
+          licenseTermsId: "1",
+          maxMintingFee: -1,
+          maxRevenueShare: 1,
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to mint license tokens: The maxMintingFee must be greater than 0.",
+        );
+      }
+    });
     it("should throw invalid address when call mintLicenseTokens given invalid licenseTemplate address", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
@@ -616,6 +636,8 @@ describe("Test LicenseClient", () => {
           licensorIpId: zeroAddress,
           licenseTermsId: "1",
           licenseTemplate: "invalid address" as Hex,
+          maxMintingFee: 1,
+          maxRevenueShare: 1,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -636,6 +658,8 @@ describe("Test LicenseClient", () => {
           licensorIpId: zeroAddress,
           licenseTermsId: "1",
           receiver: "invalid address" as Hex,
+          maxMintingFee: 1,
+          maxRevenueShare: 1,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -652,6 +676,8 @@ describe("Test LicenseClient", () => {
         await licenseClient.mintLicenseTokens({
           licensorIpId: zeroAddress,
           licenseTermsId: "1",
+          maxMintingFee: 1,
+          maxRevenueShare: 1,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -671,6 +697,8 @@ describe("Test LicenseClient", () => {
         await licenseClient.mintLicenseTokens({
           licensorIpId: zeroAddress,
           licenseTermsId: "1",
+          maxMintingFee: 1,
+          maxRevenueShare: 1,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -690,6 +718,8 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.mintLicenseTokens({
         licensorIpId: zeroAddress,
         licenseTermsId: "1",
+        maxMintingFee: 1,
+        maxRevenueShare: 1,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -720,6 +750,9 @@ describe("Test LicenseClient", () => {
         txOptions: {
           waitForTransaction: true,
         },
+        maxMintingFee: 1,
+        maxRevenueShare: 1,
+        licenseTemplate: zeroAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -752,6 +785,8 @@ describe("Test LicenseClient", () => {
         txOptions: {
           waitForTransaction: true,
         },
+        maxMintingFee: 1,
+        maxRevenueShare: 1,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -774,6 +809,8 @@ describe("Test LicenseClient", () => {
         txOptions: {
           encodedTxDataOnly: true,
         },
+        maxMintingFee: 1,
+        maxRevenueShare: 1,
       });
 
       expect(result.encodedTxData).to.deep.equal({
@@ -915,6 +952,10 @@ describe("Test LicenseClient", () => {
             mintingFee: "",
             licensingHook: zeroAddress,
             hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: zeroAddress,
           },
         });
       } catch (error) {
@@ -937,6 +978,10 @@ describe("Test LicenseClient", () => {
             mintingFee: "",
             licensingHook: zeroAddress,
             hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: zeroAddress,
           },
         });
       } catch (error) {
@@ -946,6 +991,32 @@ describe("Test LicenseClient", () => {
       }
     });
 
+    it("should throw minting fee error when call setLicensingConfig given minting fee is less than 0", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+      try {
+        await licenseClient.setLicensingConfig({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: zeroAddress,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: -1,
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: zeroAddress,
+          },
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to set licensing config: The minting fee must be greater than 0.",
+        );
+      }
+    });
     it("should throw license hook error when call setLicensingConfig given license hook is not registered", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
@@ -960,6 +1031,10 @@ describe("Test LicenseClient", () => {
             mintingFee: "",
             licensingHook: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
             hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: zeroAddress,
           },
         });
       } catch (error) {
@@ -983,15 +1058,44 @@ describe("Test LicenseClient", () => {
             mintingFee: "",
             licensingHook: zeroAddress,
             hookData: zeroAddress,
+            commercialRevShare: 0,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: zeroAddress,
           },
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to set licensing config: licenseTemplate is zero address but licenseTermsId is zero.",
+          "Failed to set licensing config: The license template is zero address but license terms id is not zero.",
         );
       }
     });
-
+    it("should throw license template cannot be zero address error when call setLicensingConfig given license template is zero address and commercial revenue share is not zero", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      try {
+        await licenseClient.setLicensingConfig({
+          ipId: zeroAddress,
+          licenseTermsId: "1",
+          licenseTemplate: zeroAddress,
+          licensingConfig: {
+            isSet: false,
+            mintingFee: "",
+            licensingHook: zeroAddress,
+            hookData: zeroAddress,
+            commercialRevShare: 1,
+            disabled: false,
+            expectMinimumGroupRewardShare: 0,
+            expectGroupRewardPool: zeroAddress,
+          },
+        });
+      } catch (error) {
+        expect((error as Error).message).equal(
+          "Failed to set licensing config: The license template cannot be zero address if commercial revenue share is not zero.",
+        );
+      }
+    });
     it("should return encodedTxData when call setLicensingConfig given txOptions.encodedTxDataOnly of true and args is correct", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
@@ -1009,6 +1113,10 @@ describe("Test LicenseClient", () => {
           mintingFee: "",
           licensingHook: zeroAddress,
           hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
         },
         txOptions: {
           encodedTxDataOnly: true,
@@ -1036,6 +1144,10 @@ describe("Test LicenseClient", () => {
           mintingFee: "",
           licensingHook: zeroAddress,
           hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
         },
       });
 
@@ -1057,6 +1169,10 @@ describe("Test LicenseClient", () => {
           mintingFee: "",
           licensingHook: zeroAddress,
           hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
         },
         txOptions: {
           waitForTransaction: true,
