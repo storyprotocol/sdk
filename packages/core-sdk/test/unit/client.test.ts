@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { createWalletClient, http, Transport } from "viem";
-import { StoryClient, StoryConfig, homer } from "../../src/index";
+import { StoryClient, StoryConfig, aeneid } from "../../src/index";
 const rpc = "http://127.0.0.1:8545";
 
 describe("Test StoryClient", () => {
@@ -36,7 +36,7 @@ describe("Test StoryClient", () => {
         transport: http(rpc),
         wallet: createWalletClient({
           account: privateKeyToAccount(generatePrivateKey()),
-          chain: homer,
+          chain: aeneid,
           transport: http(rpc),
         }),
       });
@@ -49,7 +49,7 @@ describe("Test StoryClient", () => {
         transport: http(rpc),
         wallet: createWalletClient({
           account: privateKeyToAccount(generatePrivateKey()),
-          chain: homer,
+          chain: aeneid,
           transport: http(rpc),
         }),
       });
@@ -69,7 +69,7 @@ describe("Test StoryClient", () => {
     const account = privateKeyToAccount(generatePrivateKey());
     const transport = http(rpc);
     const config: StoryConfig = {
-      chainId: "homer",
+      chainId: "aeneid",
       transport,
       account,
     };

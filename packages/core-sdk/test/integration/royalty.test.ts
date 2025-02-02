@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Address, Hex, encodeFunctionData } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getTokenId, getStoryClient, homer } from "./utils/util";
+import { mockERC721, getTokenId, getStoryClient, aeneid } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import { mockErc20Address } from "../../src/abi/generated";
 
@@ -34,7 +34,7 @@ describe("Royalty Functions", () => {
   const getCommercialPolicyId = async (): Promise<bigint> => {
     const response = await client.license.registerCommercialRemixPIL({
       defaultMintingFee: "100000",
-      currency: mockErc20Address[homer],
+      currency: mockErc20Address[aeneid],
       commercialRevShare: 10,
       txOptions: { waitForTransaction: true },
     });
@@ -107,7 +107,7 @@ describe("Royalty Functions", () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: parentIpId,
         payerIpId: childIpId,
-        token: mockErc20Address[homer],
+        token: mockErc20Address[aeneid],
         amount: 10 * 10 ** 2,
         txOptions: { waitForTransaction: true },
       });
@@ -119,7 +119,7 @@ describe("Royalty Functions", () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: parentIpId,
         payerIpId: childIpId,
-        token: mockErc20Address[homer],
+        token: mockErc20Address[aeneid],
         amount: 10 * 10 ** 2,
         txOptions: { encodedTxDataOnly: true },
       });
@@ -134,7 +134,7 @@ describe("Royalty Functions", () => {
         client.royalty.payRoyaltyOnBehalf({
           receiverIpId: unregisteredIpId,
           payerIpId: childIpId,
-          token: mockErc20Address[homer],
+          token: mockErc20Address[aeneid],
           amount: 10 * 10 ** 2,
           txOptions: { waitForTransaction: true },
         }),
@@ -147,7 +147,7 @@ describe("Royalty Functions", () => {
       const response = await client.royalty.claimableRevenue({
         royaltyVaultIpId: parentIpId,
         claimer: process.env.TEST_WALLET_ADDRESS as Address,
-        token: mockErc20Address[homer],
+        token: mockErc20Address[aeneid],
       });
 
       expect(response).to.be.a("bigint");
@@ -173,7 +173,7 @@ describe("Royalty Functions", () => {
         client.royalty.payRoyaltyOnBehalf({
           receiverIpId: parentIpId,
           payerIpId: childIpId,
-          token: mockErc20Address[homer],
+          token: mockErc20Address[aeneid],
           amount: -1,
           txOptions: { waitForTransaction: true },
         }),
