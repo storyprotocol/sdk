@@ -11,6 +11,6 @@ export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash"> & {
   encodedTxDataOnly?: boolean;
 };
 
-export type WithTxOptions<T> = T & {
+export type WithTxOptions = {
   txOptions?: TxOptions;
 };
