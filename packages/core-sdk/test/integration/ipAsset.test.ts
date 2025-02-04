@@ -19,7 +19,6 @@ import {
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
 } from "../../src/abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -320,7 +319,7 @@ describe("IP Asset Functions", () => {
         txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.childIpId).to.be.a("string").and.not.empty;
       expect(result.tokenId).to.be.a("bigint");
     });
 
