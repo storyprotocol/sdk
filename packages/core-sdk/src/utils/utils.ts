@@ -10,10 +10,11 @@ import {
   isAddress,
   checksumAddress,
   Address,
+  formatEther,
 } from "viem";
 
 import { SupportedChainIds } from "../types/config";
-import { homer } from "./chain";
+import { aeneid } from "./chain";
 
 export async function waitTxAndFilterLog<
   const TAbi extends Abi | readonly unknown[],
@@ -80,18 +81,26 @@ export async function waitTx(
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId.toString()) {
     case "1315":
-    case "homer":
-      return homer;
+    case "aeneid":
+      return aeneid;
     default:
       throw new Error(`ChainId ${chainId as string} not supported`);
   }
 }
 
 export const chain: { [key in SupportedChainIds]: "1315" } = {
-  homer: "1315",
+  aeneid: "1315",
   1315: "1315",
 };
 
+export const validateAddress = (address: string): Address => {
+  if (!isAddress(address, { strict: false })) {
+    throw Error(`Invalid address: ${address}`);
+  }
+  return address;
+};
+
+/** @deprecated use {@link validateAddress} */
 export const getAddress = (address: string, name: string, chainId?: number): Address => {
   if (!isAddress(address, { strict: false })) {
     throw Error(
@@ -100,3 +109,7 @@ export const getAddress = (address: string, name: string, chainId?: number): Add
   }
   return checksumAddress(address, chainId);
 };
+
+export function getIPAmountDisplay(amount: bigint): string {
+  return `${formatEther(amount)}IP`;
+}

@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { mockERC721, getStoryClient, getTokenId, homer } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
 import { Address } from "viem";
 import { AccessPermission } from "../../src/types/resources/permission";
 import chaiAsPromised from "chai-as-promised";
@@ -12,7 +12,7 @@ const expect = chai.expect;
 describe("Permission Functions", () => {
   let client: StoryClient;
   let ipId: Address;
-  const coreMetadataModule = coreMetadataModuleAddress[homer];
+  const coreMetadataModule = coreMetadataModuleAddress[aeneid];
 
   before(async () => {
     client = getStoryClient();

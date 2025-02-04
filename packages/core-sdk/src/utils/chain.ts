@@ -1,18 +1,18 @@
 import { defineChain } from "viem/utils";
 
-export const homer = defineChain({
+export const aeneid = defineChain({
   id: 13_15,
-  name: "homer",
+  name: "aeneid",
   nativeCurrency: { name: "IP", symbol: "IP", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ["https://devnet.storyrpc.io/"],
+      http: ["https://aeneid.storyrpc.io/"],
     },
   },
   blockExplorers: {
     default: {
       name: "Explorer",
-      url: "https://devnet.storyscan.xyz/",
+      url: "https://aeneid.storyscan.xyz/",
     },
   },
   contracts: {

@@ -1,7 +1,7 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
-import { homer, getStoryClient, mintBySpg } from "./utils/util";
+import { aeneid, getStoryClient, mintBySpg } from "./utils/util";
 import { StoryClient } from "../../src";
 import {
   evenSplitGroupPoolAddress,
@@ -19,7 +19,7 @@ describe("Group Functions", () => {
   let groupId: Address;
   let ipId: Address;
   let licenseTermsId: bigint;
-  const groupPoolAddress = evenSplitGroupPoolAddress[homer];
+  const groupPoolAddress = evenSplitGroupPoolAddress[aeneid];
 
   // Setup - create necessary contracts and initial IP
   before(async () => {
@@ -47,7 +47,7 @@ describe("Group Functions", () => {
         {
           terms: {
             transferable: true,
-            royaltyPolicy: royaltyPolicyLrpAddress[homer],
+            royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
             defaultMintingFee: 0n,
             expiration: BigInt(1000),
             commercialUse: true,
@@ -61,7 +61,7 @@ describe("Group Functions", () => {
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
-            currency: mockErc20Address[homer],
+            currency: mockErc20Address[aeneid],
             uri: "test case",
           },
           licensingConfig: {
@@ -86,7 +86,7 @@ describe("Group Functions", () => {
     await client.license.setLicensingConfig({
       ipId,
       licenseTermsId,
-      licenseTemplate: piLicenseTemplateAddress[homer],
+      licenseTemplate: piLicenseTemplateAddress[aeneid],
       licensingConfig: {
         isSet: true,
         mintingFee: 0n,

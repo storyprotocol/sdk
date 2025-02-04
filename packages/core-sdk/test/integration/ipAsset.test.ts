@@ -8,7 +8,7 @@ import {
   getTokenId,
   mintBySpg,
   approveForLicenseToken,
-  homer,
+  aeneid,
 } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
@@ -23,7 +23,8 @@ import {
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const pool = evenSplitGroupPoolAddress[homer];
+const pool = evenSplitGroupPoolAddress[aeneid];
+const walletAddress = process.env.TEST_WALLET_ADDRESS! as Address;
 
 describe("IP Asset Functions", () => {
   let client: StoryClient;
@@ -126,6 +127,7 @@ describe("IP Asset Functions", () => {
 
   describe("SPG NFT Operations", () => {
     let nftContract: Hex;
+    let nftContractWithMintingFee: Hex;
     let licenseTermsId: bigint;
 
     before(async () => {
@@ -137,7 +139,7 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
+        mintFeeRecipient: walletAddress,
         txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
@@ -150,7 +152,7 @@ describe("IP Asset Functions", () => {
           {
             terms: {
               transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[homer],
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
               defaultMintingFee: 0n,
               expiration: 0n,
               commercialUse: true,
@@ -164,7 +166,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[homer],
+              currency: mockErc20Address[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -187,8 +189,8 @@ describe("IP Asset Functions", () => {
 
       // Setup ERC20
       const mockERC20 = new MockERC20();
-      await mockERC20.approve(derivativeWorkflowsAddress[homer]);
-      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[homer]);
+      await mockERC20.approve(derivativeWorkflowsAddress[aeneid]);
+      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[aeneid]);
       await mockERC20.mint();
     });
 
@@ -250,7 +252,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[homer],
+              currency: mockErc20Address[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -267,7 +269,7 @@ describe("IP Asset Functions", () => {
           {
             terms: {
               transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[homer],
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
               defaultMintingFee: 10000n,
               expiration: 1000n,
               commercialUse: true,
@@ -281,7 +283,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[homer],
+              currency: mockErc20Address[aeneid],
               uri: "test case",
             },
             licensingConfig: {
@@ -357,7 +359,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[homer],
+              currency: mockErc20Address[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -389,7 +391,7 @@ describe("IP Asset Functions", () => {
       });
 
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[homer],
+        derivativeWorkflowsAddress[aeneid],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
 
@@ -422,7 +424,7 @@ describe("IP Asset Functions", () => {
       });
 
       await approveForLicenseToken(
-        derivativeWorkflowsAddress[homer],
+        derivativeWorkflowsAddress[aeneid],
         mintLicenseTokensResult.licenseTokenIds![0],
       );
 
@@ -454,7 +456,7 @@ describe("IP Asset Functions", () => {
             {
               terms: {
                 transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[homer],
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
                 defaultMintingFee: 0n,
                 expiration: 1000n,
                 commercialUse: true,
@@ -468,7 +470,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[homer],
+                currency: mockErc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -543,7 +545,7 @@ describe("IP Asset Functions", () => {
             {
               terms: {
                 transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[homer],
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
                 defaultMintingFee: 10000n,
                 expiration: 1000n,
                 commercialUse: true,
@@ -557,7 +559,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[homer],
+                currency: mockErc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -663,7 +665,7 @@ describe("IP Asset Functions", () => {
               {
                 terms: {
                   transferable: true,
-                  royaltyPolicy: royaltyPolicyLapAddress[homer],
+                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
                   defaultMintingFee: 8n,
                   expiration: 0n,
                   commercialUse: true,
@@ -677,7 +679,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: mockErc20Address[homer],
+                  currency: mockErc20Address[aeneid],
                   uri: "",
                 },
                 licensingConfig: {
@@ -700,7 +702,7 @@ describe("IP Asset Functions", () => {
               {
                 terms: {
                   transferable: true,
-                  royaltyPolicy: royaltyPolicyLapAddress[homer],
+                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
                   defaultMintingFee: 8n,
                   expiration: 0n,
                   commercialUse: true,
@@ -714,7 +716,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: mockErc20Address[homer],
+                  currency: mockErc20Address[aeneid],
                   uri: "",
                 },
                 licensingConfig: {
@@ -859,7 +861,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[homer],
+                currency: mockErc20Address[aeneid],
                 uri: "",
               },
               licensingConfig: {
@@ -889,7 +891,7 @@ describe("IP Asset Functions", () => {
             {
               terms: {
                 transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[homer],
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
                 defaultMintingFee: 10000n,
                 expiration: 1000n,
                 commercialUse: true,
@@ -903,7 +905,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[homer],
+                currency: mockErc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
