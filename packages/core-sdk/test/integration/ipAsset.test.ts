@@ -19,7 +19,6 @@ import {
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
 } from "../../src/abi/generated";
-// import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
