@@ -13,7 +13,7 @@ export class WipClient {
   private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
-    this.wipClient = new Erc20TokenClient(rpcClient, wallet);
+    this.wipClient = new Erc20TokenClient(rpcClient, wallet, WIP_TOKEN_ADDRESS);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
