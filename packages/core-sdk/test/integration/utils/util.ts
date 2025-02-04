@@ -1,6 +1,15 @@
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { http, createPublicClient, createWalletClient, Hex, Address, zeroHash } from "viem";
+import {
+  http,
+  createPublicClient,
+  createWalletClient,
+  Hex,
+  Address,
+  zeroHash,
+  TransactionReceipt,
+  parseEther,
+} from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import {
   licenseTokenAbi,
@@ -128,4 +137,17 @@ export const getStoryClient = (): StoryClient => {
     account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
   };
   return StoryClient.newClient(config);
+};
+
+export const getExpectedBalance = ({
+  balanceBefore,
+  cost,
+  receipt,
+}: {
+  balanceBefore: bigint;
+  cost: bigint;
+  receipt: TransactionReceipt;
+}) => {
+  const expectedBalance = balanceBefore - cost - receipt!.gasUsed * receipt!.effectiveGasPrice;
+  return expectedBalance;
 };
