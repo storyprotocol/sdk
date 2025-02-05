@@ -390,7 +390,6 @@ export type CommonRegistrationHandlerParams = WithWipOptions & {
   spgSpenderAddress: Address;
   derivData?: InternalDerivativeData;
   sender: Address;
-  disableMultiCall?: boolean;
   txOptions?: TxOptions;
 };
 

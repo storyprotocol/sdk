@@ -1020,7 +1020,10 @@ export class IPAssetClient {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(object);
       };
       return this.commonRegistrationHandler({
-        wipOptions: request.wipOptions,
+        wipOptions: {
+          ...request.wipOptions,
+          useMulticallWhenPossible: false,
+        },
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         derivData,
@@ -1357,15 +1360,17 @@ export class IPAssetClient {
         );
       };
       return this.commonRegistrationHandler({
-        wipOptions: request.wipOptions,
+        wipOptions: {
+          ...request.wipOptions,
+          // need to disable multicall to avoid needing to transfer the license
+          // token to the multicall contract.
+          useMulticallWhenPossible: false,
+        },
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         encodedTxs: [encodedTxData],
         contractCall,
-        // need to disable multicall to avoid needing to transfer the license
-        // token to the multicall contract.
-        disableMultiCall: true,
         txOptions: request.txOptions,
       });
     } catch (error) {
@@ -1697,7 +1702,10 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.commonRegistrationHandler({
-        wipOptions: request.wipOptions,
+        wipOptions: {
+          ...request.wipOptions,
+          useMulticallWhenPossible: false,
+        },
         sender: this.walletAddress,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
         derivData,
@@ -2154,7 +2162,6 @@ export class IPAssetClient {
     txOptions,
     wipOptions,
     encodedTxs,
-    disableMultiCall,
     contractCall,
   }: CommonRegistrationHandlerParams) {
     let totalFees = 0n;
@@ -2210,7 +2217,6 @@ export class IPAssetClient {
       wipClient: this.wipClient,
       wipSpenders,
       contractCall,
-      disableMultiCall,
       sender,
       wallet: this.wallet,
       txOptions,

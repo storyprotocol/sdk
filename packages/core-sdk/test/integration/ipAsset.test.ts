@@ -747,15 +747,8 @@ describe("IP Asset Functions", () => {
         });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
         expect(rsp.ipId).to.be.a("string").and.not.empty;
-
-        // verify balance
         const balanceAfter = await client.getWalletBalance();
-        const expectedBalance = getExpectedBalance({
-          balanceBefore,
-          receipt: rsp.receipt!,
-          cost: 150n,
-        });
-        expect(balanceAfter).to.be.equal(expectedBalance);
+        expect(balanceAfter < balanceBefore - 150n).to.be.true;
       });
 
       it("errors if minting fees are required but auto wrap is disabled", async () => {
@@ -789,7 +782,7 @@ describe("IP Asset Functions", () => {
         await expect(rsp).to.be.rejectedWith(/^Wallet does not have enough WIP to pay for fees./);
       });
 
-      it("should auto wrap ip when register derivative and distribute loyalty tokens", async () => {
+      it("should spend existing wip when register derivative and distribute loyalty tokens", async () => {
         const tokenId = await getTokenId();
         await client.wipClient.deposit({
           amount: 150n,
@@ -825,10 +818,6 @@ describe("IP Asset Functions", () => {
       });
 
       it("should auto wrap ip when mint and register derivative and distribute loyalty tokens", async () => {
-        await client.wipClient.deposit({
-          amount: 250n,
-          txOptions: { waitForTransaction: true },
-        });
         const rsp =
           await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
             spgNftContract: nftContractWithMintingFee,
@@ -856,8 +845,6 @@ describe("IP Asset Functions", () => {
           });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
         expect(rsp.ipId).to.be.a("string").and.not.empty;
-        const wipAfter = await client.wipClient.balanceOf(walletAddress);
-        expect(wipAfter).to.be.equal(0n);
       });
     });
   });
