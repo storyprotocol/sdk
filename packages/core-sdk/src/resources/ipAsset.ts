@@ -2183,6 +2183,7 @@ export class IPAssetClient {
           parentIpId: derivData.parentIpIds[i],
           licenseTermsId: derivData.licenseTermsIds[i],
           receiver: sender,
+          amount: 1n,
         });
         totalDerivativeMintingFee += derivativeMintingFee;
       }

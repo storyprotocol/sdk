@@ -17,7 +17,7 @@ import { HandleTxOptionsResponse } from "../types/utils/txOptions";
 /**
  * check the allowance of all spenders and call approval if any spender
  * allowance is lower than the amount they are expected to spend.
- * Supports using multicall to batch all approve calls.
+ * Supports using multicall to return all approve calls in a multicall array.
  */
 const approvalAllSpenders = async ({
   spenders,
@@ -75,7 +75,7 @@ export const calculateLicenseWipMintFee = async (params: CalculateDerivativeMint
     licensorIpId: params.parentIpId,
     licenseTemplate: params.licenseTemplateClient.address,
     licenseTermsId: params.licenseTermsId,
-    amount: 1n,
+    amount: params.amount,
     receiver: params.receiver,
     royaltyContext: zeroAddress,
   });

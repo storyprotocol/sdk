@@ -62,6 +62,7 @@ export type WipApprovalCall = {
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
   owner: Address;
+  /** when true, will return an array of {@link Multicall3ValueCall} */
   useMultiCall: boolean;
 };
 
@@ -98,4 +99,5 @@ export type CalculateDerivativeMintFeeParams = {
   parentIpId: Address;
   licenseTermsId: bigint;
   receiver: Address;
+  amount: bigint;
 };
