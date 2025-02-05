@@ -32,7 +32,7 @@ describe("IPAccount Functions", () => {
     ipId = registerResult.ipId!;
     data = encodeFunctionData({
       abi: accessControllerAbi,
-      functionName: "setPermission",
+      functionName: "setTransientPermission",
       args: [
         getAddress(ipId),
         getAddress(process.env.TEST_WALLET_ADDRESS as Hex),
