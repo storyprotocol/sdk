@@ -1,6 +1,7 @@
-import { PublicClient, zeroAddress } from "viem";
+import { Address, PublicClient, zeroAddress } from "viem";
 
 import {
+  Erc20TokenClient,
   IpAssetRegistryClient,
   LicenseRegistryEventClient,
   LicenseRegistryReadOnlyClient,
@@ -10,6 +11,7 @@ import {
   LicensingModulePredictMintingLicenseFeeResponse,
   LicensingModuleSetLicensingConfigRequest,
   ModuleRegistryReadOnlyClient,
+  Multicall3Client,
   PiLicenseTemplateClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
@@ -42,6 +44,8 @@ import {
 } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
 import { SupportedChainIds } from "../types/config";
+import { calculateLicenseWipMintFee, contractCallWithWipFees } from "../utils/wipFeeUtils";
+import { WipSpender } from "../types/utils/wip";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -51,9 +55,12 @@ export class LicenseClient {
   public licenseTemplateClient: PiLicenseTemplateClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   public moduleRegistryReadOnlyClient: ModuleRegistryReadOnlyClient;
+  public multicall3Client: Multicall3Client;
+  public wipClient: Erc20TokenClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: SupportedChainIds;
+  private readonly walletAddress: Address;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
@@ -63,9 +70,12 @@ export class LicenseClient {
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.moduleRegistryReadOnlyClient = new ModuleRegistryReadOnlyClient(rpcClient);
+    this.multicall3Client = new Multicall3Client(rpcClient, wallet);
+    this.wipClient = new Erc20TokenClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
+    this.walletAddress = wallet.account!.address;
   }
   /**
    * Registers new license terms and return the ID of the newly registered license terms.
@@ -364,6 +374,9 @@ export class LicenseClient {
     request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> {
     try {
+      const receiver =
+        (request.receiver && getAddress(request.receiver, "request.receiver")) ||
+        this.walletAddress;
       const req: LicensingModuleMintLicenseTokensRequest = {
         licensorIpId: getAddress(request.licensorIpId, "request.licensorIpId"),
         licenseTemplate:
@@ -372,9 +385,7 @@ export class LicenseClient {
           this.licenseTemplateClient.address,
         licenseTermsId: BigInt(request.licenseTermsId),
         amount: BigInt(request.amount || 1),
-        receiver:
-          (request.receiver && getAddress(request.receiver, "request.receiver")) ||
-          this.wallet.account!.address,
+        receiver,
         royaltyContext: zeroAddress,
         maxMintingFee: BigInt(request.maxMintingFee),
         maxRevenueShare: getRevenueShare(request.maxRevenueShare),
@@ -408,26 +419,54 @@ export class LicenseClient {
           `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}.`,
         );
       }
+      const encodedTxData = this.licensingModuleClient.mintLicenseTokensEncode(req);
       if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.licensingModuleClient.mintLicenseTokensEncode(req) };
-      } else {
-        const txHash = await this.licensingModuleClient.mintLicenseTokens(req);
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(txReceipt);
-          const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
-          const licenseTokenIds = [];
-          for (let i = 0; i < req.amount; i++) {
-            licenseTokenIds.push(startLicenseTokenId + BigInt(i));
-          }
-          return { txHash: txHash, licenseTokenIds: licenseTokenIds };
-        } else {
-          return { txHash: txHash };
-        }
+        return { encodedTxData };
       }
+
+      // get license token minting fee
+      const licenseMintingFee = await calculateLicenseWipMintFee({
+        multicall3Client: this.multicall3Client,
+        licenseTemplateClient: this.licenseTemplateClient,
+        licensingModuleClient: this.licensingModuleClient,
+        parentIpId: req.licensorIpId,
+        licenseTermsId: req.licenseTermsId,
+        receiver,
+        amount: req.amount,
+      });
+
+      const wipSpenders: WipSpender[] = [];
+      if (licenseMintingFee > 0n) {
+        wipSpenders.push({
+          address: this.licensingModuleClient.address,
+          amount: licenseMintingFee,
+        });
+      }
+      const { txHash, receipt } = await contractCallWithWipFees({
+        totalFees: licenseMintingFee,
+        wipOptions: request.wipOptions,
+        multicall3Client: this.multicall3Client,
+        rpcClient: this.rpcClient,
+        wipClient: this.wipClient,
+        wipSpenders,
+        contractCall: () => {
+          return this.licensingModuleClient.mintLicenseTokens(req);
+        },
+        wallet: this.wallet,
+        sender: this.walletAddress,
+        txOptions: request.txOptions,
+        encodedTxs: [encodedTxData],
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(receipt);
+      const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
+      const licenseTokenIds = [];
+      for (let i = 0; i < req.amount; i++) {
+        licenseTokenIds.push(startLicenseTokenId + BigInt(i));
+      }
+      return { txHash, licenseTokenIds: licenseTokenIds, receipt };
     } catch (error) {
       handleError(error, "Failed to mint license tokens");
     }

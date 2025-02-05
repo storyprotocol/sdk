@@ -1,12 +1,12 @@
 import chai from "chai";
-import { createMock } from "../testUtils";
+import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import * as sinon from "sinon";
 import { LicenseClient } from "../../../src";
 import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { PiLicenseTemplateGetLicenseTermsResponse } from "../../../src/abi/generated";
 import { LicenseTerms } from "../../../src/types/resources/license";
-import { MockERC20 } from "../../integration/utils/mockERC20";
+import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
 
 chai.use(chaiAsPromised);
@@ -17,6 +17,7 @@ describe("Test LicenseClient", () => {
   let licenseClient: LicenseClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
+  let predictMintingLicenseFeeStub: sinon.SinonStub;
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -25,6 +26,14 @@ describe("Test LicenseClient", () => {
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     licenseClient = new LicenseClient(rpcMock, walletMock, "1315");
+    (licenseClient.licenseTemplateClient as any).address = generateRandomAddress();
+    (licenseClient.licensingModuleClient as any).address = generateRandomAddress();
+    predictMintingLicenseFeeStub = sinon
+      .stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee")
+      .resolves({
+        currencyToken: WIP_TOKEN_ADDRESS,
+        tokenAmount: 0n,
+      });
   });
 
   afterEach(() => {
@@ -818,6 +827,82 @@ describe("Test LicenseClient", () => {
         data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
     });
+
+    describe("With Minting Fees", () => {
+      let mintLicenseTokensStub: sinon.SinonStub;
+      let wipBalanceOfStub: sinon.SinonStub;
+      let balanceStub: sinon.SinonStub;
+      let approveStub: sinon.SinonStub;
+      let simulateContractStub: sinon.SinonStub;
+
+      beforeEach(() => {
+        predictMintingLicenseFeeStub.resolves({
+          currencyToken: WIP_TOKEN_ADDRESS,
+          tokenAmount: 100n,
+        });
+        approveStub = sinon.stub(licenseClient.wipClient, "approve").resolves(txHash);
+        sinon.stub(licenseClient.wipClient, "allowance").resolves({
+          result: 50n,
+        });
+        wipBalanceOfStub = sinon.stub(licenseClient.wipClient, "balanceOf").resolves({
+          result: 0n,
+        });
+        balanceStub = sinon.stub().resolves(200n);
+        rpcMock.getBalance = balanceStub;
+        simulateContractStub = sinon.stub().resolves(generateRandomHash());
+        rpcMock.simulateContract = simulateContractStub;
+        walletMock.writeContract = sinon.stub().resolves(generateRandomHash());
+        mintLicenseTokensStub = sinon
+          .stub(licenseClient.licensingModuleClient, "mintLicenseTokens")
+          .resolves(txHash);
+        sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+        sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+        sinon
+          .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+          .resolves(true);
+      });
+
+      it("should auto convert IP to WIP", async () => {
+        const result = await licenseClient.mintLicenseTokens({
+          licensorIpId: zeroAddress,
+          licenseTermsId: "1",
+          maxMintingFee: 1,
+          maxRevenueShare: 1,
+          txOptions: { waitForTransaction: false },
+          wipOptions: { useMulticallWhenPossible: false },
+        });
+        expect(result.txHash).to.equal(txHash);
+        expect(result.receipt).to.be.undefined;
+        expect(approveStub.calledOnce).to.be.true;
+        expect(mintLicenseTokensStub.calledOnce).to.be.true;
+        expect(mintLicenseTokensStub.firstCall.args[0].receiver).to.equal(
+          walletMock.account!.address,
+        );
+        expect(simulateContractStub.callCount).to.equal(1);
+        expect(simulateContractStub.firstCall.args[0].functionName).to.equal("deposit");
+      });
+
+      it("should support multicall when converting IP to WIP", async () => {
+        const mockLicenseTokenIds = [{ startLicenseTokenId: 1n }];
+        sinon
+          .stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent")
+          .returns(mockLicenseTokenIds as any);
+        const { txHash, receipt, licenseTokenIds } = await licenseClient.mintLicenseTokens({
+          licensorIpId: zeroAddress,
+          licenseTermsId: "1",
+          maxMintingFee: 1,
+          maxRevenueShare: 1,
+          txOptions: { waitForTransaction: true },
+        });
+        expect(licenseTokenIds![0]).to.equal(mockLicenseTokenIds[0].startLicenseTokenId);
+        expect(txHash).not.to.be.undefined;
+        expect(receipt).not.to.be.undefined;
+        expect(mintLicenseTokensStub.notCalled).to.be.true;
+        expect(simulateContractStub.calledOnce).to.be.true;
+        const calls = simulateContractStub.firstCall.args[0].args[0];
+        expect(calls.length).to.equal(3);
+      });
+    });
   });
 
   describe("Test licenseClient.getLicenseTerms", async () => {
@@ -902,7 +987,7 @@ describe("Test LicenseClient", () => {
     it("should return currency token and token amount when call predictMintingLicenseFee given licenseTemplate and receiver", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee").resolves({
+      predictMintingLicenseFeeStub.resolves({
         currencyToken: zeroAddress,
         tokenAmount: 1n,
       });
@@ -922,7 +1007,7 @@ describe("Test LicenseClient", () => {
     it("should return currency token and token amount when call predictMintingLicenseFee given correct args ", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee").resolves({
+      predictMintingLicenseFeeStub.resolves({
         currencyToken: zeroAddress,
         tokenAmount: 1n,
       });
