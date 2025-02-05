@@ -410,6 +410,11 @@ export class IPAssetClient {
           allowFailure: false,
           callData: encodedTxData,
         });
+        if (isSpg) {
+          // todo(bonnie): update this to use multicall from the spg instead of
+          // multicall3 client since SPG now requires the sender to the signature signer
+          throw new Error("Batch register IP with metadata is not supported.");
+        }
       }
       const txHash = await this.multicall3Client.aggregate3({ calls: contracts });
       if (request.txOptions?.waitForTransaction) {
