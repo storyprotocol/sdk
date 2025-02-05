@@ -1,10 +1,18 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Address, Hex, encodeFunctionData } from "viem";
+import { Address, Hex, encodeFunctionData, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getTokenId, getStoryClient, aeneid } from "./utils/util";
+import {
+  mockERC721,
+  getTokenId,
+  getStoryClient,
+  aeneid,
+  TEST_WALLET_ADDRESS,
+  getExpectedBalance,
+} from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
-import { mockErc20Address } from "../../src/abi/generated";
+import { mockErc20Address, royaltyPolicyLapAddress } from "../../src/abi/generated";
+import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -115,6 +123,25 @@ describe("Royalty Functions", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
+    it("should auto convert IP to WIP when paying WIP on behalf", async () => {
+      const balanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
+      const response = await client.royalty.payRoyaltyOnBehalf({
+        receiverIpId: parentIpId,
+        payerIpId: childIpId,
+        token: WIP_TOKEN_ADDRESS,
+        amount: 100n,
+        txOptions: { waitForTransaction: true },
+      });
+      expect(response.txHash).to.be.a("string");
+      const balanceAfter = await client.getBalance(TEST_WALLET_ADDRESS);
+      const expectedBalance = getExpectedBalance({
+        balanceBefore,
+        cost: 100n,
+        receipt: response.receipt!,
+      });
+      expect(balanceAfter).to.equal(expectedBalance);
+    });
+
     it("should return encoded transaction data for payRoyaltyOnBehalf", async () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: parentIpId,
@@ -188,6 +215,127 @@ describe("Royalty Functions", () => {
       });
 
       expect(response).to.equal(0n);
+    });
+  });
+
+  describe("ClaimAllRevenue With WIP", () => {
+    let ipA: Address;
+    let ipB: Address;
+    let ipC: Address;
+    let ipD: Address;
+    let spgNftContract: Address;
+    let licenseTermsId: bigint;
+
+    before(async () => {
+      // set up
+      // minting Fee: 100, 10% LAP rev share, A expect to get 120 WIP
+      // A -> B -> C -> D
+      const txData = await client.nftClient.createNFTCollection({
+        name: "free-collection",
+        symbol: "FREE",
+        maxSupply: 100,
+        isPublicMinting: true,
+        mintOpen: true,
+        contractURI: "test-uri",
+        mintFeeRecipient: zeroAddress,
+        txOptions: { waitForTransaction: true },
+      });
+      spgNftContract = txData.spgNftContract!;
+
+      const retA = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract,
+        allowDuplicates: true,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 100n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 10,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: false,
+              mintingFee: 100n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      ipA = retA.ipId!;
+      licenseTermsId = retA.licenseTermsIds![0];
+
+      const retB = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract,
+        allowDuplicates: true,
+        derivData: {
+          parentIpIds: [ipA!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 0n,
+          maxRts: MAX_ROYALTY_TOKEN,
+          maxRevenueShare: 100,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+      ipB = retB.ipId!;
+
+      const retC = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract,
+        allowDuplicates: true,
+        derivData: {
+          parentIpIds: [ipB!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 0n,
+          maxRts: MAX_ROYALTY_TOKEN,
+          maxRevenueShare: 100,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+      ipC = retC.ipId!;
+
+      const retD = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract,
+        allowDuplicates: true,
+        derivData: {
+          parentIpIds: [ipC!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 0n,
+          maxRts: MAX_ROYALTY_TOKEN,
+          maxRevenueShare: 100,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+      ipD = retD.ipId!;
+    });
+
+    it("should claim all revenue and convert WIP back to IP", async () => {
+      const ret = await client.royalty.claimAllRevenue({
+        ancestorIpId: ipA,
+        claimer: ipA,
+        childIpIds: [ipB, ipC],
+        royaltyPolicies: [royaltyPolicyLapAddress[aeneid], royaltyPolicyLapAddress[aeneid]],
+        currencyTokens: [WIP_TOKEN_ADDRESS, WIP_TOKEN_ADDRESS],
+      });
+      expect(ret.txHashes).to.be.an("array").and.not.empty;
+      expect(ret.claimedTokens![0].amount).to.equal(120n);
     });
   });
 });

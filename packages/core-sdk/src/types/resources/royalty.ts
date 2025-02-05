@@ -1,7 +1,9 @@
-import { Address } from "viem";
+import { Address, Hash, TransactionReceipt } from "viem";
 
-import { TxOptions } from "../options";
-import { EncodedTxData } from "../../abi/generated";
+import { TxOptions, WithTxOptions } from "../options";
+import { EncodedTxData, IpAccountImplClient } from "../../abi/generated";
+import { WithWipOptions } from "../utils/wip";
+import { TokenAmountInput } from "../common";
 
 export type RoyaltyPolicyApiResponse = {
   data: RoyaltyPolicy;
@@ -42,12 +44,13 @@ export type PayRoyaltyOnBehalfRequest = {
   receiverIpId: Address;
   payerIpId: Address;
   token: Address;
-  amount: string | number | bigint;
-  txOptions?: TxOptions;
-};
+  amount: TokenAmountInput;
+} & WithTxOptions &
+  WithWipOptions;
 
 export type PayRoyaltyOnBehalfResponse = {
   txHash?: string;
+  receipt?: TransactionReceipt;
   encodedTxData?: EncodedTxData;
 };
 
@@ -130,4 +133,69 @@ export type SnapshotAndClaimBySnapshotBatchResponse = {
   encodedTxData?: EncodedTxData;
   snapshotId?: bigint;
   amountsClaimed?: bigint;
+};
+
+/**
+ * Claims all revenue from the child IPs of an ancestor IP, then transfer
+ * all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
+ * If claimed token is WIP, it will also be converted back to IP.
+ */
+export type ClaimAllRevenueRequest = {
+  /** The address of the ancestor IP from which the revenue is being claimed. */
+  ancestorIpId: Address;
+  /**
+   * The address of the claimer of the currency (revenue) tokens.
+   *
+   * This is normally the ipId of the ancestor IP if the IP has all royalty tokens.
+   * Otherwise, this would be the address that is holding the ancestor IP royalty tokens.
+   */
+  claimer: Address;
+  /** The addresses of the child IPs from which royalties are derived. */
+  childIpIds: Address[];
+  /**
+   * The addresses of the royalty policies, where
+   * royaltyPolicies[i] governs the royalty flow for childIpIds[i].
+   */
+  royaltyPolicies: Address[];
+  /** The addresses of the currency tokens in which royalties will be claimed */
+  currencyTokens: Address[];
+
+  claimOptions?: {
+    /**
+     * When enabled, all claimed tokens on the claimer are transferred to the
+     * wallet address if the wallet owns the IP. If the wallet is the claimer
+     * or if the claimer is not an IP owned by the wallet, then the tokens
+     * will not be transferred.
+     * Set to false to disable auto transferring claimed tokens from the claimer.
+     *
+     * @default true
+     */
+    autoTransferAllClaimedTokensFromIp?: boolean;
+
+    /**
+     * By default all claimed WIP tokens are converted back to IP after
+     * they are transferred.
+     * Set this to false to disable this behavior.
+     *
+     * @default false
+     */
+    autoUnwrapIpTokens?: boolean;
+  };
+};
+
+export type ClaimedToken = {
+  token: Address;
+  amount: bigint;
+};
+
+export type ClaimAllRevenueResponse = {
+  txHashes: Hash[];
+  receipt?: TransactionReceipt;
+  claimedTokens?: ClaimedToken[];
+};
+
+export type TransferClaimedTokensFromIpToWalletParams = {
+  ipAccount: IpAccountImplClient;
+  skipUnwrapIp: boolean;
+  claimedTokens: ClaimedToken[];
 };
