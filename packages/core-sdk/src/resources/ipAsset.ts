@@ -1361,7 +1361,7 @@ export class IPAssetClient {
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
-        encodedTxs: [],
+        encodedTxs: [encodedTxData],
         contractCall,
         // need to disable multicall to avoid needing to transfer the license
         // token to the multicall contract.
