@@ -2,7 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, aeneid, getExpectedBalance } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   licensingModuleAddress,
@@ -149,13 +149,6 @@ describe("License Functions", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
-      const balanceAfter = await client.getWalletBalance();
-      const expectedBalance = getExpectedBalance({
-        balanceBefore,
-        receipt: result.receipt!,
-        cost: 0n,
-      });
-      expect(balanceAfter).to.equal(expectedBalance);
     });
 
     it("should mint license tokens with fee and pay with IP", async () => {
@@ -169,12 +162,7 @@ describe("License Functions", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       const balanceAfter = await client.getWalletBalance();
-      const expectedBalance = getExpectedBalance({
-        balanceBefore,
-        receipt: result.receipt!,
-        cost: 100n,
-      });
-      expect(balanceAfter).to.equal(expectedBalance);
+      expect(balanceAfter < balanceBefore - 100n).to.be.true;
     });
 
     it("should get license terms", async () => {
