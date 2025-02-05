@@ -1,7 +1,7 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { AccessPermission, StoryClient } from "../../src";
-import { mockERC721, getStoryClient, getTokenId, homer } from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
 import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
 import {
   accessControllerAbi,
@@ -16,8 +16,8 @@ describe("IPAccount Functions", () => {
   let client: StoryClient;
   let ipId: Hex;
   let data: Hex;
-  const coreMetadataModule = coreMetadataModuleAddress[homer];
-  const permissionAddress = accessControllerAddress[homer];
+  const coreMetadataModule = coreMetadataModuleAddress[aeneid];
+  const permissionAddress = accessControllerAddress[aeneid];
 
   before(async () => {
     client = getStoryClient();

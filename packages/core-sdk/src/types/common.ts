@@ -1,6 +1,6 @@
 import { Address, Hex } from "viem";
 
-import { TxOptions } from "./options";
+import { WithTxOptions } from "./options";
 import { IpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 
 export type TypedData = {
@@ -8,9 +8,8 @@ export type TypedData = {
   data: unknown[];
 };
 
-export type IpMetadataAndTxOption = {
+export type IpMetadataAndTxOptions = WithTxOptions & {
   ipMetadata?: Partial<IpMetadataForWorkflow>;
-  txOptions?: TxOptions;
 };
 
 export type LicensingConfig = {
@@ -29,3 +28,9 @@ export type InnerLicensingConfig = {
   commercialRevShare: number;
   expectMinimumGroupRewardShare: number;
 } & LicensingConfig;
+
+/**
+ * Input for token amount, can be bigint or number.
+ * Will be converted to bigint for contract calls.
+ */
+export type TokenAmountInput = bigint | number;

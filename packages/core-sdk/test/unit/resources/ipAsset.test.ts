@@ -13,7 +13,6 @@ import {
   Address,
 } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { MockERC20 } from "../../integration/utils/mockERC20";
 import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
 import { LicensingConfig } from "../../../src/types/common";
@@ -22,6 +21,8 @@ const {
   RoyaltyModuleReadOnlyClient,
   IpRoyaltyVaultImplReadOnlyClient,
   IpAccountImplClient,
+  SpgnftImplReadOnlyClient,
+  LicensingModuleClient,
 } = require("../../../src/abi/generated");
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 chai.use(chaiAsPromised);
@@ -73,8 +74,8 @@ describe("Test IpAssetClient", () => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
-    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1315");
     walletMock.account = accountMock;
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1315");
     sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getDefaultLicenseTerms").resolves({
       licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       licenseTermsId: 5n,
@@ -106,6 +107,11 @@ describe("Test IpAssetClient", () => {
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (ipAssetClient.derivativeWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    sinon.stub(SpgnftImplReadOnlyClient.prototype, "mintFeeToken").resolves(zeroAddress);
+    sinon.stub(LicensingModuleClient.prototype, "predictMintingLicenseFee").resolves({
+      currencyToken: zeroAddress,
+      tokenAmount: 0n,
+    });
   });
 
   afterEach(() => {
@@ -259,7 +265,7 @@ describe("Test IpAssetClient", () => {
     it("should throw account error when register given wallet have no signTypedData ", async () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
-      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "homer");
+      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "aeneid");
       (ipAssetClient.registrationWorkflowsClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       (ipAssetClient.coreMetadataModuleClient as any).address =
@@ -1447,7 +1453,7 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.txHash).equal(txHash);
-      expect(res.childIpId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      expect(res.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
     });
 
     it("should return encoded tx data when call mintAndRegisterIpAndMakeDerivative given correct args and encodedTxDataOnly of true", async () => {
@@ -3177,12 +3183,35 @@ describe("Test IpAssetClient", () => {
       }
     });
     it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args", async () => {
+      const ipId = "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4";
       sinon
         .stub(
           ipAssetClient.royaltyTokenDistributionWorkflowsClient,
           "mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens",
         )
         .resolves(txHash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId,
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      sinon
+        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
+        .resolves({ selectedLicenseTermsId: 5n });
+      sinon
+        .stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent")
+        .returns([
+          {
+            ipId,
+            ipRoyaltyVault: zeroAddress,
+          },
+        ]);
       const result =
         await ipAssetClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract,
@@ -3484,6 +3513,7 @@ describe("Test IpAssetClient", () => {
         });
       expect(result).to.deep.equal({
         txHash: txHash,
+        receipt: {},
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 0n,
       });
