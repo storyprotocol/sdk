@@ -19,14 +19,14 @@ describe("WIP Functions", () => {
     const ipAmt = parseEther(ipAmtStr);
 
     it(`should deposit ${ipAmtStr} WIP`, async () => {
-      const balanceBefore = await client.walletBalance();
+      const balanceBefore = await client.getWalletBalance();
       const wipBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const rsp = await client.wipClient.deposit({
         amount: ipAmt,
         txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
-      const balanceAfter = await client.walletBalance();
+      const balanceAfter = await client.getWalletBalance();
       const wipAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(wipAfter).to.equal(wipBefore + ipAmt);
       const gasCost = rsp.receipt!.gasUsed * rsp.receipt!.effectiveGasPrice;
@@ -36,7 +36,7 @@ describe("WIP Functions", () => {
 
   describe("withdraw", () => {
     it("should withdrawal WIP", async () => {
-      const balanceBefore = await client.walletBalance();
+      const balanceBefore = await client.getWalletBalance();
       const wipBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const rsp = await client.wipClient.withdraw({
         amount: wipBefore,
@@ -45,7 +45,7 @@ describe("WIP Functions", () => {
       expect(rsp.txHash).to.be.a("string");
       const wipAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(wipAfter).to.equal(0n);
-      const balanceAfter = await client.walletBalance();
+      const balanceAfter = await client.getWalletBalance();
       const gasCost = rsp.receipt!.gasUsed * rsp.receipt!.effectiveGasPrice;
       expect(balanceAfter).to.equal(balanceBefore + wipBefore - gasCost);
     });

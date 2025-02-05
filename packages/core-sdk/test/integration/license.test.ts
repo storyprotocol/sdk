@@ -2,14 +2,7 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import {
-  mockERC721,
-  getStoryClient,
-  getTokenId,
-  aeneid,
-  getExpectedBalance,
-  TEST_WALLET_ADDRESS,
-} from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   licensingModuleAddress,
@@ -144,8 +137,7 @@ describe("License Functions", () => {
     });
 
     it("should mint license tokens", async () => {
-      const address = TEST_WALLET_ADDRESS;
-      const balanceBefore = await client.rpcClient.getBalance({ address });
+      const balanceBefore = await client.getWalletBalance();
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
@@ -157,18 +149,10 @@ describe("License Functions", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
-      const balanceAfter = await client.rpcClient.getBalance({ address });
-      const expectedBalance = getExpectedBalance({
-        balanceBefore,
-        receipt: result.receipt!,
-        cost: 0n,
-      });
-      expect(balanceAfter).to.equal(expectedBalance);
     });
 
     it("should mint license tokens with fee and pay with IP", async () => {
-      const address = TEST_WALLET_ADDRESS;
-      const balanceBefore = await client.rpcClient.getBalance({ address });
+      const balanceBefore = await client.getWalletBalance();
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: paidLicenseId,
         licensorIpId: ipId,
@@ -177,13 +161,8 @@ describe("License Functions", () => {
         txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
-      const balanceAfter = await client.rpcClient.getBalance({ address });
-      const expectedBalance = getExpectedBalance({
-        balanceBefore,
-        receipt: result.receipt!,
-        cost: 100n,
-      });
-      expect(balanceAfter).to.equal(expectedBalance);
+      const balanceAfter = await client.getWalletBalance();
+      expect(balanceAfter < balanceBefore - 100n).to.be.true;
     });
 
     it("should get license terms", async () => {

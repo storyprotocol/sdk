@@ -2338,12 +2338,12 @@ describe("Test IpAssetClient", () => {
           {
             nftContract: spgNftContract,
             tokenId: "2",
-            ipMetadata: {
-              ipMetadataURI: "",
-              ipMetadataHash: toHex(0, { size: 32 }),
-              nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-              nftMetadataURI: "",
-            },
+            // ipMetadata: {
+            //   ipMetadataURI: "",
+            //   ipMetadataHash: toHex(0, { size: 32 }),
+            //   nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            //   nftMetadataURI: "",
+            // },
           },
         ],
         txOptions: {

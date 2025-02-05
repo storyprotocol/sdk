@@ -76,7 +76,6 @@ export type ContractCallWithWipFees = WithWipOptions & {
   encodedTxs: EncodedTxData[];
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
-  disableMultiCall?: boolean;
   sender: Address;
   txOptions?: TxOptions;
 };

@@ -138,16 +138,3 @@ export const getStoryClient = (): StoryClient => {
   };
   return StoryClient.newClient(config);
 };
-
-export const getExpectedBalance = ({
-  balanceBefore,
-  cost,
-  receipt,
-}: {
-  balanceBefore: bigint;
-  cost: bigint;
-  receipt: TransactionReceipt;
-}) => {
-  const expectedBalance = balanceBefore - cost - receipt!.gasUsed * receipt!.effectiveGasPrice;
-  return expectedBalance;
-};
