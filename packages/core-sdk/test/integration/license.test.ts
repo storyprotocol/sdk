@@ -2,13 +2,21 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Hex, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
+import {
+  mockERC721,
+  getStoryClient,
+  getTokenId,
+  aeneid,
+  getExpectedBalance,
+  TEST_WALLET_ADDRESS,
+} from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   licensingModuleAddress,
   mockErc20Address,
   piLicenseTemplateAddress,
 } from "../../src/abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -80,6 +88,7 @@ describe("License Functions", () => {
   describe("attach License Terms and mint license tokens", async () => {
     let ipId: Hex;
     let licenseId: bigint;
+    let paidLicenseId: bigint; // license with 0.01IP minting fee
     let tokenId;
     before(async () => {
       tokenId = await getTokenId();
@@ -102,6 +111,14 @@ describe("License Functions", () => {
         },
       });
       licenseId = registerLicenseResult.licenseTermsId!;
+
+      const paidLicenseResult = await client.license.registerCommercialRemixPIL({
+        defaultMintingFee: 100n,
+        commercialRevShare: 10,
+        currency: WIP_TOKEN_ADDRESS,
+        txOptions: { waitForTransaction: true },
+      });
+      paidLicenseId = paidLicenseResult.licenseTermsId!;
     });
 
     it("should attach License Terms", async () => {
@@ -115,7 +132,20 @@ describe("License Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
 
+    it("should be able to attach another license terms", async () => {
+      const result = await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: paidLicenseId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+    });
+
     it("should mint license tokens", async () => {
+      const address = TEST_WALLET_ADDRESS;
+      const balanceBefore = await client.rpcClient.getBalance({ address });
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
@@ -127,6 +157,33 @@ describe("License Functions", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
+      const balanceAfter = await client.rpcClient.getBalance({ address });
+      const expectedBalance = getExpectedBalance({
+        balanceBefore,
+        receipt: result.receipt!,
+        cost: 0n,
+      });
+      expect(balanceAfter).to.equal(expectedBalance);
+    });
+
+    it("should mint license tokens with fee and pay with IP", async () => {
+      const address = TEST_WALLET_ADDRESS;
+      const balanceBefore = await client.rpcClient.getBalance({ address });
+      const result = await client.license.mintLicenseTokens({
+        licenseTermsId: paidLicenseId,
+        licensorIpId: ipId,
+        maxMintingFee: 0n,
+        maxRevenueShare: 50,
+        txOptions: { waitForTransaction: true },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      const balanceAfter = await client.rpcClient.getBalance({ address });
+      const expectedBalance = getExpectedBalance({
+        balanceBefore,
+        receipt: result.receipt!,
+        cost: 100n,
+      });
+      expect(balanceAfter).to.equal(expectedBalance);
     });
 
     it("should get license terms", async () => {
