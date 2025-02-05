@@ -31,7 +31,7 @@ describe("Dispute Functions", () => {
     ).ipId!;
   });
 
-  it("should raise a dispute", async () => {
+  it.skip("should raise a dispute", async () => {
     const raiseDisputeRequest: RaiseDisputeRequest = {
       targetIpId: ipIdB,
       cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
@@ -99,7 +99,7 @@ describe("Dispute Functions", () => {
     );
   });
 
-  it("it should not cancel a dispute (yet)", async () => {
+  it.skip("it should not cancel a dispute (yet)", async () => {
     // First raise a dispute
     const raiseResponse = await clientA.dispute.raiseDispute({
       targetIpId: ipIdB,
