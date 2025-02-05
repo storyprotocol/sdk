@@ -710,7 +710,7 @@ describe("IP Asset Functions", () => {
         });
         await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
         expect(licenseTokenIds).to.be.an("array").and.not.empty;
-        const { txHash, ipId, receipt } =
+        const { txHash, ipId } =
           await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
             spgNftContract: nftContractWithMintingFee,
             licenseTokenIds: licenseTokenIds!,
