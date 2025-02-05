@@ -93,12 +93,16 @@ export const chain: { [key in SupportedChainIds]: "1315" } = {
   1315: "1315",
 };
 
-export const validateAddress = (address: string): Address => {
+export function validateAddress(address: string): Address {
   if (!isAddress(address, { strict: false })) {
     throw Error(`Invalid address: ${address}`);
   }
   return address;
-};
+}
+
+export function validateAddresses(addresses: string[]): Address[] {
+  return addresses.map((address) => validateAddress(address));
+}
 
 /** @deprecated use {@link validateAddress} */
 export const getAddress = (address: string, name: string, chainId?: number): Address => {
@@ -110,6 +114,6 @@ export const getAddress = (address: string, name: string, chainId?: number): Add
   return checksumAddress(address, chainId);
 };
 
-export function getIPAmountDisplay(amount: bigint): string {
-  return `${formatEther(amount)}IP`;
+export function getTokenAmountDisplay(amount: bigint, unit = "IP"): string {
+  return `${formatEther(amount)}${unit}`;
 }

@@ -228,7 +228,7 @@ export class StoryClient {
     return this._wip;
   }
 
-  public async walletBalance(): Promise<bigint> {
+  public async getWalletBalance(): Promise<bigint> {
     if (!this.wallet.account) {
       throw new Error("No account found in wallet");
     }

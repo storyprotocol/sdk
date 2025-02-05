@@ -20672,6 +20672,14 @@ export class IpAccountImplReadOnlyClient {
       functionName: "token",
     });
   }
+
+  public async owner(): Promise<Address> {
+    return await this.rpcClient.readContract({
+      abi: ipAccountImplAbi,
+      address: this.address,
+      functionName: "owner",
+    });
+  }
 }
 
 /**

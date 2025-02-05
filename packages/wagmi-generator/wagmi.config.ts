@@ -191,7 +191,6 @@ export default defineConfig(async () => {
           chainId: aeneidChainId,
         }),
         contracts: contracts,
-        cacheDuration: 0,
       }),
       sdk({
         permissionLessSDK: true,
@@ -211,7 +210,13 @@ export default defineConfig(async () => {
             "resolveDispute",
             "isWhitelistedDisputeTag",
           ],
-          IPAccountImpl: ["execute", "executeWithSig", "state", "token"],
+          IPAccountImpl: [
+            "execute",
+            "executeWithSig",
+            "state",
+            "token",
+            "owner",
+          ],
           IPAssetRegistry: [
             "IPRegistered",
             "ipId",
