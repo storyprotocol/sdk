@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { PermissionClient, AddressZero } from "../../../src";
-import { PublicClient, WalletClient, LocalAccount } from "viem";
+import { PermissionClient } from "../../../src";
+import { PublicClient, WalletClient, LocalAccount, zeroAddress } from "viem";
 import { AccessPermission } from "../../../src/types/resources/permission";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
@@ -42,9 +42,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.setPermission({
-          ipId: AddressZero,
-          signer: AddressZero,
-          to: AddressZero,
+          ipId: zeroAddress,
+          signer: zeroAddress,
+          to: zeroAddress,
           permission: AccessPermission.ALLOW,
           txOptions: {
             waitForTransaction: false,
@@ -63,9 +63,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
-        ipId: AddressZero,
-        signer: AddressZero,
-        to: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
+        to: zeroAddress,
         func: "function setAll(address,string,bytes32,bytes32)",
         permission: AccessPermission.ALLOW,
       });
@@ -78,9 +78,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
-        ipId: AddressZero,
-        signer: AddressZero,
-        to: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
+        to: zeroAddress,
         permission: AccessPermission.ALLOW,
         txOptions: {
           waitForTransaction: true,
@@ -95,9 +95,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
-        ipId: AddressZero,
-        signer: AddressZero,
-        to: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
+        to: zeroAddress,
         permission: AccessPermission.ALLOW,
         txOptions: {
           encodedTxDataOnly: true,
@@ -112,8 +112,8 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.setAllPermissions({
-          ipId: AddressZero,
-          signer: AddressZero,
+          ipId: zeroAddress,
+          signer: zeroAddress,
           permission: AccessPermission.ALLOW,
           txOptions: {
             waitForTransaction: false,
@@ -132,8 +132,8 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
-        ipId: AddressZero,
-        signer: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
         permission: AccessPermission.ALLOW,
       });
       expect(res.txHash).to.equal(txHash);
@@ -144,8 +144,8 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
-        ipId: AddressZero,
-        signer: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
         permission: AccessPermission.ALLOW,
         txOptions: {
           waitForTransaction: true,
@@ -160,8 +160,8 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
-        ipId: AddressZero,
-        signer: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
         permission: AccessPermission.ALLOW,
         txOptions: {
           encodedTxDataOnly: true,
@@ -176,9 +176,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.createSetPermissionSignature({
-          ipId: AddressZero,
-          signer: AddressZero,
-          to: AddressZero,
+          ipId: zeroAddress,
+          signer: zeroAddress,
+          to: zeroAddress,
           permission: AccessPermission.ALLOW,
         });
       } catch (error) {
@@ -192,9 +192,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await permissionClient.createSetPermissionSignature({
-          ipId: AddressZero,
-          signer: AddressZero,
-          to: AddressZero,
+          ipId: zeroAddress,
+          signer: zeroAddress,
+          to: zeroAddress,
           permission: AccessPermission.ALLOW,
           deadline: "error",
         });
@@ -209,9 +209,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await permissionClient.createSetPermissionSignature({
-          ipId: AddressZero,
-          signer: AddressZero,
-          to: AddressZero,
+          ipId: zeroAddress,
+          signer: zeroAddress,
+          to: zeroAddress,
           func: "function setAll(address,string,bytes32,bytes32)",
           permission: AccessPermission.ALLOW,
           deadline: -2,
@@ -232,9 +232,9 @@ describe("Test Permission", () => {
 
       try {
         await permissionClient.createSetPermissionSignature({
-          ipId: AddressZero,
-          signer: AddressZero,
-          to: AddressZero,
+          ipId: zeroAddress,
+          signer: zeroAddress,
+          to: zeroAddress,
           func: "function setAll(address,string,bytes32,bytes32)",
           permission: AccessPermission.ALLOW,
         });
@@ -249,9 +249,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await permissionClient.createSetPermissionSignature({
-        ipId: AddressZero,
-        signer: AddressZero,
-        to: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
+        to: zeroAddress,
         func: "function setAll(address,string,bytes32,bytes32)",
         permission: AccessPermission.ALLOW,
       });
@@ -263,9 +263,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await permissionClient.createSetPermissionSignature({
-        ipId: AddressZero,
-        signer: AddressZero,
-        to: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
+        to: zeroAddress,
         func: "function setAll(address,string,bytes32,bytes32)",
         deadline: 2000,
         permission: AccessPermission.ALLOW,
@@ -281,9 +281,9 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await permissionClient.createSetPermissionSignature({
-        ipId: AddressZero,
-        signer: AddressZero,
-        to: AddressZero,
+        ipId: zeroAddress,
+        signer: zeroAddress,
+        to: zeroAddress,
         permission: AccessPermission.ALLOW,
         txOptions: {
           encodedTxDataOnly: true,
@@ -300,9 +300,9 @@ describe("Test Permission", () => {
         await permissionClient.setBatchPermissions({
           permissions: [
             {
-              ipId: AddressZero,
-              signer: AddressZero,
-              to: AddressZero,
+              ipId: zeroAddress,
+              signer: zeroAddress,
+              to: zeroAddress,
               permission: AccessPermission.ALLOW,
               func: "function setAll(address,string,bytes32,bytes32)",
             },
@@ -322,9 +322,9 @@ describe("Test Permission", () => {
       const res = await permissionClient.setBatchPermissions({
         permissions: [
           {
-            ipId: AddressZero,
-            signer: AddressZero,
-            to: AddressZero,
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
             permission: AccessPermission.ALLOW,
           },
         ],
@@ -339,9 +339,9 @@ describe("Test Permission", () => {
       const res = await permissionClient.setBatchPermissions({
         permissions: [
           {
-            ipId: AddressZero,
-            signer: AddressZero,
-            to: AddressZero,
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
             permission: AccessPermission.ALLOW,
             func: "function setAll(address,string,bytes32,bytes32)",
           },
@@ -361,9 +361,9 @@ describe("Test Permission", () => {
       const res = await permissionClient.setBatchPermissions({
         permissions: [
           {
-            ipId: AddressZero,
-            signer: AddressZero,
-            to: AddressZero,
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
             permission: AccessPermission.ALLOW,
           },
         ],
@@ -380,12 +380,12 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.createBatchPermissionSignature({
-          ipId: AddressZero,
+          ipId: zeroAddress,
           permissions: [
             {
-              ipId: AddressZero,
-              signer: AddressZero,
-              to: AddressZero,
+              ipId: zeroAddress,
+              signer: zeroAddress,
+              to: zeroAddress,
               permission: AccessPermission.ALLOW,
               func: "function setAll(address,string,bytes32,bytes32)",
             },
@@ -402,12 +402,12 @@ describe("Test Permission", () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await permissionClient.createBatchPermissionSignature({
-        ipId: AddressZero,
+        ipId: zeroAddress,
         permissions: [
           {
-            ipId: AddressZero,
-            signer: AddressZero,
-            to: AddressZero,
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
             permission: AccessPermission.ALLOW,
           },
         ],
@@ -419,13 +419,13 @@ describe("Test Permission", () => {
     it("should return txHash and success when call createSetBatchPermissionsSignature given correct args and waitForTransaction of true", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const res = await permissionClient.createBatchPermissionSignature({
-        ipId: AddressZero,
+        ipId: zeroAddress,
         deadline: 2000,
         permissions: [
           {
-            ipId: AddressZero,
-            signer: AddressZero,
-            to: AddressZero,
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
             permission: AccessPermission.ALLOW,
             func: "function setAll(address,string,bytes32,bytes32)",
           },
@@ -441,12 +441,12 @@ describe("Test Permission", () => {
     it("should return encodedTxData when call createSetBatchPermissionsSignature given correct args and encodedTxDataOnly of true", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const res = await permissionClient.createBatchPermissionSignature({
-        ipId: AddressZero,
+        ipId: zeroAddress,
         permissions: [
           {
-            ipId: AddressZero,
-            signer: AddressZero,
-            to: AddressZero,
+            ipId: zeroAddress,
+            signer: zeroAddress,
+            to: zeroAddress,
             permission: AccessPermission.ALLOW,
           },
         ],
