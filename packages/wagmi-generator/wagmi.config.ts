@@ -296,7 +296,7 @@ export default defineConfig(async () => {
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
           ],
           ArbitrationPolicyUMA: ["maxBonds", "maxLiveness", "minLiveness"],
-          AA: ["deposit", "approve"],
+          WrappedIP: ["withdraw", "approve", "balanceOf", "deposit"],
         },
       }),
     ],

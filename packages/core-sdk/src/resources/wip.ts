@@ -1,21 +1,21 @@
 import { Address, Hex, PublicClient, WriteContractParameters } from "viem";
 
 import { handleError } from "../utils/errors";
-import { Erc20TokenClient, SimpleWalletClient, erc20TokenAbi } from "../abi/generated";
+import { SimpleWalletClient, WrappedIpClient } from "../abi/generated";
 import { validateAddress } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { ApproveRequest, DepositRequest, WithdrawRequest } from "../types/resources/wip";
 import { handleTxOptions } from "../utils/txOptions";
 
 export class WipClient {
-  public wipClient: Erc20TokenClient;
+  public wipClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
-    this.wipClient = new Erc20TokenClient(rpcClient, wallet, WIP_TOKEN_ADDRESS);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
+    this.wipClient = new WrappedIpClient(this.rpcClient, this.wallet);
   }
 
   /**

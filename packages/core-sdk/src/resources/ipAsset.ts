@@ -389,6 +389,7 @@ export class IPAssetClient {
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
     try {
       const contracts = [];
+      const SpgContracts: Hex[] = [];
       let encodedTxData: Hex;
       for (const arg of request.args) {
         try {
@@ -402,16 +403,19 @@ export class IPAssetClient {
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
-        const isSpg = !!arg.ipMetadata;
-        contracts.push({
-          target: isSpg
-            ? this.registrationWorkflowsClient.address
-            : this.ipAssetRegistryClient.address,
-          allowFailure: false,
-          callData: encodedTxData,
-        });
-        if (isSpg) {
-          // todo(bonnie): update this to use multicall from the spg instead of
+        if (arg.ipMetadata) {
+          SpgContracts.push(encodedTxData);
+        } else {
+          contracts.push({
+            target: this.ipAssetRegistryClient.address,
+            allowFailure: false,
+            callData: encodedTxData,
+          });
+        }
+
+        if (SpgContracts.length > 0) {
+          const response = await this.registrationWorkflowsClient.multicall({ data: SpgContracts });
+          console.log("response");
           // multicall3 client since SPG now requires the sender to the signature signer
           throw new Error("Batch register IP with metadata is not supported.");
         }
@@ -660,7 +664,7 @@ export class IPAssetClient {
    *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
@@ -751,7 +755,7 @@ export class IPAssetClient {
    *         @param request.args.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *         @param request.args.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *         @param request.args.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *         @param request.args.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *         @param request.args.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *         If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    *         @param request.args.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *     @param {Object} request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
@@ -848,7 +852,7 @@ export class IPAssetClient {
    *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
@@ -1230,7 +1234,7 @@ export class IPAssetClient {
    *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000s.
@@ -1503,7 +1507,7 @@ export class IPAssetClient {
    *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
@@ -1784,7 +1788,7 @@ export class IPAssetClient {
    *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
    *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.

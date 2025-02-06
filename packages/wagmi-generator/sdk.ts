@@ -58,6 +58,9 @@ function isAbiFuncOnlyRead(func: AbiFunction): boolean {
   return func.stateMutability == "view" || func.stateMutability == "pure";
 }
 
+function isAbiFuncOnlyPayable(func: AbiFunction): boolean {
+  return func.stateMutability === "payable";
+}
 function parameterToPrimitiveType(type: string): string {
   if (type.endsWith("[]")) {
     return `readonly ${parameterToPrimitiveType(
@@ -102,7 +105,8 @@ function parameterToType(
 function generateContractTypes(
   name: string,
   params: readonly AbiParameter[],
-  optional: boolean = false
+  optional: boolean = false,
+  isPayableMethod: boolean = false
 ) {
   if (!params.length) return { valid: false };
 
@@ -128,6 +132,10 @@ function generateContractTypes(
       }
       args.push(`  request.${params[i].name},`);
     }
+    if (isPayableMethod) {
+      comment.push("* @param value bigint");
+      type.push("value: bigint;");
+    }
     type.push(`}`);
     comment.push(`*/`);
 
@@ -137,6 +145,7 @@ function generateContractTypes(
       type: type.join("\n"),
       args: args.join("\n"),
       kind: "object",
+      value:
     };
   } else {
     if (params.length == 1) {
@@ -180,7 +189,13 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
   let outName = `${pascalCase(contractName)}${pascalCase(
     indexFuncName
   )}Response`;
-  const inType = generateContractTypes(inName, func.inputs);
+  const isPayableMethod = isAbiFuncOnlyPayable(func);
+  const inType = generateContractTypes(
+    inName,
+    func.inputs,
+    false,
+    isPayableMethod
+  );
   const outType = generateContractTypes(outName, func.outputs);
   const inParams = inType.valid ? `request: ${inName}` : ``;
   let method = "readContract";
@@ -237,6 +252,11 @@ function generateContractFunction(contractName: string, func: AbiFunction) {
   funcLine.push(`        functionName: "${func.name}",`);
   if (!isAbiFuncOnlyRead(func)) {
     funcLine.push(`        account: this.wallet.account,`);
+  }
+  if (isPayableMethod) {
+    funcLine.push(
+      `        value: BigInt(${inType.args ? inType.args?.value : 0}),`
+    );
   }
   if (inType.valid) {
     funcLine.push(`        args: [`);
