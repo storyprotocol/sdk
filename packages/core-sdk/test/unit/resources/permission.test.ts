@@ -20,7 +20,7 @@ describe("Test Permission", () => {
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-    permissionClient = new PermissionClient(rpcMock, walletMock, "homer");
+    permissionClient = new PermissionClient(rpcMock, walletMock, "aeneid");
     sinon
       .stub(IpAccountImplClient.prototype, "state")
       .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a5e" });

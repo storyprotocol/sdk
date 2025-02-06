@@ -2,7 +2,7 @@ import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
-import { InnerLicensingConfig, IpMetadataAndTxOption, LicensingConfig } from "../common";
+import { InnerLicensingConfig, IpMetadataAndTxOptions, LicensingConfig } from "../common";
 
 export type LicenseData = {
   licenseTermsId: string | bigint | number;
@@ -24,7 +24,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   licenseData: LicenseData[];
   recipient?: Address;
   deadline?: string | number | bigint;
-} & IpMetadataAndTxOption;
+} & IpMetadataAndTxOptions;
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
   txHash?: string;
@@ -50,7 +50,7 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   deadline?: bigint;
   licenseData: LicenseData[];
   maxAllowedRewardShare: number | string;
-} & IpMetadataAndTxOption;
+} & IpMetadataAndTxOptions;
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
   txHash?: string;

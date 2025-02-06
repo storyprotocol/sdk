@@ -111,7 +111,7 @@ export class PermissionClient {
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const data = encodeFunctionData({
         abi: accessControllerAbi,
-        functionName: "setPermission",
+        functionName: "setTransientPermission",
         args: [
           ipId,
           getAddress(signer, "request.signer"),
@@ -279,7 +279,7 @@ export class PermissionClient {
       const ipAccountClient = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const data = encodeFunctionData({
         abi: accessControllerAbi,
-        functionName: "setBatchPermissions",
+        functionName: "setBatchTransientPermissions",
         args: [
           permissions.map((permission) => ({
             ipAccount: permission.ipId,

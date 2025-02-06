@@ -1,8 +1,9 @@
-import { Address } from "viem";
+import { Address, TransactionReceipt } from "viem";
 
-import { TxOptions } from "../options";
+import { WithTxOptions, TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfig } from "../common";
+import { WithWipOptions } from "../utils/wip";
 
 export type LicenseApiResponse = {
   data: License;
@@ -39,7 +40,7 @@ export type LicenseTerms = {
   commercializerChecker: Address;
   /*The data to be passed to the commercializer checker contract.*/
   commercializerCheckerData: Address;
-  /*Percentage of revenue that must be shared with the licensor.*/
+  /**Percentage of revenue that must be shared with the licensor. Must be from 0-100.*/
   commercialRevShare: number;
   /*The maximum revenue that can be generated from the commercial use of the work.*/
   commercialRevCeiling: bigint;
@@ -112,11 +113,12 @@ export type MintLicenseTokensRequest = {
   maxRevenueShare: number | string;
   amount?: number | string | bigint;
   receiver?: Address;
-  txOptions?: TxOptions;
-};
+} & WithTxOptions &
+  WithWipOptions;
 
 export type MintLicenseTokensResponse = {
   licenseTokenIds?: bigint[];
+  receipt?: TransactionReceipt;
   txHash?: string;
   encodedTxData?: EncodedTxData;
 };

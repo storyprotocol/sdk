@@ -35,7 +35,9 @@ export const getPermissionSignature = async (
   const isBatchPermissionFunction = permissions.length >= 2;
   const data = encodeFunctionData({
     abi: accessControllerAbi,
-    functionName: isBatchPermissionFunction ? "setBatchPermissions" : "setPermission",
+    functionName: isBatchPermissionFunction
+      ? "setBatchTransientPermissions"
+      : "setTransientPermission",
     args: isBatchPermissionFunction
       ? [
           permissions.map((item, index) => ({

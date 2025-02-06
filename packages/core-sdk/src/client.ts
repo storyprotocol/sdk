@@ -12,11 +12,12 @@ import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
 import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
-import { chain, chainStringToViemChain } from "./utils/utils";
+import { chain, chainStringToViemChain, validateAddress } from "./utils/utils";
 import { RoyaltyClient } from "./resources/royalty";
 import { NftClient } from "./resources/nftClient";
 import { GroupClient } from "./resources/group";
 import { SimpleWalletClient } from "./abi/generated";
+import { WipClient } from "./resources/wip";
 
 if (typeof process !== "undefined") {
   dotenv.config();
@@ -36,6 +37,7 @@ export class StoryClient {
   private _royalty: RoyaltyClient | null = null;
   private _nftClient: NftClient | null = null;
   private _group: GroupClient | null = null;
+  private _wip: WipClient | null = null;
 
   /**
    * @param config - the configuration for the SDK client
@@ -43,7 +45,7 @@ export class StoryClient {
   private constructor(config: StoryConfig) {
     this.config = {
       ...config,
-      chainId: chain[config.chainId || "homer"],
+      chainId: chain[config.chainId || "aeneid"],
     };
     if (!this.config.transport) {
       throw new Error(
@@ -217,5 +219,26 @@ export class StoryClient {
     }
 
     return this._group;
+  }
+
+  public get wipClient(): WipClient {
+    if (this._wip === null) {
+      this._wip = new WipClient(this.rpcClient, this.wallet);
+    }
+    return this._wip;
+  }
+
+  public async getWalletBalance(): Promise<bigint> {
+    if (!this.wallet.account) {
+      throw new Error("No account found in wallet");
+    }
+    return await this.getBalance(this.wallet.account.address);
+  }
+
+  public async getBalance(address: string): Promise<bigint> {
+    const validAddress = validateAddress(address);
+    return await this.rpcClient.getBalance({
+      address: validAddress,
+    });
   }
 }

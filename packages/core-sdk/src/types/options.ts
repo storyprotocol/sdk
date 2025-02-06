@@ -1,6 +1,6 @@
 import { WaitForTransactionReceiptParameters } from "viem";
 
-export interface TxOptions extends Omit<WaitForTransactionReceiptParameters, "hash"> {
+export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash"> & {
   // Whether or not to wait for the transaction so you
   // can receive a transaction receipt in return (which
   // contains data about the transaction and return values).
@@ -9,8 +9,8 @@ export interface TxOptions extends Omit<WaitForTransactionReceiptParameters, "ha
   // not submit and execute, it will only encode the abi and
   // function data and return.
   encodedTxDataOnly?: boolean;
-}
+};
 
-export type WithTxOptions<T> = T & {
+export type WithTxOptions = {
   txOptions?: TxOptions;
 };

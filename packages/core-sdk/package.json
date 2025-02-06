@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/core-sdk",
-  "version": "1.3.0-beta.1",
+  "version": "1.3.0-beta.2",
   "description": "Story Protocol Core SDK",
   "main": "dist/story-protocol-core-sdk.cjs.js",
   "module": "dist/story-protocol-core-sdk.esm.js",
@@ -19,7 +19,7 @@
     "build": "pnpm run fix && preconstruct build",
     "test": "pnpm run test:unit",
     "test:unit": "TS_NODE_PROJECT='./tsconfig.test.json' c8 --all --src ./src mocha -r ts-node/register './test/unit/**/*.test.ts'",
-    "test:integration": "TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register './test/integration/**/*.test.ts' --timeout 240000",
+    "test:integration": "TS_NODE_PROJECT='./tsconfig.test.json' mocha -r ts-node/register './test/integration/**/*.test.ts' --timeout 300000",
     "fix": "pnpm run format:fix && pnpm run lint:fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",

@@ -344,7 +344,7 @@ export const accessControllerAbi = [
         ],
       },
     ],
-    name: "setBatchPermissions",
+    name: "setBatchTransientPermissions",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -357,7 +357,7 @@ export const accessControllerAbi = [
       { name: "func", internalType: "bytes4", type: "bytes4" },
       { name: "permission", internalType: "uint8", type: "uint8" },
     ],
-    name: "setPermission",
+    name: "setTransientPermission",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -15270,7 +15270,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: accessControllerAbi,
       address: this.address,
-      functionName: "setBatchPermissions",
+      functionName: "setBatchTransientPermissions",
       account: this.wallet.account,
       args: [request.permissions],
     });
@@ -15290,7 +15290,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
       to: this.address,
       data: encodeFunctionData({
         abi: accessControllerAbi,
-        functionName: "setBatchPermissions",
+        functionName: "setBatchTransientPermissions",
         args: [request.permissions],
       }),
     };
@@ -15308,7 +15308,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: accessControllerAbi,
       address: this.address,
-      functionName: "setPermission",
+      functionName: "setTransientPermission",
       account: this.wallet.account,
       args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
     });
@@ -15326,7 +15326,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
       to: this.address,
       data: encodeFunctionData({
         abi: accessControllerAbi,
-        functionName: "setPermission",
+        functionName: "setTransientPermission",
         args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
       }),
     };
@@ -20670,6 +20670,14 @@ export class IpAccountImplReadOnlyClient {
       abi: ipAccountImplAbi,
       address: this.address,
       functionName: "token",
+    });
+  }
+
+  public async owner(): Promise<Address> {
+    return await this.rpcClient.readContract({
+      abi: ipAccountImplAbi,
+      address: this.address,
+      functionName: "owner",
     });
   }
 }

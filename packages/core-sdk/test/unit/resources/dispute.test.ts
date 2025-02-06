@@ -16,7 +16,7 @@ describe("Test DisputeClient", () => {
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
-    disputeClient = new DisputeClient(rpcMock, walletMock, "homer");
+    disputeClient = new DisputeClient(rpcMock, walletMock, "aeneid");
   });
 
   afterEach(() => {
