@@ -881,8 +881,8 @@ describe("Test LicenseClient", () => {
         expect(simulateContractStub.callCount).to.equal(1);
         expect(simulateContractStub.firstCall.args[0].functionName).to.equal("deposit");
       });
-      // FIXME: This test is failing due to the fact that it is not called by the multicall
-      it.skip("should support multicall when converting IP to WIP", async () => {
+
+      it("should support multicall when converting IP to WIP", async () => {
         const mockLicenseTokenIds = [{ startLicenseTokenId: 1n }];
         sinon
           .stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent")
