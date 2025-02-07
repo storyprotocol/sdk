@@ -57,6 +57,49 @@ describe("IP Asset Functions", () => {
       childIpId = response.ipId;
     });
 
+    it("should register an IP Asset with multiple metadata fields", async () => {
+      const tokenId = await getTokenId();
+      const response = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        ipMetadata: {
+          ipMetadataURI: "ipfs://test-uri",
+          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+          nftMetadataURI: "ipfs://test-nft-uri",
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
+        txOptions: { waitForTransaction: true },
+      });
+
+      expect(response.ipId).to.be.a("string").and.not.empty;
+      expect(response.tokenId).to.be.a("bigint");
+    });
+
+    it("should not register with invalid metadata hash length", async () => {
+      const tokenId = await getTokenId();
+      await expect(
+        client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          ipMetadata: {
+            ipMetadataHash: "0x123", // Invalid length hash
+            nftMetadataHash: toHex("valid-hash", { size: 32 }),
+          },
+          txOptions: { waitForTransaction: true },
+        }),
+      ).to.be.rejected;
+    });
+
+    it("should not register with non-existent token ID", async () => {
+      await expect(
+        client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: BigInt(Number.MAX_SAFE_INTEGER),
+          txOptions: { waitForTransaction: true },
+        }),
+      ).to.be.rejected;
+    });
+
     it("should register derivative", async () => {
       const tokenId = await getTokenId();
       parentIpId = (
@@ -82,6 +125,64 @@ describe("IP Asset Functions", () => {
         maxRevenueShare: "0",
         txOptions: { waitForTransaction: true },
       });
+      expect(response.txHash).to.be.a("string").and.not.empty;
+    });
+
+    it("should register derivative with multiple parent IPs", async () => {
+      // Create first parent IP
+      const tokenId1 = await getTokenId();
+      const parentIpId1 = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId1!,
+          txOptions: { waitForTransaction: true },
+        })
+      ).ipId!;
+
+      // Create second parent IP
+      const tokenId2 = await getTokenId();
+      const parentIpId2 = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId2!,
+          txOptions: { waitForTransaction: true },
+        })
+      ).ipId!;
+
+      // Attach license terms to both parents
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId1,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: { waitForTransaction: true },
+      });
+
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId2,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: { waitForTransaction: true },
+      });
+
+      // Create child IP
+      const childTokenId = await getTokenId();
+      const childIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: childTokenId!,
+          txOptions: { waitForTransaction: true },
+        })
+      ).ipId!;
+
+      // Register derivative with multiple parents
+      const response = await client.ipAsset.registerDerivative({
+        childIpId: childIpId,
+        parentIpIds: [parentIpId1, parentIpId2],
+        licenseTermsIds: [noCommercialLicenseTermsId, noCommercialLicenseTermsId],
+        maxMintingFee: "0",
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: "0",
+        txOptions: { waitForTransaction: true },
+      });
+
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
@@ -492,7 +593,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 1,
             },
           ],
@@ -505,6 +606,300 @@ describe("IP Asset Functions", () => {
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
       expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
+    });
+
+    it("should register IP and attach license terms and distribute royalty tokens with complex royalty shares", async () => {
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
+      const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
+        {
+          nftContract: nftContract,
+          tokenId: tokenId!,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 43,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 17,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 2,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 38,
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        },
+      );
+
+      expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
+      expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
+    });
+
+    it("should handle boundary conditions for royalty shares", async () => {
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
+      const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
+        {
+          nftContract: nftContract,
+          tokenId: tokenId!,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 1, // Test minimum valid percentage
+            },
+            {
+              recipient: walletAddress,
+              percentage: 99, // Test maximum valid percentage that sums to 100
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        },
+      );
+
+      expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
+      expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
+    });
+
+    it("should fail when total royalty shares exceed 100%", async () => {
+      const tokenId = await getTokenId();
+      await expect(
+        client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 60,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 45, // Total will be 105%
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        }),
+      ).to.be.rejectedWith("The sum of the royalty shares cannot exceeds 100");
+    });
+
+    it("should fail with non-commercial license terms for royalty distributio", async () => {
+      const tokenId = await getTokenId();
+      await expect(
+        client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: false,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 60,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 45, // Total will be 105%
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        }),
+      ).to.be.rejectedWith("The sum of the royalty shares cannot exceeds 100");
+    });
+
+    it("should fail with zero percentage royalty share", async () => {
+      const tokenId = await getTokenId();
+      await expect(
+        client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: mockErc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 0,
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        }),
+      ).to.be.rejectedWith("The percentage of the royalty shares must be greater than 0");
     });
 
     it("should register derivative and attach license terms and distribute royalty tokens", async () => {
@@ -522,7 +917,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 10, // 100%
             },
           ],
@@ -576,7 +971,7 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 10, // 100%
             },
           ],
@@ -855,7 +1250,7 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
+        mintFeeRecipient: walletAddress,
         txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
@@ -1085,7 +1480,7 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
+        mintFeeRecipient: walletAddress,
         txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
@@ -1177,7 +1572,7 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 101, // Invalid percentage > 100
             },
           ],
@@ -1215,6 +1610,193 @@ describe("IP Asset Functions", () => {
           txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("The parent IP IDs must be provided");
+    });
+  });
+
+  describe("Other Edge Cases", () => {
+    let client: StoryClient;
+    let noCommercialLicenseTermsId: bigint;
+    let parentIpId: Hex;
+
+    before(async () => {
+      client = getStoryClient();
+      const res = await client.license.registerNonComSocialRemixingPIL({
+        txOptions: { waitForTransaction: true },
+      });
+      noCommercialLicenseTermsId = res.licenseTermsId!;
+
+      const tokenId = await getTokenId();
+      const parentIpResponse = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        txOptions: { waitForTransaction: true },
+      });
+      parentIpId = parentIpResponse.ipId!;
+
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: { waitForTransaction: true },
+      });
+    });
+
+    describe("Derivative Registration Edge Cases", () => {
+      let childIpId: Hex;
+
+      beforeEach(async () => {
+        const tokenId = await getTokenId();
+        const response = await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          txOptions: { waitForTransaction: true },
+        });
+        childIpId = response.ipId!;
+      });
+
+      it("should fail when parent IP does not exist", async () => {
+        await expect(
+          client.ipAsset.registerDerivative({
+            childIpId,
+            parentIpIds: ["0x1234567890123456789012345678901234567890"],
+            licenseTermsIds: [noCommercialLicenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
+            txOptions: { waitForTransaction: true },
+          }),
+        ).to.be.rejectedWith(/not registered/);
+      });
+
+      it("should fail with mismatched parentIpIds and licenseTermsIds lengths", async () => {
+        await expect(
+          client.ipAsset.registerDerivative({
+            childIpId,
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [noCommercialLicenseTermsId, noCommercialLicenseTermsId], // More license terms than parents
+            maxMintingFee: "0",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
+            txOptions: { waitForTransaction: true },
+          }),
+        ).to.be.rejectedWith(/must match/);
+      });
+
+      it("should fail with negative maxMintingFee", async () => {
+        await expect(
+          client.ipAsset.registerDerivative({
+            childIpId,
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [noCommercialLicenseTermsId],
+            maxMintingFee: "-1",
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: "0",
+            txOptions: { waitForTransaction: true },
+          }),
+        ).to.be.rejectedWith(/must be greater than 0/);
+      });
+
+      it("should fail with maxRts exceeding maximum allowed", async () => {
+        await expect(
+          client.ipAsset.registerDerivative({
+            childIpId,
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [noCommercialLicenseTermsId],
+            maxMintingFee: "0",
+            maxRts: 100_000_001, // Exceeds maximum
+            maxRevenueShare: "0",
+            txOptions: { waitForTransaction: true },
+          }),
+        ).to.be.rejectedWith(/must be.*less than/);
+      });
+    });
+
+    describe("License Token Edge Cases", () => {
+      it("should fail when trying to use non-existent license token", async () => {
+        const tokenId = await getTokenId();
+        await expect(
+          client.ipAsset.registerDerivativeWithLicenseTokens({
+            childIpId: (
+              await client.ipAsset.register({
+                nftContract: mockERC721,
+                tokenId: tokenId!,
+                txOptions: { waitForTransaction: true },
+              })
+            ).ipId!,
+            licenseTokenIds: [BigInt(999999)], // Non-existent token
+            maxRts: 5 * 10 ** 6,
+            txOptions: { waitForTransaction: true },
+          }),
+        ).to.be.rejected;
+      });
+
+      it("should fail when trying to use same license token twice", async () => {
+        const mintLicenseTokensResult = await client.license.mintLicenseTokens({
+          licenseTermsId: noCommercialLicenseTermsId,
+          licensorIpId: parentIpId,
+          maxMintingFee: "0",
+          maxRevenueShare: 1,
+          txOptions: { waitForTransaction: true },
+        });
+
+        const tokenId1 = await getTokenId();
+        await client.ipAsset.registerDerivativeWithLicenseTokens({
+          childIpId: (
+            await client.ipAsset.register({
+              nftContract: mockERC721,
+              tokenId: tokenId1!,
+              txOptions: { waitForTransaction: true },
+            })
+          ).ipId!,
+          licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+          maxRts: 5 * 10 ** 6,
+          txOptions: { waitForTransaction: true },
+        });
+
+        const tokenId2 = await getTokenId();
+        await expect(
+          client.ipAsset.registerDerivativeWithLicenseTokens({
+            childIpId: (
+              await client.ipAsset.register({
+                nftContract: mockERC721,
+                tokenId: tokenId2!,
+                txOptions: { waitForTransaction: true },
+              })
+            ).ipId!,
+            licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+            maxRts: 5 * 10 ** 6,
+            txOptions: { waitForTransaction: true },
+          }),
+        ).to.be.rejected; // Should fail as token already used
+      });
+    });
+
+    describe("Batch Operation Edge Cases", () => {
+      it("should handle partial failures in batch registration", async () => {
+        const tokenId1 = await getTokenId();
+        const tokenId2 = await getTokenId();
+
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId1!,
+          txOptions: { waitForTransaction: true },
+        });
+
+        await expect(
+          client.ipAsset.batchRegister({
+            args: [
+              {
+                nftContract: mockERC721,
+                tokenId: tokenId1!, // Already registered
+              },
+              {
+                nftContract: mockERC721,
+                tokenId: tokenId2!, // New registration
+              },
+            ],
+            txOptions: { waitForTransaction: true },
+          }),
+        ).to.be.rejected;
+      });
     });
   });
 });
