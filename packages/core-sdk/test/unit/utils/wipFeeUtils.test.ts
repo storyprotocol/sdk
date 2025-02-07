@@ -4,21 +4,22 @@ import chaiAsPromised from "chai-as-promised";
 import { Address, LocalAccount, PublicClient, WalletClient, maxUint256, parseEther } from "viem";
 import {
   Multicall3Client,
-  Erc20TokenClient,
   royaltyModuleAddress,
   derivativeWorkflowsAddress,
+  WrappedIpClient,
 } from "../../../src/abi/generated";
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import { contractCallWithWipFees } from "../../../src/utils/wipFeeUtils";
 import { ContractCallWithWipFees } from "../../../src/types/utils/wip";
 import { TEST_WALLET_ADDRESS, aeneid } from "../../integration/utils/util";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
+import { WipClient } from "../../../src/resources/wip";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe("WIP Fee Utilities", () => {
-  let wipClient: Erc20TokenClient;
+  let wipClient: WrappedIpClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
   let multicall3Client: Multicall3Client;
@@ -34,7 +35,7 @@ describe("WIP Fee Utilities", () => {
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
     walletMock.writeContract = sinon.stub().resolves(generateRandomHash());
-    wipClient = createMock<Erc20TokenClient>();
+    wipClient = createMock<WrappedIpClient>();
     multicall3Client = createMock<Multicall3Client>();
     rpcWaitForTxMock = rpcMock.waitForTransactionReceipt as sinon.SinonStub;
   });

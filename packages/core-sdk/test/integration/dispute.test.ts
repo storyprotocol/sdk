@@ -5,7 +5,7 @@ import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
 import { Address } from "viem";
 import { MockERC20 } from "./utils/mockERC20";
-import { arbitrationPolicyUmaAddress, erc20TokenAddress } from "../../src/abi/generated";
+import { arbitrationPolicyUmaAddress, wrappedIpAddress } from "../../src/abi/generated";
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
@@ -17,7 +17,7 @@ describe("Dispute Functions", () => {
   before(async () => {
     clientA = getStoryClient();
     clientB = getStoryClient();
-    const mockERC20 = new MockERC20(erc20TokenAddress[aeneid]);
+    const mockERC20 = new MockERC20(wrappedIpAddress[aeneid]);
     await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid]);
     const tokenId = await getTokenId();
     ipIdB = (
@@ -65,7 +65,7 @@ describe("Dispute Functions", () => {
 
   it("should throw error when bond exceeds maximum", async () => {
     const maxBonds = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.maxBonds({
-      token: erc20TokenAddress[aeneid],
+      token: wrappedIpAddress[aeneid],
     });
 
     const raiseDisputeRequest: RaiseDisputeRequest = {

@@ -21,7 +21,6 @@ import {
   TransferClaimedTokensFromIpToWalletParams,
 } from "../types/resources/royalty";
 import {
-  Erc20TokenClient,
   IpAccountImplClient,
   IpAssetRegistryClient,
   ipRoyaltyVaultImplAbi,
@@ -32,6 +31,7 @@ import {
   royaltyWorkflowsAbi,
   royaltyWorkflowsAddress,
   SimpleWalletClient,
+  WrappedIpClient,
 } from "../abi/generated";
 import { IPAccountClient } from "./ipAccount";
 import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
@@ -47,7 +47,7 @@ export class RoyaltyClient {
   public ipRoyaltyVaultImplReadOnlyClient: IpRoyaltyVaultImplReadOnlyClient;
   public ipRoyaltyVaultImplEventClient: IpRoyaltyVaultImplEventClient;
   public multicall3Client: Multicall3Client;
-  public wipClient: Erc20TokenClient;
+  public wipClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly walletAddress: Address;
@@ -59,7 +59,7 @@ export class RoyaltyClient {
     this.ipRoyaltyVaultImplEventClient = new IpRoyaltyVaultImplEventClient(rpcClient);
     this.ipAccountClient = new IPAccountClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
-    this.wipClient = new Erc20TokenClient(rpcClient, wallet);
+    this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.walletAddress = wallet.account!.address;

@@ -11,7 +11,6 @@ import {
 } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -70,7 +69,6 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  Erc20TokenClient,
   IpAccountImplClient,
   IpAssetRegistryClient,
   IpRoyaltyVaultImplReadOnlyClient,
@@ -93,6 +91,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
   SpgnftImplReadOnlyClient,
+  WrappedIpClient,
   coreMetadataModuleAbi,
   ipAccountImplAbi,
   ipRoyaltyVaultImplAbi,
@@ -117,6 +116,7 @@ import {
   contractCallWithWipFees,
 } from "../utils/wipFeeUtils";
 import { WipSpender } from "../types/utils/wip";
+import { ChainIds } from "../types/config";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -132,15 +132,15 @@ export class IPAssetClient {
   public multicall3Client: Multicall3Client;
   public royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
   public royaltyModuleEventClient: RoyaltyModuleEventClient;
-  public wipClient: Erc20TokenClient;
+  public wipClient: WrappedIpClient;
   public spgNftClient: SpgnftImplReadOnlyClient;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
-  private readonly chainId: SupportedChainIds;
+  private readonly chainId: ChainIds;
   private readonly walletAddress: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
@@ -156,7 +156,7 @@ export class IPAssetClient {
       wallet,
     );
     this.royaltyModuleEventClient = new RoyaltyModuleEventClient(rpcClient);
-    this.wipClient = new Erc20TokenClient(rpcClient, wallet);
+    this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.spgNftClient = new SpgnftImplReadOnlyClient(rpcClient);
     this.rpcClient = rpcClient;
@@ -389,6 +389,7 @@ export class IPAssetClient {
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
     try {
       const contracts = [];
+      const spgContracts: Hex[] = [];
       let encodedTxData: Hex;
       for (const arg of request.args) {
         try {
@@ -402,28 +403,48 @@ export class IPAssetClient {
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
-        const isSpg = !!arg.ipMetadata;
-        contracts.push({
-          target: isSpg
-            ? this.registrationWorkflowsClient.address
-            : this.ipAssetRegistryClient.address,
-          allowFailure: false,
-          callData: encodedTxData,
-        });
-        if (isSpg) {
-          // todo(bonnie): update this to use multicall from the spg instead of
-          // multicall3 client since SPG now requires the sender to the signature signer
-          throw new Error("Batch register IP with metadata is not supported.");
+        if (arg.ipMetadata) {
+          spgContracts.push(encodedTxData);
+        } else {
+          contracts.push({
+            target: this.ipAssetRegistryClient.address,
+            allowFailure: false,
+            callData: encodedTxData,
+          });
         }
       }
-      const txHash = await this.multicall3Client.aggregate3({ calls: contracts });
+      let spgTxHash: Hex | undefined;
+      let txHash: Hex | undefined;
+      if (spgContracts.length > 0) {
+        spgTxHash = await this.registrationWorkflowsClient.multicall({ data: spgContracts });
+      }
+      if (contracts.length > 0) {
+        txHash = await this.multicall3Client.aggregate3({ calls: contracts });
+      }
+      const results: IpIdAndTokenId<"spgNftContract" | "nftContract">[] = [];
       if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const results = this.getIpIdAndTokenIdsFromEvent(txReceipt, "nftContract");
-        return { txHash, results };
+        const processTransaction = async (
+          hash: Hex,
+          contractType: "spgNftContract" | "nftContract",
+        ) => {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash,
+          });
+          const eventResults = this.getIpIdAndTokenIdsFromEvent(txReceipt, contractType);
+          results.push(...eventResults);
+        };
+        if (txHash) {
+          await processTransaction(txHash, "nftContract");
+        }
+        if (spgTxHash) {
+          await processTransaction(spgTxHash, "spgNftContract");
+        }
+        return {
+          txHash,
+          spgTxHash,
+          results,
+        };
       } else {
         return { txHash };
       }

@@ -13,19 +13,19 @@ import {
   ArbitrationPolicyUmaReadOnlyClient,
   DisputeModuleClient,
   SimpleWalletClient,
-  erc20TokenAddress,
+  wrappedIpAddress,
 } from "../abi/generated";
 import { chain, getAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
-import { SupportedChainIds } from "../types/config";
+import { ChainIds } from "../types/config";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
   public arbitrationPolicyUmaReadOnlyClient: ArbitrationPolicyUmaReadOnlyClient;
   private readonly rpcClient: PublicClient;
-  private readonly chainId: SupportedChainIds;
+  private readonly chainId: ChainIds;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.rpcClient = rpcClient;
     this.disputeModuleClient = new DisputeModuleClient(rpcClient, wallet);
     this.arbitrationPolicyUmaReadOnlyClient = new ArbitrationPolicyUmaReadOnlyClient(rpcClient);
@@ -52,7 +52,7 @@ export class DisputeClient {
     try {
       const liveness = BigInt(request.liveness);
       const bonds = BigInt(request.bond);
-      const tokenAddress = erc20TokenAddress[chain[this.chainId]];
+      const tokenAddress = wrappedIpAddress[chain[this.chainId]];
       const [minLiveness, maxLiveness] = await Promise.all([
         this.arbitrationPolicyUmaReadOnlyClient.minLiveness(),
         this.arbitrationPolicyUmaReadOnlyClient.maxLiveness(),

@@ -6,8 +6,8 @@ import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
 import { MockERC20 } from "./utils/mockERC20";
 import {
   licensingModuleAddress,
-  mockErc20Address,
   piLicenseTemplateAddress,
+  wrappedIpAddress,
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
@@ -24,7 +24,7 @@ describe("License Functions", () => {
     it("should register license ", async () => {
       const result = await client.license.registerPILTerms({
         defaultMintingFee: 0,
-        currency: mockErc20Address[aeneid],
+        currency: wrappedIpAddress[aeneid],
         transferable: false,
         royaltyPolicy: zeroAddress,
         commercialUse: false,
@@ -57,7 +57,7 @@ describe("License Functions", () => {
     it("should register license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: mockErc20Address[aeneid],
+        currency: wrappedIpAddress[aeneid],
         txOptions: {
           waitForTransaction: true,
         },
@@ -69,7 +69,7 @@ describe("License Functions", () => {
       const result = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: mockErc20Address[aeneid],
+        currency: wrappedIpAddress[aeneid],
         txOptions: {
           waitForTransaction: true,
         },
@@ -98,7 +98,7 @@ describe("License Functions", () => {
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: 0,
         commercialRevShare: 100,
-        currency: mockErc20Address[aeneid],
+        currency: wrappedIpAddress[aeneid],
         txOptions: {
           waitForTransaction: true,
         },

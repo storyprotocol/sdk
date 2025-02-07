@@ -5,9 +5,9 @@ import { aeneid, getStoryClient, mintBySpg } from "./utils/util";
 import { StoryClient } from "../../src";
 import {
   evenSplitGroupPoolAddress,
-  mockErc20Address,
   piLicenseTemplateAddress,
   royaltyPolicyLrpAddress,
+  wrappedIpAddress,
 } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
@@ -61,7 +61,7 @@ describe("Group Functions", () => {
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
-            currency: mockErc20Address[aeneid],
+            currency: wrappedIpAddress[aeneid],
             uri: "test case",
           },
           licensingConfig: {

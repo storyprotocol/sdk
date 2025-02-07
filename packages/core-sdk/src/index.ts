@@ -1,6 +1,6 @@
 export { StoryClient } from "./client";
-export { AddressZero, HashZero } from "./constants/common";
-export { aeneid } from "./utils/chain";
+export { AddressZero, HashZero, WIP_TOKEN_ADDRESS } from "./constants/common";
+export { aeneid, mainnet } from "./utils/chain";
 export { IPAssetClient } from "./resources/ipAsset";
 export { PermissionClient } from "./resources/permission";
 export { LicenseClient } from "./resources/license";

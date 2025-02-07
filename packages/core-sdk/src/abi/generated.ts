@@ -20,8 +20,8 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const accessControllerAbi = [
   {
     type: "constructor",
@@ -109,7 +109,7 @@ export const accessControllerAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
@@ -195,6 +195,39 @@ export const accessControllerAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "ipAccountOwner",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "ipAccount",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "signer",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      { name: "func", internalType: "bytes4", type: "bytes4", indexed: false },
+      {
+        name: "permission",
+        internalType: "uint8",
+        type: "uint8",
+        indexed: false,
+      },
+    ],
+    name: "TransientPermissionSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "account",
         internalType: "address",
         type: "address",
@@ -271,7 +304,31 @@ export const accessControllerAbi = [
       { name: "to", internalType: "address", type: "address" },
       { name: "func", internalType: "bytes4", type: "bytes4" },
     ],
+    name: "getPermanentPermission",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
+    ],
     name: "getPermission",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
+    ],
+    name: "getTransientPermission",
     outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
     stateMutability: "view",
   },
@@ -323,6 +380,17 @@ export const accessControllerAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "permission", internalType: "uint8", type: "uint8" },
+    ],
+    name: "setAllTransientPermissions",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "newAuthority", internalType: "address", type: "address" }],
     name: "setAuthority",
     outputs: [],
@@ -344,7 +412,40 @@ export const accessControllerAbi = [
         ],
       },
     ],
+    name: "setBatchPermissions",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "permissions",
+        internalType: "struct AccessPermission.Permission[]",
+        type: "tuple[]",
+        components: [
+          { name: "ipAccount", internalType: "address", type: "address" },
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "to", internalType: "address", type: "address" },
+          { name: "func", internalType: "bytes4", type: "bytes4" },
+          { name: "permission", internalType: "uint8", type: "uint8" },
+        ],
+      },
+    ],
     name: "setBatchTransientPermissions",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "func", internalType: "bytes4", type: "bytes4" },
+      { name: "permission", internalType: "uint8", type: "uint8" },
+    ],
+    name: "setPermission",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -381,15 +482,16 @@ export const accessControllerAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const accessControllerAddress = {
   1315: "0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a",
+  1514: "0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a",
 } as const;
 
 /**
- *
- */
+
+*/
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
@@ -400,8 +502,8 @@ export const accessControllerConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const arbitrationPolicyUmaAbi = [
   {
     type: "constructor",
@@ -433,11 +535,6 @@ export const arbitrationPolicyUmaAbi = [
     type: "error",
     inputs: [{ name: "target", internalType: "address", type: "address" }],
     name: "AddressEmptyCode",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
   },
   { type: "error", inputs: [], name: "ArbitrationPolicyUMA__BondAboveMax" },
   { type: "error", inputs: [], name: "ArbitrationPolicyUMA__CannotCancel" },
@@ -516,7 +613,7 @@ export const arbitrationPolicyUmaAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
@@ -964,15 +1061,16 @@ export const arbitrationPolicyUmaAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const arbitrationPolicyUmaAddress = {
   1315: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936",
+  1514: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936",
 } as const;
 
 /**
- *
- */
+
+*/
 export const arbitrationPolicyUmaConfig = {
   address: arbitrationPolicyUmaAddress,
   abi: arbitrationPolicyUmaAbi,
@@ -983,8 +1081,8 @@ export const arbitrationPolicyUmaConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const coreMetadataModuleAbi = [
   {
     type: "constructor",
@@ -1035,7 +1133,7 @@ export const coreMetadataModuleAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
@@ -1259,15 +1357,16 @@ export const coreMetadataModuleAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const coreMetadataModuleAddress = {
   1315: "0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16",
+  1514: "0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16",
 } as const;
 
 /**
- *
- */
+
+*/
 export const coreMetadataModuleConfig = {
   address: coreMetadataModuleAddress,
   abi: coreMetadataModuleAbi,
@@ -1278,8 +1377,8 @@ export const coreMetadataModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const derivativeWorkflowsAbi = [
   {
     type: "constructor",
@@ -1326,6 +1425,14 @@ export const derivativeWorkflowsAbi = [
       { name: "actualTokenOwner", internalType: "address", type: "address" },
     ],
     name: "DerivativeWorkflows__CallerAndNotTokenOwner",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+    ],
+    name: "DerivativeWorkflows__CallerNotSigner",
   },
   {
     type: "error",
@@ -1853,15 +1960,16 @@ export const derivativeWorkflowsAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const derivativeWorkflowsAddress = {
   1315: "0x9e2d496f72C547C2C535B167e06ED8729B374a4f",
+  1514: "0x9e2d496f72C547C2C535B167e06ED8729B374a4f",
 } as const;
 
 /**
- *
- */
+
+*/
 export const derivativeWorkflowsConfig = {
   address: derivativeWorkflowsAddress,
   abi: derivativeWorkflowsAbi,
@@ -1872,8 +1980,8 @@ export const derivativeWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const disputeModuleAbi = [
   {
     type: "constructor",
@@ -1924,10 +2032,16 @@ export const disputeModuleAbi = [
     inputs: [],
     name: "DisputeModule__DisputeAlreadyPropagated",
   },
+  {
+    type: "error",
+    inputs: [],
+    name: "DisputeModule__DisputeWithoutInfringementTag",
+  },
+  { type: "error", inputs: [], name: "DisputeModule__EvidenceHashAlreadyUsed" },
   { type: "error", inputs: [], name: "DisputeModule__NotAbleToResolve" },
   { type: "error", inputs: [], name: "DisputeModule__NotAllowedToWhitelist" },
   { type: "error", inputs: [], name: "DisputeModule__NotArbitrationRelayer" },
-  { type: "error", inputs: [], name: "DisputeModule__NotDerivative" },
+  { type: "error", inputs: [], name: "DisputeModule__NotDerivativeOrGroupIp" },
   { type: "error", inputs: [], name: "DisputeModule__NotDisputeInitiator" },
   { type: "error", inputs: [], name: "DisputeModule__NotInDisputeState" },
   { type: "error", inputs: [], name: "DisputeModule__NotRegisteredIpId" },
@@ -1944,10 +2058,8 @@ export const disputeModuleAbi = [
   {
     type: "error",
     inputs: [],
-    name: "DisputeModule__ParentDisputeNotResolved",
+    name: "DisputeModule__RelatedDisputeNotResolved",
   },
-  { type: "error", inputs: [], name: "DisputeModule__ParentIpIdMismatch" },
-  { type: "error", inputs: [], name: "DisputeModule__ParentNotTagged" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroAccessController" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroAccessManager" },
   { type: "error", inputs: [], name: "DisputeModule__ZeroArbitrationPolicy" },
@@ -1969,7 +2081,7 @@ export const disputeModuleAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
@@ -2075,38 +2187,6 @@ export const disputeModuleAbi = [
       },
     ],
     name: "DefaultArbitrationPolicyUpdated",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "parentIpId",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "derivativeIpId",
-        internalType: "address",
-        type: "address",
-        indexed: false,
-      },
-      {
-        name: "parentDisputeId",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-      { name: "tag", internalType: "bytes32", type: "bytes32", indexed: false },
-      {
-        name: "disputeTimestamp",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "DerivativeTaggedOnParentInfringement",
   },
   {
     type: "event",
@@ -2219,6 +2299,38 @@ export const disputeModuleAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "infringingIpId",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "ipIdToTag",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "infringerDisputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      { name: "tag", internalType: "bytes32", type: "bytes32", indexed: false },
+      {
+        name: "disputeTimestamp",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "IpTaggedOnRelatedIpInfringement",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
         name: "account",
         internalType: "address",
         type: "address",
@@ -2267,6 +2379,19 @@ export const disputeModuleAbi = [
     inputs: [],
     name: "ACCESS_CONTROLLER",
     outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "GROUP_IP_ASSET_REGISTRY",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IGroupIPAssetRegistry",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
   },
   {
@@ -2375,7 +2500,7 @@ export const disputeModuleAbi = [
       { name: "disputeEvidenceHash", internalType: "bytes32", type: "bytes32" },
       { name: "targetTag", internalType: "bytes32", type: "bytes32" },
       { name: "currentTag", internalType: "bytes32", type: "bytes32" },
-      { name: "parentDisputeId", internalType: "uint256", type: "uint256" },
+      { name: "infringerDisputeId", internalType: "uint256", type: "uint256" },
     ],
     stateMutability: "view",
   },
@@ -2551,11 +2676,10 @@ export const disputeModuleAbi = [
   {
     type: "function",
     inputs: [
-      { name: "parentIpId", internalType: "address", type: "address" },
-      { name: "derivativeIpId", internalType: "address", type: "address" },
-      { name: "parentDisputeId", internalType: "uint256", type: "uint256" },
+      { name: "ipIdToTag", internalType: "address", type: "address" },
+      { name: "infringerDisputeId", internalType: "uint256", type: "uint256" },
     ],
-    name: "tagDerivativeIfParentInfringed",
+    name: "tagIfRelatedIpInfringed",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -2606,250 +2730,19 @@ export const disputeModuleAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const disputeModuleAddress = {
   1315: "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5",
+  1514: "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5",
 } as const;
 
 /**
- *
- */
+
+*/
 export const disputeModuleConfig = {
   address: disputeModuleAddress,
   abi: disputeModuleAbi,
-} as const;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ERC20Token
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- *
- */
-export const erc20TokenAbi = [
-  { type: "error", inputs: [], name: "AllowanceOverflow" },
-  { type: "error", inputs: [], name: "AllowanceUnderflow" },
-  {
-    type: "error",
-    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
-    name: "ERC20InvalidReceiver",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "spender", internalType: "address", type: "address" }],
-    name: "ERC20InvalidSpender",
-  },
-  { type: "error", inputs: [], name: "IPTransferFailed" },
-  { type: "error", inputs: [], name: "InsufficientAllowance" },
-  { type: "error", inputs: [], name: "InsufficientBalance" },
-  { type: "error", inputs: [], name: "InvalidPermit" },
-  { type: "error", inputs: [], name: "Permit2AllowanceIsFixedAtInfinity" },
-  { type: "error", inputs: [], name: "PermitExpired" },
-  { type: "error", inputs: [], name: "TotalSupplyOverflow" },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "owner",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "spender",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "amount",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "Approval",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "from", internalType: "address", type: "address", indexed: true },
-      {
-        name: "amount",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "Deposit",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "from", internalType: "address", type: "address", indexed: true },
-      { name: "to", internalType: "address", type: "address", indexed: true },
-      {
-        name: "amount",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "Transfer",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "to", internalType: "address", type: "address", indexed: true },
-      {
-        name: "amount",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "Withdrawal",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "DOMAIN_SEPARATOR",
-    outputs: [{ name: "result", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "owner", internalType: "address", type: "address" },
-      { name: "spender", internalType: "address", type: "address" },
-    ],
-    name: "allowance",
-    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "spender", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "approve",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "owner", internalType: "address", type: "address" }],
-    name: "balanceOf",
-    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "decimals",
-    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "deposit",
-    outputs: [],
-    stateMutability: "payable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "name",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "owner", internalType: "address", type: "address" }],
-    name: "nonces",
-    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "owner", internalType: "address", type: "address" },
-      { name: "spender", internalType: "address", type: "address" },
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "deadline", internalType: "uint256", type: "uint256" },
-      { name: "v", internalType: "uint8", type: "uint8" },
-      { name: "r", internalType: "bytes32", type: "bytes32" },
-      { name: "s", internalType: "bytes32", type: "bytes32" },
-    ],
-    name: "permit",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "symbol",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "totalSupply",
-    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "to", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "transfer",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "from", internalType: "address", type: "address" },
-      { name: "to", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "transferFrom",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "value", internalType: "uint256", type: "uint256" }],
-    name: "withdraw",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  { type: "receive", stateMutability: "payable" },
-] as const;
-
-/**
- *
- */
-export const erc20TokenAddress = {
-  1315: "0x1514000000000000000000000000000000000000",
-} as const;
-
-/**
- *
- */
-export const erc20TokenConfig = {
-  address: erc20TokenAddress,
-  abi: erc20TokenAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2857,8 +2750,8 @@ export const erc20TokenConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const evenSplitGroupPoolAbi = [
   {
     type: "constructor",
@@ -2894,11 +2787,6 @@ export const evenSplitGroupPoolAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
@@ -2914,6 +2802,15 @@ export const evenSplitGroupPoolAbi = [
     inputs: [{ name: "groupId", internalType: "address", type: "address" }],
     name: "EvenSplitGroupPool__DepositWithZeroTokenAddress",
   },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupId", internalType: "address", type: "address" },
+      { name: "groupSize", internalType: "uint32", type: "uint32" },
+      { name: "maxGroupSize", internalType: "uint256", type: "uint256" },
+    ],
+    name: "EvenSplitGroupPool__MaxGroupSizeReached",
+  },
   { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroGroupingModule" },
   {
     type: "error",
@@ -2922,7 +2819,7 @@ export const evenSplitGroupPoolAbi = [
   },
   { type: "error", inputs: [], name: "EvenSplitGroupPool__ZeroRoyaltyModule" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   {
     type: "error",
     inputs: [
@@ -3255,15 +3152,16 @@ export const evenSplitGroupPoolAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const evenSplitGroupPoolAddress = {
   1315: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
+  1514: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
 } as const;
 
 /**
- *
- */
+
+*/
 export const evenSplitGroupPoolConfig = {
   address: evenSplitGroupPoolAddress,
   abi: evenSplitGroupPoolAbi,
@@ -3274,8 +3172,8 @@ export const evenSplitGroupPoolConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const groupingModuleAbi = [
   {
     type: "constructor",
@@ -3327,7 +3225,7 @@ export const groupingModuleAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   {
     type: "error",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
@@ -3882,15 +3780,16 @@ export const groupingModuleAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const groupingModuleAddress = {
   1315: "0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac",
+  1514: "0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac",
 } as const;
 
 /**
- *
- */
+
+*/
 export const groupingModuleConfig = {
   address: groupingModuleAddress,
   abi: groupingModuleAbi,
@@ -3901,8 +3800,8 @@ export const groupingModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const groupingWorkflowsAbi = [
   {
     type: "constructor",
@@ -3949,6 +3848,14 @@ export const groupingWorkflowsAbi = [
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "FailedCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+    ],
+    name: "GroupingWorkflows__CallerNotSigner",
+  },
   { type: "error", inputs: [], name: "GroupingWorkflows__NoLicenseData" },
   { type: "error", inputs: [], name: "GroupingWorkflows__ZeroAddressParam" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
@@ -4563,15 +4470,16 @@ export const groupingWorkflowsAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const groupingWorkflowsAddress = {
   1315: "0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd",
+  1514: "0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd",
 } as const;
 
 /**
- *
- */
+
+*/
 export const groupingWorkflowsConfig = {
   address: groupingWorkflowsAddress,
   abi: groupingWorkflowsAbi,
@@ -4582,8 +4490,8 @@ export const groupingWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const ipAccountImplAbi = [
   {
     type: "constructor",
@@ -4988,15 +4896,16 @@ export const ipAccountImplAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const ipAccountImplAddress = {
   1315: "0x7343646585443F1c3F64E4F08b708788527e1C77",
+  1514: "0x7343646585443F1c3F64E4F08b708788527e1C77",
 } as const;
 
 /**
- *
- */
+
+*/
 export const ipAccountImplConfig = {
   address: ipAccountImplAddress,
   abi: ipAccountImplAbi,
@@ -5007,8 +4916,8 @@ export const ipAccountImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const ipAssetRegistryAbi = [
   {
     type: "constructor",
@@ -5045,18 +4954,13 @@ export const ipAssetRegistryAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   {
     type: "error",
     inputs: [{ name: "caller", internalType: "address", type: "address" }],
@@ -5066,6 +4970,14 @@ export const ipAssetRegistryAbi = [
     type: "error",
     inputs: [{ name: "groupPool", internalType: "address", type: "address" }],
     name: "GroupIPAssetRegistry__GroupRewardPoolNotRegistered",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "groupSize", internalType: "uint256", type: "uint256" },
+      { name: "limit", internalType: "uint256", type: "uint256" },
+    ],
+    name: "GroupIPAssetRegistry__GroupSizeExceedsLimit",
   },
   {
     type: "error",
@@ -5081,6 +4993,14 @@ export const ipAssetRegistryAbi = [
     type: "error",
     inputs: [{ name: "ipId", internalType: "address", type: "address" }],
     name: "GroupIPAssetRegistry__NotRegisteredIP",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "pageSize", internalType: "uint256", type: "uint256" },
+      { name: "limit", internalType: "uint256", type: "uint256" },
+    ],
+    name: "GroupIPAssetRegistry__PageSizeExceedsLimit",
   },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroERC6551Registry" },
   { type: "error", inputs: [], name: "IPAccountRegistry_ZeroIpAccountImpl" },
@@ -5369,6 +5289,13 @@ export const ipAssetRegistryAbi = [
   {
     type: "function",
     inputs: [],
+    name: "MAX_GROUP_SIZE",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [{ name: "", internalType: "string", type: "string" }],
     stateMutability: "view",
@@ -5633,15 +5560,16 @@ export const ipAssetRegistryAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const ipAssetRegistryAddress = {
   1315: "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
+  1514: "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
 } as const;
 
 /**
- *
- */
+
+*/
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
   abi: ipAssetRegistryAbi,
@@ -5652,8 +5580,8 @@ export const ipAssetRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const ipRoyaltyVaultImplAbi = [
   {
     type: "constructor",
@@ -5664,16 +5592,6 @@ export const ipRoyaltyVaultImplAbi = [
       { name: "groupingModule", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "target", internalType: "address", type: "address" }],
-    name: "AddressEmptyCode",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
   },
   {
     type: "error",
@@ -5713,7 +5631,6 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [{ name: "spender", internalType: "address", type: "address" }],
     name: "ERC20InvalidSpender",
   },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__EnforcedPause" },
   {
@@ -6110,15 +6027,16 @@ export const ipRoyaltyVaultImplAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const ipRoyaltyVaultImplAddress = {
   1315: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
+  1514: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
 } as const;
 
 /**
- *
- */
+
+*/
 export const ipRoyaltyVaultImplConfig = {
   address: ipRoyaltyVaultImplAddress,
   abi: ipRoyaltyVaultImplAbi,
@@ -6129,8 +6047,8 @@ export const ipRoyaltyVaultImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const licenseAttachmentWorkflowsAbi = [
   {
     type: "constructor",
@@ -6175,6 +6093,14 @@ export const licenseAttachmentWorkflowsAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+    ],
+    name: "LicenseAttachmentWorkflows__CallerNotSigner",
+  },
   {
     type: "error",
     inputs: [],
@@ -6313,6 +6239,31 @@ export const licenseAttachmentWorkflowsAbi = [
     name: "isConsumingScheduledOp",
     outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spgNftContract", internalType: "address", type: "address" },
+      { name: "recipient", internalType: "address", type: "address" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      { name: "allowDuplicates", internalType: "bool", type: "bool" },
+    ],
+    name: "mintAndRegisterIpAndAttachDefaultTerms",
+    outputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -6613,10 +6564,53 @@ export const licenseAttachmentWorkflowsAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onERC721Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "nftContract", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      {
+        name: "ipMetadata",
+        internalType: "struct WorkflowStructs.IPMetadata",
+        type: "tuple",
+        components: [
+          { name: "ipMetadataURI", internalType: "string", type: "string" },
+          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
+          { name: "nftMetadataURI", internalType: "string", type: "string" },
+          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
+        ],
+      },
+      {
+        name: "sigMetadataAndDefaultTerms",
+        internalType: "struct WorkflowStructs.SignatureData",
+        type: "tuple",
+        components: [
+          { name: "signer", internalType: "address", type: "address" },
+          { name: "deadline", internalType: "uint256", type: "uint256" },
+          { name: "signature", internalType: "bytes", type: "bytes" },
+        ],
+      },
+    ],
+    name: "registerIpAndAttachDefaultTerms",
+    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -7245,15 +7239,16 @@ export const licenseAttachmentWorkflowsAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const licenseAttachmentWorkflowsAddress = {
   1315: "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
+  1514: "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
 } as const;
 
 /**
- *
- */
+
+*/
 export const licenseAttachmentWorkflowsConfig = {
   address: licenseAttachmentWorkflowsAddress,
   abi: licenseAttachmentWorkflowsAbi,
@@ -7264,8 +7259,8 @@ export const licenseAttachmentWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const licenseRegistryAbi = [
   {
     type: "constructor",
@@ -7310,7 +7305,7 @@ export const licenseRegistryAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   {
     type: "error",
@@ -7386,6 +7381,14 @@ export const licenseRegistryAbi = [
       },
     ],
     name: "LicenseRegistry__GroupIpCommercialRevShareConfigMustNotLessThanIp",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "groupId", internalType: "address", type: "address" },
+    ],
+    name: "LicenseRegistry__GroupMustBeSoleParent",
   },
   {
     type: "error",
@@ -7670,42 +7673,6 @@ export const licenseRegistryAbi = [
       },
     ],
     name: "LicenseTemplateRegistered",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address", indexed: true },
-      {
-        name: "licensingConfig",
-        internalType: "struct Licensing.LicensingConfig",
-        type: "tuple",
-        components: [
-          { name: "isSet", internalType: "bool", type: "bool" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "licensingHook", internalType: "address", type: "address" },
-          { name: "hookData", internalType: "bytes", type: "bytes" },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          { name: "disabled", internalType: "bool", type: "bool" },
-          {
-            name: "expectMinimumGroupRewardShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "expectGroupRewardPool",
-            internalType: "address",
-            type: "address",
-          },
-        ],
-        indexed: false,
-      },
-    ],
-    name: "LicensingConfigSetForIP",
   },
   {
     type: "event",
@@ -8127,42 +8094,6 @@ export const licenseRegistryAbi = [
     type: "function",
     inputs: [
       { name: "ipId", internalType: "address", type: "address" },
-      {
-        name: "licensingConfig",
-        internalType: "struct Licensing.LicensingConfig",
-        type: "tuple",
-        components: [
-          { name: "isSet", internalType: "bool", type: "bool" },
-          { name: "mintingFee", internalType: "uint256", type: "uint256" },
-          { name: "licensingHook", internalType: "address", type: "address" },
-          { name: "hookData", internalType: "bytes", type: "bytes" },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          { name: "disabled", internalType: "bool", type: "bool" },
-          {
-            name: "expectMinimumGroupRewardShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "expectGroupRewardPool",
-            internalType: "address",
-            type: "address",
-          },
-        ],
-      },
-    ],
-    name: "setLicensingConfigForIp",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
       { name: "licenseTemplate", internalType: "address", type: "address" },
       { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
       {
@@ -8295,15 +8226,16 @@ export const licenseRegistryAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const licenseRegistryAddress = {
   1315: "0x529a750E02d8E2f15649c13D69a465286a780e24",
+  1514: "0x529a750E02d8E2f15649c13D69a465286a780e24",
 } as const;
 
 /**
- *
- */
+
+*/
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
   abi: licenseRegistryAbi,
@@ -8314,8 +8246,8 @@ export const licenseRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const licenseTokenAbi = [
   {
     type: "constructor",
@@ -8411,7 +8343,7 @@ export const licenseTokenAbi = [
     ],
     name: "ERC721OutOfBoundsIndex",
   },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   {
     type: "error",
@@ -8972,15 +8904,16 @@ export const licenseTokenAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const licenseTokenAddress = {
   1315: "0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC",
+  1514: "0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC",
 } as const;
 
 /**
- *
- */
+
+*/
 export const licenseTokenConfig = {
   address: licenseTokenAddress,
   abi: licenseTokenAbi,
@@ -8991,8 +8924,8 @@ export const licenseTokenConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const licensingModuleAbi = [
   {
     type: "constructor",
@@ -9045,7 +8978,7 @@ export const licensingModuleAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   {
     type: "error",
@@ -9155,11 +9088,6 @@ export const licensingModuleAbi = [
   },
   {
     type: "error",
-    inputs: [],
-    name: "LicensingModule__LicenseTemplateCannotBeZeroAddressToOverrideRoyaltyPercent",
-  },
-  {
-    type: "error",
     inputs: [
       { name: "ipLength", internalType: "uint256", type: "uint256" },
       { name: "licenseTermsLength", internalType: "uint256", type: "uint256" },
@@ -9173,6 +9101,24 @@ export const licensingModuleAbi = [
       { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
     ],
     name: "LicensingModule__LicenseTokenNotCompatibleForDerivative",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      {
+        name: "licensingConfigMintingFee",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
+        name: "licenseTermsMintingFee",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "LicensingModule__LicensingConfigMintingFeeBelowLicenseTerms",
   },
   {
     type: "error",
@@ -9221,6 +9167,7 @@ export const licensingModuleAbi = [
   { type: "error", inputs: [], name: "LicensingModule__ZeroDisputeModule" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroIPGraphACL" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroLicenseRegistry" },
+  { type: "error", inputs: [], name: "LicensingModule__ZeroLicenseTemplate" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroLicenseToken" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroModuleRegistry" },
   { type: "error", inputs: [], name: "LicensingModule__ZeroRoyaltyModule" },
@@ -9685,15 +9632,16 @@ export const licensingModuleAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const licensingModuleAddress = {
   1315: "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
+  1514: "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
 } as const;
 
 /**
- *
- */
+
+*/
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
   abi: licensingModuleAbi,
@@ -9704,8 +9652,8 @@ export const licensingModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const mockErc20Abi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
@@ -9885,15 +9833,16 @@ export const mockErc20Abi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const mockErc20Address = {
   1315: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
+  1514: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
 } as const;
 
 /**
- *
- */
+
+*/
 export const mockErc20Config = {
   address: mockErc20Address,
   abi: mockErc20Abi,
@@ -9904,8 +9853,8 @@ export const mockErc20Config = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const moduleRegistryAbi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
@@ -9937,7 +9886,7 @@ export const moduleRegistryAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "ModuleRegistry__InterfaceIdZero" },
   {
@@ -10190,15 +10139,16 @@ export const moduleRegistryAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const moduleRegistryAddress = {
   1315: "0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5",
+  1514: "0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5",
 } as const;
 
 /**
- *
- */
+
+*/
 export const moduleRegistryConfig = {
   address: moduleRegistryAddress,
   abi: moduleRegistryAbi,
@@ -10209,8 +10159,8 @@ export const moduleRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const multicall3Abi = [
   {
     type: "function",
@@ -10449,15 +10399,16 @@ export const multicall3Abi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const multicall3Address = {
   1315: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  1514: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as const;
 
 /**
- *
- */
+
+*/
 export const multicall3Config = {
   address: multicall3Address,
   abi: multicall3Abi,
@@ -10468,8 +10419,8 @@ export const multicall3Config = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const piLicenseTemplateAbi = [
   {
     type: "constructor",
@@ -10517,7 +10468,7 @@ export const piLicenseTemplateAbi = [
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   {
@@ -11177,15 +11128,16 @@ export const piLicenseTemplateAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const piLicenseTemplateAddress = {
   1315: "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
+  1514: "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
 } as const;
 
 /**
- *
- */
+
+*/
 export const piLicenseTemplateConfig = {
   address: piLicenseTemplateAddress,
   abi: piLicenseTemplateAbi,
@@ -11196,8 +11148,8 @@ export const piLicenseTemplateConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const registrationWorkflowsAbi = [
   {
     type: "constructor",
@@ -11243,6 +11195,14 @@ export const registrationWorkflowsAbi = [
   { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+    ],
+    name: "RegistrationWorkflows__CallerNotSigner",
+  },
   {
     type: "error",
     inputs: [],
@@ -11477,6 +11437,18 @@ export const registrationWorkflowsAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onERC721Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
@@ -11553,15 +11525,16 @@ export const registrationWorkflowsAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const registrationWorkflowsAddress = {
   1315: "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
+  1514: "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
 } as const;
 
 /**
- *
- */
+
+*/
 export const registrationWorkflowsConfig = {
   address: registrationWorkflowsAddress,
   abi: registrationWorkflowsAbi,
@@ -11572,8 +11545,8 @@ export const registrationWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const royaltyModuleAbi = [
   {
     type: "constructor",
@@ -11611,18 +11584,13 @@ export const royaltyModuleAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
@@ -12440,15 +12408,16 @@ export const royaltyModuleAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const royaltyModuleAddress = {
   1315: "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
+  1514: "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
 } as const;
 
 /**
- *
- */
+
+*/
 export const royaltyModuleConfig = {
   address: royaltyModuleAddress,
   abi: royaltyModuleAbi,
@@ -12459,8 +12428,8 @@ export const royaltyModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const royaltyPolicyLapAbi = [
   {
     type: "constructor",
@@ -12495,18 +12464,13 @@ export const royaltyPolicyLapAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
@@ -12812,15 +12776,16 @@ export const royaltyPolicyLapAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const royaltyPolicyLapAddress = {
   1315: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+  1514: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
 } as const;
 
 /**
- *
- */
+
+*/
 export const royaltyPolicyLapConfig = {
   address: royaltyPolicyLapAddress,
   abi: royaltyPolicyLapAbi,
@@ -12831,8 +12796,8 @@ export const royaltyPolicyLapConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const royaltyPolicyLrpAbi = [
   {
     type: "constructor",
@@ -12868,18 +12833,13 @@ export const royaltyPolicyLrpAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [{ name: "implementation", internalType: "address", type: "address" }],
     name: "ERC1967InvalidImplementation",
   },
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "EnforcedPause" },
   { type: "error", inputs: [], name: "ExpectedPause" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
@@ -13199,15 +13159,16 @@ export const royaltyPolicyLrpAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const royaltyPolicyLrpAddress = {
   1315: "0x9156e603C949481883B1d3355c6f1132D191fC41",
+  1514: "0x9156e603C949481883B1d3355c6f1132D191fC41",
 } as const;
 
 /**
- *
- */
+
+*/
 export const royaltyPolicyLrpConfig = {
   address: royaltyPolicyLrpAddress,
   abi: royaltyPolicyLrpAbi,
@@ -13218,8 +13179,8 @@ export const royaltyPolicyLrpConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const royaltyTokenDistributionWorkflowsAbi = [
   {
     type: "constructor",
@@ -13268,6 +13229,14 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "signer", internalType: "address", type: "address" },
+    ],
+    name: "RoyaltyTokenDistributionWorkflows__CallerNotSigner",
+  },
   {
     type: "error",
     inputs: [],
@@ -13765,6 +13734,18 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "bytes", type: "bytes" },
+    ],
+    name: "onERC721Received",
+    outputs: [{ name: "", internalType: "bytes4", type: "bytes4" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "proxiableUUID",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
@@ -14084,15 +14065,16 @@ export const royaltyTokenDistributionWorkflowsAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const royaltyTokenDistributionWorkflowsAddress = {
   1315: "0xa38f42B8d33809917f23997B8423054aAB97322C",
+  1514: "0xa38f42B8d33809917f23997B8423054aAB97322C",
 } as const;
 
 /**
- *
- */
+
+*/
 export const royaltyTokenDistributionWorkflowsConfig = {
   address: royaltyTokenDistributionWorkflowsAddress,
   abi: royaltyTokenDistributionWorkflowsAbi,
@@ -14103,8 +14085,8 @@ export const royaltyTokenDistributionWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const royaltyWorkflowsAbi = [
   {
     type: "constructor",
@@ -14271,15 +14253,16 @@ export const royaltyWorkflowsAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const royaltyWorkflowsAddress = {
   1315: "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
+  1514: "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
 } as const;
 
 /**
- *
- */
+
+*/
 export const royaltyWorkflowsConfig = {
   address: royaltyWorkflowsAddress,
   abi: royaltyWorkflowsAbi,
@@ -14290,8 +14273,8 @@ export const royaltyWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const spgnftBeaconAbi = [
   {
     type: "constructor",
@@ -14386,15 +14369,16 @@ export const spgnftBeaconAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const spgnftBeaconAddress = {
   1315: "0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218",
+  1514: "0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218",
 } as const;
 
 /**
- *
- */
+
+*/
 export const spgnftBeaconConfig = {
   address: spgnftBeaconAddress,
   abi: spgnftBeaconAbi,
@@ -14405,8 +14389,8 @@ export const spgnftBeaconConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- *
- */
+
+*/
 export const spgnftImplAbi = [
   {
     type: "constructor",
@@ -14489,7 +14473,7 @@ export const spgnftImplAbi = [
   },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
-  { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipient" },
+  { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipientOrAdmin" },
   { type: "error", inputs: [], name: "SPGNFT__CallerNotPeripheryContract" },
   {
     type: "error",
@@ -14505,6 +14489,11 @@ export const spgnftImplAbi = [
   { type: "error", inputs: [], name: "SPGNFT__MintingDenied" },
   { type: "error", inputs: [], name: "SPGNFT__ZeroAddressParam" },
   { type: "error", inputs: [], name: "SPGNFT__ZeroMaxSupply" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
   {
     type: "event",
     anonymous: false,
@@ -15050,18 +15039,252 @@ export const spgnftImplAbi = [
 ] as const;
 
 /**
- *
- */
+
+*/
 export const spgnftImplAddress = {
   1315: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
+  1514: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
 } as const;
 
 /**
- *
- */
+
+*/
 export const spgnftImplConfig = {
   address: spgnftImplAddress,
   abi: spgnftImplAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// WrappedIP
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+
+*/
+export const wrappedIpAbi = [
+  { type: "error", inputs: [], name: "AllowanceOverflow" },
+  { type: "error", inputs: [], name: "AllowanceUnderflow" },
+  {
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidReceiver",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "spender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSpender",
+  },
+  { type: "error", inputs: [], name: "IPTransferFailed" },
+  { type: "error", inputs: [], name: "InsufficientAllowance" },
+  { type: "error", inputs: [], name: "InsufficientBalance" },
+  { type: "error", inputs: [], name: "InvalidPermit" },
+  { type: "error", inputs: [], name: "Permit2AllowanceIsFixedAtInfinity" },
+  { type: "error", inputs: [], name: "PermitExpired" },
+  { type: "error", inputs: [], name: "TotalSupplyOverflow" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "spender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Approval",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Deposit",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Transfer",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Withdrawal",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DOMAIN_SEPARATOR",
+    outputs: [{ name: "result", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "decimals",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "deposit",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "nonces",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "deadline", internalType: "uint256", type: "uint256" },
+      { name: "v", internalType: "uint8", type: "uint8" },
+      { name: "r", internalType: "bytes32", type: "bytes32" },
+      { name: "s", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "permit",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "result", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "value", internalType: "uint256", type: "uint256" }],
+    name: "withdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  { type: "receive", stateMutability: "payable" },
+] as const;
+
+/**
+
+*/
+export const wrappedIpAddress = {
+  1315: "0x1514000000000000000000000000000000000000",
+  1514: "0x1514000000000000000000000000000000000000",
+} as const;
+
+/**
+
+*/
+export const wrappedIpConfig = {
+  address: wrappedIpAddress,
+  abi: wrappedIpAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15270,7 +15493,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: accessControllerAbi,
       address: this.address,
-      functionName: "setBatchTransientPermissions",
+      functionName: "setBatchPermissions",
       account: this.wallet.account,
       args: [request.permissions],
     });
@@ -15290,7 +15513,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
       to: this.address,
       data: encodeFunctionData({
         abi: accessControllerAbi,
-        functionName: "setBatchTransientPermissions",
+        functionName: "setBatchPermissions",
         args: [request.permissions],
       }),
     };
@@ -15308,7 +15531,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
     const { request: call } = await this.rpcClient.simulateContract({
       abi: accessControllerAbi,
       address: this.address,
-      functionName: "setTransientPermission",
+      functionName: "setPermission",
       account: this.wallet.account,
       args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
     });
@@ -15326,7 +15549,7 @@ export class AccessControllerClient extends AccessControllerEventClient {
       to: this.address,
       data: encodeFunctionData({
         abi: accessControllerAbi,
-        functionName: "setTransientPermission",
+        functionName: "setPermission",
         args: [request.ipAccount, request.signer, request.to, request.func, request.permission],
       }),
     };
@@ -17021,745 +17244,6 @@ export class DisputeModuleClient extends DisputeModuleReadOnlyClient {
         abi: disputeModuleAbi,
         functionName: "resolveDispute",
         args: [request.disputeId, request.data],
-      }),
-    };
-  }
-}
-
-// Contract ERC20Token =============================================================
-
-/**
- * Erc20TokenApprovalEvent
- *
- * @param owner address
- * @param spender address
- * @param amount uint256
- */
-export type Erc20TokenApprovalEvent = {
-  owner: Address;
-  spender: Address;
-  amount: bigint;
-};
-
-/**
- * Erc20TokenDepositEvent
- *
- * @param from address
- * @param amount uint256
- */
-export type Erc20TokenDepositEvent = {
-  from: Address;
-  amount: bigint;
-};
-
-/**
- * Erc20TokenTransferEvent
- *
- * @param from address
- * @param to address
- * @param amount uint256
- */
-export type Erc20TokenTransferEvent = {
-  from: Address;
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * Erc20TokenWithdrawalEvent
- *
- * @param to address
- * @param amount uint256
- */
-export type Erc20TokenWithdrawalEvent = {
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * Erc20TokenDomainSeparatorResponse
- *
- * @param result bytes32
- */
-export type Erc20TokenDomainSeparatorResponse = {
-  result: Hex;
-};
-
-/**
- * Erc20TokenAllowanceRequest
- *
- * @param owner address
- * @param spender address
- */
-export type Erc20TokenAllowanceRequest = {
-  owner: Address;
-  spender: Address;
-};
-
-/**
- * Erc20TokenAllowanceResponse
- *
- * @param result uint256
- */
-export type Erc20TokenAllowanceResponse = {
-  result: bigint;
-};
-
-/**
- * Erc20TokenBalanceOfRequest
- *
- * @param owner address
- */
-export type Erc20TokenBalanceOfRequest = {
-  owner: Address;
-};
-
-/**
- * Erc20TokenBalanceOfResponse
- *
- * @param result uint256
- */
-export type Erc20TokenBalanceOfResponse = {
-  result: bigint;
-};
-
-export type Erc20TokenDecimalsResponse = number;
-
-export type Erc20TokenNameResponse = string;
-
-/**
- * Erc20TokenNoncesRequest
- *
- * @param owner address
- */
-export type Erc20TokenNoncesRequest = {
-  owner: Address;
-};
-
-/**
- * Erc20TokenNoncesResponse
- *
- * @param result uint256
- */
-export type Erc20TokenNoncesResponse = {
-  result: bigint;
-};
-
-export type Erc20TokenSymbolResponse = string;
-
-/**
- * Erc20TokenTotalSupplyResponse
- *
- * @param result uint256
- */
-export type Erc20TokenTotalSupplyResponse = {
-  result: bigint;
-};
-
-/**
- * Erc20TokenApproveRequest
- *
- * @param spender address
- * @param amount uint256
- */
-export type Erc20TokenApproveRequest = {
-  spender: Address;
-  amount: bigint;
-};
-
-/**
- * Erc20TokenPermitRequest
- *
- * @param owner address
- * @param spender address
- * @param value uint256
- * @param deadline uint256
- * @param v uint8
- * @param r bytes32
- * @param s bytes32
- */
-export type Erc20TokenPermitRequest = {
-  owner: Address;
-  spender: Address;
-  value: bigint;
-  deadline: bigint;
-  v: number;
-  r: Hex;
-  s: Hex;
-};
-
-/**
- * Erc20TokenTransferRequest
- *
- * @param to address
- * @param amount uint256
- */
-export type Erc20TokenTransferRequest = {
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * Erc20TokenTransferFromRequest
- *
- * @param from address
- * @param to address
- * @param amount uint256
- */
-export type Erc20TokenTransferFromRequest = {
-  from: Address;
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * Erc20TokenWithdrawRequest
- *
- * @param value uint256
- */
-export type Erc20TokenWithdrawRequest = {
-  value: bigint;
-};
-
-/**
- * contract ERC20Token event
- */
-export class Erc20TokenEventClient {
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, address?: Address) {
-    this.address = address || getAddress(erc20TokenAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event Approval for contract ERC20Token
-   */
-  public watchApprovalEvent(
-    onLogs: (txHash: Hex, ev: Partial<Erc20TokenApprovalEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: erc20TokenAbi,
-      address: this.address,
-      eventName: "Approval",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Approval for contract ERC20Token
-   */
-  public parseTxApprovalEvent(txReceipt: TransactionReceipt): Array<Erc20TokenApprovalEvent> {
-    const targetLogs: Array<Erc20TokenApprovalEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: erc20TokenAbi,
-          eventName: "Approval",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Approval") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Deposit for contract ERC20Token
-   */
-  public watchDepositEvent(
-    onLogs: (txHash: Hex, ev: Partial<Erc20TokenDepositEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: erc20TokenAbi,
-      address: this.address,
-      eventName: "Deposit",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Deposit for contract ERC20Token
-   */
-  public parseTxDepositEvent(txReceipt: TransactionReceipt): Array<Erc20TokenDepositEvent> {
-    const targetLogs: Array<Erc20TokenDepositEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: erc20TokenAbi,
-          eventName: "Deposit",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Deposit") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Transfer for contract ERC20Token
-   */
-  public watchTransferEvent(
-    onLogs: (txHash: Hex, ev: Partial<Erc20TokenTransferEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: erc20TokenAbi,
-      address: this.address,
-      eventName: "Transfer",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Transfer for contract ERC20Token
-   */
-  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<Erc20TokenTransferEvent> {
-    const targetLogs: Array<Erc20TokenTransferEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: erc20TokenAbi,
-          eventName: "Transfer",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Transfer") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Withdrawal for contract ERC20Token
-   */
-  public watchWithdrawalEvent(
-    onLogs: (txHash: Hex, ev: Partial<Erc20TokenWithdrawalEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: erc20TokenAbi,
-      address: this.address,
-      eventName: "Withdrawal",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Withdrawal for contract ERC20Token
-   */
-  public parseTxWithdrawalEvent(txReceipt: TransactionReceipt): Array<Erc20TokenWithdrawalEvent> {
-    const targetLogs: Array<Erc20TokenWithdrawalEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: erc20TokenAbi,
-          eventName: "Withdrawal",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Withdrawal") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract ERC20Token readonly method
- */
-export class Erc20TokenReadOnlyClient extends Erc20TokenEventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method DOMAIN_SEPARATOR for contract ERC20Token
-   *
-   * @param request Erc20TokenDomainSeparatorRequest
-   * @return Promise<Erc20TokenDomainSeparatorResponse>
-   */
-  public async domainSeparator(): Promise<Erc20TokenDomainSeparatorResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "DOMAIN_SEPARATOR",
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method allowance for contract ERC20Token
-   *
-   * @param request Erc20TokenAllowanceRequest
-   * @return Promise<Erc20TokenAllowanceResponse>
-   */
-  public async allowance(
-    request: Erc20TokenAllowanceRequest,
-  ): Promise<Erc20TokenAllowanceResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "allowance",
-      args: [request.owner, request.spender],
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method balanceOf for contract ERC20Token
-   *
-   * @param request Erc20TokenBalanceOfRequest
-   * @return Promise<Erc20TokenBalanceOfResponse>
-   */
-  public async balanceOf(
-    request: Erc20TokenBalanceOfRequest,
-  ): Promise<Erc20TokenBalanceOfResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "balanceOf",
-      args: [request.owner],
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method decimals for contract ERC20Token
-   *
-   * @param request Erc20TokenDecimalsRequest
-   * @return Promise<Erc20TokenDecimalsResponse>
-   */
-  public async decimals(): Promise<Erc20TokenDecimalsResponse> {
-    return await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "decimals",
-    });
-  }
-
-  /**
-   * method name for contract ERC20Token
-   *
-   * @param request Erc20TokenNameRequest
-   * @return Promise<Erc20TokenNameResponse>
-   */
-  public async name(): Promise<Erc20TokenNameResponse> {
-    return await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "name",
-    });
-  }
-
-  /**
-   * method nonces for contract ERC20Token
-   *
-   * @param request Erc20TokenNoncesRequest
-   * @return Promise<Erc20TokenNoncesResponse>
-   */
-  public async nonces(request: Erc20TokenNoncesRequest): Promise<Erc20TokenNoncesResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "nonces",
-      args: [request.owner],
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method symbol for contract ERC20Token
-   *
-   * @param request Erc20TokenSymbolRequest
-   * @return Promise<Erc20TokenSymbolResponse>
-   */
-  public async symbol(): Promise<Erc20TokenSymbolResponse> {
-    return await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "symbol",
-    });
-  }
-
-  /**
-   * method totalSupply for contract ERC20Token
-   *
-   * @param request Erc20TokenTotalSupplyRequest
-   * @return Promise<Erc20TokenTotalSupplyResponse>
-   */
-  public async totalSupply(): Promise<Erc20TokenTotalSupplyResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "totalSupply",
-    });
-    return {
-      result: result,
-    };
-  }
-}
-
-/**
- * contract ERC20Token write method
- */
-export class Erc20TokenClient extends Erc20TokenReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method approve for contract ERC20Token
-   *
-   * @param request Erc20TokenApproveRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async approve(request: Erc20TokenApproveRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "approve",
-      account: this.wallet.account,
-      args: [request.spender, request.amount],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method approve for contract ERC20Token with only encode
-   *
-   * @param request Erc20TokenApproveRequest
-   * @return EncodedTxData
-   */
-  public approveEncode(request: Erc20TokenApproveRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: erc20TokenAbi,
-        functionName: "approve",
-        args: [request.spender, request.amount],
-      }),
-    };
-  }
-
-  /**
-   * method deposit for contract ERC20Token
-   *
-   * @param request Erc20TokenDepositRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async deposit(): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "deposit",
-      account: this.wallet.account,
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method deposit for contract ERC20Token with only encode
-   *
-   * @param request Erc20TokenDepositRequest
-   * @return EncodedTxData
-   */
-  public depositEncode(): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: erc20TokenAbi,
-        functionName: "deposit",
-      }),
-    };
-  }
-
-  /**
-   * method permit for contract ERC20Token
-   *
-   * @param request Erc20TokenPermitRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async permit(request: Erc20TokenPermitRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "permit",
-      account: this.wallet.account,
-      args: [
-        request.owner,
-        request.spender,
-        request.value,
-        request.deadline,
-        request.v,
-        request.r,
-        request.s,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method permit for contract ERC20Token with only encode
-   *
-   * @param request Erc20TokenPermitRequest
-   * @return EncodedTxData
-   */
-  public permitEncode(request: Erc20TokenPermitRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: erc20TokenAbi,
-        functionName: "permit",
-        args: [
-          request.owner,
-          request.spender,
-          request.value,
-          request.deadline,
-          request.v,
-          request.r,
-          request.s,
-        ],
-      }),
-    };
-  }
-
-  /**
-   * method transfer for contract ERC20Token
-   *
-   * @param request Erc20TokenTransferRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transfer(request: Erc20TokenTransferRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "transfer",
-      account: this.wallet.account,
-      args: [request.to, request.amount],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transfer for contract ERC20Token with only encode
-   *
-   * @param request Erc20TokenTransferRequest
-   * @return EncodedTxData
-   */
-  public transferEncode(request: Erc20TokenTransferRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: erc20TokenAbi,
-        functionName: "transfer",
-        args: [request.to, request.amount],
-      }),
-    };
-  }
-
-  /**
-   * method transferFrom for contract ERC20Token
-   *
-   * @param request Erc20TokenTransferFromRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transferFrom(
-    request: Erc20TokenTransferFromRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "transferFrom",
-      account: this.wallet.account,
-      args: [request.from, request.to, request.amount],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transferFrom for contract ERC20Token with only encode
-   *
-   * @param request Erc20TokenTransferFromRequest
-   * @return EncodedTxData
-   */
-  public transferFromEncode(request: Erc20TokenTransferFromRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: erc20TokenAbi,
-        functionName: "transferFrom",
-        args: [request.from, request.to, request.amount],
-      }),
-    };
-  }
-
-  /**
-   * method withdraw for contract ERC20Token
-   *
-   * @param request Erc20TokenWithdrawRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async withdraw(request: Erc20TokenWithdrawRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: erc20TokenAbi,
-      address: this.address,
-      functionName: "withdraw",
-      account: this.wallet.account,
-      args: [request.value],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method withdraw for contract ERC20Token with only encode
-   *
-   * @param request Erc20TokenWithdrawRequest
-   * @return EncodedTxData
-   */
-  public withdrawEncode(request: Erc20TokenWithdrawRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: erc20TokenAbi,
-        functionName: "withdraw",
-        args: [request.value],
       }),
     };
   }
@@ -20565,6 +20049,8 @@ export class GroupingWorkflowsClient {
 
 // Contract IPAccountImpl =============================================================
 
+export type IpAccountImplOwnerResponse = Address;
+
 /**
  * IpAccountImplStateResponse
  *
@@ -20643,6 +20129,20 @@ export class IpAccountImplReadOnlyClient {
   }
 
   /**
+   * method owner for contract IPAccountImpl
+   *
+   * @param request IpAccountImplOwnerRequest
+   * @return Promise<IpAccountImplOwnerResponse>
+   */
+  public async owner(): Promise<IpAccountImplOwnerResponse> {
+    return await this.rpcClient.readContract({
+      abi: ipAccountImplAbi,
+      address: this.address,
+      functionName: "owner",
+    });
+  }
+
+  /**
    * method state for contract IPAccountImpl
    *
    * @param request IpAccountImplStateRequest
@@ -20670,14 +20170,6 @@ export class IpAccountImplReadOnlyClient {
       abi: ipAccountImplAbi,
       address: this.address,
       functionName: "token",
-    });
-  }
-
-  public async owner(): Promise<Address> {
-    return await this.rpcClient.readContract({
-      abi: ipAccountImplAbi,
-      address: this.address,
-      functionName: "owner",
     });
   }
 }
@@ -21632,26 +21124,6 @@ export type LicenseRegistryLicenseTemplateRegisteredEvent = {
 };
 
 /**
- * LicenseRegistryLicensingConfigSetForIpEvent
- *
- * @param ipId address
- * @param licensingConfig tuple
- */
-export type LicenseRegistryLicensingConfigSetForIpEvent = {
-  ipId: Address;
-  licensingConfig: {
-    isSet: boolean;
-    mintingFee: bigint;
-    licensingHook: Address;
-    hookData: Hex;
-    commercialRevShare: number;
-    disabled: boolean;
-    expectMinimumGroupRewardShare: number;
-    expectGroupRewardPool: Address;
-  };
-};
-
-/**
  * LicenseRegistryLicensingConfigSetForLicenseEvent
  *
  * @param ipId address
@@ -22130,26 +21602,6 @@ export type LicenseRegistrySetDefaultLicenseTermsRequest = {
 };
 
 /**
- * LicenseRegistrySetLicensingConfigForIpRequest
- *
- * @param ipId address
- * @param licensingConfig tuple
- */
-export type LicenseRegistrySetLicensingConfigForIpRequest = {
-  ipId: Address;
-  licensingConfig: {
-    isSet: boolean;
-    mintingFee: bigint;
-    licensingHook: Address;
-    hookData: Hex;
-    commercialRevShare: number;
-    disabled: boolean;
-    expectMinimumGroupRewardShare: number;
-    expectGroupRewardPool: Address;
-  };
-};
-
-/**
  * LicenseRegistrySetLicensingConfigForLicenseRequest
  *
  * @param ipId address
@@ -22392,47 +21844,6 @@ export class LicenseRegistryEventClient {
           topics: log.topics,
         });
         if (event.eventName === "LicenseTemplateRegistered") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event LicensingConfigSetForIP for contract LicenseRegistry
-   */
-  public watchLicensingConfigSetForIpEvent(
-    onLogs: (txHash: Hex, ev: Partial<LicenseRegistryLicensingConfigSetForIpEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: licenseRegistryAbi,
-      address: this.address,
-      eventName: "LicensingConfigSetForIP",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event LicensingConfigSetForIP for contract LicenseRegistry
-   */
-  public parseTxLicensingConfigSetForIpEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<LicenseRegistryLicensingConfigSetForIpEvent> {
-    const targetLogs: Array<LicenseRegistryLicensingConfigSetForIpEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: licenseRegistryAbi,
-          eventName: "LicensingConfigSetForIP",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "LicensingConfigSetForIP") {
           targetLogs.push(event.args);
         }
       } catch (e) {
@@ -23368,44 +22779,6 @@ export class LicenseRegistryClient extends LicenseRegistryReadOnlyClient {
         abi: licenseRegistryAbi,
         functionName: "setDefaultLicenseTerms",
         args: [request.newLicenseTemplate, request.newLicenseTermsId],
-      }),
-    };
-  }
-
-  /**
-   * method setLicensingConfigForIp for contract LicenseRegistry
-   *
-   * @param request LicenseRegistrySetLicensingConfigForIpRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async setLicensingConfigForIp(
-    request: LicenseRegistrySetLicensingConfigForIpRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: licenseRegistryAbi,
-      address: this.address,
-      functionName: "setLicensingConfigForIp",
-      account: this.wallet.account,
-      args: [request.ipId, request.licensingConfig],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method setLicensingConfigForIp for contract LicenseRegistry with only encode
-   *
-   * @param request LicenseRegistrySetLicensingConfigForIpRequest
-   * @return EncodedTxData
-   */
-  public setLicensingConfigForIpEncode(
-    request: LicenseRegistrySetLicensingConfigForIpRequest,
-  ): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: licenseRegistryAbi,
-        functionName: "setLicensingConfigForIp",
-        args: [request.ipId, request.licensingConfig],
       }),
     };
   }
@@ -28129,6 +27502,86 @@ export class RoyaltyTokenDistributionWorkflowsClient {
 
 // Contract RoyaltyWorkflows =============================================================
 
+/**
+ * RoyaltyWorkflowsClaimAllRevenueRequest
+ *
+ * @param ancestorIpId address
+ * @param claimer address
+ * @param childIpIds address[]
+ * @param royaltyPolicies address[]
+ * @param currencyTokens address[]
+ */
+export type RoyaltyWorkflowsClaimAllRevenueRequest = {
+  ancestorIpId: Address;
+  claimer: Address;
+  childIpIds: readonly Address[];
+  royaltyPolicies: readonly Address[];
+  currencyTokens: readonly Address[];
+};
+
+/**
+ * contract RoyaltyWorkflows write method
+ */
+export class RoyaltyWorkflowsClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(royaltyWorkflowsAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method claimAllRevenue for contract RoyaltyWorkflows
+   *
+   * @param request RoyaltyWorkflowsClaimAllRevenueRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async claimAllRevenue(
+    request: RoyaltyWorkflowsClaimAllRevenueRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyWorkflowsAbi,
+      address: this.address,
+      functionName: "claimAllRevenue",
+      account: this.wallet.account,
+      args: [
+        request.ancestorIpId,
+        request.claimer,
+        request.childIpIds,
+        request.royaltyPolicies,
+        request.currencyTokens,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method claimAllRevenue for contract RoyaltyWorkflows with only encode
+   *
+   * @param request RoyaltyWorkflowsClaimAllRevenueRequest
+   * @return EncodedTxData
+   */
+  public claimAllRevenueEncode(request: RoyaltyWorkflowsClaimAllRevenueRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyWorkflowsAbi,
+        functionName: "claimAllRevenue",
+        args: [
+          request.ancestorIpId,
+          request.claimer,
+          request.childIpIds,
+          request.royaltyPolicies,
+          request.currencyTokens,
+        ],
+      }),
+    };
+  }
+}
+
 // Contract SPGNFTBeacon =============================================================
 
 /**
@@ -30328,6 +29781,741 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
         abi: spgnftImplAbi,
         functionName: "withdrawToken",
         args: [request.token],
+      }),
+    };
+  }
+}
+
+// Contract WrappedIP =============================================================
+
+/**
+ * WrappedIpApprovalEvent
+ *
+ * @param owner address
+ * @param spender address
+ * @param amount uint256
+ */
+export type WrappedIpApprovalEvent = {
+  owner: Address;
+  spender: Address;
+  amount: bigint;
+};
+
+/**
+ * WrappedIpDepositEvent
+ *
+ * @param from address
+ * @param amount uint256
+ */
+export type WrappedIpDepositEvent = {
+  from: Address;
+  amount: bigint;
+};
+
+/**
+ * WrappedIpTransferEvent
+ *
+ * @param from address
+ * @param to address
+ * @param amount uint256
+ */
+export type WrappedIpTransferEvent = {
+  from: Address;
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * WrappedIpWithdrawalEvent
+ *
+ * @param to address
+ * @param amount uint256
+ */
+export type WrappedIpWithdrawalEvent = {
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * WrappedIpDomainSeparatorResponse
+ *
+ * @param result bytes32
+ */
+export type WrappedIpDomainSeparatorResponse = {
+  result: Hex;
+};
+
+/**
+ * WrappedIpAllowanceRequest
+ *
+ * @param owner address
+ * @param spender address
+ */
+export type WrappedIpAllowanceRequest = {
+  owner: Address;
+  spender: Address;
+};
+
+/**
+ * WrappedIpAllowanceResponse
+ *
+ * @param result uint256
+ */
+export type WrappedIpAllowanceResponse = {
+  result: bigint;
+};
+
+/**
+ * WrappedIpBalanceOfRequest
+ *
+ * @param owner address
+ */
+export type WrappedIpBalanceOfRequest = {
+  owner: Address;
+};
+
+/**
+ * WrappedIpBalanceOfResponse
+ *
+ * @param result uint256
+ */
+export type WrappedIpBalanceOfResponse = {
+  result: bigint;
+};
+
+export type WrappedIpDecimalsResponse = number;
+
+export type WrappedIpNameResponse = string;
+
+/**
+ * WrappedIpNoncesRequest
+ *
+ * @param owner address
+ */
+export type WrappedIpNoncesRequest = {
+  owner: Address;
+};
+
+/**
+ * WrappedIpNoncesResponse
+ *
+ * @param result uint256
+ */
+export type WrappedIpNoncesResponse = {
+  result: bigint;
+};
+
+export type WrappedIpSymbolResponse = string;
+
+/**
+ * WrappedIpTotalSupplyResponse
+ *
+ * @param result uint256
+ */
+export type WrappedIpTotalSupplyResponse = {
+  result: bigint;
+};
+
+/**
+ * WrappedIpApproveRequest
+ *
+ * @param spender address
+ * @param amount uint256
+ */
+export type WrappedIpApproveRequest = {
+  spender: Address;
+  amount: bigint;
+};
+
+/**
+ * WrappedIpPermitRequest
+ *
+ * @param owner address
+ * @param spender address
+ * @param value uint256
+ * @param deadline uint256
+ * @param v uint8
+ * @param r bytes32
+ * @param s bytes32
+ */
+export type WrappedIpPermitRequest = {
+  owner: Address;
+  spender: Address;
+  value: bigint;
+  deadline: bigint;
+  v: number;
+  r: Hex;
+  s: Hex;
+};
+
+/**
+ * WrappedIpTransferRequest
+ *
+ * @param to address
+ * @param amount uint256
+ */
+export type WrappedIpTransferRequest = {
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * WrappedIpTransferFromRequest
+ *
+ * @param from address
+ * @param to address
+ * @param amount uint256
+ */
+export type WrappedIpTransferFromRequest = {
+  from: Address;
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * WrappedIpWithdrawRequest
+ *
+ * @param value uint256
+ */
+export type WrappedIpWithdrawRequest = {
+  value: bigint;
+};
+
+/**
+ * contract WrappedIP event
+ */
+export class WrappedIpEventClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(wrappedIpAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event Approval for contract WrappedIP
+   */
+  public watchApprovalEvent(
+    onLogs: (txHash: Hex, ev: Partial<WrappedIpApprovalEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: wrappedIpAbi,
+      address: this.address,
+      eventName: "Approval",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Approval for contract WrappedIP
+   */
+  public parseTxApprovalEvent(txReceipt: TransactionReceipt): Array<WrappedIpApprovalEvent> {
+    const targetLogs: Array<WrappedIpApprovalEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: wrappedIpAbi,
+          eventName: "Approval",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Approval") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Deposit for contract WrappedIP
+   */
+  public watchDepositEvent(
+    onLogs: (txHash: Hex, ev: Partial<WrappedIpDepositEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: wrappedIpAbi,
+      address: this.address,
+      eventName: "Deposit",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Deposit for contract WrappedIP
+   */
+  public parseTxDepositEvent(txReceipt: TransactionReceipt): Array<WrappedIpDepositEvent> {
+    const targetLogs: Array<WrappedIpDepositEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: wrappedIpAbi,
+          eventName: "Deposit",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Deposit") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Transfer for contract WrappedIP
+   */
+  public watchTransferEvent(
+    onLogs: (txHash: Hex, ev: Partial<WrappedIpTransferEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: wrappedIpAbi,
+      address: this.address,
+      eventName: "Transfer",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Transfer for contract WrappedIP
+   */
+  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<WrappedIpTransferEvent> {
+    const targetLogs: Array<WrappedIpTransferEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: wrappedIpAbi,
+          eventName: "Transfer",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Transfer") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+
+  /**
+   * event Withdrawal for contract WrappedIP
+   */
+  public watchWithdrawalEvent(
+    onLogs: (txHash: Hex, ev: Partial<WrappedIpWithdrawalEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: wrappedIpAbi,
+      address: this.address,
+      eventName: "Withdrawal",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Withdrawal for contract WrappedIP
+   */
+  public parseTxWithdrawalEvent(txReceipt: TransactionReceipt): Array<WrappedIpWithdrawalEvent> {
+    const targetLogs: Array<WrappedIpWithdrawalEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: wrappedIpAbi,
+          eventName: "Withdrawal",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Withdrawal") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract WrappedIP readonly method
+ */
+export class WrappedIpReadOnlyClient extends WrappedIpEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method DOMAIN_SEPARATOR for contract WrappedIP
+   *
+   * @param request WrappedIpDomainSeparatorRequest
+   * @return Promise<WrappedIpDomainSeparatorResponse>
+   */
+  public async domainSeparator(): Promise<WrappedIpDomainSeparatorResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "DOMAIN_SEPARATOR",
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method allowance for contract WrappedIP
+   *
+   * @param request WrappedIpAllowanceRequest
+   * @return Promise<WrappedIpAllowanceResponse>
+   */
+  public async allowance(request: WrappedIpAllowanceRequest): Promise<WrappedIpAllowanceResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "allowance",
+      args: [request.owner, request.spender],
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method balanceOf for contract WrappedIP
+   *
+   * @param request WrappedIpBalanceOfRequest
+   * @return Promise<WrappedIpBalanceOfResponse>
+   */
+  public async balanceOf(request: WrappedIpBalanceOfRequest): Promise<WrappedIpBalanceOfResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "balanceOf",
+      args: [request.owner],
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method decimals for contract WrappedIP
+   *
+   * @param request WrappedIpDecimalsRequest
+   * @return Promise<WrappedIpDecimalsResponse>
+   */
+  public async decimals(): Promise<WrappedIpDecimalsResponse> {
+    return await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "decimals",
+    });
+  }
+
+  /**
+   * method name for contract WrappedIP
+   *
+   * @param request WrappedIpNameRequest
+   * @return Promise<WrappedIpNameResponse>
+   */
+  public async name(): Promise<WrappedIpNameResponse> {
+    return await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "name",
+    });
+  }
+
+  /**
+   * method nonces for contract WrappedIP
+   *
+   * @param request WrappedIpNoncesRequest
+   * @return Promise<WrappedIpNoncesResponse>
+   */
+  public async nonces(request: WrappedIpNoncesRequest): Promise<WrappedIpNoncesResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "nonces",
+      args: [request.owner],
+    });
+    return {
+      result: result,
+    };
+  }
+
+  /**
+   * method symbol for contract WrappedIP
+   *
+   * @param request WrappedIpSymbolRequest
+   * @return Promise<WrappedIpSymbolResponse>
+   */
+  public async symbol(): Promise<WrappedIpSymbolResponse> {
+    return await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "symbol",
+    });
+  }
+
+  /**
+   * method totalSupply for contract WrappedIP
+   *
+   * @param request WrappedIpTotalSupplyRequest
+   * @return Promise<WrappedIpTotalSupplyResponse>
+   */
+  public async totalSupply(): Promise<WrappedIpTotalSupplyResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "totalSupply",
+    });
+    return {
+      result: result,
+    };
+  }
+}
+
+/**
+ * contract WrappedIP write method
+ */
+export class WrappedIpClient extends WrappedIpReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method approve for contract WrappedIP
+   *
+   * @param request WrappedIpApproveRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async approve(request: WrappedIpApproveRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "approve",
+      account: this.wallet.account,
+      args: [request.spender, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method approve for contract WrappedIP with only encode
+   *
+   * @param request WrappedIpApproveRequest
+   * @return EncodedTxData
+   */
+  public approveEncode(request: WrappedIpApproveRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: wrappedIpAbi,
+        functionName: "approve",
+        args: [request.spender, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method deposit for contract WrappedIP
+   *
+   * @param request WrappedIpDepositRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async deposit(): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "deposit",
+      account: this.wallet.account,
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method deposit for contract WrappedIP with only encode
+   *
+   * @param request WrappedIpDepositRequest
+   * @return EncodedTxData
+   */
+  public depositEncode(): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: wrappedIpAbi,
+        functionName: "deposit",
+      }),
+    };
+  }
+
+  /**
+   * method permit for contract WrappedIP
+   *
+   * @param request WrappedIpPermitRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async permit(request: WrappedIpPermitRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "permit",
+      account: this.wallet.account,
+      args: [
+        request.owner,
+        request.spender,
+        request.value,
+        request.deadline,
+        request.v,
+        request.r,
+        request.s,
+      ],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method permit for contract WrappedIP with only encode
+   *
+   * @param request WrappedIpPermitRequest
+   * @return EncodedTxData
+   */
+  public permitEncode(request: WrappedIpPermitRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: wrappedIpAbi,
+        functionName: "permit",
+        args: [
+          request.owner,
+          request.spender,
+          request.value,
+          request.deadline,
+          request.v,
+          request.r,
+          request.s,
+        ],
+      }),
+    };
+  }
+
+  /**
+   * method transfer for contract WrappedIP
+   *
+   * @param request WrappedIpTransferRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transfer(request: WrappedIpTransferRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "transfer",
+      account: this.wallet.account,
+      args: [request.to, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transfer for contract WrappedIP with only encode
+   *
+   * @param request WrappedIpTransferRequest
+   * @return EncodedTxData
+   */
+  public transferEncode(request: WrappedIpTransferRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: wrappedIpAbi,
+        functionName: "transfer",
+        args: [request.to, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method transferFrom for contract WrappedIP
+   *
+   * @param request WrappedIpTransferFromRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferFrom(
+    request: WrappedIpTransferFromRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "transferFrom",
+      account: this.wallet.account,
+      args: [request.from, request.to, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferFrom for contract WrappedIP with only encode
+   *
+   * @param request WrappedIpTransferFromRequest
+   * @return EncodedTxData
+   */
+  public transferFromEncode(request: WrappedIpTransferFromRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: wrappedIpAbi,
+        functionName: "transferFrom",
+        args: [request.from, request.to, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method withdraw for contract WrappedIP
+   *
+   * @param request WrappedIpWithdrawRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async withdraw(request: WrappedIpWithdrawRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: wrappedIpAbi,
+      address: this.address,
+      functionName: "withdraw",
+      account: this.wallet.account,
+      args: [request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method withdraw for contract WrappedIP with only encode
+   *
+   * @param request WrappedIpWithdrawRequest
+   * @return EncodedTxData
+   */
+  public withdrawEncode(request: WrappedIpWithdrawRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: wrappedIpAbi,
+        functionName: "withdraw",
+        args: [request.value],
       }),
     };
   }

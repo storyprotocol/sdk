@@ -1,6 +1,6 @@
 import { maxUint256, zeroAddress } from "viem";
 
-import { erc20TokenAbi, multicall3Abi, SpgnftImplReadOnlyClient } from "../abi/generated";
+import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { getTokenAmountDisplay } from "./utils";
 import {
@@ -25,9 +25,14 @@ const approvalAllSpenders = async ({
   owner,
   useMultiCall,
   rpcClient,
+  multicallAddress,
 }: WipApprovalCall) => {
   const approvals = await Promise.all(
     spenders.map(async (spender) => {
+      // make sure we never give approval to the multicall contract
+      if (spender.address === multicallAddress) {
+        return;
+      }
       const spenderAmount = spender.amount || maxUint256;
       const { result: allowance } = await client.allowance({
         owner: owner,
@@ -110,7 +115,6 @@ const multiCallWrapIp = async ({
   const multiCalls: Multicall3ValueCall[] = [];
 
   const useMultiCall = wipOptions?.useMulticallWhenPossible !== false;
-
   if (useMultiCall) {
     const deposit = wipClient.depositEncode();
     multiCalls.push({
@@ -125,7 +129,7 @@ const multiCallWrapIp = async ({
       rpcClient,
       wallet: wallet,
       data: {
-        abi: erc20TokenAbi,
+        abi: wrappedIpAbi,
         address: WIP_TOKEN_ADDRESS,
         functionName: "deposit",
         value: ipAmountToWrap,
@@ -139,6 +143,7 @@ const multiCallWrapIp = async ({
     const approvalCalls = await approvalAllSpenders({
       spenders: wipSpenders,
       client: wipClient,
+      multicallAddress: multicall3Client.address,
       owner: useMultiCall ? multicall3Client.address : wallet.account!.address,
       rpcClient,
       useMultiCall,
@@ -222,6 +227,7 @@ export const contractCallWithWipFees = async ({
         spenders: wipSpenders,
         client: wipClient,
         owner: sender, // sender owns the wip
+        multicallAddress: multicall3Client.address,
         rpcClient,
         // since sender has all wip, if using multicall, we will also need to transfer
         // sender's wip to multicall, which brings more complexity. So in this case,
@@ -234,7 +240,6 @@ export const contractCallWithWipFees = async ({
   }
 
   const startingBalance = await rpcClient.getBalance({ address: sender });
-
   // error if wallet does not have enough IP to cover fees
   if (startingBalance < totalFees) {
     throw new Error(
@@ -243,7 +248,6 @@ export const contractCallWithWipFees = async ({
       )}, balance: ${getTokenAmountDisplay(startingBalance)}`,
     );
   }
-
   // error if there's enough IP to cover fees and we cannot wrap IP to WIP
   if (!autoWrapIp) {
     throw new Error(

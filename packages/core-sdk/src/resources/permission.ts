@@ -18,9 +18,9 @@ import {
   SimpleWalletClient,
 } from "../abi/generated";
 import { chain, getAddress } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
 import { defaultFunctionSelector } from "../constants/common";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
+import { ChainIds } from "../types/config";
 
 export class PermissionClient {
   public accessControllerClient: AccessControllerClient;
@@ -28,9 +28,9 @@ export class PermissionClient {
   public coreMetadataModuleClient: CoreMetadataModuleClient;
   private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
-  private readonly chainId: SupportedChainIds;
+  private readonly chainId: ChainIds;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
