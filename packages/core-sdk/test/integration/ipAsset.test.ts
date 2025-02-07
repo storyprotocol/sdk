@@ -593,7 +593,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 1,
             },
           ],
@@ -654,19 +654,19 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 43,
             },
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 17,
             },
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 2,
             },
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 38,
             },
           ],
@@ -726,11 +726,11 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 1, // Test minimum valid percentage
             },
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 99, // Test maximum valid percentage that sums to 100
             },
           ],
@@ -785,11 +785,11 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 60,
             },
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 45, // Total will be 105%
             },
           ],
@@ -839,11 +839,11 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 60,
             },
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 45, // Total will be 105%
             },
           ],
@@ -893,7 +893,7 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 0,
             },
           ],
@@ -917,7 +917,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 10, // 100%
             },
           ],
@@ -971,7 +971,7 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 10, // 100%
             },
           ],
@@ -1250,7 +1250,7 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
+        mintFeeRecipient: walletAddress,
         txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
@@ -1480,7 +1480,7 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
+        mintFeeRecipient: walletAddress,
         txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
@@ -1572,7 +1572,7 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: process.env.TEST_WALLET_ADDRESS! as Address,
+              recipient: walletAddress,
               percentage: 101, // Invalid percentage > 100
             },
           ],
