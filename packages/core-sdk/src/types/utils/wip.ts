@@ -59,6 +59,7 @@ export type WipSpender = {
 export type WipApprovalCall = {
   spenders: WipSpender[];
   client: WrappedIpClient;
+  multicallAddress: Address;
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
   owner: Address;

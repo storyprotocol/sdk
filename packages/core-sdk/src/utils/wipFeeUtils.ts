@@ -25,9 +25,14 @@ const approvalAllSpenders = async ({
   owner,
   useMultiCall,
   rpcClient,
+  multicallAddress,
 }: WipApprovalCall) => {
   const approvals = await Promise.all(
     spenders.map(async (spender) => {
+      // make sure we never give approval to the multicall contract
+      if (spender.address === multicallAddress) {
+        return;
+      }
       const spenderAmount = spender.amount || maxUint256;
       const { result: allowance } = await client.allowance({
         owner: owner,
@@ -138,6 +143,7 @@ const multiCallWrapIp = async ({
     const approvalCalls = await approvalAllSpenders({
       spenders: wipSpenders,
       client: wipClient,
+      multicallAddress: multicall3Client.address,
       owner: useMultiCall ? multicall3Client.address : wallet.account!.address,
       rpcClient,
       useMultiCall,
@@ -221,6 +227,7 @@ export const contractCallWithWipFees = async ({
         spenders: wipSpenders,
         client: wipClient,
         owner: sender, // sender owns the wip
+        multicallAddress: multicall3Client.address,
         rpcClient,
         // since sender has all wip, if using multicall, we will also need to transfer
         // sender's wip to multicall, which brings more complexity. So in this case,

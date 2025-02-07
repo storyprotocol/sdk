@@ -17,6 +17,7 @@ import {
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
   wrappedIpAddress,
+  mockErc20Address,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
