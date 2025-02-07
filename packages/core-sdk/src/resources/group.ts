@@ -25,7 +25,7 @@ import { AccessPermission } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
 import { getPermissionSignature, getDeadline } from "../utils/sign";
 import { chain, getAddress } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
+import { ChainIds } from "../types/config";
 import {
   InnerLicenseData,
   LicenseData,
@@ -58,9 +58,9 @@ export class GroupClient {
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
-  private readonly chainId: SupportedChainIds;
+  private readonly chainId: ChainIds;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;

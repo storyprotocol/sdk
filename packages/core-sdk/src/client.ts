@@ -1,12 +1,7 @@
 import { createPublicClient, createWalletClient, PublicClient } from "viem";
 import * as dotenv from "dotenv";
 
-import {
-  StoryConfig,
-  SupportedChainIds,
-  UseAccountStoryConfig,
-  UseWalletStoryConfig,
-} from "./types/config";
+import { ChainIds, StoryConfig, UseAccountStoryConfig, UseWalletStoryConfig } from "./types/config";
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
@@ -26,7 +21,7 @@ if (typeof process !== "undefined") {
  * The StoryClient is the main entry point for the SDK.
  */
 export class StoryClient {
-  private readonly config: StoryConfig & { chainId: SupportedChainIds };
+  private readonly config: StoryConfig;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private _ipAsset: IPAssetClient | null = null;
@@ -54,7 +49,7 @@ export class StoryClient {
     }
 
     const clientConfig = {
-      chain: chainStringToViemChain(this.config.chainId),
+      chain: chainStringToViemChain(this.chainId),
       transport: this.config.transport,
     };
 
@@ -73,7 +68,9 @@ export class StoryClient {
       throw new Error("must specify a wallet or account");
     }
   }
-
+  private get chainId(): ChainIds {
+    return this.config.chainId as ChainIds;
+  }
   /**
    * Factory method for creating a SDK client with a signer.
    *
@@ -117,7 +114,7 @@ export class StoryClient {
    */
   public get ipAsset(): IPAssetClient {
     if (this._ipAsset === null) {
-      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.config.chainId);
+      this._ipAsset = new IPAssetClient(this.rpcClient, this.wallet, this.chainId);
     }
 
     return this._ipAsset;
@@ -131,7 +128,7 @@ export class StoryClient {
    */
   public get permission(): PermissionClient {
     if (this._permission === null) {
-      this._permission = new PermissionClient(this.rpcClient, this.wallet, this.config.chainId);
+      this._permission = new PermissionClient(this.rpcClient, this.wallet, this.chainId);
     }
 
     return this._permission;
@@ -145,7 +142,7 @@ export class StoryClient {
    */
   public get license(): LicenseClient {
     if (this._license === null) {
-      this._license = new LicenseClient(this.rpcClient, this.wallet, this.config.chainId);
+      this._license = new LicenseClient(this.rpcClient, this.wallet, this.chainId);
     }
 
     return this._license;
@@ -159,7 +156,7 @@ export class StoryClient {
    */
   public get dispute(): DisputeClient {
     if (this._dispute === null) {
-      this._dispute = new DisputeClient(this.rpcClient, this.wallet, this.config.chainId);
+      this._dispute = new DisputeClient(this.rpcClient, this.wallet, this.chainId);
     }
 
     return this._dispute;
@@ -215,7 +212,7 @@ export class StoryClient {
    */
   public get groupClient(): GroupClient {
     if (this._group === null) {
-      this._group = new GroupClient(this.rpcClient, this.wallet, this.config.chainId);
+      this._group = new GroupClient(this.rpcClient, this.wallet, this.chainId);
     }
 
     return this._group;

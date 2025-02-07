@@ -1,7 +1,6 @@
 import { Address, PublicClient, zeroAddress } from "viem";
 
 import {
-  Erc20TokenClient,
   IpAssetRegistryClient,
   LicenseRegistryEventClient,
   LicenseRegistryReadOnlyClient,
@@ -16,6 +15,8 @@ import {
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
   SimpleWalletClient,
+  WrappedIpClient,
+  royaltyModuleAddress,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
 import {
@@ -43,7 +44,7 @@ import {
   validateLicenseTerms,
 } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
+import { ChainIds } from "../types/config";
 import { calculateLicenseWipMintFee, contractCallWithWipFees } from "../utils/wipFeeUtils";
 import { WipSpender } from "../types/utils/wip";
 
@@ -56,13 +57,13 @@ export class LicenseClient {
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   public moduleRegistryReadOnlyClient: ModuleRegistryReadOnlyClient;
   public multicall3Client: Multicall3Client;
-  public wipClient: Erc20TokenClient;
+  public wipClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
-  private readonly chainId: SupportedChainIds;
+  private readonly chainId: ChainIds;
   private readonly walletAddress: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
     this.licenseRegistryClient = new LicenseRegistryEventClient(rpcClient);
     this.piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
@@ -71,7 +72,7 @@ export class LicenseClient {
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.moduleRegistryReadOnlyClient = new ModuleRegistryReadOnlyClient(rpcClient);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
-    this.wipClient = new Erc20TokenClient(rpcClient, wallet);
+    this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -438,7 +439,7 @@ export class LicenseClient {
       const wipSpenders: WipSpender[] = [];
       if (licenseMintingFee > 0n) {
         wipSpenders.push({
-          address: this.licensingModuleClient.address,
+          address: royaltyModuleAddress[chain[this.chainId]],
           amount: licenseMintingFee,
         });
       }

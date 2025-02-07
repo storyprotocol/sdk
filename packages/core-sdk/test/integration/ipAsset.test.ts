@@ -13,10 +13,10 @@ import {
 import { MockERC20 } from "./utils/mockERC20";
 import {
   evenSplitGroupPoolAddress,
-  mockErc20Address,
   royaltyPolicyLapAddress,
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
+  wrappedIpAddress,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
@@ -267,7 +267,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -353,7 +353,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -384,7 +384,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "test case",
             },
             licensingConfig: {
@@ -460,7 +460,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -571,7 +571,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -954,7 +954,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -1328,7 +1328,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: mockErc20Address[aeneid],
+                  currency: wrappedIpAddress[aeneid],
                   uri: "",
                 },
                 licensingConfig: {
@@ -1365,7 +1365,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: mockErc20Address[aeneid],
+                  currency: wrappedIpAddress[aeneid],
                   uri: "",
                 },
                 licensingConfig: {
@@ -1425,7 +1425,7 @@ describe("IP Asset Functions", () => {
       expect(result.results).to.be.an("array").and.not.empty;
     });
 
-    it("should batch register giving parameters without ipMetadata", async () => {
+    it("should batch register giving parameters", async () => {
       const tokenId = await getTokenId();
       const tokenId2 = await getTokenId();
       const spgTokenId1 = await mintBySpg(nftContract, "test-metadata");
@@ -1441,29 +1441,27 @@ describe("IP Asset Functions", () => {
             nftContract: mockERC721,
             tokenId: tokenId2!,
           },
-          // todo: need to disable for now, some issues with signature validation when using multicall
-          // {
-          //   nftContract,
-          //   tokenId: spgTokenId1!,
-          //   ipMetadata: {
-          //     ipMetadataURI: "test-uri2",
-          //     ipMetadataHash: toHex("test-metadata-hash2", { size: 32 }),
-          //     nftMetadataHash: toHex("test-nft-metadata-hash2", { size: 32 }),
-          //   },
-          // },
-          // {
-          //   nftContract,
-          //   tokenId: spgTokenId2!,
-          //   ipMetadata: {
-          //     ipMetadataURI: "test-uri",
-          //     ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-          //     nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          //   },
-          // },
+          {
+            nftContract,
+            tokenId: spgTokenId1!,
+            ipMetadata: {
+              ipMetadataURI: "test-uri2",
+              ipMetadataHash: toHex("test-metadata-hash2", { size: 32 }),
+              nftMetadataHash: toHex("test-nft-metadata-hash2", { size: 32 }),
+            },
+          },
+          {
+            nftContract,
+            tokenId: spgTokenId2!,
+            ipMetadata: {
+              ipMetadataURI: "test-uri",
+              ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+              nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+            },
+          },
         ],
         txOptions: { waitForTransaction: true },
       });
-
       expect(result.results).to.be.an("array").and.not.empty;
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
@@ -1511,7 +1509,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "",
               },
               licensingConfig: {
@@ -1555,7 +1553,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
