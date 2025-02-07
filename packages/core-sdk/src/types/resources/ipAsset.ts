@@ -293,7 +293,8 @@ export type BatchRegisterRequest = {
 };
 
 export type BatchRegisterResponse = {
-  txHash: Hex;
+  txHash?: Hex;
+  spgTxHash?: Hex;
   results?: IpIdAndTokenId<"nftContract">[];
 };
 

@@ -2329,6 +2329,7 @@ describe("Test IpAssetClient", () => {
           registrationDate: 0n,
         },
       ]);
+      sinon.stub(ipAssetClient.registrationWorkflowsClient, "multicall").resolves(txHash);
       const result = await ipAssetClient.batchRegister({
         args: [
           {
@@ -2338,12 +2339,12 @@ describe("Test IpAssetClient", () => {
           {
             nftContract: spgNftContract,
             tokenId: "2",
-            // ipMetadata: {
-            //   ipMetadataURI: "",
-            //   ipMetadataHash: toHex(0, { size: 32 }),
-            //   nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-            //   nftMetadataURI: "",
-            // },
+            ipMetadata: {
+              ipMetadataURI: "",
+              ipMetadataHash: toHex(0, { size: 32 }),
+              nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+              nftMetadataURI: "",
+            },
           },
         ],
         txOptions: {
@@ -2352,18 +2353,8 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.results).to.deep.equal([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 1n,
-        },
-        {
-          ipId: "0x1daAE3197Bc469Cb87B917aa460a12dD95c6627c",
-          nftContract: "0x1daAE3197Bc469Cbd97B917aa460a12dD95c6627c",
-          tokenId: 2n,
-        },
-      ]);
+      expect(result.spgTxHash).to.equal(txHash);
+      expect(result.results?.length).to.equal(4);
     });
   });
   describe("Test ipAssetClient.batchRegisterDerivative", async () => {

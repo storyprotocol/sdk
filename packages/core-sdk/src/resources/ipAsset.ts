@@ -389,6 +389,7 @@ export class IPAssetClient {
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
     try {
       const contracts = [];
+      const spgContracts: Hex[] = [];
       let encodedTxData: Hex;
       for (const arg of request.args) {
         try {
@@ -402,28 +403,52 @@ export class IPAssetClient {
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
-        const isSpg = !!arg.ipMetadata;
-        contracts.push({
-          target: isSpg
-            ? this.registrationWorkflowsClient.address
-            : this.ipAssetRegistryClient.address,
-          allowFailure: false,
-          callData: encodedTxData,
-        });
-        if (isSpg) {
-          // todo(bonnie): update this to use multicall from the spg instead of
-          // multicall3 client since SPG now requires the sender to the signature signer
-          throw new Error("Batch register IP with metadata is not supported.");
+        if (arg.ipMetadata) {
+          spgContracts.push(encodedTxData);
+        } else {
+          contracts.push({
+            target: this.ipAssetRegistryClient.address,
+            allowFailure: false,
+            callData: encodedTxData,
+          });
         }
       }
-      const txHash = await this.multicall3Client.aggregate3({ calls: contracts });
+      let spgTxHash: Hex | undefined;
+      let txHash: Hex | undefined;
+
+      if (spgContracts.length > 0) {
+        spgTxHash = await this.registrationWorkflowsClient.multicall({ data: spgContracts });
+      }
+
+      if (contracts.length > 0) {
+        txHash = await this.multicall3Client.aggregate3({ calls: contracts });
+      }
+
+      const results: IpIdAndTokenId<"spgNftContract" | "nftContract">[] = [];
+
       if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const results = this.getIpIdAndTokenIdsFromEvent(txReceipt, "nftContract");
-        return { txHash, results };
+        const processTransaction = async (
+          hash: Hex,
+          contractType: "spgNftContract" | "nftContract",
+        ) => {
+          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+            ...request.txOptions,
+            hash,
+          });
+          const eventResults = this.getIpIdAndTokenIdsFromEvent(txReceipt, contractType);
+          results.push(...eventResults);
+        };
+        if (txHash) {
+          await processTransaction(txHash, "nftContract");
+        }
+        if (spgTxHash) {
+          await processTransaction(spgTxHash, "spgNftContract");
+        }
+        return {
+          txHash,
+          spgTxHash,
+          results,
+        };
       } else {
         return { txHash };
       }
