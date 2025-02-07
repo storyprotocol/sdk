@@ -16,6 +16,7 @@ import {
   PiLicenseTemplateReadOnlyClient,
   SimpleWalletClient,
   WrappedIpClient,
+  royaltyModuleAddress,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
 import {
@@ -438,16 +439,13 @@ export class LicenseClient {
       const wipSpenders: WipSpender[] = [];
       if (licenseMintingFee > 0n) {
         wipSpenders.push({
-          address: this.licensingModuleClient.address,
+          address: royaltyModuleAddress[chain[this.chainId]],
           amount: licenseMintingFee,
         });
       }
       const { txHash, receipt } = await contractCallWithWipFees({
         totalFees: licenseMintingFee,
-        wipOptions: {
-          ...request.wipOptions,
-          useMulticallWhenPossible: false,
-        },
+        wipOptions: request.wipOptions,
         multicall3Client: this.multicall3Client,
         rpcClient: this.rpcClient,
         wipClient: this.wipClient,
