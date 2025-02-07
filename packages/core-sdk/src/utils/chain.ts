@@ -45,5 +45,5 @@ export const mainnet = defineChain({
       blockCreated: 5882,
     },
   },
-  testnet: true,
+  testnet: false,
 });

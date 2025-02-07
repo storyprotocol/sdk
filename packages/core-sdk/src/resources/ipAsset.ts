@@ -415,17 +415,13 @@ export class IPAssetClient {
       }
       let spgTxHash: Hex | undefined;
       let txHash: Hex | undefined;
-
       if (spgContracts.length > 0) {
         spgTxHash = await this.registrationWorkflowsClient.multicall({ data: spgContracts });
       }
-
       if (contracts.length > 0) {
         txHash = await this.multicall3Client.aggregate3({ calls: contracts });
       }
-
       const results: IpIdAndTokenId<"spgNftContract" | "nftContract">[] = [];
-
       if (request.txOptions?.waitForTransaction) {
         const processTransaction = async (
           hash: Hex,

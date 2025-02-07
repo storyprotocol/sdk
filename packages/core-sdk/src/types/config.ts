@@ -7,7 +7,7 @@ import { SimpleWalletClient } from "../abi/generated";
  *
  * @public
  */
-export type SupportedChainIds = "1315" | "aeneid" | "1514" | "mainnet";
+export type SupportedChainIds = "aeneid" | "mainnet" | ChainIds;
 
 /**
  * Configuration for the SDK Client.
