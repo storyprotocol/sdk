@@ -13,10 +13,10 @@ import {
 import { MockERC20 } from "./utils/mockERC20";
 import {
   evenSplitGroupPoolAddress,
-  mockErc20Address,
   royaltyPolicyLapAddress,
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
+  wrappedIpAddress,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 
@@ -166,7 +166,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -252,7 +252,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -283,7 +283,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "test case",
             },
             licensingConfig: {
@@ -359,7 +359,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: mockErc20Address[aeneid],
+              currency: wrappedIpAddress[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -470,7 +470,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -559,7 +559,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -933,7 +933,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: mockErc20Address[aeneid],
+                  currency: wrappedIpAddress[aeneid],
                   uri: "",
                 },
                 licensingConfig: {
@@ -970,7 +970,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: mockErc20Address[aeneid],
+                  currency: wrappedIpAddress[aeneid],
                   uri: "",
                 },
                 licensingConfig: {
@@ -1116,7 +1116,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "",
               },
               licensingConfig: {
@@ -1160,7 +1160,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: wrappedIpAddress[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
