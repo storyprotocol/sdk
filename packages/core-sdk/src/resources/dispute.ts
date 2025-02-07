@@ -13,7 +13,7 @@ import {
   ArbitrationPolicyUmaReadOnlyClient,
   DisputeModuleClient,
   SimpleWalletClient,
-  erc20TokenAddress,
+  wrappedIpAddress,
 } from "../abi/generated";
 import { chain, getAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
@@ -52,7 +52,7 @@ export class DisputeClient {
     try {
       const liveness = BigInt(request.liveness);
       const bonds = BigInt(request.bond);
-      const tokenAddress = erc20TokenAddress[chain[this.chainId]];
+      const tokenAddress = wrappedIpAddress[chain[this.chainId]];
       const [minLiveness, maxLiveness] = await Promise.all([
         this.arbitrationPolicyUmaReadOnlyClient.minLiveness(),
         this.arbitrationPolicyUmaReadOnlyClient.maxLiveness(),

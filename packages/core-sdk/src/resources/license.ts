@@ -1,7 +1,6 @@
 import { Address, PublicClient, zeroAddress } from "viem";
 
 import {
-  Erc20TokenClient,
   IpAssetRegistryClient,
   LicenseRegistryEventClient,
   LicenseRegistryReadOnlyClient,
@@ -16,6 +15,7 @@ import {
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
   SimpleWalletClient,
+  WrappedIpClient,
   royaltyPolicyLapAddress,
 } from "../abi/generated";
 import {
@@ -56,7 +56,7 @@ export class LicenseClient {
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   public moduleRegistryReadOnlyClient: ModuleRegistryReadOnlyClient;
   public multicall3Client: Multicall3Client;
-  public wipClient: Erc20TokenClient;
+  public wipClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: SupportedChainIds;
@@ -71,7 +71,7 @@ export class LicenseClient {
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.moduleRegistryReadOnlyClient = new ModuleRegistryReadOnlyClient(rpcClient);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
-    this.wipClient = new Erc20TokenClient(rpcClient, wallet);
+    this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -444,7 +444,10 @@ export class LicenseClient {
       }
       const { txHash, receipt } = await contractCallWithWipFees({
         totalFees: licenseMintingFee,
-        wipOptions: request.wipOptions,
+        wipOptions: {
+          ...request.wipOptions,
+          useMulticallWhenPossible: false,
+        },
         multicall3Client: this.multicall3Client,
         rpcClient: this.rpcClient,
         wipClient: this.wipClient,

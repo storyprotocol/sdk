@@ -3,11 +3,11 @@ import { Address, Hash, PublicClient } from "viem";
 import {
   Multicall3Aggregate3Request,
   Multicall3Client,
-  Erc20TokenClient,
   EncodedTxData,
   SimpleWalletClient,
   PiLicenseTemplateClient,
   LicensingModuleClient,
+  WrappedIpClient,
 } from "../../abi/generated";
 import { TxOptions } from "../options";
 
@@ -58,7 +58,7 @@ export type WipSpender = {
 
 export type WipApprovalCall = {
   spenders: WipSpender[];
-  client: Erc20TokenClient;
+  client: WrappedIpClient;
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
   owner: Address;
@@ -69,7 +69,7 @@ export type WipApprovalCall = {
 export type ContractCallWithWipFees = WithWipOptions & {
   totalFees: bigint;
   multicall3Client: Multicall3Client;
-  wipClient: Erc20TokenClient;
+  wipClient: WrappedIpClient;
   /** all possible spenders of the wip */
   wipSpenders: WipSpender[];
   contractCall: () => Promise<Hash>;
@@ -86,7 +86,7 @@ export type MulticallWithWrapIp = WithWipOptions & {
   contractCall: () => Promise<Hash>;
   wipSpenders: WipSpender[];
   multicall3Client: Multicall3Client;
-  wipClient: Erc20TokenClient;
+  wipClient: WrappedIpClient;
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
 };

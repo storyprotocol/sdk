@@ -14,7 +14,7 @@ import {
 } from "viem";
 
 import { SupportedChainIds } from "../types/config";
-import { aeneid } from "./chain";
+import { aeneid, mainnet } from "./chain";
 
 export async function waitTxAndFilterLog<
   const TAbi extends Abi | readonly unknown[],
@@ -83,14 +83,19 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     case "1315":
     case "aeneid":
       return aeneid;
+    case "1514":
+    case "mainnet":
+      return mainnet;
     default:
       throw new Error(`ChainId ${chainId as string} not supported`);
   }
 }
 
-export const chain: { [key in SupportedChainIds]: "1315" } = {
+export const chain: { [key in SupportedChainIds]: "1315" | "1514" } = {
   aeneid: "1315",
   1315: "1315",
+  1514: "1514",
+  mainnet: "1514",
 };
 
 export function validateAddress(address: string): Address {

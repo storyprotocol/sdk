@@ -70,7 +70,6 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  Erc20TokenClient,
   IpAccountImplClient,
   IpAssetRegistryClient,
   IpRoyaltyVaultImplReadOnlyClient,
@@ -93,6 +92,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
   SpgnftImplReadOnlyClient,
+  WrappedIpClient,
   coreMetadataModuleAbi,
   ipAccountImplAbi,
   ipRoyaltyVaultImplAbi,
@@ -132,7 +132,7 @@ export class IPAssetClient {
   public multicall3Client: Multicall3Client;
   public royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
   public royaltyModuleEventClient: RoyaltyModuleEventClient;
-  public wipClient: Erc20TokenClient;
+  public wipClient: WrappedIpClient;
   public spgNftClient: SpgnftImplReadOnlyClient;
 
   private readonly rpcClient: PublicClient;
@@ -156,7 +156,7 @@ export class IPAssetClient {
       wallet,
     );
     this.royaltyModuleEventClient = new RoyaltyModuleEventClient(rpcClient);
-    this.wipClient = new Erc20TokenClient(rpcClient, wallet);
+    this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.spgNftClient = new SpgnftImplReadOnlyClient(rpcClient);
     this.rpcClient = rpcClient;

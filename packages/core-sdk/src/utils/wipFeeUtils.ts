@@ -1,6 +1,6 @@
 import { maxUint256, zeroAddress } from "viem";
 
-import { erc20TokenAbi, multicall3Abi, SpgnftImplReadOnlyClient } from "../abi/generated";
+import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { getTokenAmountDisplay } from "./utils";
 import {
@@ -110,7 +110,6 @@ const multiCallWrapIp = async ({
   const multiCalls: Multicall3ValueCall[] = [];
 
   const useMultiCall = wipOptions?.useMulticallWhenPossible !== false;
-
   if (useMultiCall) {
     const deposit = wipClient.depositEncode();
     multiCalls.push({
@@ -125,7 +124,7 @@ const multiCallWrapIp = async ({
       rpcClient,
       wallet: wallet,
       data: {
-        abi: erc20TokenAbi,
+        abi: wrappedIpAbi,
         address: WIP_TOKEN_ADDRESS,
         functionName: "deposit",
         value: ipAmountToWrap,
@@ -234,7 +233,6 @@ export const contractCallWithWipFees = async ({
   }
 
   const startingBalance = await rpcClient.getBalance({ address: sender });
-
   // error if wallet does not have enough IP to cover fees
   if (startingBalance < totalFees) {
     throw new Error(
@@ -243,7 +241,6 @@ export const contractCallWithWipFees = async ({
       )}, balance: ${getTokenAmountDisplay(startingBalance)}`,
     );
   }
-
   // error if there's enough IP to cover fees and we cannot wrap IP to WIP
   if (!autoWrapIp) {
     throw new Error(
