@@ -11,7 +11,6 @@ import {
 } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
 import { handleError } from "../utils/errors";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -117,6 +116,7 @@ import {
   contractCallWithWipFees,
 } from "../utils/wipFeeUtils";
 import { WipSpender } from "../types/utils/wip";
+import { ChainIds } from "../types/config";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -137,10 +137,10 @@ export class IPAssetClient {
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
-  private readonly chainId: SupportedChainIds;
+  private readonly chainId: ChainIds;
   private readonly walletAddress: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);

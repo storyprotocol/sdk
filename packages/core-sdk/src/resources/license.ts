@@ -43,7 +43,7 @@ import {
   validateLicenseTerms,
 } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
-import { SupportedChainIds } from "../types/config";
+import { ChainIds } from "../types/config";
 import { calculateLicenseWipMintFee, contractCallWithWipFees } from "../utils/wipFeeUtils";
 import { WipSpender } from "../types/utils/wip";
 
@@ -59,10 +59,10 @@ export class LicenseClient {
   public wipClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
-  private readonly chainId: SupportedChainIds;
+  private readonly chainId: ChainIds;
   private readonly walletAddress: Address;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: SupportedChainIds) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
     this.licenseRegistryClient = new LicenseRegistryEventClient(rpcClient);
     this.piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
