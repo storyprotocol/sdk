@@ -1,6 +1,6 @@
 import { Address } from "viem";
 
-import { TxOptions } from "../options";
+import { TxOptions, WithTxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 
 export type RaiseDisputeRequest = {
@@ -39,3 +39,18 @@ export type ResolveDisputeResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
 };
+
+export type TagIfRelatedIpInfringedRequest = {
+  args: {
+    /** The ipId to tag */
+    ipIdToTag: Address;
+    /** The dispute id that tagged the related infringing ipId */
+    infringerDisputeId: number | string | bigint;
+  }[];
+  /**
+   * Use multicall to batch the WIP calls into one transaction when possible.
+   *
+   * @default true
+   */
+  useMulticallWhenPossible?: boolean;
+} & WithTxOptions;

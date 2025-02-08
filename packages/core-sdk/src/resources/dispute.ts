@@ -1,4 +1,4 @@
-import { PublicClient, encodeAbiParameters, stringToHex } from "viem";
+import { Hex, PublicClient, encodeAbiParameters, stringToHex } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -8,20 +8,24 @@ import {
   RaiseDisputeResponse,
   ResolveDisputeRequest,
   ResolveDisputeResponse,
+  TagIfRelatedIpInfringedRequest,
 } from "../types/resources/dispute";
 import {
   ArbitrationPolicyUmaReadOnlyClient,
   DisputeModuleClient,
+  DisputeModuleTagIfRelatedIpInfringedRequest,
+  Multicall3Client,
   SimpleWalletClient,
   wrappedIpAddress,
 } from "../abi/generated";
-import { chain, getAddress } from "../utils/utils";
+import { chain, validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
   public arbitrationPolicyUmaReadOnlyClient: ArbitrationPolicyUmaReadOnlyClient;
+  public multicall3Client: Multicall3Client;
   private readonly rpcClient: PublicClient;
   private readonly chainId: ChainIds;
 
@@ -29,6 +33,7 @@ export class DisputeClient {
     this.rpcClient = rpcClient;
     this.disputeModuleClient = new DisputeModuleClient(rpcClient, wallet);
     this.arbitrationPolicyUmaReadOnlyClient = new ArbitrationPolicyUmaReadOnlyClient(rpcClient);
+    this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.chainId = chainId;
   }
 
@@ -84,7 +89,7 @@ export class DisputeClient {
         throw new Error(`The target tag ${request.targetTag} is not whitelisted.`);
       }
       const req = {
-        targetIpId: getAddress(request.targetIpId, "request.targetIpId"),
+        targetIpId: validateAddress(request.targetIpId),
         targetTag: tag,
         disputeEvidenceHash: convertCIDtoHashIPFS(request.cid),
         data,
@@ -183,6 +188,38 @@ export class DisputeClient {
       }
     } catch (error) {
       handleError(error, "Failed to resolve dispute");
+    }
+  }
+  /**
+   * Tags a derivative if a parent has been tagged with an infringement tag
+   * or a group ip if a group member has been tagged with an infringement tag.
+   */
+  public async tagIfRelatedIpInfringed(request: TagIfRelatedIpInfringedRequest) {
+    try {
+      const objects: DisputeModuleTagIfRelatedIpInfringedRequest[] = request.args.map((arg) => ({
+        ipIdToTag: validateAddress(arg.ipIdToTag),
+        infringerDisputeId: BigInt(arg.infringerDisputeId),
+      }));
+      let txHash: Hex;
+      if (request.useMulticallWhenPossible !== false && request.args.length > 1) {
+        const calls = objects.map((object) => ({
+          target: this.disputeModuleClient.address,
+          allowFailure: false,
+          callData: this.disputeModuleClient.tagIfRelatedIpInfringedEncode(object).data,
+        }));
+        txHash = await this.multicall3Client.aggregate3({ calls });
+      } else {
+        txHash = await this.disputeModuleClient.tagIfRelatedIpInfringed(objects[0]);
+      }
+      if (request.txOptions?.waitForTransaction) {
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        //TODO: wait for querying event
+      }
+    } catch (error) {
+      handleError(error, "Failed to tag related ip");
     }
   }
 }
