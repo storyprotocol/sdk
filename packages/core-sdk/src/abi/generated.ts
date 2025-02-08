@@ -16965,6 +16965,17 @@ export type DisputeModuleResolveDisputeRequest = {
 };
 
 /**
+ * DisputeModuleTagIfRelatedIpInfringedRequest
+ *
+ * @param ipIdToTag address
+ * @param infringerDisputeId uint256
+ */
+export type DisputeModuleTagIfRelatedIpInfringedRequest = {
+  ipIdToTag: Address;
+  infringerDisputeId: bigint;
+};
+
+/**
  * contract DisputeModule event
  */
 export class DisputeModuleEventClient {
@@ -17244,6 +17255,44 @@ export class DisputeModuleClient extends DisputeModuleReadOnlyClient {
         abi: disputeModuleAbi,
         functionName: "resolveDispute",
         args: [request.disputeId, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method tagIfRelatedIpInfringed for contract DisputeModule
+   *
+   * @param request DisputeModuleTagIfRelatedIpInfringedRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async tagIfRelatedIpInfringed(
+    request: DisputeModuleTagIfRelatedIpInfringedRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: disputeModuleAbi,
+      address: this.address,
+      functionName: "tagIfRelatedIpInfringed",
+      account: this.wallet.account,
+      args: [request.ipIdToTag, request.infringerDisputeId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method tagIfRelatedIpInfringed for contract DisputeModule with only encode
+   *
+   * @param request DisputeModuleTagIfRelatedIpInfringedRequest
+   * @return EncodedTxData
+   */
+  public tagIfRelatedIpInfringedEncode(
+    request: DisputeModuleTagIfRelatedIpInfringedRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "tagIfRelatedIpInfringed",
+        args: [request.ipIdToTag, request.infringerDisputeId],
       }),
     };
   }
@@ -29789,63 +29838,6 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
 // Contract WrappedIP =============================================================
 
 /**
- * WrappedIpApprovalEvent
- *
- * @param owner address
- * @param spender address
- * @param amount uint256
- */
-export type WrappedIpApprovalEvent = {
-  owner: Address;
-  spender: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpDepositEvent
- *
- * @param from address
- * @param amount uint256
- */
-export type WrappedIpDepositEvent = {
-  from: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpTransferEvent
- *
- * @param from address
- * @param to address
- * @param amount uint256
- */
-export type WrappedIpTransferEvent = {
-  from: Address;
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpWithdrawalEvent
- *
- * @param to address
- * @param amount uint256
- */
-export type WrappedIpWithdrawalEvent = {
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpDomainSeparatorResponse
- *
- * @param result bytes32
- */
-export type WrappedIpDomainSeparatorResponse = {
-  result: Hex;
-};
-
-/**
  * WrappedIpAllowanceRequest
  *
  * @param owner address
@@ -29883,39 +29875,6 @@ export type WrappedIpBalanceOfResponse = {
   result: bigint;
 };
 
-export type WrappedIpDecimalsResponse = number;
-
-export type WrappedIpNameResponse = string;
-
-/**
- * WrappedIpNoncesRequest
- *
- * @param owner address
- */
-export type WrappedIpNoncesRequest = {
-  owner: Address;
-};
-
-/**
- * WrappedIpNoncesResponse
- *
- * @param result uint256
- */
-export type WrappedIpNoncesResponse = {
-  result: bigint;
-};
-
-export type WrappedIpSymbolResponse = string;
-
-/**
- * WrappedIpTotalSupplyResponse
- *
- * @param result uint256
- */
-export type WrappedIpTotalSupplyResponse = {
-  result: bigint;
-};
-
 /**
  * WrappedIpApproveRequest
  *
@@ -29925,27 +29884,6 @@ export type WrappedIpTotalSupplyResponse = {
 export type WrappedIpApproveRequest = {
   spender: Address;
   amount: bigint;
-};
-
-/**
- * WrappedIpPermitRequest
- *
- * @param owner address
- * @param spender address
- * @param value uint256
- * @param deadline uint256
- * @param v uint8
- * @param r bytes32
- * @param s bytes32
- */
-export type WrappedIpPermitRequest = {
-  owner: Address;
-  spender: Address;
-  value: bigint;
-  deadline: bigint;
-  v: number;
-  r: Hex;
-  s: Hex;
 };
 
 /**
@@ -29982,197 +29920,15 @@ export type WrappedIpWithdrawRequest = {
 };
 
 /**
- * contract WrappedIP event
+ * contract WrappedIP readonly method
  */
-export class WrappedIpEventClient {
+export class WrappedIpReadOnlyClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(wrappedIpAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event Approval for contract WrappedIP
-   */
-  public watchApprovalEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpApprovalEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Approval",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Approval for contract WrappedIP
-   */
-  public parseTxApprovalEvent(txReceipt: TransactionReceipt): Array<WrappedIpApprovalEvent> {
-    const targetLogs: Array<WrappedIpApprovalEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Approval",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Approval") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Deposit for contract WrappedIP
-   */
-  public watchDepositEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpDepositEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Deposit",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Deposit for contract WrappedIP
-   */
-  public parseTxDepositEvent(txReceipt: TransactionReceipt): Array<WrappedIpDepositEvent> {
-    const targetLogs: Array<WrappedIpDepositEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Deposit",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Deposit") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Transfer for contract WrappedIP
-   */
-  public watchTransferEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpTransferEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Transfer",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Transfer for contract WrappedIP
-   */
-  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<WrappedIpTransferEvent> {
-    const targetLogs: Array<WrappedIpTransferEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Transfer",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Transfer") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Withdrawal for contract WrappedIP
-   */
-  public watchWithdrawalEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpWithdrawalEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Withdrawal",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Withdrawal for contract WrappedIP
-   */
-  public parseTxWithdrawalEvent(txReceipt: TransactionReceipt): Array<WrappedIpWithdrawalEvent> {
-    const targetLogs: Array<WrappedIpWithdrawalEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Withdrawal",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Withdrawal") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract WrappedIP readonly method
- */
-export class WrappedIpReadOnlyClient extends WrappedIpEventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method DOMAIN_SEPARATOR for contract WrappedIP
-   *
-   * @param request WrappedIpDomainSeparatorRequest
-   * @return Promise<WrappedIpDomainSeparatorResponse>
-   */
-  public async domainSeparator(): Promise<WrappedIpDomainSeparatorResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "DOMAIN_SEPARATOR",
-    });
-    return {
-      result: result,
-    };
   }
 
   /**
@@ -30205,83 +29961,6 @@ export class WrappedIpReadOnlyClient extends WrappedIpEventClient {
       address: this.address,
       functionName: "balanceOf",
       args: [request.owner],
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method decimals for contract WrappedIP
-   *
-   * @param request WrappedIpDecimalsRequest
-   * @return Promise<WrappedIpDecimalsResponse>
-   */
-  public async decimals(): Promise<WrappedIpDecimalsResponse> {
-    return await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "decimals",
-    });
-  }
-
-  /**
-   * method name for contract WrappedIP
-   *
-   * @param request WrappedIpNameRequest
-   * @return Promise<WrappedIpNameResponse>
-   */
-  public async name(): Promise<WrappedIpNameResponse> {
-    return await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "name",
-    });
-  }
-
-  /**
-   * method nonces for contract WrappedIP
-   *
-   * @param request WrappedIpNoncesRequest
-   * @return Promise<WrappedIpNoncesResponse>
-   */
-  public async nonces(request: WrappedIpNoncesRequest): Promise<WrappedIpNoncesResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "nonces",
-      args: [request.owner],
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method symbol for contract WrappedIP
-   *
-   * @param request WrappedIpSymbolRequest
-   * @return Promise<WrappedIpSymbolResponse>
-   */
-  public async symbol(): Promise<WrappedIpSymbolResponse> {
-    return await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "symbol",
-    });
-  }
-
-  /**
-   * method totalSupply for contract WrappedIP
-   *
-   * @param request WrappedIpTotalSupplyRequest
-   * @return Promise<WrappedIpTotalSupplyResponse>
-   */
-  public async totalSupply(): Promise<WrappedIpTotalSupplyResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "totalSupply",
     });
     return {
       result: result,
@@ -30362,56 +30041,6 @@ export class WrappedIpClient extends WrappedIpReadOnlyClient {
       data: encodeFunctionData({
         abi: wrappedIpAbi,
         functionName: "deposit",
-      }),
-    };
-  }
-
-  /**
-   * method permit for contract WrappedIP
-   *
-   * @param request WrappedIpPermitRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async permit(request: WrappedIpPermitRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "permit",
-      account: this.wallet.account,
-      args: [
-        request.owner,
-        request.spender,
-        request.value,
-        request.deadline,
-        request.v,
-        request.r,
-        request.s,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method permit for contract WrappedIP with only encode
-   *
-   * @param request WrappedIpPermitRequest
-   * @return EncodedTxData
-   */
-  public permitEncode(request: WrappedIpPermitRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: wrappedIpAbi,
-        functionName: "permit",
-        args: [
-          request.owner,
-          request.spender,
-          request.value,
-          request.deadline,
-          request.v,
-          request.r,
-          request.s,
-        ],
       }),
     };
   }
