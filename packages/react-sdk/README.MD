@@ -14,9 +14,9 @@ pnpm install
 
 2. Update the `@story-protocol/core-sdk` package version in the `packages/react-sdk/package.json` file to the latest version.
 
-Important: Once publish core-sdk, you need to update the core-sdk version in the react-sdk package.json file.
+Important: Once published core-sdk, you need to update the core-sdk version in the react-sdk package.json file.
 
-3. Generate the SDK
+3. Generating the SDK
 
 ```bash
 pnpm run generate
@@ -66,13 +66,13 @@ npm install -g yalc
 
 Under the `typescript-sdk/packages/react-sdk` directory:
 
-- Execute `npm run build` to build your latest code.
+- Run `npm run build` to build your latest code.
 - Run `yalc publish`. You should see a message like `@story-protocol/react-sdk@<version> published in store.` (Note: The version number may vary).
 - To set up your testing environment (e.g., a new Next.js project), use `yalc add @story-protocol/react-sdk@<version>` (ensure the version number is updated accordingly).
 
 - Run `pnpm install`. This installs `@story-protocol/react-sdk@<version>` with your local changes.
 
-### Steps to Refresh the Changes
+### Steps to Refreshes the Changes
 
 Under the `typescript-sdk/packages/react-sdk` directory:
 
