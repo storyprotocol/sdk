@@ -1,25 +1,35 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
-import { mockERC721, getStoryClient, getTokenId, publicClient, aeneid, RPC } from "./utils/util";
+import {
+  mockERC721,
+  getStoryClient,
+  getTokenId,
+  publicClient,
+  aeneid,
+  RPC,
+  TEST_WALLET_ADDRESS,
+} from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import { Address, createWalletClient, http, parseEther } from "viem";
-import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
+import { Address, createWalletClient, http, parseEther, zeroAddress } from "viem";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { MockERC20 } from "./utils/mockERC20";
-import { arbitrationPolicyUmaAddress, wrappedIpAddress } from "../../src/abi/generated";
+import {
+  arbitrationPolicyUmaAddress,
+  disputeModuleAddress,
+  evenSplitGroupPoolAddress,
+  royaltyPolicyLapAddress,
+  wrappedIpAddress,
+} from "../../src/abi/generated";
 import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
-
-import {} from "viem/accounts";
-import {} from "viem";
-
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const DISPUTE_MODULE_ADDRESS = "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5";
+const DISPUTE_MODULE_ADDRESS = disputeModuleAddress[aeneid];
 const SET_DISPUTE_JUDGEMENT_ABI = disputeModuleAbi.find(
   (item) => item.type === "function" && item.name === "setDisputeJudgement",
 );
@@ -41,104 +51,88 @@ describe("Dispute Functions", () => {
   let ipIdB: Address;
 
   before(async () => {
+    const privateKey = generatePrivateKey();
     clientA = getStoryClient();
-
-    const randomBytes = crypto.getRandomValues(new Uint8Array(32));
-    const privateKey = `0x${Buffer.from(randomBytes).toString("hex")}` as `0x${string}`;
+    clientB = getStoryClient(privateKey);
     const walletB = privateKeyToAccount(privateKey);
 
-    const mainWalletClient = createWalletClient({
+    // Transfer some funds to walletB
+    const clientAWalletClient = createWalletClient({
       chain: chainStringToViemChain("aeneid"),
       transport: http(RPC),
       account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as `0x${string}`),
     });
-    const txHash = await mainWalletClient.sendTransaction({
+    const txHash = await clientAWalletClient.sendTransaction({
       to: walletB.address,
       value: parseEther("0.25"),
     });
     await publicClient.waitForTransactionReceipt({ hash: txHash });
-    clientB = getStoryClient(privateKey);
+  });
 
-    const mockERC20 = new MockERC20(wrappedIpAddress[aeneid]);
-    await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid]);
-    const tokenId = await getTokenId();
-    ipIdB = (
-      await clientB.ipAsset.register({
-        nftContract: mockERC721,
-        tokenId: tokenId!,
+  describe("raiseDispute", () => {
+    it("should raise a dispute", async () => {
+      const raiseDisputeRequest: RaiseDisputeRequest = {
+        targetIpId: ipIdB,
+        cid: await generateCID(),
+        targetTag: "IMPROPER_REGISTRATION",
+        liveness: 2592000,
+        bond: 0,
         txOptions: {
           waitForTransaction: true,
         },
-      })
-    ).ipId!;
-  });
-
-  it("should raise a dispute", async () => {
-    const raiseDisputeRequest: RaiseDisputeRequest = {
-      targetIpId: ipIdB,
-      cid: await generateCID(),
-      targetTag: "IMPROPER_REGISTRATION",
-      liveness: 2592000,
-      bond: 0,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    };
-    const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
-    expect(response.txHash).to.be.a("string").and.not.empty;
-    expect(response.disputeId).to.be.a("bigint");
-  });
-
-  it("should throw error when liveness is out of bounds", async () => {
-    const minLiveness = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.minLiveness();
-    const raiseDisputeRequest: RaiseDisputeRequest = {
-      targetIpId: ipIdB,
-      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-      targetTag: "IMPROPER_REGISTRATION",
-      liveness: Number(minLiveness) - 1,
-      bond: 0,
-      txOptions: { waitForTransaction: true },
-    };
-
-    await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-      `Liveness must be between`,
-    );
-  });
-
-  it("should throw error when bond exceeds maximum", async () => {
-    const maxBonds = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.maxBonds({
-      token: wrappedIpAddress[aeneid],
+      };
+      const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
+      expect(response.txHash).to.be.a("string").and.not.empty;
+      expect(response.disputeId).to.be.a("bigint");
     });
 
-    const raiseDisputeRequest: RaiseDisputeRequest = {
-      targetIpId: ipIdB,
-      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-      targetTag: "IMPROPER_REGISTRATION",
-      liveness: 2592000,
-      bond: 2000000000000000000,
-      txOptions: {
-        waitForTransaction: true,
-      },
-    };
+    it("should throw error when liveness is out of bounds", async () => {
+      const minLiveness = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.minLiveness();
+      const raiseDisputeRequest: RaiseDisputeRequest = {
+        targetIpId: ipIdB,
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        targetTag: "IMPROPER_REGISTRATION",
+        liveness: Number(minLiveness) - 1,
+        bond: 0,
+        txOptions: { waitForTransaction: true },
+      };
 
-    await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-      `Bonds must be less than`,
-    );
-  });
+      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+        `Liveness must be between`,
+      );
+    });
 
-  it("should throw error for non-whitelisted dispute tag", async () => {
-    const raiseDisputeRequest: RaiseDisputeRequest = {
-      targetIpId: ipIdB,
-      cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-      targetTag: "INVALID_TAG",
-      liveness: 2592000,
-      bond: 0,
-      txOptions: { waitForTransaction: true },
-    };
+    it("should throw error when bond exceeds maximum", async () => {
+      const raiseDisputeRequest: RaiseDisputeRequest = {
+        targetIpId: ipIdB,
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        targetTag: "IMPROPER_REGISTRATION",
+        liveness: 2592000,
+        bond: 2000000000000000000,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      };
 
-    await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-      `The target tag INVALID_TAG is not whitelisted`,
-    );
+      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+        `Bonds must be less than`,
+      );
+    });
+
+    it("should throw error for non-whitelisted dispute tag", async () => {
+      const raiseDisputeRequest: RaiseDisputeRequest = {
+        targetIpId: ipIdB,
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        targetTag: "INVALID_TAG",
+        liveness: 2592000,
+        bond: 0,
+        txOptions: { waitForTransaction: true },
+      };
+
+      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+        `The target tag INVALID_TAG is not whitelisted`,
+      );
+    });
   });
 
   it("it should not cancel a dispute (yet)", async () => {
@@ -171,6 +165,10 @@ describe("Dispute Functions", () => {
    */
   describe("resolveDispute", () => {
     let disputeId: bigint;
+    let nftContract: Address;
+    let parentIpId: Address;
+    let licenseTermsId: bigint;
+    let childIpId: Address;
 
     // Skip tests if whitelisted judge private key is not configured
     before(function (this: Mocha.Context) {
@@ -238,6 +236,95 @@ describe("Dispute Functions", () => {
           },
         }),
       ).to.be.rejectedWith("NotDisputeInitiator");
+    });
+  });
+
+  describe("tagIfRelatedIpInfringed", () => {
+    before(async () => {
+      // Setup NFT collection
+      const txData = await clientA.nftClient.createNFTCollection({
+        name: "test-collection",
+        symbol: "TEST",
+        maxSupply: 100,
+        isPublicMinting: true,
+        mintOpen: true,
+        contractURI: "test-uri",
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        txOptions: { waitForTransaction: true },
+      });
+      nftContract = txData.spgNftContract!;
+
+      // Get parent IP ID and license terms ID
+      const ipIdAndLicenseResponse = await clientA.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: nftContract,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 90,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: wrappedIpAddress[aeneid],
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: evenSplitGroupPoolAddress[aeneid],
+            },
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      parentIpId = ipIdAndLicenseResponse.ipId!;
+      licenseTermsId = ipIdAndLicenseResponse.licenseTermsIds![0];
+
+      //Create a derivative ip
+      const derivativeIpIdResponse = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContract,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+        allowDuplicates: true,
+        txOptions: { waitForTransaction: true },
+      });
+      childIpId = derivativeIpIdResponse.ipId!;
+    });
+
+    it.skip("should tag infringing ip", async () => {
+      const results = await clientA.dispute.tagIfRelatedIpInfringed({
+        args: [
+          {
+            ipIdToTag: childIpId,
+            infringerDisputeId: disputeId,
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+        useMulticallWhenPossible: true,
+      });
+      console.log("tagResponse", results);
+      expect(results[0].txHash).to.be.a("string").and.not.empty;
     });
   });
 });
