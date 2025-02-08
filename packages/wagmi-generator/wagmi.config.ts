@@ -238,6 +238,7 @@ export default defineConfig(async () => {
             "raiseDispute",
             "resolveDispute",
             "isWhitelistedDisputeTag",
+            "tagIfRelatedIpInfringed",
           ],
           IPAccountImpl: [
             "execute",
@@ -287,7 +288,7 @@ export default defineConfig(async () => {
           ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],
-          SPG: ["CollectionCreated"],
+          SPG: ["CollectionCreated", "mintFeeToken", "mintFee"],
           GroupingWorkflows: [
             "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
             "registerIpAndAttachLicenseAndAddToGroup",
@@ -325,7 +326,15 @@ export default defineConfig(async () => {
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
           ],
           ArbitrationPolicyUMA: ["maxBonds", "maxLiveness", "minLiveness"],
-          AA: ["deposit", "approve"],
+          WrappedIP: [
+            "deposit",
+            "approve",
+            "transferFrom",
+            "transfer",
+            "balanceOf",
+            "withdraw",
+            "allowance",
+          ],
         },
       }),
     ],
