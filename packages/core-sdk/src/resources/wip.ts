@@ -14,12 +14,12 @@ import {
 import { handleTxOptions } from "../utils/txOptions";
 
 export class WipClient {
-  public wipClient: WrappedIpClient;
+  public wrappedIpClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
-    this.wipClient = new WrappedIpClient(rpcClient, wallet, WIP_TOKEN_ADDRESS);
+    this.wrappedIpClient = new WrappedIpClient(rpcClient, wallet, WIP_TOKEN_ADDRESS);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
   }
@@ -60,7 +60,7 @@ export class WipClient {
       if (targetAmt <= 0) {
         throw new Error("WIP withdraw amount must be greater than 0.");
       }
-      const txHash = await this.wipClient.withdraw({ value: targetAmt });
+      const txHash = await this.wrappedIpClient.withdraw({ value: targetAmt });
       return handleTxOptions({
         txHash,
         txOptions,
@@ -81,7 +81,7 @@ export class WipClient {
         throw new Error("WIP approve amount must be greater than 0.");
       }
       const spender = validateAddress(req.spender);
-      const txHash = await this.wipClient.approve({
+      const txHash = await this.wrappedIpClient.approve({
         spender,
         amount,
       });
@@ -100,7 +100,7 @@ export class WipClient {
    */
   public async balanceOf(addr: Address): Promise<bigint> {
     const owner = validateAddress(addr);
-    const ret = await this.wipClient.balanceOf({ owner });
+    const ret = await this.wrappedIpClient.balanceOf({ owner });
     return ret.result;
   }
 
@@ -113,7 +113,7 @@ export class WipClient {
       if (amount <= 0) {
         throw new Error("WIP transfer amount must be greater than 0.");
       }
-      const txHash = await this.wipClient.transfer({
+      const txHash = await this.wrappedIpClient.transfer({
         to: validateAddress(request.to),
         amount,
       });
@@ -136,7 +136,7 @@ export class WipClient {
       if (amount <= 0) {
         throw new Error("WIP transfer amount must be greater than 0.");
       }
-      const txHash = await this.wipClient.transferFrom({
+      const txHash = await this.wrappedIpClient.transferFrom({
         to: validateAddress(request.to),
         amount,
         from: validateAddress(request.from),
