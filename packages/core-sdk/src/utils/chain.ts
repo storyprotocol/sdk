@@ -18,7 +18,7 @@ export const aeneid = defineChain({
   contracts: {
     multicall3: {
       address: "0xca11bde05977b3631167028862be2a173976ca11",
-      blockCreated: 5882,
+      blockCreated: 1792,
     },
   },
   testnet: true,
@@ -42,7 +42,7 @@ export const mainnet = defineChain({
   contracts: {
     multicall3: {
       address: "0xca11bde05977b3631167028862be2a173976ca11",
-      blockCreated: 5882,
+      blockCreated: 340998,
     },
   },
   testnet: false,
