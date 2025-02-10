@@ -17,3 +17,12 @@ export type DepositRequest = WithTxOptions & {
 export type WithdrawRequest = WithTxOptions & {
   amount: TokenAmountInput;
 };
+
+export type TransferRequest = WithTxOptions & {
+  to: Address;
+  amount: TokenAmountInput;
+};
+
+export type TransferFromRequest = TransferRequest & {
+  from: Address;
+};
