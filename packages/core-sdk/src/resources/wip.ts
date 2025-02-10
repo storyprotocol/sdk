@@ -4,7 +4,13 @@ import { handleError } from "../utils/errors";
 import { SimpleWalletClient, WrappedIpClient, wrappedIpAbi } from "../abi/generated";
 import { validateAddress } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
-import { ApproveRequest, DepositRequest, WithdrawRequest } from "../types/resources/wip";
+import {
+  ApproveRequest,
+  DepositRequest,
+  TransferFromRequest,
+  TransferRequest,
+  WithdrawRequest,
+} from "../types/resources/wip";
 import { handleTxOptions } from "../utils/txOptions";
 
 export class WipClient {
@@ -96,5 +102,52 @@ export class WipClient {
     const owner = validateAddress(addr);
     const ret = await this.wipClient.balanceOf({ owner });
     return ret.result;
+  }
+
+  /**
+   * Transfers `amount` of WIP to a recipient `to`.
+   */
+  public async transfer(request: TransferRequest): Promise<{ txHash: Hex }> {
+    try {
+      const amount = BigInt(request.amount);
+      if (amount <= 0) {
+        throw new Error("WIP transfer amount must be greater than 0.");
+      }
+      const txHash = await this.wipClient.transfer({
+        to: validateAddress(request.to),
+        amount,
+      });
+      return handleTxOptions({
+        txHash,
+        txOptions: request.txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      handleError(error, "Failed to transfer WIP");
+    }
+  }
+
+  /**
+   * Transfers `amount` of WIP from `from` to a recipient `to`.
+   */
+  public async transferFrom(request: TransferFromRequest): Promise<{ txHash: Hex }> {
+    try {
+      const amount = BigInt(request.amount);
+      if (amount <= 0) {
+        throw new Error("WIP transfer amount must be greater than 0.");
+      }
+      const txHash = await this.wipClient.transferFrom({
+        to: validateAddress(request.to),
+        amount,
+        from: validateAddress(request.from),
+      });
+      return handleTxOptions({
+        txHash,
+        txOptions: request.txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      handleError(error, "Failed to transfer WIP");
+    }
   }
 }
