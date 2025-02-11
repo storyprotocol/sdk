@@ -21,6 +21,7 @@ import {
 import { chain, validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
+import { handleTxOptions } from "../utils/txOptions";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
@@ -38,20 +39,8 @@ export class DisputeClient {
   }
 
   /**
-   * Raises a dispute on a given ipId
-   * @param request - The request object containing necessary data to raise a dispute.
-   *   @param request.targetIpId The IP ID that is the target of the dispute.
-   *   @param request.targetTag The target tag of the dispute.
-   *   @param request.cid CID (Content Identifier) is a unique identifier in IPFS, including CID v0 (base58) and CID v1 (base32).
-   *   @param request.liveness The liveness time.
-   *   @param request.bond The bond size.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a RaiseDisputeResponse containing the transaction hash.
-   * @throws `NotRegisteredIpId` if targetIpId is not registered in the IPA Registry.
-   * @throws `NotWhitelistedDisputeTag` if targetTag is not whitelisted.
-   * @throws `ZeroLinkToDisputeEvidence` if linkToDisputeEvidence is empty
-   * @calls raiseDispute(address _targetIpId, string memory _linkToDisputeEvidence, bytes32 _targetTag, bytes calldata _data) external nonReentrant returns (uint256) {
-   * @emits DisputeRaised (disputeId_, targetIpId, msg.sender, arbitrationPolicy, linkToDisputeEvidence, targetTag, calldata);
+   * Raises a dispute on a given ipId.
+   * Emits DisputeRaised (disputeId_, targetIpId, msg.sender, arbitrationPolicy, linkToDisputeEvidence, targetTag, calldata);
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
@@ -211,13 +200,11 @@ export class DisputeClient {
       } else {
         txHash = await this.disputeModuleClient.tagIfRelatedIpInfringed(objects[0]);
       }
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        //TODO: wait for querying event
-      }
+      return handleTxOptions({
+        txHash,
+        txOptions: request.txOptions,
+        rpcClient: this.rpcClient,
+      });
     } catch (error) {
       handleError(error, "Failed to tag related ip");
     }

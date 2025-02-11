@@ -12,7 +12,7 @@ import {
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
-import { HandleTxOptionsResponse } from "../types/utils/txOptions";
+import { TransactionResponse } from "../types/utils/txOptions";
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -199,7 +199,7 @@ export const contractCallWithWipFees = async ({
   sender,
   txOptions,
   encodedTxs,
-}: ContractCallWithWipFees): Promise<HandleTxOptionsResponse> => {
+}: ContractCallWithWipFees): Promise<TransactionResponse> => {
   // if no fees, skip all WIP logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
