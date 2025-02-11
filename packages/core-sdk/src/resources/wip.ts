@@ -1,4 +1,4 @@
-import { Address, Hex, PublicClient, WriteContractParameters } from "viem";
+import { Address, PublicClient, WriteContractParameters } from "viem";
 
 import { handleError } from "../utils/errors";
 import { SimpleWalletClient, WrappedIpClient, wrappedIpAbi } from "../abi/generated";
@@ -74,7 +74,7 @@ export class WipClient {
   /**
    * Approve a spender to use the wallet's WIP balance.
    */
-  public async approve(req: ApproveRequest): Promise<{ txHash: Hex }> {
+  public async approve(req: ApproveRequest) {
     try {
       const amount = BigInt(req.amount);
       if (amount <= 0) {
@@ -107,7 +107,7 @@ export class WipClient {
   /**
    * Transfers `amount` of WIP to a recipient `to`.
    */
-  public async transfer(request: TransferRequest): Promise<{ txHash: Hex }> {
+  public async transfer(request: TransferRequest) {
     try {
       const amount = BigInt(request.amount);
       if (amount <= 0) {
@@ -130,7 +130,7 @@ export class WipClient {
   /**
    * Transfers `amount` of WIP from `from` to a recipient `to`.
    */
-  public async transferFrom(request: TransferFromRequest): Promise<{ txHash: Hex }> {
+  public async transferFrom(request: TransferFromRequest) {
     try {
       const amount = BigInt(request.amount);
       if (amount <= 0) {
