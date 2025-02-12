@@ -37,16 +37,18 @@ export type ClaimableRevenueRequest = {
   claimer: Address;
   token: Address;
 };
-
 export type ClaimableRevenueResponse = bigint;
-
-export type PayRoyaltyOnBehalfRequest = {
-  receiverIpId: Address;
-  payerIpId: Address;
-  token: Address;
-  amount: TokenAmountInput;
-} & WithTxOptions &
-  WithWipOptions;
+export type PayRoyaltyOnBehalfRequest = WithTxOptions &
+  WithWipOptions & {
+    /** The IP ID that receives the royalties. */
+    receiverIpId: Address;
+    /** The IP ID that pays the royalties. */
+    payerIpId: Address;
+    /** The token to use to pay the royalties. */
+    token: Address;
+    /** The amount to pay. */
+    amount: TokenAmountInput;
+  };
 
 export type PayRoyaltyOnBehalfResponse = {
   txHash?: string;

@@ -36,9 +36,10 @@ import {
 import { IPAccountClient } from "./ipAccount";
 import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
-import { contractCallWithWipFees } from "../utils/wipFeeUtils";
-import { WipSpender } from "../types/utils/wip";
+import { contractCallWithFees } from "../utils/wipFeeUtils";
+import { TokenSpender } from "../types/utils/wip";
 import { simulateAndWriteContract } from "../utils/contract";
+import { ERC20Client, WIPTokenClient } from "../utils/token";
 
 export class RoyaltyClient {
   public royaltyModuleClient: RoyaltyModuleClient;
@@ -137,13 +138,6 @@ export class RoyaltyClient {
 
   /**
    * Allows the function caller to pay royalties to the receiver IP asset on behalf of the payer IP asset.
-   * @param request - The request object that contains all data needed to pay royalty on behalf.
-   *   @param request.receiverIpId The ipId that receives the royalties.
-   *   @param request.payerIpId The ID of the IP asset that pays the royalties.
-   *   @param request.token The token to use to pay the royalties.
-   *   @param request.amount The amount to pay.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async payRoyaltyOnBehalf(
     request: PayRoyaltyOnBehalfRequest,
@@ -156,12 +150,12 @@ export class RoyaltyClient {
         throw new Error("The amount to pay must be number greater than 0.");
       }
       const isReceiverRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(receiverIpId, "request.receiverIpId"),
+        id: validateAddress(receiverIpId),
       });
       if (!isReceiverRegistered) {
         throw new Error(`The receiver IP with id ${receiverIpId} is not registered.`);
       }
-      if (getAddress(payerIpId, "request.payerIpId") && payerIpId !== zeroAddress) {
+      if (validateAddress(payerIpId) && payerIpId !== zeroAddress) {
         const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
           id: payerIpId,
         });
@@ -172,7 +166,7 @@ export class RoyaltyClient {
       const req = {
         receiverIpId: receiverIpId,
         payerIpId: payerIpId,
-        token: getAddress(token, "request.token"),
+        token: validateAddress(token),
         amount: BigInt(amount),
       };
 
@@ -183,22 +177,21 @@ export class RoyaltyClient {
       const contractCall = () => {
         return this.royaltyModuleClient.payRoyaltyOnBehalf(req);
       };
-
+      const tokenSpenders: TokenSpender[] = [
+        {
+          address: this.royaltyModuleClient.address,
+          amount: payAmount,
+        },
+      ];
       // auto wrap wallet's IP to WIP if paying WIP
       if (token === WIP_TOKEN_ADDRESS) {
-        const wipSpenders: WipSpender[] = [
-          {
-            address: this.royaltyModuleClient.address,
-            amount: payAmount,
-          },
-        ];
-        return contractCallWithWipFees({
+        return contractCallWithFees({
           totalFees: payAmount,
           wipOptions,
-          multicall3Client: this.multicall3Client,
+          multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
-          wipClient: this.wipClient,
-          wipSpenders,
+          tokenClient: new WIPTokenClient(this.rpcClient, this.wallet),
+          tokenSpenders: tokenSpenders,
           contractCall,
           sender,
           wallet: this.wallet,
@@ -206,8 +199,16 @@ export class RoyaltyClient {
           encodedTxs: [encodedTxData],
         });
       } else {
-        const txHash = await contractCall();
-        return { txHash };
+        return contractCallWithFees({
+          totalFees: payAmount,
+          wipOptions,
+          rpcClient: this.rpcClient,
+          tokenClient: new ERC20Client(this.rpcClient, this.wallet, token),
+          tokenSpenders: tokenSpenders,
+          contractCall,
+          sender,
+          txOptions,
+        });
       }
     } catch (error) {
       handleError(error, "Failed to pay royalty on behalf");
