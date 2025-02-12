@@ -4,15 +4,16 @@ import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/ge
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { getTokenAmountDisplay } from "./utils";
 import {
-  WipApprovalCall,
+  ApprovalCall,
   Multicall3ValueCall,
   CalculateDerivativeMintFeeParams,
   MulticallWithWrapIp,
-  ContractCallWithWipFees,
+  ContractCallWithFees,
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
 import { TransactionResponse } from "../types/utils/txOptions";
+import { TokenClient, WIPTokenClient } from "./token";
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -26,7 +27,7 @@ const approvalAllSpenders = async ({
   useMultiCall,
   rpcClient,
   multicallAddress,
-}: WipApprovalCall) => {
+}: ApprovalCall) => {
   const approvals = await Promise.all(
     spenders.map(async (spender) => {
       // make sure we never give approval to the multicall contract
@@ -34,14 +35,11 @@ const approvalAllSpenders = async ({
         return;
       }
       const spenderAmount = spender.amount || maxUint256;
-      const { result: allowance } = await client.allowance({
-        owner: owner,
-        spender: spender.address,
-      });
+      const allowance = await client.allowance(owner, spender.address);
       if (allowance < spenderAmount) {
         return {
           spender: spender.address,
-          amount: maxUint256, // approve max amount to avoid approvals in the future
+          value: maxUint256, // approve max amount to avoid approvals in the future
         };
       }
       return;
@@ -53,7 +51,7 @@ const approvalAllSpenders = async ({
       if (!approval) {
         return;
       }
-      const encodedData = client.approveEncode(approval);
+      const encodedData = client.approveEncode(approval.spender, approval.value);
       allCalls.push({
         target: encodedData.to,
         allowFailure: false,
@@ -69,7 +67,7 @@ const approvalAllSpenders = async ({
     if (!approval) {
       continue;
     }
-    const hash = await client.approve(approval);
+    const hash = await client.approve(approval.spender, approval.value);
     await rpcClient.waitForTransactionReceipt({ hash });
   }
   return [];
@@ -101,7 +99,7 @@ export const calculateSPGWipMintFee = async (spgNftClient: SpgnftImplReadOnlyCli
 const multiCallWrapIp = async ({
   ipAmountToWrap,
   wipClient,
-  multicall3Client,
+  multicall3Address,
   wipSpenders,
   calls,
   rpcClient,
@@ -143,8 +141,8 @@ const multiCallWrapIp = async ({
     const approvalCalls = await approvalAllSpenders({
       spenders: wipSpenders,
       client: wipClient,
-      multicallAddress: multicall3Client.address,
-      owner: useMultiCall ? multicall3Client.address : wallet.account!.address,
+      multicallAddress: multicall3Address,
+      owner: useMultiCall ? multicall3Address : wallet.account!.address,
       rpcClient,
       useMultiCall,
     });
@@ -164,7 +162,7 @@ const multiCallWrapIp = async ({
     wallet: wallet,
     data: {
       abi: multicall3Abi,
-      address: multicall3Client.address,
+      address: multicall3Address,
       functionName: "aggregate3Value",
       args: [multiCalls],
       value: ipAmountToWrap,
@@ -187,51 +185,38 @@ const multiCallWrapIp = async ({
  * for each spender address and batch them in a multicall, unless disabled via
  * `disableAutoApprove`.
  */
-export const contractCallWithWipFees = async ({
+export const contractCallWithFees = async ({
   totalFees,
   wipOptions,
-  multicall3Client,
+  multicall3Address,
   rpcClient,
-  wipClient,
+  tokenClient,
   wallet,
-  wipSpenders,
+  tokenSpenders,
   contractCall,
   sender,
   txOptions,
   encodedTxs,
-}: ContractCallWithWipFees): Promise<TransactionResponse> => {
-  // if no fees, skip all WIP logic
+}: ContractCallWithFees): Promise<TransactionResponse> => {
+  // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
     return handleTxOptions({ rpcClient, txOptions, txHash });
   }
-
-  const wipBalanceOf = await wipClient.balanceOf({
-    owner: sender,
-  });
-  const wipBalance = wipBalanceOf.result;
-  const calls = encodedTxs.map((data) => ({
-    target: data.to,
-    allowFailure: false,
-    value: 0n,
-    callData: data.data,
-  }));
-
+  const balance = await tokenClient.balanceOf(sender);
   const autoApprove = wipOptions?.enableAutoApprove !== false;
-  const autoWrapIp = wipOptions?.enableAutoWrapIp !== false;
 
-  // handle when there's enough WIP to cover all fees
-  if (wipBalance >= totalFees) {
+  // handle when there's enough token to cover all fees
+  if (balance >= totalFees) {
     if (autoApprove) {
       await approvalAllSpenders({
-        spenders: wipSpenders,
-        client: wipClient,
+        spenders: tokenSpenders,
+        client: tokenClient,
         owner: sender, // sender owns the wip
-        multicallAddress: multicall3Client.address,
+        multicallAddress: multicall3Address,
         rpcClient,
-        // since sender has all wip, if using multicall, we will also need to transfer
-        // sender's wip to multicall, which brings more complexity. So in this case,
-        // we don't use multicall here and instead just wait for each approval to be finished.
+        // since sender has all token, if using multicall, we cannot approve transfer token into multicall by multicall.
+        //  So in this case, we don't use multicall here and instead just wait for each approval to be finished.
         useMultiCall: false,
       });
     }
@@ -239,34 +224,52 @@ export const contractCallWithWipFees = async ({
     return handleTxOptions({ rpcClient, txOptions, txHash });
   }
 
-  const startingBalance = await rpcClient.getBalance({ address: sender });
-  // error if wallet does not have enough IP to cover fees
-  if (startingBalance < totalFees) {
+  if (isWIPTokenClient(tokenClient)) {
+    const autoWrapIp = wipOptions?.enableAutoWrapIp !== false;
+    const startingBalance = await rpcClient.getBalance({ address: sender });
+    // error if wallet does not have enough IP to cover fees
+    if (startingBalance < totalFees) {
+      throw new Error(
+        `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
+          totalFees,
+        )}, balance: ${getTokenAmountDisplay(startingBalance)}`,
+      );
+    }
+    // error if there's enough IP to cover fees and we cannot wrap IP to WIP
+    if (!autoWrapIp) {
+      throw new Error(
+        `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
+          totalFees,
+        )}, balance: ${getTokenAmountDisplay(balance, "WIP")}`,
+      );
+    }
+    const calls = encodedTxs?.map((data) => ({
+      target: data.to,
+      allowFailure: false,
+      value: 0n,
+      callData: data.data,
+    }));
+    const { txHash } = await multiCallWrapIp({
+      ipAmountToWrap: totalFees,
+      multicall3Address: multicall3Address!,
+      wipClient: tokenClient, // Change the type of tokenClient to WIPTokenClient
+      wipOptions,
+      contractCall,
+      wipSpenders: tokenSpenders,
+      rpcClient,
+      wallet: wallet!,
+      calls: calls!,
+    });
+    return handleTxOptions({ rpcClient, txOptions, txHash });
+  } else {
     throw new Error(
-      `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
+      `Wallet does not have enough token to pay for fees. Total fees:  ${getTokenAmountDisplay(
         totalFees,
-      )}, balance: ${getTokenAmountDisplay(startingBalance)}`,
+      )}, balance: ${getTokenAmountDisplay(balance)}`,
     );
   }
-  // error if there's enough IP to cover fees and we cannot wrap IP to WIP
-  if (!autoWrapIp) {
-    throw new Error(
-      `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
-        totalFees,
-      )}, balance: ${getTokenAmountDisplay(wipBalance, "WIP")}`,
-    );
-  }
-
-  const { txHash } = await multiCallWrapIp({
-    ipAmountToWrap: totalFees,
-    multicall3Client,
-    wipClient,
-    wipOptions,
-    contractCall,
-    wipSpenders,
-    rpcClient,
-    wallet,
-    calls,
-  });
-  return handleTxOptions({ rpcClient, txOptions, txHash });
 };
+// Type guard function
+export function isWIPTokenClient(client: TokenClient): client is WIPTokenClient {
+  return (client as WIPTokenClient).depositEncode !== undefined;
+}

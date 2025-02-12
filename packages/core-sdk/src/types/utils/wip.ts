@@ -7,9 +7,10 @@ import {
   SimpleWalletClient,
   PiLicenseTemplateClient,
   LicensingModuleClient,
-  WrappedIpClient,
+  MockErc20Client,
 } from "../../abi/generated";
 import { TxOptions } from "../options";
+import { TokenClient, WIPTokenClient } from "../../utils/token";
 
 /**
  * Options to override the default behavior of the auto wrapping IP
@@ -47,7 +48,7 @@ export type WithWipOptions = {
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
-export type WipSpender = {
+export type TokenSpender = {
   address: Address;
   /**
    * Amount that the address will spend in WIP.
@@ -56,9 +57,20 @@ export type WipSpender = {
   amount?: bigint;
 };
 
-export type WipApprovalCall = {
-  spenders: WipSpender[];
-  client: WrappedIpClient;
+export type ApprovalCall = {
+  spenders: TokenSpender[];
+  client: TokenClient;
+  rpcClient: PublicClient;
+  /** owner is the address calling the approval */
+  owner: Address;
+  /** when true, will return an array of {@link Multicall3ValueCall} */
+  useMultiCall: boolean;
+  multicallAddress?: Address;
+};
+
+export type TokenApprovalCall = {
+  spenders: TokenSpender[];
+  client: MockErc20Client;
   multicallAddress: Address;
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
@@ -67,17 +79,20 @@ export type WipApprovalCall = {
   useMultiCall: boolean;
 };
 
-export type ContractCallWithWipFees = WithWipOptions & {
+export type ContractCallWithFees = WithWipOptions & {
   totalFees: bigint;
-  multicall3Client: Multicall3Client;
-  wipClient: WrappedIpClient;
+  tokenClient: TokenClient;
   /** all possible spenders of the wip */
-  wipSpenders: WipSpender[];
+  tokenSpenders: TokenSpender[];
   contractCall: () => Promise<Hash>;
-  encodedTxs: EncodedTxData[];
   rpcClient: PublicClient;
-  wallet: SimpleWalletClient;
   sender: Address;
+  /** If tokenClient is WIPTokenClient, The field is required */
+  encodedTxs?: EncodedTxData[];
+  /** If tokenClient is WIPTokenClient, The field is required */
+  wallet?: SimpleWalletClient;
+  /** If tokenClient is WIPTokenClient, The field is required */
+  multicall3Address?: Address;
   txOptions?: TxOptions;
 };
 
@@ -85,9 +100,9 @@ export type MulticallWithWrapIp = WithWipOptions & {
   calls: Multicall3ValueCall[];
   ipAmountToWrap: bigint;
   contractCall: () => Promise<Hash>;
-  wipSpenders: WipSpender[];
-  multicall3Client: Multicall3Client;
-  wipClient: WrappedIpClient;
+  wipSpenders: TokenSpender[];
+  multicall3Address: Address;
+  wipClient: WIPTokenClient;
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
 };

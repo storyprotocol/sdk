@@ -335,6 +335,7 @@ export default defineConfig(async () => {
             "withdraw",
             "allowance",
           ],
+          MockERC20: ["approve", "balanceOf", "allowance", "transferFrom"],
         },
       }),
     ],
