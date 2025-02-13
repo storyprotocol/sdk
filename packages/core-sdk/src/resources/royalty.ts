@@ -39,7 +39,6 @@ import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { contractCallWithFees } from "../utils/wipFeeUtils";
 import { TokenSpender } from "../types/utils/wip";
 import { simulateAndWriteContract } from "../utils/contract";
-import { ERC20Client, WIPTokenClient } from "../utils/token";
 
 export class RoyaltyClient {
   public royaltyModuleClient: RoyaltyModuleClient;
@@ -48,7 +47,7 @@ export class RoyaltyClient {
   public ipRoyaltyVaultImplReadOnlyClient: IpRoyaltyVaultImplReadOnlyClient;
   public ipRoyaltyVaultImplEventClient: IpRoyaltyVaultImplEventClient;
   public multicall3Client: Multicall3Client;
-  public wipClient: WrappedIpClient;
+  public wrappedIpClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly walletAddress: Address;
@@ -60,7 +59,7 @@ export class RoyaltyClient {
     this.ipRoyaltyVaultImplEventClient = new IpRoyaltyVaultImplEventClient(rpcClient);
     this.ipAccountClient = new IPAccountClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
-    this.wipClient = new WrappedIpClient(rpcClient, wallet);
+    this.wrappedIpClient = new WrappedIpClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.walletAddress = wallet.account!.address;
@@ -123,7 +122,7 @@ export class RoyaltyClient {
           if (token !== WIP_TOKEN_ADDRESS) {
             continue;
           }
-          const hash = await this.wipClient.withdraw({
+          const hash = await this.wrappedIpClient.withdraw({
             value: amount,
           });
           txHashes.push(hash);
@@ -143,7 +142,7 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
-      const { receiverIpId, payerIpId, token, amount, wipOptions, txOptions } = request;
+      const { receiverIpId, payerIpId, token, amount, erc20Options, txOptions } = request;
       const sender = this.wallet.account!.address;
       const payAmount = BigInt(amount);
       if (payAmount <= 0n) {
@@ -183,33 +182,19 @@ export class RoyaltyClient {
           amount: payAmount,
         },
       ];
-      // auto wrap wallet's IP to WIP if paying WIP
-      if (token === WIP_TOKEN_ADDRESS) {
-        return contractCallWithFees({
-          totalFees: payAmount,
-          wipOptions,
-          multicall3Address: this.multicall3Client.address,
-          rpcClient: this.rpcClient,
-          tokenClient: new WIPTokenClient(this.rpcClient, this.wallet),
-          tokenSpenders: tokenSpenders,
-          contractCall,
-          sender,
-          wallet: this.wallet,
-          txOptions,
-          encodedTxs: [encodedTxData],
-        });
-      } else {
-        return contractCallWithFees({
-          totalFees: payAmount,
-          wipOptions,
-          rpcClient: this.rpcClient,
-          tokenClient: new ERC20Client(this.rpcClient, this.wallet, token),
-          tokenSpenders: tokenSpenders,
-          contractCall,
-          sender,
-          txOptions,
-        });
-      }
+      return contractCallWithFees({
+        totalFees: payAmount,
+        erc20Options,
+        multicall3Address: this.multicall3Client.address,
+        rpcClient: this.rpcClient,
+        tokenSpenders: tokenSpenders,
+        contractCall,
+        sender,
+        token,
+        wallet: this.wallet,
+        txOptions,
+        encodedTxs: [encodedTxData],
+      });
     } catch (error) {
       handleError(error, "Failed to pay royalty on behalf");
     }
@@ -304,7 +289,7 @@ export class RoyaltyClient {
 
       // auto unwrap WIP tokens once they are transferred
       if (token === WIP_TOKEN_ADDRESS && !skipUnwrapIp) {
-        const withdrawalHash = await this.wipClient.withdraw({
+        const withdrawalHash = await this.wrappedIpClient.withdraw({
           value: amount,
         });
         txHashes.push(withdrawalHash);

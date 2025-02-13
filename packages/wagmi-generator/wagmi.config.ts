@@ -185,8 +185,9 @@ export default defineConfig(async () => {
         [mainnetChainId]: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
       },
     },
+    // Make sure ERC20's abi is equal to the erc20 abi of viem
     {
-      name: "MockERC20",
+      name: "ERC20",
       address: {
         [aeneidChainId]: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
         [mainnetChainId]: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
@@ -335,7 +336,7 @@ export default defineConfig(async () => {
             "withdraw",
             "allowance",
           ],
-          MockERC20: ["approve", "balanceOf", "allowance", "transferFrom"],
+          ERC20: ["approve", "balanceOf", "allowance", "transferFrom", "mint"],
         },
       }),
     ],

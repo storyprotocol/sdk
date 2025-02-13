@@ -1,11 +1,6 @@
 import { Address, Hash, PublicClient } from "viem";
 
-import {
-  EncodedTxData,
-  MockErc20Client,
-  SimpleWalletClient,
-  WrappedIpClient,
-} from "../abi/generated";
+import { EncodedTxData, Erc20Client, SimpleWalletClient, WrappedIpClient } from "../abi/generated";
 
 export interface TokenClient {
   balanceOf(account: Address): Promise<bigint>;
@@ -15,10 +10,10 @@ export interface TokenClient {
 }
 
 export class ERC20Client implements TokenClient {
-  private ercClient: MockErc20Client;
+  private ercClient: Erc20Client;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address: Address) {
-    this.ercClient = new MockErc20Client(rpcClient, wallet, address);
+    this.ercClient = new Erc20Client(rpcClient, wallet, address);
   }
 
   async balanceOf(account: Address): Promise<bigint> {
@@ -36,13 +31,19 @@ export class ERC20Client implements TokenClient {
   approveEncode(spender: Address, value: bigint): EncodedTxData {
     return this.ercClient.approveEncode({ spender, value });
   }
+  // The method only will in test environment
+  async mint(to: Address, amount: bigint) {
+    return await this.ercClient.mint({ to, amount });
+  }
 }
 
 export class WIPTokenClient implements TokenClient {
   private wipClient: WrappedIpClient;
+  readonly address: Address;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.wipClient = new WrappedIpClient(rpcClient, wallet);
+    this.address = this.wipClient.address;
   }
 
   async balanceOf(account: Address): Promise<bigint> {

@@ -13,7 +13,7 @@ import {
 import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
 import { TransactionResponse } from "../types/utils/txOptions";
-import { TokenClient, WIPTokenClient } from "./token";
+import { ERC20Client, WIPTokenClient } from "./token";
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -105,14 +105,14 @@ const multiCallWrapIp = async ({
   rpcClient,
   wallet,
   contractCall,
-  wipOptions,
+  erc20Options,
 }: MulticallWithWrapIp) => {
   if (ipAmountToWrap === 0n) {
     throw new Error("ipAmountToWrap should be greater than 0");
   }
   const multiCalls: Multicall3ValueCall[] = [];
 
-  const useMultiCall = wipOptions?.useMulticallWhenPossible !== false;
+  const useMultiCall = erc20Options?.useMulticallWhenPossible !== false;
   if (useMultiCall) {
     const deposit = wipClient.depositEncode();
     multiCalls.push({
@@ -128,7 +128,7 @@ const multiCallWrapIp = async ({
       wallet: wallet,
       data: {
         abi: wrappedIpAbi,
-        address: WIP_TOKEN_ADDRESS,
+        address: wipClient.address,
         functionName: "deposit",
         value: ipAmountToWrap,
       },
@@ -136,7 +136,7 @@ const multiCallWrapIp = async ({
     });
   }
 
-  const autoApprove = wipOptions?.enableAutoApprove !== false;
+  const autoApprove = erc20Options?.enableAutoApprove !== false;
   if (autoApprove) {
     const approvalCalls = await approvalAllSpenders({
       spenders: wipSpenders,
@@ -173,38 +173,48 @@ const multiCallWrapIp = async ({
 };
 
 /**
- * Handle contract calls that require WIP fees by automatically wrapping IP to WIP when needed.
+ * Handle contract calls that require token fees by automatically wrapping IP to WIP, automatically approve when needed.
  *
  * @remarks
  * This function will automatically handle the following:
  *
- * If the user does not have enough WIP, it will wrap IP to WIP, unless
+ * If token is wip and the user does not have enough WIP, it will wrap IP to WIP, unless
  * disabled via `disableAutoWrappingIp`.
  *
- * If the user have enough WIP, it will check for if approvals are needed
- * for each spender address and batch them in a multicall, unless disabled via
- * `disableAutoApprove`.
+ * If the user have enough token, it will check for if approvals are needed
+ * for each spender address and approve it, unless disabled via `disableAutoApprove`.
  */
 export const contractCallWithFees = async ({
   totalFees,
-  wipOptions,
+  erc20Options,
   multicall3Address,
-  rpcClient,
-  tokenClient,
   wallet,
   tokenSpenders,
   contractCall,
   sender,
   txOptions,
   encodedTxs,
+  rpcClient,
+  token,
 }: ContractCallWithFees): Promise<TransactionResponse> => {
+  const wipTokenClient = new WIPTokenClient(rpcClient, wallet);
+  const isWip = token === wipTokenClient.address;
+  const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token!);
+
+  erc20Options = {
+    enableAutoApprove: erc20Options?.enableAutoApprove,
+    // default to false for token
+    enableAutoWrapIp: isWip ? erc20Options?.enableAutoWrapIp : false,
+    // default to false for token
+    useMulticallWhenPossible: isWip ? erc20Options?.useMulticallWhenPossible : false,
+  };
   // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
     return handleTxOptions({ rpcClient, txOptions, txHash });
   }
   const balance = await tokenClient.balanceOf(sender);
-  const autoApprove = wipOptions?.enableAutoApprove !== false;
+  const autoApprove = erc20Options?.enableAutoApprove !== false;
 
   // handle when there's enough token to cover all fees
   if (balance >= totalFees) {
@@ -224,8 +234,8 @@ export const contractCallWithFees = async ({
     return handleTxOptions({ rpcClient, txOptions, txHash });
   }
 
-  if (isWIPTokenClient(tokenClient)) {
-    const autoWrapIp = wipOptions?.enableAutoWrapIp !== false;
+  if (isWip) {
+    const autoWrapIp = erc20Options?.enableAutoWrapIp !== false;
     const startingBalance = await rpcClient.getBalance({ address: sender });
     // error if wallet does not have enough IP to cover fees
     if (startingBalance < totalFees) {
@@ -251,14 +261,14 @@ export const contractCallWithFees = async ({
     }));
     const { txHash } = await multiCallWrapIp({
       ipAmountToWrap: totalFees,
-      multicall3Address: multicall3Address!,
-      wipClient: tokenClient, // Change the type of tokenClient to WIPTokenClient
-      wipOptions,
+      multicall3Address,
+      wipClient: wipTokenClient,
+      erc20Options,
       contractCall,
       wipSpenders: tokenSpenders,
       rpcClient,
-      wallet: wallet!,
-      calls: calls!,
+      wallet,
+      calls,
     });
     return handleTxOptions({ rpcClient, txOptions, txHash });
   } else {
@@ -269,7 +279,3 @@ export const contractCallWithFees = async ({
     );
   }
 };
-// Type guard function
-export function isWIPTokenClient(client: TokenClient): client is WIPTokenClient {
-  return (client as WIPTokenClient).depositEncode !== undefined;
-}
