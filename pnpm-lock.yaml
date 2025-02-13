@@ -67,7 +67,7 @@ importers:
         specifier: ^7.1.6
         version: 7.1.8
       '@types/mocha':
-        specifier: ^10.0.2
+        specifier: ^10.0.6
         version: 10.0.6
       '@types/node':
         specifier: ^20.8.2
@@ -85,14 +85,8 @@ importers:
         specifier: ^7.1.1
         version: 7.1.1(chai@4.4.1)
       eslint:
-        specifier: ^8.57.1
+        specifier: ^8.50.0
         version: 8.57.1
-      eslint-config-prettier:
-        specifier: ^8.10.0
-        version: 8.10.0(eslint@8.57.1)
-      eslint-config-turbo:
-        specifier: ^1.10.0
-        version: 1.13.2(eslint@8.57.1)
       mocha:
         specifier: ^10.2.0
         version: 10.4.0
@@ -4480,9 +4474,11 @@ packages:
 
   lodash.get@4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
+    deprecated: This package is deprecated. Use the optional chaining (?.) operator instead.
 
   lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -10629,19 +10625,10 @@ snapshots:
     dependencies:
       eslint: 8.57.0
 
-  eslint-config-prettier@8.10.0(eslint@8.57.1):
-    dependencies:
-      eslint: 8.57.1
-
   eslint-config-turbo@1.13.2(eslint@8.57.0):
     dependencies:
       eslint: 8.57.0
       eslint-plugin-turbo: 1.13.2(eslint@8.57.0)
-
-  eslint-config-turbo@1.13.2(eslint@8.57.1):
-    dependencies:
-      eslint: 8.57.1
-      eslint-plugin-turbo: 1.13.2(eslint@8.57.1)
 
   eslint-import-resolver-node@0.3.9:
     dependencies:
@@ -10705,11 +10692,6 @@ snapshots:
     dependencies:
       dotenv: 16.0.3
       eslint: 8.57.0
-
-  eslint-plugin-turbo@1.13.2(eslint@8.57.1):
-    dependencies:
-      dotenv: 16.0.3
-      eslint: 8.57.1
 
   eslint-scope@7.2.2:
     dependencies:

@@ -3,12 +3,15 @@ import { StoryClient } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
 import { mockERC721, getStoryClient, getTokenId, publicClient, aeneid, RPC } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import { Address, parseAbiItem, createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { Address, createWalletClient, http, parseEther } from "viem";
+import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { MockERC20 } from "./utils/mockERC20";
 import { arbitrationPolicyUmaAddress, wrappedIpAddress } from "../../src/abi/generated";
 import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
+
+import {} from "viem/accounts";
+import {} from "viem";
 
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
@@ -20,12 +23,6 @@ const DISPUTE_MODULE_ADDRESS = "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5";
 const SET_DISPUTE_JUDGEMENT_ABI = disputeModuleAbi.find(
   (item) => item.type === "function" && item.name === "setDisputeJudgement",
 );
-
-const judgeWalletClient = createWalletClient({
-  chain: chainStringToViemChain("aeneid"),
-  transport: http(RPC),
-  account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as `0x${string}`),
-});
 
 const generateCID = async () => {
   // Generate a random 32-byte buffer
@@ -45,7 +42,23 @@ describe("Dispute Functions", () => {
 
   before(async () => {
     clientA = getStoryClient();
-    clientB = getStoryClient(process.env.WALLET_PRIVATE_KEY_2 as `0x${string}`);
+
+    const randomBytes = crypto.getRandomValues(new Uint8Array(32));
+    const privateKey = `0x${Buffer.from(randomBytes).toString("hex")}` as `0x${string}`;
+    const walletB = privateKeyToAccount(privateKey);
+
+    const mainWalletClient = createWalletClient({
+      chain: chainStringToViemChain("aeneid"),
+      transport: http(RPC),
+      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as `0x${string}`),
+    });
+    const txHash = await mainWalletClient.sendTransaction({
+      to: walletB.address,
+      value: parseEther("0.25"),
+    });
+    await publicClient.waitForTransactionReceipt({ hash: txHash });
+    clientB = getStoryClient(privateKey);
+
     const mockERC20 = new MockERC20(wrappedIpAddress[aeneid]);
     await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid]);
     const tokenId = await getTokenId();
@@ -148,7 +161,20 @@ describe("Dispute Functions", () => {
 
   describe("resolveDispute", () => {
     let disputeId: bigint;
+
+    before(function (this: Mocha.Context) {
+      if (!process.env.JUDGE_PRIVATE_KEY) {
+        this.skip();
+      }
+    });
+
     beforeEach(async () => {
+      const judgeWalletClient = createWalletClient({
+        chain: chainStringToViemChain("aeneid"),
+        transport: http(RPC),
+        account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as `0x${string}`),
+      });
+
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
         cid: await generateCID(),
