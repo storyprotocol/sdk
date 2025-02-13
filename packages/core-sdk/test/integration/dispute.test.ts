@@ -1,21 +1,14 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
-import {
-  mockERC721,
-  getStoryClient,
-  getStoryClientWithKey,
-  getTokenId,
-  publicClient,
-  aeneid,
-  RPC,
-} from "./utils/util";
+import { mockERC721, getStoryClient, getTokenId, publicClient, aeneid, RPC } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
 import { Address, parseAbiItem, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { MockERC20 } from "./utils/mockERC20";
 import { arbitrationPolicyUmaAddress, wrappedIpAddress } from "../../src/abi/generated";
 import { chainStringToViemChain } from "../../src/utils/utils";
+import { disputeModuleAbi } from "../../src/abi/generated";
 
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
@@ -23,10 +16,9 @@ import * as sha256 from "multiformats/hashes/sha2";
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-// Add the dispute module address and ABI
 const DISPUTE_MODULE_ADDRESS = "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5";
-const SET_DISPUTE_JUDGEMENT_ABI = parseAbiItem(
-  "function setDisputeJudgement(uint256 disputeId, bool decision, bytes calldata data)",
+const SET_DISPUTE_JUDGEMENT_ABI = disputeModuleAbi.find(
+  (item) => item.type === "function" && item.name === "setDisputeJudgement",
 );
 
 const judgeWalletClient = createWalletClient({
@@ -53,7 +45,7 @@ describe("Dispute Functions", () => {
 
   before(async () => {
     clientA = getStoryClient();
-    clientB = getStoryClientWithKey(process.env.WALLET_PRIVATE_KEY_2 as `0x${string}`);
+    clientB = getStoryClient(process.env.WALLET_PRIVATE_KEY_2 as `0x${string}`);
     const mockERC20 = new MockERC20(wrappedIpAddress[aeneid]);
     await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid]);
     const tokenId = await getTokenId();

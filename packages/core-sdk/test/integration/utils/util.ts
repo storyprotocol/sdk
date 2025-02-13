@@ -121,20 +121,11 @@ export const approveForLicenseToken = async (address: Address, tokenId: bigint) 
   const hash = await walletClient.writeContract(call);
   await waitTx(publicClient, hash);
 };
-export const getStoryClient = (): StoryClient => {
+export const getStoryClient = (privateKey?: `0x${string}`): StoryClient => {
   const config: StoryConfig = {
     chainId: "aeneid",
     transport: http(RPC),
-    account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
-  };
-  return StoryClient.newClient(config);
-};
-
-export const getStoryClientWithKey = (privateKey: `0x${string}`): StoryClient => {
-  const config: StoryConfig = {
-    chainId: "aeneid",
-    transport: http(RPC),
-    account: privateKeyToAccount(privateKey),
+    account: privateKeyToAccount(privateKey ?? (process.env.WALLET_PRIVATE_KEY as Address)),
   };
 
   return StoryClient.newClient(config);
