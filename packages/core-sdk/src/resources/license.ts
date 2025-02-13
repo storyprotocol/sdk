@@ -47,7 +47,6 @@ import { chain, getAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/wipFeeUtils";
 import { TokenSpender } from "../types/utils/wip";
-import { WIPTokenClient } from "../utils/token";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -446,10 +445,9 @@ export class LicenseClient {
       }
       const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
-        wipOptions: request.wipOptions,
+        erc20Options: request.erc20Options,
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
-        tokenClient: new WIPTokenClient(this.rpcClient, this.wallet),
         tokenSpenders: wipSpenders,
         contractCall: () => {
           return this.licensingModuleClient.mintLicenseTokens(req);
