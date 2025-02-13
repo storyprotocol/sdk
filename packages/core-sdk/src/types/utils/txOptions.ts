@@ -8,7 +8,7 @@ export type HandleTxOptionsParams = {
   rpcClient: PublicClient;
 };
 
-export type HandleTxOptionsResponse = {
+export type TransactionResponse = {
   txHash: Hex;
 
   /** Transaction receipt, only available if waitForTransaction is set to true */
