@@ -159,9 +159,20 @@ describe("Dispute Functions", () => {
     ).to.be.rejected;
   });
 
+  /**
+   * Setup for dispute resolution testing
+   *
+   * On mainnet, disputes are judged by UMA's optimistic oracle. For testing purposes,
+   * we simulate this process by setting up a whitelisted judge account that can
+   * directly set dispute judgements. The process creates a wallet client with the
+   * whitelisted judge account, after which a user raises a dispute through the dispute
+   * module. The judge account then sets the dispute judgement (simulating UMA's role),
+   * and finally the dispute can be resolved based on this judgement.
+   */
   describe("resolveDispute", () => {
     let disputeId: bigint;
 
+    // Skip tests if whitelisted judge private key is not configured
     before(function (this: Mocha.Context) {
       if (!process.env.JUDGE_PRIVATE_KEY) {
         this.skip();
@@ -169,12 +180,14 @@ describe("Dispute Functions", () => {
     });
 
     beforeEach(async () => {
+      // Set up judge wallet client using whitelisted account
       const judgeWalletClient = createWalletClient({
         chain: chainStringToViemChain("aeneid"),
         transport: http(RPC),
         account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as `0x${string}`),
       });
 
+      // Step 1: User raises a dispute
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
         cid: await generateCID(),
@@ -188,7 +201,8 @@ describe("Dispute Functions", () => {
       const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
       disputeId = response.disputeId!;
 
-      // Setting dispute judgement directly through contract
+      // Step 2: Judge sets dispute judgement
+      // This simulates UMA's role on mainnet by directly setting the judgement
       const { request } = await publicClient.simulateContract({
         address: DISPUTE_MODULE_ADDRESS,
         abi: [SET_DISPUTE_JUDGEMENT_ABI],
@@ -201,6 +215,7 @@ describe("Dispute Functions", () => {
       await publicClient.waitForTransactionReceipt({ hash: txHash });
     });
 
+    // Test that dispute initiator can resolve the dispute after judgement
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
       const response = await clientA.dispute.resolveDispute({
         disputeId: disputeId,
@@ -212,6 +227,7 @@ describe("Dispute Functions", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
+    // Test that non-initiators cannot resolve the dispute
     it("should fail when non-initiator tries to resolve the dispute", async () => {
       await expect(
         clientB.dispute.resolveDispute({
