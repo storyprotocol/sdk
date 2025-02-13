@@ -9,9 +9,18 @@ import {
   aeneid,
   RPC,
   TEST_WALLET_ADDRESS,
+  walletClient,
 } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import { Address, createWalletClient, http, parseEther, zeroAddress } from "viem";
+import {
+  Address,
+  WalletClient,
+  createWalletClient,
+  http,
+  maxUint256,
+  parseEther,
+  zeroAddress,
+} from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { MockERC20 } from "./utils/mockERC20";
 import {
@@ -25,6 +34,7 @@ import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
+import { WIPTokenClient } from "../../src/utils/token";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -48,7 +58,6 @@ const generateCID = async () => {
 describe("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
-  let ipIdB: Address;
 
   before(async () => {
     const privateKey = generatePrivateKey();
@@ -56,7 +65,7 @@ describe("Dispute Functions", () => {
     clientB = getStoryClient(privateKey);
     const walletB = privateKeyToAccount(privateKey);
 
-    // Transfer some funds to walletB
+    // ClientA transfer some funds to walletB
     const clientAWalletClient = createWalletClient({
       chain: chainStringToViemChain("aeneid"),
       transport: http(RPC),
@@ -67,9 +76,24 @@ describe("Dispute Functions", () => {
       value: parseEther("0.25"),
     });
     await publicClient.waitForTransactionReceipt({ hash: txHash });
+    // clientA approves the arbitration policyUma module to spend the some tokens
+    const mockERC20 = new WIPTokenClient(publicClient, walletClient);
+    await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid], maxUint256);
   });
 
   describe("raiseDispute", () => {
+    let ipIdB: Address;
+    before(async () => {
+      ipIdB = (
+        await clientB.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        })
+      ).ipId!;
+    });
     it("should raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
@@ -163,84 +187,26 @@ describe("Dispute Functions", () => {
    * module. The judge account then sets the dispute judgement (simulating UMA's role),
    * and finally the dispute can be resolved based on this judgement.
    */
-  describe("resolveDispute", () => {
+  describe("Dispute resolution", () => {
     let disputeId: bigint;
     let nftContract: Address;
     let parentIpId: Address;
     let licenseTermsId: bigint;
     let childIpId: Address;
+    let judgeWalletClient: WalletClient;
 
-    // Skip tests if whitelisted judge private key is not configured
-    before(function (this: Mocha.Context) {
+    before(async function (this: Mocha.Context) {
+      // Skip tests if whitelisted judge private key is not configured
       if (!process.env.JUDGE_PRIVATE_KEY) {
         this.skip();
       }
-    });
-
-    beforeEach(async () => {
       // Set up judge wallet client using whitelisted account
-      const judgeWalletClient = createWalletClient({
+       judgeWalletClient = createWalletClient({
         chain: chainStringToViemChain("aeneid"),
         transport: http(RPC),
-        account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as `0x${string}`),
+        account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as Address),
       });
 
-      // Step 1: User raises a dispute
-      const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: ipIdB,
-        cid: await generateCID(),
-        targetTag: "IMPROPER_REGISTRATION",
-        liveness: 2592000,
-        bond: 0,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      };
-      const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
-      disputeId = response.disputeId!;
-
-      // Step 2: Judge sets dispute judgement
-      // This simulates UMA's role on mainnet by directly setting the judgement
-      const { request } = await publicClient.simulateContract({
-        address: DISPUTE_MODULE_ADDRESS,
-        abi: [SET_DISPUTE_JUDGEMENT_ABI],
-        functionName: "setDisputeJudgement",
-        args: [disputeId, true, "0x"],
-        account: judgeWalletClient.account!,
-      });
-
-      const txHash = await judgeWalletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
-    });
-
-    // Test that dispute initiator can resolve the dispute after judgement
-    it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
-      const response = await clientA.dispute.resolveDispute({
-        disputeId: disputeId,
-        data: "0x",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
-      expect(response.txHash).to.be.a("string").and.not.empty;
-    });
-
-    // Test that non-initiators cannot resolve the dispute
-    it("should fail when non-initiator tries to resolve the dispute", async () => {
-      await expect(
-        clientB.dispute.resolveDispute({
-          disputeId: disputeId,
-          data: "0x",
-          txOptions: {
-            waitForTransaction: true,
-          },
-        }),
-      ).to.be.rejectedWith("NotDisputeInitiator");
-    });
-  });
-
-  describe("tagIfRelatedIpInfringed", () => {
-    before(async () => {
       // Setup NFT collection
       const txData = await clientA.nftClient.createNFTCollection({
         name: "test-collection",
@@ -312,7 +278,37 @@ describe("Dispute Functions", () => {
       childIpId = derivativeIpIdResponse.ipId!;
     });
 
-    it.skip("should tag infringing ip", async () => {
+    it("should raise a dispute", async () => {
+      const raiseDisputeRequest: RaiseDisputeRequest = {
+        targetIpId: parentIpId,
+        cid: await generateCID(),
+        targetTag: "IMPROPER_REGISTRATION",
+        liveness: 2592000,
+        bond: 0,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      };
+      const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
+      disputeId = response.disputeId!;
+      expect(response.txHash).to.be.a("string").and.not.empty;
+      expect(response.disputeId).to.be.a("bigint");
+    });
+
+    it("should tag infringing ip", async () => {
+      // Step 1: Judge sets dispute judgement
+      // This simulates UMA's role on mainnet by directly setting the judgement
+      const { request } = await publicClient.simulateContract({
+        address: DISPUTE_MODULE_ADDRESS,
+        abi: [SET_DISPUTE_JUDGEMENT_ABI],
+        functionName: "setDisputeJudgement",
+        args: [disputeId, true, "0x"],
+        account: judgeWalletClient.account!,
+      });
+      const txHash = await judgeWalletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+      // Step 2: Tag derivative IP as infringing
       const results = await clientA.dispute.tagIfRelatedIpInfringed({
         args: [
           {
@@ -323,8 +319,31 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
         useMulticallWhenPossible: true,
       });
-      console.log("tagResponse", results);
       expect(results[0].txHash).to.be.a("string").and.not.empty;
     });
+
+  // Test that dispute initiator can resolve the dispute after judgement
+  it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
+    const response = await clientA.dispute.resolveDispute({
+      disputeId: disputeId,
+      data: "0x",
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+    expect(response.txHash).to.be.a("string").and.not.empty;
+  });
+
+  // Test that non-initiators cannot resolve the dispute
+  it("should fail when non-initiator tries to resolve the dispute", async () => {
+    await expect(
+      clientB.dispute.resolveDispute({
+        disputeId: disputeId,
+        data: "0x",
+        txOptions: {
+          waitForTransaction: true,
+        },
+      }),
+    ).to.be.rejectedWith("NotDisputeInitiator");
   });
 });
