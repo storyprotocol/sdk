@@ -1,15 +1,6 @@
 import { privateKeyToAccount } from "viem/accounts";
 import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import {
-  http,
-  createPublicClient,
-  createWalletClient,
-  Hex,
-  Address,
-  zeroHash,
-  TransactionReceipt,
-  parseEther,
-} from "viem";
+import { http, createPublicClient, createWalletClient, Hex, Address, zeroHash } from "viem";
 import { StoryClient, StoryConfig } from "../../../src";
 import {
   licenseTokenAbi,
@@ -130,11 +121,12 @@ export const approveForLicenseToken = async (address: Address, tokenId: bigint) 
   const hash = await walletClient.writeContract(call);
   await waitTx(publicClient, hash);
 };
-export const getStoryClient = (): StoryClient => {
+export const getStoryClient = (privateKey?: Address): StoryClient => {
   const config: StoryConfig = {
     chainId: "aeneid",
     transport: http(RPC),
-    account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
+    account: privateKeyToAccount(privateKey ?? (process.env.WALLET_PRIVATE_KEY as Address)),
   };
+
   return StoryClient.newClient(config);
 };
