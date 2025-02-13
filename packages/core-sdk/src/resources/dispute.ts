@@ -182,6 +182,7 @@ export class DisputeClient {
   /**
    * Tags a derivative if a parent has been tagged with an infringement tag
    * or a group ip if a group member has been tagged with an infringement tag.
+   * it emits IpTaggedOnRelatedIpInfringement(infringingIpId, ipIdToTag, infringerDisputeId, tag, disputeTimestamp)
    */
   public async tagIfRelatedIpInfringed(request: TagIfRelatedIpInfringedRequest) {
     try {

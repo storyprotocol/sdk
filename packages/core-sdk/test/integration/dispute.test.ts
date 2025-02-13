@@ -188,6 +188,7 @@ describe("Dispute Functions", () => {
   });
 
   it("should tag infringing ip", async () => {
+    //TODO: Need to test with multicall
     const tagResponse = await client.dispute.tagIfRelatedIpInfringed({
       args: [
         {
@@ -198,5 +199,7 @@ describe("Dispute Functions", () => {
       txOptions: { waitForTransaction: true },
       useMulticallWhenPossible: true,
     });
+
+    expect(tagResponse.txHash).to.be.a("string").and.not.empty;
   });
 });
