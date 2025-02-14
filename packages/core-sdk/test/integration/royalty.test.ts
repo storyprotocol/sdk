@@ -2,10 +2,19 @@ import chai from "chai";
 import { StoryClient } from "../../src";
 import { Address, Hex, encodeFunctionData, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getTokenId, getStoryClient, aeneid } from "./utils/util";
-import { MockERC20 } from "./utils/mockERC20";
-import { mockErc20Address, royaltyPolicyLapAddress } from "../../src/abi/generated";
+import {
+  mockERC721,
+  getTokenId,
+  getStoryClient,
+  aeneid,
+  publicClient,
+  TEST_WALLET_ADDRESS,
+  walletClient,
+} from "./utils/util";
+import { erc20Address, royaltyPolicyLapAddress } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
+import { describe } from "mocha";
+import { ERC20Client } from "../../src/utils/token";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -16,7 +25,7 @@ describe("Royalty Functions", () => {
   let childIpId: Hex;
   let licenseTermsId: bigint;
   let parentIpIdRoyaltyAddress: Address;
-  let mockERC20: MockERC20;
+  let mockERC20: ERC20Client;
 
   // Helper functions
   const getIpId = async (): Promise<Hex> => {
@@ -35,7 +44,7 @@ describe("Royalty Functions", () => {
   const getCommercialPolicyId = async (): Promise<bigint> => {
     const response = await client.license.registerCommercialRemixPIL({
       defaultMintingFee: "100000",
-      currency: mockErc20Address[aeneid],
+      currency: erc20Address[aeneid],
       commercialRevShare: 10,
       txOptions: { waitForTransaction: true },
     });
@@ -78,7 +87,7 @@ describe("Royalty Functions", () => {
 
   before(async () => {
     client = getStoryClient();
-    mockERC20 = new MockERC20();
+    mockERC20 = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
 
     // Setup initial state
     parentIpId = await getIpId();
@@ -87,7 +96,7 @@ describe("Royalty Functions", () => {
 
     // Setup relationships and approvals
     await attachLicenseTerms(parentIpId, licenseTermsId);
-    await mockERC20.approve(client.royalty.royaltyModuleClient.address);
+    await mockERC20.mint(TEST_WALLET_ADDRESS, 1000n);
 
     // Register derivative
     await client.ipAsset.registerDerivative({
@@ -108,11 +117,10 @@ describe("Royalty Functions", () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: parentIpId,
         payerIpId: childIpId,
-        token: mockErc20Address[aeneid],
-        amount: 10 * 10 ** 2,
+        token: erc20Address[aeneid],
+        amount: 1,
         txOptions: { waitForTransaction: true },
       });
-
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
@@ -134,7 +142,7 @@ describe("Royalty Functions", () => {
       const response = await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: parentIpId,
         payerIpId: childIpId,
-        token: mockErc20Address[aeneid],
+        token: erc20Address[aeneid],
         amount: 10 * 10 ** 2,
         txOptions: { encodedTxDataOnly: true },
       });
@@ -149,7 +157,7 @@ describe("Royalty Functions", () => {
         client.royalty.payRoyaltyOnBehalf({
           receiverIpId: unregisteredIpId,
           payerIpId: childIpId,
-          token: mockErc20Address[aeneid],
+          token: erc20Address[aeneid],
           amount: 10 * 10 ** 2,
           txOptions: { waitForTransaction: true },
         }),
@@ -162,7 +170,7 @@ describe("Royalty Functions", () => {
       const response = await client.royalty.claimableRevenue({
         royaltyVaultIpId: parentIpId,
         claimer: process.env.TEST_WALLET_ADDRESS as Address,
-        token: mockErc20Address[aeneid],
+        token: erc20Address[aeneid],
       });
 
       expect(response).to.be.a("bigint");
@@ -188,7 +196,7 @@ describe("Royalty Functions", () => {
         client.royalty.payRoyaltyOnBehalf({
           receiverIpId: parentIpId,
           payerIpId: childIpId,
-          token: mockErc20Address[aeneid],
+          token: erc20Address[aeneid],
           amount: -1,
           txOptions: { waitForTransaction: true },
         }),

@@ -3,26 +3,25 @@ import * as sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
 import { Address, LocalAccount, PublicClient, WalletClient, maxUint256, parseEther } from "viem";
 import {
-  Multicall3Client,
   royaltyModuleAddress,
   derivativeWorkflowsAddress,
-  WrappedIpClient,
+  wrappedIpAddress,
+  multicall3Address,
+  erc20Address,
 } from "../../../src/abi/generated";
-import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
-import { contractCallWithWipFees } from "../../../src/utils/wipFeeUtils";
-import { ContractCallWithWipFees } from "../../../src/types/utils/wip";
+import { createMock, generateRandomAddress, generateRandomHash, txHash } from "../testUtils";
+import { contractCallWithFees } from "../../../src/utils/wipFeeUtils";
 import { TEST_WALLET_ADDRESS, aeneid } from "../../integration/utils/util";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-import { WipClient } from "../../../src/resources/wip";
+import { ContractCallWithFees } from "../../../src/types/utils/wip";
+import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe("WIP Fee Utilities", () => {
-  let wipClient: WrappedIpClient;
+describe("Token Fee Utilities", () => {
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-  let multicall3Client: Multicall3Client;
   let contractCallMock: sinon.SinonStub;
   let rpcWaitForTxMock: sinon.SinonStub;
   let walletBalanceMock: sinon.SinonStub;
@@ -35,79 +34,72 @@ describe("WIP Fee Utilities", () => {
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
     walletMock.writeContract = sinon.stub().resolves(generateRandomHash());
-    wipClient = createMock<WrappedIpClient>();
-    multicall3Client = createMock<Multicall3Client>();
     rpcWaitForTxMock = rpcMock.waitForTransactionReceipt as sinon.SinonStub;
+    sinon.stub(WIPTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  function getDefaultParams(overrides: Partial<ContractCallWithWipFees>): ContractCallWithWipFees {
+  function getDefaultParams(overrides: Partial<ContractCallWithFees>): ContractCallWithFees {
     const hash = generateRandomHash();
     contractCallMock = sinon.stub().resolves(hash);
     return {
       rpcClient: rpcMock,
       wallet: walletMock,
-      multicall3Client: multicall3Client,
-      wipClient: wipClient,
+      multicall3Address: multicall3Address[aeneid],
       totalFees: 0n,
-      wipSpenders: [],
+      tokenSpenders: [],
       contractCall: contractCallMock,
       encodedTxs: [
         {
           to: generateRandomAddress(),
-          data: "0x",
+          data: txHash,
         },
       ],
       sender: TEST_WALLET_ADDRESS,
       ...overrides,
     };
   }
+  describe("No Fees", () => {
+    it("should call contract directly if no fees", async () => {
+      const params = getDefaultParams({ totalFees: 0n });
+      const { txHash } = await contractCallWithFees(params);
+      expect(contractCallMock.calledOnce).to.be.true;
+      expect(rpcWaitForTxMock.notCalled).to.be.true;
+      expect(txHash).not.to.be.empty;
+    });
 
-  describe("contractCallWithWipFees", () => {
+    it("should support wait for tx", async () => {
+      const params = getDefaultParams({
+        totalFees: 0n,
+        txOptions: { waitForTransaction: true },
+      });
+      const { txHash } = await contractCallWithFees(params);
+      expect(contractCallMock.calledOnce).to.be.true;
+      expect(rpcWaitForTxMock.calledOnce).to.be.true;
+      expect(txHash).not.to.be.empty;
+    });
+  });
+
+  describe("contractCallWithFees with wip", () => {
     let approveMock: sinon.SinonStub;
 
     beforeEach(() => {
-      approveMock = sinon.stub().resolves();
-      wipClient.approve = approveMock;
-    });
-
-    describe("No Fees", () => {
-      it("should call contract directly if no fees", async () => {
-        const params = getDefaultParams({ totalFees: 0n });
-        const { txHash } = await contractCallWithWipFees(params);
-        expect(contractCallMock.calledOnce).to.be.true;
-        expect(rpcWaitForTxMock.notCalled).to.be.true;
-        expect(txHash).not.to.be.empty;
-      });
-
-      it("should support wait for tx", async () => {
-        const params = getDefaultParams({
-          totalFees: 0n,
-          txOptions: { waitForTransaction: true },
-        });
-        const { txHash } = await contractCallWithWipFees(params);
-        expect(contractCallMock.calledOnce).to.be.true;
-        expect(rpcWaitForTxMock.calledOnce).to.be.true;
-        expect(txHash).not.to.be.empty;
-      });
+      approveMock = sinon.stub(WIPTokenClient.prototype, "approve").resolves(txHash);
     });
 
     describe("Enough WIP", () => {
       beforeEach(() => {
-        wipClient.balanceOf = sinon.stub().resolves({
-          result: 200n,
-        });
+        sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(200n);
       });
-
       it("should not call approval if disabled via enableAutoApprove", async () => {
         const params = getDefaultParams({
           totalFees: 100n,
-          wipOptions: { enableAutoApprove: false },
+          erc20Options: { enableAutoApprove: false },
         });
-        const { txHash, receipt } = await contractCallWithWipFees(params);
+        const { txHash, receipt } = await contractCallWithFees(params);
         expect(receipt).to.be.undefined;
         expect(contractCallMock.calledOnce).to.be.true;
         expect(rpcWaitForTxMock.notCalled).to.be.true;
@@ -118,7 +110,7 @@ describe("WIP Fee Utilities", () => {
       it("should skip approvals if all spenders have enough allowance", async () => {
         const params = getDefaultParams({
           totalFees: 100n,
-          wipSpenders: [
+          tokenSpenders: [
             {
               address: royaltyModuleAddress[aeneid],
               amount: 50n,
@@ -130,25 +122,17 @@ describe("WIP Fee Utilities", () => {
           ],
           txOptions: { waitForTransaction: false },
         });
-        const allowanceMock = sinon.stub().resolves({
-          result: 50n,
-        });
-        wipClient.allowance = allowanceMock;
+        const allowanceMock = sinon.stub(WIPTokenClient.prototype, "allowance").resolves(50n);
 
-        const { txHash, receipt } = await contractCallWithWipFees(params);
+        const { txHash, receipt } = await contractCallWithFees(params);
         expect(receipt).to.be.undefined;
         expect(allowanceMock.calledTwice).to.be.true;
         expect(
-          allowanceMock.firstCall.calledWith({
-            owner: TEST_WALLET_ADDRESS,
-            spender: params.wipSpenders[0].address,
-          }),
+          allowanceMock.firstCall.calledWith(TEST_WALLET_ADDRESS, params.tokenSpenders[0].address),
         ).to.be.true;
+
         expect(
-          allowanceMock.secondCall.calledWith({
-            owner: TEST_WALLET_ADDRESS,
-            spender: params.wipSpenders[1].address,
-          }),
+          allowanceMock.secondCall.calledWith(TEST_WALLET_ADDRESS, params.tokenSpenders[1].address),
         ).to.be.true;
         expect(contractCallMock.calledOnce).to.be.true;
         expect(rpcWaitForTxMock.notCalled).to.be.true;
@@ -159,7 +143,7 @@ describe("WIP Fee Utilities", () => {
       it("should call separate approvals for each spender address if not enough allowance", async () => {
         const params = getDefaultParams({
           totalFees: 100n,
-          wipSpenders: [
+          tokenSpenders: [
             {
               address: royaltyModuleAddress[aeneid],
               amount: 10n,
@@ -171,20 +155,13 @@ describe("WIP Fee Utilities", () => {
           ],
           txOptions: { waitForTransaction: true },
         });
-        const allowanceMock = sinon.stub().resolves({
-          result: 15n,
-        });
-        wipClient.allowance = allowanceMock;
-        const { txHash, receipt } = await contractCallWithWipFees(params);
+        sinon.stub(WIPTokenClient.prototype, "allowance").resolves(15n);
+        const { txHash, receipt } = await contractCallWithFees(params);
         expect(receipt).not.to.be.undefined;
         expect(contractCallMock.calledOnce).to.be.true;
         expect(approveMock.calledOnce).to.be.true;
-        expect(
-          approveMock.firstCall.calledWith({
-            spender: derivativeWorkflowsAddress[aeneid],
-            amount: maxUint256,
-          }),
-        ).to.be.true;
+        expect(approveMock.firstCall.calledWith(derivativeWorkflowsAddress[aeneid], maxUint256)).to
+          .be.true;
         expect(rpcWaitForTxMock.callCount).to.equal(2); // 1 approval + 1 contract call
         expect(txHash).not.to.be.empty;
       });
@@ -192,19 +169,17 @@ describe("WIP Fee Utilities", () => {
 
     describe("Enough IP, not enough WIP", () => {
       let simulateContractMock: sinon.SinonStub;
-      let params: ContractCallWithWipFees;
+      let params: ContractCallWithFees;
 
       beforeEach(() => {
-        wipClient.balanceOf = sinon.stub().resolves({
-          result: 1n,
-        });
+        sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(1n);
         walletBalanceMock.resolves(1_000);
         simulateContractMock = sinon.stub().resolves({ request: {} });
         rpcMock.simulateContract = simulateContractMock;
         rpcMock;
         params = getDefaultParams({
           totalFees: 100n,
-          wipSpenders: [
+          tokenSpenders: [
             {
               address: royaltyModuleAddress[aeneid],
               amount: 20n,
@@ -215,26 +190,23 @@ describe("WIP Fee Utilities", () => {
             },
           ],
         });
-        const allowanceMock = sinon.stub().resolves({
-          result: 50n,
-        });
-        wipClient.allowance = allowanceMock;
+        sinon.stub(WIPTokenClient.prototype, "allowance").resolves(50n);
       });
 
       it("should error if enableAutoWrapIp is false", async () => {
         await expect(
-          contractCallWithWipFees({
+          contractCallWithFees({
             ...params,
-            wipOptions: { enableAutoWrapIp: false },
+            erc20Options: { enableAutoWrapIp: false },
           }),
         ).to.be.rejectedWith(/^Wallet does not have enough WIP to pay for fees./);
       });
 
       describe("no multicall", () => {
         it("should deposit, approve, and call contract separately", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees({
+          const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            wipOptions: { useMulticallWhenPossible: false },
+            erc20Options: { useMulticallWhenPossible: false },
           });
           expect(receipt).to.be.undefined;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -256,9 +228,9 @@ describe("WIP Fee Utilities", () => {
         });
 
         it("should support wait for tx", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees({
+          const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            wipOptions: { useMulticallWhenPossible: false },
+            erc20Options: { useMulticallWhenPossible: false },
             txOptions: { waitForTransaction: true },
           });
           expect(receipt).not.to.be.undefined;
@@ -270,9 +242,9 @@ describe("WIP Fee Utilities", () => {
         });
 
         it("should not call approval if enableAutoApprove is false", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees({
+          const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            wipOptions: { enableAutoApprove: false, useMulticallWhenPossible: false },
+            erc20Options: { enableAutoApprove: false, useMulticallWhenPossible: false },
           });
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
@@ -283,9 +255,9 @@ describe("WIP Fee Utilities", () => {
         });
 
         it("should not call approval if spender has enough allowance", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees({
+          const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            wipSpenders: [
+            tokenSpenders: [
               {
                 address: royaltyModuleAddress[aeneid],
                 amount: 20n,
@@ -295,7 +267,7 @@ describe("WIP Fee Utilities", () => {
                 amount: 10n,
               },
             ],
-            wipOptions: { useMulticallWhenPossible: false },
+            erc20Options: { useMulticallWhenPossible: false },
           });
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
@@ -311,20 +283,18 @@ describe("WIP Fee Utilities", () => {
         let approveEncodeMock: sinon.SinonStub;
 
         beforeEach(() => {
-          depositEncodeMock = sinon.stub().returns({
+          depositEncodeMock = sinon.stub(WIPTokenClient.prototype, "depositEncode").returns({
             to: generateRandomAddress(),
-            data: "",
+            data: txHash,
           });
-          wipClient.depositEncode = depositEncodeMock;
-          approveEncodeMock = sinon.stub().returns({
+          approveEncodeMock = sinon.stub(WIPTokenClient.prototype, "approveEncode").returns({
             to: generateRandomAddress(),
-            data: "",
+            data: txHash,
           });
-          wipClient.approveEncode = approveEncodeMock;
         });
 
         it("should deposit, approve, and call contract in one multicall", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees(params);
+          const { txHash, receipt } = await contractCallWithFees(params);
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(depositEncodeMock.calledOnce).to.be.true;
@@ -345,7 +315,7 @@ describe("WIP Fee Utilities", () => {
         });
 
         it("should support wait for tx", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees({
+          const { txHash, receipt } = await contractCallWithFees({
             ...params,
             txOptions: { waitForTransaction: true },
           });
@@ -358,9 +328,9 @@ describe("WIP Fee Utilities", () => {
         });
 
         it("should not include approvals if enableAutoApprove is false", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees({
+          const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            wipOptions: { enableAutoApprove: false },
+            erc20Options: { enableAutoApprove: false },
           });
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
@@ -372,9 +342,9 @@ describe("WIP Fee Utilities", () => {
         });
 
         it("should only include approves if enough allowances", async () => {
-          const { txHash, receipt } = await contractCallWithWipFees({
+          const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            wipSpenders: [
+            tokenSpenders: [
               {
                 address: royaltyModuleAddress[aeneid],
                 amount: 20n,
@@ -400,18 +370,115 @@ describe("WIP Fee Utilities", () => {
       const totalFees = parseEther("1");
 
       beforeEach(() => {
-        wipClient.balanceOf = sinon.stub().resolves({
-          result: parseEther("0.1"),
-        });
         walletBalanceMock.resolves(parseEther("0.1"));
+        sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(0n);
       });
 
-      it("should throw error indicating not enough funds to complete", async () => {
+      it("should throw error indicating not enough wip funds to complete given token is wip", async () => {
         const params = getDefaultParams({ totalFees });
-        await expect(contractCallWithWipFees(params)).to.be.rejectedWith(
+        await expect(contractCallWithFees(params)).to.be.rejectedWith(
           "Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: 1IP, balance: 0.1IP",
         );
       });
+    });
+  });
+
+  describe("contractCallWithFees with erc20 token", () => {
+    let approveMock: sinon.SinonStub;
+    let allowanceMock: sinon.SinonStub;
+
+    beforeEach(() => {
+      approveMock = sinon.stub(ERC20Client.prototype, "approve").resolves(txHash);
+      allowanceMock = sinon.stub(ERC20Client.prototype, "allowance").resolves(0n);
+      sinon.stub(ERC20Client.prototype, "balanceOf").resolves(100n);
+    });
+
+    it("should not call approval if disabled via enableAutoApprove and enough erc20 token", async () => {
+      const params = getDefaultParams({
+        totalFees: 100n,
+        token: erc20Address[aeneid],
+        erc20Options: { enableAutoApprove: false },
+      });
+      const { txHash, receipt } = await contractCallWithFees(params);
+      expect(receipt).to.be.undefined;
+      expect(contractCallMock.calledOnce).to.be.true;
+      expect(rpcWaitForTxMock.notCalled).to.be.true;
+      expect(approveMock.notCalled).to.be.true;
+      expect(txHash).not.to.be.empty;
+    });
+
+    it("should skip approvals if all spenders have sufficient allowance and enough erc20 token", async () => {
+      const params = getDefaultParams({
+        totalFees: 100n,
+        token: erc20Address[aeneid],
+        tokenSpenders: [
+          {
+            address: royaltyModuleAddress[aeneid],
+            amount: 50n,
+          },
+          {
+            address: derivativeWorkflowsAddress[aeneid],
+            amount: 50n,
+          },
+        ],
+        txOptions: { waitForTransaction: false },
+      });
+      allowanceMock.resolves(1001n);
+
+      const { txHash, receipt } = await contractCallWithFees(params);
+      expect(receipt).to.be.undefined;
+      expect(allowanceMock.calledTwice).to.be.true;
+      expect(
+        allowanceMock.firstCall.calledWith(TEST_WALLET_ADDRESS, params.tokenSpenders[0].address),
+      ).to.be.true;
+
+      expect(
+        allowanceMock.secondCall.calledWith(TEST_WALLET_ADDRESS, params.tokenSpenders[1].address),
+      ).to.be.true;
+      expect(contractCallMock.calledOnce).to.be.true;
+      expect(rpcWaitForTxMock.notCalled).to.be.true;
+      expect(approveMock.notCalled).to.be.true;
+      expect(txHash).not.to.be.empty;
+    });
+
+    it("should call separate approvals for each spender address if not enough allowance and enough erc20 token", async () => {
+      const params = getDefaultParams({
+        totalFees: 100n,
+        token: erc20Address[aeneid],
+        tokenSpenders: [
+          {
+            address: royaltyModuleAddress[aeneid],
+            amount: 20n,
+          },
+          {
+            address: royaltyModuleAddress[aeneid],
+            amount: 22n,
+          },
+          {
+            address: multicall3Address[aeneid],
+            amount: 22n,
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      allowanceMock.resolves(15n);
+      const { txHash, receipt } = await contractCallWithFees(params);
+      expect(receipt).not.to.be.undefined;
+      expect(contractCallMock.calledOnce).to.be.true;
+      expect(approveMock.calledTwice).to.be.true;
+      expect(approveMock.firstCall.calledWith(royaltyModuleAddress[aeneid], maxUint256)).to.be.true;
+      expect(rpcWaitForTxMock.callCount).to.equal(3); // 2 approval + 1 contract call
+      expect(txHash).not.to.be.empty;
+    });
+
+    it("should throw not enough erc20 token when call contractCallWithFees given erc20 token is not enough", async () => {
+      const params = getDefaultParams({
+        totalFees: 101n,
+        token: erc20Address[aeneid],
+      });
+      await expect(contractCallWithFees(params)).to.be.rejectedWith(
+        "Wallet does not have enough erc20 token to pay for fees. Total fees:  0.000000000000000101IP, balance: 0.0000000000000001IP.",
+      );
     });
   });
 });

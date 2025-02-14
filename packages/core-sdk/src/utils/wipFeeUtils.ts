@@ -198,9 +198,8 @@ export const contractCallWithFees = async ({
   token,
 }: ContractCallWithFees): Promise<TransactionResponse> => {
   const wipTokenClient = new WIPTokenClient(rpcClient, wallet);
-  const isWip = token === wipTokenClient.address;
-  const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token!);
-
+  const isWip = token === wipTokenClient.address || token === undefined;
+  const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token);
   erc20Options = {
     enableAutoApprove: erc20Options?.enableAutoApprove,
     // default to false for token
@@ -242,7 +241,7 @@ export const contractCallWithFees = async ({
       throw new Error(
         `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
           totalFees,
-        )}, balance: ${getTokenAmountDisplay(startingBalance)}`,
+        )}, balance: ${getTokenAmountDisplay(startingBalance)}.`,
       );
     }
     // error if there's enough IP to cover fees and we cannot wrap IP to WIP
@@ -250,7 +249,7 @@ export const contractCallWithFees = async ({
       throw new Error(
         `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
           totalFees,
-        )}, balance: ${getTokenAmountDisplay(balance, "WIP")}`,
+        )}, balance: ${getTokenAmountDisplay(balance, "WIP")}.`,
       );
     }
     const calls = encodedTxs?.map((data) => ({
@@ -273,9 +272,9 @@ export const contractCallWithFees = async ({
     return handleTxOptions({ rpcClient, txOptions, txHash });
   } else {
     throw new Error(
-      `Wallet does not have enough token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
         totalFees,
-      )}, balance: ${getTokenAmountDisplay(balance)}`,
+      )}, balance: ${getTokenAmountDisplay(balance)}.`,
     );
   }
 };

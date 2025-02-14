@@ -39,11 +39,9 @@ export class ERC20Client implements TokenClient {
 
 export class WIPTokenClient implements TokenClient {
   private wipClient: WrappedIpClient;
-  readonly address: Address;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
     this.wipClient = new WrappedIpClient(rpcClient, wallet);
-    this.address = this.wipClient.address;
   }
 
   async balanceOf(account: Address): Promise<bigint> {
@@ -66,5 +64,9 @@ export class WIPTokenClient implements TokenClient {
 
   depositEncode(): EncodedTxData {
     return this.wipClient.depositEncode();
+  }
+
+  get address(): Address {
+    return this.wipClient.address;
   }
 }

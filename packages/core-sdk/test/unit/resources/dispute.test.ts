@@ -42,9 +42,7 @@ describe("Test DisputeClient", () => {
           liveness: 2592000,
         });
       } catch (e) {
-        expect((e as Error).message).equal(
-          "Failed to raise dispute: request.targetIpId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-        );
+        expect((e as Error).message).equal("Failed to raise dispute: Invalid address: 0x.");
       }
     });
 

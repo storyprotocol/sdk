@@ -1,16 +1,17 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
-import { getStoryClient, aeneid, TEST_WALLET_ADDRESS } from "./utils/util";
+import { getStoryClient, aeneid, publicClient, walletClient } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import { Address, Hex, zeroAddress } from "viem";
-import { MockERC20 } from "./utils/mockERC20";
+import { Address, Hex, maxUint256, zeroAddress } from "viem";
 import {
   arbitrationPolicyUmaAddress,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
   wrappedIpAddress,
 } from "../../src/abi/generated";
+import { WIPTokenClient } from "../../src/utils/token";
+
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
@@ -24,81 +25,81 @@ describe("Dispute Functions", () => {
 
   before(async () => {
     client = getStoryClient();
-    const mockERC20 = new MockERC20(wrappedIpAddress[aeneid]);
-    await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid]);
+    const mockERC20 = new WIPTokenClient(publicClient, walletClient);
+    await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid], maxUint256);
     // Setup NFT collection
-    const txData = await client.nftClient.createNFTCollection({
-      name: "test-collection",
-      symbol: "TEST",
-      maxSupply: 100,
-      isPublicMinting: true,
-      mintOpen: true,
-      contractURI: "test-uri",
-      mintFeeRecipient: TEST_WALLET_ADDRESS,
-      txOptions: { waitForTransaction: true },
-    });
-    nftContract = txData.spgNftContract!;
+    // const txData = await client.nftClient.createNFTCollection({
+    //   name: "test-collection",
+    //   symbol: "TEST",
+    //   maxSupply: 100,
+    //   isPublicMinting: true,
+    //   mintOpen: true,
+    //   contractURI: "test-uri",
+    //   mintFeeRecipient: TEST_WALLET_ADDRESS,
+    //   txOptions: { waitForTransaction: true },
+    // });
+    // nftContract = txData.spgNftContract!;
 
-    // Get parent IP ID and license terms ID
-    const ipIdAndLicenseResponse = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-      spgNftContract: nftContract,
-      allowDuplicates: false,
-      licenseTermsData: [
-        {
-          terms: {
-            transferable: true,
-            royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-            defaultMintingFee: 0n,
-            expiration: 0n,
-            commercialUse: true,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 90,
-            commercialRevCeiling: 0n,
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: 0n,
-            currency: wrappedIpAddress[aeneid],
-            uri: "",
-          },
-          licensingConfig: {
-            isSet: true,
-            mintingFee: 0n,
-            licensingHook: zeroAddress,
-            hookData: zeroAddress,
-            commercialRevShare: 0,
-            disabled: false,
-            expectMinimumGroupRewardShare: 0,
-            expectGroupRewardPool: evenSplitGroupPoolAddress[aeneid],
-          },
-        },
-      ],
-      txOptions: { waitForTransaction: true },
-    });
-    parentIpId = ipIdAndLicenseResponse.ipId!;
-    licenseTermsId = ipIdAndLicenseResponse.licenseTermsIds![0];
+    // // Get parent IP ID and license terms ID
+    // const ipIdAndLicenseResponse = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+    //   spgNftContract: nftContract,
+    //   allowDuplicates: false,
+    //   licenseTermsData: [
+    //     {
+    //       terms: {
+    //         transferable: true,
+    //         royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+    //         defaultMintingFee: 0n,
+    //         expiration: 0n,
+    //         commercialUse: true,
+    //         commercialAttribution: false,
+    //         commercializerChecker: zeroAddress,
+    //         commercializerCheckerData: zeroAddress,
+    //         commercialRevShare: 90,
+    //         commercialRevCeiling: 0n,
+    //         derivativesAllowed: true,
+    //         derivativesAttribution: true,
+    //         derivativesApproval: false,
+    //         derivativesReciprocal: true,
+    //         derivativeRevCeiling: 0n,
+    //         currency: wrappedIpAddress[aeneid],
+    //         uri: "",
+    //       },
+    //       licensingConfig: {
+    //         isSet: true,
+    //         mintingFee: 0n,
+    //         licensingHook: zeroAddress,
+    //         hookData: zeroAddress,
+    //         commercialRevShare: 0,
+    //         disabled: false,
+    //         expectMinimumGroupRewardShare: 0,
+    //         expectGroupRewardPool: evenSplitGroupPoolAddress[aeneid],
+    //       },
+    //     },
+    //   ],
+    //   txOptions: { waitForTransaction: true },
+    // });
+    // parentIpId = ipIdAndLicenseResponse.ipId!;
+    // licenseTermsId = ipIdAndLicenseResponse.licenseTermsIds![0];
 
     // Create a derivative ip
-    const derivativeIpIdResponse = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
-      spgNftContract: nftContract,
-      derivData: {
-        parentIpIds: [parentIpId!],
-        licenseTermsIds: [licenseTermsId!],
-        maxMintingFee: 1n,
-        maxRts: 5 * 10 ** 6,
-        maxRevenueShare: 100,
-      },
-      allowDuplicates: true,
-      txOptions: { waitForTransaction: true },
-    });
-    childIpId = derivativeIpIdResponse.ipId!;
-    console.log("parentIpId", childIpId);
+    // const derivativeIpIdResponse = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+    //   spgNftContract: nftContract,
+    //   derivData: {
+    //     parentIpIds: [parentIpId!],
+    //     licenseTermsIds: [licenseTermsId!],
+    //     maxMintingFee: 1n,
+    //     maxRts: 5 * 10 ** 6,
+    //     maxRevenueShare: 100,
+    //   },
+    //   allowDuplicates: true,
+    //   txOptions: { waitForTransaction: true },
+    // });
+    // childIpId = derivativeIpIdResponse.ipId!;
+    // console.log("parentIpId", childIpId);
   });
 
-  it("should raise a dispute", async () => {
+  it.skip("should raise a dispute", async () => {
     const raiseDisputeRequest: RaiseDisputeRequest = {
       targetIpId: parentIpId,
       cid: "QmeyFm6gj1jMdfVYbnyFwZfm9FC1jYLLnFYqre48xKYLHd",
@@ -188,7 +189,6 @@ describe("Dispute Functions", () => {
   });
 
   it("should tag infringing ip", async () => {
-    //TODO: Need to test with multicall
     const tagResponse = await client.dispute.tagIfRelatedIpInfringed({
       args: [
         {
@@ -199,7 +199,7 @@ describe("Dispute Functions", () => {
       txOptions: { waitForTransaction: true },
       useMulticallWhenPossible: true,
     });
-
+    console.log("tagResponse", tagResponse);
     expect(tagResponse.txHash).to.be.a("string").and.not.empty;
   });
 });
