@@ -5,7 +5,7 @@ import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig } from "../common";
 import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
-import { ERC20Options } from "../utils/wip";
+import { ERC20Options } from "../options";
 
 export type DerivativeData = {
   parentIpIds: Address[];

@@ -11,7 +11,7 @@ import {
 } from "../../../src/abi/generated";
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import { txHash } from "./mockData";
-import { contractCallWithFees } from "../../../src/utils/wipFeeUtils";
+import { contractCallWithFees } from "../../../src/utils/Erc20FeeUtils";
 import { TEST_WALLET_ADDRESS, aeneid } from "../../integration/utils/util";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 import { ContractCallWithFees } from "../../../src/types/utils/wip";
@@ -20,7 +20,7 @@ import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe("Token Fee Utilities", () => {
+describe("Erc20 Token Fee Utilities", () => {
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
   let contractCallMock: sinon.SinonStub;

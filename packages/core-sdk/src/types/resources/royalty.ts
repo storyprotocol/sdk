@@ -2,7 +2,7 @@ import { Address, Hash, TransactionReceipt } from "viem";
 
 import { TxOptions, WithTxOptions } from "../options";
 import { EncodedTxData, IpAccountImplClient } from "../../abi/generated";
-import { ERC20Options } from "../utils/wip";
+import { ERC20Options } from "../options";
 import { TokenAmountInput } from "../common";
 
 export type RoyaltyPolicyApiResponse = {

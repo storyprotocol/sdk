@@ -12,7 +12,7 @@ import {
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
-import { TransactionResponse } from "../types/utils/txOptions";
+import { TransactionResponse } from "../types/options";
 import { ERC20Client, WIPTokenClient } from "./token";
 
 /**
@@ -202,15 +202,15 @@ export const contractCallWithFees = async ({
   const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token);
   erc20Options = {
     enableAutoApprove: erc20Options?.enableAutoApprove,
-    // default to false for token
+    // default to false for erc20 token
     enableAutoWrapIp: isWip ? erc20Options?.enableAutoWrapIp : false,
-    // default to false for token
+    // default to false for erc20 token
     useMulticallWhenPossible: isWip ? erc20Options?.useMulticallWhenPossible : false,
   };
   // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
-    return handleTxOptions({ rpcClient, txOptions, txHash });
+    return await handleTxOptions({ rpcClient, txOptions, txHash });
   }
   const balance = await tokenClient.balanceOf(sender);
   const autoApprove = erc20Options?.enableAutoApprove !== false;
@@ -230,7 +230,7 @@ export const contractCallWithFees = async ({
       });
     }
     const txHash = await contractCall();
-    return handleTxOptions({ rpcClient, txOptions, txHash });
+    return await handleTxOptions({ rpcClient, txOptions, txHash });
   }
 
   if (isWip) {

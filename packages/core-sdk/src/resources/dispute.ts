@@ -22,7 +22,7 @@ import { chain, validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
-import { TransactionResponse } from "../types/utils/txOptions";
+import { TransactionResponse } from "../types/options";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
