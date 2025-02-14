@@ -49,7 +49,7 @@ export type TokenApprovalCall = {
 export type ContractCallWithFees = ERC20Options & {
   totalFees: bigint;
   multicall3Address: Address;
-  /** all possible spenders of the wip */
+  /** all possible spenders of the erc20 token */
   tokenSpenders: Erc20Spender[];
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];

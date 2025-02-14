@@ -25,9 +25,10 @@ export type ERC20Options = {
   erc20Options?: {
     /**
      * Use multicall to batch the erc20 calls into one transaction when possible.
-     * This option is false if the token is not WIP.
      *
      * @default true
+     * This option is not work if the token is not WIP.
+     *
      */
     useMulticallWhenPossible?: boolean;
 
@@ -35,9 +36,10 @@ export type ERC20Options = {
      * By default IP is converted to WIP if the current WIP
      * balance does not cover the fees.
      * Set this to `false` to disable this behavior.
-     * This option is false if the token is not WIP.
      *
      * @default true
+     * This option is not work if the token is not WIP.
+     *
      */
     enableAutoWrapIp?: boolean;
 
