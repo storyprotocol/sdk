@@ -220,7 +220,7 @@ export class DisputeClient {
         ),
       );
     } catch (error) {
-      handleError(error, "Failed to tag related ip");
+      handleError(error, "Failed to tag related ip infringed");
     }
   }
 }
