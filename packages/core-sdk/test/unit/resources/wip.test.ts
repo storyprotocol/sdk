@@ -1,4 +1,4 @@
-import { PublicClient, SimulateContractReturnType, WalletClient } from "viem";
+import { PublicClient, WalletClient } from "viem";
 import { WipClient } from "../../../src/resources/wip";
 import chaiAsPromised from "chai-as-promised";
 import chai from "chai";
@@ -136,7 +136,7 @@ describe("WIP Functions", () => {
       try {
         await wipClient.balanceOf("0x");
       } catch (error) {
-        expect((error as Error).message).equals("Invalid address: 0x");
+        expect((error as Error).message).equals("Invalid address: 0x.");
       }
     });
 

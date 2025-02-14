@@ -37,7 +37,7 @@ describe("WIP Functions", () => {
     it("should transfer WIP", async () => {
       const rsp = await client.wipClient.transfer({
         to: TEST_WALLET_ADDRESS,
-        amount: parseEther("0.1"),
+        amount: parseEther("0.01"),
         txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
