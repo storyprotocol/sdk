@@ -1098,7 +1098,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          "Failed to set licensing config: The minting fee must be greater than 0.",
+          "Failed to set licensing config: The mintingFee must be greater than 0.",
         );
       }
     });

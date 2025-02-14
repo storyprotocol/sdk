@@ -924,7 +924,6 @@ describe("Test IpAssetClient", () => {
         ],
         allowDuplicates: false,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        royaltyPolicyAddress: zeroAddress,
         ipMetadata: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),

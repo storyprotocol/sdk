@@ -100,14 +100,10 @@ import {
 import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission } from "../types/resources/permission";
-import {
-  InnerLicensingConfig,
-  LicenseTerms,
-  RegisterPILTermsRequest,
-} from "../types/resources/license";
+import { LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
-import { LicensingConfig } from "../types/common";
+import { LicensingConfig, ValidatedLicensingConfig } from "../types/common";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import {
@@ -642,48 +638,8 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT from a collection and register it as an IP.
-   * @param request - The request object that contains all data needed to mint and register ip.
-   *   @param request.spgNftContract The address of the NFT collection.
-   *   @param request.allowDuplicates Indicates whether the license terms can be attached to the same IP ID or not.
-   *   @param {Array} request.licenseTermsData The PIL terms and licensing configuration data to be attached to the IP.
-   *     @param {Object} request.licenseTermsData.terms The PIL terms to be used for the licensing.
-   *       @param request.licenseTermsData.terms.transferable Indicates whether the license is transferable or not.
-   *       @param request.licenseTermsData.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
-   *       @param request.licenseTermsData.terms.mintingFee The fee to be paid when minting a license.
-   *       @param request.licenseTermsData.terms.expiration The expiration period of the license.
-   *       @param request.licenseTermsData.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
-   *       @param request.licenseTermsData.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
-   *       @param request.licenseTermsData.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
-   *       @param request.licenseTermsData.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
-   *       @param request.licenseTermsData.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *       @param request.licenseTermsData.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
-   *       @param request.licenseTermsData.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
-   *       @param request.licenseTermsData.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
-   *       @param request.licenseTermsData.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
-   *       @param request.licenseTermsData.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
-   *       @param request.licenseTermsData.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
-   *       @param request.licenseTermsData.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *       @param request.licenseTermsData.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, including IP ID, Token ID, License Terms Ids.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
-   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
+   * it emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId).
    */
   public async mintAndRegisterIpAssetWithPilTerms(
     request: MintAndRegisterIpAssetWithPilTermsRequest,
@@ -830,47 +786,7 @@ export class IPAssetClient {
   }
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.R.
-   * @param request - The request object that contains all data needed to mint and register ip.
-   *   @param request.nftContract The address of the NFT collection.
-   *   @param request.tokenId The ID of the NFT.
-   *   @param {Array} request.licenseTermsData The PIL terms and licensing configuration data to be attached to the IP.
-   *     @param {Object} request.licenseTermsData.terms The PIL terms to be used for the licensing.
-   *       @param request.licenseTermsData.terms.transferable Indicates whether the license is transferable or not.
-   *       @param request.licenseTermsData.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
-   *       @param request.licenseTermsData.terms.mintingFee The fee to be paid when minting a license.
-   *       @param request.licenseTermsData.terms.expiration The expiration period of the license.
-   *       @param request.licenseTermsData.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
-   *       @param request.licenseTermsData.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
-   *       @param request.licenseTermsData.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
-   *       @param request.licenseTermsData.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
-   *       @param request.licenseTermsData.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *       @param request.licenseTermsData.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
-   *       @param request.licenseTermsData.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
-   *       @param request.licenseTermsData.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
-   *       @param request.licenseTermsData.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
-   *       @param request.licenseTermsData.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
-   *       @param request.licenseTermsData.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
-   *       @param request.licenseTermsData.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *       @param request.licenseTermsData.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, including IP ID, token ID and License terms IDs.
-   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
+   * it emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId).
    */
   public async registerIpAndAttachPilTerms(
     request: RegisterIpAndAttachPilTermsRequest,
@@ -1179,41 +1095,7 @@ export class IPAssetClient {
   }
   /**
    * Register Programmable IP License Terms (if unregistered) and attach it to IP.
-   * @param request - The request object that contains all data needed to attach license terms.
-   *   @param request.ipId The ID of the IP.
-   *   @param {Array} request.licenseTermsData The PIL terms and licensing configuration data to be attached to the IP.
-   *     @param {Object} request.licenseTermsData.terms The PIL terms to be used for the licensing.
-   *       @param request.licenseTermsData.terms.transferable Indicates whether the license is transferable or not.
-   *       @param request.licenseTermsData.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
-   *       @param request.licenseTermsData.terms.mintingFee The fee to be paid when minting a license.
-   *       @param request.licenseTermsData.terms.expiration The expiration period of the license.
-   *       @param request.licenseTermsData.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
-   *       @param request.licenseTermsData.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
-   *       @param request.licenseTermsData.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
-   *       @param request.licenseTermsData.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
-   *       @param request.licenseTermsData.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *       @param request.licenseTermsData.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
-   *       @param request.licenseTermsData.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
-   *       @param request.licenseTermsData.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
-   *       @param request.licenseTermsData.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
-   *       @param request.licenseTermsData.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
-   *       @param request.licenseTermsData.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
-   *       @param request.licenseTermsData.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *       @param request.licenseTermsData.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000s.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, returns an array containing the license terms ID.
-   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
+   * it emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId).
    */
   public async registerPilTermsAndAttach(
     request: RegisterPilTermsAndAttachRequest,
@@ -1451,51 +1333,8 @@ export class IPAssetClient {
   /**
    * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the first license terms attached to the IP must be
    * a commercial license.
-   * @param request - The request object that contains all data needed to register ip and attach license terms and distribute royalty tokens.
-   *   @param request.nftContract The address of the NFT collection.
-   *   @param request.tokenId The ID of the NFT.
-   *   @param {Array} request.licenseTermsData The PIL terms and licensing configuration data to be attached to the IP.
-   *     @param {Object} request.licenseTermsData.terms The PIL terms to be used for the licensing.
-   *       @param request.licenseTermsData.terms.transferable Indicates whether the license is transferable or not.
-   *       @param request.licenseTermsData.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
-   *       @param request.licenseTermsData.terms.mintingFee The fee to be paid when minting a license.
-   *       @param request.licenseTermsData.terms.expiration The expiration period of the license.
-   *       @param request.licenseTermsData.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
-   *       @param request.licenseTermsData.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
-   *       @param request.licenseTermsData.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
-   *       @param request.licenseTermsData.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
-   *       @param request.licenseTermsData.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *       @param request.licenseTermsData.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
-   *       @param request.licenseTermsData.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
-   *       @param request.licenseTermsData.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
-   *       @param request.licenseTermsData.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
-   *       @param request.licenseTermsData.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
-   *       @param request.licenseTermsData.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
-   *       @param request.licenseTermsData.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *       @param request.licenseTermsData.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *  @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
-   *    @param request.royaltyShares.recipient The address of the recipient.
-   *    @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
-   *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hashes, IP ID, IP royalty vault and an array containing the license terms ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
-   * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
+   * it emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
   public async registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
@@ -1711,51 +1550,8 @@ export class IPAssetClient {
 
   /**
    * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
-   * @param request - The request object that contains all data needed to mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
-   *   @param request.spgNftContract The address of the SPG NFT contract.
-   *   @param request.allowDuplicates Set to true to allow minting an NFT with a duplicate metadata hash.
-   *   @param {Array} request.licenseTermsData The PIL terms and licensing configuration data to attach to the IP.
-   *     @param {Object} request.licenseTermsData.terms The PIL terms to be attached.
-   *       @param request.licenseTermsData.terms.transferable Indicates whether the license is transferable or not.
-   *       @param request.licenseTermsData.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
-   *       @param request.licenseTermsData.terms.mintingFee The fee to be paid when minting a license.
-   *       @param request.licenseTermsData.terms.expiration The expiration period of the license.
-   *       @param request.licenseTermsData.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
-   *       @param request.licenseTermsData.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
-   *       @param request.licenseTermsData.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
-   *       @param request.licenseTermsData.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
-   *       @param request.licenseTermsData.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *       @param request.licenseTermsData.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
-   *       @param request.licenseTermsData.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
-   *       @param request.licenseTermsData.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
-   *       @param request.licenseTermsData.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
-   *       @param request.licenseTermsData.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
-   *       @param request.licenseTermsData.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
-   *       @param request.licenseTermsData.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *       @param request.licenseTermsData.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *  @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
-   *    @param request.royaltyShares.recipient The address of the recipient.
-   *    @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
-   *   @param request.recipient - [Optional] The address to receive the minted NFT,default value is your wallet address.
-   *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hash, IP ID, IP royalty vault, Token ID, and an array containing the license terms ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
-   * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
+   * it emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
    */
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
@@ -2073,10 +1869,11 @@ export class IPAssetClient {
     licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[],
   ): Promise<{
     licenseTerms: LicenseTerms[];
-    licenseTermsData: LicenseTermsData<LicenseTerms, InnerLicensingConfig>[];
+    licenseTermsData: LicenseTermsData<LicenseTerms, ValidatedLicensingConfig>[];
   }> {
     const licenseTerms: LicenseTerms[] = [];
-    const processedLicenseTermsData: LicenseTermsData<LicenseTerms, InnerLicensingConfig>[] = [];
+    const processedLicenseTermsData: LicenseTermsData<LicenseTerms, ValidatedLicensingConfig>[] =
+      [];
     for (let i = 0; i < licenseTermsData.length; i++) {
       const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
       const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);

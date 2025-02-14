@@ -27,7 +27,7 @@ import { getPermissionSignature, getDeadline } from "../utils/sign";
 import { chain, getAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import {
-  InnerLicenseData,
+  ValidatedLicenseData,
   LicenseData,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
@@ -107,36 +107,8 @@ export class GroupClient {
       handleError(error, "Failed to register group");
     }
   }
-  /**  Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
-   * @param request - The request object containing necessary data to mint and register Ip and attach license and add to group.
-   *   @param request.nftContract The address of the NFT collection.
-   *   @param request.groupId The ID of the group IP to add the newly registered IP.
-   *   @param request.maxAllowedRewardShare The maximum reward share percentage that can be allocated to each member IP.
-   *   @param {Array} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
-   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
-   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
-   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
-   *     @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *       @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *       @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *       @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *       @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *       @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *       @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *       @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *       If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *       @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param request.allowDuplicates Set to true to allow minting an NFT with a duplicate metadata hash.
-   *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
-   * . @param request.deadline [Optional] The deadline for the signature in seconds, default value is 1000s.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
+  /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata).
    */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -209,34 +181,7 @@ export class GroupClient {
   }
 
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
-   * @param request - The request object containing necessary data to register ip and attach license and add to group.
-   *   @param request.spgNftContract The address of the NFT collection.
-   *   @param request.tokenId The ID of the NFT.
-   *   @param request.maxAllowedRewardShare The maximum reward share percentage that can be allocated to each member IP.
-   *   @param request.groupId The ID of the group IP to add the newly registered IP.
-   *    @param {Array} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
-   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
-   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
-   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
-   *      @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *        @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *        @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *        @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *        @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *        @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *        @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *        @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *        If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *        @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   * . @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata).
    */
   public async registerIpAndAttachLicenseAndAddToGroup(
     request: RegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -345,25 +290,7 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
-   * @param request - The request object containing necessary data to register group and attach license.
-   *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
-   *    @param {Object} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
-   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
-   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
-   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
-   *      @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *        @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *        @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *        @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *        @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *        @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *        @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *        @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *        If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *        @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
-   * @emits PGroupRegistered (groupId, groupPool);
+   * it emits PGroupRegistered (groupId, groupPool).
    */
   public async registerGroupAndAttachLicense(
     request: RegisterGroupAndAttachLicenseRequest,
@@ -394,27 +321,7 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
-   * @param request - The request object containing necessary data to register group and attach license and add ips.
-   *   @param request.ipIds The IP IDs of the IPs to be added to the group.
-   *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
-   *   @param request.maxAllowedRewardShare The maximum reward share percentage that can be allocated to each member IP.
-   *   @param {Object} request.licenseData licenseData The data of the license and its configuration to be attached to the new group IP.
-   *      @param request.licenseData.licenseTermsId The ID of the registered license terms that will be attached to the new group IP.
-   *      @param request.licenseData.licenseTemplate [Optional] The address of the license template to be attached to the new group IP, default value is Programmable IP License.
-   *      @param request.licenseData.licensingConfig The licensing configuration for the IP.
-   *      @param {Object} request.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *        @param request.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *        @param request.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *        @param request.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
-   *        @param request.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *        @param request.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *        @param request.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *        @param request.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *        If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *        @param request.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   *   @param request.txOptions [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
-   * @emits PGroupRegistered (groupId, groupPool);
+   * it emits PGroupRegistered (groupId, groupPool).
    */
   public async registerGroupAndAttachLicenseAndAddIps(
     request: RegisterGroupAndAttachLicenseAndAddIpsRequest,
@@ -472,7 +379,7 @@ export class GroupClient {
     }
   }
 
-  private getLicenseData(licenseData: LicenseData[] | LicenseData): InnerLicenseData[] {
+  private getLicenseData(licenseData: LicenseData[] | LicenseData): ValidatedLicenseData[] {
     const isArray = Array.isArray(licenseData);
     if ((isArray && licenseData.length === 0) || !licenseData) {
       throw new Error("License data is required.");

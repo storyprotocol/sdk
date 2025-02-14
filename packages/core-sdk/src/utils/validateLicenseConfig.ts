@@ -1,19 +1,21 @@
-import { LicensingConfig } from "../types/common";
-import { InnerLicensingConfig } from "../types/resources/license";
-import { getRevenueShare } from "./licenseTermsHelper";
-import { getAddress } from "./utils";
+import { zeroAddress } from "viem";
 
-export const validateLicenseConfig = (licensingConfig: LicensingConfig): InnerLicensingConfig => {
+import { LicensingConfig, ValidatedLicensingConfig } from "../types/common";
+import { getRevenueShare } from "./licenseTermsHelper";
+import { validateAddress } from "./utils";
+
+export const validateLicenseConfig = (
+  licensingConfig: LicensingConfig,
+): ValidatedLicensingConfig => {
   const licenseConfig = {
-    ...licensingConfig,
     expectMinimumGroupRewardShare: Number(licensingConfig.expectMinimumGroupRewardShare),
-    commercialRevShare: getRevenueShare(licensingConfig.commercialRevShare),
-    mintingFee: BigInt(licensingConfig.mintingFee),
-    expectGroupRewardPool: getAddress(
-      licensingConfig.expectGroupRewardPool,
-      "licensingConfig.expectGroupRewardPool",
-    ),
-    licensingHook: getAddress(licensingConfig.licensingHook, "licensingConfig.licensingHook"),
+    commercialRevShare: getRevenueShare(licensingConfig.commercialRevShare || 0),
+    mintingFee: BigInt(licensingConfig.mintingFee || 0),
+    expectGroupRewardPool: validateAddress(licensingConfig.expectGroupRewardPool || zeroAddress),
+    licensingHook: validateAddress(licensingConfig.licensingHook || zeroAddress),
+    hookData: licensingConfig.hookData || zeroAddress,
+    isSet: licensingConfig.isSet || false,
+    disabled: licensingConfig.disabled || false,
   } as const;
   if (isNaN(licenseConfig.expectMinimumGroupRewardShare)) {
     throw new Error(`The expectMinimumGroupRewardShare must be a valid number.`);

@@ -139,15 +139,14 @@ export type PredictMintingLicenseFeeRequest = {
   txOptions?: TxOptions;
 };
 
-export type InnerLicensingConfig = {
-  mintingFee: bigint;
-  commercialRevShare: number;
-  expectMinimumGroupRewardShare: number;
-} & LicensingConfig;
 export type SetLicensingConfigRequest = {
+  /** The address of the IP for which the configuration is being set. */
   ipId: Address;
+  /** The ID of the license terms within the license template. */
   licenseTermsId: string | number | bigint;
+  /** The address of the license template used, If not specified, the configuration applies to all licenses. */
   licensingConfig: LicensingConfig;
+  /** The licensing configuration for the license. */
   licenseTemplate: Address;
   txOptions?: TxOptions;
 };

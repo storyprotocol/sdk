@@ -71,10 +71,14 @@ export type LicenseTermsData<T, U> = {
 };
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
   spgNftContract: Address;
+  /** Indicates whether the license terms can be attached to the same IP ID or not. */
   allowDuplicates: boolean;
+  /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  /** The address to receive the minted NFT.
+   * @default wallet address
+   */
   recipient?: Address;
-  royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -110,7 +114,11 @@ export type RegisterIpAndMakeDerivativeResponse = {
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
+  /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  /** The deadline for the signature in seconds.
+   * @default 1000s
+   */
   deadline?: bigint | number | string;
 } & IpMetadataAndTxOptions;
 
@@ -235,10 +243,13 @@ export type MintAndRegisterIpRequest = {
   recipient?: Address;
   allowDuplicates: boolean;
 } & IpMetadataAndTxOptions;
-
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
+  /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  /** The deadline for the signature in seconds.
+   * @default 1000s
+   */
   deadline?: string | number | bigint;
   txOptions?: TxOptions;
 };
@@ -310,12 +321,16 @@ export type BatchRegisterResponse = {
   spgTxHash?: Hex;
   results?: IpIdAndTokenId<"nftContract">[];
 };
-
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
+  /** The data of the license and its configuration to be attached to the new group IP. */
   licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
+  /** The deadline for the signature in seconds.
+   * @default 1000s
+   */
   deadline?: string | number | bigint;
+  /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo;
@@ -367,15 +382,23 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
   tokenId: bigint;
   ipRoyaltyVault: Address;
 };
-
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
+  /** The address of the SPG NFT contract. */
   spgNftContract: Address;
+  /** Set to true to allow minting an NFT with a duplicate metadata hash. */
   allowDuplicates: boolean;
+  /** The data of the license and its configuration to be attached to the new group IP. */
   licenseTermsData: {
+    /** The PIL terms to be attached. */
     terms: RegisterPILTermsRequest;
+    /** The licensing configuration to be attached. */
     licensingConfig: LicensingConfig;
   }[];
+  /** Authors of the IP and their shares of the royalty tokens */
   royaltyShares: RoyaltyShare[];
+  /** The address to receive the minted NFT.
+   * @default wallet address
+   */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo &
