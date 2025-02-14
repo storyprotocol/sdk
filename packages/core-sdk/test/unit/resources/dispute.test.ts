@@ -1,6 +1,6 @@
 import * as sinon from "sinon";
 import { createMock } from "../testUtils";
-import { ipId, txHash } from "../utils/mockData";
+import { ipId, txHash } from "../mockData";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient } from "viem";

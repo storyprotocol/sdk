@@ -934,7 +934,7 @@ describe("IP Asset Functions", () => {
       expect(result.tokenId).to.be.a("bigint");
     });
 
-    it("should mint and register IP and attach PIL terms and distribute royalty tokens", async () => {
+    it("should mint and register IP and attach PIL terms and distribute royalty tokens without licensing config", async () => {
       const result =
         await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract: nftContract,
@@ -959,16 +959,6 @@ describe("IP Asset Functions", () => {
                 derivativeRevCeiling: 0n,
                 currency: wrappedIpAddress[aeneid],
                 uri: "test case",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 10000n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
               },
             },
           ],
