@@ -113,9 +113,9 @@ import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import {
   calculateLicenseWipMintFee,
   calculateSPGWipMintFee,
-  contractCallWithWipFees,
-} from "../utils/wipFeeUtils";
-import { WipSpender } from "../types/utils/wip";
+  contractCallWithFees,
+} from "../utils/Erc20FeeUtils";
+import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
 
 export class IPAssetClient {
@@ -721,7 +721,7 @@ export class IPAssetClient {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(object);
       };
       const rsp = await this.commonRegistrationHandler({
-        wipOptions: request.wipOptions,
+        erc20Options: request.erc20Options,
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -1046,8 +1046,8 @@ export class IPAssetClient {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(object);
       };
       return this.commonRegistrationHandler({
-        wipOptions: {
-          ...request.wipOptions,
+        erc20Options: {
+          ...request.erc20Options,
           useMulticallWhenPossible: false,
         },
         sender: this.walletAddress,
@@ -1110,7 +1110,7 @@ export class IPAssetClient {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(object);
       };
       return this.commonRegistrationHandler({
-        wipOptions: request.wipOptions,
+        erc20Options: request.erc20Options,
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         spgNftContract,
@@ -1386,8 +1386,8 @@ export class IPAssetClient {
         );
       };
       return this.commonRegistrationHandler({
-        wipOptions: {
-          ...request.wipOptions,
+        erc20Options: {
+          ...request.erc20Options,
           // need to disable multicall to avoid needing to transfer the license
           // token to the multicall contract.
           useMulticallWhenPossible: false,
@@ -1728,8 +1728,8 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.commonRegistrationHandler({
-        wipOptions: {
-          ...request.wipOptions,
+        erc20Options: {
+          ...request.erc20Options,
           useMulticallWhenPossible: false,
         },
         sender: this.walletAddress,
@@ -1851,7 +1851,7 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.commonRegistrationHandler({
-        wipOptions: request.wipOptions,
+        erc20Options: request.erc20Options,
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -1934,7 +1934,7 @@ export class IPAssetClient {
       };
       return this.commonRegistrationHandler({
         spgNftContract: object.spgNftContract,
-        wipOptions: request.wipOptions,
+        erc20Options: request.erc20Options,
         sender: this.walletAddress,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
         derivData,
@@ -2186,12 +2186,12 @@ export class IPAssetClient {
     spgNftContract,
     spgSpenderAddress,
     txOptions,
-    wipOptions,
+    erc20Options,
     encodedTxs,
     contractCall,
   }: CommonRegistrationHandlerParams) {
     let totalFees = 0n;
-    const wipSpenders: WipSpender[] = [];
+    const wipSpenders: Erc20Spender[] = [];
 
     // get spg minting fee
     if (spgNftContract) {
@@ -2235,13 +2235,12 @@ export class IPAssetClient {
       );
     }
 
-    const { txHash, receipt } = await contractCallWithWipFees({
+    const { txHash, receipt } = await contractCallWithFees({
       totalFees,
-      wipOptions,
-      multicall3Client: this.multicall3Client,
+      erc20Options,
+      multicall3Address: this.multicall3Client.address,
       rpcClient: this.rpcClient,
-      wipClient: this.wipClient,
-      wipSpenders,
+      tokenSpenders: wipSpenders,
       contractCall,
       sender,
       wallet: this.wallet,

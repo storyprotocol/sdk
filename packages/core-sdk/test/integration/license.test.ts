@@ -1,15 +1,23 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Hex, zeroAddress } from "viem";
+import { Hex, maxUint256, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
-import { MockERC20 } from "./utils/mockERC20";
 import {
+  mockERC721,
+  getStoryClient,
+  getTokenId,
+  aeneid,
+  publicClient,
+  walletClient,
+} from "./utils/util";
+import {
+  erc20Address,
   licensingModuleAddress,
   piLicenseTemplateAddress,
   wrappedIpAddress,
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
+import { ERC20Client } from "../../src/utils/token";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -92,8 +100,8 @@ describe("License Functions", () => {
           waitForTransaction: true,
         },
       });
-      const mockERC20 = new MockERC20();
-      await mockERC20.approve(licensingModuleAddress[aeneid]);
+      const mockERC20 = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
+      await mockERC20.approve(licensingModuleAddress[aeneid], maxUint256);
       ipId = registerResult.ipId!;
       const registerLicenseResult = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: 0,

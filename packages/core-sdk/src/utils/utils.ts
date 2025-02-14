@@ -100,7 +100,7 @@ export const chain: { [key in SupportedChainIds]: "1315" | "1514" } = {
 
 export function validateAddress(address: string): Address {
   if (!isAddress(address, { strict: false })) {
-    throw Error(`Invalid address: ${address}`);
+    throw Error(`Invalid address: ${address}.`);
   }
   return address;
 }

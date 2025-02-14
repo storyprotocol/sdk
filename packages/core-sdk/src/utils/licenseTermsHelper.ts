@@ -1,7 +1,7 @@
 import { Address, PublicClient, zeroAddress } from "viem";
 
 import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
-import { getAddress } from "./utils";
+import { validateAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 
@@ -40,15 +40,12 @@ export function getLicenseTermByType(
     if (!term || term.defaultMintingFee === undefined || term.currency === undefined) {
       throw new Error("DefaultMintingFee, currency are required for commercial use PIL.");
     }
-    licenseTerms.royaltyPolicy = getAddress(
-      term.royaltyPolicyAddress,
-      "term.royaltyPolicyLAPAddress",
-    );
+    licenseTerms.royaltyPolicy = validateAddress(term.royaltyPolicyAddress);
     licenseTerms.defaultMintingFee = BigInt(term.defaultMintingFee);
     licenseTerms.commercialUse = true;
     licenseTerms.commercialAttribution = true;
     licenseTerms.derivativesReciprocal = false;
-    licenseTerms.currency = getAddress(term.currency, "term.currency");
+    licenseTerms.currency = validateAddress(term.currency);
     return licenseTerms;
   } else {
     if (
@@ -61,17 +58,14 @@ export function getLicenseTermByType(
         "DefaultMintingFee, currency and commercialRevShare are required for commercial remix PIL.",
       );
     }
-    licenseTerms.royaltyPolicy = getAddress(
-      term.royaltyPolicyAddress,
-      "term.royaltyPolicyLAPAddress",
-    );
+    licenseTerms.royaltyPolicy = validateAddress(term.royaltyPolicyAddress);
     licenseTerms.defaultMintingFee = BigInt(term.defaultMintingFee);
     licenseTerms.commercialUse = true;
     licenseTerms.commercialAttribution = true;
 
     licenseTerms.commercialRevShare = getRevenueShare(term.commercialRevShare);
     licenseTerms.derivativesReciprocal = true;
-    licenseTerms.currency = getAddress(term.currency, "term.currency");
+    licenseTerms.currency = validateAddress(term.currency);
     return licenseTerms;
   }
 }
@@ -82,14 +76,14 @@ export async function validateLicenseTerms(
 ): Promise<LicenseTerms> {
   const { royaltyPolicy, currency } = params;
   const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
-  if (getAddress(royaltyPolicy, "params.royaltyPolicy") !== zeroAddress) {
+  if (validateAddress(royaltyPolicy) !== zeroAddress) {
     const isWhitelistedArbitrationPolicy =
       await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({ royaltyPolicy });
     if (!isWhitelistedArbitrationPolicy) {
       throw new Error("The royalty policy is not whitelisted.");
     }
   }
-  if (getAddress(currency, "params.currency") !== zeroAddress) {
+  if (validateAddress(currency) !== zeroAddress) {
     const isWhitelistedRoyaltyToken = await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken({
       token: currency,
     });

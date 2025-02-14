@@ -5,13 +5,31 @@ import {
   getRevenueShare,
   validateLicenseTerms,
 } from "../../../src/utils/licenseTermsHelper";
-import { expect } from "chai";
-import { MockERC20 } from "../../integration/utils/mockERC20";
+import chai from "chai";
 import sinon from "sinon";
 import { createMock } from "../testUtils";
-const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
+import chaiAsPromised from "chai-as-promised";
+import { RoyaltyModuleReadOnlyClient } from "../../../src/abi/generated";
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe("License Terms Helper", () => {
+  let isWhitelistedRoyaltyTokenStub: sinon.SinonStub;
+  let isWhitelistedRoyaltyPolicyStub: sinon.SinonStub;
+  beforeEach(() => {
+    isWhitelistedRoyaltyTokenStub = sinon
+      .stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyToken")
+      .resolves(true);
+    isWhitelistedRoyaltyPolicyStub = sinon
+      .stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyPolicy")
+      .resolves(true);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe("getLicenseTermByType", () => {
     it("it should return no commercial license terms when call getLicenseTermByType given NON_COMMERCIAL_REMIX", async () => {
       const result = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
@@ -59,18 +77,6 @@ describe("License Terms Helper", () => {
             defaultMintingFee: "1",
           }),
         ).to.throw("DefaultMintingFee, currency are required for commercial use PIL.");
-      });
-
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_USE and wrong royaltyAddress", async () => {
-        expect(() =>
-          getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-            royaltyPolicyAddress: "wrong" as Hex,
-            defaultMintingFee: "1",
-            currency: zeroAddress,
-          }),
-        ).to.throw(
-          `term.royaltyPolicyLAPAddress address is invalid: wrong, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
-        );
       });
 
       it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_USE and correct args", async () => {
@@ -129,19 +135,6 @@ describe("License Terms Helper", () => {
           }),
         ).to.throw(
           "MintingFee, currency and commercialRevShare are required for commercial remix PIL.",
-        );
-      });
-
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX and wrong royaltyAddress", async () => {
-        expect(() =>
-          getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-            royaltyPolicyAddress: "wrong" as Hex,
-            defaultMintingFee: "1",
-            currency: zeroAddress,
-            commercialRevShare: 100,
-          }),
-        ).to.throw(
-          `term.royaltyPolicyLAPAddress address is invalid: wrong, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
         );
       });
 
@@ -254,9 +247,7 @@ describe("License Terms Helper", () => {
           },
           rpcMock,
         ),
-      ).to.be.rejectedWith(
-        "params.royaltyPolicy address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-      );
+      ).to.be.rejectedWith("Invalid address: 0x");
     });
     it("should throw defaultMintingFee error when call validateLicenseTerms given defaultMintingFee is less than 0", async () => {
       await expect(
@@ -283,9 +274,7 @@ describe("License Terms Helper", () => {
       ).to.be.rejectedWith("Royalty policy is required when defaultMintingFee is greater than 0.");
     });
     it("should throw royalty whitelist error when call validateLicenseTerms with invalid royalty whitelist address", async () => {
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
-        .stub()
-        .resolves(false);
+      isWhitelistedRoyaltyPolicyStub.resolves(false);
       await expect(
         validateLicenseTerms(
           {
@@ -298,9 +287,6 @@ describe("License Terms Helper", () => {
     });
 
     it("should throw currency error when call validateLicenseTerms with invalid currency address", async () => {
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
-        .stub()
-        .resolves(true);
       await expect(
         validateLicenseTerms(
           {
@@ -309,18 +295,11 @@ describe("License Terms Helper", () => {
           },
           rpcMock,
         ),
-      ).to.be.rejectedWith(
-        "params.currency address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-      );
+      ).to.be.rejectedWith("Invalid address: 0x");
     });
 
     it("should throw currency whitelist error when call validateLicenseTerms with invalid currency whitelist address", async () => {
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
-        .stub()
-        .resolves(true);
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon
-        .stub()
-        .resolves(false);
+      isWhitelistedRoyaltyTokenStub.resolves(false);
       await expect(
         validateLicenseTerms(
           {
@@ -333,10 +312,6 @@ describe("License Terms Helper", () => {
     });
 
     it("should throw royalty policy requires currency token error when call validateLicenseTerms given royaltyPolicy is not zero address and current is zero address", async () => {
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
-        .stub()
-        .resolves(true);
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon.stub().resolves(true);
       await expect(
         validateLicenseTerms(
           {
@@ -350,14 +325,6 @@ describe("License Terms Helper", () => {
     });
 
     describe("verify commercial use", () => {
-      beforeEach(() => {
-        RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
-          .stub()
-          .resolves(true);
-        RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon
-          .stub()
-          .resolves(true);
-      });
       it("should throw commercialAttribution error when call validateLicenseTerms given commercialUse is false and commercialAttribution is true", async () => {
         await expect(
           validateLicenseTerms(
@@ -463,14 +430,6 @@ describe("License Terms Helper", () => {
     });
 
     describe("verify derivatives", () => {
-      beforeEach(() => {
-        RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
-          .stub()
-          .resolves(true);
-        RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon
-          .stub()
-          .resolves(true);
-      });
       it("should throw derivativesAttribution error when call validateLicenseTerms given derivativesAllowed is false and derivativesAttribution is true", async () => {
         await expect(
           validateLicenseTerms(

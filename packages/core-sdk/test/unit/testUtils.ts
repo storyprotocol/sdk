@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import sinon from "sinon";
-import { Address, Hex, keccak256, toBytes } from "viem";
+import { Address, Hex, keccak256 } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 export function createMock<T>(obj = {}): T {
