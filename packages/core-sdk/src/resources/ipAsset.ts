@@ -458,16 +458,6 @@ export class IPAssetClient {
    * The license terms must be attached to the parent IP before calling this function.
    * All IPs attached default license terms by default.
    * The derivative IP owner must be the caller or an authorized operator.
-   * @param request - The request object that contains all data needed to register derivative IP.
-   *   @param request.childIpId The derivative IP ID.
-   *   @param {Array} request.parentIpIds The parent IP IDs.
-   *   @param {Array} request.licenseTermsIds The IDs of the license terms that the parent IP supports.
-   *   @param request.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *   @param request.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-   *   @param request.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
-   *   @param request.licenseTemplate [Optional] The license template address, default value is Programmable IP License.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data.
    */
   public async registerDerivative(
     request: RegisterDerivativeRequest,
@@ -974,22 +964,7 @@ export class IPAssetClient {
   }
   /**
    * Register the given NFT as a derivative IP with metadata without using license tokens.
-   * @param request - The request object that contains all data needed to register derivative IP.
-   *   @param request.nftContract The address of the NFT collection.
-   *   @param request.tokenId The ID of the NFT.
-   *   @param {Object} request.derivData The derivative data to be used for registerDerivative.
-   *     @param {Array} request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
-   *     @param {Array} request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking, default value is Programmable IP License.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, included IP ID, Token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
    */
   public async registerDerivativeIp(
     request: RegisterIpAndMakeDerivativeRequest,
@@ -1063,26 +1038,7 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
-   * @param request - The request object that contains all data needed to mint and register ip and make derivative.
-   *   @param request.spgNftContract The address of the NFT collection.
-   *   @param request.allowDuplicates Set to true to allow minting an NFT with a duplicate metadata hash.
-   *   @param {Object} request.derivData The derivative data to be used for registerDerivative.
-   *     @param {Array} request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
-   *     @param {Array} request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking, default value is Programmable IP License.
-   *     @param request.derivData.royaltyContext The address of the royalty context to be used for the linking, default value is zero address.
-   *     @param request.derivData.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *     @param request.derivData.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-   *     @param request.derivData.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes child IP ID and token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
    */
   public async mintAndRegisterIpAndMakeDerivative(
     request: MintAndRegisterIpAndMakeDerivativeRequest,
@@ -1644,29 +1600,8 @@ export class IPAssetClient {
   /**
    * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.  In order to successfully distribute royalty tokens, the license terms attached to the IP must be
    * a commercial license.
-   * @param request - The request object that contains all data needed to register derivative IP and distribute royalty tokens.
-   *   @param request.nftContract The address of the NFT collection.
-   *   @param request.tokenId The ID of the NFT.
-   *   @param {Object} request.derivData The derivative data to be used for registerDerivative.
-   *     @param {Array} request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
-   *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking, default value is Programmable IP License.
-   *     @param {Array} request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *     @param request.derivData.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *     @param request.derivData.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-   *     @param request.derivData.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
-   *      @param request.royaltyShares.recipient The address of the recipient.
-   *     @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
-   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hashes, IP ID and IP royalty vault, token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
-   * @emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault)
+   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
+   * it emits IpRoyaltyVaultDeployed (ipId, ipRoyaltyVault).
    */
   public async registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
@@ -1881,28 +1816,7 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
-   * @param request - The request object that contains all data needed to mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
-   *   @param request.spgNftContract The address of the SPG NFT collection.
-   *   @param request.derivData The derivative data to be used for registerDerivative.
-   *     @param  {Array} request.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
-   *     @param request.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking, default value is Programmable IP License.
-   *     @param {Array} request.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *     @param request.derivData.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *     @param request.derivData.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-   *     @param request.derivData.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param {Array} request.royaltyShares Authors of the IP and their shares of the royalty tokens.
-   *     @param request.royaltyShares.recipient The address of the recipient.
-   *     @param request.royaltyShares.percentage The percentage of the royalty share, 10 represents 10%.
-   *  @param request.allowDuplicates Set to true to allow minting an NFT with a duplicate metadata hash.
-   *  @param request.recipient - [Optional] The address to receive the minted NFT,default value is your wallet address.
-   *  @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option..
-   * @returns A Promise that resolves to a transaction hash, IP ID and token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   * emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
    */
   public async mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
@@ -2102,9 +2016,9 @@ export class IPAssetClient {
           getAddress(derivativeData.licenseTemplate, "derivativeData.licenseTemplate")) ||
         this.licenseTemplateClient.address,
       royaltyContext: zeroAddress,
-      maxMintingFee: BigInt(derivativeData.maxMintingFee),
-      maxRts: Number(derivativeData.maxRts),
-      maxRevenueShare: getRevenueShare(derivativeData.maxRevenueShare),
+      maxMintingFee: BigInt(derivativeData.maxMintingFee) || 0n,
+      maxRts: Number(derivativeData.maxRts) || 100_000_000,
+      maxRevenueShare: getRevenueShare(derivativeData.maxRevenueShare || 100),
     };
     if (internalDerivativeData.parentIpIds.length === 0) {
       throw new Error("The parent IP IDs must be provided.");
