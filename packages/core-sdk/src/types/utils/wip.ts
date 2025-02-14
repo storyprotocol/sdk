@@ -7,60 +7,25 @@ import {
   SimpleWalletClient,
   PiLicenseTemplateClient,
   LicensingModuleClient,
-  MockErc20Client,
+  Erc20Client,
 } from "../../abi/generated";
 import { TxOptions } from "../options";
 import { TokenClient, WIPTokenClient } from "../../utils/token";
-
-/**
- * Options to override the default behavior of the auto wrapping IP
- * and auto approve logic, use multicall.
- */
-export type ERC20Options = {
-  /** Options to configure erc20 behavior */
-  erc20Options?: {
-    /**
-     * Use multicall to batch the erc20 calls into one transaction when possible.
-     * This option is false if the token is not WIP.
-     *
-     * @default true
-     */
-    useMulticallWhenPossible?: boolean;
-
-    /**
-     * By default IP is converted to WIP if the current WIP
-     * balance does not cover the fees.
-     * Set this to `false` to disable this behavior.
-     * This option is false if the token is not WIP.
-     *
-     * @default true
-     */
-    enableAutoWrapIp?: boolean;
-
-    /**
-     * Automatically approve token usage when token is needed but current allowance
-     * is not sufficient.
-     * Set this to `false` to disable this behavior.
-     *
-     * @default true
-     */
-    enableAutoApprove?: boolean;
-  };
-};
+import { ERC20Options } from "../options";
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
-export type TokenSpender = {
+export type Erc20Spender = {
   address: Address;
   /**
-   * Amount that the address will spend in WIP.
+   * Amount that the address will spend in erc20 token.
    * If not provided, then unlimited amount is assumed.
    */
   amount?: bigint;
 };
 
 export type ApprovalCall = {
-  spenders: TokenSpender[];
+  spenders: Erc20Spender[];
   client: TokenClient;
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
@@ -71,8 +36,8 @@ export type ApprovalCall = {
 };
 
 export type TokenApprovalCall = {
-  spenders: TokenSpender[];
-  client: MockErc20Client;
+  spenders: Erc20Spender[];
+  client: Erc20Client;
   multicallAddress: Address;
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
@@ -85,7 +50,7 @@ export type ContractCallWithFees = ERC20Options & {
   totalFees: bigint;
   multicall3Address: Address;
   /** all possible spenders of the wip */
-  tokenSpenders: TokenSpender[];
+  tokenSpenders: Erc20Spender[];
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   rpcClient: PublicClient;
@@ -99,7 +64,7 @@ export type MulticallWithWrapIp = ERC20Options & {
   calls: Multicall3ValueCall[];
   ipAmountToWrap: bigint;
   contractCall: () => Promise<Hash>;
-  wipSpenders: TokenSpender[];
+  wipSpenders: Erc20Spender[];
   multicall3Address: Address;
   wipClient: WIPTokenClient;
   rpcClient: PublicClient;

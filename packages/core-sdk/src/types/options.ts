@@ -1,4 +1,4 @@
-import { WaitForTransactionReceiptParameters } from "viem";
+import { Hex, PublicClient, TransactionReceipt, WaitForTransactionReceiptParameters } from "viem";
 
 export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash"> & {
   /** Whether or not to wait for the transaction so you can receive a transaction receipt in return
@@ -13,4 +13,54 @@ export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash"> & {
 
 export type WithTxOptions = {
   txOptions?: TxOptions;
+};
+
+/**
+ * Options to override the default behavior of the auto wrapping IP
+ * and auto approve logic, use multicall.
+ */
+
+export type ERC20Options = {
+  /** Options to configure erc20 behavior */
+  erc20Options?: {
+    /**
+     * Use multicall to batch the erc20 calls into one transaction when possible.
+     * This option is false if the token is not WIP.
+     *
+     * @default true
+     */
+    useMulticallWhenPossible?: boolean;
+
+    /**
+     * By default IP is converted to WIP if the current WIP
+     * balance does not cover the fees.
+     * Set this to `false` to disable this behavior.
+     * This option is false if the token is not WIP.
+     *
+     * @default true
+     */
+    enableAutoWrapIp?: boolean;
+
+    /**
+     * Automatically approve token usage when token is needed but current allowance
+     * is not sufficient.
+     * Set this to `false` to disable this behavior.
+     *
+     * @default true
+     */
+    enableAutoApprove?: boolean;
+  };
+};
+
+export type HandleTxOptionsParams = {
+  txHash: Hex;
+  txOptions?: TxOptions;
+  rpcClient: PublicClient;
+};
+
+export type TransactionResponse = {
+  txHash: Hex;
+
+  /** Transaction receipt, only available if waitForTransaction is set to true */
+  receipt?: TransactionReceipt;
 };

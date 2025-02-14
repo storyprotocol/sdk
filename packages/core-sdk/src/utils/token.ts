@@ -31,7 +31,7 @@ export class ERC20Client implements TokenClient {
   approveEncode(spender: Address, value: bigint): EncodedTxData {
     return this.ercClient.approveEncode({ spender, value });
   }
-  // The method only will in test environment
+  // The method only will work in test environment
   async mint(to: Address, amount: bigint) {
     return await this.ercClient.mint({ to, amount });
   }

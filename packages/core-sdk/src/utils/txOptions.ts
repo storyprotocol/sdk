@@ -1,4 +1,4 @@
-import { HandleTxOptionsParams, TransactionResponse } from "../types/utils/txOptions";
+import { HandleTxOptionsParams, TransactionResponse } from "../types/options";
 
 export async function handleTxOptions({
   txOptions,

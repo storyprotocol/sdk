@@ -45,8 +45,8 @@ import {
 } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
-import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/wipFeeUtils";
-import { TokenSpender } from "../types/utils/wip";
+import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/Erc20FeeUtils";
+import { Erc20Spender } from "../types/utils/wip";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -436,7 +436,7 @@ export class LicenseClient {
         amount: req.amount,
       });
 
-      const wipSpenders: TokenSpender[] = [];
+      const wipSpenders: Erc20Spender[] = [];
       if (licenseMintingFee > 0n) {
         wipSpenders.push({
           address: royaltyModuleAddress[chain[this.chainId]],

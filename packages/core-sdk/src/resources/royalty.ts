@@ -36,8 +36,8 @@ import {
 import { IPAccountClient } from "./ipAccount";
 import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
-import { contractCallWithFees } from "../utils/wipFeeUtils";
-import { TokenSpender } from "../types/utils/wip";
+import { contractCallWithFees } from "../utils/Erc20FeeUtils";
+import { Erc20Spender } from "../types/utils/wip";
 import { simulateAndWriteContract } from "../utils/contract";
 
 export class RoyaltyClient {
@@ -176,7 +176,7 @@ export class RoyaltyClient {
       const contractCall = () => {
         return this.royaltyModuleClient.payRoyaltyOnBehalf(req);
       };
-      const tokenSpenders: TokenSpender[] = [
+      const tokenSpenders: Erc20Spender[] = [
         {
           address: this.royaltyModuleClient.address,
           amount: payAmount,
