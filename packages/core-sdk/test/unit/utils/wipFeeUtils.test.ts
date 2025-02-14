@@ -9,7 +9,8 @@ import {
   multicall3Address,
   erc20Address,
 } from "../../../src/abi/generated";
-import { createMock, generateRandomAddress, generateRandomHash, txHash } from "../testUtils";
+import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
+import { txHash } from "./mockData";
 import { contractCallWithFees } from "../../../src/utils/wipFeeUtils";
 import { TEST_WALLET_ADDRESS, aeneid } from "../../integration/utils/util";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
