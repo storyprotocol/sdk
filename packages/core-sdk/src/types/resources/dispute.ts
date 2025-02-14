@@ -55,9 +55,10 @@ export type TagIfRelatedIpInfringedRequest = {
     infringerDisputeId: number | string | bigint;
   }[];
   /**
-   * Use multicall to batch the WIP calls into one transaction when possible.
+   * Use multicall to batch the calls into one transaction when possible.
    *
    * @default true
+   * If args length is 1, multicall is not used.
    */
   useMulticallWhenPossible?: boolean;
 } & WithTxOptions;

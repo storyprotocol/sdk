@@ -22,5 +22,3 @@ export function generateRandomAddress(): Address {
   const address = account.address;
   return address;
 }
-
-export const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";

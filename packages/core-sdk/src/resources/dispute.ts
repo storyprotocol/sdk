@@ -22,6 +22,7 @@ import { chain, validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
+import { TransactionResponse } from "../types/utils/txOptions";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
@@ -184,28 +185,40 @@ export class DisputeClient {
    * or a group ip if a group member has been tagged with an infringement tag.
    * it emits IpTaggedOnRelatedIpInfringement(infringingIpId, ipIdToTag, infringerDisputeId, tag, disputeTimestamp)
    */
-  public async tagIfRelatedIpInfringed(request: TagIfRelatedIpInfringedRequest) {
+  public async tagIfRelatedIpInfringed(
+    request: TagIfRelatedIpInfringedRequest,
+  ): Promise<TransactionResponse[]> {
     try {
       const objects: DisputeModuleTagIfRelatedIpInfringedRequest[] = request.args.map((arg) => ({
         ipIdToTag: validateAddress(arg.ipIdToTag),
         infringerDisputeId: BigInt(arg.infringerDisputeId),
       }));
-      let txHash: Hex;
-      if (request.useMulticallWhenPossible !== false && request.args.length > 1) {
+      let txHashes: Hex[] = [];
+      if (
+        (request.useMulticallWhenPossible === undefined && request.args.length === 1) ||
+        request.useMulticallWhenPossible === false
+      ) {
+        txHashes = await Promise.all(
+          objects.map((object) => this.disputeModuleClient.tagIfRelatedIpInfringed(object)),
+        );
+      } else {
         const calls = objects.map((object) => ({
           target: this.disputeModuleClient.address,
           allowFailure: false,
           callData: this.disputeModuleClient.tagIfRelatedIpInfringedEncode(object).data,
         }));
-        txHash = await this.multicall3Client.aggregate3({ calls });
-      } else {
-        txHash = await this.disputeModuleClient.tagIfRelatedIpInfringed(objects[0]);
+        const txHash = await this.multicall3Client.aggregate3({ calls });
+        txHashes.push(txHash);
       }
-      return handleTxOptions({
-        txHash,
-        txOptions: request.txOptions,
-        rpcClient: this.rpcClient,
-      });
+      return await Promise.all(
+        txHashes.map((txHash) =>
+          handleTxOptions({
+            txHash,
+            txOptions: request.txOptions,
+            rpcClient: this.rpcClient,
+          }),
+        ),
+      );
     } catch (error) {
       handleError(error, "Failed to tag related ip");
     }
