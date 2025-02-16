@@ -395,6 +395,7 @@ export class GroupClient {
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    * @param request - The request object containing necessary data to register group and attach license and add ips.
+   *   @param request.ipIds must have the same PIL terms as the group IP.
    *   @param request.ipIds The IP IDs of the IPs to be added to the group.
    *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
    *   @param request.maxAllowedRewardShare The maximum reward share percentage that can be allocated to each member IP.
