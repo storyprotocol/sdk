@@ -14,6 +14,7 @@ export type RaiseDisputeRequest = WithTxOptions & {
    */
   targetTag: string;
   /** The liveness is the time window in which a counter dispute can be presented (30days). */
+  //TODO: Confirm about unit
   liveness: bigint | number | string;
   /**
    * The amount that the dispute initiator pays upfront into a pool.
