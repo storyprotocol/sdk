@@ -36,7 +36,7 @@ import {
 import { IPAccountClient } from "./ipAccount";
 import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
-import { contractCallWithFees } from "../utils/Erc20FeeUtils";
+import { contractCallWithFees } from "../utils/FeeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 import { simulateAndWriteContract } from "../utils/contract";
 
@@ -142,7 +142,8 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
-      const { receiverIpId, payerIpId, token, amount, erc20Options, txOptions } = request;
+      const { receiverIpId, payerIpId, token, amount, ERC20Options, wipOptions, txOptions } =
+        request;
       const sender = this.wallet.account!.address;
       const payAmount = BigInt(amount);
       if (payAmount <= 0n) {
@@ -184,7 +185,7 @@ export class RoyaltyClient {
       ];
       return contractCallWithFees({
         totalFees: payAmount,
-        erc20Options,
+        options: { ERC20Options, wipOptions },
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: tokenSpenders,

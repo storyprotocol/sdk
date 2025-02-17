@@ -317,7 +317,7 @@ describe("Dispute Functions", () => {
           },
         ],
         txOptions: { waitForTransaction: true },
-        useMulticallWhenPossible: true,
+        options: { useMulticallWhenPossible: true },
       });
       expect(results[0].txHash).to.be.a("string").and.not.empty;
     });

@@ -1,11 +1,10 @@
 import { Address, Hash, Hex, TransactionReceipt } from "viem";
 
-import { TxOptions } from "../options";
+import { TxOptions, WithWipOptions } from "../options";
 import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig } from "../common";
 import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
-import { ERC20Options } from "../options";
 
 export type DerivativeData = {
   parentIpIds: Address[];
@@ -66,7 +65,7 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
   recipient?: Address;
   royaltyPolicyAddress?: Address;
 } & IpMetadataAndTxOptions &
-  ERC20Options;
+  WithWipOptions;
 
 export type MintAndRegisterIpAssetWithPilTermsResponse = {
   txHash?: Hex;
@@ -88,7 +87,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
     signature: Hex;
   };
 } & IpMetadataAndTxOptions &
-  ERC20Options;
+  WithWipOptions;
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: Hex;
@@ -119,7 +118,7 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   recipient?: Address;
   allowDuplicates: boolean;
 } & IpMetadataAndTxOptions &
-  ERC20Options;
+  WithWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeResponse = {
   encodedTxData?: EncodedTxData;
@@ -243,7 +242,7 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   maxRts: number | string;
   allowDuplicates: boolean;
 } & IpMetadataAndTxOptions &
-  ERC20Options;
+  WithWipOptions;
 
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
@@ -252,7 +251,7 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   deadline?: string | number | bigint;
   maxRts: number | string;
 } & IpMetadataAndTxOptions &
-  ERC20Options;
+  WithWipOptions;
 
 export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
   args: Omit<MintAndRegisterIpAssetWithPilTermsRequest, "txOptions">[];
@@ -337,7 +336,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   royaltyShares: RoyaltyShare[];
   ipMetadata?: IpMetadataForWorkflow;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & ERC20Options;
+} & WithWipOptions;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
@@ -358,7 +357,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo &
-  ERC20Options;
+  WithWipOptions;
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
   txHash: Hex;
@@ -375,7 +374,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo &
-  ERC20Options;
+  WithWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {
   txHash: Hex;
@@ -383,7 +382,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse
   tokenId?: bigint;
 };
 
-export type CommonRegistrationHandlerParams = ERC20Options & {
+export type CommonRegistrationHandlerParams = WithWipOptions & {
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   spgNftContract?: Address;

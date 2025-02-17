@@ -1,9 +1,8 @@
 import { Address, TransactionReceipt } from "viem";
 
-import { WithTxOptions, TxOptions } from "../options";
+import { WithTxOptions, TxOptions, WithWipOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfig } from "../common";
-import { ERC20Options } from "../options";
 
 export type LicenseApiResponse = {
   data: License;
@@ -114,7 +113,7 @@ export type MintLicenseTokensRequest = {
   amount?: number | string | bigint;
   receiver?: Address;
 } & WithTxOptions &
-  ERC20Options;
+  WithWipOptions;
 
 export type MintLicenseTokensResponse = {
   licenseTokenIds?: bigint[];

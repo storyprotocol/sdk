@@ -46,7 +46,7 @@ describe("Test DisputeClient", () => {
       }
     });
 
-    it("throw liveness error when call raiseDispute given livenss out of range", async () => {
+    it("throw liveness error when call raiseDispute given liveness out of range", async () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(100n);
       sinon
         .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
@@ -293,7 +293,6 @@ describe("Test DisputeClient", () => {
     });
     it("should not call multicall3 when call tagIfRelatedIpInfringed give disable useMulticallWhenPossible", async () => {
       const result = await disputeClient.tagIfRelatedIpInfringed({
-        useMulticallWhenPossible: false,
         infringementTags: [
           {
             ipId: ipId,
@@ -304,6 +303,7 @@ describe("Test DisputeClient", () => {
             disputeId: 1,
           },
         ],
+        options: { useMulticallWhenPossible: false },
       });
 
       expect(result.length).equal(2);

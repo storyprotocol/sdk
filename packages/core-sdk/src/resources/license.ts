@@ -45,7 +45,7 @@ import {
 } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
-import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/Erc20FeeUtils";
+import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/FeeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 
 export class LicenseClient {
@@ -445,7 +445,7 @@ export class LicenseClient {
       }
       const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
-        erc20Options: request.erc20Options,
+        options: { wipOptions: request.wipOptions },
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: wipSpenders,

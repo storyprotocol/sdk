@@ -199,7 +199,10 @@ export class DisputeClient {
         }),
       );
       let txHashes: Hex[] = [];
-      if (request.useMulticallWhenPossible !== false && request.infringementTags.length > 1) {
+      if (
+        request.options?.useMulticallWhenPossible !== false &&
+        request.infringementTags.length > 1
+      ) {
         const calls = objects.map((object) => ({
           target: this.disputeModuleClient.address,
           allowFailure: false,

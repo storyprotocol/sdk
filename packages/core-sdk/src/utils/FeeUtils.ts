@@ -12,7 +12,7 @@ import {
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
-import { TransactionResponse } from "../types/options";
+import { TransactionResponse, WipOptions } from "../types/options";
 import { ERC20Client, WIPTokenClient } from "./token";
 
 /**
@@ -105,14 +105,14 @@ const multiCallWrapIp = async ({
   rpcClient,
   wallet,
   contractCall,
-  erc20Options,
+  wipOptions,
 }: MulticallWithWrapIp) => {
   if (ipAmountToWrap === 0n) {
     throw new Error("ipAmountToWrap should be greater than 0");
   }
   const multiCalls: Multicall3ValueCall[] = [];
 
-  const useMultiCall = erc20Options?.useMulticallWhenPossible !== false;
+  const useMultiCall = wipOptions?.useMulticallWhenPossible !== false;
   if (useMultiCall) {
     const deposit = wipClient.depositEncode();
     multiCalls.push({
@@ -136,7 +136,7 @@ const multiCallWrapIp = async ({
     });
   }
 
-  const autoApprove = erc20Options?.enableAutoApprove !== false;
+  const autoApprove = wipOptions?.enableAutoApprove !== false;
   if (autoApprove) {
     const approvalCalls = await approvalAllSpenders({
       spenders: wipSpenders,
@@ -186,7 +186,7 @@ const multiCallWrapIp = async ({
  */
 export const contractCallWithFees = async ({
   totalFees,
-  erc20Options,
+  options,
   multicall3Address,
   wallet,
   tokenSpenders,
@@ -199,21 +199,15 @@ export const contractCallWithFees = async ({
 }: ContractCallWithFees): Promise<TransactionResponse> => {
   const wipTokenClient = new WIPTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
+  const selectedOptions = isWip ? options?.wipOptions : options.ERC20Options;
   const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token);
-  const options = {
-    enableAutoApprove: erc20Options?.enableAutoApprove,
-    // default to false for erc20 token
-    enableAutoWrapIp: isWip ? erc20Options?.enableAutoWrapIp : false,
-    // default to false for erc20 token
-    useMulticallWhenPossible: isWip ? erc20Options?.useMulticallWhenPossible : false,
-  };
   // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
     return handleTxOptions({ rpcClient, txOptions, txHash });
   }
   const balance = await tokenClient.balanceOf(sender);
-  const autoApprove = options?.enableAutoApprove !== false;
+  const autoApprove = selectedOptions?.enableAutoApprove !== false;
 
   // handle when there's enough token to cover all fees
   if (balance >= totalFees) {
@@ -240,7 +234,7 @@ export const contractCallWithFees = async ({
       )}, balance: ${getTokenAmountDisplay(balance)}.`,
     );
   }
-  const autoWrapIp = options?.enableAutoWrapIp !== false;
+  const autoWrapIp = (selectedOptions as WipOptions)?.enableAutoWrapIp !== false;
   const startingBalance = await rpcClient.getBalance({ address: sender });
   // error if wallet does not have enough IP to cover fees
   if (startingBalance < totalFees) {
@@ -268,7 +262,7 @@ export const contractCallWithFees = async ({
     ipAmountToWrap: totalFees,
     multicall3Address,
     wipClient: wipTokenClient,
-    erc20Options: options,
+    wipOptions: selectedOptions,
     contractCall,
     wipSpenders: tokenSpenders,
     rpcClient,

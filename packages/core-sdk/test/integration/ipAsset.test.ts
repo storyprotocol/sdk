@@ -1167,7 +1167,7 @@ describe("IP Asset Functions", () => {
               percentage: 100,
             },
           ],
-          erc20Options: {
+          wipOptions: {
             enableAutoWrapIp: false,
           },
           txOptions: { waitForTransaction: true },

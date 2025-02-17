@@ -17,45 +17,57 @@ export type WithTxOptions = {
   txOptions?: TxOptions;
 };
 
-/**
- * Options to override the default behavior of the auto wrapping IP
- * and auto approve logic, use multicall.
- */
-
 export type ERC20Options = {
-  /** Options to configure erc20 behavior */
-  erc20Options?: {
-    /**
-     * Use multicall to batch the erc20 calls into one transaction when possible.
-     *
-     * @default true
-     * This option is not work if the token is not WIP.
-     *
-     */
-    useMulticallWhenPossible?: boolean;
-
-    /**
-     * By default IP is converted to WIP if the current WIP
-     * balance does not cover the fees.
-     * Set this to `false` to disable this behavior.
-     *
-     * @default true
-     * This option is not work if the token is not WIP.
-     *
-     */
-    enableAutoWrapIp?: boolean;
-
-    /**
-     * Automatically approve token usage when token is needed but current allowance
-     * is not sufficient.
-     * Set this to `false` to disable this behavior.
-     *
-     * @default true
-     */
-    enableAutoApprove?: boolean;
-  };
+  /**
+   * Automatically approve erc20 usage when erc20 is needed but current allowance
+   * is not sufficient.
+   * Set this to `false` to disable this behavior.
+   *
+   * @default true
+   */
+  enableAutoApprove: boolean;
+};
+/**
+ * Options to override the default behavior of the auto approve logic
+ */
+export type withERC20Options = {
+  ERC20Options?: ERC20Options;
 };
 
+export type WipOptions = {
+  /**
+   * Use multicall to batch the WIP calls into one transaction when possible.
+   *
+   * @default true
+   */
+  useMulticallWhenPossible?: boolean;
+
+  /**
+   * By default IP is converted to WIP if the current WIP
+   * balance does not cover the fees.
+   * Set this to `false` to disable this behavior.
+   *
+   * @default true
+   */
+  enableAutoWrapIp?: boolean;
+
+  /**
+   * Automatically approve WIP usage when WIP is needed but current allowance
+   * is not sufficient.
+   * Set this to `false` to disable this behavior.
+   *
+   * @default true
+   */
+  enableAutoApprove?: boolean;
+};
+/**
+ * Options to override the default behavior of the auto wrapping IP
+ * and auto approve logic.
+ */
+export type WithWipOptions = {
+  /** options to configure WIP behavior */
+  wipOptions?: WipOptions;
+};
 export type HandleTxOptionsParams = {
   txHash: Hex;
   txOptions?: TxOptions;

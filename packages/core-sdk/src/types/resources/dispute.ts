@@ -59,11 +59,13 @@ export type TagIfRelatedIpInfringedRequest = {
     /** The dispute id that tagged the related infringing ipId */
     disputeId: number | string | bigint;
   }[];
-  /**
-   * Use multicall to batch the calls into one transaction when possible.
-   *
-   * If args length is 1, multicall is not used.
-   * @default true
-   */
-  useMulticallWhenPossible?: boolean;
+  options?: {
+    /**
+     * Use multicall to batch the calls into one transaction when possible.
+     *
+     * If args length is 1, multicall is not used.
+     * @default true
+     */
+    useMulticallWhenPossible?: boolean;
+  };
 } & WithTxOptions;

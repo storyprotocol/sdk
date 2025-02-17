@@ -167,4 +167,4 @@ export { getPermissionSignature, getSignature } from "./utils/sign";
 
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
 
-export type { TxOptions, ERC20Options, TransactionResponse } from "./types/options";
+export type { TxOptions, TransactionResponse, WipOptions, ERC20Options } from "./types/options";

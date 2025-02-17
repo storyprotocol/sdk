@@ -11,7 +11,7 @@ import {
 } from "../../../src/abi/generated";
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import { txHash } from "./mockData";
-import { contractCallWithFees } from "../../../src/utils/Erc20FeeUtils";
+import { contractCallWithFees } from "../../../src/utils/FeeUtils";
 import { TEST_WALLET_ADDRESS, aeneid } from "../../integration/utils/util";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 import { ContractCallWithFees } from "../../../src/types/utils/wip";
@@ -60,6 +60,9 @@ describe("Erc20 Token Fee Utilities", () => {
         },
       ],
       sender: TEST_WALLET_ADDRESS,
+      options: {
+        wipOptions: {},
+      },
       ...overrides,
     };
   }
@@ -98,7 +101,7 @@ describe("Erc20 Token Fee Utilities", () => {
       it("should not call approval if disabled via enableAutoApprove", async () => {
         const params = getDefaultParams({
           totalFees: 100n,
-          erc20Options: { enableAutoApprove: false },
+          options: { ERC20Options: { enableAutoApprove: false } },
         });
         const { txHash, receipt } = await contractCallWithFees(params);
         expect(receipt).to.be.undefined;
@@ -198,7 +201,7 @@ describe("Erc20 Token Fee Utilities", () => {
         await expect(
           contractCallWithFees({
             ...params,
-            erc20Options: { enableAutoWrapIp: false },
+            options: { wipOptions: { enableAutoWrapIp: false } },
           }),
         ).to.be.rejectedWith(/^Wallet does not have enough WIP to pay for fees./);
       });
@@ -207,7 +210,7 @@ describe("Erc20 Token Fee Utilities", () => {
         it("should deposit, approve, and call contract separately", async () => {
           const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            erc20Options: { useMulticallWhenPossible: false },
+            options: { wipOptions: { useMulticallWhenPossible: false } },
           });
           expect(receipt).to.be.undefined;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -231,7 +234,9 @@ describe("Erc20 Token Fee Utilities", () => {
         it("should support wait for tx", async () => {
           const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            erc20Options: { useMulticallWhenPossible: false },
+            options: {
+              wipOptions: { useMulticallWhenPossible: false },
+            },
             txOptions: { waitForTransaction: true },
           });
           expect(receipt).not.to.be.undefined;
@@ -245,7 +250,9 @@ describe("Erc20 Token Fee Utilities", () => {
         it("should not call approval if enableAutoApprove is false", async () => {
           const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            erc20Options: { enableAutoApprove: false, useMulticallWhenPossible: false },
+            options: {
+              wipOptions: { enableAutoApprove: false, useMulticallWhenPossible: false },
+            },
           });
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
@@ -268,7 +275,9 @@ describe("Erc20 Token Fee Utilities", () => {
                 amount: 10n,
               },
             ],
-            erc20Options: { useMulticallWhenPossible: false },
+            options: {
+              wipOptions: { useMulticallWhenPossible: false },
+            },
           });
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
@@ -331,7 +340,9 @@ describe("Erc20 Token Fee Utilities", () => {
         it("should not include approvals if enableAutoApprove is false", async () => {
           const { txHash, receipt } = await contractCallWithFees({
             ...params,
-            erc20Options: { enableAutoApprove: false },
+            options: {
+              wipOptions: { enableAutoApprove: false },
+            },
           });
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
@@ -398,7 +409,9 @@ describe("Erc20 Token Fee Utilities", () => {
       const params = getDefaultParams({
         totalFees: 100n,
         token: erc20Address[aeneid],
-        erc20Options: { enableAutoApprove: false },
+        options: {
+          ERC20Options: { enableAutoApprove: false },
+        },
       });
       const { txHash, receipt } = await contractCallWithFees(params);
       expect(receipt).to.be.undefined;

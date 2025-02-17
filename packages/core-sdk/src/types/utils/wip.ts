@@ -9,9 +9,8 @@ import {
   LicensingModuleClient,
   Erc20Client,
 } from "../../abi/generated";
-import { TxOptions } from "../options";
+import { ERC20Options, TxOptions, WipOptions, WithWipOptions } from "../options";
 import { TokenClient, WIPTokenClient } from "../../utils/token";
-import { ERC20Options } from "../options";
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
@@ -46,7 +45,7 @@ export type TokenApprovalCall = {
   useMultiCall: boolean;
 };
 
-export type ContractCallWithFees = ERC20Options & {
+export type ContractCallWithFees = {
   totalFees: bigint;
   multicall3Address: Address;
   /** all possible spenders of the erc20 token */
@@ -56,11 +55,15 @@ export type ContractCallWithFees = ERC20Options & {
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
   sender: Address;
+  options: {
+    wipOptions?: WipOptions;
+    ERC20Options?: ERC20Options;
+  };
   token?: Address;
   txOptions?: TxOptions;
 };
 
-export type MulticallWithWrapIp = ERC20Options & {
+export type MulticallWithWrapIp = WithWipOptions & {
   calls: Multicall3ValueCall[];
   ipAmountToWrap: bigint;
   contractCall: () => Promise<Hash>;
