@@ -294,14 +294,14 @@ describe("Test DisputeClient", () => {
     it("should not call multicall3 when call tagIfRelatedIpInfringed give disable useMulticallWhenPossible", async () => {
       const result = await disputeClient.tagIfRelatedIpInfringed({
         useMulticallWhenPossible: false,
-        args: [
+        infringementTags: [
           {
-            ipIdToTag: ipId,
-            infringerDisputeId: 1,
+            ipId: ipId,
+            disputeId: 1,
           },
           {
-            ipIdToTag: ipId,
-            infringerDisputeId: 1,
+            ipId: ipId,
+            disputeId: 1,
           },
         ],
       });
@@ -311,16 +311,16 @@ describe("Test DisputeClient", () => {
       expect(tagIfRelatedIpInfringedStub.callCount).equal(2);
     });
 
-    it("should call multicall3 when call tagIfRelatedIpInfringed give more than one args", async () => {
+    it("should call multicall3 when call tagIfRelatedIpInfringed give more than one infringementTags", async () => {
       const result = await disputeClient.tagIfRelatedIpInfringed({
-        args: [
+        infringementTags: [
           {
-            ipIdToTag: ipId,
-            infringerDisputeId: 1,
+            ipId: ipId,
+            disputeId: 1,
           },
           {
-            ipIdToTag: ipId,
-            infringerDisputeId: 1,
+            ipId: ipId,
+            disputeId: 1,
           },
         ],
       });
@@ -330,12 +330,12 @@ describe("Test DisputeClient", () => {
       expect(tagIfRelatedIpInfringedStub.callCount).equal(0);
     });
 
-    it("should not call multicall3 when call tagIfRelatedIpInfringed give only one args", async () => {
+    it("should not call multicall3 when call tagIfRelatedIpInfringed give only one infringementTags", async () => {
       const result = await disputeClient.tagIfRelatedIpInfringed({
-        args: [
+        infringementTags: [
           {
-            ipIdToTag: ipId,
-            infringerDisputeId: 1,
+            ipId: ipId,
+            disputeId: 1,
           },
         ],
       });

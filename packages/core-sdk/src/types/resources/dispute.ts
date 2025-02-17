@@ -6,13 +6,17 @@ import { EncodedTxData } from "../../abi/generated";
 export type RaiseDisputeRequest = WithTxOptions & {
   /** The IP ID that is the target of the dispute. */
   targetIpId: Address;
-  /** The target tag of the dispute. */
   cid: string;
-  /** The target tag of the dispute. */
+  /**
+   * The target tag of the dispute.
+   * @see https://docs.story.foundation/docs/dispute-module#dispute-tags
+   * @example "IMPROPER_REGISTRATION"
+   */
   targetTag: string;
   /** The liveness is the time window in which a counter dispute can be presented (30days). */
   liveness: bigint | number | string;
-  /** The amount that the dispute initiator pays upfront into a pool.
+  /**
+   * The amount that the dispute initiator pays upfront into a pool.
    * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
    * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
    */
@@ -48,17 +52,17 @@ export type ResolveDisputeResponse = {
 };
 
 export type TagIfRelatedIpInfringedRequest = {
-  args: {
+  infringementTags: {
     /** The ipId to tag */
-    ipIdToTag: Address;
+    ipId: Address;
     /** The dispute id that tagged the related infringing ipId */
-    infringerDisputeId: number | string | bigint;
+    disputeId: number | string | bigint;
   }[];
   /**
    * Use multicall to batch the calls into one transaction when possible.
    *
-   * @default true
    * If args length is 1, multicall is not used.
+   * @default true
    */
   useMulticallWhenPossible?: boolean;
 } & WithTxOptions;

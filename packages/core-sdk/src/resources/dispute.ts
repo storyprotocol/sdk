@@ -41,7 +41,8 @@ export class DisputeClient {
 
   /**
    * Raises a dispute on a given ipId.
-   * Emits DisputeRaised (disputeId_, targetIpId, msg.sender, arbitrationPolicy, linkToDisputeEvidence, targetTag, calldata);
+   * Submits a {@link DisputeRaised} event.
+   * @see https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
@@ -184,24 +185,21 @@ export class DisputeClient {
    * Tags a derivative if a parent has been tagged with an infringement tag
    * or a group ip if a group member has been tagged with an infringement tag.
    * it emits IpTaggedOnRelatedIpInfringement(infringingIpId, ipIdToTag, infringerDisputeId, tag, disputeTimestamp)
+   * Submits a {@link IpTaggedOnRelatedIpInfringement} event.
+   * @see https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol.
    */
   public async tagIfRelatedIpInfringed(
     request: TagIfRelatedIpInfringedRequest,
   ): Promise<TransactionResponse[]> {
     try {
-      const objects: DisputeModuleTagIfRelatedIpInfringedRequest[] = request.args.map((arg) => ({
-        ipIdToTag: validateAddress(arg.ipIdToTag),
-        infringerDisputeId: BigInt(arg.infringerDisputeId),
-      }));
+      const objects: DisputeModuleTagIfRelatedIpInfringedRequest[] = request.infringementTags.map(
+        (arg) => ({
+          ipIdToTag: validateAddress(arg.ipId),
+          infringerDisputeId: BigInt(arg.disputeId),
+        }),
+      );
       let txHashes: Hex[] = [];
-      if (
-        (request.useMulticallWhenPossible === undefined && request.args.length === 1) ||
-        request.useMulticallWhenPossible === false
-      ) {
-        txHashes = await Promise.all(
-          objects.map((object) => this.disputeModuleClient.tagIfRelatedIpInfringed(object)),
-        );
-      } else {
+      if (request.useMulticallWhenPossible !== false && request.infringementTags.length > 1) {
         const calls = objects.map((object) => ({
           target: this.disputeModuleClient.address,
           allowFailure: false,
@@ -209,6 +207,10 @@ export class DisputeClient {
         }));
         const txHash = await this.multicall3Client.aggregate3({ calls });
         txHashes.push(txHash);
+      } else {
+        txHashes = await Promise.all(
+          objects.map((object) => this.disputeModuleClient.tagIfRelatedIpInfringed(object)),
+        );
       }
       return await Promise.all(
         txHashes.map((txHash) =>

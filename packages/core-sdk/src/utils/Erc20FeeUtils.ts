@@ -200,7 +200,7 @@ export const contractCallWithFees = async ({
   const wipTokenClient = new WIPTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
   const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token);
-  erc20Options = {
+  const options = {
     enableAutoApprove: erc20Options?.enableAutoApprove,
     // default to false for erc20 token
     enableAutoWrapIp: isWip ? erc20Options?.enableAutoWrapIp : false,
@@ -210,10 +210,10 @@ export const contractCallWithFees = async ({
   // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
-    return await handleTxOptions({ rpcClient, txOptions, txHash });
+    return handleTxOptions({ rpcClient, txOptions, txHash });
   }
   const balance = await tokenClient.balanceOf(sender);
-  const autoApprove = erc20Options?.enableAutoApprove !== false;
+  const autoApprove = options?.enableAutoApprove !== false;
 
   // handle when there's enough token to cover all fees
   if (balance >= totalFees) {
@@ -230,51 +230,50 @@ export const contractCallWithFees = async ({
       });
     }
     const txHash = await contractCall();
-    return await handleTxOptions({ rpcClient, txOptions, txHash });
+    return handleTxOptions({ rpcClient, txOptions, txHash });
   }
 
-  if (isWip) {
-    const autoWrapIp = erc20Options?.enableAutoWrapIp !== false;
-    const startingBalance = await rpcClient.getBalance({ address: sender });
-    // error if wallet does not have enough IP to cover fees
-    if (startingBalance < totalFees) {
-      throw new Error(
-        `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
-          totalFees,
-        )}, balance: ${getTokenAmountDisplay(startingBalance)}.`,
-      );
-    }
-    // error if there's enough IP to cover fees and we cannot wrap IP to WIP
-    if (!autoWrapIp) {
-      throw new Error(
-        `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
-          totalFees,
-        )}, balance: ${getTokenAmountDisplay(balance, "WIP")}.`,
-      );
-    }
-    const calls = encodedTxs?.map((data) => ({
-      target: data.to,
-      allowFailure: false,
-      value: 0n,
-      callData: data.data,
-    }));
-    const { txHash } = await multiCallWrapIp({
-      ipAmountToWrap: totalFees,
-      multicall3Address,
-      wipClient: wipTokenClient,
-      erc20Options,
-      contractCall,
-      wipSpenders: tokenSpenders,
-      rpcClient,
-      wallet,
-      calls,
-    });
-    return handleTxOptions({ rpcClient, txOptions, txHash });
-  } else {
+  if (!isWip) {
     throw new Error(
       `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
         totalFees,
       )}, balance: ${getTokenAmountDisplay(balance)}.`,
     );
   }
+  const autoWrapIp = options?.enableAutoWrapIp !== false;
+  const startingBalance = await rpcClient.getBalance({ address: sender });
+  // error if wallet does not have enough IP to cover fees
+  if (startingBalance < totalFees) {
+    throw new Error(
+      `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
+        totalFees,
+      )}, balance: ${getTokenAmountDisplay(startingBalance)}.`,
+    );
+  }
+  // error if there's enough IP to cover fees and we cannot wrap IP to WIP
+  if (!autoWrapIp) {
+    throw new Error(
+      `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
+        totalFees,
+      )}, balance: ${getTokenAmountDisplay(balance, "WIP")}.`,
+    );
+  }
+  const calls = encodedTxs?.map((data) => ({
+    target: data.to,
+    allowFailure: false,
+    value: 0n,
+    callData: data.data,
+  }));
+  const { txHash } = await multiCallWrapIp({
+    ipAmountToWrap: totalFees,
+    multicall3Address,
+    wipClient: wipTokenClient,
+    erc20Options: options,
+    contractCall,
+    wipSpenders: tokenSpenders,
+    rpcClient,
+    wallet,
+    calls,
+  });
+  return handleTxOptions({ rpcClient, txOptions, txHash });
 };

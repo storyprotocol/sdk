@@ -310,10 +310,10 @@ describe("Dispute Functions", () => {
 
       // Step 2: Tag derivative IP as infringing
       const results = await clientA.dispute.tagIfRelatedIpInfringed({
-        args: [
+        infringementTags: [
           {
-            ipIdToTag: childIpId,
-            infringerDisputeId: disputeId,
+            ipId: childIpId,
+            disputeId: disputeId,
           },
         ],
         txOptions: { waitForTransaction: true },
