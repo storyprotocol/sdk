@@ -21,7 +21,7 @@ export type DerivativeData = {
    */
   maxRts: number | string;
   /**
-   * The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100 (where 100% represents 100,000,000).
+   * The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100 (where 100% represents 100_000_000).
    * @default 100
    */
   maxRevenueShare: number | string;

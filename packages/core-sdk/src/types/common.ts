@@ -13,7 +13,8 @@ export type IpMetadataAndTxOptions = WithTxOptions & {
   ipMetadata?: Partial<IpMetadataForWorkflow>;
 };
 export type LicensingConfig = {
-  /** Whether the configuration is set or not
+  /**
+   * Whether the configuration is set or not
    * @default false
    */
   isSet?: boolean;
@@ -43,7 +44,7 @@ export type LicensingConfig = {
    */
   disabled?: boolean;
   /**
-   * The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   * The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100_000_000) that can be allocated to the IP when it is added to the group.
    * If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    * @default 0
    */

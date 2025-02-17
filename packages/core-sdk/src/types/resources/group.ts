@@ -58,7 +58,8 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   tokenId: bigint | string | number;
   /** The ID of the group IP to add the newly registered IP. */
   groupId: Address;
-  /** The deadline for the signature in seconds.
+  /**
+   * The deadline for the signature in seconds.
    * @default 1000s
    */
   deadline?: bigint;
