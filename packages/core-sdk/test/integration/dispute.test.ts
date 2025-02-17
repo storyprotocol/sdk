@@ -22,7 +22,6 @@ import {
   zeroAddress,
 } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { MockERC20 } from "./utils/mockERC20";
 import {
   arbitrationPolicyUmaAddress,
   disputeModuleAddress,
@@ -58,6 +57,7 @@ const generateCID = async () => {
 describe("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
+  let ipIdB: Address;
 
   before(async () => {
     const privateKey = generatePrivateKey();
@@ -69,31 +69,31 @@ describe("Dispute Functions", () => {
     const clientAWalletClient = createWalletClient({
       chain: chainStringToViemChain("aeneid"),
       transport: http(RPC),
-      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as `0x${string}`),
+      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
     });
     const txHash = await clientAWalletClient.sendTransaction({
       to: walletB.address,
       value: parseEther("0.25"),
     });
     await publicClient.waitForTransactionReceipt({ hash: txHash });
+
     // clientA approves the arbitration policyUma module to spend the some tokens
     const mockERC20 = new WIPTokenClient(publicClient, walletClient);
     await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid], maxUint256);
+
+    const tokenId = await getTokenId();
+    ipIdB = (
+      await clientB.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      })
+    ).ipId!;
   });
 
   describe("raiseDispute", () => {
-    let ipIdB: Address;
-    before(async () => {
-      ipIdB = (
-        await clientB.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          txOptions: {
-            waitForTransaction: true,
-          },
-        })
-      ).ipId!;
-    });
     it("should raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
@@ -201,7 +201,7 @@ describe("Dispute Functions", () => {
         this.skip();
       }
       // Set up judge wallet client using whitelisted account
-       judgeWalletClient = createWalletClient({
+      judgeWalletClient = createWalletClient({
         chain: chainStringToViemChain("aeneid"),
         transport: http(RPC),
         account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as Address),
@@ -322,28 +322,29 @@ describe("Dispute Functions", () => {
       expect(results[0].txHash).to.be.a("string").and.not.empty;
     });
 
-  // Test that dispute initiator can resolve the dispute after judgement
-  it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
-    const response = await clientA.dispute.resolveDispute({
-      disputeId: disputeId,
-      data: "0x",
-      txOptions: {
-        waitForTransaction: true,
-      },
-    });
-    expect(response.txHash).to.be.a("string").and.not.empty;
-  });
-
-  // Test that non-initiators cannot resolve the dispute
-  it("should fail when non-initiator tries to resolve the dispute", async () => {
-    await expect(
-      clientB.dispute.resolveDispute({
+    // Test that dispute initiator can resolve the dispute after judgement
+    it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
+      const response = await clientA.dispute.resolveDispute({
         disputeId: disputeId,
         data: "0x",
         txOptions: {
           waitForTransaction: true,
         },
-      }),
-    ).to.be.rejectedWith("NotDisputeInitiator");
+      });
+      expect(response.txHash).to.be.a("string").and.not.empty;
+    });
+
+    // Test that non-initiators cannot resolve the dispute
+    it("should fail when non-initiator tries to resolve the dispute", async () => {
+      await expect(
+        clientB.dispute.resolveDispute({
+          disputeId: disputeId,
+          data: "0x",
+          txOptions: {
+            waitForTransaction: true,
+          },
+        }),
+      ).to.be.rejectedWith("NotDisputeInitiator");
+    });
   });
 });
