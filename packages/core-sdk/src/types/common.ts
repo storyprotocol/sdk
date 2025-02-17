@@ -42,7 +42,3 @@ export type ValidatedLicensingConfig = LicensingConfig & {
  * Will be converted to bigint for contract calls.
  */
 export type TokenAmountInput = bigint | number;
-// Make all properties in T required
-export type MakeRequired<T> = {
-  [P in keyof T]-?: T[P];
-};
