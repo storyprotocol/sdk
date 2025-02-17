@@ -25,11 +25,13 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   maxAllowedRewardShare: number | string;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseData[];
-  /** The address of the recipient of the minted NFT.
+  /**
+   * The address of the recipient of the minted NFT.
    * @default  wallet address
    */
   recipient?: Address;
-  /** The deadline for the signature in seconds.
+  /**
+   * The deadline for the signature in seconds.
    * @default 1000s
    */
   deadline?: string | number | bigint;
