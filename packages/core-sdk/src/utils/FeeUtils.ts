@@ -173,7 +173,7 @@ const multiCallWrapIp = async ({
 };
 
 /**
- * Handle contract calls that require token fees by automatically wrapping IP to WIP, automatically approve when needed.
+ * Handle contract calls that require token fees by automatically wrapping IP to WIP only for wip, otherwise only handle approvals.
  *
  * @remarks
  * This function will automatically handle the following:
