@@ -108,7 +108,8 @@ export class GroupClient {
     }
   }
   /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
-   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata).
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/registries/IIPAssetRegistry.sol | IIPAssetRegistry}
+   * for a list of on-chain events emitted when an IP is minted and registered, license terms are attached to an IP, and it is added to a group.
    */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -181,7 +182,8 @@ export class GroupClient {
   }
 
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
-   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata).
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/registries/IIPAssetRegistry.sol | IIPAssetRegistry}
+   * for a list of on-chain events emitted when an IP is registered, license terms are attached to an IP, and it is added to a group.
    */
   public async registerIpAndAttachLicenseAndAddToGroup(
     request: RegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -290,7 +292,8 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
-   * it emits PGroupRegistered (groupId, groupPool).
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/grouping/IGroupingModule.sol | IGroupingModule}
+   * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP .
    */
   public async registerGroupAndAttachLicense(
     request: RegisterGroupAndAttachLicenseRequest,
@@ -321,7 +324,8 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
-   * it emits PGroupRegistered (groupId, groupPool).
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/grouping/IGroupingModule.sol | IGroupingModule}
+   * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP, and individual IPs are added to a group.
    */
   public async registerGroupAndAttachLicenseAndAddIps(
     request: RegisterGroupAndAttachLicenseAndAddIpsRequest,
