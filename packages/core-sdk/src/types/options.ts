@@ -25,12 +25,12 @@ export type ERC20Options = {
    *
    * @default true
    */
-  enableAutoApprove: boolean;
+  enableAutoApprove?: boolean;
 };
 /**
  * Options to override the default behavior of the auto approve logic
  */
-export type withERC20Options = {
+export type WithERC20Options = {
   ERC20Options?: ERC20Options;
 };
 

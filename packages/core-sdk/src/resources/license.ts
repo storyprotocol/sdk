@@ -45,7 +45,7 @@ import {
 } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
-import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/FeeUtils";
+import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 
 export class LicenseClient {

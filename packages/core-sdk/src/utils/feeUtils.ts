@@ -12,7 +12,7 @@ import {
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
-import { TransactionResponse, WipOptions } from "../types/options";
+import { TransactionResponse } from "../types/options";
 import { ERC20Client, WIPTokenClient } from "./token";
 
 /**
@@ -173,7 +173,8 @@ const multiCallWrapIp = async ({
 };
 
 /**
- * Handle contract calls that require token fees by automatically wrapping IP to WIP only for wip, otherwise only handle approvals.
+ * Handle contract calls that require token fees. For fees in WIP, it automatically wraps IP to WIP when insufficient WIP balance.
+ * For all other ERC20 tokens, it handles approvals if insufficient allowance.
  *
  * @remarks
  * This function will automatically handle the following:
@@ -234,7 +235,7 @@ export const contractCallWithFees = async ({
       )}, balance: ${getTokenAmountDisplay(balance)}.`,
     );
   }
-  const autoWrapIp = (selectedOptions as WipOptions)?.enableAutoWrapIp !== false;
+  const autoWrapIp = options?.wipOptions?.enableAutoWrapIp !== false;
   const startingBalance = await rpcClient.getBalance({ address: sender });
   // error if wallet does not have enough IP to cover fees
   if (startingBalance < totalFees) {
@@ -262,7 +263,7 @@ export const contractCallWithFees = async ({
     ipAmountToWrap: totalFees,
     multicall3Address,
     wipClient: wipTokenClient,
-    wipOptions: selectedOptions,
+    wipOptions: options?.wipOptions,
     contractCall,
     wipSpenders: tokenSpenders,
     rpcClient,

@@ -13,10 +13,10 @@ export type RaiseDisputeRequest = WithTxOptions & {
    * @example "IMPROPER_REGISTRATION"
    */
   targetTag: string;
-  /** The liveness is the time window in which a counter dispute can be presented (30days). The unit is second. */
+  /** The liveness is the time window (in seconds) in which a counter dispute can be presented (30days). */
   liveness: bigint | number | string;
   /**
-   * The amount that the dispute initiator pays upfront into a pool.
+   * The amount of ERC20 that the dispute initiator pays upfront into a pool.
    * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
    * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
    */
@@ -62,7 +62,7 @@ export type TagIfRelatedIpInfringedRequest = {
     /**
      * Use multicall to batch the calls into one transaction when possible.
      *
-     * If args length is 1, multicall is not used.
+     * If only 1 infringementTag is provided, multicall will not be used.
      * @default true
      */
     useMulticallWhenPossible?: boolean;

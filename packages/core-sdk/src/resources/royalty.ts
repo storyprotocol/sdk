@@ -36,7 +36,7 @@ import {
 import { IPAccountClient } from "./ipAccount";
 import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
-import { contractCallWithFees } from "../utils/FeeUtils";
+import { contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 import { simulateAndWriteContract } from "../utils/contract";
 

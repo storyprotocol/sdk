@@ -114,7 +114,7 @@ import {
   calculateLicenseWipMintFee,
   calculateSPGWipMintFee,
   contractCallWithFees,
-} from "../utils/FeeUtils";
+} from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
 

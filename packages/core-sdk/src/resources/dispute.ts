@@ -41,8 +41,10 @@ export class DisputeClient {
 
   /**
    * Raises a dispute on a given ipId.
+   *
    * Submits a {@link DisputeRaised} event.
-   * @see https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol | IDisputeModule.sol}
+   * for a list of on-chain events emitted when a dispute is raised.
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
@@ -184,9 +186,9 @@ export class DisputeClient {
   /**
    * Tags a derivative if a parent has been tagged with an infringement tag
    * or a group ip if a group member has been tagged with an infringement tag.
-   * it emits IpTaggedOnRelatedIpInfringement(infringingIpId, ipIdToTag, infringerDisputeId, tag, disputeTimestamp)
-   * Submits a {@link IpTaggedOnRelatedIpInfringement} event.
-   * @see https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol.
+   *
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol | IDisputeModule.sol}
+   * for a list of on-chain events emitted when a derivative is tagged on an infringement.
    */
   public async tagIfRelatedIpInfringed(
     request: TagIfRelatedIpInfringedRequest,
