@@ -24,13 +24,13 @@ export type LicensingConfig = {
    */
   mintingFee?: bigint | string | number;
   /**
-   * The hook contract address for the licensing module, or address(0) if none.
-   * @default address(0)
+   * The hook contract address for the licensing module, or zero address if none.
+   * @default zeroAddress
    */
   licensingHook?: Address;
   /**
    * The data to be used by the licensing hook.
-   * @default address(0)
+   * @default zeroAddress
    */
   hookData?: Hex;
   /**
@@ -50,8 +50,8 @@ export type LicensingConfig = {
    */
   expectMinimumGroupRewardShare?: number | string;
   /**
-   * The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
-   * @default address(0)
+   * The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or zero address if the IP does not want to be added to any group.
+   * @default zeroAddress
    */
   expectGroupRewardPool?: Address;
 };

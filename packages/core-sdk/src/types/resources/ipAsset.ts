@@ -103,7 +103,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
    * @default 1000s
    */
   deadline?: string | number | bigint;
-  /** The derivative data to be used for registerDerivative. */
+  /** The derivative data to be used for register derivative. */
   derivData: DerivativeData;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
@@ -137,7 +137,7 @@ export type RegisterIpAndAttachPilTermsResponse = {
 };
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
-  /** The derivative data to be used for registerDerivative. */
+  /** The derivative data to be used for register derivative. */
   derivData: DerivativeData;
   /**
    * Authors of the IP and their shares of the royalty tokens.
@@ -378,7 +378,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
    * @default 1000s
    */
   deadline?: string | number | bigint;
-  /** The derivative data to be used for registerDerivative.*/
+  /** The derivative data to be used for register derivative.*/
   derivData: DerivativeData;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
@@ -427,7 +427,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
-  /** The derivative data to be used for registerDerivative. */
+  /** The derivative data to be used for register derivative. */
   derivData: DerivativeData;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];

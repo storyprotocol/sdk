@@ -639,7 +639,9 @@ export class IPAssetClient {
   /**
    * Mint an NFT from a collection and register it as an IP.
    * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
-   * it emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId).
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/registries/IIPAssetRegistry.sol | IIPAssetRegistry}
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/licensing/ILicensingModule.sol | ILicensingModule}
+   * for a list of on-chain events emitted when an IP is minted and registered, and license terms are attached to an IP.
    */
   public async mintAndRegisterIpAssetWithPilTerms(
     request: MintAndRegisterIpAssetWithPilTermsRequest,
@@ -714,13 +716,13 @@ export class IPAssetClient {
    *       @param {Object} request.args.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
    *         @param request.args.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
    *         @param request.args.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *         @param request.args.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or address(0) if none
+   *         @param request.args.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or zero address if none
    *         @param request.args.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *         @param request.args.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *         @param request.args.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
    *         @param request.args.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *         If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *         @param request.args.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or address(0) if the IP does not want to be added to any group.
+   *         @param request.args.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or zero address if the IP does not want to be added to any group.
    *     @param {Object} request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
    *       @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
    *       @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
@@ -785,8 +787,9 @@ export class IPAssetClient {
     }
   }
   /**
-   * Register a given NFT as an IP and attach Programmable IP License Terms.R.
-   * it emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId).
+   * Register a given NFT as an IP and attach Programmable IP License Terms.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/licensing/ILicensingModule.sol | ILicensingModule}
+   * for a list of on-chain events emitted when an ip is registered and license terms are attached to it.
    */
   public async registerIpAndAttachPilTerms(
     request: RegisterIpAndAttachPilTermsRequest,
