@@ -6,6 +6,11 @@ import { EncodedTxData } from "../../abi/generated";
 export type RaiseDisputeRequest = WithTxOptions & {
   /** The IP ID that is the target of the dispute. */
   targetIpId: Address;
+  /**
+   * Content Identifier (CID) for the dispute evidence.
+   * This should be obtained by uploading your dispute evidence (documents, images, etc.) to IPFS.
+   * @example "QmX4zdp8VpzqvtKuEqMo6gfZPdoUx9TeHXCgzKLcFfSUbk"
+   */
   cid: string;
   /**
    * The target tag of the dispute.

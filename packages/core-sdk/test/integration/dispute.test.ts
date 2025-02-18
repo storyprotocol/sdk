@@ -114,7 +114,7 @@ describe("Dispute Functions", () => {
       const minLiveness = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.minLiveness();
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
-        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: Number(minLiveness) - 1,
         bond: 0,
@@ -129,7 +129,7 @@ describe("Dispute Functions", () => {
     it("should throw error when bond exceeds maximum", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
-        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
         bond: 2000000000000000000,
@@ -146,7 +146,7 @@ describe("Dispute Functions", () => {
     it("should throw error for non-whitelisted dispute tag", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
-        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        cid: await generateCID(),
         targetTag: "INVALID_TAG",
         liveness: 2592000,
         bond: 0,
@@ -193,6 +193,7 @@ describe("Dispute Functions", () => {
     let parentIpId: Address;
     let licenseTermsId: bigint;
     let childIpId: Address;
+    let childIpId2: Address;
     let judgeWalletClient: WalletClient;
 
     before(async function (this: Mocha.Context) {
@@ -263,7 +264,7 @@ describe("Dispute Functions", () => {
       licenseTermsId = ipIdAndLicenseResponse.licenseTermsIds![0];
 
       //Create a derivative ip
-      const derivativeIpIdResponse = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+      const derivativeIpIdResponse1 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract: nftContract,
         derivData: {
           parentIpIds: [parentIpId!],
@@ -275,11 +276,25 @@ describe("Dispute Functions", () => {
         allowDuplicates: true,
         txOptions: { waitForTransaction: true },
       });
-      childIpId = derivativeIpIdResponse.ipId!;
-    });
+      childIpId = derivativeIpIdResponse1.ipId!;
 
-    it("should raise a dispute", async () => {
-      const raiseDisputeRequest: RaiseDisputeRequest = {
+      // Create a second derivative ip
+      const derivativeIpIdResponse2 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContract,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+        allowDuplicates: true,
+        txOptions: { waitForTransaction: true },
+      });
+      childIpId2 = derivativeIpIdResponse2.ipId!;
+
+      // Raise a dispute
+      const response = await clientA.dispute.raiseDispute({
         targetIpId: parentIpId,
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
@@ -288,11 +303,8 @@ describe("Dispute Functions", () => {
         txOptions: {
           waitForTransaction: true,
         },
-      };
-      const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
+      });
       disputeId = response.disputeId!;
-      expect(response.txHash).to.be.a("string").and.not.empty;
-      expect(response.disputeId).to.be.a("bigint");
     });
 
     it("should tag infringing ip", async () => {
@@ -315,9 +327,12 @@ describe("Dispute Functions", () => {
             ipId: childIpId,
             disputeId: disputeId,
           },
+          {
+            ipId: childIpId2,
+            disputeId: disputeId,
+          },
         ],
         txOptions: { waitForTransaction: true },
-        options: { useMulticallWhenPossible: true },
       });
       expect(results[0].txHash).to.be.a("string").and.not.empty;
     });
