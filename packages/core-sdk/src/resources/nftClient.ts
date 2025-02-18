@@ -1,19 +1,21 @@
-import { PublicClient, isAddress, maxUint32, zeroAddress } from "viem";
+import { Address, PublicClient, isAddress, maxUint32, zeroAddress } from "viem";
 
 import {
   RegistrationWorkflowsClient,
   RegistrationWorkflowsCreateCollectionRequest,
   SimpleWalletClient,
+  SpgnftImplReadOnlyClient,
 } from "../abi/generated";
 import {
   CreateNFTCollectionRequest,
   CreateNFTCollectionResponse,
 } from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
-import { getAddress } from "../utils/utils";
+import { getAddress, validateAddress } from "../utils/utils";
 
 export class NftClient {
   public registrationWorkflowsClient: RegistrationWorkflowsClient;
+
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
 
@@ -95,5 +97,26 @@ export class NftClient {
     } catch (error) {
       handleError(error, "Failed to create a SPG NFT collection");
     }
+  }
+  /**
+   * Returns the current mint token of the collection.
+   */
+  public async getMintFeeToken(spgNftContract: Address): Promise<Address> {
+    const spgNftClient = new SpgnftImplReadOnlyClient(
+      this.rpcClient,
+      validateAddress(spgNftContract),
+    );
+    return spgNftClient.mintFeeToken();
+  }
+
+  /**
+   * Returns the current mint fee of the collection.
+   */
+  public async getMintFee(spgNftContract: Address): Promise<bigint> {
+    const spgNftClient = new SpgnftImplReadOnlyClient(
+      this.rpcClient,
+      validateAddress(spgNftContract),
+    );
+    return spgNftClient.mintFee();
   }
 }

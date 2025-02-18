@@ -291,7 +291,7 @@ export default defineConfig(async () => {
           ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],
-          SPG: ["CollectionCreated"],
+          SPG: ["CollectionCreated", "mintFee", "mintFeeToken"],
           GroupingWorkflows: [
             "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
             "registerIpAndAttachLicenseAndAddToGroup",
