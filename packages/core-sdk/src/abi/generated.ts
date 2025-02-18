@@ -15199,7 +15199,7 @@ export const wrappedIpAbi = [
     inputs: [],
     name: "name",
     outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
   {
     type: "function",
@@ -15228,7 +15228,7 @@ export const wrappedIpAbi = [
     inputs: [],
     name: "symbol",
     outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
   {
     type: "function",

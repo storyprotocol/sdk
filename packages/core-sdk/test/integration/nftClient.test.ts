@@ -9,6 +9,7 @@ chai.use(chaiAsPromised);
 describe("nftClient Functions", () => {
   let client: StoryClient;
   let testWalletAddress: Address;
+  let spgNftContract: Address;
 
   before(async () => {
     client = getStoryClient();
@@ -31,6 +32,7 @@ describe("nftClient Functions", () => {
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
       expect(txData.txHash).to.be.a("string").and.not.empty;
+      spgNftContract = txData.spgNftContract!;
     });
 
     it("should successfully create collection with custom mint fee", async () => {
@@ -137,5 +139,15 @@ describe("nftClient Functions", () => {
         }),
       ).to.be.rejectedWith("Invalid mint fee token address");
     });
+  });
+
+  it("should successfully get mint fee token", async () => {
+    const mintFeeToken = await client.nftClient.getMintFeeToken(spgNftContract);
+    expect(mintFeeToken).to.be.a("string").and.not.empty;
+  });
+
+  it("should successfully get mint fee", async () => {
+    const mintFee = await client.nftClient.getMintFee(spgNftContract);
+    expect(mintFee).to.be.a("bigint");
   });
 });
