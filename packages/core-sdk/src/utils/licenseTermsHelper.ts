@@ -4,6 +4,7 @@ import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resour
 import { validateAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
+import { RevShareType } from "../types/common";
 
 export function getLicenseTermByType(
   type: PIL_TYPE,
@@ -163,13 +164,16 @@ const verifyDerivatives = (terms: LicenseTerms) => {
   }
 };
 
-export const getRevenueShare = (revShare: number | string) => {
+export const getRevenueShare = (
+  revShare: number | string,
+  type: RevShareType = RevShareType.COMMERCIAL_REVENUE_SHARE,
+) => {
   const revShareNumber = Number(revShare);
   if (isNaN(revShareNumber)) {
-    throw new Error("CommercialRevShare must be a valid number.");
+    throw new Error(`${type} must be a valid number.`);
   }
   if (revShareNumber < 0 || revShareNumber > 100) {
-    throw new Error("CommercialRevShare should be between 0 and 100.");
+    throw new Error(`${type} must be between 0 and 100.`);
   }
   return (revShareNumber / 100) * MAX_ROYALTY_TOKEN;
 };

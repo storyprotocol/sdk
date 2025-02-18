@@ -44,6 +44,7 @@ import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
+import { RevShareType } from "../types/common";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -147,7 +148,9 @@ export class GroupClient {
         spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
         recipient:
           (recipient && getAddress(recipient, "request.recipient")) || this.wallet.account!.address,
-        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
+        maxAllowedRewardShare: BigInt(
+          getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+        ),
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigAddToGroup: {
@@ -257,7 +260,9 @@ export class GroupClient {
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         tokenId: BigInt(request.tokenId),
-        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
+        maxAllowedRewardShare: BigInt(
+          getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+        ),
         sigAddToGroup: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
           deadline: calculatedDeadline,

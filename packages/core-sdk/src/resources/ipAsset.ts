@@ -105,7 +105,7 @@ import { AccessPermission } from "../types/resources/permission";
 import { LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
-import { LicensingConfig } from "../types/common";
+import { LicensingConfig, RevShareType } from "../types/common";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import {
@@ -549,7 +549,7 @@ export class IPAssetClient {
             zeroAddress,
             BigInt(arg.maxMintingFee || 0),
             Number(arg.maxRts || MAX_ROYALTY_TOKEN),
-            getRevenueShare(arg.maxRevenueShare || 100),
+            getRevenueShare(arg.maxRevenueShare || 100, RevShareType.MAX_REVENUE_SHARE),
           ],
         });
         const { result: state } = await ipAccount.state();
@@ -1837,7 +1837,10 @@ export class IPAssetClient {
       royaltyContext: zeroAddress,
       maxMintingFee: BigInt(derivativeData.maxMintingFee || 0),
       maxRts: Number(derivativeData.maxRts || MAX_ROYALTY_TOKEN),
-      maxRevenueShare: getRevenueShare(derivativeData.maxRevenueShare || 100),
+      maxRevenueShare: getRevenueShare(
+        derivativeData.maxRevenueShare || 100,
+        RevShareType.MAX_REVENUE_SHARE,
+      ),
     };
     if (internalDerivativeData.parentIpIds.length === 0) {
       throw new Error("The parent IP IDs must be provided.");
