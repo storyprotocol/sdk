@@ -661,6 +661,9 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
+      // Because registerDerivative doesn't call trigger parseTxIpRegisteredEvent, but the `handleRegistrationTransaction`
+      // will call it, so we need to mock the result of parseTxIpRegisteredEvent to avoid the error.
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([]);
 
       const res = await ipAssetClient.registerDerivative({
         childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
