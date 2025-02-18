@@ -59,7 +59,8 @@ import {
   InternalDerivativeData,
   LicenseTermsData,
   DerivativeData,
-  CommonRegistrationHandlerParams,
+  CommonRegistrationTxResponse,
+  CommonRegistrationParams,
   ValidatedLicenseTermsData,
 } from "../types/resources/ipAsset";
 import {
@@ -469,19 +470,25 @@ export class IPAssetClient {
         childIpId: request.childIpId,
         ...derivativeData,
       };
+      const encodedTxData = this.licensingModuleClient.registerDerivativeEncode(object);
       if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.licensingModuleClient.registerDerivativeEncode(object) };
+        return { encodedTxData };
       } else {
-        const txHash = await this.licensingModuleClient.registerDerivative(object);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash };
-        } else {
-          return { txHash };
-        }
+        const contractCall = () => {
+          return this.licensingModuleClient.registerDerivative(object);
+        };
+        return this.handleRegistrationTransaction({
+          sender: this.walletAddress,
+          derivData: object,
+          contractCall,
+          txOptions: request.txOptions,
+          encodedTxs: [encodedTxData],
+          spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
+          wipOptions: {
+            ...request.wipOptions,
+            useMulticallWhenPossible: false,
+          },
+        });
       }
     } catch (error) {
       handleError(error, "Failed to register derivative");
@@ -669,7 +676,7 @@ export class IPAssetClient {
       const contractCall = () => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(object);
       };
-      const rsp = await this.commonRegistrationHandler({
+      const rsp = await this.handleRegistrationTransaction({
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
@@ -721,7 +728,7 @@ export class IPAssetClient {
    *         @param request.args.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
    *         @param request.args.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
    *         @param request.args.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *         @param request.args.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
+   *         @param request.args.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
    *         If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
    *         @param request.args.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or zero address if the IP does not want to be added to any group.
    *     @param {Object} request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
@@ -941,7 +948,7 @@ export class IPAssetClient {
       const contractCall = () => {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(object);
       };
-      return this.commonRegistrationHandler({
+      return this.handleRegistrationTransaction({
         wipOptions: {
           ...request.wipOptions,
           useMulticallWhenPossible: false,
@@ -987,7 +994,7 @@ export class IPAssetClient {
       const contractCall = () => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(object);
       };
-      return this.commonRegistrationHandler({
+      return this.handleRegistrationTransaction({
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
@@ -1081,20 +1088,24 @@ export class IPAssetClient {
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         allowDuplicates: request.allowDuplicates,
       };
+      const encodedTxData = this.registrationWorkflowsClient.mintAndRegisterIpEncode(object);
       if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.registrationWorkflowsClient.mintAndRegisterIpEncode(object) };
-      } else {
-        const txHash = await this.registrationWorkflowsClient.mintAndRegisterIp(object);
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-          return { txHash, ...log };
-        }
-        return { txHash };
+        return { encodedTxData };
       }
+      const contractCall = () => {
+        return this.registrationWorkflowsClient.mintAndRegisterIp(object);
+      };
+      return this.handleRegistrationTransaction({
+        sender: this.walletAddress,
+        spgSpenderAddress: this.registrationWorkflowsClient.address,
+        encodedTxs: [encodedTxData],
+        contractCall,
+        txOptions: request.txOptions,
+        wipOptions: {
+          ...request.wipOptions,
+          useMulticallWhenPossible: false,
+        },
+      });
     } catch (error) {
       handleError(error, "Failed to mint and register IP");
     }
@@ -1230,7 +1241,7 @@ export class IPAssetClient {
           object,
         );
       };
-      return this.commonRegistrationHandler({
+      return this.handleRegistrationTransaction({
         wipOptions: {
           ...request.wipOptions,
           // need to disable multicall to avoid needing to transfer the license
@@ -1510,7 +1521,7 @@ export class IPAssetClient {
           object,
         );
       };
-      const { txHash, ipId, tokenId, receipt } = await this.commonRegistrationHandler({
+      const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationTransaction({
         wipOptions: {
           ...request.wipOptions,
           useMulticallWhenPossible: false,
@@ -1522,8 +1533,9 @@ export class IPAssetClient {
         contractCall,
         txOptions: { ...request.txOptions, waitForTransaction: true },
       });
-      if (tokenId === undefined || ipId === undefined) {
-        throw new Error("Failed to register derivative ip and deploy royalty vault");
+      // Need to consider tokenId is 0n, so we can't check !tokenId.
+      if (tokenId === undefined || !ipId || !receipt) {
+        throw new Error("Failed to register derivative ip and deploy royalty vault.");
       }
       const { ipRoyaltyVault } = this.royaltyModuleEventClient
         .parseTxIpRoyaltyVaultDeployedEvent(receipt)
@@ -1591,7 +1603,7 @@ export class IPAssetClient {
           object,
         );
       };
-      const { txHash, ipId, tokenId, receipt } = await this.commonRegistrationHandler({
+      const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationTransaction({
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
@@ -1653,7 +1665,7 @@ export class IPAssetClient {
           object,
         );
       };
-      return this.commonRegistrationHandler({
+      return this.handleRegistrationTransaction({
         spgNftContract: object.spgNftContract,
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
@@ -1901,7 +1913,7 @@ export class IPAssetClient {
     return { licenseTerms, licenseTermsData: processedLicenseTermsData };
   }
 
-  private async commonRegistrationHandler({
+  private async handleRegistrationTransaction({
     sender,
     derivData,
     spgNftContract,
@@ -1910,7 +1922,7 @@ export class IPAssetClient {
     wipOptions,
     encodedTxs,
     contractCall,
-  }: CommonRegistrationHandlerParams) {
+  }: CommonRegistrationParams): Promise<CommonRegistrationTxResponse> {
     let totalFees = 0n;
     const wipSpenders: Erc20Spender[] = [];
 
@@ -1969,10 +1981,16 @@ export class IPAssetClient {
       encodedTxs,
     });
     if (receipt) {
-      const { ipId, tokenId } = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
-      return { txHash, ipId, tokenId, receipt };
-    } else {
-      return { txHash };
+      const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
+      return {
+        txHash,
+        receipt,
+        ...(event && {
+          ipId: event.ipId ?? undefined,
+          tokenId: event.tokenId ?? undefined,
+        }),
+      };
     }
+    return { txHash };
   }
 }

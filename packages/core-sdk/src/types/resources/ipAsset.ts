@@ -37,9 +37,9 @@ export type InternalDerivativeData = {
   maxRevenueShare: number;
   licenseTemplate: Address;
 };
-export type RegisterIpResponse = {
+export type RegisterIpResponse = RegistrationResponse & {
   encodedTxData?: EncodedTxData;
-} & CommonRegistrationResponse;
+};
 
 export type RegisterRequest = {
   nftContract: Address;
@@ -59,10 +59,11 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
   encodedTxData?: EncodedTxData;
 };
 
-export type RegisterDerivativeRequest = {
-  txOptions?: TxOptions;
-  childIpId: Address;
-} & DerivativeData;
+export type RegisterDerivativeRequest = WithWipOptions &
+  DerivativeData & {
+    txOptions?: TxOptions;
+    childIpId: Address;
+  };
 
 export type RegisterDerivativeResponse = {
   txHash?: Hex;
@@ -151,9 +152,9 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
-export type MintAndRegisterIpAndMakeDerivativeResponse = {
+export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & {
   encodedTxData?: EncodedTxData;
-} & CommonRegistrationResponse;
+};
 
 export type IpRelationship = {
   parentIpId: Address;
@@ -247,11 +248,12 @@ export type IpMetadata = {
   [key: string]: unknown;
 };
 
-export type MintAndRegisterIpRequest = {
-  spgNftContract: Address;
-  recipient?: Address;
-  allowDuplicates: boolean;
-} & IpMetadataAndTxOptions;
+export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
+  WithWipOptions & {
+    spgNftContract: Address;
+    recipient?: Address;
+    allowDuplicates: boolean;
+  };
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
   /** The data of the license and its configuration to be attached to the IP. */
@@ -439,7 +441,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse
   tokenId?: bigint;
 };
 
-export type CommonRegistrationHandlerParams = WithWipOptions & {
+export type CommonRegistrationParams = WithWipOptions & {
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   spgNftContract?: Address;
@@ -450,9 +452,13 @@ export type CommonRegistrationHandlerParams = WithWipOptions & {
   txOptions?: TxOptions;
 };
 
-export type CommonRegistrationResponse = {
+export type RegistrationResponse = {
   txHash?: Hex;
-  ipId?: Address;
-  tokenId?: bigint;
   receipt?: TransactionReceipt;
+  ipId?: Hex;
+  tokenId?: bigint;
+};
+
+export type CommonRegistrationTxResponse = RegistrationResponse & {
+  txHash: Hex;
 };
