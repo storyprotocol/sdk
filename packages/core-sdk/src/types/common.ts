@@ -42,3 +42,21 @@ export type ValidatedLicensingConfig = LicensingConfig & {
  * Will be converted to bigint for contract calls.
  */
 export type TokenAmountInput = bigint | number;
+
+/**
+ * The type of revenue share.
+ */
+export enum RevShareType {
+  /**
+   * The commercial revenue share.
+   */
+  COMMERCIAL_REVENUE_SHARE = "CommercialRevShare",
+  /**
+   * The maximum revenue share.
+   */
+  MAX_REVENUE_SHARE = "MaxRevenueShare",
+  /**
+   * The maximum allowed reward share.
+   */
+  MAX_ALLOWED_REWARD_SHARE = "MaxAllowedRewardShare",
+}

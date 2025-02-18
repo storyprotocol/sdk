@@ -48,6 +48,7 @@ import { ChainIds } from "../types/config";
 import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
+import { RevShareType } from "../types/common";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -390,7 +391,7 @@ export class LicenseClient {
         receiver,
         royaltyContext: zeroAddress,
         maxMintingFee: BigInt(request.maxMintingFee),
-        maxRevenueShare: getRevenueShare(request.maxRevenueShare),
+        maxRevenueShare: getRevenueShare(request.maxRevenueShare, RevShareType.MAX_REVENUE_SHARE),
       } as const;
       if (req.maxMintingFee < 0) {
         throw new Error(`The maxMintingFee must be greater than 0.`);

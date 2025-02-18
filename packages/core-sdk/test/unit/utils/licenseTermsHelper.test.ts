@@ -185,7 +185,7 @@ describe("License Terms Helper", () => {
             currency: zeroAddress,
             commercialRevShare: -8,
           }),
-        ).to.throw(`CommercialRevShare should be between 0 and 100.`);
+        ).to.throw(`CommercialRevShare must be between 0 and 100.`);
       });
 
       it("it throw commercialRevShare error  when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is greater than 100", async () => {
@@ -196,7 +196,7 @@ describe("License Terms Helper", () => {
             currency: zeroAddress,
             commercialRevShare: 105,
           }),
-        ).to.throw(`CommercialRevShare should be between 0 and 100.`);
+        ).to.throw(`CommercialRevShare must be between 0 and 100.`);
       });
 
       it("it get commercialRevShare correct value when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is 10", async () => {
@@ -502,13 +502,11 @@ describe("License Terms Helper", () => {
     });
 
     it("should throw error when call getRevenueShare given revShare is less than 0", async () => {
-      expect(() => getRevenueShare(-1)).to.throw("CommercialRevShare should be between 0 and 100.");
+      expect(() => getRevenueShare(-1)).to.throw("CommercialRevShare must be between 0 and 100.");
     });
 
     it("should throw error when call getRevenueShare given revShare is greater than 100", async () => {
-      expect(() => getRevenueShare(101)).to.throw(
-        "CommercialRevShare should be between 0 and 100.",
-      );
+      expect(() => getRevenueShare(101)).to.throw("CommercialRevShare must be between 0 and 100.");
     });
 
     it("should return correct value when call getRevenueShare given revShare is 10", async () => {
