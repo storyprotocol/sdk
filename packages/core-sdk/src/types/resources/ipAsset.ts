@@ -455,7 +455,7 @@ export type CommonRegistrationParams = WithWipOptions & {
 export type RegistrationResponse = {
   txHash?: Hex;
   receipt?: TransactionReceipt;
-  ipId?: Hex;
+  ipId?: Address;
   tokenId?: bigint;
 };
 

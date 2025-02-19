@@ -3,6 +3,9 @@ import { getStoryClient } from "./utils/util";
 import { Address } from "viem";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { erc20Address } from "../../src/abi/generated";
+import { aeneid } from "../unit/mockData";
+
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
@@ -32,7 +35,6 @@ describe("nftClient Functions", () => {
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
       expect(txData.txHash).to.be.a("string").and.not.empty;
-      spgNftContract = txData.spgNftContract!;
     });
 
     it("should successfully create collection with custom mint fee", async () => {
@@ -44,13 +46,14 @@ describe("nftClient Functions", () => {
         mintFeeRecipient: testWalletAddress,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFee: 1000000000000000000n,
-        mintFeeToken: "0x3eD6de5146C3235cC0d15023F3beaD8cb172F63b",
+        mintFee: 10000000n,
+        mintFeeToken: erc20Address[aeneid],
         txOptions: {
           waitForTransaction: true,
         },
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
+      spgNftContract = txData.spgNftContract!;
     });
 
     it("should successfully create private collection", async () => {
@@ -141,13 +144,15 @@ describe("nftClient Functions", () => {
     });
   });
 
-  it("should successfully get mint fee token", async () => {
-    const mintFeeToken = await client.nftClient.getMintFeeToken(spgNftContract);
-    expect(mintFeeToken).to.be.a("string").and.not.empty;
-  });
+  describe("Mint Fee", () => {
+    it("should successfully get mint fee token", async () => {
+      const mintFeeToken = await client.nftClient.getMintFeeToken(spgNftContract);
+      expect(mintFeeToken).to.equal(erc20Address[aeneid]);
+    });
 
-  it("should successfully get mint fee", async () => {
-    const mintFee = await client.nftClient.getMintFee(spgNftContract);
-    expect(mintFee).to.be.a("bigint");
+    it("should successfully get mint fee", async () => {
+      const mintFee = await client.nftClient.getMintFee(spgNftContract);
+      expect(mintFee).to.equal(10000000n);
+    });
   });
 });
