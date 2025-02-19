@@ -21,7 +21,7 @@ export type RaiseDisputeRequest = WithTxOptions & {
   /** The liveness is the time window (in seconds) in which a counter dispute can be presented (30days). */
   liveness: bigint | number | string;
   /**
-   * The amount of ERC20 that the dispute initiator pays upfront into a pool.
+   * The amount of wrapper IP that the dispute initiator pays upfront into a pool.
    * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
    * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
    */

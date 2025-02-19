@@ -142,7 +142,7 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
-      const { receiverIpId, payerIpId, token, amount, ERC20Options, wipOptions, txOptions } =
+      const { receiverIpId, payerIpId, token, amount, erc20Options, wipOptions, txOptions } =
         request;
       const sender = this.wallet.account!.address;
       const payAmount = BigInt(amount);
@@ -185,7 +185,7 @@ export class RoyaltyClient {
       ];
       return contractCallWithFees({
         totalFees: payAmount,
-        options: { ERC20Options, wipOptions },
+        options: { erc20Options, wipOptions },
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: tokenSpenders,

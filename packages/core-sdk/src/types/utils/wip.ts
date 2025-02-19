@@ -57,7 +57,7 @@ export type ContractCallWithFees = {
   sender: Address;
   options: {
     wipOptions?: WipOptions;
-    ERC20Options?: ERC20Options;
+    erc20Options?: ERC20Options;
   };
   token?: Address;
   txOptions?: TxOptions;

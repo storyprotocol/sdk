@@ -200,7 +200,7 @@ export const contractCallWithFees = async ({
 }: ContractCallWithFees): Promise<TransactionResponse> => {
   const wipTokenClient = new WIPTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
-  const selectedOptions = isWip ? options?.wipOptions : options.ERC20Options;
+  const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;
   const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token);
   // if no fees, skip all logic
   if (totalFees === 0n) {

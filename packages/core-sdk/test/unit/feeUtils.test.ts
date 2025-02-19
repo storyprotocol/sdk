@@ -101,7 +101,7 @@ describe("Erc20 Token Fee Utilities", () => {
       it("should not call approval if disabled via enableAutoApprove", async () => {
         const params = getDefaultParams({
           totalFees: 100n,
-          options: { ERC20Options: { enableAutoApprove: false } },
+          options: { erc20Options: { enableAutoApprove: false } },
         });
         const { txHash, receipt } = await contractCallWithFees(params);
         expect(receipt).to.be.undefined;
@@ -410,7 +410,7 @@ describe("Erc20 Token Fee Utilities", () => {
         totalFees: 100n,
         token: erc20Address[aeneid],
         options: {
-          ERC20Options: { enableAutoApprove: false },
+          erc20Options: { enableAutoApprove: false },
         },
       });
       const { txHash, receipt } = await contractCallWithFees(params);
