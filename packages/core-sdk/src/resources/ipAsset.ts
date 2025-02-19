@@ -104,7 +104,7 @@ import { AccessPermission } from "../types/resources/permission";
 import { LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
-import { LicensingConfig, ValidatedLicensingConfig } from "../types/common";
+import { LicensingConfig } from "../types/common";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import {
@@ -1880,13 +1880,10 @@ export class IPAssetClient {
     licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[],
   ): Promise<{
     licenseTerms: LicenseTerms[];
-    licenseTermsData: ValidatedLicenseTermsData<LicenseTerms, ValidatedLicensingConfig>[];
+    licenseTermsData: ValidatedLicenseTermsData[];
   }> {
     const licenseTerms: LicenseTerms[] = [];
-    const processedLicenseTermsData: ValidatedLicenseTermsData<
-      LicenseTerms,
-      ValidatedLicensingConfig
-    >[] = [];
+    const processedLicenseTermsData: ValidatedLicenseTermsData[] = [];
     for (let i = 0; i < licenseTermsData.length; i++) {
       const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
       const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);

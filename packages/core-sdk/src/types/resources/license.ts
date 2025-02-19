@@ -144,7 +144,7 @@ export type SetLicensingConfigRequest = {
   ipId: Address;
   /** The ID of the license terms within the license template. */
   licenseTermsId: string | number | bigint;
-  /** The address of the license template used, If not specified, the configuration applies to all licenses. */
+  /** The address of the license template used. */
   licenseTemplate: Address;
   /** The licensing configuration for the license. */
   licensingConfig?: LicensingConfig;
