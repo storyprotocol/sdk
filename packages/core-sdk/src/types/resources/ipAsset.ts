@@ -14,17 +14,17 @@ export type DerivativeData = {
    * The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
    * @default 0
    */
-  maxMintingFee: bigint | string | number;
+  maxMintingFee?: bigint | string | number;
   /**
    *  The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
    * @default 100_000_000
    */
-  maxRts: number | string;
+  maxRts?: number | string;
   /**
    * The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100 (where 100% represents 100_000_000).
    * @default 100
    */
-  maxRevenueShare: number | string;
+  maxRevenueShare?: number | string;
   /** The license template address, default value is Programmable IP License. */
   licenseTemplate?: Address;
 };

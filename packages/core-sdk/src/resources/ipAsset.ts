@@ -540,9 +540,9 @@ export class IPAssetClient {
             arg.licenseTermsIds.map((id) => BigInt(id)),
             arg.licenseTemplate || this.licenseTemplateClient.address,
             zeroAddress,
-            BigInt(arg.maxMintingFee),
-            Number(arg.maxRts),
-            getRevenueShare(arg.maxRevenueShare),
+            BigInt(arg.maxMintingFee || 0),
+            Number(arg.maxRts || MAX_ROYALTY_TOKEN),
+            getRevenueShare(arg.maxRevenueShare || 100),
           ],
         });
         const { result: state } = await ipAccount.state();
@@ -1823,8 +1823,8 @@ export class IPAssetClient {
           getAddress(derivativeData.licenseTemplate, "derivativeData.licenseTemplate")) ||
         this.licenseTemplateClient.address,
       royaltyContext: zeroAddress,
-      maxMintingFee: BigInt(derivativeData.maxMintingFee) || 0n,
-      maxRts: Number(derivativeData.maxRts) || 100_000_000,
+      maxMintingFee: BigInt(derivativeData.maxMintingFee || 0),
+      maxRts: Number(derivativeData.maxRts || MAX_ROYALTY_TOKEN),
       maxRevenueShare: getRevenueShare(derivativeData.maxRevenueShare || 100),
     };
     if (internalDerivativeData.parentIpIds.length === 0) {
