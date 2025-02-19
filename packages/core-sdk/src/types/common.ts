@@ -45,18 +45,10 @@ export type TokenAmountInput = bigint | number;
 
 /**
  * The type of revenue share.
+ * It is used to determine the type of revenue share to be used in the revenue share calculation and throw error when the revenue share is not valid.
  */
 export enum RevShareType {
-  /**
-   * The commercial revenue share.
-   */
   COMMERCIAL_REVENUE_SHARE = "CommercialRevShare",
-  /**
-   * The maximum revenue share.
-   */
   MAX_REVENUE_SHARE = "MaxRevenueShare",
-  /**
-   * The maximum allowed reward share.
-   */
   MAX_ALLOWED_REWARD_SHARE = "MaxAllowedRewardShare",
 }

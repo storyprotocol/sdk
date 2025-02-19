@@ -477,7 +477,7 @@ export class IPAssetClient {
         const contractCall = () => {
           return this.licensingModuleClient.registerDerivative(object);
         };
-        return this.handleRegistrationTransaction({
+        return this.handleRegistrationWithFees({
           sender: this.walletAddress,
           derivData: object,
           contractCall,
@@ -676,7 +676,7 @@ export class IPAssetClient {
       const contractCall = () => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(object);
       };
-      const rsp = await this.handleRegistrationTransaction({
+      const rsp = await this.handleRegistrationWithFees({
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
@@ -948,7 +948,7 @@ export class IPAssetClient {
       const contractCall = () => {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(object);
       };
-      return this.handleRegistrationTransaction({
+      return this.handleRegistrationWithFees({
         wipOptions: {
           ...request.wipOptions,
           useMulticallWhenPossible: false,
@@ -994,7 +994,7 @@ export class IPAssetClient {
       const contractCall = () => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(object);
       };
-      return this.handleRegistrationTransaction({
+      return this.handleRegistrationWithFees({
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
@@ -1095,7 +1095,7 @@ export class IPAssetClient {
       const contractCall = () => {
         return this.registrationWorkflowsClient.mintAndRegisterIp(object);
       };
-      return this.handleRegistrationTransaction({
+      return this.handleRegistrationWithFees({
         sender: this.walletAddress,
         spgSpenderAddress: this.registrationWorkflowsClient.address,
         encodedTxs: [encodedTxData],
@@ -1241,7 +1241,7 @@ export class IPAssetClient {
           object,
         );
       };
-      return this.handleRegistrationTransaction({
+      return this.handleRegistrationWithFees({
         wipOptions: {
           ...request.wipOptions,
           // need to disable multicall to avoid needing to transfer the license
@@ -1521,7 +1521,7 @@ export class IPAssetClient {
           object,
         );
       };
-      const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationTransaction({
+      const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
         wipOptions: {
           ...request.wipOptions,
           useMulticallWhenPossible: false,
@@ -1603,7 +1603,7 @@ export class IPAssetClient {
           object,
         );
       };
-      const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationTransaction({
+      const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
@@ -1665,7 +1665,7 @@ export class IPAssetClient {
           object,
         );
       };
-      return this.handleRegistrationTransaction({
+      return this.handleRegistrationWithFees({
         spgNftContract: object.spgNftContract,
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
@@ -1916,7 +1916,7 @@ export class IPAssetClient {
     return { licenseTerms, licenseTermsData: processedLicenseTermsData };
   }
 
-  private async handleRegistrationTransaction({
+  private async handleRegistrationWithFees({
     sender,
     derivData,
     spgNftContract,
