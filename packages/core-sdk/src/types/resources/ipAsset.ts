@@ -1,11 +1,10 @@
 import { Address, Hash, Hex, TransactionReceipt } from "viem";
 
-import { TxOptions } from "../options";
+import { TxOptions, WithWipOptions } from "../options";
 import { RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig } from "../common";
 import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
-import { WithWipOptions } from "../utils/wip";
 
 export type DerivativeData = {
   parentIpIds: Address[];

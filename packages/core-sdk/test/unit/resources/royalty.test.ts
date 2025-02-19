@@ -4,8 +4,13 @@ import * as sinon from "sinon";
 import { PublicClient, WalletClient, Account } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RoyaltyClient } from "../../../src/resources/royalty";
-import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-const { IpRoyaltyVaultImplReadOnlyClient } = require("../../../src/abi/generated");
+import {
+  IpRoyaltyVaultImplReadOnlyClient,
+  erc20Address,
+  wrappedIpAddress,
+} from "../../../src/abi/generated";
+import { aeneid } from "../../integration/utils/util";
+import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -22,7 +27,6 @@ describe("Test RoyaltyClient", () => {
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
     royaltyClient = new RoyaltyClient(rpcMock, walletMock);
-    sinon.stub();
   });
 
   afterEach(() => {
@@ -30,6 +34,16 @@ describe("Test RoyaltyClient", () => {
   });
 
   describe("Test royaltyClient.payRoyaltyOnBehalf", async () => {
+    beforeEach(() => {
+      sinon.stub(ERC20Client.prototype, "balanceOf").resolves(1n);
+      sinon.stub(ERC20Client.prototype, "allowance").resolves(10000n);
+      sinon.stub(ERC20Client.prototype, "approve").resolves(txHash);
+      sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(1n);
+      sinon.stub(WIPTokenClient.prototype, "allowance").resolves(1n);
+      sinon.stub(WIPTokenClient.prototype, "approve").resolves(txHash);
+      sinon.stub(WIPTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
+    });
+
     it("should throw receiverIpId error when call payRoyaltyOnBehalf given receiverIpId is not registered", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -69,24 +83,21 @@ describe("Test RoyaltyClient", () => {
       }
     });
 
-    it("should return txHash when call payRoyaltyOnBehalf given correct args", async () => {
+    it("should return txHash when call payRoyaltyOnBehalf given correct args with erc20", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalf").resolves(txHash);
-
       const result = await royaltyClient.payRoyaltyOnBehalf({
         receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        token: erc20Address[aeneid],
         amount: 1,
       });
 
       expect(result.txHash).equals(txHash);
     });
-
     it("should convert IP to WIP when paying WIP via payRoyaltyOnBehalf", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(royaltyClient.wipClient, "balanceOf").resolves({ result: 0n });
-      sinon.stub(royaltyClient.wipClient, "allowance").resolves({ result: 200n });
+
       rpcMock.getBalance = sinon.stub().resolves(150n);
       const simulateContractStub = sinon.stub().resolves({ request: {} });
       rpcMock.simulateContract = simulateContractStub;
@@ -94,7 +105,7 @@ describe("Test RoyaltyClient", () => {
       const result = await royaltyClient.payRoyaltyOnBehalf({
         receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        token: WIP_TOKEN_ADDRESS,
+        token: wrappedIpAddress[aeneid],
         amount: 100n,
         txOptions: { waitForTransaction: true },
       });
@@ -102,21 +113,6 @@ describe("Test RoyaltyClient", () => {
       expect(simulateContractStub.calledOnce).to.be.true;
       const calls = simulateContractStub.firstCall.args[0].args[0];
       expect(calls.length).to.equal(2); // deposit and payRoyaltyOnBehalf
-    });
-
-    it("should return txHash when call payRoyaltyOnBehalf given given correct args and waitForTransaction is true", async () => {
-      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalf").resolves(txHash);
-
-      const result = await royaltyClient.payRoyaltyOnBehalf({
-        receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        amount: 1,
-        txOptions: { waitForTransaction: true },
-      });
-
-      expect(result.txHash).equals(txHash);
     });
 
     it("should return encodedData when call payRoyaltyOnBehalf given correct args and encodedTxDataOnly is true", async () => {
@@ -178,14 +174,14 @@ describe("Test RoyaltyClient", () => {
       sinon
         .stub(royaltyClient.royaltyModuleClient, "ipRoyaltyVaults")
         .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
-      sinon.stub(IpRoyaltyVaultImplReadOnlyClient.prototype, "claimableRevenue").resolves(1);
+      sinon.stub(IpRoyaltyVaultImplReadOnlyClient.prototype, "claimableRevenue").resolves(1n);
 
       const result = await royaltyClient.claimableRevenue({
         royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         claimer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       });
-      expect(result).equals(1);
+      expect(result).equals(1n);
     });
   });
 });

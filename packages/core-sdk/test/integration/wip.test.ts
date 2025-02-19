@@ -33,6 +33,17 @@ describe("WIP Functions", () => {
       expect(balanceAfter).to.equal(balanceBefore - ipAmt - gasCost);
     });
   });
+  describe("transfer", () => {
+    it("should transfer WIP", async () => {
+      const rsp = await client.wipClient.transfer({
+        to: TEST_WALLET_ADDRESS,
+        amount: parseEther("0.01"),
+        txOptions: { waitForTransaction: true },
+      });
+      expect(rsp.txHash).to.be.a("string");
+      //Due to approve cannot approve msy.sender, so skip transferFrom test
+    });
+  });
 
   describe("withdraw", () => {
     it("should withdrawal WIP", async () => {

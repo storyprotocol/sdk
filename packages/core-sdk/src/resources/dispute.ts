@@ -1,4 +1,4 @@
-import { PublicClient, encodeAbiParameters, stringToHex } from "viem";
+import { Hex, PublicClient, encodeAbiParameters, stringToHex } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -8,20 +8,26 @@ import {
   RaiseDisputeResponse,
   ResolveDisputeRequest,
   ResolveDisputeResponse,
+  TagIfRelatedIpInfringedRequest,
 } from "../types/resources/dispute";
 import {
   ArbitrationPolicyUmaReadOnlyClient,
   DisputeModuleClient,
+  DisputeModuleTagIfRelatedIpInfringedRequest,
+  Multicall3Client,
   SimpleWalletClient,
   wrappedIpAddress,
 } from "../abi/generated";
-import { chain, getAddress } from "../utils/utils";
+import { chain, validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
+import { handleTxOptions } from "../utils/txOptions";
+import { TransactionResponse } from "../types/options";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
   public arbitrationPolicyUmaReadOnlyClient: ArbitrationPolicyUmaReadOnlyClient;
+  public multicall3Client: Multicall3Client;
   private readonly rpcClient: PublicClient;
   private readonly chainId: ChainIds;
 
@@ -29,24 +35,16 @@ export class DisputeClient {
     this.rpcClient = rpcClient;
     this.disputeModuleClient = new DisputeModuleClient(rpcClient, wallet);
     this.arbitrationPolicyUmaReadOnlyClient = new ArbitrationPolicyUmaReadOnlyClient(rpcClient);
+    this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.chainId = chainId;
   }
 
   /**
-   * Raises a dispute on a given ipId
-   * @param request - The request object containing necessary data to raise a dispute.
-   *   @param request.targetIpId The IP ID that is the target of the dispute.
-   *   @param request.targetTag The target tag of the dispute.
-   *   @param request.cid CID (Content Identifier) is a unique identifier in IPFS, including CID v0 (base58) and CID v1 (base32).
-   *   @param request.liveness The liveness time.
-   *   @param request.bond The bond size.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a RaiseDisputeResponse containing the transaction hash.
-   * @throws `NotRegisteredIpId` if targetIpId is not registered in the IPA Registry.
-   * @throws `NotWhitelistedDisputeTag` if targetTag is not whitelisted.
-   * @throws `ZeroLinkToDisputeEvidence` if linkToDisputeEvidence is empty
-   * @calls raiseDispute(address _targetIpId, string memory _linkToDisputeEvidence, bytes32 _targetTag, bytes calldata _data) external nonReentrant returns (uint256) {
-   * @emits DisputeRaised (disputeId_, targetIpId, msg.sender, arbitrationPolicy, linkToDisputeEvidence, targetTag, calldata);
+   * Raises a dispute on a given ipId.
+   *
+   * Submits a {@link DisputeRaised} event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol | IDisputeModule.sol}
+   * for a list of on-chain events emitted when a dispute is raised.
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
@@ -84,7 +82,7 @@ export class DisputeClient {
         throw new Error(`The target tag ${request.targetTag} is not whitelisted.`);
       }
       const req = {
-        targetIpId: getAddress(request.targetIpId, "request.targetIpId"),
+        targetIpId: validateAddress(request.targetIpId),
         targetTag: tag,
         disputeEvidenceHash: convertCIDtoHashIPFS(request.cid),
         data,
@@ -183,6 +181,53 @@ export class DisputeClient {
       }
     } catch (error) {
       handleError(error, "Failed to resolve dispute");
+    }
+  }
+  /**
+   * Tags a derivative if a parent has been tagged with an infringement tag
+   * or a group ip if a group member has been tagged with an infringement tag.
+   *
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/dispute/IDisputeModule.sol | IDisputeModule.sol}
+   * for a list of on-chain events emitted when a derivative is tagged on an infringement.
+   */
+  public async tagIfRelatedIpInfringed(
+    request: TagIfRelatedIpInfringedRequest,
+  ): Promise<TransactionResponse[]> {
+    try {
+      const objects: DisputeModuleTagIfRelatedIpInfringedRequest[] = request.infringementTags.map(
+        (arg) => ({
+          ipIdToTag: validateAddress(arg.ipId),
+          infringerDisputeId: BigInt(arg.disputeId),
+        }),
+      );
+      let txHashes: Hex[] = [];
+      if (
+        request.options?.useMulticallWhenPossible !== false &&
+        request.infringementTags.length > 1
+      ) {
+        const calls = objects.map((object) => ({
+          target: this.disputeModuleClient.address,
+          allowFailure: false,
+          callData: this.disputeModuleClient.tagIfRelatedIpInfringedEncode(object).data,
+        }));
+        const txHash = await this.multicall3Client.aggregate3({ calls });
+        txHashes.push(txHash);
+      } else {
+        txHashes = await Promise.all(
+          objects.map((object) => this.disputeModuleClient.tagIfRelatedIpInfringed(object)),
+        );
+      }
+      return await Promise.all(
+        txHashes.map((txHash) =>
+          handleTxOptions({
+            txHash,
+            txOptions: request.txOptions,
+            rpcClient: this.rpcClient,
+          }),
+        ),
+      );
+    } catch (error) {
+      handleError(error, "Failed to tag related ip infringed");
     }
   }
 }

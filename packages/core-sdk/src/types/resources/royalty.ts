@@ -1,8 +1,8 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
-import { TxOptions, WithTxOptions } from "../options";
+import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 import { EncodedTxData, IpAccountImplClient } from "../../abi/generated";
-import { WithWipOptions } from "../utils/wip";
+import { WithERC20Options } from "../options";
 import { TokenAmountInput } from "../common";
 
 export type RoyaltyPolicyApiResponse = {
@@ -37,16 +37,19 @@ export type ClaimableRevenueRequest = {
   claimer: Address;
   token: Address;
 };
-
 export type ClaimableRevenueResponse = bigint;
-
-export type PayRoyaltyOnBehalfRequest = {
-  receiverIpId: Address;
-  payerIpId: Address;
-  token: Address;
-  amount: TokenAmountInput;
-} & WithTxOptions &
-  WithWipOptions;
+export type PayRoyaltyOnBehalfRequest = WithTxOptions &
+  WithERC20Options &
+  WithWipOptions & {
+    /** The IP ID that receives the royalties. */
+    receiverIpId: Address;
+    /** The IP ID that pays the royalties. */
+    payerIpId: Address;
+    /** The token to use to pay the royalties. */
+    token: Address;
+    /** The amount to pay. */
+    amount: TokenAmountInput;
+  };
 
 export type PayRoyaltyOnBehalfResponse = {
   txHash?: string;

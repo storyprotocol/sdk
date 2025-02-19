@@ -1,12 +1,12 @@
 import * as sinon from "sinon";
 import { createMock } from "../testUtils";
+import { ipId, txHash } from "../utils/mockData";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient } from "viem";
 import { DisputeClient } from "../../../src";
 
 chai.use(chaiAsPromised);
-const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
 
 describe("Test DisputeClient", () => {
   let disputeClient: DisputeClient;
@@ -42,13 +42,11 @@ describe("Test DisputeClient", () => {
           liveness: 2592000,
         });
       } catch (e) {
-        expect((e as Error).message).equal(
-          "Failed to raise dispute: request.targetIpId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-        );
+        expect((e as Error).message).equal("Failed to raise dispute: Invalid address: 0x.");
       }
     });
 
-    it("throw liveness error when call raiseDispute given livenss out of range", async () => {
+    it("throw liveness error when call raiseDispute given liveness out of range", async () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(100n);
       sinon
         .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
@@ -281,6 +279,70 @@ describe("Test DisputeClient", () => {
       });
 
       expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+    });
+  });
+
+  describe("Test tagIfRelatedIpInfringed", () => {
+    let aggregate3Stub: sinon.SinonStub;
+    let tagIfRelatedIpInfringedStub: sinon.SinonStub;
+    beforeEach(() => {
+      aggregate3Stub = sinon.stub(disputeClient.multicall3Client, "aggregate3").resolves(txHash);
+      tagIfRelatedIpInfringedStub = sinon
+        .stub(disputeClient.disputeModuleClient, "tagIfRelatedIpInfringed")
+        .resolves(txHash);
+    });
+    it("should not call multicall3 when call tagIfRelatedIpInfringed give disable useMulticallWhenPossible", async () => {
+      const result = await disputeClient.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: ipId,
+            disputeId: 1,
+          },
+          {
+            ipId: ipId,
+            disputeId: 1,
+          },
+        ],
+        options: { useMulticallWhenPossible: false },
+      });
+
+      expect(result.length).equal(2);
+      expect(aggregate3Stub.called).to.be.false;
+      expect(tagIfRelatedIpInfringedStub.callCount).equal(2);
+    });
+
+    it("should call multicall3 when call tagIfRelatedIpInfringed give more than one infringementTags", async () => {
+      const result = await disputeClient.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: ipId,
+            disputeId: 1,
+          },
+          {
+            ipId: ipId,
+            disputeId: 1,
+          },
+        ],
+      });
+
+      expect(result.length).equal(1);
+      expect(aggregate3Stub.calledOnce).to.be.true;
+      expect(tagIfRelatedIpInfringedStub.callCount).equal(0);
+    });
+
+    it("should not call multicall3 when call tagIfRelatedIpInfringed give only one infringementTags", async () => {
+      const result = await disputeClient.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: ipId,
+            disputeId: 1,
+          },
+        ],
+      });
+
+      expect(result.length).equal(1);
+      expect(aggregate3Stub.called).to.be.false;
+      expect(tagIfRelatedIpInfringedStub.calledOnce).to.be.true;
     });
   });
 });

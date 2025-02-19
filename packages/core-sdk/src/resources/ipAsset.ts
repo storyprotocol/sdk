@@ -113,9 +113,9 @@ import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import {
   calculateLicenseWipMintFee,
   calculateSPGWipMintFee,
-  contractCallWithWipFees,
-} from "../utils/wipFeeUtils";
-import { WipSpender } from "../types/utils/wip";
+  contractCallWithFees,
+} from "../utils/feeUtils";
+import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
 
 export class IPAssetClient {
@@ -2191,7 +2191,7 @@ export class IPAssetClient {
     contractCall,
   }: CommonRegistrationHandlerParams) {
     let totalFees = 0n;
-    const wipSpenders: WipSpender[] = [];
+    const wipSpenders: Erc20Spender[] = [];
 
     // get spg minting fee
     if (spgNftContract) {
@@ -2235,13 +2235,12 @@ export class IPAssetClient {
       );
     }
 
-    const { txHash, receipt } = await contractCallWithWipFees({
+    const { txHash, receipt } = await contractCallWithFees({
       totalFees,
-      wipOptions,
-      multicall3Client: this.multicall3Client,
+      options: { wipOptions },
+      multicall3Address: this.multicall3Client.address,
       rpcClient: this.rpcClient,
-      wipClient: this.wipClient,
-      wipSpenders,
+      tokenSpenders: wipSpenders,
       contractCall,
       sender,
       wallet: this.wallet,

@@ -185,8 +185,11 @@ export default defineConfig(async () => {
         [mainnetChainId]: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
       },
     },
+    // IMPORTANT: This ERC20 contract must have an ABI that exactly matches Viem's ERC20 ABI implementation.
+    // This contract's ABI will be used as the standard ERC20 ABI throughout the application for
+    // common operations like balanceOf, allowance, approve, etc.
     {
-      name: "MockERC20",
+      name: "ERC20",
       address: {
         [aeneidChainId]: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
         [mainnetChainId]: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
@@ -238,6 +241,7 @@ export default defineConfig(async () => {
             "raiseDispute",
             "resolveDispute",
             "isWhitelistedDisputeTag",
+            "tagIfRelatedIpInfringed",
           ],
           IPAccountImpl: [
             "execute",
@@ -325,7 +329,16 @@ export default defineConfig(async () => {
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
           ],
           ArbitrationPolicyUMA: ["maxBonds", "maxLiveness", "minLiveness"],
-          AA: ["deposit", "approve"],
+          WrappedIP: [
+            "deposit",
+            "approve",
+            "transferFrom",
+            "transfer",
+            "balanceOf",
+            "withdraw",
+            "allowance",
+          ],
+          ERC20: ["approve", "balanceOf", "allowance", "transferFrom", "mint"],
         },
       }),
     ],

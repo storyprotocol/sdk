@@ -2746,6 +2746,204 @@ export const disputeModuleConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ERC20
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+
+*/
+export const erc20Abi = [
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
+  {
+    type: "error",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "allowance", internalType: "uint256", type: "uint256" },
+      { name: "needed", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC20InsufficientAllowance",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "sender", internalType: "address", type: "address" },
+      { name: "balance", internalType: "uint256", type: "uint256" },
+      { name: "needed", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC20InsufficientBalance",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "approver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidApprover",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC20InvalidReceiver",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "sender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSender",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "spender", internalType: "address", type: "address" }],
+    name: "ERC20InvalidSpender",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "spender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Approval",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "value",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Transfer",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "burn",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "decimals",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "mint",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+/**
+
+*/
+export const erc20Address = {
+  1315: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
+  1514: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
+} as const;
+
+/**
+
+*/
+export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EvenSplitGroupPool
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -9645,207 +9843,6 @@ export const licensingModuleAddress = {
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
   abi: licensingModuleAbi,
-} as const;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MockERC20
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
-
-*/
-export const mockErc20Abi = [
-  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
-  {
-    type: "error",
-    inputs: [
-      { name: "spender", internalType: "address", type: "address" },
-      { name: "allowance", internalType: "uint256", type: "uint256" },
-      { name: "needed", internalType: "uint256", type: "uint256" },
-    ],
-    name: "ERC20InsufficientAllowance",
-  },
-  {
-    type: "error",
-    inputs: [
-      { name: "sender", internalType: "address", type: "address" },
-      { name: "balance", internalType: "uint256", type: "uint256" },
-      { name: "needed", internalType: "uint256", type: "uint256" },
-    ],
-    name: "ERC20InsufficientBalance",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "approver", internalType: "address", type: "address" }],
-    name: "ERC20InvalidApprover",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
-    name: "ERC20InvalidReceiver",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "sender", internalType: "address", type: "address" }],
-    name: "ERC20InvalidSender",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "spender", internalType: "address", type: "address" }],
-    name: "ERC20InvalidSpender",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      {
-        name: "owner",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "spender",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "value",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "Approval",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "from", internalType: "address", type: "address", indexed: true },
-      { name: "to", internalType: "address", type: "address", indexed: true },
-      {
-        name: "value",
-        internalType: "uint256",
-        type: "uint256",
-        indexed: false,
-      },
-    ],
-    name: "Transfer",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "owner", internalType: "address", type: "address" },
-      { name: "spender", internalType: "address", type: "address" },
-    ],
-    name: "allowance",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "spender", internalType: "address", type: "address" },
-      { name: "value", internalType: "uint256", type: "uint256" },
-    ],
-    name: "approve",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "balanceOf",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "from", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "burn",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "decimals",
-    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "to", internalType: "address", type: "address" },
-      { name: "amount", internalType: "uint256", type: "uint256" },
-    ],
-    name: "mint",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "name",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "symbol",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "totalSupply",
-    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "to", internalType: "address", type: "address" },
-      { name: "value", internalType: "uint256", type: "uint256" },
-    ],
-    name: "transfer",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "from", internalType: "address", type: "address" },
-      { name: "to", internalType: "address", type: "address" },
-      { name: "value", internalType: "uint256", type: "uint256" },
-    ],
-    name: "transferFrom",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "nonpayable",
-  },
-] as const;
-
-/**
-
-*/
-export const mockErc20Address = {
-  1315: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
-  1514: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
-} as const;
-
-/**
-
-*/
-export const mockErc20Config = {
-  address: mockErc20Address,
-  abi: mockErc20Abi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16965,6 +16962,17 @@ export type DisputeModuleResolveDisputeRequest = {
 };
 
 /**
+ * DisputeModuleTagIfRelatedIpInfringedRequest
+ *
+ * @param ipIdToTag address
+ * @param infringerDisputeId uint256
+ */
+export type DisputeModuleTagIfRelatedIpInfringedRequest = {
+  ipIdToTag: Address;
+  infringerDisputeId: bigint;
+};
+
+/**
  * contract DisputeModule event
  */
 export class DisputeModuleEventClient {
@@ -17244,6 +17252,262 @@ export class DisputeModuleClient extends DisputeModuleReadOnlyClient {
         abi: disputeModuleAbi,
         functionName: "resolveDispute",
         args: [request.disputeId, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method tagIfRelatedIpInfringed for contract DisputeModule
+   *
+   * @param request DisputeModuleTagIfRelatedIpInfringedRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async tagIfRelatedIpInfringed(
+    request: DisputeModuleTagIfRelatedIpInfringedRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: disputeModuleAbi,
+      address: this.address,
+      functionName: "tagIfRelatedIpInfringed",
+      account: this.wallet.account,
+      args: [request.ipIdToTag, request.infringerDisputeId],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method tagIfRelatedIpInfringed for contract DisputeModule with only encode
+   *
+   * @param request DisputeModuleTagIfRelatedIpInfringedRequest
+   * @return EncodedTxData
+   */
+  public tagIfRelatedIpInfringedEncode(
+    request: DisputeModuleTagIfRelatedIpInfringedRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: disputeModuleAbi,
+        functionName: "tagIfRelatedIpInfringed",
+        args: [request.ipIdToTag, request.infringerDisputeId],
+      }),
+    };
+  }
+}
+
+// Contract ERC20 =============================================================
+
+/**
+ * Erc20AllowanceRequest
+ *
+ * @param owner address
+ * @param spender address
+ */
+export type Erc20AllowanceRequest = {
+  owner: Address;
+  spender: Address;
+};
+
+export type Erc20AllowanceResponse = bigint;
+
+/**
+ * Erc20BalanceOfRequest
+ *
+ * @param account address
+ */
+export type Erc20BalanceOfRequest = {
+  account: Address;
+};
+
+export type Erc20BalanceOfResponse = bigint;
+
+/**
+ * Erc20ApproveRequest
+ *
+ * @param spender address
+ * @param value uint256
+ */
+export type Erc20ApproveRequest = {
+  spender: Address;
+  value: bigint;
+};
+
+/**
+ * Erc20MintRequest
+ *
+ * @param to address
+ * @param amount uint256
+ */
+export type Erc20MintRequest = {
+  to: Address;
+  amount: bigint;
+};
+
+/**
+ * Erc20TransferFromRequest
+ *
+ * @param from address
+ * @param to address
+ * @param value uint256
+ */
+export type Erc20TransferFromRequest = {
+  from: Address;
+  to: Address;
+  value: bigint;
+};
+
+/**
+ * contract ERC20 readonly method
+ */
+export class Erc20ReadOnlyClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(erc20Address, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method allowance for contract ERC20
+   *
+   * @param request Erc20AllowanceRequest
+   * @return Promise<Erc20AllowanceResponse>
+   */
+  public async allowance(request: Erc20AllowanceRequest): Promise<Erc20AllowanceResponse> {
+    return await this.rpcClient.readContract({
+      abi: erc20Abi,
+      address: this.address,
+      functionName: "allowance",
+      args: [request.owner, request.spender],
+    });
+  }
+
+  /**
+   * method balanceOf for contract ERC20
+   *
+   * @param request Erc20BalanceOfRequest
+   * @return Promise<Erc20BalanceOfResponse>
+   */
+  public async balanceOf(request: Erc20BalanceOfRequest): Promise<Erc20BalanceOfResponse> {
+    return await this.rpcClient.readContract({
+      abi: erc20Abi,
+      address: this.address,
+      functionName: "balanceOf",
+      args: [request.account],
+    });
+  }
+}
+
+/**
+ * contract ERC20 write method
+ */
+export class Erc20Client extends Erc20ReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method approve for contract ERC20
+   *
+   * @param request Erc20ApproveRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async approve(request: Erc20ApproveRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20Abi,
+      address: this.address,
+      functionName: "approve",
+      account: this.wallet.account,
+      args: [request.spender, request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method approve for contract ERC20 with only encode
+   *
+   * @param request Erc20ApproveRequest
+   * @return EncodedTxData
+   */
+  public approveEncode(request: Erc20ApproveRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [request.spender, request.value],
+      }),
+    };
+  }
+
+  /**
+   * method mint for contract ERC20
+   *
+   * @param request Erc20MintRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async mint(request: Erc20MintRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20Abi,
+      address: this.address,
+      functionName: "mint",
+      account: this.wallet.account,
+      args: [request.to, request.amount],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method mint for contract ERC20 with only encode
+   *
+   * @param request Erc20MintRequest
+   * @return EncodedTxData
+   */
+  public mintEncode(request: Erc20MintRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "mint",
+        args: [request.to, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method transferFrom for contract ERC20
+   *
+   * @param request Erc20TransferFromRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferFrom(request: Erc20TransferFromRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20Abi,
+      address: this.address,
+      functionName: "transferFrom",
+      account: this.wallet.account,
+      args: [request.from, request.to, request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferFrom for contract ERC20 with only encode
+   *
+   * @param request Erc20TransferFromRequest
+   * @return EncodedTxData
+   */
+  public transferFromEncode(request: Erc20TransferFromRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "transferFrom",
+        args: [request.from, request.to, request.value],
       }),
     };
   }
@@ -23453,493 +23717,6 @@ export class LicensingModuleClient extends LicensingModuleReadOnlyClient {
   }
 }
 
-// Contract MockERC20 =============================================================
-
-/**
- * MockErc20ApprovalEvent
- *
- * @param owner address
- * @param spender address
- * @param value uint256
- */
-export type MockErc20ApprovalEvent = {
-  owner: Address;
-  spender: Address;
-  value: bigint;
-};
-
-/**
- * MockErc20TransferEvent
- *
- * @param from address
- * @param to address
- * @param value uint256
- */
-export type MockErc20TransferEvent = {
-  from: Address;
-  to: Address;
-  value: bigint;
-};
-
-/**
- * MockErc20AllowanceRequest
- *
- * @param owner address
- * @param spender address
- */
-export type MockErc20AllowanceRequest = {
-  owner: Address;
-  spender: Address;
-};
-
-export type MockErc20AllowanceResponse = bigint;
-
-/**
- * MockErc20BalanceOfRequest
- *
- * @param account address
- */
-export type MockErc20BalanceOfRequest = {
-  account: Address;
-};
-
-export type MockErc20BalanceOfResponse = bigint;
-
-export type MockErc20DecimalsResponse = number;
-
-export type MockErc20NameResponse = string;
-
-export type MockErc20SymbolResponse = string;
-
-export type MockErc20TotalSupplyResponse = bigint;
-
-/**
- * MockErc20ApproveRequest
- *
- * @param spender address
- * @param value uint256
- */
-export type MockErc20ApproveRequest = {
-  spender: Address;
-  value: bigint;
-};
-
-/**
- * MockErc20BurnRequest
- *
- * @param from address
- * @param amount uint256
- */
-export type MockErc20BurnRequest = {
-  from: Address;
-  amount: bigint;
-};
-
-/**
- * MockErc20MintRequest
- *
- * @param to address
- * @param amount uint256
- */
-export type MockErc20MintRequest = {
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * MockErc20TransferRequest
- *
- * @param to address
- * @param value uint256
- */
-export type MockErc20TransferRequest = {
-  to: Address;
-  value: bigint;
-};
-
-/**
- * MockErc20TransferFromRequest
- *
- * @param from address
- * @param to address
- * @param value uint256
- */
-export type MockErc20TransferFromRequest = {
-  from: Address;
-  to: Address;
-  value: bigint;
-};
-
-/**
- * contract MockERC20 event
- */
-export class MockErc20EventClient {
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, address?: Address) {
-    this.address = address || getAddress(mockErc20Address, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event Approval for contract MockERC20
-   */
-  public watchApprovalEvent(
-    onLogs: (txHash: Hex, ev: Partial<MockErc20ApprovalEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: mockErc20Abi,
-      address: this.address,
-      eventName: "Approval",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Approval for contract MockERC20
-   */
-  public parseTxApprovalEvent(txReceipt: TransactionReceipt): Array<MockErc20ApprovalEvent> {
-    const targetLogs: Array<MockErc20ApprovalEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: mockErc20Abi,
-          eventName: "Approval",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Approval") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Transfer for contract MockERC20
-   */
-  public watchTransferEvent(
-    onLogs: (txHash: Hex, ev: Partial<MockErc20TransferEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: mockErc20Abi,
-      address: this.address,
-      eventName: "Transfer",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Transfer for contract MockERC20
-   */
-  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<MockErc20TransferEvent> {
-    const targetLogs: Array<MockErc20TransferEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: mockErc20Abi,
-          eventName: "Transfer",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Transfer") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract MockERC20 readonly method
- */
-export class MockErc20ReadOnlyClient extends MockErc20EventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method allowance for contract MockERC20
-   *
-   * @param request MockErc20AllowanceRequest
-   * @return Promise<MockErc20AllowanceResponse>
-   */
-  public async allowance(request: MockErc20AllowanceRequest): Promise<MockErc20AllowanceResponse> {
-    return await this.rpcClient.readContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "allowance",
-      args: [request.owner, request.spender],
-    });
-  }
-
-  /**
-   * method balanceOf for contract MockERC20
-   *
-   * @param request MockErc20BalanceOfRequest
-   * @return Promise<MockErc20BalanceOfResponse>
-   */
-  public async balanceOf(request: MockErc20BalanceOfRequest): Promise<MockErc20BalanceOfResponse> {
-    return await this.rpcClient.readContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "balanceOf",
-      args: [request.account],
-    });
-  }
-
-  /**
-   * method decimals for contract MockERC20
-   *
-   * @param request MockErc20DecimalsRequest
-   * @return Promise<MockErc20DecimalsResponse>
-   */
-  public async decimals(): Promise<MockErc20DecimalsResponse> {
-    return await this.rpcClient.readContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "decimals",
-    });
-  }
-
-  /**
-   * method name for contract MockERC20
-   *
-   * @param request MockErc20NameRequest
-   * @return Promise<MockErc20NameResponse>
-   */
-  public async name(): Promise<MockErc20NameResponse> {
-    return await this.rpcClient.readContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "name",
-    });
-  }
-
-  /**
-   * method symbol for contract MockERC20
-   *
-   * @param request MockErc20SymbolRequest
-   * @return Promise<MockErc20SymbolResponse>
-   */
-  public async symbol(): Promise<MockErc20SymbolResponse> {
-    return await this.rpcClient.readContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "symbol",
-    });
-  }
-
-  /**
-   * method totalSupply for contract MockERC20
-   *
-   * @param request MockErc20TotalSupplyRequest
-   * @return Promise<MockErc20TotalSupplyResponse>
-   */
-  public async totalSupply(): Promise<MockErc20TotalSupplyResponse> {
-    return await this.rpcClient.readContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "totalSupply",
-    });
-  }
-}
-
-/**
- * contract MockERC20 write method
- */
-export class MockErc20Client extends MockErc20ReadOnlyClient {
-  protected readonly wallet: SimpleWalletClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    super(rpcClient, address);
-    this.wallet = wallet;
-  }
-
-  /**
-   * method approve for contract MockERC20
-   *
-   * @param request MockErc20ApproveRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async approve(request: MockErc20ApproveRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "approve",
-      account: this.wallet.account,
-      args: [request.spender, request.value],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method approve for contract MockERC20 with only encode
-   *
-   * @param request MockErc20ApproveRequest
-   * @return EncodedTxData
-   */
-  public approveEncode(request: MockErc20ApproveRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: mockErc20Abi,
-        functionName: "approve",
-        args: [request.spender, request.value],
-      }),
-    };
-  }
-
-  /**
-   * method burn for contract MockERC20
-   *
-   * @param request MockErc20BurnRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async burn(request: MockErc20BurnRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "burn",
-      account: this.wallet.account,
-      args: [request.from, request.amount],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method burn for contract MockERC20 with only encode
-   *
-   * @param request MockErc20BurnRequest
-   * @return EncodedTxData
-   */
-  public burnEncode(request: MockErc20BurnRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: mockErc20Abi,
-        functionName: "burn",
-        args: [request.from, request.amount],
-      }),
-    };
-  }
-
-  /**
-   * method mint for contract MockERC20
-   *
-   * @param request MockErc20MintRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async mint(request: MockErc20MintRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "mint",
-      account: this.wallet.account,
-      args: [request.to, request.amount],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method mint for contract MockERC20 with only encode
-   *
-   * @param request MockErc20MintRequest
-   * @return EncodedTxData
-   */
-  public mintEncode(request: MockErc20MintRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: mockErc20Abi,
-        functionName: "mint",
-        args: [request.to, request.amount],
-      }),
-    };
-  }
-
-  /**
-   * method transfer for contract MockERC20
-   *
-   * @param request MockErc20TransferRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transfer(request: MockErc20TransferRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "transfer",
-      account: this.wallet.account,
-      args: [request.to, request.value],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transfer for contract MockERC20 with only encode
-   *
-   * @param request MockErc20TransferRequest
-   * @return EncodedTxData
-   */
-  public transferEncode(request: MockErc20TransferRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: mockErc20Abi,
-        functionName: "transfer",
-        args: [request.to, request.value],
-      }),
-    };
-  }
-
-  /**
-   * method transferFrom for contract MockERC20
-   *
-   * @param request MockErc20TransferFromRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transferFrom(
-    request: MockErc20TransferFromRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: mockErc20Abi,
-      address: this.address,
-      functionName: "transferFrom",
-      account: this.wallet.account,
-      args: [request.from, request.to, request.value],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transferFrom for contract MockERC20 with only encode
-   *
-   * @param request MockErc20TransferFromRequest
-   * @return EncodedTxData
-   */
-  public transferFromEncode(request: MockErc20TransferFromRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: mockErc20Abi,
-        functionName: "transferFrom",
-        args: [request.from, request.to, request.value],
-      }),
-    };
-  }
-}
-
 // Contract ModuleRegistry =============================================================
 
 /**
@@ -29789,63 +29566,6 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
 // Contract WrappedIP =============================================================
 
 /**
- * WrappedIpApprovalEvent
- *
- * @param owner address
- * @param spender address
- * @param amount uint256
- */
-export type WrappedIpApprovalEvent = {
-  owner: Address;
-  spender: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpDepositEvent
- *
- * @param from address
- * @param amount uint256
- */
-export type WrappedIpDepositEvent = {
-  from: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpTransferEvent
- *
- * @param from address
- * @param to address
- * @param amount uint256
- */
-export type WrappedIpTransferEvent = {
-  from: Address;
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpWithdrawalEvent
- *
- * @param to address
- * @param amount uint256
- */
-export type WrappedIpWithdrawalEvent = {
-  to: Address;
-  amount: bigint;
-};
-
-/**
- * WrappedIpDomainSeparatorResponse
- *
- * @param result bytes32
- */
-export type WrappedIpDomainSeparatorResponse = {
-  result: Hex;
-};
-
-/**
  * WrappedIpAllowanceRequest
  *
  * @param owner address
@@ -29883,39 +29603,6 @@ export type WrappedIpBalanceOfResponse = {
   result: bigint;
 };
 
-export type WrappedIpDecimalsResponse = number;
-
-export type WrappedIpNameResponse = string;
-
-/**
- * WrappedIpNoncesRequest
- *
- * @param owner address
- */
-export type WrappedIpNoncesRequest = {
-  owner: Address;
-};
-
-/**
- * WrappedIpNoncesResponse
- *
- * @param result uint256
- */
-export type WrappedIpNoncesResponse = {
-  result: bigint;
-};
-
-export type WrappedIpSymbolResponse = string;
-
-/**
- * WrappedIpTotalSupplyResponse
- *
- * @param result uint256
- */
-export type WrappedIpTotalSupplyResponse = {
-  result: bigint;
-};
-
 /**
  * WrappedIpApproveRequest
  *
@@ -29925,27 +29612,6 @@ export type WrappedIpTotalSupplyResponse = {
 export type WrappedIpApproveRequest = {
   spender: Address;
   amount: bigint;
-};
-
-/**
- * WrappedIpPermitRequest
- *
- * @param owner address
- * @param spender address
- * @param value uint256
- * @param deadline uint256
- * @param v uint8
- * @param r bytes32
- * @param s bytes32
- */
-export type WrappedIpPermitRequest = {
-  owner: Address;
-  spender: Address;
-  value: bigint;
-  deadline: bigint;
-  v: number;
-  r: Hex;
-  s: Hex;
 };
 
 /**
@@ -29982,197 +29648,15 @@ export type WrappedIpWithdrawRequest = {
 };
 
 /**
- * contract WrappedIP event
+ * contract WrappedIP readonly method
  */
-export class WrappedIpEventClient {
+export class WrappedIpReadOnlyClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(wrappedIpAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event Approval for contract WrappedIP
-   */
-  public watchApprovalEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpApprovalEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Approval",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Approval for contract WrappedIP
-   */
-  public parseTxApprovalEvent(txReceipt: TransactionReceipt): Array<WrappedIpApprovalEvent> {
-    const targetLogs: Array<WrappedIpApprovalEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Approval",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Approval") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Deposit for contract WrappedIP
-   */
-  public watchDepositEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpDepositEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Deposit",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Deposit for contract WrappedIP
-   */
-  public parseTxDepositEvent(txReceipt: TransactionReceipt): Array<WrappedIpDepositEvent> {
-    const targetLogs: Array<WrappedIpDepositEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Deposit",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Deposit") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Transfer for contract WrappedIP
-   */
-  public watchTransferEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpTransferEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Transfer",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Transfer for contract WrappedIP
-   */
-  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<WrappedIpTransferEvent> {
-    const targetLogs: Array<WrappedIpTransferEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Transfer",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Transfer") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-
-  /**
-   * event Withdrawal for contract WrappedIP
-   */
-  public watchWithdrawalEvent(
-    onLogs: (txHash: Hex, ev: Partial<WrappedIpWithdrawalEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: wrappedIpAbi,
-      address: this.address,
-      eventName: "Withdrawal",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event Withdrawal for contract WrappedIP
-   */
-  public parseTxWithdrawalEvent(txReceipt: TransactionReceipt): Array<WrappedIpWithdrawalEvent> {
-    const targetLogs: Array<WrappedIpWithdrawalEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: wrappedIpAbi,
-          eventName: "Withdrawal",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "Withdrawal") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
-  }
-}
-
-/**
- * contract WrappedIP readonly method
- */
-export class WrappedIpReadOnlyClient extends WrappedIpEventClient {
-  constructor(rpcClient: PublicClient, address?: Address) {
-    super(rpcClient, address);
-  }
-
-  /**
-   * method DOMAIN_SEPARATOR for contract WrappedIP
-   *
-   * @param request WrappedIpDomainSeparatorRequest
-   * @return Promise<WrappedIpDomainSeparatorResponse>
-   */
-  public async domainSeparator(): Promise<WrappedIpDomainSeparatorResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "DOMAIN_SEPARATOR",
-    });
-    return {
-      result: result,
-    };
   }
 
   /**
@@ -30205,83 +29689,6 @@ export class WrappedIpReadOnlyClient extends WrappedIpEventClient {
       address: this.address,
       functionName: "balanceOf",
       args: [request.owner],
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method decimals for contract WrappedIP
-   *
-   * @param request WrappedIpDecimalsRequest
-   * @return Promise<WrappedIpDecimalsResponse>
-   */
-  public async decimals(): Promise<WrappedIpDecimalsResponse> {
-    return await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "decimals",
-    });
-  }
-
-  /**
-   * method name for contract WrappedIP
-   *
-   * @param request WrappedIpNameRequest
-   * @return Promise<WrappedIpNameResponse>
-   */
-  public async name(): Promise<WrappedIpNameResponse> {
-    return await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "name",
-    });
-  }
-
-  /**
-   * method nonces for contract WrappedIP
-   *
-   * @param request WrappedIpNoncesRequest
-   * @return Promise<WrappedIpNoncesResponse>
-   */
-  public async nonces(request: WrappedIpNoncesRequest): Promise<WrappedIpNoncesResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "nonces",
-      args: [request.owner],
-    });
-    return {
-      result: result,
-    };
-  }
-
-  /**
-   * method symbol for contract WrappedIP
-   *
-   * @param request WrappedIpSymbolRequest
-   * @return Promise<WrappedIpSymbolResponse>
-   */
-  public async symbol(): Promise<WrappedIpSymbolResponse> {
-    return await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "symbol",
-    });
-  }
-
-  /**
-   * method totalSupply for contract WrappedIP
-   *
-   * @param request WrappedIpTotalSupplyRequest
-   * @return Promise<WrappedIpTotalSupplyResponse>
-   */
-  public async totalSupply(): Promise<WrappedIpTotalSupplyResponse> {
-    const result = await this.rpcClient.readContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "totalSupply",
     });
     return {
       result: result,
@@ -30362,56 +29769,6 @@ export class WrappedIpClient extends WrappedIpReadOnlyClient {
       data: encodeFunctionData({
         abi: wrappedIpAbi,
         functionName: "deposit",
-      }),
-    };
-  }
-
-  /**
-   * method permit for contract WrappedIP
-   *
-   * @param request WrappedIpPermitRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async permit(request: WrappedIpPermitRequest): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: wrappedIpAbi,
-      address: this.address,
-      functionName: "permit",
-      account: this.wallet.account,
-      args: [
-        request.owner,
-        request.spender,
-        request.value,
-        request.deadline,
-        request.v,
-        request.r,
-        request.s,
-      ],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method permit for contract WrappedIP with only encode
-   *
-   * @param request WrappedIpPermitRequest
-   * @return EncodedTxData
-   */
-  public permitEncode(request: WrappedIpPermitRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: wrappedIpAbi,
-        functionName: "permit",
-        args: [
-          request.owner,
-          request.spender,
-          request.value,
-          request.deadline,
-          request.v,
-          request.r,
-          request.s,
-        ],
       }),
     };
   }

@@ -45,8 +45,8 @@ import {
 } from "../utils/licenseTermsHelper";
 import { chain, getAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
-import { calculateLicenseWipMintFee, contractCallWithWipFees } from "../utils/wipFeeUtils";
-import { WipSpender } from "../types/utils/wip";
+import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/feeUtils";
+import { Erc20Spender } from "../types/utils/wip";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -436,20 +436,19 @@ export class LicenseClient {
         amount: req.amount,
       });
 
-      const wipSpenders: WipSpender[] = [];
+      const wipSpenders: Erc20Spender[] = [];
       if (licenseMintingFee > 0n) {
         wipSpenders.push({
           address: royaltyModuleAddress[chain[this.chainId]],
           amount: licenseMintingFee,
         });
       }
-      const { txHash, receipt } = await contractCallWithWipFees({
+      const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
-        wipOptions: request.wipOptions,
-        multicall3Client: this.multicall3Client,
+        options: { wipOptions: request.wipOptions },
+        multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
-        wipClient: this.wipClient,
-        wipSpenders,
+        tokenSpenders: wipSpenders,
         contractCall: () => {
           return this.licensingModuleClient.mintLicenseTokens(req);
         },

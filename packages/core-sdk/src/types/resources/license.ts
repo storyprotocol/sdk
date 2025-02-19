@@ -1,9 +1,8 @@
 import { Address, TransactionReceipt } from "viem";
 
-import { WithTxOptions, TxOptions } from "../options";
+import { WithTxOptions, TxOptions, WithWipOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfig } from "../common";
-import { WithWipOptions } from "../utils/wip";
 
 export type LicenseApiResponse = {
   data: License;

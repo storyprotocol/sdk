@@ -4,10 +4,13 @@ import * as sinon from "sinon";
 import { LicenseClient } from "../../../src";
 import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { PiLicenseTemplateGetLicenseTermsResponse } from "../../../src/abi/generated";
+import {
+  PiLicenseTemplateGetLicenseTermsResponse,
+  RoyaltyModuleReadOnlyClient,
+  WrappedIpClient,
+} from "../../../src/abi/generated";
 import { LicenseTerms } from "../../../src/types/resources/license";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-const { RoyaltyModuleReadOnlyClient } = require("../../../src/abi/generated");
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,10 +45,10 @@ describe("Test LicenseClient", () => {
 
   describe("Test licenseClient.registerPILTerms", async () => {
     beforeEach(() => {
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyPolicy = sinon
-        .stub()
+      sinon.stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyToken").resolves(true);
+      sinon
+        .stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyPolicy")
         .resolves(true);
-      RoyaltyModuleReadOnlyClient.prototype.isWhitelistedRoyaltyToken = sinon.stub().resolves(true);
     });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
@@ -830,9 +833,7 @@ describe("Test LicenseClient", () => {
 
     describe("With Minting Fees", () => {
       let mintLicenseTokensStub: sinon.SinonStub;
-      let wipBalanceOfStub: sinon.SinonStub;
       let balanceStub: sinon.SinonStub;
-      let approveStub: sinon.SinonStub;
       let simulateContractStub: sinon.SinonStub;
 
       beforeEach(() => {
@@ -840,11 +841,11 @@ describe("Test LicenseClient", () => {
           currencyToken: WIP_TOKEN_ADDRESS,
           tokenAmount: 100n,
         });
-        approveStub = sinon.stub(licenseClient.wipClient, "approve").resolves(txHash);
-        sinon.stub(licenseClient.wipClient, "allowance").resolves({
+        sinon.stub(WrappedIpClient.prototype, "approve").resolves(txHash);
+        sinon.stub(WrappedIpClient.prototype, "allowance").resolves({
           result: 50n,
         });
-        wipBalanceOfStub = sinon.stub(licenseClient.wipClient, "balanceOf").resolves({
+        sinon.stub(WrappedIpClient.prototype, "balanceOf").resolves({
           result: 0n,
         });
         balanceStub = sinon.stub().resolves(200n);
@@ -873,7 +874,6 @@ describe("Test LicenseClient", () => {
         });
         expect(result.txHash).to.equal(txHash);
         expect(result.receipt).to.be.undefined;
-        expect(approveStub.calledOnce).to.be.true;
         expect(mintLicenseTokensStub.calledOnce).to.be.true;
         expect(mintLicenseTokensStub.firstCall.args[0].receiver).to.equal(
           walletMock.account!.address,

@@ -7,58 +7,36 @@ import {
   SimpleWalletClient,
   PiLicenseTemplateClient,
   LicensingModuleClient,
-  WrappedIpClient,
+  Erc20Client,
 } from "../../abi/generated";
-import { TxOptions } from "../options";
-
-/**
- * Options to override the default behavior of the auto wrapping IP
- * and auto approve logic.
- */
-export type WithWipOptions = {
-  /** options to configure WIP behavior */
-  wipOptions?: {
-    /**
-     * Use multicall to batch the WIP calls into one transaction when possible.
-     *
-     * @default true
-     */
-    useMulticallWhenPossible?: boolean;
-
-    /**
-     * By default IP is converted to WIP if the current WIP
-     * balance does not cover the fees.
-     * Set this to `false` to disable this behavior.
-     *
-     * @default true
-     */
-    enableAutoWrapIp?: boolean;
-
-    /**
-     * Automatically approve WIP usage when WIP is needed but current allowance
-     * is not sufficient.
-     * Set this to `false` to disable this behavior.
-     *
-     * @default true
-     */
-    enableAutoApprove?: boolean;
-  };
-};
+import { ERC20Options, TxOptions, WipOptions, WithWipOptions } from "../options";
+import { TokenClient, WIPTokenClient } from "../../utils/token";
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
-export type WipSpender = {
+export type Erc20Spender = {
   address: Address;
   /**
-   * Amount that the address will spend in WIP.
+   * Amount that the address will spend in erc20 token.
    * If not provided, then unlimited amount is assumed.
    */
   amount?: bigint;
 };
 
-export type WipApprovalCall = {
-  spenders: WipSpender[];
-  client: WrappedIpClient;
+export type ApprovalCall = {
+  spenders: Erc20Spender[];
+  client: TokenClient;
+  rpcClient: PublicClient;
+  /** owner is the address calling the approval */
+  owner: Address;
+  /** when true, will return an array of {@link Multicall3ValueCall} */
+  useMultiCall: boolean;
+  multicallAddress?: Address;
+};
+
+export type TokenApprovalCall = {
+  spenders: Erc20Spender[];
+  client: Erc20Client;
   multicallAddress: Address;
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
@@ -67,17 +45,21 @@ export type WipApprovalCall = {
   useMultiCall: boolean;
 };
 
-export type ContractCallWithWipFees = WithWipOptions & {
+export type ContractCallWithFees = {
   totalFees: bigint;
-  multicall3Client: Multicall3Client;
-  wipClient: WrappedIpClient;
-  /** all possible spenders of the wip */
-  wipSpenders: WipSpender[];
+  multicall3Address: Address;
+  /** all possible spenders of the erc20 token */
+  tokenSpenders: Erc20Spender[];
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
   sender: Address;
+  options: {
+    wipOptions?: WipOptions;
+    erc20Options?: ERC20Options;
+  };
+  token?: Address;
   txOptions?: TxOptions;
 };
 
@@ -85,9 +67,9 @@ export type MulticallWithWrapIp = WithWipOptions & {
   calls: Multicall3ValueCall[];
   ipAmountToWrap: bigint;
   contractCall: () => Promise<Hash>;
-  wipSpenders: WipSpender[];
-  multicall3Client: Multicall3Client;
-  wipClient: WrappedIpClient;
+  wipSpenders: Erc20Spender[];
+  multicall3Address: Address;
+  wipClient: WIPTokenClient;
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
 };
