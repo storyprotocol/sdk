@@ -50,7 +50,7 @@ describe("License Terms Helper", () => {
         expiration: 0n,
         defaultMintingFee: 0n,
         royaltyPolicy: "0x0000000000000000000000000000000000000000",
-        uri: "",
+        uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/NCSR.json",
       });
     });
 
@@ -102,7 +102,7 @@ describe("License Terms Helper", () => {
           defaultMintingFee: 1n,
           royaltyPolicy: "0x0000000000000000000000000000000000000000",
           transferable: true,
-          uri: "",
+          uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
         });
       });
     });
@@ -174,7 +174,7 @@ describe("License Terms Helper", () => {
           defaultMintingFee: 1n,
           royaltyPolicy: "0x0000000000000000000000000000000000000000",
           transferable: true,
-          uri: "",
+          uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
         });
       });
       it("it throw commercialRevShare error when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is less than 0 ", async () => {
