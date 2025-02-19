@@ -550,27 +550,24 @@ export class LicenseClient {
         licenseTermsId: BigInt(request.licenseTermsId),
         licensingConfig: validateLicenseConfig(request.licensingConfig),
       };
-      if (
-        request.licenseTemplate === zeroAddress &&
-        request.licensingConfig.commercialRevShare !== 0
-      ) {
+      if (req.licenseTemplate === zeroAddress && req.licensingConfig.commercialRevShare !== 0) {
         throw new Error(
           "The license template cannot be zero address if commercial revenue share is not zero.",
         );
       }
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: validateAddress(request.ipId),
+        id: validateAddress(req.ipId),
       });
       if (!isLicenseIpIdRegistered) {
-        throw new Error(`The licensor IP with id ${request.ipId} is not registered.`);
+        throw new Error(`The licensor IP with id ${req.ipId} is not registered.`);
       }
       const isExisted = await this.piLicenseTemplateReadOnlyClient.exists({
         licenseTermsId: req.licenseTermsId,
       });
       if (!isExisted) {
-        throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
+        throw new Error(`License terms id ${req.licenseTermsId} do not exist.`);
       }
-      if (request.licensingConfig.licensingHook !== zeroAddress) {
+      if (req.licensingConfig.licensingHook !== zeroAddress) {
         const isRegistered = await this.moduleRegistryReadOnlyClient.isRegistered({
           moduleAddress: req.licensingConfig.licensingHook,
         });
@@ -578,7 +575,7 @@ export class LicenseClient {
           throw new Error("The licensing hook is not registered.");
         }
       }
-      if (request.licenseTemplate === zeroAddress && request.licenseTermsId !== 0n) {
+      if (req.licenseTemplate === zeroAddress && req.licenseTermsId !== 0n) {
         throw new Error("The license template is zero address but license terms id is not zero.");
       }
 

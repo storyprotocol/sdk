@@ -60,6 +60,7 @@ import {
   LicenseTermsData,
   DerivativeData,
   CommonRegistrationHandlerParams,
+  ValidatedLicenseTermsData,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -1879,11 +1880,13 @@ export class IPAssetClient {
     licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[],
   ): Promise<{
     licenseTerms: LicenseTerms[];
-    licenseTermsData: LicenseTermsData<LicenseTerms, ValidatedLicensingConfig>[];
+    licenseTermsData: ValidatedLicenseTermsData<LicenseTerms, ValidatedLicensingConfig>[];
   }> {
     const licenseTerms: LicenseTerms[] = [];
-    const processedLicenseTermsData: LicenseTermsData<LicenseTerms, ValidatedLicensingConfig>[] =
-      [];
+    const processedLicenseTermsData: ValidatedLicenseTermsData<
+      LicenseTerms,
+      ValidatedLicensingConfig
+    >[] = [];
     for (let i = 0; i < licenseTermsData.length; i++) {
       const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
       const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);

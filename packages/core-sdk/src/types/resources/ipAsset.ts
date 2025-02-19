@@ -70,6 +70,10 @@ export type RegisterDerivativeResponse = {
 };
 export type LicenseTermsData<T, U> = {
   terms: T;
+  licensingConfig?: U;
+};
+
+export type ValidatedLicenseTermsData<T, U> = LicenseTermsData<T, U> & {
   licensingConfig: U;
 };
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
@@ -400,12 +404,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   /** Set to true to allow minting an NFT with a duplicate metadata hash. */
   allowDuplicates: boolean;
   /** The data of the license and its configuration to be attached to the new group IP. */
-  licenseTermsData: {
-    /** The PIL terms to be attached. */
-    terms: RegisterPILTermsRequest;
-    /** The licensing configuration to be attached. */
-    licensingConfig: LicensingConfig;
-  }[];
+  licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[];
   /** Authors of the IP and their shares of the royalty tokens */
   royaltyShares: RoyaltyShare[];
   /**

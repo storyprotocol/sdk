@@ -6,7 +6,7 @@ import { IpMetadataAndTxOptions, LicensingConfig, ValidatedLicensingConfig } fro
 
 export type LicenseData = {
   licenseTermsId: string | bigint | number;
-  licensingConfig: LicensingConfig;
+  licensingConfig?: LicensingConfig;
   licenseTemplate?: Address;
 };
 

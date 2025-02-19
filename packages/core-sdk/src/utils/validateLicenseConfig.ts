@@ -5,17 +5,29 @@ import { getRevenueShare } from "./licenseTermsHelper";
 import { validateAddress } from "./utils";
 
 export const validateLicenseConfig = (
-  licensingConfig: LicensingConfig,
+  licensingConfig?: LicensingConfig,
 ): ValidatedLicensingConfig => {
+  if (!licensingConfig) {
+    return {
+      isSet: false,
+      mintingFee: 0n,
+      licensingHook: zeroAddress,
+      hookData: zeroAddress,
+      commercialRevShare: 0,
+      disabled: false,
+      expectMinimumGroupRewardShare: 0,
+      expectGroupRewardPool: zeroAddress,
+    };
+  }
   const licenseConfig = {
     expectMinimumGroupRewardShare: Number(licensingConfig.expectMinimumGroupRewardShare),
-    commercialRevShare: getRevenueShare(licensingConfig.commercialRevShare || 0),
-    mintingFee: BigInt(licensingConfig.mintingFee || 0),
-    expectGroupRewardPool: validateAddress(licensingConfig.expectGroupRewardPool || zeroAddress),
-    licensingHook: validateAddress(licensingConfig.licensingHook || zeroAddress),
-    hookData: licensingConfig.hookData || zeroAddress,
-    isSet: licensingConfig.isSet || false,
-    disabled: licensingConfig.disabled || false,
+    commercialRevShare: getRevenueShare(licensingConfig.commercialRevShare),
+    mintingFee: BigInt(licensingConfig.mintingFee),
+    expectGroupRewardPool: validateAddress(licensingConfig.expectGroupRewardPool),
+    licensingHook: validateAddress(licensingConfig.licensingHook),
+    hookData: licensingConfig.hookData,
+    isSet: licensingConfig.isSet,
+    disabled: licensingConfig.disabled,
   } as const;
   if (isNaN(licenseConfig.expectMinimumGroupRewardShare)) {
     throw new Error(`The expectMinimumGroupRewardShare must be a valid number.`);
