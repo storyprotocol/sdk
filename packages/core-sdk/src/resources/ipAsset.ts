@@ -664,7 +664,7 @@ export class IPAssetClient {
           (request.recipient && getAddress(request.recipient, "request.recipient")) ||
           this.wallet.account!.address,
         licenseTermsData,
-        allowDuplicates: request.allowDuplicates,
+        allowDuplicates: request.allowDuplicates || true,
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
       };
 
@@ -983,7 +983,7 @@ export class IPAssetClient {
         derivData,
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         recipient,
-        allowDuplicates: request.allowDuplicates,
+        allowDuplicates: request.allowDuplicates || true,
         spgNftContract,
       };
       const encodedTxData =
@@ -1086,7 +1086,7 @@ export class IPAssetClient {
           (request.recipient && getAddress(request.recipient, "request.recipient")) ||
           this.wallet.account!.address,
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
-        allowDuplicates: request.allowDuplicates,
+        allowDuplicates: request.allowDuplicates || true,
       };
       const encodedTxData = this.registrationWorkflowsClient.mintAndRegisterIpEncode(object);
       if (request.txOptions?.encodedTxDataOnly) {
@@ -1225,7 +1225,7 @@ export class IPAssetClient {
           licenseTokenIds: licenseTokenIds,
           royaltyContext: zeroAddress,
           maxRts: Number(request.maxRts),
-          allowDuplicates: request.allowDuplicates,
+          allowDuplicates: request.allowDuplicates || true,
         };
       this.validateMaxRts(object.maxRts);
 
@@ -1592,7 +1592,7 @@ export class IPAssetClient {
           ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
           licenseTermsData,
           royaltyShares,
-          allowDuplicates: request.allowDuplicates,
+          allowDuplicates: request.allowDuplicates || true,
         };
       const encodedTxData =
         this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensEncode(
@@ -1653,7 +1653,7 @@ export class IPAssetClient {
           ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
           derivData,
           royaltyShares: royaltyShares,
-          allowDuplicates: request.allowDuplicates,
+          allowDuplicates: request.allowDuplicates || true,
         };
 
       const encodedTxData =

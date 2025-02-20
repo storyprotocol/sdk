@@ -145,6 +145,7 @@ export class GroupClient {
       });
       const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         ...request,
+        allowDuplicates: request.allowDuplicates || true,
         spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
         recipient:
           (recipient && getAddress(recipient, "request.recipient")) || this.wallet.account!.address,

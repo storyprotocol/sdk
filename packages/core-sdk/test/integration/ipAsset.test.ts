@@ -419,7 +419,6 @@ describe("IP Asset Functions", () => {
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: 100,
         },
-        allowDuplicates: true,
         txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -503,7 +502,6 @@ describe("IP Asset Functions", () => {
         spgNftContract: nftContract,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
-        allowDuplicates: true,
         ipMetadata: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -938,7 +936,6 @@ describe("IP Asset Functions", () => {
       const result =
         await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract: nftContract,
-          allowDuplicates: true,
           licenseTermsData: [
             {
               terms: {
@@ -1009,7 +1006,6 @@ describe("IP Asset Functions", () => {
         // create parent ip with minting fee
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract: nftContractWithMintingFee,
-          allowDuplicates: true,
           licenseTermsData: [
             {
               terms: {
@@ -1066,7 +1062,6 @@ describe("IP Asset Functions", () => {
             nftMetadataURI: "test",
             nftMetadataHash: zeroHash,
           },
-          allowDuplicates: true,
           txOptions: { waitForTransaction: true },
         });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
@@ -1098,7 +1093,6 @@ describe("IP Asset Functions", () => {
             spgNftContract: nftContractWithMintingFee,
             licenseTokenIds: licenseTokenIds!,
             maxRts: MAX_ROYALTY_TOKEN,
-            allowDuplicates: true,
             ipMetadata: {
               ipMetadataURI: "test",
               ipMetadataHash: zeroHash,
@@ -1144,7 +1138,6 @@ describe("IP Asset Functions", () => {
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
-          allowDuplicates: true,
           ipMetadata: {
             ipMetadataURI: "test",
             ipMetadataHash: zeroHash,
@@ -1211,7 +1204,6 @@ describe("IP Asset Functions", () => {
               maxRts: MAX_ROYALTY_TOKEN,
               maxRevenueShare: 100,
             },
-            allowDuplicates: true,
             ipMetadata: {
               ipMetadataURI: "test",
               ipMetadataHash: zeroHash,
@@ -1336,7 +1328,6 @@ describe("IP Asset Functions", () => {
                 },
               },
             ],
-            allowDuplicates: true,
           },
           {
             spgNftContract: nftContract,
@@ -1373,7 +1364,6 @@ describe("IP Asset Functions", () => {
                 },
               },
             ],
-            allowDuplicates: true,
           },
         ],
         txOptions: { waitForTransaction: true },
@@ -1397,7 +1387,6 @@ describe("IP Asset Functions", () => {
               maxRts: 5 * 10 ** 6,
               maxRevenueShare: "0",
             },
-            allowDuplicates: true,
           },
           {
             spgNftContract: nftContract,
@@ -1408,7 +1397,6 @@ describe("IP Asset Functions", () => {
               maxRts: 5 * 10 ** 6,
               maxRevenueShare: "0",
             },
-            allowDuplicates: true,
           },
         ],
         txOptions: { waitForTransaction: true },

@@ -19,8 +19,11 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
   spgNftContract: Address;
   /** The ID of the group IP to add the newly registered IP. */
   groupId: Address;
-  /** Set to true to allow minting an NFT with a duplicate metadata hash. */
-  allowDuplicates: boolean;
+  /**
+   * Set to true to allow minting an NFT with a duplicate metadata hash.
+   * @default true
+   */
+  allowDuplicates?: boolean;
   /** The maximum reward share percentage that can be allocated to each member IP. */
   maxAllowedRewardShare: number | string;
   /** The data of the license and its configuration to be attached to the new group IP. */

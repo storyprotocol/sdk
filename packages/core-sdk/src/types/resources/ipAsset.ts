@@ -83,8 +83,11 @@ export type ValidatedLicenseTermsData = Omit<
 
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
   spgNftContract: Address;
-  /** Indicates whether the license terms can be attached to the same IP ID or not. */
-  allowDuplicates: boolean;
+  /**
+   * Set to true to allow minting an NFT with a duplicate metadata hash.
+   * @default true
+   */
+  allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsData[];
   /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
@@ -147,8 +150,11 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   derivData: DerivativeData;
   /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
-  /** Set to true to allow minting an NFT with a duplicate metadata hash. */
-  allowDuplicates: boolean;
+  /**
+   * Set to true to allow minting an NFT with a duplicate metadata hash.
+   * @default true
+   */
+  allowDuplicates?: boolean;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -252,7 +258,11 @@ export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
   WithWipOptions & {
     spgNftContract: Address;
     recipient?: Address;
-    allowDuplicates: boolean;
+    /**
+     * Set to true to allow minting an NFT with a duplicate metadata hash.
+     * @default true
+     */
+    allowDuplicates?: boolean;
   };
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
@@ -276,7 +286,11 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   licenseTokenIds: string[] | bigint[] | number[];
   recipient?: Address;
   maxRts: number | string;
-  allowDuplicates: boolean;
+  /**
+   * Set to true to allow minting an NFT with a duplicate metadata hash.
+   * @default true
+   */
+  allowDuplicates?: boolean;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -401,8 +415,11 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
   /** The address of the SPG NFT contract. */
   spgNftContract: Address;
-  /** Set to true to allow minting an NFT with a duplicate metadata hash. */
-  allowDuplicates: boolean;
+  /**
+   * Set to true to allow minting an NFT with a duplicate metadata hash.
+   * @default true
+   */
+  allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseTermsData: LicenseTermsData[];
   /** Authors of the IP and their shares of the royalty tokens */
@@ -427,8 +444,11 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   derivData: DerivativeData;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
-  /** Set to true to allow minting an NFT with a duplicate metadata hash. */
-  allowDuplicates: boolean;
+  /**
+   * Set to true to allow minting an NFT with a duplicate metadata hash.
+   * @default true
+   */
+  allowDuplicates?: boolean;
   /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;

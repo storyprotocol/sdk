@@ -1,10 +1,11 @@
 import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { PublicClient, WalletClient, Account, zeroAddress } from "viem";
+import { PublicClient, WalletClient, Account, zeroAddress, toHex, zeroHash, zeroHash } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { GroupClient } from "../../../src";
 import { LicenseData } from "../../../src/types/resources/group";
+import { walletAddress } from "../mockData";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 chai.use(chaiAsPromised);
@@ -375,6 +376,34 @@ describe("Test IpAssetClient", () => {
         },
       });
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should call with default values when mintAndRegisterIpAndAttachLicenseAndAddToGroup without providing allowDuplicates, ipMetadata, recipient", async () => {
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const mintAndRegisterIpAndAttachLicenseAndAddToGroupStub = sinon
+        .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
+        .resolves(txHash);
+      await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
+        groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        maxAllowedRewardShare: 5,
+        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseData: [mockLicenseData],
+      });
+
+      expect(
+        mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0].allowDuplicates,
+      ).to.equal(true);
+      expect(
+        mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0].ipMetadata,
+      ).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataURI: "",
+        nftMetadataHash: zeroHash,
+      });
+      expect(mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0].recipient).to.equal(
+        walletAddress,
+      );
     });
   });
 
