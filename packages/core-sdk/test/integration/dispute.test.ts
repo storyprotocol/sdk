@@ -339,7 +339,6 @@ describe("Dispute Functions", () => {
       expect(results[0].txHash).to.be.a("string").and.not.empty;
     });
 
-    // BORIS - BREAK
     it("should tag a single IP as infringing without using multicall", async () => {
       // Set dispute judgment
       const { request } = await publicClient.simulateContract({
@@ -448,33 +447,32 @@ describe("Dispute Functions", () => {
     });
 
     it("should tag multiple IPs without multicall when specified", async () => {
-      // Create two new derivative IPs
-      const [derivativeResponse3, derivativeResponse4] = await Promise.all([
-        clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
-          spgNftContract: nftContract,
-          derivData: {
-            parentIpIds: [parentIpId!],
-            licenseTermsIds: [licenseTermsId!],
-            maxMintingFee: 1n,
-            maxRts: 5 * 10 ** 6,
-            maxRevenueShare: 100,
-          },
-          allowDuplicates: true,
-          txOptions: { waitForTransaction: true },
-        }),
-        clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
-          spgNftContract: nftContract,
-          derivData: {
-            parentIpIds: [parentIpId!],
-            licenseTermsIds: [licenseTermsId!],
-            maxMintingFee: 1n,
-            maxRts: 5 * 10 ** 6,
-            maxRevenueShare: 100,
-          },
-          allowDuplicates: true,
-          txOptions: { waitForTransaction: true },
-        }),
-      ]);
+      // Create two new derivative IPs sequentially
+      const derivativeResponse3 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContract,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+        allowDuplicates: true,
+        txOptions: { waitForTransaction: true },
+      });
+
+      const derivativeResponse4 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContract,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+        allowDuplicates: true,
+        txOptions: { waitForTransaction: true },
+      });
 
       // Set judgment for this specific dispute
       const { request } = await publicClient.simulateContract({
@@ -495,12 +493,22 @@ describe("Dispute Functions", () => {
       });
       expect(disputeState[6]).to.equal(disputeState[5]);
 
-      const response = await clientA.dispute.tagIfRelatedIpInfringed({
+      // Tag IPs sequentially instead of in parallel
+      const response1 = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
           {
             ipId: derivativeResponse3.ipId!,
             disputeId: disputeId,
           },
+        ],
+        options: {
+          useMulticallWhenPossible: false,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+
+      const response2 = await clientA.dispute.tagIfRelatedIpInfringed({
+        infringementTags: [
           {
             ipId: derivativeResponse4.ipId!,
             disputeId: disputeId,
@@ -512,9 +520,10 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      expect(response).to.have.lengthOf(2);
-      expect(response[0].txHash).to.be.a("string").and.not.empty;
-      expect(response[1].txHash).to.be.a("string").and.not.empty;
+      const responses = [...response1, ...response2];
+      expect(responses).to.have.lengthOf(2);
+      expect(responses[0].txHash).to.be.a("string").and.not.empty;
+      expect(responses[1].txHash).to.be.a("string").and.not.empty;
     });
 
     it("should fail when trying to tag with invalid dispute ID", async () => {
@@ -530,8 +539,6 @@ describe("Dispute Functions", () => {
         }),
       ).to.be.rejected;
     });
-
-    // END-BORIS - BREAK
 
     // Test that dispute initiator can resolve the dispute after judgement
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
