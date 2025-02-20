@@ -86,10 +86,7 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
   allowDuplicates: boolean;
   /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsData[];
-  /**
-   * The address to receive the minted NFT.
-   * @default wallet address
-   */
+  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
@@ -108,7 +105,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
   tokenId: string | number | bigint;
   /**
    * The deadline for the signature in seconds.
-   * @default 1000s
+   * @default 1000
    */
   deadline?: string | number | bigint;
   /** The derivative data to be used for register derivative. */
@@ -131,7 +128,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
   licenseTermsData: LicenseTermsData[];
   /**
    * The deadline for the signature in seconds.
-   * @default 1000s
+   * @default 1000
    */
   deadline?: bigint | number | string;
 } & IpMetadataAndTxOptions;
@@ -147,10 +144,7 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
   /** The derivative data to be used for register derivative. */
   derivData: DerivativeData;
-  /**
-   * Authors of the IP and their shares of the royalty tokens.
-   * @default wallet address
-   */
+  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
   /** Set to true to allow minting an NFT with a duplicate metadata hash. */
   allowDuplicates: boolean;
@@ -263,7 +257,7 @@ export type RegisterPilTermsAndAttachRequest = {
   /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsData[];
   /** The deadline for the signature in seconds.
-   * @default 1000s
+   * @default 1000
    */
   deadline?: string | number | bigint;
   txOptions?: TxOptions;
@@ -343,7 +337,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   licenseTermsData: LicenseTermsData[];
   /**
    * The deadline for the signature in seconds.
-   * @default 1000s
+   * @default 1000
    */
   deadline?: string | number | bigint;
   /** Authors of the IP and their shares of the royalty tokens. */
@@ -369,8 +363,8 @@ export type RoyaltyShare = {
   /** The address of the recipient. */
   recipient: Address;
   /**
-   *  The percentage of the royalty share.
-   *  @example 10 represents 10% which is 100_000_00.
+   *  The percentage of the total royalty share. For example, a value of 10 represents 10% of max royalty shares, which is 10,000,000.
+   *  @example 10
    */
   percentage: number;
 };
@@ -383,7 +377,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   tokenId: bigint | string | number;
   /**
    * The deadline for the signature in seconds.
-   * @default 1000s
+   * @default 1000
    */
   deadline?: string | number | bigint;
   /** The derivative data to be used for register derivative.*/
@@ -411,10 +405,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   licenseTermsData: LicenseTermsData[];
   /** Authors of the IP and their shares of the royalty tokens */
   royaltyShares: RoyaltyShare[];
-  /**
-   * The address to receive the minted NFT.
-   * @default wallet address
-   */
+  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo &
@@ -436,10 +427,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   royaltyShares: RoyaltyShare[];
   /** Set to true to allow minting an NFT with a duplicate metadata hash. */
   allowDuplicates: boolean;
-  /**
-   * The address to receive the minted NFT
-   * @default wallet address
-   */
+  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo &
