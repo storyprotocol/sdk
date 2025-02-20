@@ -147,7 +147,7 @@ export type SetLicensingConfigRequest = {
   /** The address of the license template used. */
   licenseTemplate: Address;
   /** The licensing configuration for the license. */
-  licensingConfig?: LicensingConfig;
+  licensingConfig: LicensingConfig;
   txOptions?: TxOptions;
 };
 
