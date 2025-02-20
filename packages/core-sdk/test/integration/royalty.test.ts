@@ -240,7 +240,6 @@ describe("Royalty Functions", () => {
 
       const retA = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract,
-        allowDuplicates: true,
         licenseTermsData: [
           {
             terms: {
@@ -281,7 +280,6 @@ describe("Royalty Functions", () => {
 
       const retB = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract,
-        allowDuplicates: true,
         derivData: {
           parentIpIds: [ipA!],
           licenseTermsIds: [licenseTermsId!],
@@ -295,7 +293,6 @@ describe("Royalty Functions", () => {
 
       const retC = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract,
-        allowDuplicates: true,
         derivData: {
           parentIpIds: [ipB!],
           licenseTermsIds: [licenseTermsId!],
@@ -309,7 +306,6 @@ describe("Royalty Functions", () => {
 
       const retD = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract,
-        allowDuplicates: true,
         derivData: {
           parentIpIds: [ipC!],
           licenseTermsIds: [licenseTermsId!],
