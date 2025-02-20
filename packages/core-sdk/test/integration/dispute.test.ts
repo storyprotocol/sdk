@@ -340,7 +340,6 @@ describe("Dispute Functions", () => {
     });
 
     it("should tag a single IP as infringing without using multicall", async () => {
-      // Set dispute judgment
       const { request } = await publicClient.simulateContract({
         address: DISPUTE_MODULE_ADDRESS,
         abi: [SET_DISPUTE_JUDGEMENT_ABI],
@@ -349,10 +348,8 @@ describe("Dispute Functions", () => {
         account: judgeWalletClient.account!,
       });
       const judgmentTxHash = await judgeWalletClient.writeContract(request);
-      // Wait for judgment to be processed
       await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
 
-      // Verify dispute state using direct contract call
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
         abi: disputeModuleAbi,
@@ -360,7 +357,7 @@ describe("Dispute Functions", () => {
         args: [disputeId],
       });
 
-      expect(disputeState[6]).to.equal(disputeState[5]); // currentTag should equal targetTag
+      expect(disputeState[6]).to.equal(disputeState[5]);
 
       const response = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
@@ -380,7 +377,6 @@ describe("Dispute Functions", () => {
     });
 
     it("should tag multiple IPs as infringing using multicall", async () => {
-      // Create new dispute for this test
       const disputeResponse = await clientA.dispute.raiseDispute({
         targetIpId: parentIpId,
         cid: await generateCID(),
@@ -391,7 +387,6 @@ describe("Dispute Functions", () => {
       });
       const testDisputeId = disputeResponse.disputeId!;
 
-      // Create second derivative IP
       const derivativeResponse2 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract: nftContract,
         derivData: {
@@ -406,7 +401,6 @@ describe("Dispute Functions", () => {
       });
       const childIpId2 = derivativeResponse2.ipId!;
 
-      // Set judgment for this specific dispute
       const { request } = await publicClient.simulateContract({
         address: DISPUTE_MODULE_ADDRESS,
         abi: [SET_DISPUTE_JUDGEMENT_ABI],
@@ -474,7 +468,6 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      // Set judgment for this specific dispute
       const { request } = await publicClient.simulateContract({
         address: DISPUTE_MODULE_ADDRESS,
         abi: [SET_DISPUTE_JUDGEMENT_ABI],
@@ -493,7 +486,6 @@ describe("Dispute Functions", () => {
       });
       expect(disputeState[6]).to.equal(disputeState[5]);
 
-      // Tag IPs sequentially instead of in parallel
       const response1 = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
           {
@@ -540,7 +532,6 @@ describe("Dispute Functions", () => {
       ).to.be.rejected;
     });
 
-    // Test that dispute initiator can resolve the dispute after judgement
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
       // First set judgment
       const { request } = await publicClient.simulateContract({
@@ -553,16 +544,14 @@ describe("Dispute Functions", () => {
       const judgmentTxHash = await judgeWalletClient.writeContract(request);
       await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
 
-      // Verify dispute state
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
         abi: disputeModuleAbi,
         functionName: "disputes",
         args: [disputeId],
       });
-      expect(disputeState[6]).to.equal(disputeState[5]); // currentTag should equal targetTag
+      expect(disputeState[6]).to.equal(disputeState[5]);
 
-      // Then try to resolve
       const response = await clientA.dispute.resolveDispute({
         disputeId: disputeId,
         data: "0x",
@@ -573,7 +562,6 @@ describe("Dispute Functions", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
-    // Test that non-initiators cannot resolve the dispute
     it("should fail when non-initiator tries to resolve the dispute", async () => {
       await expect(
         clientB.dispute.resolveDispute({
