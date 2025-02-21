@@ -61,6 +61,6 @@ To make it easier for your PR to receive reviews, consider the reviewers will ne
 * write [good commit messages][2].
 * break large changes into a logical series of smaller patches which individually make easily understandable changes, and in aggregate solve a broader issue.
 
-[1]: https://github.com/storyprotocol/typescript-sdk/issues
+[1]: https://github.com/storyprotocol/sdk/issues
 [2]: https://chris.beams.io/posts/git-commit/#seven-rules
 [3]: https://google.github.io/styleguide/tsguide.html
