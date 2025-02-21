@@ -1,123 +1,172 @@
-# Story Protocol SDK
+# 📖 Story Protocol SDK
 
-Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for developers to build applications with Story Protocol. By using the SDK, developers can create the resources like IP assets and perform actions to interact with the resource.
+<div align="left">
 
-## How to use Story Protocol SDK in Your Project
+[![GitHub Repo stars](https://img.shields.io/github/stars/storyprotocol/sdk?logo=github&color=yellow)](https://github.com/storyprotocol/sdk/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/storyprotocol/sdk?logo=github&color=blue)](https://github.com/storyprotocol/sdk/network/members)
+[![GitHub last commit](https://img.shields.io/github/last-commit/storyprotocol/sdk?logo=git)](https://github.com/storyprotocol/sdk/commits/main)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-### Install Story Protocol core SDK
+</div>
 
-Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following command to install the package:
+---
 
-Use `npm`:
+## 🚀 Overview
 
-```
+Welcome to the **Story Protocol SDK**!  
+This SDK provides **APIs** for developers to build applications with **Story Protocol**, enabling seamless creation and interaction with **IP assets**.
+
+---
+
+## ⚡ Installation
+
+### 1️⃣ Install Story Protocol Core SDK
+
+Ensure you have an existing **Node.js** project before installation.
+
+📌 **Using `npm`**:
+```sh
 npm install --save @story-protocol/core-sdk viem@1.21.4
 ```
 
-Use `pnpm`:
-
-```
+📌 **Using `pnpm`**:
+```sh
 pnpm install @story-protocol/core-sdk viem@1.21.4
 ```
 
-Use `yarn`:
-
-```
+📌 **Using `yarn`**:
+```sh
 yarn add @story-protocol/core-sdk viem@1.21.4
 ```
 
-Besides the Story Protocol SDK package `@story-protocol/core-sdk`, we also require the package `viem` (https://www.npmjs.com/package/viem) to access the DeFi wallet accounts.
+📌 **Note:**  
+The package `viem` ([npm package](https://www.npmjs.com/package/viem)) is required for **DeFi wallet access**.
 
-# Initiate SDK Client
+---
 
-Next we can initiate the SDK Client by first setting up our wallet and then the client itself.
+## 🛠 Initializing SDK Client
 
-## Set up your wallet
+### 2️⃣ Set Up Your Wallet
 
-The SDK supports using `viem` for initiating SDK client. Create a typescript file and write the following code to initiate the client with a private key:
+Use `viem` to create a wallet:
 
-> :information-source: Make sure to have WALLET_PRIVATE_KEY set up in your .env file.
-
-```typescript index.ts
+```typescript
 import { privateKeyToAccount } from "viem/accounts";
 
 const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
-const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+const account = privateKeyToAccount(PRIVATE_KEY as Address);
 ```
 
-The preceding code created the `account` object for creating the SDK client.
+📌 **Note:** Ensure `WALLET_PRIVATE_KEY` is set in your `.env` file.
 
-## Set up SDK client
+---
 
-To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, utilizing the `account` we created previously.
+### 3️⃣ Configure SDK Client
 
-> :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Iliad network with `RPC_PROVIDER_URL=https://rpc.partner.testnet.storyprotocol.net`.
+Initialize the SDK client using `StoryClient`:
 
-```typescript index.ts
+```typescript
 import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
 
 const config: StoryConfig = {
   transport: http(process.env.RPC_PROVIDER_URL),
   account: account,
 };
+
 const client = StoryClient.newClient(config);
 ```
 
-## How To Build and Test Story Protocol SDK for local testing
+📌 **Note:** Set up `RPC_PROVIDER_URL` for your desired chain in your `.env` file.  
+💡 We recommend using the **Iliad network**:
+```sh
+RPC_PROVIDER_URL=https://rpc.partner.testnet.storyprotocol.net
+```
 
-This section provides the instructions on how to build Story Protocol SDK from source code.
+---
 
-### Prerequisite
+## 🏗 Building & Testing Locally
 
-- Install PNPM: Execute `npm install -g pnpm`
-- Install TypeScript: Run `pnpm add typescript -D`
-- Install Yalc: Use `npm install -g yalc`
+### 4️⃣ Prerequisites
 
-### Steps for Using Yalc for Local Testing of Core-SDK
+📌 Install required dependencies:
+```sh
+npm install -g pnpm typescript yalc
+```
 
-For manual testing of the core-sdk, set up a separate web project. The guide below uses `yalc` to link the `core-sdk` locally, enabling its installation and import for testing.
+---
 
-Under the `typescript-sdk/packages/core-sdk` directory:
+### 5️⃣ Using `yalc` for Local Testing
 
-- Navigate to the `core-sdk` directory.
-- Execute `npm run build` to build your latest code.
-- Run `yalc publish`. You should see a message like `@story-protocol/core-sdk@<version> published in store.` (Note: The version number may vary).
+📌 **In `typescript-sdk/packages/core-sdk` directory**:
 
-To set up your testing environment (e.g., a new Next.js project), use `yalc add @story-protocol/core-sdk@<version>` (ensure the version number is updated accordingly).
+```sh
+cd packages/core-sdk
+npm run build
+yalc publish
+```
 
-- Run `pnpm install`. This installs `@story-protocol/core-sdk@<version>` with your local changes.
+📌 **In your test project**:
 
-### Steps to Refresh the Changes
+```sh
+yalc add @story-protocol/core-sdk@<version>
+pnpm install
+```
 
-Under the `typescript-sdk/packages/core-sdk` directory:
+📌 **To refresh changes**:
 
-- Execute `npm run build` to build your latest code.
-- Run `yalc push`.
+```sh
+npm run build
+yalc push
+yalc update
+```
 
-In your testing environment:
+---
 
-- Run `yalc update` to pull the latest changes.
+## 🔄 Updating Smart Contract ABIs
 
-## Steps to pull and compile latest Protocol Core & Periphery v1 Smart Contract ABIs (Currently pulls from the protocol-core-v1 and protocol-periphery-v1 `release-v1.x.x` branch)
+To pull & compile the latest **Protocol Core & Periphery v1** ABIs:
 
-- run `cd packages/wagmi-generator && npm run generate`
+📌 **Run:**
+```sh
+cd packages/wagmi-generator
+npm run generate
+```
 
-## Release
+---
 
-| Package                           | Description                                     |
-| :-------------------------------- | :---------------------------------------------- |
-| [core-sdk](./packages/core-sdk)   | The core sdk for interacting with the protocol  |
-| [react-sdk](./packages/react-sdk) | The react sdk for interacting with the protocol |
+## 📦 Available Packages
 
-## Contributing
+| Package | Description |
+|---------|------------|
+| [core-sdk](./packages/core-sdk) | Core SDK for protocol interaction |
+| [react-sdk](./packages/react-sdk) | React SDK for frontend integration |
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change. Details see: [CONTRIBUTING](/CONTRIBUTING.md)
+---
 
-Please make sure to update tests as appropriate.
+## 🤝 Contributing
 
-## License
+Pull requests are welcome!  
+🔹 Before major changes, **open an issue** for discussion.  
+🔹 See our [CONTRIBUTING.md](CONTRIBUTING.md) guide.  
 
-[MIT License](/LICENSE.md)
+✅ **Ensure tests are updated appropriately.**
 
-## Contact Us
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.  
+See [LICENSE](LICENSE.md) for details.
+
+---
+
+## 📬 Contact Us
+
+<p align="left">
+  <a href="https://discord.gg/storyprotocol">
+    <img src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white&style=for-the-badge" alt="Discord">
+  </a>
+  <a href="https://x.com/storyprotocol">
+    <img src="https://img.shields.io/badge/Twitter-000000?logo=x&logoColor=white&style=for-the-badge" alt="Twitter (X)">
+  </a>
+</p>
