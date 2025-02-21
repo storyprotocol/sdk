@@ -710,6 +710,34 @@ describe("Test IpAssetClient", () => {
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
+
+    it("should call with default values of maxMintingFee, maxRts, maxRevenueShare when registerDerivative given maxMintingFee, maxRts, maxRevenueShare is not provided", async () => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .onCall(0)
+        .resolves(true)
+        .onCall(1)
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      const registerDerivativeStub = sinon
+        .stub(ipAssetClient.licensingModuleClient, "registerDerivative")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+
+      await ipAssetClient.registerDerivative({
+        childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+        licenseTermsIds: ["1"],
+        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
+      expect(registerDerivativeStub.args[0][0].maxMintingFee).equal(0n);
+      expect(registerDerivativeStub.args[0][0].maxRts).equal(MAX_ROYALTY_TOKEN);
+      expect(registerDerivativeStub.args[0][0].maxRevenueShare).equal(MAX_ROYALTY_TOKEN);
+    });
   });
 
   describe("Test ipAssetClient.registerDerivativeWithLicenseTokens", async () => {
@@ -924,7 +952,6 @@ describe("Test IpAssetClient", () => {
         ],
         allowDuplicates: false,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        royaltyPolicyAddress: zeroAddress,
         ipMetadata: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
@@ -1708,6 +1735,34 @@ describe("Test IpAssetClient", () => {
         ],
       });
       expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should call with default values of licensingConfig when registerPilTermsAndAttach given licensingConfig is not provided", async () => {
+      const registerPilTermsAndAttachStub = sinon
+        .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerPilTermsAndAttach")
+        .resolves(txHash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      await ipAssetClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+          },
+        ],
+      });
+      expect(
+        registerPilTermsAndAttachStub.args[0][0].licenseTermsData[0].licensingConfig,
+      ).to.deep.equal({
+        isSet: false,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: zeroAddress,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: zeroAddress,
+      });
     });
   });
 
