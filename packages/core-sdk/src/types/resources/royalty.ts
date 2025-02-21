@@ -199,6 +199,6 @@ export type ClaimAllRevenueResponse = {
 
 export type TransferClaimedTokensFromIpToWalletParams = {
   ipAccount: IpAccountImplClient;
-  skipUnwrapIp: boolean;
+  autoUnwrapIp: boolean;
   claimedTokens: ClaimedToken[];
 };
