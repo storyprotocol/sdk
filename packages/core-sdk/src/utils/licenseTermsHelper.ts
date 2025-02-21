@@ -4,6 +4,7 @@ import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resour
 import { validateAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
+import { RevShareType } from "../types/common";
 
 export function getLicenseTermByType(
   type: PIL_TYPE,
@@ -35,6 +36,8 @@ export function getLicenseTermByType(
   };
   if (type === PIL_TYPE.NON_COMMERCIAL_REMIX) {
     licenseTerms.commercializerCheckerData = "0x";
+    licenseTerms.uri =
+      "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/NCSR.json";
     return licenseTerms;
   } else if (type === PIL_TYPE.COMMERCIAL_USE) {
     if (!term || term.defaultMintingFee === undefined || term.currency === undefined) {
@@ -46,6 +49,8 @@ export function getLicenseTermByType(
     licenseTerms.commercialAttribution = true;
     licenseTerms.derivativesReciprocal = false;
     licenseTerms.currency = validateAddress(term.currency);
+    licenseTerms.uri =
+      "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json";
     return licenseTerms;
   } else {
     if (
@@ -62,7 +67,8 @@ export function getLicenseTermByType(
     licenseTerms.defaultMintingFee = BigInt(term.defaultMintingFee);
     licenseTerms.commercialUse = true;
     licenseTerms.commercialAttribution = true;
-
+    licenseTerms.uri =
+      "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json";
     licenseTerms.commercialRevShare = getRevenueShare(term.commercialRevShare);
     licenseTerms.derivativesReciprocal = true;
     licenseTerms.currency = validateAddress(term.currency);
@@ -163,13 +169,16 @@ const verifyDerivatives = (terms: LicenseTerms) => {
   }
 };
 
-export const getRevenueShare = (revShare: number | string) => {
+export const getRevenueShare = (
+  revShare: number | string,
+  type: RevShareType = RevShareType.COMMERCIAL_REVENUE_SHARE,
+) => {
   const revShareNumber = Number(revShare);
   if (isNaN(revShareNumber)) {
-    throw new Error("CommercialRevShare must be a valid number.");
+    throw new Error(`${type} must be a valid number.`);
   }
   if (revShareNumber < 0 || revShareNumber > 100) {
-    throw new Error("CommercialRevShare should be between 0 and 100.");
+    throw new Error(`${type} must be between 0 and 100.`);
   }
   return (revShareNumber / 100) * MAX_ROYALTY_TOKEN;
 };

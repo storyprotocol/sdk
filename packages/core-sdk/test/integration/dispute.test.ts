@@ -273,7 +273,6 @@ describe("Dispute Functions", () => {
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: 100,
         },
-        allowDuplicates: true,
         txOptions: { waitForTransaction: true },
       });
       childIpId = derivativeIpIdResponse1.ipId!;
@@ -288,7 +287,6 @@ describe("Dispute Functions", () => {
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: 100,
         },
-        allowDuplicates: true,
         txOptions: { waitForTransaction: true },
       });
       childIpId2 = derivativeIpIdResponse2.ipId!;

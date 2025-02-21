@@ -2,11 +2,12 @@ import { randomBytes } from "crypto";
 import sinon from "sinon";
 import { Address, Hex, keccak256 } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { walletAddress } from "./mockData";
 
 export function createMock<T>(obj = {}): T {
   const mockObj: any = obj;
   mockObj.waitForTransactionReceipt = sinon.stub().resolves({});
-  mockObj.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
+  mockObj.address = walletAddress;
   mockObj.multicall = sinon.stub().returns([{ error: "", status: "success" }]);
   mockObj.getBlock = sinon.stub().resolves({ timestamp: 1629820800n });
   return mockObj;

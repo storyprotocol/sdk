@@ -44,6 +44,7 @@ import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
+import { RevShareType } from "../types/common";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -108,7 +109,7 @@ export class GroupClient {
     }
   }
   /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/registries/IIPAssetRegistry.sol | IIPAssetRegistry}
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    * for a list of on-chain events emitted when an IP is minted and registered, license terms are attached to an IP, and it is added to a group.
    */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
@@ -144,10 +145,13 @@ export class GroupClient {
       });
       const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         ...request,
+        allowDuplicates: request.allowDuplicates || true,
         spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
         recipient:
           (recipient && getAddress(recipient, "request.recipient")) || this.wallet.account!.address,
-        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
+        maxAllowedRewardShare: BigInt(
+          getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+        ),
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigAddToGroup: {
@@ -182,7 +186,7 @@ export class GroupClient {
   }
 
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/registries/IIPAssetRegistry.sol | IIPAssetRegistry}
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    * for a list of on-chain events emitted when an IP is registered, license terms are attached to an IP, and it is added to a group.
    */
   public async registerIpAndAttachLicenseAndAddToGroup(
@@ -257,7 +261,9 @@ export class GroupClient {
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         tokenId: BigInt(request.tokenId),
-        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
+        maxAllowedRewardShare: BigInt(
+          getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+        ),
         sigAddToGroup: {
           signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
           deadline: calculatedDeadline,
@@ -292,7 +298,7 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/grouping/IGroupingModule.sol | IGroupingModule}
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
    * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP .
    */
   public async registerGroupAndAttachLicense(
@@ -324,7 +330,7 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/main/contracts/interfaces/modules/grouping/IGroupingModule.sol | IGroupingModule}
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
    * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP, and individual IPs are added to a group.
    */
   public async registerGroupAndAttachLicenseAndAddIps(
