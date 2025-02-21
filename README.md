@@ -42,7 +42,7 @@ The SDK supports using `viem` for initiating SDK client. Create a typescript fil
 import { privateKeyToAccount } from "viem/accounts";
 
 const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
-const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+const account = privateKeyToAccount(PRIVATE_KEY as Address);
 ```
 
 The preceding code created the `account` object for creating the SDK client.
