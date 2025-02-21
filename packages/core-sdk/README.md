@@ -67,7 +67,7 @@ const client = StoryClient.newClient(config);
 
 This section provides the instructions on how to build Story Protocol SDK from source code.
 
-### Prerequisite
+### Prerequisites
 
 - Install PNPM: Execute `npm install -g pnpm`
 - Install TypeScript: Run `pnpm add typescript -D`
@@ -121,3 +121,4 @@ Please make sure to update tests as appropriate.
 [MIT License](/LICENSE.md)
 
 ## Contact Us
+- [Join our Discord](https://discord.gg/storyprotocol)
