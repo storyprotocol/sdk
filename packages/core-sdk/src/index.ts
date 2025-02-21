@@ -84,18 +84,10 @@ export { PIL_TYPE } from "./types/resources/license";
 export type {
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
-  SnapshotRequest,
-  SnapshotResponse,
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
-  SnapshotAndClaimBySnapshotBatchRequest,
-  SnapshotAndClaimBySnapshotBatchResponse,
-  SnapshotAndClaimByTokenBatchRequest,
-  SnapshotAndClaimByTokenBatchResponse,
-  TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
-  TransferToVaultAndSnapshotAndClaimBySnapshotBatchResponse,
-  TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
-  TransferToVaultAndSnapshotAndClaimByTokenBatchResponse,
+  ClaimAllRevenueRequest,
+  ClaimAllRevenueResponse,
 } from "./types/resources/royalty";
 
 export type {
