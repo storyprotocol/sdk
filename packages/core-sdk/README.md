@@ -6,7 +6,7 @@ Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for d
 
 ### Install Story Protocol core SDK
 
-Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following command to install the package:
+Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following commands to install the package:
 
 Use `npm`:
 
@@ -34,7 +34,7 @@ Next we can initiate the SDK Client by first setting up our wallet and then the 
 
 ## Set up your wallet
 
-The SDK supports using `viem` for initiating SDK client. Create a typescript file and write the following code to initiate the client with a private key:
+The SDK supports using `viem` for initialize SDK client. Create a typescript file and write the following code to initiate the client with a private key:
 
 > :information-source: Make sure to have WALLET_PRIVATE_KEY set up in your .env file.
 
@@ -45,11 +45,11 @@ const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
 const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
 ```
 
-The preceding code created the `account` object for creating the SDK client.
+The previous code creates the `account` object for creating the SDK client.
 
 ## Set up SDK client
 
-To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, utilizing the `account` we created previously.
+To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, use the `account` we create previously.
 
 > :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Iliad network with `RPC_PROVIDER_URL=https://rpc.partner.testnet.storyprotocol.net`.
 
@@ -69,7 +69,7 @@ This section provides the instructions on how to build Story Protocol SDK from s
 
 ### Prerequisite
 
-- Install PNPM: Execute `npm install -g pnpm`
+- Install PNPM: Run `npm install -g pnpm`
 - Install TypeScript: Run `pnpm add typescript -D`
 - Install Yalc: Use `npm install -g yalc`
 
@@ -83,11 +83,11 @@ Under the `typescript-sdk/packages/core-sdk` directory:
 - Execute `npm run build` to build your latest code.
 - Run `yalc publish`. You should see a message like `@story-protocol/core-sdk@<version> published in store.` (Note: The version number may vary).
 
-To set up your testing environment (e.g., a new Next.js project), use `yalc add @story-protocol/core-sdk@<version>` (ensure the version number is updated accordingly).
+To set up your testing environment (e.g., a new Next.js project), use `yalc add @story-protocol/core-sdk@<version>` (make sure the version number is updated accordingly).
 
 - Run `pnpm install`. This installs `@story-protocol/core-sdk@<version>` with your local changes.
 
-### Steps to Refresh the Changes
+### Steps to Refreshes the Changes
 
 Under the `typescript-sdk/packages/core-sdk` directory:
 
