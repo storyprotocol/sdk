@@ -77,4 +77,18 @@ describe("validateLicenseConfig", () => {
       "The mintingFee must be greater than 0.",
     );
   });
+
+  it("should throw default value when licensingConfig is not provided", () => {
+    const result = validateLicenseConfig();
+    expect(result).to.deep.equal({
+      isSet: false,
+      mintingFee: 0n,
+      licensingHook: zeroAddress,
+      hookData: zeroAddress,
+      commercialRevShare: 0,
+      disabled: false,
+      expectMinimumGroupRewardShare: 0,
+      expectGroupRewardPool: zeroAddress,
+    });
+  });
 });

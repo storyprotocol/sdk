@@ -17,6 +17,7 @@ import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
 import { LicensingConfig } from "../../../src/types/common";
 import { DerivativeData } from "../../../src/types/resources/ipAsset";
+import { txHash, walletAddress } from "../mockData";
 const {
   RoyaltyModuleReadOnlyClient,
   IpRoyaltyVaultImplReadOnlyClient,
@@ -24,7 +25,6 @@ const {
   SpgnftImplReadOnlyClient,
   LicensingModuleClient,
 } = require("../../../src/abi/generated");
-const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const licenseTerms: LicenseTerms = {
@@ -661,6 +661,9 @@ describe("Test IpAssetClient", () => {
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
+      // Because registerDerivative doesn't call trigger IPRegistered event, but the `handleRegistrationWithFees`
+      // will call it, so we need to mock the result of parseTxIpRegisteredEvent to avoid the error.
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([]);
 
       const res = await ipAssetClient.registerDerivative({
         childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -709,6 +712,34 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should call with default values of maxMintingFee, maxRts, maxRevenueShare when registerDerivative given maxMintingFee, maxRts, maxRevenueShare is not provided", async () => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .onCall(0)
+        .resolves(true)
+        .onCall(1)
+        .resolves(true);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      const registerDerivativeStub = sinon
+        .stub(ipAssetClient.licensingModuleClient, "registerDerivative")
+        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+
+      await ipAssetClient.registerDerivative({
+        childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+        licenseTermsIds: ["1"],
+        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
+      expect(registerDerivativeStub.args[0][0].maxMintingFee).equal(0n);
+      expect(registerDerivativeStub.args[0][0].maxRts).equal(MAX_ROYALTY_TOKEN);
+      expect(registerDerivativeStub.args[0][0].maxRevenueShare).equal(MAX_ROYALTY_TOKEN);
     });
   });
 
@@ -924,7 +955,6 @@ describe("Test IpAssetClient", () => {
         ],
         allowDuplicates: false,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        royaltyPolicyAddress: zeroAddress,
         ipMetadata: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
@@ -1025,7 +1055,6 @@ describe("Test IpAssetClient", () => {
             licensingConfig,
           },
         ],
-        allowDuplicates: false,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         ipMetadata: {
           ipMetadataURI: "",
@@ -1037,6 +1066,29 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should call with default values when createIpAssetWithPilTerms without providing allowDuplicates, ipMetadata, recipient", async () => {
+      const mintAndRegisterIpAndAttachPilTermsStub = sinon
+        .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "mintAndRegisterIpAndAttachPilTerms")
+        .resolves(txHash);
+      await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+            licensingConfig,
+          },
+        ],
+      });
+      expect(mintAndRegisterIpAndAttachPilTermsStub.args[0][0].allowDuplicates).to.equal(true);
+      expect(mintAndRegisterIpAndAttachPilTermsStub.args[0][0].ipMetadata).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataURI: "",
+        nftMetadataHash: zeroHash,
+      });
+      expect(mintAndRegisterIpAndAttachPilTermsStub.args[0][0].recipient).to.equal(walletAddress);
     });
   });
 
@@ -1490,7 +1542,6 @@ describe("Test IpAssetClient", () => {
       const res = await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         derivData,
-        allowDuplicates: false,
         ipMetadata: {
           ipMetadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -1501,6 +1552,53 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should call with default values when mintAndRegisterIpAndMakeDerivative without providing allowDuplicates, ipMetadata", async () => {
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+      sinon
+        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .onFirstCall()
+        .resolves(true)
+        .onSecondCall()
+        .resolves(false);
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+
+      const mintAndRegisterIpAndMakeDerivativeStub = sinon
+        .stub(ipAssetClient.derivativeWorkflowsClient, "mintAndRegisterIpAndMakeDerivative")
+        .resolves(txHash);
+
+      await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        derivData,
+      });
+
+      expect(mintAndRegisterIpAndMakeDerivativeStub.args[0][0].allowDuplicates).to.equal(true);
+      expect(mintAndRegisterIpAndMakeDerivativeStub.args[0][0].ipMetadata).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataURI: "",
+        nftMetadataHash: zeroHash,
+      });
+      expect(mintAndRegisterIpAndMakeDerivativeStub.args[0][0].recipient).to.equal(walletAddress);
     });
   });
   describe("Test ipAssetClient.mintAndRegisterIp", async () => {
@@ -1600,6 +1698,25 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should call with default values when mintAndRegisterIp without providing allowDuplicates, ipMetadata, recipient", async () => {
+      const mintAndRegisterIpStub = sinon
+        .stub(ipAssetClient.registrationWorkflowsClient, "mintAndRegisterIp")
+        .resolves(txHash);
+
+      await ipAssetClient.mintAndRegisterIp({
+        spgNftContract,
+      });
+
+      expect(mintAndRegisterIpStub.args[0][0].allowDuplicates).to.equal(true);
+      expect(mintAndRegisterIpStub.args[0][0].ipMetadata).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataURI: "",
+        nftMetadataHash: zeroHash,
+      });
+      expect(mintAndRegisterIpStub.args[0][0].recipient).to.equal(walletAddress);
     });
   });
 
@@ -1708,6 +1825,34 @@ describe("Test IpAssetClient", () => {
         ],
       });
       expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should call with default values of licensingConfig when registerPilTermsAndAttach given licensingConfig is not provided", async () => {
+      const registerPilTermsAndAttachStub = sinon
+        .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerPilTermsAndAttach")
+        .resolves(txHash);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      await ipAssetClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+          },
+        ],
+      });
+      expect(
+        registerPilTermsAndAttachStub.args[0][0].licenseTermsData[0].licensingConfig,
+      ).to.deep.equal({
+        isSet: false,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: zeroAddress,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: zeroAddress,
+      });
     });
   });
 
@@ -1838,6 +1983,42 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+    });
+
+    it("should call with default values when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens without providing allowDuplicates, ipMetadata, royaltyContext, recipient", async () => {
+      sinon
+        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
+        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
+      const mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub = sinon
+        .stub(
+          ipAssetClient.derivativeWorkflowsClient,
+          "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+        )
+        .resolves(txHash);
+
+      await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+        spgNftContract,
+        licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+        maxRts: 0,
+      });
+
+      expect(
+        mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub.args[0][0].allowDuplicates,
+      ).to.equal(true);
+      expect(
+        mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub.args[0][0].ipMetadata,
+      ).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataURI: "",
+        nftMetadataHash: zeroHash,
+      });
+      expect(
+        mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub.args[0][0].royaltyContext,
+      ).to.equal(zeroAddress);
+      expect(mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub.args[0][0].recipient).to.equal(
+        walletAddress,
+      );
     });
   });
 
@@ -3060,8 +3241,7 @@ describe("Test IpAssetClient", () => {
           tokenId: "1",
         });
       expect(result).to.deep.equal({
-        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
-          "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -3141,8 +3321,7 @@ describe("Test IpAssetClient", () => {
           },
         });
       expect(result).to.deep.equal({
-        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash:
-          "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+        registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
         distributeRoyaltyTokensTxHash: txHash,
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -3285,6 +3464,43 @@ describe("Test IpAssetClient", () => {
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
     });
+
+    it("should call with default values when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens without providing allowDuplicates, ipMetadata, recipient", async () => {
+      const mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub = sinon
+        .stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens",
+        )
+        .resolves(txHash);
+
+      await ipAssetClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
+        spgNftContract,
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+            licensingConfig,
+          },
+        ],
+        royaltyShares: [
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+        ],
+      });
+
+      expect(
+        mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.args[0][0].allowDuplicates,
+      ).to.equal(true);
+      expect(
+        mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.args[0][0].ipMetadata,
+      ).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataHash: zeroHash,
+        nftMetadataURI: "",
+      });
+      expect(
+        mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.args[0][0].recipient,
+      ).to.equal(walletAddress);
+    });
   });
 
   describe("Test ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens", async () => {
@@ -3370,7 +3586,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative and distribute royalty tokens: CommercialRevShare should be between 0 and 100.",
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: MaxRevenueShare must be between 0 and 100.",
         );
       }
     });
@@ -3398,7 +3614,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative and distribute royalty tokens: CommercialRevShare should be between 0 and 100.",
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: MaxRevenueShare must be between 0 and 100.",
         );
       }
     });
@@ -3508,6 +3724,54 @@ describe("Test IpAssetClient", () => {
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 0n,
       });
+    });
+
+    it("should call with default values when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens without providing allowDuplicates, ipMetadata, recipient", async () => {
+      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      sinon
+        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(ipAssetClient.licenseTemplateClient, "getLicenseTerms").resolves({
+        terms: licenseTerms,
+      });
+      const mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub = sinon
+        .stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+        )
+        .resolves(txHash);
+
+      await ipAssetClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+        spgNftContract,
+        derivData: {
+          parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+          licenseTermsIds: [1n],
+          maxMintingFee: 100,
+          maxRts: 100,
+          maxRevenueShare: 100,
+        },
+        royaltyShares: [
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+        ],
+      });
+
+      expect(
+        mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.args[0][0].allowDuplicates,
+      ).to.equal(true);
+      expect(
+        mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.args[0][0].ipMetadata,
+      ).to.deep.equal({
+        ipMetadataURI: "",
+        ipMetadataHash: zeroHash,
+        nftMetadataHash: zeroHash,
+        nftMetadataURI: "",
+      });
+      expect(
+        mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.args[0][0].recipient,
+      ).to.equal(walletAddress);
     });
   });
 });

@@ -5,6 +5,8 @@ import { PublicClient, WalletClient } from "viem";
 
 import { NftClient } from "../../../src";
 import { createMock } from "../testUtils";
+import { mockERC20 } from "../mockData";
+import { SpgnftImplReadOnlyClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 
@@ -126,6 +128,22 @@ describe("Test NftClient", () => {
       });
 
       expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+    });
+  });
+
+  describe("test for getMintFeeToken", () => {
+    it("should successfully get mint fee token", async () => {
+      sinon.stub(SpgnftImplReadOnlyClient.prototype, "mintFeeToken").resolves(mockERC20);
+      const mintFeeToken = await nftClient.getMintFeeToken(mockERC20);
+      expect(mintFeeToken).equal(mockERC20);
+    });
+  });
+
+  describe("test for getMintFee", () => {
+    it("should successfully get mint fee", async () => {
+      sinon.stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(1n);
+      const mintFee = await nftClient.getMintFee(mockERC20);
+      expect(mintFee).equal(1n);
     });
   });
 });

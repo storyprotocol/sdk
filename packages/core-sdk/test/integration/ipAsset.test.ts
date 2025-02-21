@@ -1,7 +1,7 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { StoryClient } from "../../src";
-import { Address, Hex, toHex, zeroAddress, zeroHash } from "viem";
+import { Address, Hex, maxUint256, toHex, zeroAddress, zeroHash } from "viem";
 import {
   mockERC721,
   getStoryClient,
@@ -9,17 +9,19 @@ import {
   mintBySpg,
   approveForLicenseToken,
   aeneid,
+  publicClient,
+  walletClient,
 } from "./utils/util";
-import { MockERC20 } from "./utils/mockERC20";
 import {
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
   wrappedIpAddress,
-  mockErc20Address,
+  erc20Address,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
+import { ERC20Client } from "../../src/utils/token";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -290,10 +292,10 @@ describe("IP Asset Functions", () => {
       licenseTermsId = result.licenseTermsIds![0];
 
       // Setup ERC20
-      const mockERC20 = new MockERC20();
-      await mockERC20.approve(derivativeWorkflowsAddress[aeneid]);
-      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[aeneid]);
-      await mockERC20.mint();
+      const mockERC20 = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
+      await mockERC20.approve(derivativeWorkflowsAddress[aeneid], maxUint256);
+      await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[aeneid], maxUint256);
+      await mockERC20.mint(walletAddress, 100000n);
     });
 
     it("should register IP Asset with metadata", async () => {
@@ -417,7 +419,6 @@ describe("IP Asset Functions", () => {
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: 100,
         },
-        allowDuplicates: true,
         txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -501,7 +502,6 @@ describe("IP Asset Functions", () => {
         spgNftContract: nftContract,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
-        allowDuplicates: true,
         ipMetadata: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -633,7 +633,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: erc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -705,7 +705,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: erc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -769,7 +769,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: erc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -799,7 +799,7 @@ describe("IP Asset Functions", () => {
       ).to.be.rejectedWith("The sum of the royalty shares cannot exceeds 100");
     });
 
-    it("should fail with non-commercial license terms for royalty distributio", async () => {
+    it("should fail with non-commercial license terms for royalty distribution", async () => {
       const tokenId = await getTokenId();
       await expect(
         client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
@@ -823,7 +823,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: erc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -877,7 +877,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: mockErc20Address[aeneid],
+                currency: erc20Address[aeneid],
                 uri: "test case",
               },
               licensingConfig: {
@@ -932,11 +932,10 @@ describe("IP Asset Functions", () => {
       expect(result.tokenId).to.be.a("bigint");
     });
 
-    it("should mint and register IP and attach PIL terms and distribute royalty tokens", async () => {
+    it("should mint and register IP and attach PIL terms and distribute royalty tokens without licensing config", async () => {
       const result =
         await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract: nftContract,
-          allowDuplicates: true,
           licenseTermsData: [
             {
               terms: {
@@ -957,16 +956,6 @@ describe("IP Asset Functions", () => {
                 derivativeRevCeiling: 0n,
                 currency: wrappedIpAddress[aeneid],
                 uri: "test case",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 10000n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
               },
             },
           ],
@@ -1017,7 +1006,6 @@ describe("IP Asset Functions", () => {
         // create parent ip with minting fee
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract: nftContractWithMintingFee,
-          allowDuplicates: true,
           licenseTermsData: [
             {
               terms: {
@@ -1074,7 +1062,6 @@ describe("IP Asset Functions", () => {
             nftMetadataURI: "test",
             nftMetadataHash: zeroHash,
           },
-          allowDuplicates: true,
           txOptions: { waitForTransaction: true },
         });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
@@ -1106,7 +1093,6 @@ describe("IP Asset Functions", () => {
             spgNftContract: nftContractWithMintingFee,
             licenseTokenIds: licenseTokenIds!,
             maxRts: MAX_ROYALTY_TOKEN,
-            allowDuplicates: true,
             ipMetadata: {
               ipMetadataURI: "test",
               ipMetadataHash: zeroHash,
@@ -1152,7 +1138,6 @@ describe("IP Asset Functions", () => {
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
-          allowDuplicates: true,
           ipMetadata: {
             ipMetadataURI: "test",
             ipMetadataHash: zeroHash,
@@ -1219,7 +1204,6 @@ describe("IP Asset Functions", () => {
               maxRts: MAX_ROYALTY_TOKEN,
               maxRevenueShare: 100,
             },
-            allowDuplicates: true,
             ipMetadata: {
               ipMetadataURI: "test",
               ipMetadataHash: zeroHash,
@@ -1344,7 +1328,6 @@ describe("IP Asset Functions", () => {
                 },
               },
             ],
-            allowDuplicates: true,
           },
           {
             spgNftContract: nftContract,
@@ -1381,7 +1364,6 @@ describe("IP Asset Functions", () => {
                 },
               },
             ],
-            allowDuplicates: true,
           },
         ],
         txOptions: { waitForTransaction: true },
@@ -1405,7 +1387,6 @@ describe("IP Asset Functions", () => {
               maxRts: 5 * 10 ** 6,
               maxRevenueShare: "0",
             },
-            allowDuplicates: true,
           },
           {
             spgNftContract: nftContract,
@@ -1416,7 +1397,6 @@ describe("IP Asset Functions", () => {
               maxRts: 5 * 10 ** 6,
               maxRevenueShare: "0",
             },
-            allowDuplicates: true,
           },
         ],
         txOptions: { waitForTransaction: true },

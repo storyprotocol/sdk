@@ -167,7 +167,6 @@ describe("Group Functions", () => {
             },
           },
         ],
-        allowDuplicates: true,
         maxAllowedRewardShare: 5,
         txOptions: { waitForTransaction: true },
       });

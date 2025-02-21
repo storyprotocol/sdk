@@ -9,6 +9,7 @@ export { NftClient } from "./resources/nftClient";
 export { IPAccountClient } from "./resources/ipAccount";
 export { RoyaltyClient } from "./resources/royalty";
 export { GroupClient } from "./resources/group";
+export { WipClient } from "./resources/wip";
 
 export type { StoryConfig, SupportedChainIds } from "./types/config";
 
@@ -154,8 +155,16 @@ export type {
   LicensingModulePredictMintingLicenseFeeResponse,
 } from "./abi/generated";
 
+export type {
+  DepositRequest,
+  WithdrawRequest,
+  ApproveRequest,
+  TransferRequest,
+  TransferFromRequest,
+} from "./types/resources/wip";
+
 export { getPermissionSignature, getSignature } from "./utils/sign";
 
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
 
-export type { TxOptions } from "./types/options";
+export type { TxOptions, TransactionResponse, WipOptions, ERC20Options } from "./types/options";
