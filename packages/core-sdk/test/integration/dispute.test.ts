@@ -207,7 +207,9 @@ describe("Dispute Functions", () => {
         transport: http(RPC),
         account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as Address),
       });
+    });
 
+    beforeEach(async function (this: Mocha.Context) {
       // Setup NFT collection
       const txData = await clientA.nftClient.createNFTCollection({
         name: "test-collection",
@@ -335,8 +337,248 @@ describe("Dispute Functions", () => {
       expect(results[0].txHash).to.be.a("string").and.not.empty;
     });
 
-    // Test that dispute initiator can resolve the dispute after judgement
+    it("should tag a single IP as infringing without using multicall", async () => {
+      /**
+       * Test Flow:
+       * 1. Set judgment on an existing dispute to mark it as valid
+       * 2. Verify the dispute state changed correctly after judgment
+       * 3. Try to tag a derivative IP using the judged dispute
+       */
+
+      // Step 1: Set dispute judgment using the judge wallet
+      // When judgment is true, the dispute's currentTag will be set to the targetTag
+      // When false, currentTag would be set to bytes32(0)
+      const { request } = await publicClient.simulateContract({
+        address: DISPUTE_MODULE_ADDRESS,
+        abi: [SET_DISPUTE_JUDGEMENT_ABI],
+        functionName: "setDisputeJudgement",
+        args: [disputeId, true, "0x"],
+        account: judgeWalletClient.account!,
+      });
+      const judgmentTxHash = await judgeWalletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+
+      // Step 2: Verify dispute state
+      // The disputes() function returns multiple values about the dispute:
+      // - targetTag: the tag we wanted to apply when raising the dispute
+      // - currentTag: the current state of the dispute after judgment
+      // After a successful judgment, currentTag should equal targetTag
+      const [
+        _targetIpId, // IP being disputed
+        _disputeInitiator, // Address that raised the dispute
+        _disputeTimestamp, // When dispute was raised
+        _arbitrationPolicy, // Policy used for arbitration
+        _disputeEvidenceHash, // Evidence hash for dispute
+        targetTag, // Tag we want to apply (e.g. "IMPROPER_REGISTRATION")
+        currentTag, // Current state of dispute
+        _infringerDisputeId, // Related dispute ID if this is a propagated tag
+      ] = await publicClient.readContract({
+        address: disputeModuleAddress[aeneid],
+        abi: disputeModuleAbi,
+        functionName: "disputes",
+        args: [disputeId],
+      });
+      expect(currentTag).to.equal(targetTag); // Verify judgment was recorded correctly
+
+      // Step 3: Attempt to tag a derivative IP
+      // This will fail if:
+      // - The dispute is not in a valid state (still IN_DISPUTE or cleared)
+      // - The IP we're trying to tag is not actually a derivative of the disputed IP
+      // - The dispute has already been used to tag this IP
+      const response = await clientA.dispute.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: childIpId, // The derivative IP to tag
+            disputeId: disputeId, // Using the judged dispute as basis for tagging
+          },
+        ],
+        options: {
+          useMulticallWhenPossible: false, // Force single transaction instead of batch
+        },
+        txOptions: { waitForTransaction: true },
+      });
+
+      // Verify we got the expected response
+      expect(response).to.have.lengthOf(1);
+      expect(response[0].txHash).to.be.a("string").and.not.empty;
+    });
+
+    it("should tag multiple IPs as infringing using multicall", async () => {
+      const disputeResponse = await clientA.dispute.raiseDispute({
+        targetIpId: parentIpId,
+        cid: await generateCID(),
+        targetTag: "IMPROPER_REGISTRATION",
+        liveness: 2592000,
+        bond: 0,
+        txOptions: { waitForTransaction: true },
+      });
+      const testDisputeId = disputeResponse.disputeId!;
+
+      const derivativeResponse2 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContract,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+        allowDuplicates: true,
+        txOptions: { waitForTransaction: true },
+      });
+      const childIpId2 = derivativeResponse2.ipId!;
+
+      const { request } = await publicClient.simulateContract({
+        address: DISPUTE_MODULE_ADDRESS,
+        abi: [SET_DISPUTE_JUDGEMENT_ABI],
+        functionName: "setDisputeJudgement",
+        args: [testDisputeId, true, "0x"],
+        account: judgeWalletClient.account!,
+      });
+      const judgmentTxHash = await judgeWalletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+
+      const disputeState = await publicClient.readContract({
+        address: disputeModuleAddress[aeneid],
+        abi: disputeModuleAbi,
+        functionName: "disputes",
+        args: [testDisputeId],
+      });
+      expect(disputeState[6]).to.equal(disputeState[5]);
+
+      const response = await clientA.dispute.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: childIpId,
+            disputeId: testDisputeId,
+          },
+          {
+            ipId: childIpId2,
+            disputeId: testDisputeId,
+          },
+        ],
+        options: {
+          useMulticallWhenPossible: true,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+
+      expect(response).to.have.lengthOf(1);
+      expect(response[0].txHash).to.be.a("string").and.not.empty;
+    });
+
+    it("should tag multiple IPs without multicall when specified", async () => {
+      // Create two new derivative IPs sequentially
+      const derivativeResponse3 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContract,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+        allowDuplicates: true,
+        txOptions: { waitForTransaction: true },
+      });
+
+      const derivativeResponse4 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContract,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 1n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+        allowDuplicates: true,
+        txOptions: { waitForTransaction: true },
+      });
+
+      const { request } = await publicClient.simulateContract({
+        address: DISPUTE_MODULE_ADDRESS,
+        abi: [SET_DISPUTE_JUDGEMENT_ABI],
+        functionName: "setDisputeJudgement",
+        args: [disputeId, true, "0x"],
+        account: judgeWalletClient.account!,
+      });
+      const judgmentTxHash = await judgeWalletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+
+      const disputeState = await publicClient.readContract({
+        address: disputeModuleAddress[aeneid],
+        abi: disputeModuleAbi,
+        functionName: "disputes",
+        args: [disputeId],
+      });
+      expect(disputeState[6]).to.equal(disputeState[5]);
+
+      const response1 = await clientA.dispute.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: derivativeResponse3.ipId!,
+            disputeId: disputeId,
+          },
+        ],
+        options: {
+          useMulticallWhenPossible: false,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+
+      const response2 = await clientA.dispute.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: derivativeResponse4.ipId!,
+            disputeId: disputeId,
+          },
+        ],
+        options: {
+          useMulticallWhenPossible: false,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+
+      const responses = [...response1, ...response2];
+      expect(responses).to.have.lengthOf(2);
+      expect(responses[0].txHash).to.be.a("string").and.not.empty;
+      expect(responses[1].txHash).to.be.a("string").and.not.empty;
+    });
+
+    it("should fail when trying to tag with invalid dispute ID", async () => {
+      await expect(
+        clientA.dispute.tagIfRelatedIpInfringed({
+          infringementTags: [
+            {
+              ipId: childIpId,
+              disputeId: 999999n,
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        }),
+      ).to.be.rejected;
+    });
+
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
+      // First set judgment
+      const { request } = await publicClient.simulateContract({
+        address: DISPUTE_MODULE_ADDRESS,
+        abi: [SET_DISPUTE_JUDGEMENT_ABI],
+        functionName: "setDisputeJudgement",
+        args: [disputeId, true, "0x"],
+        account: judgeWalletClient.account!,
+      });
+      const judgmentTxHash = await judgeWalletClient.writeContract(request);
+      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+
+      const disputeState = await publicClient.readContract({
+        address: disputeModuleAddress[aeneid],
+        abi: disputeModuleAbi,
+        functionName: "disputes",
+        args: [disputeId],
+      });
+      expect(disputeState[6]).to.equal(disputeState[5]);
+
       const response = await clientA.dispute.resolveDispute({
         disputeId: disputeId,
         data: "0x",
@@ -347,7 +589,6 @@ describe("Dispute Functions", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
-    // Test that non-initiators cannot resolve the dispute
     it("should fail when non-initiator tries to resolve the dispute", async () => {
       await expect(
         clientB.dispute.resolveDispute({
