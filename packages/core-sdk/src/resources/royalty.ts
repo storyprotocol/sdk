@@ -86,9 +86,10 @@ export class RoyaltyClient {
       txHashes.push(txHash);
 
       // determine if the claimer is an IP owned by the wallet
-      const { ownsClaimer, isClaimerIp, ipAccount } = await this.validateClaimer(claimer);
+      const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
 
       // if wallet does not own the claimer then we cannot auto claim or unwrap
+      // If ownsClaimer is false, it means the claimer is neither an IP owned by the wallet nor the wallet address itself.
       if (!ownsClaimer) {
         return { receipt, txHashes };
       }
@@ -105,18 +106,10 @@ export class RoyaltyClient {
           claimedTokens,
         });
         txHashes.push(...hashes);
-      } else if (autoUnwrapIp && this.walletAddress === claimer) {
-        // if the claimer is the wallet, then we can unwrap any claimed WIP tokens
-        for (const { token, amount } of claimedTokens) {
-          if (token !== this.wrappedIpClient.address) {
-            continue;
-          }
-          const hash = await this.wrappedIpClient.withdraw({
-            value: amount,
-          });
-          txHashes.push(hash);
-          await this.rpcClient.waitForTransactionReceipt({ hash });
-        }
+      }
+      if (autoUnwrapIp) {
+        const hashes = await this.unwrapWIPTokens(claimedTokens);
+        txHashes.push(...hashes);
       }
       return { receipt, claimedTokens, txHashes };
     } catch (error) {
@@ -192,32 +185,27 @@ export class RoyaltyClient {
       const autoTransfer = request.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
       const autoUnwrapIp = request.claimOptions?.autoUnwrapIpTokens !== false;
       for (const claimer of claimers) {
-        const { ownsClaimer, isClaimerIp, ipAccount } = await this.validateClaimer(claimer);
+        const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
+        // If ownsClaimer is false, it means the claimer is neither an IP owned by the wallet nor the wallet address itself.
         if (!ownsClaimer) {
           continue;
         }
+        const filterClaimedTokens = Object.values(aggregatedTokens).filter(
+          (item) => item.claimer === claimer,
+        );
         // transfer claimed tokens from IP to wallet if wallet owns IP
         if (autoTransfer && isClaimerIp && ownsClaimer) {
           const hashes = await this.transferClaimedTokensFromIpToWallet({
             ipAccount,
             autoUnwrapIp,
-            claimedTokens: Object.values(aggregatedTokens).filter(
-              (item) => item.claimer === claimer,
-            ),
+            claimedTokens: filterClaimedTokens,
           });
           txHashes.push(...hashes);
-        } else if (autoUnwrapIp && this.walletAddress === claimer) {
+        }
+        if (autoUnwrapIp) {
           // if the claimer is the wallet, then we can unwrap any claimed WIP tokens
-          for (const { token, amount } of claimedTokens) {
-            if (token !== WIP_TOKEN_ADDRESS) {
-              continue;
-            }
-            const hash = await this.wrappedIpClient.withdraw({
-              value: amount,
-            });
-            txHashes.push(hash);
-            await this.rpcClient.waitForTransactionReceipt({ hash });
-          }
+          const hashes = await this.unwrapWIPTokens(filterClaimedTokens);
+          txHashes.push(...hashes);
         }
       }
       return { receipts: [receipt], claimedTokens, txHashes };
@@ -334,7 +322,6 @@ export class RoyaltyClient {
 
   private async transferClaimedTokensFromIpToWallet({
     ipAccount,
-    autoUnwrapIp,
     claimedTokens,
   }: TransferClaimedTokensFromIpToWalletParams) {
     const txHashes: Hex[] = [];
@@ -354,15 +341,6 @@ export class RoyaltyClient {
       });
       await this.rpcClient.waitForTransactionReceipt({ hash });
       txHashes.push(hash);
-
-      // auto unwrap WIP tokens once they are transferred
-      if (token === this.wrappedIpClient.address && autoUnwrapIp) {
-        const withdrawalHash = await this.wrappedIpClient.withdraw({
-          value: amount,
-        });
-        txHashes.push(withdrawalHash);
-        await this.rpcClient.waitForTransactionReceipt({ hash: withdrawalHash });
-      }
     };
     for (const { token, amount } of claimedTokens) {
       await transferToken(token, amount);
@@ -370,7 +348,7 @@ export class RoyaltyClient {
     return txHashes;
   }
 
-  private async validateClaimer(claimer: Address) {
+  private async getClaimerInfo(claimer: Address) {
     const isClaimerIp = await this.ipAssetRegistryClient.isRegistered({
       id: claimer,
     });
@@ -381,5 +359,20 @@ export class RoyaltyClient {
       ownsClaimer = ipOwner === this.walletAddress;
     }
     return { ownsClaimer, isClaimerIp, ipAccount };
+  }
+
+  private async unwrapWIPTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
+    const txHashes: Hex[] = [];
+    for (const { token, amount } of claimedTokens) {
+      if (token !== WIP_TOKEN_ADDRESS) {
+        continue;
+      }
+      const hash = await this.wrappedIpClient.withdraw({
+        value: amount,
+      });
+      txHashes.push(hash);
+      await this.rpcClient.waitForTransactionReceipt({ hash });
+    }
+    return txHashes;
   }
 }
