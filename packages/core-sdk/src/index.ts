@@ -88,6 +88,8 @@ export type {
   ClaimableRevenueResponse,
   ClaimAllRevenueRequest,
   ClaimAllRevenueResponse,
+  BatchClaimAllRevenueRequest,
+  BatchClaimAllRevenueResponse,
 } from "./types/resources/royalty";
 
 export type {

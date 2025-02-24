@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Address, Hex, encodeFunctionData, zeroAddress } from "viem";
+import { Address, Hex, encodeFunctionData, parseEther, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import {
   mockERC721,
@@ -11,7 +11,12 @@ import {
   TEST_WALLET_ADDRESS,
   walletClient,
 } from "./utils/util";
-import { erc20Address, royaltyPolicyLapAddress } from "../../src/abi/generated";
+import {
+  erc20Address,
+  royaltyPolicyLapAddress,
+  wrappedIpAddress,
+  royaltyPolicyLrpAddress,
+} from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 import { describe } from "mocha";
 import { ERC20Client } from "../../src/utils/token";
@@ -258,7 +263,7 @@ describe("Royalty Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: WIP_TOKEN_ADDRESS,
+              currency: wrappedIpAddress[aeneid],
               uri: "",
             },
             licensingConfig: {
@@ -328,6 +333,217 @@ describe("Royalty Functions", () => {
       });
       expect(ret.txHashes).to.be.an("array").and.not.empty;
       expect(ret.claimedTokens![0].amount).to.equal(120n);
+    });
+  });
+
+  describe("BatchClaimAllRevenue With WIP", () => {
+    let ipA: Address;
+    let ipA1: Address;
+    let ipA2: Address;
+    let ipA3: Address;
+    let ipB: Address;
+    let ipB1: Address;
+    let ipB2: Address;
+    let ipB3: Address;
+    let spgNftContract: Address;
+    let licenseTermsId: bigint;
+    let licenseTermsId1: bigint;
+    before(async () => {
+      await client.wipClient.deposit({
+        amount: parseEther("5"),
+        txOptions: { waitForTransaction: true },
+      });
+      // set up
+      // ipA ->ipA1->ipA2->ipA3 minting Fee: 100, 10% LAP rev share, A expect to get 120 WIP
+      // ipB->ipB1,ipB2
+      // ipB1,ipB2->ipB3 minting Fee: 150, 10% Lrp rev share, B expect to get 330 WIP
+      const txData = await client.nftClient.createNFTCollection({
+        name: "free-collection",
+        symbol: "FREE",
+        maxSupply: 100,
+        isPublicMinting: true,
+        mintOpen: true,
+        contractURI: "test-uri",
+        mintFeeRecipient: zeroAddress,
+        txOptions: { waitForTransaction: true },
+      });
+      spgNftContract = txData.spgNftContract!;
+      const { results: ret1 } = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
+        args: [
+          {
+            spgNftContract,
+            licenseTermsData: [
+              {
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                  defaultMintingFee: 100n,
+                  expiration: 0n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 10,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: wrappedIpAddress[aeneid],
+                  uri: "",
+                },
+                licensingConfig: {
+                  isSet: false,
+                  mintingFee: 100n,
+                  licensingHook: zeroAddress,
+                  hookData: zeroAddress,
+                  commercialRevShare: 0,
+                  disabled: false,
+                  expectMinimumGroupRewardShare: 0,
+                  expectGroupRewardPool: zeroAddress,
+                },
+              },
+            ],
+          },
+          {
+            spgNftContract,
+            licenseTermsData: [
+              {
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
+                  defaultMintingFee: 150n,
+                  expiration: 0n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 10,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: wrappedIpAddress[aeneid],
+                  uri: "",
+                },
+                licensingConfig: {
+                  isSet: false,
+                  mintingFee: 150n,
+                  licensingHook: zeroAddress,
+                  hookData: zeroAddress,
+                  commercialRevShare: 0,
+                  disabled: false,
+                  expectMinimumGroupRewardShare: 0,
+                  expectGroupRewardPool: zeroAddress,
+                },
+              },
+            ],
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      ipA = ret1?.[0].ipId!;
+      licenseTermsId = ret1?.[0].licenseTermsIds![0]!;
+      ipB = ret1?.[1].ipId!;
+      licenseTermsId1 = ret1?.[1].licenseTermsIds![0]!;
+
+      const { results: ret2 } = await client.ipAsset.batchMintAndRegisterIpAndMakeDerivative({
+        args: [
+          {
+            spgNftContract,
+            derivData: {
+              parentIpIds: [ipA],
+              licenseTermsIds: [licenseTermsId],
+            },
+          },
+          {
+            spgNftContract,
+            derivData: {
+              parentIpIds: [ipB],
+              licenseTermsIds: [licenseTermsId1],
+            },
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      ipA1 = ret2?.[0].ipId!;
+      ipB1 = ret2?.[1].ipId!;
+      const { results: ret3 } = await client.ipAsset.batchMintAndRegisterIpAndMakeDerivative({
+        args: [
+          {
+            spgNftContract,
+            derivData: {
+              parentIpIds: [ipA1],
+              licenseTermsIds: [licenseTermsId],
+            },
+          },
+          {
+            spgNftContract,
+            derivData: {
+              parentIpIds: [ipB],
+              licenseTermsIds: [licenseTermsId1],
+            },
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      ipA2 = ret3?.[0].ipId!;
+      ipB2 = ret3?.[1].ipId!;
+      const ret4 = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract,
+        derivData: {
+          parentIpIds: [ipA2],
+          licenseTermsIds: [licenseTermsId],
+        },
+        txOptions: { waitForTransaction: true },
+      });
+      ipA3 = ret4.ipId!;
+
+      const { results: ret5 } = await client.ipAsset.batchMintAndRegisterIpAndMakeDerivative({
+        args: [
+          {
+            spgNftContract,
+            derivData: {
+              parentIpIds: [ipB1, ipB2],
+              licenseTermsIds: [licenseTermsId1, licenseTermsId1],
+            },
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      ipB3 = ret5?.[0].ipId!;
+      const balance = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      await client.wipClient.withdraw({
+        amount: balance,
+        txOptions: { waitForTransaction: true },
+      });
+    });
+
+    it("should batch claim all revenue and convert WIP back to IP", async () => {
+      const result = await client.royalty.batchClaimAllRevenue({
+        ancestorIps: [
+          {
+            ipId: ipA,
+            claimer: ipA,
+            childIpIds: [ipA1, ipA2],
+            royaltyPolicies: [royaltyPolicyLapAddress[aeneid], royaltyPolicyLapAddress[aeneid]],
+            currencyTokens: [wrappedIpAddress[aeneid], wrappedIpAddress[aeneid]],
+          },
+          {
+            ipId: ipB,
+            claimer: ipB,
+            childIpIds: [ipB1, ipB2],
+            royaltyPolicies: [royaltyPolicyLrpAddress[aeneid], royaltyPolicyLrpAddress[aeneid]],
+            currencyTokens: [wrappedIpAddress[aeneid], wrappedIpAddress[aeneid]],
+          },
+        ],
+      });
+      expect(result.txHashes).to.be.an("array").and.not.empty;
+      expect(result.claimedTokens![0].amount).to.equal(120n);
+      expect(result.claimedTokens![1].amount).to.equal(330n);
     });
   });
 });
