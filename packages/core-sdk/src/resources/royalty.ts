@@ -170,27 +170,33 @@ export class RoyaltyClient {
       const claimedTokens =
         this.ipRoyaltyVaultImplEventClient.parseTxRevenueTokenClaimedEvent(receipt);
       // Aggregate claimed tokens by claimer and token address
-      const aggregatedTokens = claimedTokens.reduce<
-        Record<string, IpRoyaltyVaultImplRevenueTokenClaimedEvent>
-      >((acc, curr) => {
-        const key = `${curr.claimer}_${curr.token}`;
-        if (!acc[key]) {
-          acc[key] = { ...curr };
-        } else {
-          acc[key].amount += curr.amount;
-        }
-        return acc;
-      }, {});
+      const aggregatedClaimedTokens = Object.values(
+        claimedTokens.reduce<Record<string, IpRoyaltyVaultImplRevenueTokenClaimedEvent>>(
+          (acc, curr) => {
+            const key = `${curr.claimer}_${curr.token}`;
+            if (!acc[key]) {
+              acc[key] = { ...curr };
+            } else {
+              acc[key].amount += curr.amount;
+            }
+            return acc;
+          },
+          {},
+        ),
+      );
       const claimers = [...new Set(request.ancestorIps.map(({ claimer }) => claimer))];
       const autoTransfer = request.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
       const autoUnwrapIp = request.claimOptions?.autoUnwrapIpTokens !== false;
+      let ownsClaimerCount = 0;
       for (const claimer of claimers) {
         const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
+
         // If ownsClaimer is false, it means the claimer is neither an IP owned by the wallet nor the wallet address itself.
         if (!ownsClaimer) {
           continue;
         }
-        const filterClaimedTokens = Object.values(aggregatedTokens).filter(
+        ownsClaimerCount++;
+        const filterClaimedTokens = aggregatedClaimedTokens.filter(
           (item) => item.claimer === claimer,
         );
         // transfer claimed tokens from IP to wallet if wallet owns IP
@@ -208,9 +214,19 @@ export class RoyaltyClient {
           txHashes.push(...hashes);
         }
       }
-      return { receipts: [receipt], claimedTokens, txHashes };
+      if (ownsClaimerCount === 0) {
+        return { receipts: [receipt], txHashes };
+      }
+      return {
+        receipts: [receipt],
+        claimedTokens: aggregatedClaimedTokens,
+        txHashes,
+      };
     } catch (error) {
-      handleError(error, "Failed to batch claim all revenue");
+      handleError(
+        new Error((error as Error).message.replace("Failed to claim all revenue: ", "").trim()),
+        "Failed to batch claim all revenue",
+      );
     }
   }
 
@@ -364,7 +380,7 @@ export class RoyaltyClient {
   private async unwrapWIPTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
     const txHashes: Hex[] = [];
     for (const { token, amount } of claimedTokens) {
-      if (token !== WIP_TOKEN_ADDRESS) {
+      if (token !== WIP_TOKEN_ADDRESS || !amount) {
         continue;
       }
       const hash = await this.wrappedIpClient.withdraw({

@@ -112,7 +112,7 @@ export type BatchClaimAllRevenueRequest = WithClaimOptions & {
 export type BatchClaimAllRevenueResponse = {
   txHashes: Hash[];
   receipts: TransactionReceipt[];
-  claimedTokens: ClaimedToken[];
+  claimedTokens?: ClaimedToken[];
 };
 
 export type ClaimedToken = {
