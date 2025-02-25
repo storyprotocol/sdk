@@ -1,7 +1,11 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
 import { WithTxOptions, WithWipOptions } from "../options";
-import { EncodedTxData, IpAccountImplClient } from "../../abi/generated";
+import {
+  EncodedTxData,
+  IpAccountImplClient,
+  IpRoyaltyVaultImplRevenueTokenClaimedEvent,
+} from "../../abi/generated";
 import { WithERC20Options } from "../options";
 import { TokenAmountInput } from "../common";
 
@@ -94,21 +98,16 @@ export type BatchClaimAllRevenueRequest = WithClaimOptions & {
 export type BatchClaimAllRevenueResponse = {
   txHashes: Hash[];
   receipts: TransactionReceipt[];
-  claimedTokens?: ClaimedToken[];
-};
-
-export type ClaimedToken = {
-  token: Address;
-  amount: bigint;
+  claimedTokens?: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
 };
 
 export type ClaimAllRevenueResponse = {
   txHashes: Hash[];
-  receipt?: TransactionReceipt;
-  claimedTokens?: ClaimedToken[];
+  receipt: TransactionReceipt;
+  claimedTokens?: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
 };
 
 export type TransferClaimedTokensFromIpToWalletParams = {
   ipAccount: IpAccountImplClient;
-  claimedTokens: ClaimedToken[];
+  claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
 };

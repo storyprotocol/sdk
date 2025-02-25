@@ -16,7 +16,6 @@ import {
   ClaimableRevenueResponse,
   ClaimAllRevenueRequest,
   ClaimAllRevenueResponse,
-  ClaimedToken,
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
   TransferClaimedTokensFromIpToWalletParams,
@@ -126,48 +125,50 @@ export class RoyaltyClient {
     request: BatchClaimAllRevenueRequest,
   ): Promise<BatchClaimAllRevenueResponse> {
     try {
+      const txHashes: Hex[] = [];
+      const receipts: TransactionReceipt[] = [];
+      const claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[] = [];
       // if the number of ancestor IPs is 1 or if multicall is disabled, then just call claimAllRevenue.
       const useMulticallWhenPossible = request.options?.useMulticallWhenPossible !== false;
       if (request.ancestorIps.length === 1 || !useMulticallWhenPossible) {
-        const txHashes: Hex[] = [];
-        const receipts: TransactionReceipt[] = [];
-        const claimedTokens: ClaimedToken[] = [];
         for (const ancestorIp of request.ancestorIps) {
           const result = await this.claimAllRevenue({
             ...ancestorIp,
             ancestorIpId: validateAddress(ancestorIp.ipId),
-            claimOptions: request.claimOptions,
+            claimOptions: {
+              autoTransferAllClaimedTokensFromIp: false,
+              autoUnwrapIpTokens: false,
+            },
           });
           txHashes.push(...result.txHashes);
-          if (result.receipt) {
-            receipts.push(result.receipt);
-          }
+          receipts.push(result.receipt);
           if (result.claimedTokens) {
             claimedTokens.push(...result.claimedTokens);
           }
         }
-        return { txHashes, receipts, claimedTokens };
+      } else {
+        // Batch claimAllRevenue the calls into a single multicall
+        const encodedTxs = request.ancestorIps.map(
+          ({ ipId, claimer, childIpIds, royaltyPolicies, currencyTokens }) => {
+            const claim = {
+              ancestorIpId: validateAddress(ipId),
+              claimer: validateAddress(claimer),
+              childIpIds: validateAddresses(childIpIds),
+              royaltyPolicies: validateAddresses(royaltyPolicies),
+              currencyTokens: validateAddresses(currencyTokens),
+            };
+            return this.royaltyWorkflowsClient.claimAllRevenueEncode(claim).data;
+          },
+        );
+        const txHash = await this.royaltyWorkflowsClient.multicall({ data: encodedTxs });
+        const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        txHashes.push(txHash);
+        receipts.push(receipt);
+        const claimedTokenLogs =
+          this.ipRoyaltyVaultImplEventClient.parseTxRevenueTokenClaimedEvent(receipt);
+        claimedTokens.push(...claimedTokenLogs);
       }
 
-      // Batch claimAllRevenue the calls into a single multicall
-      const encodedTxs = request.ancestorIps.map(
-        ({ ipId, claimer, childIpIds, royaltyPolicies, currencyTokens }) => {
-          const claim = {
-            ancestorIpId: validateAddress(ipId),
-            claimer: validateAddress(claimer),
-            childIpIds: validateAddresses(childIpIds),
-            royaltyPolicies: validateAddresses(royaltyPolicies),
-            currencyTokens: validateAddresses(currencyTokens),
-          };
-          return this.royaltyWorkflowsClient.claimAllRevenueEncode(claim).data;
-        },
-      );
-      const txHashes: Hex[] = [];
-      const txHash = await this.royaltyWorkflowsClient.multicall({ data: encodedTxs });
-      txHashes.push(txHash);
-      const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
-      const claimedTokens =
-        this.ipRoyaltyVaultImplEventClient.parseTxRevenueTokenClaimedEvent(receipt);
       // Aggregate claimed tokens by claimer and token address
       const aggregatedClaimedTokens = Object.values(
         claimedTokens.reduce<Record<string, IpRoyaltyVaultImplRevenueTokenClaimedEvent>>(
@@ -213,10 +214,10 @@ export class RoyaltyClient {
         }
       }
       if (ownsClaimerCount === 0) {
-        return { receipts: [receipt], txHashes };
+        return { receipts, txHashes };
       }
       return {
-        receipts: [receipt],
+        receipts,
         claimedTokens: aggregatedClaimedTokens,
         txHashes,
       };
