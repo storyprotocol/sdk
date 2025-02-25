@@ -12,7 +12,7 @@ export type IPAccountExecuteRequest = {
 };
 
 export type IPAccountExecuteResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
 };
 
@@ -28,7 +28,7 @@ export type IPAccountExecuteWithSigRequest = {
 };
 
 export type IPAccountExecuteWithSigResponse = {
-  txHash?: string;
+  txHash?: Hex;
   encodedTxData?: EncodedTxData;
 };
 
@@ -38,4 +38,13 @@ export type TokenResponse = {
   chainId: bigint;
   tokenContract: Address;
   tokenId: bigint;
+};
+
+export type SetIpMetadataRequest = {
+  ipId: Address;
+  /** The metadataURI to set for the IP asset. */
+  metadataURI: string;
+  /** The hash of metadata at metadataURI. */
+  metadataHash: Hex;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };

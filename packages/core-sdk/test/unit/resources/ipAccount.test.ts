@@ -4,20 +4,20 @@ import * as sinon from "sinon";
 import { IPAccountClient } from "../../../src/resources/ipAccount";
 import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
 import * as utils from "../../../src/utils/utils";
-import { Account, PublicClient, WalletClient, zeroAddress } from "viem";
-const { IpAccountImplClient } = require("../../../src/abi/generated");
+import { Account, PublicClient, toHex, WalletClient, zeroAddress } from "viem";
+import { aeneid, ipId, txHash } from "../mockData";
+import { IpAccountImplClient } from "../../../src/abi/generated";
 
 describe("Test IPAccountClient", () => {
   let ipAccountClient: IPAccountClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-  const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<Account>();
     walletMock.account = accountMock;
-    ipAccountClient = new IPAccountClient(rpcMock, walletMock);
+    ipAccountClient = new IPAccountClient(rpcMock, walletMock, aeneid);
     sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
     sinon.stub(IpAccountImplClient.prototype, "executeEncode").returns({ data: "0x", to: "0x" });
     sinon.stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
@@ -193,6 +193,28 @@ describe("Test IPAccountClient", () => {
       sinon.stub(IpAccountImplClient.prototype, "token").resolves([1513n, zeroAddress, 1n]);
       const token = await ipAccountClient.getToken("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       expect(token).to.deep.equal({ chainId: 1513n, tokenContract: zeroAddress, tokenId: 1n });
+    });
+  });
+
+  describe("Test setIpMetadata", () => {
+    it("should throw error when call setIpMetadata given wrong ipId", async () => {
+      try {
+        await ipAccountClient.setIpMetadata({
+          ipId: "0x",
+          metadataURI: "https://example.com",
+          metadataHash: toHex("test", { size: 32 }),
+        });
+      } catch (err) {
+        expect((err as Error).message).equal("Failed to set the IP metadata: Invalid address: 0x.");
+      }
+    });
+    it("should return txHash when call setIpMetadata successfully", async () => {
+      const result = await ipAccountClient.setIpMetadata({
+        ipId: ipId,
+        metadataURI: "https://example.com",
+        metadataHash: toHex("test", { size: 32 }),
+      });
+      expect(result).to.equal(txHash);
     });
   });
 });

@@ -170,7 +170,7 @@ export class StoryClient {
    */
   public get ipAccount(): IPAccountClient {
     if (this._ipAccount === null) {
-      this._ipAccount = new IPAccountClient(this.rpcClient, this.wallet);
+      this._ipAccount = new IPAccountClient(this.rpcClient, this.wallet, this.chainId);
     }
 
     return this._ipAccount;
