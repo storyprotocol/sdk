@@ -13,7 +13,7 @@ import {
 import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
 import { TransactionResponse } from "../types/options";
-import { ERC20Client, WIPTokenClient } from "./token";
+import { ERC20Client, WipTokenClient } from "./token";
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -198,7 +198,7 @@ export const contractCallWithFees = async ({
   rpcClient,
   token,
 }: ContractCallWithFees): Promise<TransactionResponse> => {
-  const wipTokenClient = new WIPTokenClient(rpcClient, wallet);
+  const wipTokenClient = new WipTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
   const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;
   const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token);

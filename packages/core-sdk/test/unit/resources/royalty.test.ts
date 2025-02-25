@@ -11,7 +11,7 @@ import {
   wrappedIpAddress,
 } from "../../../src/abi/generated";
 import { aeneid } from "../../integration/utils/util";
-import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
+import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { ipId, mockAddress, walletAddress } from "../mockData";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -40,10 +40,10 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(ERC20Client.prototype, "balanceOf").resolves(1n);
       sinon.stub(ERC20Client.prototype, "allowance").resolves(10000n);
       sinon.stub(ERC20Client.prototype, "approve").resolves(txHash);
-      sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(1n);
-      sinon.stub(WIPTokenClient.prototype, "allowance").resolves(1n);
-      sinon.stub(WIPTokenClient.prototype, "approve").resolves(txHash);
-      sinon.stub(WIPTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
+      sinon.stub(WipTokenClient.prototype, "balanceOf").resolves(1n);
+      sinon.stub(WipTokenClient.prototype, "allowance").resolves(1n);
+      sinon.stub(WipTokenClient.prototype, "approve").resolves(txHash);
+      sinon.stub(WipTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
     });
 
     it("should throw receiverIpId error when call payRoyaltyOnBehalf given receiverIpId is not registered", async () => {

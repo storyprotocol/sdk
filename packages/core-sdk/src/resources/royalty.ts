@@ -136,7 +136,7 @@ export class RoyaltyClient {
         for (const ancestorIp of request.ancestorIps) {
           const result = await this.claimAllRevenue({
             ...ancestorIp,
-            ancestorIpId: validateAddress(ancestorIp.ipId),
+            ancestorIpId: ancestorIp.ipId,
             claimOptions: {
               autoTransferAllClaimedTokensFromIp: false,
               autoUnwrapIpTokens: false,
@@ -189,7 +189,6 @@ export class RoyaltyClient {
       const claimers = [...new Set(request.ancestorIps.map(({ claimer }) => claimer))];
       const autoTransfer = request.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
       const autoUnwrapIp = request.claimOptions?.autoUnwrapIpTokens !== false;
-      let ownsClaimerCount = 0;
       for (const claimer of claimers) {
         const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
 
@@ -197,7 +196,6 @@ export class RoyaltyClient {
         if (!ownsClaimer) {
           continue;
         }
-        ownsClaimerCount++;
         const filterClaimedTokens = aggregatedClaimedTokens.filter(
           (item) => item.claimer === claimer,
         );
@@ -216,9 +214,6 @@ export class RoyaltyClient {
             txHashes.push(hashes);
           }
         }
-      }
-      if (ownsClaimerCount === 0) {
-        return { receipts, txHashes };
       }
       return {
         receipts,
