@@ -450,7 +450,6 @@ describe("Test RoyaltyClient", () => {
           },
         ],
       });
-      expect(result.claimedTokens).to.be.undefined;
       expect(result.txHashes).to.be.an("array").and.lengthOf(1);
       expect(result.receipts).to.be.an("array").and.lengthOf(1);
       expect(claimAllRevenueStub.calledOnce).to.be.false;

@@ -377,7 +377,7 @@ export class RoyaltyClient {
 
   private async unwrapWipTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
     const wipToken = claimedTokens.find((token) => token.token === WIP_TOKEN_ADDRESS);
-    if (!wipToken) {
+    if (!wipToken || wipToken.amount <= 0n) {
       return;
     }
     const hash = await this.wrappedIpClient.withdraw({
