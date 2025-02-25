@@ -152,9 +152,9 @@ describe("Test IpAssetClient", () => {
       customField2: 42,
     };
 
-    describe("generateCreatorsMetadata", function () {
+    describe("generateCreatorMetadata", function () {
       it("should create an IpCreator object with the provided details", function () {
-        const creator = ipAssetClient.generateCreatorsMetadata([sampleCreatorData]);
+        const creator = ipAssetClient.generateCreatorMetadata(sampleCreatorData);
 
         expect(creator).to.be.an("object");
         expect(creator).to.have.property("name", "Jane Doe");

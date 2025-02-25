@@ -160,7 +160,7 @@ export class IPAssetClient {
     this.walletAddress = this.wallet.account!.address;
   }
 
-  public generateCreatorsMetadata(creator: IpCreator): IpCreator {
+  public generateCreatorMetadata(creator: IpCreator): IpCreator {
     return creator;
   }
 
