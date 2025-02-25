@@ -106,8 +106,10 @@ export class RoyaltyClient {
         txHashes.push(...hashes);
       }
       if (autoUnwrapIp) {
-        const hashes = await this.unwrapWIPTokens(claimedTokens);
-        txHashes.push(...hashes);
+        const hashes = await this.unwrapWipTokens(claimedTokens);
+        if (hashes) {
+          txHashes.push(hashes);
+        }
       }
       return { receipt, claimedTokens, txHashes };
     } catch (error) {
@@ -209,8 +211,10 @@ export class RoyaltyClient {
         }
         if (autoUnwrapIp) {
           // if the claimer is the wallet, then we can unwrap any claimed WIP tokens
-          const hashes = await this.unwrapWIPTokens(filterClaimedTokens);
-          txHashes.push(...hashes);
+          const hashes = await this.unwrapWipTokens(filterClaimedTokens);
+          if (hashes) {
+            txHashes.push(hashes);
+          }
         }
       }
       if (ownsClaimerCount === 0) {
@@ -376,18 +380,15 @@ export class RoyaltyClient {
     return { ownsClaimer, isClaimerIp, ipAccount };
   }
 
-  private async unwrapWIPTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
-    const txHashes: Hex[] = [];
-    for (const { token, amount } of claimedTokens) {
-      if (token !== WIP_TOKEN_ADDRESS || !amount) {
-        continue;
-      }
-      const hash = await this.wrappedIpClient.withdraw({
-        value: amount,
-      });
-      txHashes.push(hash);
-      await this.rpcClient.waitForTransactionReceipt({ hash });
+  private async unwrapWipTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
+    const wipToken = claimedTokens.find((token) => token.token === WIP_TOKEN_ADDRESS);
+    if (!wipToken) {
+      return;
     }
-    return txHashes;
+    const hash = await this.wrappedIpClient.withdraw({
+      value: wipToken.amount,
+    });
+    await this.rpcClient.waitForTransactionReceipt({ hash });
+    return hash;
   }
 }
