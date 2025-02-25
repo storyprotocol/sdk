@@ -11,19 +11,11 @@ import {
 } from "../../../src/abi/generated";
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import { aeneid, txHash } from "../mockData";
-import { contractCallWithFees } from "../../../src/utils/feeUtils";
-import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
-import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-import { ContractCallWithFees } from "../../../src/types/utils/wip";
-import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
-import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
-import { aeneid, txHash } from "../mockData";
-import { contractCallWithFees } from "../../../src/utils/feeUtils";
 import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 import { ContractCallWithFees } from "../../../src/types/utils/wip";
 import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
+import { contractCallWithFees } from "../../../src/utils/feeUtils";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
