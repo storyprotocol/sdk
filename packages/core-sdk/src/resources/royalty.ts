@@ -63,7 +63,7 @@ export class RoyaltyClient {
     this.walletAddress = wallet.account!.address;
   }
   /**
-   * Claims all revenue from the child IPs of an ancestor IP, then transfer
+   * Claims all revenue from the child IPs of an ancestor IP, then transfer.
    * all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
    * If claimed token is WIP, it will also be converted back to IP.
    */
