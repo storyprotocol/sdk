@@ -76,28 +76,10 @@ export type WithClaimOptions = {
 };
 export type BatchClaimAllRevenueRequest = WithClaimOptions & {
   /** The ancestor IPs from which the revenue is being claimed. */
-  ancestorIps: {
+  ancestorIps: (Omit<ClaimAllRevenueRequest, "ancestorIpId" | "wipOptions"> & {
     /** The address of the ancestor IP from which the revenue is being claimed. */
     ipId: Address;
-    /**
-     * The address of the claimer of the currency (revenue) tokens.
-     *
-     * This is normally the ipId of the ancestor IP if the IP has all royalty tokens.
-     * Otherwise, this would be the address that is holding the ancestor IP royalty tokens.
-     */
-    claimer: Address;
-    /** The addresses of the child IPs from which royalties are derived. */
-    childIpIds: Address[];
-    /**
-     * The addresses of the royalty policies, where
-     * royaltyPolicies[i] governs the royalty flow for childIpIds[i].
-     */
-    royaltyPolicies: Address[];
-    /** The addresses of the currency tokens in which royalties will be claimed */
-    currencyTokens: Address[];
-  }[];
-  /** The deadline for the transaction. */
-  deadline?: bigint | number | string;
+  })[];
   options?: {
     /**
      * Use multicall to batch the calls `claimAllRevenue` into one transaction when possible.
@@ -128,6 +110,5 @@ export type ClaimAllRevenueResponse = {
 
 export type TransferClaimedTokensFromIpToWalletParams = {
   ipAccount: IpAccountImplClient;
-  autoUnwrapIp: boolean;
   claimedTokens: ClaimedToken[];
 };

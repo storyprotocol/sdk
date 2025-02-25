@@ -102,7 +102,6 @@ export class RoyaltyClient {
       if (autoTransfer && isClaimerIp && ownsClaimer) {
         const hashes = await this.transferClaimedTokensFromIpToWallet({
           ipAccount,
-          autoUnwrapIp,
           claimedTokens,
         });
         txHashes.push(...hashes);
@@ -150,7 +149,7 @@ export class RoyaltyClient {
         return { txHashes, receipts, claimedTokens };
       }
 
-      // Otherwise, we need to batch the calls into a single multicall
+      // Batch claimAllRevenue the calls into a single multicall
       const encodedTxs = request.ancestorIps.map(
         ({ ipId, claimer, childIpIds, royaltyPolicies, currencyTokens }) => {
           const claim = {
@@ -203,7 +202,6 @@ export class RoyaltyClient {
         if (autoTransfer && isClaimerIp && ownsClaimer) {
           const hashes = await this.transferClaimedTokensFromIpToWallet({
             ipAccount,
-            autoUnwrapIp,
             claimedTokens: filterClaimedTokens,
           });
           txHashes.push(...hashes);
