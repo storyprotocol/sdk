@@ -149,6 +149,12 @@ export type {
   LicensingModulePredictMintingLicenseFeeResponse,
 } from "./abi/generated";
 
+export {
+  royaltyPolicyLapAddress,
+  royaltyPolicyLrpAddress,
+  wrappedIpAddress,
+} from "./abi/generated";
+
 export type {
   DepositRequest,
   WithdrawRequest,
