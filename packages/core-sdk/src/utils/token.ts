@@ -37,7 +37,7 @@ export class ERC20Client implements TokenClient {
   }
 }
 
-export class WIPTokenClient implements TokenClient {
+export class WipTokenClient implements TokenClient {
   private wipClient: WrappedIpClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {

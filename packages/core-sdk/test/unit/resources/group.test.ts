@@ -1,7 +1,7 @@
 import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { PublicClient, WalletClient, Account, zeroAddress, toHex, zeroHash, zeroHash } from "viem";
+import { PublicClient, WalletClient, Account, zeroAddress, zeroHash } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { GroupClient } from "../../../src";
 import { LicenseData } from "../../../src/types/resources/group";

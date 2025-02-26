@@ -33,7 +33,7 @@ import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
-import { WIPTokenClient } from "../../src/utils/token";
+import { WipTokenClient } from "../../src/utils/token";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -78,7 +78,7 @@ describe("Dispute Functions", () => {
     await publicClient.waitForTransactionReceipt({ hash: txHash });
 
     // clientA approves the arbitration policyUma module to spend the some tokens
-    const mockERC20 = new WIPTokenClient(publicClient, walletClient);
+    const mockERC20 = new WipTokenClient(publicClient, walletClient);
     await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid], maxUint256);
 
     const tokenId = await getTokenId();

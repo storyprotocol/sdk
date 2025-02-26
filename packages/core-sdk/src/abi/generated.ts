@@ -27297,6 +27297,15 @@ export type RoyaltyWorkflowsClaimAllRevenueRequest = {
 };
 
 /**
+ * RoyaltyWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type RoyaltyWorkflowsMulticallRequest = {
+  data: readonly Hex[];
+};
+
+/**
  * contract RoyaltyWorkflows write method
  */
 export class RoyaltyWorkflowsClient {
@@ -27354,6 +27363,42 @@ export class RoyaltyWorkflowsClient {
           request.royaltyPolicies,
           request.currencyTokens,
         ],
+      }),
+    };
+  }
+
+  /**
+   * method multicall for contract RoyaltyWorkflows
+   *
+   * @param request RoyaltyWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: RoyaltyWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyWorkflowsAbi,
+      address: this.address,
+      functionName: "multicall",
+      account: this.wallet.account,
+      args: [request.data],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method multicall for contract RoyaltyWorkflows with only encode
+   *
+   * @param request RoyaltyWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(request: RoyaltyWorkflowsMulticallRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyWorkflowsAbi,
+        functionName: "multicall",
+        args: [request.data],
       }),
     };
   }

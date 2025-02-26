@@ -319,7 +319,7 @@ export default defineConfig(async () => {
             "mintAndRegisterIpAndAttachPILTerms",
             "multicall",
           ],
-          RoyaltyWorkflows: ["claimAllRevenue"],
+          RoyaltyWorkflows: ["claimAllRevenue", "multicall"],
           Multicall3: ["aggregate3"],
           RoyaltyTokenDistributionWorkflows: [
             "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",

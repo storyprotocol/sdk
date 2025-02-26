@@ -11,19 +11,11 @@ import {
 } from "../../../src/abi/generated";
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import { aeneid, txHash } from "../mockData";
-import { contractCallWithFees } from "../../../src/utils/feeUtils";
 import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 import { ContractCallWithFees } from "../../../src/types/utils/wip";
-import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
-import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
-import { aeneid, txHash } from "../mockData";
+import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { contractCallWithFees } from "../../../src/utils/feeUtils";
-import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
-import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-import { ContractCallWithFees } from "../../../src/types/utils/wip";
-import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -44,7 +36,7 @@ describe("Erc20 Token Fee Utilities", () => {
     walletMock.account = accountMock;
     walletMock.writeContract = sinon.stub().resolves(generateRandomHash());
     rpcWaitForTxMock = rpcMock.waitForTransactionReceipt as sinon.SinonStub;
-    sinon.stub(WIPTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
+    sinon.stub(WipTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
   });
 
   afterEach(() => {
@@ -99,12 +91,12 @@ describe("Erc20 Token Fee Utilities", () => {
     let approveMock: sinon.SinonStub;
 
     beforeEach(() => {
-      approveMock = sinon.stub(WIPTokenClient.prototype, "approve").resolves(txHash);
+      approveMock = sinon.stub(WipTokenClient.prototype, "approve").resolves(txHash);
     });
 
     describe("Enough WIP", () => {
       beforeEach(() => {
-        sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(200n);
+        sinon.stub(WipTokenClient.prototype, "balanceOf").resolves(200n);
       });
       it("should not call approval if disabled via enableAutoApprove", async () => {
         const params = getDefaultParams({
@@ -134,7 +126,7 @@ describe("Erc20 Token Fee Utilities", () => {
           ],
           txOptions: { waitForTransaction: false },
         });
-        const allowanceMock = sinon.stub(WIPTokenClient.prototype, "allowance").resolves(50n);
+        const allowanceMock = sinon.stub(WipTokenClient.prototype, "allowance").resolves(50n);
 
         const { txHash, receipt } = await contractCallWithFees(params);
         expect(receipt).to.be.undefined;
@@ -167,7 +159,7 @@ describe("Erc20 Token Fee Utilities", () => {
           ],
           txOptions: { waitForTransaction: true },
         });
-        sinon.stub(WIPTokenClient.prototype, "allowance").resolves(15n);
+        sinon.stub(WipTokenClient.prototype, "allowance").resolves(15n);
         const { txHash, receipt } = await contractCallWithFees(params);
         expect(receipt).not.to.be.undefined;
         expect(contractCallMock.calledOnce).to.be.true;
@@ -184,7 +176,7 @@ describe("Erc20 Token Fee Utilities", () => {
       let params: ContractCallWithFees;
 
       beforeEach(() => {
-        sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(1n);
+        sinon.stub(WipTokenClient.prototype, "balanceOf").resolves(1n);
         walletBalanceMock.resolves(1_000);
         simulateContractMock = sinon.stub().resolves({ request: {} });
         rpcMock.simulateContract = simulateContractMock;
@@ -202,7 +194,7 @@ describe("Erc20 Token Fee Utilities", () => {
             },
           ],
         });
-        sinon.stub(WIPTokenClient.prototype, "allowance").resolves(50n);
+        sinon.stub(WipTokenClient.prototype, "allowance").resolves(50n);
       });
 
       it("should error if enableAutoWrapIp is false", async () => {
@@ -301,11 +293,11 @@ describe("Erc20 Token Fee Utilities", () => {
         let approveEncodeMock: sinon.SinonStub;
 
         beforeEach(() => {
-          depositEncodeMock = sinon.stub(WIPTokenClient.prototype, "depositEncode").returns({
+          depositEncodeMock = sinon.stub(WipTokenClient.prototype, "depositEncode").returns({
             to: generateRandomAddress(),
             data: txHash,
           });
-          approveEncodeMock = sinon.stub(WIPTokenClient.prototype, "approveEncode").returns({
+          approveEncodeMock = sinon.stub(WipTokenClient.prototype, "approveEncode").returns({
             to: generateRandomAddress(),
             data: txHash,
           });
@@ -391,7 +383,7 @@ describe("Erc20 Token Fee Utilities", () => {
 
       beforeEach(() => {
         walletBalanceMock.resolves(parseEther("0.1"));
-        sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(0n);
+        sinon.stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       });
 
       it("should throw error indicating not enough wip funds to complete given token is wip", async () => {

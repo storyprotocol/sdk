@@ -1,6 +1,5 @@
 import {
   Address,
-  decodeEventLog,
   encodeFunctionData,
   erc20Abi,
   Hex,
@@ -11,11 +10,12 @@ import {
 
 import { handleError } from "../utils/errors";
 import {
+  BatchClaimAllRevenueRequest,
+  BatchClaimAllRevenueResponse,
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
   ClaimAllRevenueRequest,
   ClaimAllRevenueResponse,
-  ClaimedToken,
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
   TransferClaimedTokensFromIpToWalletParams,
@@ -23,13 +23,12 @@ import {
 import {
   IpAccountImplClient,
   IpAssetRegistryClient,
-  ipRoyaltyVaultImplAbi,
   IpRoyaltyVaultImplEventClient,
   IpRoyaltyVaultImplReadOnlyClient,
+  IpRoyaltyVaultImplRevenueTokenClaimedEvent,
   Multicall3Client,
   RoyaltyModuleClient,
-  royaltyWorkflowsAbi,
-  royaltyWorkflowsAddress,
+  RoyaltyWorkflowsClient,
   SimpleWalletClient,
   WrappedIpClient,
 } from "../abi/generated";
@@ -37,13 +36,13 @@ import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
-import { simulateAndWriteContract } from "../utils/contract";
 
 export class RoyaltyClient {
   public royaltyModuleClient: RoyaltyModuleClient;
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public ipRoyaltyVaultImplReadOnlyClient: IpRoyaltyVaultImplReadOnlyClient;
   public ipRoyaltyVaultImplEventClient: IpRoyaltyVaultImplEventClient;
+  public royaltyWorkflowsClient: RoyaltyWorkflowsClient;
   public multicall3Client: Multicall3Client;
   public wrappedIpClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
@@ -55,13 +54,18 @@ export class RoyaltyClient {
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.ipRoyaltyVaultImplReadOnlyClient = new IpRoyaltyVaultImplReadOnlyClient(rpcClient);
     this.ipRoyaltyVaultImplEventClient = new IpRoyaltyVaultImplEventClient(rpcClient);
+    this.royaltyWorkflowsClient = new RoyaltyWorkflowsClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.wrappedIpClient = new WrappedIpClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.walletAddress = wallet.account!.address;
   }
-
+  /**
+   * Claims all revenue from the child IPs of an ancestor IP, then transfer.
+   * all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
+   * If claimed token is WIP, it will also be converted back to IP.
+   */
   public async claimAllRevenue(req: ClaimAllRevenueRequest): Promise<ClaimAllRevenueResponse> {
     try {
       const ancestorIpId = validateAddress(req.ancestorIpId);
@@ -69,66 +73,158 @@ export class RoyaltyClient {
       const childIpIds = validateAddresses(req.childIpIds);
       const royaltyPolicies = validateAddresses(req.royaltyPolicies);
       const currencyTokens = validateAddresses(req.currencyTokens);
-
-      // todo: use generated code when aeneid explorer is available
-      const { txHash, receipt } = await simulateAndWriteContract({
-        rpcClient: this.rpcClient,
-        wallet: this.wallet,
-        waitForTransaction: true,
-        data: {
-          abi: royaltyWorkflowsAbi,
-          address: royaltyWorkflowsAddress[1315],
-          functionName: "claimAllRevenue",
-          args: [ancestorIpId, claimer, childIpIds, royaltyPolicies, currencyTokens],
-        },
-      });
       const txHashes: Hex[] = [];
+      const txHash = await this.royaltyWorkflowsClient.claimAllRevenue({
+        ancestorIpId,
+        claimer,
+        childIpIds,
+        royaltyPolicies,
+        currencyTokens,
+      });
+      const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
       txHashes.push(txHash);
 
       // determine if the claimer is an IP owned by the wallet
-      const isClaimerIp = await this.ipAssetRegistryClient.isRegistered({
-        id: claimer,
-      });
-      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, claimer);
-      let ownsClaimer = claimer === this.walletAddress;
-      if (isClaimerIp) {
-        const ipOwner = await ipAccount.owner();
-        ownsClaimer = ipOwner === this.walletAddress;
-      }
+      const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
 
       // if wallet does not own the claimer then we cannot auto claim or unwrap
+      // If ownsClaimer is false, it means the claimer is neither an IP owned by the wallet nor the wallet address itself.
       if (!ownsClaimer) {
         return { receipt, txHashes };
       }
-
-      const claimedTokens = this.getClaimedTokensFromReceipt(receipt!);
-      const skipTransfer = req.claimOptions?.autoTransferAllClaimedTokensFromIp === false;
-      const skipUnwrapIp = req.claimOptions?.autoUnwrapIpTokens === false;
+      const claimedTokens =
+        this.ipRoyaltyVaultImplEventClient.parseTxRevenueTokenClaimedEvent(receipt);
+      const autoTransfer = req.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
+      const autoUnwrapIp = req.claimOptions?.autoUnwrapIpTokens !== false;
 
       // transfer claimed tokens from IP to wallet if wallet owns IP
-      if (!skipTransfer && isClaimerIp && ownsClaimer) {
+      if (autoTransfer && isClaimerIp && ownsClaimer) {
         const hashes = await this.transferClaimedTokensFromIpToWallet({
           ipAccount,
-          skipUnwrapIp,
           claimedTokens,
         });
         txHashes.push(...hashes);
-      } else if (!skipUnwrapIp && this.walletAddress === claimer) {
-        // if the claimer is the wallet, then we can unwrap any claimed WIP tokens
-        for (const { token, amount } of claimedTokens) {
-          if (token !== WIP_TOKEN_ADDRESS) {
-            continue;
-          }
-          const hash = await this.wrappedIpClient.withdraw({
-            value: amount,
-          });
-          txHashes.push(hash);
-          await this.rpcClient.waitForTransactionReceipt({ hash });
+      }
+      if (autoUnwrapIp) {
+        const hashes = await this.unwrapWipTokens(claimedTokens);
+        if (hashes) {
+          txHashes.push(hashes);
         }
       }
       return { receipt, claimedTokens, txHashes };
     } catch (error) {
       handleError(error, "Failed to claim all revenue");
+    }
+  }
+
+  /**
+   * Automatically batch claims all revenue from the child IPs of multiple ancestor IPs.
+   * if multicall is disabled, it will call @link{claimAllRevenue} for each ancestor IP.
+   * Then transfer all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
+   * If claimed token is WIP, it will also be converted back to IP.
+   */
+  public async batchClaimAllRevenue(
+    request: BatchClaimAllRevenueRequest,
+  ): Promise<BatchClaimAllRevenueResponse> {
+    try {
+      const txHashes: Hex[] = [];
+      const receipts: TransactionReceipt[] = [];
+      const claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[] = [];
+      // if the number of ancestor IPs is 1 or if multicall is disabled, then just call claimAllRevenue.
+      const useMulticallWhenPossible = request.options?.useMulticallWhenPossible !== false;
+      if (request.ancestorIps.length === 1 || !useMulticallWhenPossible) {
+        for (const ancestorIp of request.ancestorIps) {
+          const result = await this.claimAllRevenue({
+            ...ancestorIp,
+            ancestorIpId: ancestorIp.ipId,
+            claimOptions: {
+              autoTransferAllClaimedTokensFromIp: false,
+              autoUnwrapIpTokens: false,
+            },
+          });
+          txHashes.push(...result.txHashes);
+          receipts.push(result.receipt);
+          if (result.claimedTokens) {
+            claimedTokens.push(...result.claimedTokens);
+          }
+        }
+      } else {
+        // Batch claimAllRevenue the calls into a single multicall
+        const encodedTxs = request.ancestorIps.map(
+          ({ ipId, claimer, childIpIds, royaltyPolicies, currencyTokens }) => {
+            const claim = {
+              ancestorIpId: validateAddress(ipId),
+              claimer: validateAddress(claimer),
+              childIpIds: validateAddresses(childIpIds),
+              royaltyPolicies: validateAddresses(royaltyPolicies),
+              currencyTokens: validateAddresses(currencyTokens),
+            };
+            return this.royaltyWorkflowsClient.claimAllRevenueEncode(claim).data;
+          },
+        );
+        const txHash = await this.royaltyWorkflowsClient.multicall({ data: encodedTxs });
+        const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
+        txHashes.push(txHash);
+        receipts.push(receipt);
+        const claimedTokenLogs =
+          this.ipRoyaltyVaultImplEventClient.parseTxRevenueTokenClaimedEvent(receipt);
+        claimedTokens.push(...claimedTokenLogs);
+      }
+
+      // Aggregate claimed tokens by claimer and token address
+      const aggregatedClaimedTokens = Object.values(
+        claimedTokens.reduce<Record<string, IpRoyaltyVaultImplRevenueTokenClaimedEvent>>(
+          (acc, curr) => {
+            const key = `${curr.claimer}_${curr.token}`;
+            if (!acc[key]) {
+              acc[key] = { ...curr };
+            } else {
+              acc[key].amount += curr.amount;
+            }
+            return acc;
+          },
+          {},
+        ),
+      );
+      const claimers = [...new Set(request.ancestorIps.map(({ claimer }) => claimer))];
+      const autoTransfer = request.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
+      const autoUnwrapIp = request.claimOptions?.autoUnwrapIpTokens !== false;
+      for (const claimer of claimers) {
+        const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
+
+        // If ownsClaimer is false, it means the claimer is neither an IP owned by the wallet nor the wallet address itself.
+        if (!ownsClaimer) {
+          continue;
+        }
+        const filterClaimedTokens = aggregatedClaimedTokens.filter(
+          (item) => item.claimer === claimer,
+        );
+        // transfer claimed tokens from IP to wallet if wallet owns IP
+        if (autoTransfer && isClaimerIp && ownsClaimer) {
+          const hashes = await this.transferClaimedTokensFromIpToWallet({
+            ipAccount,
+            claimedTokens: filterClaimedTokens,
+          });
+          txHashes.push(...hashes);
+        }
+        if (autoUnwrapIp) {
+          // if the claimer is the wallet, then we can unwrap any claimed WIP tokens
+          const hashes = await this.unwrapWipTokens(filterClaimedTokens);
+          if (hashes) {
+            txHashes.push(hashes);
+          }
+        }
+      }
+      return {
+        receipts,
+        claimedTokens: aggregatedClaimedTokens,
+        txHashes,
+      };
+    } catch (error) {
+      handleError(
+        new Error((error as Error).message.replace("Failed to claim all revenue: ", "").trim()),
+        "Failed to batch claim all revenue",
+      );
     }
   }
 
@@ -238,33 +334,8 @@ export class RoyaltyClient {
     return await this.royaltyModuleClient.ipRoyaltyVaults({ ipId: royaltyVaultIpId });
   }
 
-  private getClaimedTokensFromReceipt(receipt: TransactionReceipt): ClaimedToken[] {
-    const eventName = "RevenueTokenClaimed";
-    const claimedTokens: ClaimedToken[] = [];
-    for (const log of receipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: ipRoyaltyVaultImplAbi,
-          eventName: eventName,
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === eventName) {
-          claimedTokens.push({
-            token: event.args.token,
-            amount: event.args.amount,
-          });
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return claimedTokens;
-  }
-
   private async transferClaimedTokensFromIpToWallet({
     ipAccount,
-    skipUnwrapIp,
     claimedTokens,
   }: TransferClaimedTokensFromIpToWalletParams) {
     const txHashes: Hex[] = [];
@@ -284,19 +355,42 @@ export class RoyaltyClient {
       });
       await this.rpcClient.waitForTransactionReceipt({ hash });
       txHashes.push(hash);
-
-      // auto unwrap WIP tokens once they are transferred
-      if (token === WIP_TOKEN_ADDRESS && !skipUnwrapIp) {
-        const withdrawalHash = await this.wrappedIpClient.withdraw({
-          value: amount,
-        });
-        txHashes.push(withdrawalHash);
-        await this.rpcClient.waitForTransactionReceipt({ hash: withdrawalHash });
-      }
     };
     for (const { token, amount } of claimedTokens) {
       await transferToken(token, amount);
     }
     return txHashes;
+  }
+
+  private async getClaimerInfo(claimer: Address) {
+    const isClaimerIp = await this.ipAssetRegistryClient.isRegistered({
+      id: claimer,
+    });
+    const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, claimer);
+    let ownsClaimer = claimer === this.walletAddress;
+    if (isClaimerIp) {
+      const ipOwner = await ipAccount.owner();
+      ownsClaimer = ipOwner === this.walletAddress;
+    }
+    return { ownsClaimer, isClaimerIp, ipAccount };
+  }
+  /**
+   * Unwraps WIP tokens back to their underlying IP tokens. Only accepts a single WIP token entry
+   * in the claimed tokens array. Throws an error if multiple WIP tokens are found.
+   */
+  private async unwrapWipTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
+    const wipTokens = claimedTokens.filter((token) => token.token === WIP_TOKEN_ADDRESS);
+    if (wipTokens.length > 1) {
+      throw new Error("Multiple WIP tokens found in the claimed tokens");
+    }
+    const wipToken = wipTokens[0];
+    if (!wipToken || wipToken.amount <= 0n) {
+      return;
+    }
+    const hash = await this.wrappedIpClient.withdraw({
+      value: wipToken.amount,
+    });
+    await this.rpcClient.waitForTransactionReceipt({ hash });
+    return hash;
   }
 }

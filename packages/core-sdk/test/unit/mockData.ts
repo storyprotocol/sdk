@@ -3,3 +3,4 @@ export const ipId = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
 export const aeneid = "1315";
 export const mockERC20 = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
 export const walletAddress = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
+export const mockAddress = "0x73fcb515cee99e4991465ef586cfe2b072ebb513";

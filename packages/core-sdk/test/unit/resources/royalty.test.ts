@@ -5,12 +5,14 @@ import { PublicClient, WalletClient, Account } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RoyaltyClient } from "../../../src/resources/royalty";
 import {
+  IpAccountImplClient,
   IpRoyaltyVaultImplReadOnlyClient,
   erc20Address,
-  wrappedIpAddress,
 } from "../../../src/abi/generated";
 import { aeneid } from "../../integration/utils/util";
-import { ERC20Client, WIPTokenClient } from "../../../src/utils/token";
+import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
+import { ipId, mockAddress, walletAddress } from "../mockData";
+import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -38,10 +40,10 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(ERC20Client.prototype, "balanceOf").resolves(1n);
       sinon.stub(ERC20Client.prototype, "allowance").resolves(10000n);
       sinon.stub(ERC20Client.prototype, "approve").resolves(txHash);
-      sinon.stub(WIPTokenClient.prototype, "balanceOf").resolves(1n);
-      sinon.stub(WIPTokenClient.prototype, "allowance").resolves(1n);
-      sinon.stub(WIPTokenClient.prototype, "approve").resolves(txHash);
-      sinon.stub(WIPTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
+      sinon.stub(WipTokenClient.prototype, "balanceOf").resolves(1n);
+      sinon.stub(WipTokenClient.prototype, "allowance").resolves(1n);
+      sinon.stub(WipTokenClient.prototype, "approve").resolves(txHash);
+      sinon.stub(WipTokenClient.prototype, "address").get(() => WIP_TOKEN_ADDRESS);
     });
 
     it("should throw receiverIpId error when call payRoyaltyOnBehalf given receiverIpId is not registered", async () => {
@@ -60,7 +62,20 @@ describe("Test RoyaltyClient", () => {
         );
       }
     });
-
+    it("should throw error when call payRoyaltyOnBehalf given amount is 0", async () => {
+      try {
+        await royaltyClient.payRoyaltyOnBehalf({
+          receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          amount: 0,
+        });
+      } catch (err) {
+        expect((err as Error).message).equals(
+          "Failed to pay royalty on behalf: The amount to pay must be number greater than 0.",
+        );
+      }
+    });
     it("should throw payerIpId error when call payRoyaltyOnBehalf given payerIpId is not registered", async () => {
       sinon
         .stub(royaltyClient.ipAssetRegistryClient, "isRegistered")
@@ -105,7 +120,7 @@ describe("Test RoyaltyClient", () => {
       const result = await royaltyClient.payRoyaltyOnBehalf({
         receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        token: wrappedIpAddress[aeneid],
+        token: WIP_TOKEN_ADDRESS,
         amount: 100n,
         txOptions: { waitForTransaction: true },
       });
@@ -182,6 +197,397 @@ describe("Test RoyaltyClient", () => {
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       });
       expect(result).equals(1n);
+    });
+  });
+
+  describe("Test royaltyClient.claimAllRevenue", async () => {
+    it("should throw error when call claimAllRevenue given claimer address is wrong", async () => {
+      try {
+        await royaltyClient.claimAllRevenue({
+          ancestorIpId: ipId,
+          claimer: "0x",
+          childIpIds: [ipId],
+          royaltyPolicies: [mockAddress],
+          currencyTokens: [WIP_TOKEN_ADDRESS],
+        });
+      } catch (err) {
+        expect((err as Error).message).equals("Failed to claim all revenue: Invalid address: 0x.");
+      }
+    });
+    it("should not return `claimedTokens` when call claimAllRevenue given claimer is neither an IP owned by the wallet nor the wallet address itself", async () => {
+      sinon.stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue").resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const result = await royaltyClient.claimAllRevenue({
+        ancestorIpId: ipId,
+        claimer: ipId,
+        childIpIds: [ipId],
+        royaltyPolicies: [mockAddress],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
+      });
+      expect(result.claimedTokens).to.be.undefined;
+      expect(result.txHashes).to.be.an("array").and.lengthOf(1);
+      expect(result.receipt).to.be.an("object");
+    });
+
+    it("should call transfer and unwrap method when call claimAllRevenue given claimer is an IP owned by the wallet", async () => {
+      sinon.stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue").resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      const executeStub = sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          {
+            token: WIP_TOKEN_ADDRESS,
+            amount: 1n,
+            claimer: ipId,
+          },
+        ]);
+      const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+      const result = await royaltyClient.claimAllRevenue({
+        ancestorIpId: ipId,
+        claimer: ipId,
+        childIpIds: [ipId],
+        royaltyPolicies: [mockAddress],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
+      });
+      expect(executeStub.calledOnce).to.be.true;
+      expect(withdrawStub.calledOnce).to.be.true;
+      expect(result.txHashes).to.be.an("array").and.lengthOf(3);
+    });
+
+    it("should only unwrap token when call claimAllRevenue given autoTransfer is false", async () => {
+      sinon.stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue").resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      const executeStub = sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          {
+            token: WIP_TOKEN_ADDRESS,
+            amount: 1n,
+            claimer: ipId,
+          },
+        ]);
+      const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      const result = await royaltyClient.claimAllRevenue({
+        ancestorIpId: ipId,
+        claimer: ipId,
+        childIpIds: [ipId],
+        royaltyPolicies: [mockAddress],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
+        claimOptions: { autoTransferAllClaimedTokensFromIp: false },
+      });
+      expect(result.txHashes).to.be.an("array").and.lengthOf(2);
+      expect(executeStub.calledOnce).to.be.false;
+      expect(withdrawStub.calledOnce).to.be.true;
+    });
+
+    it("should not unwrap token when call claimAllRevenue given autoUnwrapIpTokens is false", async () => {
+      sinon.stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue").resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          {
+            token: WIP_TOKEN_ADDRESS,
+            amount: 1n,
+            claimer: ipId,
+          },
+        ]);
+      const executeStub = sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      const result = await royaltyClient.claimAllRevenue({
+        ancestorIpId: ipId,
+        claimer: ipId,
+        childIpIds: [ipId],
+        royaltyPolicies: [mockAddress],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
+        claimOptions: { autoTransferAllClaimedTokensFromIp: true, autoUnwrapIpTokens: false },
+      });
+      expect(result.txHashes).to.be.an("array").and.lengthOf(2);
+      expect(withdrawStub.calledOnce).to.be.false;
+      expect(executeStub.calledOnce).to.be.true;
+    });
+  });
+
+  describe("Test royaltyClient.batchClaimAllRevenue", async () => {
+    it("should throw error when call batchClaimAllRevenue given claimer address is wrong", async () => {
+      try {
+        await royaltyClient.batchClaimAllRevenue({
+          ancestorIps: [
+            {
+              ipId,
+              claimer: "0x",
+              childIpIds: [ipId],
+              royaltyPolicies: [mockAddress],
+              currencyTokens: [WIP_TOKEN_ADDRESS],
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equals(
+          "Failed to batch claim all revenue: Invalid address: 0x.",
+        );
+      }
+    });
+
+    it("should directly call claimAllRevenue when call batchClaimAllRevenue given only one ancestorIp", async () => {
+      const claimAllRevenueStub = sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue")
+        .resolves(txHash);
+      const multicallStub = sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "multicall")
+        .resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          {
+            token: WIP_TOKEN_ADDRESS,
+            amount: 1n,
+            claimer: ipId,
+          },
+        ]);
+      sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      await royaltyClient.batchClaimAllRevenue({
+        ancestorIps: [
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+        ],
+      });
+      expect(claimAllRevenueStub.calledOnce).to.be.true;
+      expect(multicallStub.calledOnce).to.be.false;
+    });
+
+    it("should directly call claimAllRevenue when call batchClaimAllRevenue given useMulticallWhenPossible is false", async () => {
+      const claimAllRevenueStub = sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue")
+        .resolves(txHash);
+      const multicallStub = sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "multicall")
+        .resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          {
+            token: WIP_TOKEN_ADDRESS,
+            amount: 1n,
+            claimer: ipId,
+          },
+        ]);
+      sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      await royaltyClient.batchClaimAllRevenue({
+        ancestorIps: [
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+        ],
+        options: { useMulticallWhenPossible: false },
+      });
+      expect(claimAllRevenueStub.calledTwice).to.be.true;
+      expect(multicallStub.calledOnce).to.be.false;
+    });
+
+    it("should not return claimedTokens when call batchClaimAllRevenue given claimer is neither an IP owned by the wallet nor the wallet address itself", async () => {
+      const claimAllRevenueStub = sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue")
+        .resolves(txHash);
+      const multicallStub = sinon
+        .stub(royaltyClient.royaltyWorkflowsClient, "multicall")
+        .resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
+      sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([{ token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId }]);
+      sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      const result = await royaltyClient.batchClaimAllRevenue({
+        ancestorIps: [
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+        ],
+      });
+      expect(result.txHashes).to.be.an("array").and.lengthOf(1);
+      expect(result.receipts).to.be.an("array").and.lengthOf(1);
+      expect(claimAllRevenueStub.calledOnce).to.be.false;
+      expect(multicallStub.calledOnce).to.be.true;
+    });
+
+    it("should not call transfer when call batchClaimAllRevenue given autoTransferAllClaimedTokensFromIp is false", async () => {
+      sinon.stub(royaltyClient.royaltyWorkflowsClient, "multicall").resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      const executeStub = sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([{ token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId }]);
+      const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      const result = await royaltyClient.batchClaimAllRevenue({
+        ancestorIps: [
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+        ],
+        claimOptions: { autoTransferAllClaimedTokensFromIp: false },
+      });
+      expect(result.txHashes).to.be.an("array").and.lengthOf(2);
+      expect(result.receipts).to.be.an("array").and.lengthOf(1);
+      expect(result.claimedTokens).to.be.deep.equal([
+        { token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId },
+      ]);
+      expect(executeStub.calledOnce).to.be.false;
+      expect(withdrawStub.calledOnce).to.be.true;
+    });
+
+    it("should not unwrap token when call batchClaimAllRevenue given autoUnwrapIpTokens is false", async () => {
+      sinon.stub(royaltyClient.royaltyWorkflowsClient, "multicall").resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      const executeStub = sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          { token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId },
+          { token: mockAddress, amount: 0n, claimer: ipId },
+          { token: mockAddress, amount: 1n, claimer: walletAddress },
+        ]);
+      const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      const result = await royaltyClient.batchClaimAllRevenue({
+        ancestorIps: [
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+          {
+            ipId,
+            claimer: ipId,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+        ],
+        claimOptions: { autoUnwrapIpTokens: false },
+      });
+      expect(result.txHashes).to.be.an("array").and.lengthOf(3);
+      expect(result.receipts).to.be.an("array").and.lengthOf(1);
+      expect(executeStub.calledTwice).to.be.true;
+      expect(withdrawStub.calledOnce).to.be.false;
+    });
+
+    it("should return claimedTokens when call batchClaimAllRevenue", async () => {
+      sinon.stub(royaltyClient.royaltyWorkflowsClient, "multicall").resolves(txHash);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      const executeStub = sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
+        .returns([
+          { token: mockAddress, amount: 1n, claimer: walletAddress },
+          { token: WIP_TOKEN_ADDRESS, amount: 0n, claimer: walletAddress },
+          { token: mockAddress, amount: 1n, claimer: walletAddress },
+        ]);
+      const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
+
+      const result = await royaltyClient.batchClaimAllRevenue({
+        ancestorIps: [
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+          {
+            ipId,
+            claimer: walletAddress,
+            childIpIds: [ipId],
+            royaltyPolicies: [mockAddress],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
+          },
+        ],
+      });
+      expect(result.claimedTokens).to.be.deep.equal([
+        { token: mockAddress, amount: 2n, claimer: walletAddress },
+        { token: WIP_TOKEN_ADDRESS, amount: 0n, claimer: walletAddress },
+      ]);
+      expect(executeStub.calledOnce).to.be.true;
+      // withdraw is not called because amount is 0
+      expect(withdrawStub.calledOnce).to.be.false;
+      expect(result.txHashes).to.be.an("array").and.lengthOf(2);
+      expect(result.receipts).to.be.an("array").and.lengthOf(1);
     });
   });
 });

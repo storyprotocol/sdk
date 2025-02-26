@@ -84,18 +84,12 @@ export { PIL_TYPE } from "./types/resources/license";
 export type {
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
-  SnapshotRequest,
-  SnapshotResponse,
   ClaimableRevenueRequest,
   ClaimableRevenueResponse,
-  SnapshotAndClaimBySnapshotBatchRequest,
-  SnapshotAndClaimBySnapshotBatchResponse,
-  SnapshotAndClaimByTokenBatchRequest,
-  SnapshotAndClaimByTokenBatchResponse,
-  TransferToVaultAndSnapshotAndClaimBySnapshotBatchRequest,
-  TransferToVaultAndSnapshotAndClaimBySnapshotBatchResponse,
-  TransferToVaultAndSnapshotAndClaimByTokenBatchRequest,
-  TransferToVaultAndSnapshotAndClaimByTokenBatchResponse,
+  ClaimAllRevenueRequest,
+  ClaimAllRevenueResponse,
+  BatchClaimAllRevenueRequest,
+  BatchClaimAllRevenueResponse,
 } from "./types/resources/royalty";
 
 export type {
@@ -154,6 +148,8 @@ export type {
   EncodedTxData,
   LicensingModulePredictMintingLicenseFeeResponse,
 } from "./abi/generated";
+
+export { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "./abi/generated";
 
 export type {
   DepositRequest,
