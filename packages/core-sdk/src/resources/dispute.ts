@@ -235,6 +235,15 @@ export class DisputeClient {
     }
   }
 
+  /**
+   * Counters a dispute that was raised by another party on an IP using counter evidence.
+   *
+   * This method can only be called by the IP's owner to counter a dispute by providing
+   * counter evidence. The counter evidence (e.g., documents, images) should be
+   * uploaded to IPFS, and its corresponding CID is converted to a hash for the request.
+   *
+   * If you only have a `disputeId`, call {@link disputeIdToAssertionId} to get the `assertionId` needed here.
+   */
   public async disputeAssertion(request: DisputeAssertionRequest): Promise<TransactionResponse> {
     try {
       const ipAccount = new IpAccountImplClient(
