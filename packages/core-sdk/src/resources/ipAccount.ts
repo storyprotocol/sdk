@@ -185,14 +185,7 @@ export class IPAccountClient {
       });
       return txHash!;
     } catch (error) {
-      handleError(
-        new Error(
-          (error as Error).message
-            .replace("Failed to execute the IP Account transaction: ", "")
-            .trim(),
-        ),
-        "Failed to set the IP metadata",
-      );
+      handleError(error, "Failed to set the IP metadata");
     }
   }
 }
