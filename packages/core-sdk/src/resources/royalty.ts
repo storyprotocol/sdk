@@ -374,9 +374,16 @@ export class RoyaltyClient {
     }
     return { ownsClaimer, isClaimerIp, ipAccount };
   }
-
+  /**
+   * Unwraps WIP tokens back to their underlying IP tokens. Only accepts a single WIP token entry
+   * in the claimed tokens array. Throws an error if multiple WIP tokens are found.
+   */
   private async unwrapWipTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
-    const wipToken = claimedTokens.find((token) => token.token === WIP_TOKEN_ADDRESS);
+    const wipTokens = claimedTokens.filter((token) => token.token === WIP_TOKEN_ADDRESS);
+    if (wipTokens.length > 1) {
+      throw new Error("Multiple WIP tokens found in the claimed tokens");
+    }
+    const wipToken = wipTokens[0];
     if (!wipToken || wipToken.amount <= 0n) {
       return;
     }
