@@ -4,6 +4,7 @@ import { handleError } from "../utils/errors";
 import {
   CancelDisputeRequest,
   CancelDisputeResponse,
+  DisputeAssertionRequest,
   RaiseDisputeRequest,
   RaiseDisputeResponse,
   ResolveDisputeRequest,
@@ -11,9 +12,10 @@ import {
   TagIfRelatedIpInfringedRequest,
 } from "../types/resources/dispute";
 import {
-  ArbitrationPolicyUmaReadOnlyClient,
+  ArbitrationPolicyUmaClient,
   DisputeModuleClient,
   DisputeModuleTagIfRelatedIpInfringedRequest,
+  IpAccountImplClient,
   Multicall3Client,
   SimpleWalletClient,
   wrappedIpAddress,
@@ -26,17 +28,19 @@ import { TransactionResponse } from "../types/options";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
-  public arbitrationPolicyUmaReadOnlyClient: ArbitrationPolicyUmaReadOnlyClient;
+  public arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient;
   public multicall3Client: Multicall3Client;
   private readonly rpcClient: PublicClient;
   private readonly chainId: ChainIds;
+  private readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.rpcClient = rpcClient;
     this.disputeModuleClient = new DisputeModuleClient(rpcClient, wallet);
-    this.arbitrationPolicyUmaReadOnlyClient = new ArbitrationPolicyUmaReadOnlyClient(rpcClient);
+    this.arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.chainId = chainId;
+    this.wallet = wallet;
   }
 
   /**
@@ -52,8 +56,8 @@ export class DisputeClient {
       const bonds = BigInt(request.bond);
       const tokenAddress = wrappedIpAddress[chain[this.chainId]];
       const [minLiveness, maxLiveness] = await Promise.all([
-        this.arbitrationPolicyUmaReadOnlyClient.minLiveness(),
-        this.arbitrationPolicyUmaReadOnlyClient.maxLiveness(),
+        this.arbitrationPolicyUmaClient.minLiveness(),
+        this.arbitrationPolicyUmaClient.maxLiveness(),
       ]);
 
       const tag = stringToHex(request.targetTag, { size: 32 });
@@ -61,7 +65,7 @@ export class DisputeClient {
         throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
       }
 
-      const maxBonds = await this.arbitrationPolicyUmaReadOnlyClient.maxBonds({
+      const maxBonds = await this.arbitrationPolicyUmaClient.maxBonds({
         token: tokenAddress,
       });
       if (bonds > maxBonds) {
@@ -229,5 +233,41 @@ export class DisputeClient {
     } catch (error) {
       handleError(error, "Failed to tag related ip infringed");
     }
+  }
+
+  public async disputeAssertion(request: DisputeAssertionRequest): Promise<TransactionResponse> {
+    try {
+      const ipAccount = new IpAccountImplClient(
+        this.rpcClient,
+        this.wallet,
+        validateAddress(request.ipId),
+      );
+      const counterEvidenceHash = convertCIDtoHashIPFS(request.counterEvidenceCID);
+      const encodedData = this.arbitrationPolicyUmaClient.disputeAssertionEncode({
+        assertionId: request.assertionId,
+        counterEvidenceHash,
+      });
+      const txHash = await ipAccount.execute({
+        to: encodedData.to,
+        value: 0n,
+        data: encodedData.data,
+        operation: 0,
+      });
+
+      return handleTxOptions({
+        txHash,
+        txOptions: request.txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (e) {
+      handleError(e, "Failed to dispute assertion");
+    }
+  }
+
+  public async disputeIdToAssertionId(disputeId: number | bigint): Promise<Hex> {
+    const assertionId = await this.arbitrationPolicyUmaClient.disputeIdToAssertionId({
+      disputeId: BigInt(disputeId),
+    });
+    return assertionId;
   }
 }

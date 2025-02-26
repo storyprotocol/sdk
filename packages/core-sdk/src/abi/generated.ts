@@ -5793,6 +5793,16 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "error",
+    inputs: [{ name: "target", internalType: "address", type: "address" }],
+    name: "AddressEmptyCode",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  {
+    type: "error",
     inputs: [
       { name: "spender", internalType: "address", type: "address" },
       { name: "allowance", internalType: "uint256", type: "uint256" },
@@ -5829,6 +5839,7 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [{ name: "spender", internalType: "address", type: "address" }],
     name: "ERC20InvalidSpender",
   },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__EnforcedPause" },
   {
@@ -14470,7 +14481,7 @@ export const spgnftImplAbi = [
   },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
-  { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipientOrAdmin" },
+  { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipient" },
   { type: "error", inputs: [], name: "SPGNFT__CallerNotPeripheryContract" },
   {
     type: "error",
@@ -14486,11 +14497,6 @@ export const spgnftImplAbi = [
   { type: "error", inputs: [], name: "SPGNFT__MintingDenied" },
   { type: "error", inputs: [], name: "SPGNFT__ZeroAddressParam" },
   { type: "error", inputs: [], name: "SPGNFT__ZeroMaxSupply" },
-  {
-    type: "error",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
-    name: "SafeERC20FailedOperation",
-  },
   {
     type: "event",
     anonymous: false,
@@ -15556,6 +15562,17 @@ export class AccessControllerClient extends AccessControllerEventClient {
 // Contract ArbitrationPolicyUMA =============================================================
 
 /**
+ * ArbitrationPolicyUmaDisputeIdToAssertionIdRequest
+ *
+ * @param disputeId uint256
+ */
+export type ArbitrationPolicyUmaDisputeIdToAssertionIdRequest = {
+  disputeId: bigint;
+};
+
+export type ArbitrationPolicyUmaDisputeIdToAssertionIdResponse = Hex;
+
+/**
  * ArbitrationPolicyUmaMaxBondsRequest
  *
  * @param token address
@@ -15571,6 +15588,17 @@ export type ArbitrationPolicyUmaMaxLivenessResponse = bigint;
 export type ArbitrationPolicyUmaMinLivenessResponse = bigint;
 
 /**
+ * ArbitrationPolicyUmaDisputeAssertionRequest
+ *
+ * @param assertionId bytes32
+ * @param counterEvidenceHash bytes32
+ */
+export type ArbitrationPolicyUmaDisputeAssertionRequest = {
+  assertionId: Hex;
+  counterEvidenceHash: Hex;
+};
+
+/**
  * contract ArbitrationPolicyUMA readonly method
  */
 export class ArbitrationPolicyUmaReadOnlyClient {
@@ -15580,6 +15608,23 @@ export class ArbitrationPolicyUmaReadOnlyClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(arbitrationPolicyUmaAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method disputeIdToAssertionId for contract ArbitrationPolicyUMA
+   *
+   * @param request ArbitrationPolicyUmaDisputeIdToAssertionIdRequest
+   * @return Promise<ArbitrationPolicyUmaDisputeIdToAssertionIdResponse>
+   */
+  public async disputeIdToAssertionId(
+    request: ArbitrationPolicyUmaDisputeIdToAssertionIdRequest,
+  ): Promise<ArbitrationPolicyUmaDisputeIdToAssertionIdResponse> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicyUmaAbi,
+      address: this.address,
+      functionName: "disputeIdToAssertionId",
+      args: [request.disputeId],
+    });
   }
 
   /**
@@ -15625,6 +15670,56 @@ export class ArbitrationPolicyUmaReadOnlyClient {
       address: this.address,
       functionName: "minLiveness",
     });
+  }
+}
+
+/**
+ * contract ArbitrationPolicyUMA write method
+ */
+export class ArbitrationPolicyUmaClient extends ArbitrationPolicyUmaReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method disputeAssertion for contract ArbitrationPolicyUMA
+   *
+   * @param request ArbitrationPolicyUmaDisputeAssertionRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async disputeAssertion(
+    request: ArbitrationPolicyUmaDisputeAssertionRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: arbitrationPolicyUmaAbi,
+      address: this.address,
+      functionName: "disputeAssertion",
+      account: this.wallet.account,
+      args: [request.assertionId, request.counterEvidenceHash],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method disputeAssertion for contract ArbitrationPolicyUMA with only encode
+   *
+   * @param request ArbitrationPolicyUmaDisputeAssertionRequest
+   * @return EncodedTxData
+   */
+  public disputeAssertionEncode(
+    request: ArbitrationPolicyUmaDisputeAssertionRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: arbitrationPolicyUmaAbi,
+        functionName: "disputeAssertion",
+        args: [request.assertionId, request.counterEvidenceHash],
+      }),
+    };
   }
 }
 
