@@ -80,7 +80,7 @@ export type WithClaimOptions = {
 };
 export type BatchClaimAllRevenueRequest = WithClaimOptions & {
   /** The ancestor IPs from which the revenue is being claimed. */
-  ancestorIps: (Omit<ClaimAllRevenueRequest, "ancestorIpId" | "wipOptions"> & {
+  ancestorIps: (Omit<ClaimAllRevenueRequest, "ancestorIpId" | "claimOptions"> & {
     /** The address of the ancestor IP from which the revenue is being claimed. */
     ipId: Address;
   })[];
