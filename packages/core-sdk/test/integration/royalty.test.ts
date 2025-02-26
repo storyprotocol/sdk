@@ -263,7 +263,7 @@ describe("Royalty Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -323,7 +323,7 @@ describe("Royalty Functions", () => {
       ipD = retD.ipId!;
     });
 
-    it("should claim all revenue and convert WIP back to IP", async () => {
+    it("should claim all revenue", async () => {
       const ret = await client.royalty.claimAllRevenue({
         ancestorIpId: ipA,
         claimer: ipA,
@@ -390,7 +390,7 @@ describe("Royalty Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: wrappedIpAddress[aeneid],
+                  currency: WIP_TOKEN_ADDRESS,
                   uri: "",
                 },
                 licensingConfig: {
@@ -426,7 +426,7 @@ describe("Royalty Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: wrappedIpAddress[aeneid],
+                  currency: WIP_TOKEN_ADDRESS,
                   uri: "",
                 },
                 licensingConfig: {
@@ -522,7 +522,7 @@ describe("Royalty Functions", () => {
       });
     });
 
-    it("should batch claim all revenue and convert WIP back to IP", async () => {
+    it("should batch claim all revenue", async () => {
       const result = await client.royalty.batchClaimAllRevenue({
         ancestorIps: [
           {
