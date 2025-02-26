@@ -2,7 +2,7 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { AccessPermission, StoryClient } from "../../src";
 import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector } from "viem";
+import { Hex, encodeFunctionData, getAddress, toFunctionSelector, toHex } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
@@ -149,5 +149,14 @@ describe("IPAccount Functions", () => {
       await expect(client.ipAccount.getToken("0x0000000000000000000000000000000000000000")).to.be
         .rejected;
     });
+  });
+
+  it("should successfully set ip metadata", async () => {
+    const txHash = await client.ipAccount.setIpMetadata({
+      ipId: ipId,
+      metadataURI: "https://example.com",
+      metadataHash: toHex("test", { size: 32 }),
+    });
+    expect(txHash).to.be.a("string").and.not.empty;
   });
 });

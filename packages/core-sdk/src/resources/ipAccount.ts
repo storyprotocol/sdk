@@ -1,4 +1,4 @@
-import { Address, PublicClient } from "viem";
+import { Address, Hex, encodeFunctionData, PublicClient } from "viem";
 
 import {
   IPAccountExecuteRequest,
@@ -6,19 +6,27 @@ import {
   IPAccountExecuteWithSigRequest,
   IPAccountExecuteWithSigResponse,
   IpAccountStateResponse,
+  SetIpMetadataRequest,
   TokenResponse,
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
-import { IpAccountImplClient, SimpleWalletClient } from "../abi/generated";
-import { getAddress } from "../utils/utils";
+import {
+  coreMetadataModuleAbi,
+  coreMetadataModuleAddress,
+  IpAccountImplClient,
+  SimpleWalletClient,
+} from "../abi/generated";
+import { getAddress, validateAddress } from "../utils/utils";
+import { ChainIds } from "../types/config";
 
 export class IPAccountClient {
   private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
+  private readonly chainId: ChainIds;
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
+    this.chainId = chainId;
   }
 
   /** Executes a transaction from the IP Account.
@@ -148,6 +156,36 @@ export class IPAccountClient {
       };
     } catch (error) {
       handleError(error, "Failed to get the token");
+    }
+  }
+  /**
+   * Sets the metadataURI for an IP asset.
+   */
+  public async setIpMetadata({
+    ipId,
+    metadataURI,
+    metadataHash,
+    txOptions,
+  }: SetIpMetadataRequest): Promise<Hex> {
+    try {
+      const data = encodeFunctionData({
+        abi: coreMetadataModuleAbi,
+        functionName: "setMetadataURI",
+        args: [validateAddress(ipId), metadataURI, metadataHash],
+      });
+      const { txHash } = await this.execute({
+        ipId: ipId,
+        to: coreMetadataModuleAddress[this.chainId],
+        data: data,
+        value: 0,
+        txOptions: {
+          ...txOptions,
+          encodedTxDataOnly: false,
+        },
+      });
+      return txHash!;
+    } catch (error) {
+      handleError(error, "Failed to set the IP metadata");
     }
   }
 }
