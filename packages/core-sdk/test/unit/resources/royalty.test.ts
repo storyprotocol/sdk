@@ -8,11 +8,11 @@ import {
   IpAccountImplClient,
   IpRoyaltyVaultImplReadOnlyClient,
   erc20Address,
-  wrappedIpAddress,
 } from "../../../src/abi/generated";
 import { aeneid } from "../../integration/utils/util";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { ipId, mockAddress, walletAddress } from "../mockData";
+import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -43,7 +43,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(WipTokenClient.prototype, "balanceOf").resolves(1n);
       sinon.stub(WipTokenClient.prototype, "allowance").resolves(1n);
       sinon.stub(WipTokenClient.prototype, "approve").resolves(txHash);
-      sinon.stub(WipTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
+      sinon.stub(WipTokenClient.prototype, "address").get(() => WIP_TOKEN_ADDRESS);
     });
 
     it("should throw receiverIpId error when call payRoyaltyOnBehalf given receiverIpId is not registered", async () => {
@@ -120,7 +120,7 @@ describe("Test RoyaltyClient", () => {
       const result = await royaltyClient.payRoyaltyOnBehalf({
         receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        token: wrappedIpAddress[aeneid],
+        token: WIP_TOKEN_ADDRESS,
         amount: 100n,
         txOptions: { waitForTransaction: true },
       });
@@ -208,7 +208,7 @@ describe("Test RoyaltyClient", () => {
           claimer: "0x",
           childIpIds: [ipId],
           royaltyPolicies: [mockAddress],
-          currencyTokens: [wrappedIpAddress[aeneid]],
+          currencyTokens: [WIP_TOKEN_ADDRESS],
         });
       } catch (err) {
         expect((err as Error).message).equals("Failed to claim all revenue: Invalid address: 0x.");
@@ -223,7 +223,7 @@ describe("Test RoyaltyClient", () => {
         claimer: ipId,
         childIpIds: [ipId],
         royaltyPolicies: [mockAddress],
-        currencyTokens: [wrappedIpAddress[aeneid]],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
       });
       expect(result.claimedTokens).to.be.undefined;
       expect(result.txHashes).to.be.an("array").and.lengthOf(1);
@@ -239,7 +239,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
         .returns([
           {
-            token: wrappedIpAddress[aeneid],
+            token: WIP_TOKEN_ADDRESS,
             amount: 1n,
             claimer: ipId,
           },
@@ -250,7 +250,7 @@ describe("Test RoyaltyClient", () => {
         claimer: ipId,
         childIpIds: [ipId],
         royaltyPolicies: [mockAddress],
-        currencyTokens: [wrappedIpAddress[aeneid]],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
       });
       expect(executeStub.calledOnce).to.be.true;
       expect(withdrawStub.calledOnce).to.be.true;
@@ -266,7 +266,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
         .returns([
           {
-            token: wrappedIpAddress[aeneid],
+            token: WIP_TOKEN_ADDRESS,
             amount: 1n,
             claimer: ipId,
           },
@@ -278,7 +278,7 @@ describe("Test RoyaltyClient", () => {
         claimer: ipId,
         childIpIds: [ipId],
         royaltyPolicies: [mockAddress],
-        currencyTokens: [wrappedIpAddress[aeneid]],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
         claimOptions: { autoTransferAllClaimedTokensFromIp: false },
       });
       expect(result.txHashes).to.be.an("array").and.lengthOf(2);
@@ -294,7 +294,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
         .returns([
           {
-            token: wrappedIpAddress[aeneid],
+            token: WIP_TOKEN_ADDRESS,
             amount: 1n,
             claimer: ipId,
           },
@@ -307,7 +307,7 @@ describe("Test RoyaltyClient", () => {
         claimer: ipId,
         childIpIds: [ipId],
         royaltyPolicies: [mockAddress],
-        currencyTokens: [wrappedIpAddress[aeneid]],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
         claimOptions: { autoTransferAllClaimedTokensFromIp: true, autoUnwrapIpTokens: false },
       });
       expect(result.txHashes).to.be.an("array").and.lengthOf(2);
@@ -326,7 +326,7 @@ describe("Test RoyaltyClient", () => {
               claimer: "0x",
               childIpIds: [ipId],
               royaltyPolicies: [mockAddress],
-              currencyTokens: [wrappedIpAddress[aeneid]],
+              currencyTokens: [WIP_TOKEN_ADDRESS],
             },
           ],
         });
@@ -351,7 +351,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
         .returns([
           {
-            token: wrappedIpAddress[aeneid],
+            token: WIP_TOKEN_ADDRESS,
             amount: 1n,
             claimer: ipId,
           },
@@ -365,7 +365,7 @@ describe("Test RoyaltyClient", () => {
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
         ],
       });
@@ -387,7 +387,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
         .returns([
           {
-            token: wrappedIpAddress[aeneid],
+            token: WIP_TOKEN_ADDRESS,
             amount: 1n,
             claimer: ipId,
           },
@@ -401,14 +401,14 @@ describe("Test RoyaltyClient", () => {
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
           {
             ipId,
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
         ],
         options: { useMulticallWhenPossible: false },
@@ -429,7 +429,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
-        .returns([{ token: wrappedIpAddress[aeneid], amount: 1n, claimer: ipId }]);
+        .returns([{ token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId }]);
       sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
 
       const result = await royaltyClient.batchClaimAllRevenue({
@@ -439,14 +439,14 @@ describe("Test RoyaltyClient", () => {
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
           {
             ipId,
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
         ],
       });
@@ -463,7 +463,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
-        .returns([{ token: wrappedIpAddress[aeneid], amount: 1n, claimer: ipId }]);
+        .returns([{ token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId }]);
       const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
 
       const result = await royaltyClient.batchClaimAllRevenue({
@@ -473,14 +473,14 @@ describe("Test RoyaltyClient", () => {
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
           {
             ipId,
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
         ],
         claimOptions: { autoTransferAllClaimedTokensFromIp: false },
@@ -488,7 +488,7 @@ describe("Test RoyaltyClient", () => {
       expect(result.txHashes).to.be.an("array").and.lengthOf(2);
       expect(result.receipts).to.be.an("array").and.lengthOf(1);
       expect(result.claimedTokens).to.be.deep.equal([
-        { token: wrappedIpAddress[aeneid], amount: 1n, claimer: ipId },
+        { token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId },
       ]);
       expect(executeStub.calledOnce).to.be.false;
       expect(withdrawStub.calledOnce).to.be.true;
@@ -502,7 +502,7 @@ describe("Test RoyaltyClient", () => {
       sinon
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
         .returns([
-          { token: wrappedIpAddress[aeneid], amount: 1n, claimer: ipId },
+          { token: WIP_TOKEN_ADDRESS, amount: 1n, claimer: ipId },
           { token: mockAddress, amount: 0n, claimer: ipId },
           { token: mockAddress, amount: 1n, claimer: walletAddress },
         ]);
@@ -515,21 +515,21 @@ describe("Test RoyaltyClient", () => {
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
           {
             ipId,
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
           {
             ipId,
             claimer: ipId,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
         ],
         claimOptions: { autoUnwrapIpTokens: false },
@@ -549,7 +549,7 @@ describe("Test RoyaltyClient", () => {
         .stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent")
         .returns([
           { token: mockAddress, amount: 1n, claimer: walletAddress },
-          { token: wrappedIpAddress[aeneid], amount: 0n, claimer: walletAddress },
+          { token: WIP_TOKEN_ADDRESS, amount: 0n, claimer: walletAddress },
           { token: mockAddress, amount: 1n, claimer: walletAddress },
         ]);
       const withdrawStub = sinon.stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
@@ -561,27 +561,27 @@ describe("Test RoyaltyClient", () => {
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
           {
             ipId,
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
           {
             ipId,
             claimer: walletAddress,
             childIpIds: [ipId],
             royaltyPolicies: [mockAddress],
-            currencyTokens: [wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS],
           },
         ],
       });
       expect(result.claimedTokens).to.be.deep.equal([
         { token: mockAddress, amount: 2n, claimer: walletAddress },
-        { token: wrappedIpAddress[aeneid], amount: 0n, claimer: walletAddress },
+        { token: WIP_TOKEN_ADDRESS, amount: 0n, claimer: walletAddress },
       ]);
       expect(executeStub.calledOnce).to.be.true;
       // withdraw is not called because amount is 0

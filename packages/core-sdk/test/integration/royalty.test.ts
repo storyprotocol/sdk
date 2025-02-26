@@ -530,14 +530,14 @@ describe("Royalty Functions", () => {
             claimer: ipA,
             childIpIds: [ipA1, ipA2],
             royaltyPolicies: [royaltyPolicyLapAddress[aeneid], royaltyPolicyLapAddress[aeneid]],
-            currencyTokens: [wrappedIpAddress[aeneid], wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS, WIP_TOKEN_ADDRESS],
           },
           {
             ipId: ipB,
             claimer: ipB,
             childIpIds: [ipB1, ipB2],
             royaltyPolicies: [royaltyPolicyLrpAddress[aeneid], royaltyPolicyLrpAddress[aeneid]],
-            currencyTokens: [wrappedIpAddress[aeneid], wrappedIpAddress[aeneid]],
+            currencyTokens: [WIP_TOKEN_ADDRESS, WIP_TOKEN_ADDRESS],
           },
         ],
       });

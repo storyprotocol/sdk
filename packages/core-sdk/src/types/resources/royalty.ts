@@ -104,6 +104,11 @@ export type BatchClaimAllRevenueResponse = {
 export type ClaimAllRevenueResponse = {
   txHashes: Hash[];
   receipt: TransactionReceipt;
+  /**
+   * Aggregate list of all tokens claimed across all transactions in the batch.
+   * Events are aggregated by unique combinations of claimer and token addresses,
+   * summing up the amounts for the same claimer-token pairs.
+   */
   claimedTokens?: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
 };
 
