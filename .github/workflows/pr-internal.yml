@@ -24,6 +24,7 @@ jobs:
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+      JUDGE_PRIVATE_KEY: ${{ secrets.JUDGE_PRIVATE_KEY }}
 
   push_build_and_test:
     if: github.event_name == 'push'
@@ -34,3 +35,4 @@ jobs:
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+      JUDGE_PRIVATE_KEY: ${{ secrets.JUDGE_PRIVATE_KEY }}
