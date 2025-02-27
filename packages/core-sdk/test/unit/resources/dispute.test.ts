@@ -1,10 +1,11 @@
 import * as sinon from "sinon";
-import { createMock } from "../testUtils";
+import { createMock, generateRandomHash } from "../testUtils";
 import { ipId, txHash } from "../mockData";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { PublicClient, WalletClient } from "viem";
 import { DisputeClient } from "../../../src";
+import { IpAccountImplClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 
@@ -23,13 +24,11 @@ describe("Test DisputeClient", () => {
     sinon.restore();
   });
 
-  describe("Test raiseDispute", () => {
+  describe("raiseDispute", () => {
     it("throw address error when call raiseDispute with invalid targetIpId", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(0n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
-        .resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxBonds").resolves(1000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(1000n);
       sinon
         .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
         .resolves({ allowed: true });
@@ -47,10 +46,8 @@ describe("Test DisputeClient", () => {
     });
 
     it("throw liveness error when call raiseDispute given liveness out of range", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(100n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
-        .resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(100n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
       try {
         await disputeClient.raiseDispute({
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -67,11 +64,9 @@ describe("Test DisputeClient", () => {
     });
 
     it("throw bond error when call raiseDispute given bond more than max bonds", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(0n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
-        .resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxBonds").resolves(1000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(1000n);
       try {
         await disputeClient.raiseDispute({
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -88,11 +83,9 @@ describe("Test DisputeClient", () => {
     });
 
     it("should throw tag error when call raiseDispute given tag not whitelisted", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(0n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
-        .resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxBonds").resolves(1000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(1000n);
       sinon
         .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
         .resolves({ allowed: false });
@@ -111,13 +104,9 @@ describe("Test DisputeClient", () => {
       }
     });
     it("should return txHash when call raiseDispute successfully", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(0n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
-        .resolves(100000000000n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxBonds")
-        .resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
       sinon
         .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
         .resolves({ allowed: true });
@@ -135,13 +124,9 @@ describe("Test DisputeClient", () => {
     });
 
     it("should return txHash and disputeId when call raiseDispute successfully with waitForTransaction", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(0n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
-        .resolves(100000000000n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxBonds")
-        .resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
       sinon
         .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
         .resolves({ allowed: true });
@@ -172,13 +157,9 @@ describe("Test DisputeClient", () => {
     });
 
     it("should return encodedTxData when call raiseDispute successfully with encodedTxDataOnly", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "minLiveness").resolves(0n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxLiveness")
-        .resolves(100000000000n);
-      sinon
-        .stub(disputeClient.arbitrationPolicyUmaReadOnlyClient, "maxBonds")
-        .resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
       sinon
         .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
         .resolves({ allowed: true });
@@ -195,7 +176,7 @@ describe("Test DisputeClient", () => {
     });
   });
 
-  describe("Test cancelDispute", () => {
+  describe("cancelDispute", () => {
     it("should throw error when call cancelDispute failed", async () => {
       sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").rejects(new Error("500"));
       try {
@@ -237,7 +218,7 @@ describe("Test DisputeClient", () => {
     });
   });
 
-  describe("Test resolveDispute", () => {
+  describe("resolveDispute", () => {
     it("should throw error when call resolveDispute failed", async () => {
       sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").rejects(new Error("500"));
       try {
@@ -282,7 +263,7 @@ describe("Test DisputeClient", () => {
     });
   });
 
-  describe("Test tagIfRelatedIpInfringed", () => {
+  describe("tagIfRelatedIpInfringed", () => {
     let aggregate3Stub: sinon.SinonStub;
     let tagIfRelatedIpInfringedStub: sinon.SinonStub;
     beforeEach(() => {
@@ -343,6 +324,34 @@ describe("Test DisputeClient", () => {
       expect(result.length).equal(1);
       expect(aggregate3Stub.called).to.be.false;
       expect(tagIfRelatedIpInfringedStub.calledOnce).to.be.true;
+    });
+  });
+
+  describe("disputeAssertion", () => {
+    it("should dispute assertion successfully", async () => {
+      const accountExecuteMock = sinon
+        .stub(IpAccountImplClient.prototype, "execute")
+        .resolves(txHash);
+      const result = await disputeClient.disputeAssertion({
+        ipId,
+        assertionId: generateRandomHash(),
+        counterEvidenceCID: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+      });
+      expect(result.txHash).equal(txHash);
+      expect(accountExecuteMock.calledOnce).to.be.true;
+    });
+  });
+
+  describe("disputeIdToAssertionId", () => {
+    it("should return assertionId", async () => {
+      const mockAssertionId = generateRandomHash();
+      const mock = sinon
+        .stub(disputeClient.arbitrationPolicyUmaClient, "disputeIdToAssertionId")
+        .resolves(mockAssertionId);
+      const disputeId = BigInt(10);
+      const result = await disputeClient.disputeIdToAssertionId(disputeId);
+      expect(result).equal(mockAssertionId);
+      expect(mock.calledOnceWith({ disputeId })).to.be.true;
     });
   });
 });

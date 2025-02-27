@@ -81,11 +81,20 @@ describe("Dispute Functions", () => {
     const mockERC20 = new WipTokenClient(publicClient, walletClient);
     await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid], maxUint256);
 
-    const tokenId = await getTokenId();
+    const txData = await clientA.nftClient.createNFTCollection({
+      name: "test-collection",
+      symbol: "TEST",
+      maxSupply: 100,
+      isPublicMinting: true,
+      mintOpen: true,
+      contractURI: "test-uri",
+      mintFeeRecipient: TEST_WALLET_ADDRESS,
+      txOptions: { waitForTransaction: true },
+    });
+    const nftContract = txData.spgNftContract!;
     ipIdB = (
-      await clientB.ipAsset.register({
-        nftContract: mockERC721,
-        tokenId: tokenId!,
+      await clientB.ipAsset.mintAndRegisterIp({
+        spgNftContract: nftContract,
         txOptions: {
           waitForTransaction: true,
         },
@@ -93,7 +102,8 @@ describe("Dispute Functions", () => {
     ).ipId!;
   });
 
-  describe("raiseDispute", () => {
+  describe("raiseDispute and counter dispute", () => {
+    let disputeId: bigint | undefined;
     it("should raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
@@ -108,10 +118,30 @@ describe("Dispute Functions", () => {
       const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
       expect(response.txHash).to.be.a("string").and.not.empty;
       expect(response.disputeId).to.be.a("bigint");
+      disputeId = response.disputeId;
+    });
+
+    it("should be able to counter existing dispute once", async () => {
+      const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
+      const counterEvidenceCID = await generateCID();
+      const ret = await clientB.dispute.disputeAssertion({
+        ipId: ipIdB,
+        assertionId,
+        counterEvidenceCID,
+      });
+      expect(ret.txHash).to.be.a("string").and.not.empty;
+
+      // should throw error if attempting to dispute assertion again
+      const secondDispute = clientB.dispute.disputeAssertion({
+        ipId: ipIdB,
+        assertionId,
+        counterEvidenceCID,
+      });
+      await expect(secondDispute).to.be.rejectedWith("Assertion already disputed");
     });
 
     it("should throw error when liveness is out of bounds", async () => {
-      const minLiveness = await clientA.dispute.arbitrationPolicyUmaReadOnlyClient.minLiveness();
+      const minLiveness = await clientA.dispute.arbitrationPolicyUmaClient.minLiveness();
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
         cid: await generateCID(),

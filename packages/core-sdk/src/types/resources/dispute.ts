@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions, WithTxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
@@ -72,4 +72,24 @@ export type TagIfRelatedIpInfringedRequest = {
      */
     useMulticallWhenPossible?: boolean;
   };
+} & WithTxOptions;
+
+export type DisputeAssertionRequest = {
+  /**
+   * The IP ID that is the target of the dispute.
+   */
+  ipId: Address;
+  /**
+   * The identifier of the assertion that was disputed.
+   *
+   * You can get this from the `disputeId` by calling `dispute.disputeIdToAssertionId`.
+   */
+  assertionId: Hex;
+  /**
+   * Content Identifier (CID) for the counter evidence.
+   * This should be obtained by uploading your dispute evidence (documents, images, etc.) to IPFS.
+   *
+   * @example "QmX4zdp8VpzqvtKuEqMo6gfZPdoUx9TeHXCgzKLcFfSUbk"
+   */
+  counterEvidenceCID: string;
 } & WithTxOptions;

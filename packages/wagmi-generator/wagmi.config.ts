@@ -328,7 +328,13 @@ export default defineConfig(async () => {
             "distributeRoyaltyTokens",
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
           ],
-          ArbitrationPolicyUMA: ["maxBonds", "maxLiveness", "minLiveness"],
+          ArbitrationPolicyUMA: [
+            "maxBonds",
+            "maxLiveness",
+            "minLiveness",
+            "disputeIdToAssertionId",
+            "disputeAssertion",
+          ],
           WrappedIP: [
             "deposit",
             "approve",
