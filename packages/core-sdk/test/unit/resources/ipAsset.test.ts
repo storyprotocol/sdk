@@ -1,7 +1,7 @@
 import chai from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
-import { IPAssetClient, LicenseTerms } from "../../../src";
+import { IPAssetClient, LicenseTerms, StoryRelationship } from "../../../src";
 import {
   PublicClient,
   WalletClient,
@@ -136,7 +136,7 @@ describe("Test IpAssetClient", () => {
       relationships: [
         {
           parentIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512" as Address,
-          type: "APPEARS_IN",
+          type: StoryRelationship.APPEARS_IN,
         },
       ],
       createdAt: "2024-08-22T10:20:30Z",
@@ -144,10 +144,6 @@ describe("Test IpAssetClient", () => {
       creators: [sampleCreatorData],
       media: [
         { name: "Cover Image", url: "https://example.com/cover.jpg", mimeType: "image/jpeg" },
-      ],
-      attributes: [
-        { key: "Genre", value: "Adventure" },
-        { key: "Pages", value: 350 },
       ],
       app: { id: "app_001", name: "Story Protocol", website: "https://story.foundation" },
       tags: ["Adventure", "Thriller"],
@@ -186,7 +182,10 @@ describe("Test IpAssetClient", () => {
           .to.have.property("relationships")
           .that.is.an("array")
           .that.deep.equals([
-            { parentIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", type: "APPEARS_IN" },
+            {
+              parentIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+              type: StoryRelationship.APPEARS_IN,
+            },
           ]);
         expect(metadata).to.have.property("createdAt", "2024-08-22T10:20:30Z");
         expect(metadata).to.have.property("watermarkImg", "https://example.com/watermark.png");

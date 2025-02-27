@@ -28,16 +28,6 @@ export type {
   RegisterIpAndAttachPilTermsResponse,
   MintAndRegisterIpAndMakeDerivativeRequest,
   MintAndRegisterIpAndMakeDerivativeResponse,
-  GenerateCreatorMetadataParam,
-  IpCreator,
-  GenerateIpMetadataParam,
-  IpMetadata,
-  IpRelationship,
-  IpAttribute,
-  IpCreatorSocial,
-  IpMedia,
-  IPRobotTerms,
-  StoryProtocolApp,
   MintAndRegisterIpRequest,
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
@@ -61,6 +51,8 @@ export type {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
 } from "./types/resources/ipAsset";
+
+export * from "./types/resources/ipMetadata";
 
 export type {
   RegisterNonComSocialRemixingPILRequest,
