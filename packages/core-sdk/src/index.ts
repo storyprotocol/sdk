@@ -13,6 +13,8 @@ export { WipClient } from "./resources/wip";
 
 export type { StoryConfig, SupportedChainIds } from "./types/config";
 
+export type { LicensingConfig } from "./types/common";
+
 export type {
   RegisterRequest,
   RegisterIpResponse,
@@ -50,6 +52,7 @@ export type {
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
+  LicenseTermsData,
 } from "./types/resources/ipAsset";
 
 export * from "./types/resources/ipMetadata";
