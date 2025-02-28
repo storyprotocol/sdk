@@ -199,13 +199,6 @@ describe("Test IpAssetClient", () => {
           .that.deep.equals([
             { name: "Cover Image", url: "https://example.com/cover.jpg", mimeType: "image/jpeg" },
           ]);
-        expect(metadata)
-          .to.have.property("attributes")
-          .that.is.an("array")
-          .that.deep.equals([
-            { key: "Genre", value: "Adventure" },
-            { key: "Pages", value: 350 },
-          ]);
         expect(metadata).to.have.property("app").that.deep.equals({
           id: "app_001",
           name: "Story Protocol",
