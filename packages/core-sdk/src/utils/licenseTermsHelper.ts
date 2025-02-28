@@ -51,6 +51,8 @@ export function getLicenseTermByType(
     licenseTerms.currency = validateAddress(term.currency);
     licenseTerms.uri =
       "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json";
+    licenseTerms.derivativesAllowed = false;
+    licenseTerms.derivativesAttribution = false;
     return licenseTerms;
   } else {
     if (
