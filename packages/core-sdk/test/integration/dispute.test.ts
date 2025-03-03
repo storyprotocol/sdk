@@ -120,8 +120,7 @@ describe("Dispute Functions", () => {
       expect(response.disputeId).to.be.a("bigint");
       disputeId = response.disputeId;
     });
-    // TODO: Need to consider how to catch this error
-    it.skip("should be able to counter existing dispute once", async () => {
+    it("should be able to counter existing dispute once", async () => {
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
       const ret = await clientB.dispute.disputeAssertion({
@@ -132,12 +131,15 @@ describe("Dispute Functions", () => {
       expect(ret.txHash).to.be.a("string").and.not.empty;
 
       // should throw error if attempting to dispute assertion again
-      const secondDispute = clientB.dispute.disputeAssertion({
+      const secondDispute = await clientB.dispute.disputeAssertion({
         ipId: ipIdB,
         assertionId,
         counterEvidenceCID,
+        txOptions: {
+          waitForTransaction: true,
+        },
       });
-      await expect(secondDispute).to.be.rejectedWith("Assertion already disputed");
+      expect(secondDispute.receipt?.status).to.equal("reverted");
     });
 
     it("should throw error when liveness is out of bounds", async () => {
