@@ -352,26 +352,21 @@ export class RoyaltyClient {
     claimedTokens,
   }: TransferClaimedTokensFromIpToWalletParams) {
     const txHashes: Hex[] = [];
-    const transferToken = async (token: Address, amount: bigint) => {
-      if (amount <= 0) {
-        return;
-      }
-      const hash = await ipAccount.execute({
-        to: token,
+    const calls = [];
+    for (const { token, amount } of claimedTokens) {
+      calls.push({
+        target: token,
         value: BigInt(0),
-        operation: 0,
         data: encodeFunctionData({
           abi: erc20Abi,
           functionName: "transfer",
           args: [this.walletAddress, amount],
         }),
       });
-      await this.rpcClient.waitForTransactionReceipt({ hash });
-      txHashes.push(hash);
-    };
-    for (const { token, amount } of claimedTokens) {
-      await transferToken(token, amount);
     }
+    const hash = await ipAccount.executeBatch({ calls, operation: 0 });
+    await this.rpcClient.waitForTransactionReceipt({ hash });
+    txHashes.push(hash);
     return txHashes;
   }
 
