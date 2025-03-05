@@ -189,6 +189,7 @@ export class RoyaltyClient {
       const claimers = [...new Set(request.ancestorIps.map(({ claimer }) => claimer))];
       const autoTransfer = request.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
       const autoUnwrapIp = request.claimOptions?.autoUnwrapIpTokens !== false;
+      let wipClaimableAmounts = 0n;
       for (const claimer of claimers) {
         const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
 
@@ -207,12 +208,24 @@ export class RoyaltyClient {
           });
           txHashes.push(...hashes);
         }
-        if (autoUnwrapIp) {
-          // if the claimer is the wallet, then we can unwrap any claimed WIP tokens
-          const hashes = await this.unwrapWipTokens(filterClaimedTokens);
-          if (hashes) {
-            txHashes.push(hashes);
+        // Sum up the amount of WIP tokens claimed
+        wipClaimableAmounts += filterClaimedTokens.reduce((acc, curr) => {
+          if (curr.token === WIP_TOKEN_ADDRESS) {
+            return acc + curr.amount;
           }
+          return acc;
+        }, 0n);
+      }
+      if (wipClaimableAmounts > 0n && autoUnwrapIp) {
+        const hash = await this.unwrapWipTokens([
+          {
+            token: WIP_TOKEN_ADDRESS,
+            amount: wipClaimableAmounts,
+            claimer: this.walletAddress,
+          },
+        ]);
+        if (hash) {
+          txHashes.push(hash);
         }
       }
       return {
