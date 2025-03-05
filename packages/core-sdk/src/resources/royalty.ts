@@ -389,7 +389,7 @@ export class RoyaltyClient {
   private async unwrapWipTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
     const wipTokens = claimedTokens.filter((token) => token.token === WIP_TOKEN_ADDRESS);
     if (wipTokens.length > 1) {
-      throw new Error("Multiple WIP tokens found in the claimed tokens");
+      throw new Error("Multiple WIP tokens found in the claimed tokens.");
     }
     const wipToken = wipTokens[0];
     if (!wipToken || wipToken.amount <= 0n) {
