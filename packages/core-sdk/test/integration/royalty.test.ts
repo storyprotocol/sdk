@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Address, Hex, encodeFunctionData, parseEther, zeroAddress } from "viem";
+import { Address, Hex, encodeFunctionData, erc20Abi, parseEther, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import {
   mockERC721,
@@ -14,7 +14,6 @@ import {
 import {
   erc20Address,
   royaltyPolicyLapAddress,
-  wrappedIpAddress,
   royaltyPolicyLrpAddress,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
@@ -29,7 +28,6 @@ describe("Royalty Functions", () => {
   let parentIpId: Hex;
   let childIpId: Hex;
   let licenseTermsId: bigint;
-  let parentIpIdRoyaltyAddress: Address;
   let mockERC20: ERC20Client;
 
   // Helper functions
@@ -64,32 +62,6 @@ describe("Royalty Functions", () => {
     });
   };
 
-  const setupRoyaltyVault = async () => {
-    parentIpIdRoyaltyAddress = await client.royalty.getRoyaltyVaultAddress(parentIpId);
-    await client.ipAccount.execute({
-      to: parentIpIdRoyaltyAddress,
-      value: 0,
-      ipId: parentIpId,
-      txOptions: { waitForTransaction: true },
-      data: encodeFunctionData({
-        abi: [
-          {
-            inputs: [
-              { internalType: "address", name: "to", type: "address" },
-              { internalType: "uint256", name: "value", type: "uint256" },
-            ],
-            name: "transfer",
-            outputs: [{ internalType: "bool", name: "", type: "bool" }],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
-        functionName: "transfer",
-        args: [process.env.TEST_WALLET_ADDRESS as Hex, BigInt(10 * 10 ** 6)],
-      }),
-    });
-  };
-
   before(async () => {
     client = getStoryClient();
     mockERC20 = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
@@ -113,8 +85,6 @@ describe("Royalty Functions", () => {
       maxRevenueShare: "0",
       txOptions: { waitForTransaction: true },
     });
-
-    await setupRoyaltyVault();
   });
 
   describe("Royalty Payments", () => {
@@ -168,6 +138,49 @@ describe("Royalty Functions", () => {
         }),
       ).to.be.rejectedWith(`The receiver IP with id ${unregisteredIpId} is not registered.`);
     });
+
+    it("should allow the royalty vault to transfer its native tokens to a wallet address", async () => {
+      const royaltyVaultAddress = await client.royalty.getRoyaltyVaultAddress(parentIpId);
+
+      const royaltyVaultToken = new ERC20Client(publicClient, walletClient, royaltyVaultAddress);
+
+      const targetWalletAddress = TEST_WALLET_ADDRESS as Hex;
+      const transferAmount = BigInt(10 * 10 ** 6); // 10 million tokens
+
+      // Check initial balances of the vault token
+      const initialTargetBalance = await royaltyVaultToken.balanceOf(targetWalletAddress);
+      const initialParentBalance = await royaltyVaultToken.balanceOf(parentIpId);
+
+      expect(initialParentBalance >= transferAmount).to.be.true;
+
+      const transferResult = await client.ipAccount.execute({
+        to: royaltyVaultAddress,
+        value: 0,
+        ipId: parentIpId,
+        txOptions: { waitForTransaction: true },
+        data: encodeFunctionData({
+          abi: erc20Abi,
+          functionName: "transfer",
+          args: [targetWalletAddress, transferAmount],
+        }),
+      });
+
+      expect(transferResult.txHash).to.be.a("string").and.not.empty;
+
+      // Check final balances to confirm the transfer worked
+      const finalTargetBalance = await royaltyVaultToken.balanceOf(targetWalletAddress);
+      const finalParentBalance = await royaltyVaultToken.balanceOf(parentIpId);
+
+      expect(finalTargetBalance).to.equal(
+        initialTargetBalance + transferAmount,
+        "Target wallet balance should increase by the transfer amount",
+      );
+
+      expect(finalParentBalance).to.equal(
+        initialParentBalance - transferAmount,
+        "Parent's vault token balance should decrease by the transfer amount",
+      );
+    });
   });
 
   describe("Revenue Queries", () => {
@@ -179,12 +192,6 @@ describe("Royalty Functions", () => {
       });
 
       expect(response).to.be.a("bigint");
-    });
-
-    it("should get royalty vault address", async () => {
-      const address = await client.royalty.getRoyaltyVaultAddress(parentIpId);
-      expect(address).to.be.a("string").and.not.empty;
-      expect(address).to.equal(parentIpIdRoyaltyAddress);
     });
 
     it("should fail to get royalty vault address for unregistered IP", async () => {
