@@ -189,6 +189,7 @@ export class RoyaltyClient {
       const claimers = [...new Set(request.ancestorIps.map(({ claimer }) => claimer))];
       const autoTransfer = request.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
       const autoUnwrapIp = request.claimOptions?.autoUnwrapIpTokens !== false;
+      let wipClaimableAmounts = 0n;
       for (const claimer of claimers) {
         const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
 
@@ -207,12 +208,24 @@ export class RoyaltyClient {
           });
           txHashes.push(...hashes);
         }
-        if (autoUnwrapIp) {
-          // if the claimer is the wallet, then we can unwrap any claimed WIP tokens
-          const hashes = await this.unwrapWipTokens(filterClaimedTokens);
-          if (hashes) {
-            txHashes.push(hashes);
+        // Sum up the amount of WIP tokens claimed
+        wipClaimableAmounts += filterClaimedTokens.reduce((acc, curr) => {
+          if (curr.token === WIP_TOKEN_ADDRESS) {
+            return acc + curr.amount;
           }
+          return acc;
+        }, 0n);
+      }
+      if (wipClaimableAmounts > 0n && autoUnwrapIp) {
+        const hash = await this.unwrapWipTokens([
+          {
+            token: WIP_TOKEN_ADDRESS,
+            amount: wipClaimableAmounts,
+            claimer: this.walletAddress,
+          },
+        ]);
+        if (hash) {
+          txHashes.push(hash);
         }
       }
       return {
@@ -339,26 +352,21 @@ export class RoyaltyClient {
     claimedTokens,
   }: TransferClaimedTokensFromIpToWalletParams) {
     const txHashes: Hex[] = [];
-    const transferToken = async (token: Address, amount: bigint) => {
-      if (amount <= 0) {
-        return;
-      }
-      const hash = await ipAccount.execute({
-        to: token,
+    const calls = [];
+    for (const { token, amount } of claimedTokens) {
+      calls.push({
+        target: token,
         value: BigInt(0),
-        operation: 0,
         data: encodeFunctionData({
           abi: erc20Abi,
           functionName: "transfer",
           args: [this.walletAddress, amount],
         }),
       });
-      await this.rpcClient.waitForTransactionReceipt({ hash });
-      txHashes.push(hash);
-    };
-    for (const { token, amount } of claimedTokens) {
-      await transferToken(token, amount);
     }
+    const hash = await ipAccount.executeBatch({ calls, operation: 0 });
+    await this.rpcClient.waitForTransactionReceipt({ hash });
+    txHashes.push(hash);
     return txHashes;
   }
 
@@ -381,7 +389,7 @@ export class RoyaltyClient {
   private async unwrapWipTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
     const wipTokens = claimedTokens.filter((token) => token.token === WIP_TOKEN_ADDRESS);
     if (wipTokens.length > 1) {
-      throw new Error("Multiple WIP tokens found in the claimed tokens");
+      throw new Error("Multiple WIP tokens found in the claimed tokens.");
     }
     const wipToken = wipTokens[0];
     if (!wipToken || wipToken.amount <= 0n) {

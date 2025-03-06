@@ -20457,6 +20457,21 @@ export type IpAccountImplExecute2Request = {
 };
 
 /**
+ * IpAccountImplExecuteBatchRequest
+ *
+ * @param calls tuple[]
+ * @param operation uint8
+ */
+export type IpAccountImplExecuteBatchRequest = {
+  calls: {
+    target: Address;
+    value: bigint;
+    data: Hex;
+  }[];
+  operation: number;
+};
+
+/**
  * IpAccountImplExecuteWithSigRequest
  *
  * @param to address
@@ -20608,6 +20623,42 @@ export class IpAccountImplClient extends IpAccountImplReadOnlyClient {
         abi: ipAccountImplAbi,
         functionName: "execute",
         args: [request.to, request.value, request.data],
+      }),
+    };
+  }
+
+  /**
+   * method executeBatch for contract IPAccountImpl
+   *
+   * @param request IpAccountImplExecuteBatchRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async executeBatch(
+    request: IpAccountImplExecuteBatchRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: ipAccountImplAbi,
+      address: this.address,
+      functionName: "executeBatch",
+      account: this.wallet.account,
+      args: [request.calls, request.operation],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method executeBatch for contract IPAccountImpl with only encode
+   *
+   * @param request IpAccountImplExecuteBatchRequest
+   * @return EncodedTxData
+   */
+  public executeBatchEncode(request: IpAccountImplExecuteBatchRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: ipAccountImplAbi,
+        functionName: "executeBatch",
+        args: [request.calls, request.operation],
       }),
     };
   }

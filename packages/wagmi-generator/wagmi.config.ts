@@ -249,6 +249,7 @@ export default defineConfig(async () => {
             "state",
             "token",
             "owner",
+            "executeBatch",
           ],
           IPAssetRegistry: [
             "IPRegistered",
