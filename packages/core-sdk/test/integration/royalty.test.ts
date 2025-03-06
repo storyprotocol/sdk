@@ -1,6 +1,6 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
-import { Address, Hex, encodeFunctionData, parseEther, zeroAddress } from "viem";
+import { Address, Hex, encodeFunctionData, erc20Abi, parseEther, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import {
   mockERC721,
@@ -159,18 +159,7 @@ describe("Royalty Functions", () => {
         ipId: parentIpId,
         txOptions: { waitForTransaction: true },
         data: encodeFunctionData({
-          abi: [
-            {
-              inputs: [
-                { internalType: "address", name: "to", type: "address" },
-                { internalType: "uint256", name: "value", type: "uint256" },
-              ],
-              name: "transfer",
-              outputs: [{ internalType: "bool", name: "", type: "bool" }],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-          ],
+          abi: erc20Abi,
           functionName: "transfer",
           args: [targetWalletAddress, transferAmount],
         }),
