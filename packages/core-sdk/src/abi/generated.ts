@@ -5793,16 +5793,6 @@ export const ipRoyaltyVaultImplAbi = [
   },
   {
     type: "error",
-    inputs: [{ name: "target", internalType: "address", type: "address" }],
-    name: "AddressEmptyCode",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [
       { name: "spender", internalType: "address", type: "address" },
       { name: "allowance", internalType: "uint256", type: "uint256" },
@@ -5839,7 +5829,6 @@ export const ipRoyaltyVaultImplAbi = [
     inputs: [{ name: "spender", internalType: "address", type: "address" }],
     name: "ERC20InvalidSpender",
   },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "IpRoyaltyVault__EnforcedPause" },
   {
@@ -6239,7 +6228,7 @@ export const ipRoyaltyVaultImplAbi = [
 
 */
 export const ipRoyaltyVaultImplAddress = {
-  1315: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
+  1315: "0x73e2D097F71e5103824abB6562362106A8955AEc",
   1514: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
 } as const;
 
@@ -14481,7 +14470,7 @@ export const spgnftImplAbi = [
   },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
-  { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipient" },
+  { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipientOrAdmin" },
   { type: "error", inputs: [], name: "SPGNFT__CallerNotPeripheryContract" },
   {
     type: "error",
@@ -14497,6 +14486,11 @@ export const spgnftImplAbi = [
   { type: "error", inputs: [], name: "SPGNFT__MintingDenied" },
   { type: "error", inputs: [], name: "SPGNFT__ZeroAddressParam" },
   { type: "error", inputs: [], name: "SPGNFT__ZeroMaxSupply" },
+  {
+    type: "error",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "SafeERC20FailedOperation",
+  },
   {
     type: "event",
     anonymous: false,
@@ -15045,7 +15039,7 @@ export const spgnftImplAbi = [
 
 */
 export const spgnftImplAddress = {
-  1315: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
+  1315: "0xc09e3788Fdfbd3dd8CDaa2aa481B52CcFAb74a42",
   1514: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
 } as const;
 
