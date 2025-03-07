@@ -56,7 +56,7 @@ export type TransferErc20Request = {
     address: Address;
     /** The amount of the ERC20 token to transfer. */
     amount: bigint | string | number;
-    /** The address of the target to transfer the ERC20 token to. */
+    /** The address of the recipient. */
     target: Address;
   }[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
