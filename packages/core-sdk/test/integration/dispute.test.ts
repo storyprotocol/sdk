@@ -1,29 +1,11 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
-import {
-  mockERC721,
-  getStoryClient,
-  getTokenId,
-  publicClient,
-  aeneid,
-  RPC,
-  TEST_WALLET_ADDRESS,
-  walletClient,
-} from "./utils/util";
+import { getStoryClient, publicClient, aeneid, RPC, TEST_WALLET_ADDRESS } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import {
-  Address,
-  WalletClient,
-  createWalletClient,
-  http,
-  maxUint256,
-  parseEther,
-  zeroAddress,
-} from "viem";
+import { Address, WalletClient, createWalletClient, http, parseEther, zeroAddress } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
-  arbitrationPolicyUmaAddress,
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
@@ -33,7 +15,6 @@ import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
-import { WipTokenClient } from "../../src/utils/token";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -77,10 +58,6 @@ describe("Dispute Functions", () => {
     });
     await publicClient.waitForTransactionReceipt({ hash: txHash });
 
-    // clientA approves the arbitration policyUma module to spend the some tokens
-    const mockERC20 = new WipTokenClient(publicClient, walletClient);
-    await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid], maxUint256);
-
     const txData = await clientA.nftClient.createNFTCollection({
       name: "test-collection",
       symbol: "TEST",
@@ -110,7 +87,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 0,
+        bond: 1000,
         txOptions: {
           waitForTransaction: true,
         },
@@ -129,9 +106,7 @@ describe("Dispute Functions", () => {
         counterEvidenceCID,
       });
       expect(ret.txHash).to.be.a("string").and.not.empty;
-
-      // should throw error if attempting to dispute assertion again
-      const secondDispute = await clientB.dispute.disputeAssertion({
+      const secondDispute = clientB.dispute.disputeAssertion({
         ipId: ipIdB,
         assertionId,
         counterEvidenceCID,
@@ -139,7 +114,7 @@ describe("Dispute Functions", () => {
           waitForTransaction: true,
         },
       });
-      expect(secondDispute.receipt?.status).to.equal("reverted");
+      await expect(secondDispute).to.be.rejectedWith("Execution reverted for an unknown reason");
     });
 
     it("should throw error when liveness is out of bounds", async () => {
@@ -214,7 +189,7 @@ describe("Dispute Functions", () => {
    *
    * On mainnet, disputes are judged by UMA's optimistic oracle. For testing purposes,
    * we simulate this process by setting up a whitelisted judge account that can
-   * directly set dispute judgements. The process creates a wallet client with the
+   * directly set dispute judgement. The process creates a wallet client with the
    * whitelisted judge account, after which a user raises a dispute through the dispute
    * module. The judge account then sets the dispute judgement (simulating UMA's role),
    * and finally the dispute can be resolved based on this judgement.

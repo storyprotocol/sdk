@@ -335,6 +335,7 @@ export default defineConfig(async () => {
             "minLiveness",
             "disputeIdToAssertionId",
             "disputeAssertion",
+            "oov3",
           ],
           WrappedIP: [
             "deposit",
