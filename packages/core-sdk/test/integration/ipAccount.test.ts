@@ -1,12 +1,21 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { AccessPermission, StoryClient } from "../../src";
-import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, toFunctionSelector, toHex } from "viem";
+import { AccessPermission, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
+import {
+  mockERC721,
+  getStoryClient,
+  getTokenId,
+  aeneid,
+  walletClient,
+  publicClient,
+  TEST_WALLET_ADDRESS,
+} from "./utils/util";
+import { Hex, encodeFunctionData, getAddress, parseEther, toFunctionSelector, toHex } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
   coreMetadataModuleAddress,
+  Erc20Client,
 } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
@@ -158,5 +167,79 @@ describe("IPAccount Functions", () => {
       metadataHash: toHex("test", { size: 32 }),
     });
     expect(txHash).to.be.a("string").and.not.empty;
+  });
+
+  it.only("should successfully transfer ERC20 tokens", async () => {
+    const erc20 = new Erc20Client(publicClient, walletClient);
+    // 1. Query token balance of ipId and wallet before
+    const initialErc20BalanceOfIpId = await erc20.balanceOf({
+      account: ipId,
+    });
+    const initialErc20BalanceOfWallet = await erc20.balanceOf({
+      account: TEST_WALLET_ADDRESS,
+    });
+    const initialWipBalanceOfIpId = await client.wipClient.balanceOf(ipId);
+    const initialWipBalanceOfWallet = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+    // 2. transfer erc20 token to the ip account
+    const txHash = await erc20.mint({
+      to: ipId,
+      amount: parseEther("0.002"),
+    });
+    await publicClient.waitForTransactionReceipt({
+      hash: txHash,
+    });
+    // 3. transfer wip to the ip account
+    await client.wipClient.deposit({
+      amount: parseEther("0.001"),
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+    await client.wipClient.transfer({
+      to: ipId,
+      amount: parseEther("0.001"),
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+    // 4. transfer token of ip account to wallet address
+    const ret = await client.ipAccount.transferErc20({
+      ipId,
+      tokens: [
+        {
+          address: WIP_TOKEN_ADDRESS,
+          target: TEST_WALLET_ADDRESS,
+          amount: parseEther("0.001"),
+        },
+        {
+          address: erc20.address,
+          target: TEST_WALLET_ADDRESS,
+          amount: parseEther("0.001"),
+        },
+        {
+          address: erc20.address,
+          target: TEST_WALLET_ADDRESS,
+          amount: parseEther("0.001"),
+        },
+      ],
+      txOptions: {
+        waitForTransaction: true,
+      },
+    });
+    // 5. query token balance of ipId and wallet address after
+    const finalErc20BalanceOfIpId = await erc20.balanceOf({
+      account: ipId,
+    });
+    const finalWipBalanceOfIpId = await client.wipClient.balanceOf(ipId);
+    const finalErc20BalanceOfWallet = await erc20.balanceOf({
+      account: TEST_WALLET_ADDRESS,
+    });
+    const finalWipBalanceOfWallet = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+
+    expect(ret.txHash).to.be.a("string").and.not.empty;
+    expect(finalErc20BalanceOfIpId).to.equal(initialErc20BalanceOfIpId);
+    expect(finalWipBalanceOfIpId).to.equal(initialWipBalanceOfIpId);
+    expect(finalErc20BalanceOfWallet).to.equal(initialErc20BalanceOfWallet + parseEther("0.002"));
+    expect(finalWipBalanceOfWallet).to.equal(initialWipBalanceOfWallet + parseEther("0.001"));
   });
 });

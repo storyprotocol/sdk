@@ -48,3 +48,16 @@ export type SetIpMetadataRequest = {
   metadataHash: Hex;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
+
+export type TransferErc20Request = {
+  ipId: Address;
+  tokens: {
+    /** The address of the ERC20 token including WIP and standard ERC20. */
+    address: Address;
+    /** The amount of the ERC20 token to transfer. */
+    amount: bigint | string | number;
+    /** The address of the target to transfer the ERC20 token to. */
+    target: Address;
+  }[];
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};

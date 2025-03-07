@@ -2,7 +2,11 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAccountClient } from "../../../src/resources/ipAccount";
-import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
+import {
+  IPAccountExecuteRequest,
+  IPAccountExecuteWithSigRequest,
+  WIP_TOKEN_ADDRESS,
+} from "../../../src";
 import * as utils from "../../../src/utils/utils";
 import { Account, PublicClient, toHex, WalletClient, zeroAddress } from "viem";
 import { aeneid, ipId, txHash } from "../mockData";
@@ -215,6 +219,47 @@ describe("Test IPAccountClient", () => {
         metadataHash: toHex("test", { size: 32 }),
       });
       expect(result).to.equal(txHash);
+    });
+  });
+
+  describe("Test transferErc20", () => {
+    it("should throw error when call transferErc20 failed", async () => {
+      sinon
+        .stub(IpAccountImplClient.prototype, "executeBatch")
+        .rejects(new Error("Failed to transfer ERC20 tokens"));
+      try {
+        await ipAccountClient.transferErc20({
+          ipId: ipId,
+          tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to transfer Erc20: Failed to transfer ERC20 tokens",
+        );
+      }
+    });
+
+    it("should return txHash when call transferErc20 successfully", async () => {
+      sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
+      const result = await ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.receipt).to.be.undefined;
+    });
+
+    it("should return txHash when call transferErc20 successfully with waitForTransaction", async () => {
+      sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
+      const result = await ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: WIP_TOKEN_ADDRESS, target: zeroAddress, amount: 1n }],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.receipt).to.not.be.undefined;
     });
   });
 });
