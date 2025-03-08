@@ -20,6 +20,7 @@ import {
   maxUint256,
   parseEther,
   zeroAddress,
+  encodeFunctionData,
 } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
@@ -28,6 +29,9 @@ import {
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
   wrappedIpAddress,
+  IOOV3Abi,
+  IArbitrationPolicyUMAAbi,
+  arbitrationPolicyUmaAbi,
 } from "../../src/abi/generated";
 import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
@@ -219,7 +223,7 @@ describe("Dispute Functions", () => {
    * module. The judge account then sets the dispute judgement (simulating UMA's role),
    * and finally the dispute can be resolved based on this judgement.
    */
-  describe("Dispute resolution", () => {
+  describe.only("Dispute resolution", () => {
     let disputeId: bigint;
     let nftContract: Address;
     let parentIpId: Address;
@@ -337,9 +341,67 @@ describe("Dispute Functions", () => {
         },
       });
       disputeId = response.disputeId!;
+
+      // Setup ArbitrationPolicyUMA
+      // Instantiate IOOV3 interface
+
+      const arbitrationPolicyCallData = encodeFunctionData({
+        abi: arbitrationPolicyUmaAbi,
+        functionName: "disputeIdToAssertionId",
+        args: [disputeId],
+      });
+
+      const arbitrationPolicyRawResult = await publicClient.call({
+        to: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936" as Address,
+        data: arbitrationPolicyCallData,
+      });
+
+      console.log(arbitrationPolicyRawResult.data);
+
+      // Setup OOV3
+      // Instantiate IOOV3 interface
+
+      interface Assertion {
+        escalationManagerSettings: {
+          arbitrateViaEscalationManager: boolean;
+          discardOracle: boolean;
+          validateDisputers: boolean;
+          assertingCaller: Address;
+          escalationManager: Address;
+        };
+        asserter: Address;
+        assertionTime: bigint;
+        settled: boolean;
+        currency: Address;
+        expirationTime: bigint;
+        settlementResolution: boolean;
+        domainId: string; // bytes32
+        identifier: string; // bytes32
+        bond: bigint;
+        callbackRecipient: Address;
+        disputer: Address;
+      }
+
+      const callData = encodeFunctionData({
+        abi: IOOV3Abi,
+        functionName: "setAssertion",
+        args: [arbitrationPolicyRawResult.data],
+      });
+
+      const rawResult = await publicClient.call({
+        to: "0x8EF424F90C6BC1b98153A09c0Cac5072545793e8" as Address,
+        data: callData,
+      });
+
+      console.log(rawResult);
+
+      // Extract the assertionTime from the returned assertion
+      // const assertionTimestamp = assertion.assertionTime;
+
+      // console.log(assertionTimestamp)
     });
 
-    it("should tag infringing ip", async () => {
+    it.only("should tag infringing ip", async () => {
       // Step 1: Judge sets dispute judgement
       // This simulates UMA's role on mainnet by directly setting the judgement
       const { request } = await publicClient.simulateContract({

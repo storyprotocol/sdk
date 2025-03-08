@@ -30068,3 +30068,717 @@ export class WrappedIpClient extends WrappedIpReadOnlyClient {
     };
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IOOV3
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const IOOV3Abi = [
+  {
+    inputs: [
+      {
+        internalType: "bytes",
+        name: "claim",
+        type: "bytes",
+      },
+      {
+        internalType: "address",
+        name: "asserter",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "callbackRecipient",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "escalationManager",
+        type: "address",
+      },
+      {
+        internalType: "uint64",
+        name: "liveness",
+        type: "uint64",
+      },
+      {
+        internalType: "contract IERC20",
+        name: "currency",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "bond",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes32",
+        name: "identifier",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "domainId",
+        type: "bytes32",
+      },
+    ],
+    name: "assertTruth",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "burnedBondPercentage",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+      {
+        internalType: "address",
+        name: "disputer",
+        type: "address",
+      },
+    ],
+    name: "disputeAssertion",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+    ],
+    name: "getAssertion",
+    outputs: [
+      {
+        components: [
+          {
+            components: [
+              {
+                internalType: "bool",
+                name: "arbitrateViaEscalationManager",
+                type: "bool",
+              },
+              {
+                internalType: "bool",
+                name: "discardOracle",
+                type: "bool",
+              },
+              {
+                internalType: "bool",
+                name: "validateDisputers",
+                type: "bool",
+              },
+              {
+                internalType: "address",
+                name: "assertingCaller",
+                type: "address",
+              },
+              {
+                internalType: "address",
+                name: "escalationManager",
+                type: "address",
+              },
+            ],
+            internalType: "struct IOOV3.EscalationManagerSettings",
+            name: "escalationManagerSettings",
+            type: "tuple",
+          },
+          {
+            internalType: "address",
+            name: "asserter",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "assertionTime",
+            type: "uint64",
+          },
+          {
+            internalType: "bool",
+            name: "settled",
+            type: "bool",
+          },
+          {
+            internalType: "contract IERC20",
+            name: "currency",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "expirationTime",
+            type: "uint64",
+          },
+          {
+            internalType: "bool",
+            name: "settlementResolution",
+            type: "bool",
+          },
+          {
+            internalType: "bytes32",
+            name: "domainId",
+            type: "bytes32",
+          },
+          {
+            internalType: "bytes32",
+            name: "identifier",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint256",
+            name: "bond",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "callbackRecipient",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "disputer",
+            type: "address",
+          },
+        ],
+        internalType: "struct IOOV3.Assertion",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "currency",
+        type: "address",
+      },
+    ],
+    name: "getMinimumBond",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+    ],
+    name: "settleAssertion",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+    ],
+    name: "stampAssertion",
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IArbitrationPolicyUMAAbi
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const IArbitrationPolicyUMAAbi = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "counterEvidenceHash",
+        type: "bytes32",
+      },
+    ],
+    name: "AssertionDisputed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "liveness",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "currency",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "bond",
+        type: "uint256",
+      },
+    ],
+    name: "DisputeRaisedUMA",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "minLiveness",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "maxLiveness",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "ipOwnerTimePercent",
+        type: "uint32",
+      },
+    ],
+    name: "LivenessSet",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "maxBond",
+        type: "uint256",
+      },
+    ],
+    name: "MaxBondSet",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "oov3",
+        type: "address",
+      },
+    ],
+    name: "OOV3Set",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+    ],
+    name: "assertionDisputedCallback",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+    ],
+    name: "assertionIdToDisputeId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+      {
+        internalType: "bool",
+        name: "assertedTruthfully",
+        type: "bool",
+      },
+    ],
+    name: "assertionResolvedCallback",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "counterEvidenceHash",
+        type: "bytes32",
+      },
+    ],
+    name: "disputeAssertion",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+    ],
+    name: "disputeIdToAssertionId",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "ipOwnerTimePercent",
+    outputs: [
+      {
+        internalType: "uint32",
+        name: "",
+        type: "uint32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+    ],
+    name: "ipOwnerTimePercents",
+    outputs: [
+      {
+        internalType: "uint32",
+        name: "",
+        type: "uint32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "maxBonds",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "maxLiveness",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "minLiveness",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "onDisputeCancel",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "decision",
+        type: "bool",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "onDisputeJudgement",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "targetIpId",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "disputeEvidenceHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "targetTag",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "onRaiseDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "onResolveDispute",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "oov3",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "minLiveness",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "maxLiveness",
+        type: "uint64",
+      },
+      {
+        internalType: "uint32",
+        name: "ipOwnerTimePercent",
+        type: "uint32",
+      },
+    ],
+    name: "setLiveness",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "maxBond",
+        type: "uint256",
+      },
+    ],
+    name: "setMaxBond",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "oov3",
+        type: "address",
+      },
+    ],
+    name: "setOOV3",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
