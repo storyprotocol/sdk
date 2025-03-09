@@ -27,7 +27,7 @@ export class NftClient {
 
   /**
    * Creates a new SPG NFT Collection.
-   * @param request - The request object containing necessary data to create a SPG NFT Collection.
+   * @param request - The request object containing necessary data to create an SPG NFT Collection.
    *   @param request.name - The name of the collection.
    * 	 @param request.symbol - The symbol of the collection.
    * 	 @param request.isPublicMinting - If true, anyone can mint from the collection. If false, only the addresses with the minter role can mint.
@@ -95,7 +95,7 @@ export class NftClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to create a SPG NFT collection");
+      handleError(error, "Failed to create an SPG NFT collection");
     }
   }
   /**
