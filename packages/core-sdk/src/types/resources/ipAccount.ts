@@ -2,6 +2,7 @@ import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
+import { TokenAmountInput } from "../common";
 
 export type IPAccountExecuteRequest = {
   ipId: Address;
@@ -54,8 +55,7 @@ export type TransferErc20Request = {
   tokens: {
     /** The address of the ERC20 token including WIP and standard ERC20. */
     address: Address;
-    /** The amount of the ERC20 token to transfer. */
-    amount: bigint | string | number;
+    amount: TokenAmountInput;
     /** The address of the recipient. */
     target: Address;
   }[];

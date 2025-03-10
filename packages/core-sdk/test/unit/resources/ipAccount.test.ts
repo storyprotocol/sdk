@@ -11,6 +11,10 @@ import * as utils from "../../../src/utils/utils";
 import { Account, PublicClient, toHex, WalletClient, zeroAddress } from "viem";
 import { aeneid, ipId, txHash } from "../mockData";
 import { IpAccountImplClient } from "../../../src/abi/generated";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+chai.use(chaiAsPromised);
 
 describe("Test IPAccountClient", () => {
   let ipAccountClient: IPAccountClient;
@@ -227,18 +231,22 @@ describe("Test IPAccountClient", () => {
       sinon
         .stub(IpAccountImplClient.prototype, "executeBatch")
         .rejects(new Error("Failed to transfer ERC20 tokens"));
-      try {
-        await ipAccountClient.transferErc20({
-          ipId: ipId,
-          tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
-        });
-      } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to transfer Erc20: Failed to transfer ERC20 tokens",
-        );
-      }
+      const result = ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
+      });
+      await expect(result).to.be.rejectedWith(
+        "Failed to transfer Erc20: Failed to transfer ERC20 tokens",
+      );
     });
 
+    it("should throw error when call transferErc20 given wrong token address", async () => {
+      const result = ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: "0x123", target: zeroAddress, amount: 1n }],
+      });
+      await expect(result).to.be.rejectedWith("Failed to transfer Erc20: Invalid address: 0x123.");
+    });
     it("should return txHash when call transferErc20 successfully", async () => {
       sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
       const result = await ipAccountClient.transferErc20({

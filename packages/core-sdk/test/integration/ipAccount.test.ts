@@ -169,7 +169,7 @@ describe("IPAccount Functions", () => {
     expect(txHash).to.be.a("string").and.not.empty;
   });
 
-  it.only("should successfully transfer ERC20 tokens", async () => {
+  it("should successfully transfer ERC20 tokens", async () => {
     const erc20 = new Erc20Client(publicClient, walletClient);
     // 1. Query token balance of ipId and wallet before
     const initialErc20BalanceOfIpId = await erc20.balanceOf({
@@ -190,14 +190,14 @@ describe("IPAccount Functions", () => {
     });
     // 3. transfer wip to the ip account
     await client.wipClient.deposit({
-      amount: parseEther("0.001"),
+      amount: 1n,
       txOptions: {
         waitForTransaction: true,
       },
     });
     await client.wipClient.transfer({
       to: ipId,
-      amount: parseEther("0.001"),
+      amount: 1n,
       txOptions: {
         waitForTransaction: true,
       },
@@ -209,7 +209,7 @@ describe("IPAccount Functions", () => {
         {
           address: WIP_TOKEN_ADDRESS,
           target: TEST_WALLET_ADDRESS,
-          amount: parseEther("0.001"),
+          amount: 1n,
         },
         {
           address: erc20.address,
@@ -240,6 +240,6 @@ describe("IPAccount Functions", () => {
     expect(finalErc20BalanceOfIpId).to.equal(initialErc20BalanceOfIpId);
     expect(finalWipBalanceOfIpId).to.equal(initialWipBalanceOfIpId);
     expect(finalErc20BalanceOfWallet).to.equal(initialErc20BalanceOfWallet + parseEther("0.002"));
-    expect(finalWipBalanceOfWallet).to.equal(initialWipBalanceOfWallet + parseEther("0.001"));
+    expect(finalWipBalanceOfWallet).to.equal(initialWipBalanceOfWallet + 1n);
   });
 });
