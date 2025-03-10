@@ -109,4 +109,17 @@ export const ASSERTION_ABI = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "assertionId",
+        type: "bytes32",
+      },
+    ],
+    name: "settleAssertion",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ] as const satisfies Abi;
