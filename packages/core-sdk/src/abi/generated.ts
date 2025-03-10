@@ -15581,6 +15581,8 @@ export type ArbitrationPolicyUmaMaxLivenessResponse = bigint;
 
 export type ArbitrationPolicyUmaMinLivenessResponse = bigint;
 
+export type ArbitrationPolicyUmaOov3Response = Address;
+
 /**
  * ArbitrationPolicyUmaDisputeAssertionRequest
  *
@@ -15663,6 +15665,20 @@ export class ArbitrationPolicyUmaReadOnlyClient {
       abi: arbitrationPolicyUmaAbi,
       address: this.address,
       functionName: "minLiveness",
+    });
+  }
+
+  /**
+   * method oov3 for contract ArbitrationPolicyUMA
+   *
+   * @param request ArbitrationPolicyUmaOov3Request
+   * @return Promise<ArbitrationPolicyUmaOov3Response>
+   */
+  public async oov3(): Promise<ArbitrationPolicyUmaOov3Response> {
+    return await this.rpcClient.readContract({
+      abi: arbitrationPolicyUmaAbi,
+      address: this.address,
+      functionName: "oov3",
     });
   }
 }

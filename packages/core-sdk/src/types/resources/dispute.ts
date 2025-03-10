@@ -1,6 +1,6 @@
 import { Address, Hex } from "viem";
 
-import { TxOptions, WithTxOptions } from "../options";
+import { TxOptions, WipOptions, WithTxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 
 export type RaiseDisputeRequest = WithTxOptions & {
@@ -26,6 +26,11 @@ export type RaiseDisputeRequest = WithTxOptions & {
    * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
    */
   bond: bigint | number | string;
+  /**
+   * Omit {@link WipOptions.useMulticallWhenPossible} for this function due to disputeInitiator issue.
+   * It will be executed sequentially with several transactions.
+   */
+  wipOptions?: Omit<WipOptions, "useMulticallWhenPossible">;
 };
 
 export type RaiseDisputeResponse = {
@@ -92,4 +97,9 @@ export type DisputeAssertionRequest = {
    * @example "QmX4zdp8VpzqvtKuEqMo6gfZPdoUx9TeHXCgzKLcFfSUbk"
    */
   counterEvidenceCID: string;
+  /**
+   * Omit {@link WipOptions.useMulticallWhenPossible} for this function due to disputeInitiator issue.
+   * It will be executed sequentially with several transactions.
+   */
+  wipOptions?: Omit<WipOptions, "useMulticallWhenPossible">;
 } & WithTxOptions;
