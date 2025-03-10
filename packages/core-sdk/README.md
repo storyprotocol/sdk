@@ -106,8 +106,8 @@ In your testing environment:
 
 | Package                           | Description                                     |
 | :-------------------------------- | :---------------------------------------------- |
-| [core-sdk](./packages/core-sdk)   | The core sdk for interacting with the protocol  |
-| [react-sdk](./packages/react-sdk) | The react sdk for interacting with the protocol |
+| [core-sdk](https://github.com/storyprotocol/sdk/tree/ce2107393d5963f49bcb693c4e7af81f528836c6/packages/core-sdk)   | The core sdk for interacting with the protocol  |
+| [react-sdk](https://github.com/storyprotocol/sdk/tree/ce2107393d5963f49bcb693c4e7af81f528836c6/packages/react-sdk) | The react sdk for interacting with the protocol |
 
 ## Contributing
 
