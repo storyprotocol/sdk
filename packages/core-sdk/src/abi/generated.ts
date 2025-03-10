@@ -17433,6 +17433,17 @@ export type Erc20MintRequest = {
 };
 
 /**
+ * Erc20TransferRequest
+ *
+ * @param to address
+ * @param value uint256
+ */
+export type Erc20TransferRequest = {
+  to: Address;
+  value: bigint;
+};
+
+/**
  * Erc20TransferFromRequest
  *
  * @param from address
@@ -17563,6 +17574,40 @@ export class Erc20Client extends Erc20ReadOnlyClient {
         abi: erc20Abi,
         functionName: "mint",
         args: [request.to, request.amount],
+      }),
+    };
+  }
+
+  /**
+   * method transfer for contract ERC20
+   *
+   * @param request Erc20TransferRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transfer(request: Erc20TransferRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: erc20Abi,
+      address: this.address,
+      functionName: "transfer",
+      account: this.wallet.account,
+      args: [request.to, request.value],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transfer for contract ERC20 with only encode
+   *
+   * @param request Erc20TransferRequest
+   * @return EncodedTxData
+   */
+  public transferEncode(request: Erc20TransferRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "transfer",
+        args: [request.to, request.value],
       }),
     };
   }

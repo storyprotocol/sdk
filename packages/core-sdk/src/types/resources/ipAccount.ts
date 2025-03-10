@@ -2,6 +2,7 @@ import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
+import { TokenAmountInput } from "../common";
 
 export type IPAccountExecuteRequest = {
   ipId: Address;
@@ -46,5 +47,17 @@ export type SetIpMetadataRequest = {
   metadataURI: string;
   /** The hash of metadata at metadataURI. */
   metadataHash: Hex;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type TransferErc20Request = {
+  ipId: Address;
+  tokens: {
+    /** The address of the ERC20 token including WIP and standard ERC20. */
+    address: Address;
+    amount: TokenAmountInput;
+    /** The address of the recipient. */
+    target: Address;
+  }[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };

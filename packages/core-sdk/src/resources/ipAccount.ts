@@ -8,18 +8,26 @@ import {
   IpAccountStateResponse,
   SetIpMetadataRequest,
   TokenResponse,
+  TransferErc20Request,
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
 import {
   coreMetadataModuleAbi,
   coreMetadataModuleAddress,
+  Erc20Client,
   IpAccountImplClient,
   SimpleWalletClient,
+  WrappedIpClient,
 } from "../abi/generated";
 import { getAddress, validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
+import { handleTxOptions } from "../utils/txOptions";
+import { TransactionResponse } from "../types/options";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
 export class IPAccountClient {
+  public wrappedIpClient: WrappedIpClient;
+  public erc20Client: Erc20Client;
   private readonly wallet: SimpleWalletClient;
   private readonly rpcClient: PublicClient;
   private readonly chainId: ChainIds;
@@ -27,6 +35,8 @@ export class IPAccountClient {
     this.wallet = wallet;
     this.rpcClient = rpcClient;
     this.chainId = chainId;
+    this.wrappedIpClient = new WrappedIpClient(rpcClient, wallet);
+    this.erc20Client = new Erc20Client(rpcClient, wallet);
   }
 
   /** Executes a transaction from the IP Account.
@@ -186,6 +196,46 @@ export class IPAccountClient {
       return txHash!;
     } catch (error) {
       handleError(error, "Failed to set the IP metadata");
+    }
+  }
+
+  /**
+   * Transfers ERC20 tokens from the IP Account to the target address.
+   */
+  public async transferErc20({
+    ipId,
+    tokens,
+    txOptions,
+  }: TransferErc20Request): Promise<TransactionResponse> {
+    try {
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
+      const calls = tokens.map(({ address: token, target, amount }) => {
+        let encodedData: Hex;
+        if (validateAddress(token) === WIP_TOKEN_ADDRESS) {
+          encodedData = this.wrappedIpClient.transferEncode({
+            to: validateAddress(target),
+            amount: BigInt(amount),
+          }).data;
+        } else {
+          encodedData = this.erc20Client.transferEncode({
+            to: validateAddress(target),
+            value: BigInt(amount),
+          }).data;
+        }
+        return {
+          target: token,
+          data: encodedData,
+          value: 0n,
+        };
+      });
+      const txHash = await ipAccount.executeBatch({ calls, operation: 0 });
+      return handleTxOptions({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      handleError(error, "Failed to transfer Erc20");
     }
   }
 }
