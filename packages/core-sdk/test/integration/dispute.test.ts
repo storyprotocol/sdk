@@ -10,15 +10,7 @@ import {
   walletClient,
 } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import {
-  Address,
-  createWalletClient,
-  http,
-  maxUint256,
-  parseEther,
-  zeroAddress,
-  encodeFunctionData,
-} from "viem";
+import { Address, createWalletClient, http, maxUint256, parseEther, zeroAddress } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
   arbitrationPolicyUmaAddress,
@@ -26,15 +18,14 @@ import {
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
   wrappedIpAddress,
-  IOOV3Abi,
-  IArbitrationPolicyUMAAbi,
-  arbitrationPolicyUmaAbi,
 } from "../../src/abi/generated";
 import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
 import { WipTokenClient } from "../../src/utils/token";
+import { ASSERTION_ABI } from "../../src/abi/oov3Abi";
+import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -50,24 +41,14 @@ const generateCID = async () => {
   return cidv1.toV0().toString();
 };
 
-const settleAssertion = async (disputeId: bigint): Promise<`0x${string}`> => {
-  const arbitrationPolicyCallData = encodeFunctionData({
-    abi: arbitrationPolicyUmaAbi,
-    functionName: "disputeIdToAssertionId",
-    args: [disputeId],
-  });
+const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<`0x${string}`> => {
+  const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(publicClient, walletClient);
+  const oov3Address = await arbitrationPolicyUmaClient.oov3();
+  const assertionId = await client.dispute.disputeIdToAssertionId(disputeId!);
 
-  const arbitrationPolicyRawResult = await publicClient.call({
-    to: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936" as Address,
-    data: arbitrationPolicyCallData,
-  });
-
-  const assertionId = arbitrationPolicyRawResult.data;
-
-  // First simulate the contract call to check if it would succeed
   const { request } = await publicClient.simulateContract({
-    address: "0xABac6a158431edED06EE6cba37eDE8779F599eE4" as Address,
-    abi: IOOV3Abi,
+    address: oov3Address,
+    abi: ASSERTION_ABI,
     functionName: "settleAssertion",
     args: [assertionId],
     account: walletClient.account,
@@ -144,7 +125,6 @@ describe("Dispute Functions", () => {
     });
 
     it("should be able to counter existing dispute once", async () => {
-      console.log(disputeId);
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
       const ret = await clientB.dispute.disputeAssertion({
@@ -352,7 +332,7 @@ describe("Dispute Functions", () => {
     });
 
     it("should tag infringing ip", async () => {
-      const txHash = await settleAssertion(disputeId);
+      const txHash = await settleAssertion(clientA, disputeId);
 
       // Assert that txHash is a valid transaction hash
       expect(txHash).to.be.a("string");
@@ -384,7 +364,7 @@ describe("Dispute Functions", () => {
        */
 
       // Step 1: Set judgment on an existing dispute to mark it as valid
-      const txHash = await settleAssertion(disputeId);
+      const txHash = await settleAssertion(clientA, disputeId);
 
       // Assert that txHash is a valid transaction hash
       expect(txHash).to.be.a("string");
@@ -464,7 +444,7 @@ describe("Dispute Functions", () => {
       });
       const childIpId2 = derivativeResponse2.ipId!;
 
-      const txHash = await settleAssertion(testDisputeId);
+      const txHash = await settleAssertion(clientA, testDisputeId);
       // Assert the receipt comes with a success
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       expect(receipt.status).to.equal("success");
@@ -528,7 +508,7 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      const txHash = await settleAssertion(disputeId);
+      const txHash = await settleAssertion(clientA, disputeId);
 
       // Assert that txHash is a valid transaction hash
       expect(txHash).to.be.a("string");
@@ -594,7 +574,7 @@ describe("Dispute Functions", () => {
 
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
       // First set judgment
-      const txHash = await settleAssertion(disputeId);
+      const txHash = await settleAssertion(clientA, disputeId);
 
       // Assert that txHash is a valid transaction hash
       expect(txHash).to.be.a("string");
