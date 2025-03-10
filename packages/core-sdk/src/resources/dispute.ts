@@ -27,6 +27,7 @@ import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 import { contractCallWithFees } from "../utils/feeUtils";
+import { getAssertionDetails } from "../utils/oov3";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
@@ -268,8 +269,6 @@ export class DisputeClient {
    * uploaded to IPFS, and its corresponding CID is converted to a hash for the request.
    *
    * If you only have a `disputeId`, call {@link disputeIdToAssertionId} to get the `assertionId` needed here.
-   *
-   * @remarks `WipOptions.useMulticallWhenPossible` is disabled for this function due to disputeInitiator issue. It will be executed sequentially with several transactions.
    */
   public async disputeAssertion(request: DisputeAssertionRequest): Promise<TransactionResponse> {
     try {
@@ -278,153 +277,54 @@ export class DisputeClient {
         this.wallet,
         validateAddress(request.ipId),
       );
-      // Query the bonds of the assertion.
-      const oov3Contract = await this.arbitrationPolicyUmaClient.oov3();
-      const { bond } = await this.rpcClient.readContract({
-        address: oov3Contract,
-        abi: [
-          {
-            inputs: [
-              {
-                internalType: "bytes32",
-                name: "assertionId",
-                type: "bytes32",
-              },
-            ],
-            name: "getAssertion",
-            outputs: [
-              {
-                components: [
-                  {
-                    components: [
-                      {
-                        internalType: "bool",
-                        name: "arbitrateViaEscalationManager",
-                        type: "bool",
-                      },
-                      {
-                        internalType: "bool",
-                        name: "discardOracle",
-                        type: "bool",
-                      },
-                      {
-                        internalType: "bool",
-                        name: "validateDisputers",
-                        type: "bool",
-                      },
-                      {
-                        internalType: "address",
-                        name: "assertingCaller",
-                        type: "address",
-                      },
-                      {
-                        internalType: "address",
-                        name: "escalationManager",
-                        type: "address",
-                      },
-                    ],
-                    internalType: "struct OptimisticOracleV3Interface.EscalationManagerSettings",
-                    name: "escalationManagerSettings",
-                    type: "tuple",
-                  },
-                  {
-                    internalType: "address",
-                    name: "asserter",
-                    type: "address",
-                  },
-                  {
-                    internalType: "uint64",
-                    name: "assertionTime",
-                    type: "uint64",
-                  },
-                  {
-                    internalType: "bool",
-                    name: "settled",
-                    type: "bool",
-                  },
-                  {
-                    internalType: "contract IERC20",
-                    name: "currency",
-                    type: "address",
-                  },
-                  {
-                    internalType: "uint64",
-                    name: "expirationTime",
-                    type: "uint64",
-                  },
-                  {
-                    internalType: "bool",
-                    name: "settlementResolution",
-                    type: "bool",
-                  },
-                  {
-                    internalType: "bytes32",
-                    name: "domainId",
-                    type: "bytes32",
-                  },
-                  {
-                    internalType: "bytes32",
-                    name: "identifier",
-                    type: "bytes32",
-                  },
-                  {
-                    internalType: "uint256",
-                    name: "bond",
-                    type: "uint256",
-                  },
-                  {
-                    internalType: "address",
-                    name: "callbackRecipient",
-                    type: "address",
-                  },
-                  {
-                    internalType: "address",
-                    name: "disputer",
-                    type: "address",
-                  },
-                ],
-                internalType: "struct OptimisticOracleV3Interface.Assertion",
-                name: "",
-                type: "tuple",
-              },
-            ],
-            stateMutability: "view",
-            type: "function",
-          },
-        ],
-        functionName: "getAssertion",
-        args: [request.assertionId],
-      });
+      const bond = await getAssertionDetails(
+        this.rpcClient,
+        this.arbitrationPolicyUmaClient,
+        request.assertionId,
+      );
       const counterEvidenceHash = convertCIDtoHashIPFS(request.counterEvidenceCID);
       const encodedData = this.arbitrationPolicyUmaClient.disputeAssertionEncode({
         assertionId: request.assertionId,
         counterEvidenceHash,
       });
-      // Approve ipAccount to transfer wrappedIp, cannot use ipAccount.executeBatch because msg.sender is ipAccount with same address as spender.
-      await this.wrappedIpClient.approve({
+      const { result: allowance } = await this.wrappedIpClient.allowance({
+        owner: this.wallet.account!.address,
         spender: ipAccount.address,
-        amount: maxUint256,
       });
-      const contractCall = () =>
-        ipAccount.executeBatch({
+      if (allowance < bond) {
+        // Approve ipAccount to transfer WrappedIP tokens
+        // Note: We must use client wallet directly because:
+        // 1. The bond payment requires WrappedIP tokens
+        // 2. Cannot use ipAccount.executeBatch since msg.sender would be the same as spender
+        await this.wrappedIpClient.approve({
+          spender: ipAccount.address,
+          amount: maxUint256,
+        });
+      }
+      const contractCall = () => {
+        const calls = [];
+        if (bond > 0) {
+          calls.push({
+            target: this.wrappedIpClient.address,
+            value: 0n,
+            data: this.wrappedIpClient.transferFromEncode({
+              from: this.wallet.account!.address,
+              to: ipAccount.address,
+              amount: bond,
+            }).data,
+          });
+          calls.push({
+            target: this.wrappedIpClient.address,
+            value: 0n,
+            data: this.wrappedIpClient.approveEncode({
+              spender: this.arbitrationPolicyUmaClient.address,
+              amount: maxUint256,
+            }).data,
+          });
+        }
+        return ipAccount.executeBatch({
           calls: [
-            {
-              target: this.wrappedIpClient.address,
-              value: 0n,
-              data: this.wrappedIpClient.transferFromEncode({
-                from: this.wallet.account!.address,
-                to: ipAccount.address,
-                amount: bond,
-              }).data,
-            },
-            {
-              target: this.wrappedIpClient.address,
-              value: 0n,
-              data: this.wrappedIpClient.approveEncode({
-                spender: this.arbitrationPolicyUmaClient.address,
-                amount: maxUint256,
-              }).data,
-            },
+            ...calls,
             {
               target: encodedData.to,
               value: 0n,
@@ -433,6 +333,7 @@ export class DisputeClient {
           ],
           operation: 0,
         });
+      };
 
       const { txHash, receipt } = await contractCallWithFees({
         totalFees: bond,

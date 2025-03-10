@@ -1,33 +1,37 @@
 import { Address, Hex } from "viem";
 
-import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
+import { TxOptions, WipOptions, WithTxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 
-export type RaiseDisputeRequest = WithTxOptions &
-  WithWipOptions & {
-    /** The IP ID that is the target of the dispute. */
-    targetIpId: Address;
-    /**
-     * Content Identifier (CID) for the dispute evidence.
-     * This should be obtained by uploading your dispute evidence (documents, images, etc.) to IPFS.
-     * @example "QmX4zdp8VpzqvtKuEqMo6gfZPdoUx9TeHXCgzKLcFfSUbk"
-     */
-    cid: string;
-    /**
-     * The target tag of the dispute.
-     * @see https://docs.story.foundation/docs/dispute-module#dispute-tags
-     * @example "IMPROPER_REGISTRATION"
-     */
-    targetTag: string;
-    /** The liveness is the time window (in seconds) in which a counter dispute can be presented (30days). */
-    liveness: bigint | number | string;
-    /**
-     * The amount of wrapper IP that the dispute initiator pays upfront into a pool.
-     * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
-     * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
-     */
-    bond: bigint | number | string;
-  };
+export type RaiseDisputeRequest = WithTxOptions & {
+  /** The IP ID that is the target of the dispute. */
+  targetIpId: Address;
+  /**
+   * Content Identifier (CID) for the dispute evidence.
+   * This should be obtained by uploading your dispute evidence (documents, images, etc.) to IPFS.
+   * @example "QmX4zdp8VpzqvtKuEqMo6gfZPdoUx9TeHXCgzKLcFfSUbk"
+   */
+  cid: string;
+  /**
+   * The target tag of the dispute.
+   * @see https://docs.story.foundation/docs/dispute-module#dispute-tags
+   * @example "IMPROPER_REGISTRATION"
+   */
+  targetTag: string;
+  /** The liveness is the time window (in seconds) in which a counter dispute can be presented (30days). */
+  liveness: bigint | number | string;
+  /**
+   * The amount of wrapper IP that the dispute initiator pays upfront into a pool.
+   * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
+   * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
+   */
+  bond: bigint | number | string;
+  /**
+   * Omit {@link WipOptions.useMulticallWhenPossible} for this function due to disputeInitiator issue.
+   * It will be executed sequentially with several transactions.
+   */
+  wipOptions?: Omit<WipOptions, "useMulticallWhenPossible">;
+};
 
 export type RaiseDisputeResponse = {
   txHash?: string;
@@ -93,5 +97,9 @@ export type DisputeAssertionRequest = {
    * @example "QmX4zdp8VpzqvtKuEqMo6gfZPdoUx9TeHXCgzKLcFfSUbk"
    */
   counterEvidenceCID: string;
-} & WithTxOptions &
-  WithWipOptions;
+  /**
+   * Omit {@link WipOptions.useMulticallWhenPossible} for this function due to disputeInitiator issue.
+   * It will be executed sequentially with several transactions.
+   */
+  wipOptions?: Omit<WipOptions, "useMulticallWhenPossible">;
+} & WithTxOptions;

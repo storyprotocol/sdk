@@ -87,7 +87,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 1000,
+        bond: 1,
         txOptions: {
           waitForTransaction: true,
         },
