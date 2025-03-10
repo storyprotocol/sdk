@@ -144,6 +144,7 @@ describe("Dispute Functions", () => {
     });
 
     it("should be able to counter existing dispute once", async () => {
+      console.log(disputeId);
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
       const ret = await clientB.dispute.disputeAssertion({

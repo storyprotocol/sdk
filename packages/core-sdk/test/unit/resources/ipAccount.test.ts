@@ -2,11 +2,19 @@ import { expect } from "chai";
 import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAccountClient } from "../../../src/resources/ipAccount";
-import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
+import {
+  IPAccountExecuteRequest,
+  IPAccountExecuteWithSigRequest,
+  WIP_TOKEN_ADDRESS,
+} from "../../../src";
 import * as utils from "../../../src/utils/utils";
 import { Account, PublicClient, toHex, WalletClient, zeroAddress } from "viem";
 import { aeneid, ipId, txHash } from "../mockData";
 import { IpAccountImplClient } from "../../../src/abi/generated";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+chai.use(chaiAsPromised);
 
 describe("Test IPAccountClient", () => {
   let ipAccountClient: IPAccountClient;
@@ -215,6 +223,51 @@ describe("Test IPAccountClient", () => {
         metadataHash: toHex("test", { size: 32 }),
       });
       expect(result).to.equal(txHash);
+    });
+  });
+
+  describe("Test transferErc20", () => {
+    it("should throw error when call transferErc20 failed", async () => {
+      sinon
+        .stub(IpAccountImplClient.prototype, "executeBatch")
+        .rejects(new Error("Failed to transfer ERC20 tokens"));
+      const result = ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
+      });
+      await expect(result).to.be.rejectedWith(
+        "Failed to transfer Erc20: Failed to transfer ERC20 tokens",
+      );
+    });
+
+    it("should throw error when call transferErc20 given wrong token address", async () => {
+      const result = ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: "0x123", target: zeroAddress, amount: 1n }],
+      });
+      await expect(result).to.be.rejectedWith("Failed to transfer Erc20: Invalid address: 0x123.");
+    });
+    it("should return txHash when call transferErc20 successfully", async () => {
+      sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
+      const result = await ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.receipt).to.be.undefined;
+    });
+
+    it("should return txHash when call transferErc20 successfully with waitForTransaction", async () => {
+      sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
+      const result = await ipAccountClient.transferErc20({
+        ipId: ipId,
+        tokens: [{ address: WIP_TOKEN_ADDRESS, target: zeroAddress, amount: 1n }],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.receipt).to.not.be.undefined;
     });
   });
 });

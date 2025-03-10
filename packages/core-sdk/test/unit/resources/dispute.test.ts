@@ -1,11 +1,11 @@
 import * as sinon from "sinon";
 import { createMock, generateRandomHash } from "../testUtils";
-import { ipId, txHash } from "../mockData";
+import { ipId, mockAddress, txHash } from "../mockData";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { PublicClient, WalletClient } from "viem";
+import { Account, PublicClient, WalletClient } from "viem";
 import { DisputeClient } from "../../../src";
-import { IpAccountImplClient } from "../../../src/abi/generated";
+import { IpAccountImplClient, WrappedIpClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 
@@ -16,7 +16,13 @@ describe("Test DisputeClient", () => {
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
+    rpcMock.getBalance = sinon.stub().resolves(1000n);
+    rpcMock.simulateContract = sinon.stub().resolves({ request: {} });
     walletMock = createMock<WalletClient>();
+    walletMock.writeContract = sinon.stub().resolves(txHash);
+    const accountMock = createMock<Account>();
+    accountMock.address = mockAddress;
+    walletMock.account = accountMock;
     disputeClient = new DisputeClient(rpcMock, walletMock, "1315");
   });
 
@@ -174,6 +180,39 @@ describe("Test DisputeClient", () => {
 
       expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
+
+    it("should return txHash when call raiseDispute successfully given bond is 1000", async () => {
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
+      sinon
+        .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
+        .resolves({ allowed: true });
+      sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
+      sinon.stub(disputeClient.disputeModuleClient, "parseTxDisputeRaisedEvent").returns([
+        {
+          disputeId: 1n,
+          targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          disputeInitiator: "0x",
+          arbitrationPolicy: "0x",
+          disputeEvidenceHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          targetTag: "0x",
+          data: "0x",
+          disputeTimestamp: 1715000000n,
+        },
+      ]);
+      sinon.stub(WrappedIpClient.prototype, "balanceOf").resolves({ result: 0n });
+      const result = await disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        targetTag: "tag",
+        bond: 1000,
+        liveness: 2592000,
+        txOptions: { waitForTransaction: true },
+      });
+
+      expect(result.txHash).equal(txHash);
+    });
   });
 
   describe("cancelDispute", () => {
@@ -267,12 +306,27 @@ describe("Test DisputeClient", () => {
     let aggregate3Stub: sinon.SinonStub;
     let tagIfRelatedIpInfringedStub: sinon.SinonStub;
     beforeEach(() => {
-      aggregate3Stub = sinon.stub(disputeClient.multicall3Client, "aggregate3").resolves(txHash);
       tagIfRelatedIpInfringedStub = sinon
         .stub(disputeClient.disputeModuleClient, "tagIfRelatedIpInfringed")
         .resolves(txHash);
     });
+    it("should throw error when call tagIfRelatedIpInfringed failed", async () => {
+      aggregate3Stub = sinon
+        .stub(disputeClient.multicall3Client, "aggregate3")
+        .rejects(new Error("failed"));
+      try {
+        await disputeClient.tagIfRelatedIpInfringed({
+          infringementTags: [
+            { ipId: ipId, disputeId: 1 },
+            { ipId: ipId, disputeId: 1 },
+          ],
+        });
+      } catch (e) {
+        expect((e as Error).message).equal("Failed to tag related ip infringed: failed");
+      }
+    });
     it("should not call multicall3 when call tagIfRelatedIpInfringed give disable useMulticallWhenPossible", async () => {
+      aggregate3Stub = sinon.stub(disputeClient.multicall3Client, "aggregate3").resolves(txHash);
       const result = await disputeClient.tagIfRelatedIpInfringed({
         infringementTags: [
           {
@@ -293,6 +347,7 @@ describe("Test DisputeClient", () => {
     });
 
     it("should call multicall3 when call tagIfRelatedIpInfringed give more than one infringementTags", async () => {
+      aggregate3Stub = sinon.stub(disputeClient.multicall3Client, "aggregate3").resolves(txHash);
       const result = await disputeClient.tagIfRelatedIpInfringed({
         infringementTags: [
           {
@@ -312,6 +367,7 @@ describe("Test DisputeClient", () => {
     });
 
     it("should not call multicall3 when call tagIfRelatedIpInfringed give only one infringementTags", async () => {
+      aggregate3Stub = sinon.stub(disputeClient.multicall3Client, "aggregate3").resolves(txHash);
       const result = await disputeClient.tagIfRelatedIpInfringed({
         infringementTags: [
           {
@@ -328,10 +384,17 @@ describe("Test DisputeClient", () => {
   });
 
   describe("disputeAssertion", () => {
+    beforeEach(() => {
+      rpcMock.readContract = sinon.stub().resolves({ bond: 0n });
+      disputeClient = new DisputeClient(rpcMock, walletMock, "1315");
+      (disputeClient.arbitrationPolicyUmaClient as any).address = mockAddress;
+    });
+
     it("should dispute assertion successfully", async () => {
       const accountExecuteMock = sinon
-        .stub(IpAccountImplClient.prototype, "execute")
+        .stub(IpAccountImplClient.prototype, "executeBatch")
         .resolves(txHash);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "oov3").resolves(mockAddress);
       const result = await disputeClient.disputeAssertion({
         ipId,
         assertionId: generateRandomHash(),
@@ -339,6 +402,18 @@ describe("Test DisputeClient", () => {
       });
       expect(result.txHash).equal(txHash);
       expect(accountExecuteMock.calledOnce).to.be.true;
+    });
+    it("should return txHash,receipt and disputeId when call disputeAssertion successfully with waitForTransaction", async () => {
+      sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "oov3").resolves(mockAddress);
+      const result = await disputeClient.disputeAssertion({
+        ipId,
+        assertionId: generateRandomHash(),
+        counterEvidenceCID: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        txOptions: { waitForTransaction: true },
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.receipt).not.undefined;
     });
   });
 

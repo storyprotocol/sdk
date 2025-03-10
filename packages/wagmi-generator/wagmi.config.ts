@@ -41,7 +41,7 @@ export default defineConfig(async () => {
     {
       name: "IpRoyaltyVaultImpl",
       address: {
-        [aeneidChainId]: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
+        [aeneidChainId]: "0x73e2D097F71e5103824abB6562362106A8955AEc",
         [mainnetChainId]: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
       },
     },
@@ -118,7 +118,7 @@ export default defineConfig(async () => {
     {
       name: "SPGNFTImpl",
       address: {
-        [aeneidChainId]: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
+        [aeneidChainId]: "0xc09e3788Fdfbd3dd8CDaa2aa481B52CcFAb74a42",
         [mainnetChainId]: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
       },
     },
@@ -335,6 +335,7 @@ export default defineConfig(async () => {
             "minLiveness",
             "disputeIdToAssertionId",
             "disputeAssertion",
+            "oov3",
           ],
           WrappedIP: [
             "deposit",
@@ -345,7 +346,14 @@ export default defineConfig(async () => {
             "withdraw",
             "allowance",
           ],
-          ERC20: ["approve", "balanceOf", "allowance", "transferFrom", "mint"],
+          ERC20: [
+            "approve",
+            "balanceOf",
+            "allowance",
+            "transferFrom",
+            "mint",
+            "transfer",
+          ],
         },
       }),
     ],
