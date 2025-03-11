@@ -39,11 +39,30 @@ const generateCID = async () => {
   return cidv1.toV0().toString();
 };
 
+/**
+ * Settles an assertion associated with a dispute in the UMA arbitration protocol.
+ *
+ * This function takes a dispute ID, resolves it to an assertion ID, and then calls
+ * the settleAssertion function on the Optimistic Oracle V3 contract to finalize
+ * the arbitration outcome.
+ *
+ * @see https://docs.story.foundation/docs/uma-arbitration-policy#/
+ *
+ * @param client - The StoryClient instance used to interact with the Story Protocol
+ * @param disputeId - The ID of the dispute to be settled
+ * @returns A promise that resolves to the transaction hash of the settlement transaction
+ */
 const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<Hex> => {
+  // Initialize the UMA arbitration policy client
   const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(publicClient, walletClient);
+
+  // Get the address of the Optimistic Oracle V3 contract
   const oov3Address = await arbitrationPolicyUmaClient.oov3();
+
+  // Convert the disputeId to the corresponding assertionId
   const assertionId = await client.dispute.disputeIdToAssertionId(disputeId);
 
+  // Simulate the settleAssertion contract call to ensure it will succeed
   const { request } = await publicClient.simulateContract({
     address: oov3Address,
     abi: ASSERTION_ABI,
@@ -52,12 +71,15 @@ const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<
     account: walletClient.account,
   });
 
+  // Execute the actual transaction to try to settle the assertion
   const txHash = await walletClient.writeContract(request);
   expect(txHash).to.be.a("string");
 
+  // Wait for the transaction to be mined and verify it was successful
   const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
   expect(receipt.status).to.equal("success");
 
+  // Return the transaction hash for reference or further processing
   return txHash;
 };
 
