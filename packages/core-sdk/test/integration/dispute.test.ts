@@ -10,7 +10,7 @@ import {
   walletClient,
 } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import { Address, createWalletClient, http, maxUint256, parseEther, zeroAddress } from "viem";
+import { Address, createWalletClient, http, maxUint256, parseEther, zeroAddress, Hex } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
   arbitrationPolicyUmaAddress,
@@ -41,7 +41,7 @@ const generateCID = async () => {
   return cidv1.toV0().toString();
 };
 
-const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<`0x${string}`> => {
+const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<Hex> => {
   const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(publicClient, walletClient);
   const oov3Address = await arbitrationPolicyUmaClient.oov3();
   const assertionId = await client.dispute.disputeIdToAssertionId(disputeId!);
@@ -54,7 +54,10 @@ const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<
     account: walletClient.account,
   });
 
-  return await walletClient.writeContract(request);
+  const txHash = await walletClient.writeContract(request);
+  expect(txHash).to.be.a("string");
+
+  return txHash as Hex;
 };
 
 describe("Dispute Functions", () => {
@@ -113,7 +116,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 0,
+        bond: 1,
         txOptions: {
           waitForTransaction: true,
         },
@@ -218,10 +221,10 @@ describe("Dispute Functions", () => {
    *
    * On mainnet, disputes are judged by UMA's optimistic oracle. For testing purposes,
    * we simulate this process by setting up a whitelisted judge account that can
-   * directly set dispute judgements. The process creates a wallet client with the
+   * directly set dispute judgments. The process creates a wallet client with the
    * whitelisted judge account, after which a user raises a dispute through the dispute
-   * module. The judge account then sets the dispute judgement (simulating UMA's role),
-   * and finally the dispute can be resolved based on this judgement.
+   * module. The judge account then sets the dispute judgment (simulating UMA's role),
+   * and finally the dispute can be resolved based on this judgment.
    */
   describe("Dispute resolution", () => {
     let disputeId: bigint;
@@ -334,10 +337,6 @@ describe("Dispute Functions", () => {
     it("should tag infringing ip", async () => {
       const txHash = await settleAssertion(clientA, disputeId);
 
-      // Assert that txHash is a valid transaction hash
-      expect(txHash).to.be.a("string");
-      expect(txHash).to.match(/^0x[a-fA-F0-9]{64}$/);
-
       // Assert the receipt comes with a success
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       expect(receipt.status).to.equal("success");
@@ -365,10 +364,6 @@ describe("Dispute Functions", () => {
 
       // Step 1: Set judgment on an existing dispute to mark it as valid
       const txHash = await settleAssertion(clientA, disputeId);
-
-      // Assert that txHash is a valid transaction hash
-      expect(txHash).to.be.a("string");
-      expect(txHash).to.match(/^0x[a-fA-F0-9]{64}$/);
 
       // Assert the receipt comes with a success
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
@@ -510,10 +505,6 @@ describe("Dispute Functions", () => {
 
       const txHash = await settleAssertion(clientA, disputeId);
 
-      // Assert that txHash is a valid transaction hash
-      expect(txHash).to.be.a("string");
-      expect(txHash).to.match(/^0x[a-fA-F0-9]{64}$/);
-
       // Assert the receipt comes with a success
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       expect(receipt.status).to.equal("success");
@@ -575,10 +566,6 @@ describe("Dispute Functions", () => {
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
       // First set judgment
       const txHash = await settleAssertion(clientA, disputeId);
-
-      // Assert that txHash is a valid transaction hash
-      expect(txHash).to.be.a("string");
-      expect(txHash).to.match(/^0x[a-fA-F0-9]{64}$/);
 
       // Assert the receipt comes with a success
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
