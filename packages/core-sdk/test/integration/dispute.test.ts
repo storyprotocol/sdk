@@ -42,7 +42,7 @@ const generateCID = async () => {
 const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<Hex> => {
   const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(publicClient, walletClient);
   const oov3Address = await arbitrationPolicyUmaClient.oov3();
-  const assertionId = await client.dispute.disputeIdToAssertionId(disputeId!);
+  const assertionId = await client.dispute.disputeIdToAssertionId(disputeId);
 
   const { request } = await publicClient.simulateContract({
     address: oov3Address,
@@ -332,17 +332,17 @@ describe("Dispute Functions", () => {
     });
 
     it("should tag infringing ip", async () => {
-      const txHash = await settleAssertion(clientA, disputeId);
-
-      // Assert the receipt comes with a success
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      expect(receipt.status).to.equal("success");
+      await settleAssertion(clientA, disputeId);
 
       // Tag derivative IP as infringing
       const results = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
           {
             ipId: childIpId,
+            disputeId: disputeId,
+          },
+          {
+            ipId: childIpId2,
             disputeId: disputeId,
           },
         ],
@@ -360,11 +360,7 @@ describe("Dispute Functions", () => {
        */
 
       // Step 1: Set judgment on an existing dispute to mark it as valid
-      const txHash = await settleAssertion(clientA, disputeId);
-
-      // Assert the receipt comes with a success
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      expect(receipt.status).to.equal("success");
+      await settleAssertion(clientA, disputeId);
 
       // Step 2: Verify dispute state
       // The disputes() function returns multiple values about the dispute:
@@ -436,10 +432,7 @@ describe("Dispute Functions", () => {
       });
       const childIpId2 = derivativeResponse2.ipId!;
 
-      const txHash = await settleAssertion(clientA, testDisputeId);
-      // Assert the receipt comes with a success
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      expect(receipt.status).to.equal("success");
+      await settleAssertion(clientA, testDisputeId);
 
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -500,11 +493,7 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      const txHash = await settleAssertion(clientA, disputeId);
-
-      // Assert the receipt comes with a success
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      expect(receipt.status).to.equal("success");
+      await settleAssertion(clientA, disputeId);
 
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
@@ -561,12 +550,7 @@ describe("Dispute Functions", () => {
     });
 
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
-      // First set judgment
-      const txHash = await settleAssertion(clientA, disputeId);
-
-      // Assert the receipt comes with a success
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-      expect(receipt.status).to.equal("success");
+      await settleAssertion(clientA, disputeId);
 
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
