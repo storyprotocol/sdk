@@ -18,7 +18,7 @@ export type SetPermissionsRequest = {
   permission: AccessPermission;
   /**
    * The function selector string of `to` that can be called by the `signer` on behalf of the IP Account {@link https://docs.story.foundation/docs/ip-account}.
-   * Be default, it allows all functions.
+   * @default `0x00000000`
    */
   func?: string;
   txOptions?: TxOptions;
@@ -82,7 +82,6 @@ export type PermissionSignatureRequest = {
   deadline: string | number | bigint;
   wallet: WalletClient;
   chainId: string | number | bigint;
-  /**The permission function,default function is setPermission. */
   permissions: Omit<SetPermissionsRequest, "txOptions">[];
 };
 

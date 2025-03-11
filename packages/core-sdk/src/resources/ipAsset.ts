@@ -3,11 +3,11 @@ import {
   PublicClient,
   zeroAddress,
   Address,
+  zeroHash,
   WalletClient,
   toHex,
   encodeFunctionData,
   TransactionReceipt,
-  zeroHash,
 } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
@@ -38,6 +38,7 @@ import {
   RegisterIpResponse,
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
+  RegisterRequest,
   MintAndRegisterIpAndMakeDerivativeResponse,
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   DistributeRoyaltyTokens,
@@ -57,7 +58,6 @@ import {
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
   ValidatedLicenseTermsData,
-  RegisterRequest,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
