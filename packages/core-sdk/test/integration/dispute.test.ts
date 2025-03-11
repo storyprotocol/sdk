@@ -1,9 +1,16 @@
 import chai from "chai";
 import { StoryClient } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
-import { getStoryClient, publicClient, aeneid, RPC, TEST_WALLET_ADDRESS } from "./utils/util";
+import {
+  getStoryClient,
+  publicClient,
+  aeneid,
+  RPC,
+  TEST_WALLET_ADDRESS,
+  walletClient,
+} from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import { Address, WalletClient, createWalletClient, http, parseEther, zeroAddress } from "viem";
+import { Address, createWalletClient, http, parseEther, zeroAddress, Hex } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
   disputeModuleAddress,
@@ -15,14 +22,11 @@ import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
+import { ASSERTION_ABI } from "../../src/abi/oov3Abi";
+import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
-
-const DISPUTE_MODULE_ADDRESS = disputeModuleAddress[aeneid];
-const SET_DISPUTE_JUDGEMENT_ABI = disputeModuleAbi.find(
-  (item) => item.type === "function" && item.name === "setDisputeJudgement",
-);
 
 const generateCID = async () => {
   // Generate a random 32-byte buffer
@@ -33,6 +37,50 @@ const generateCID = async () => {
   const cidv1 = CID.createV1(0x70, hash); // 0x70 = dag-pb codec
   // Convert CIDv1 to CIDv0 (Base58-encoded)
   return cidv1.toV0().toString();
+};
+
+/**
+ * Settles an assertion associated with a dispute in the UMA arbitration protocol.
+ *
+ * This function takes a dispute ID, resolves it to an assertion ID, and then calls
+ * the settleAssertion function on the Optimistic Oracle V3 contract to finalize
+ * the arbitration outcome.
+ *
+ * @see https://docs.story.foundation/docs/uma-arbitration-policy#/
+ *
+ * @param client - The StoryClient instance used to interact with the Story Protocol
+ * @param disputeId - The ID of the dispute to be settled
+ * @returns A promise that resolves to the transaction hash of the settlement transaction
+ */
+const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<Hex> => {
+  // Initialize the UMA arbitration policy client
+  const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(publicClient, walletClient);
+
+  // Get the address of the Optimistic Oracle V3 contract
+  const oov3Address = await arbitrationPolicyUmaClient.oov3();
+
+  // Convert the disputeId to the corresponding assertionId
+  const assertionId = await client.dispute.disputeIdToAssertionId(disputeId);
+
+  // Simulate the settleAssertion contract call to ensure it will succeed
+  const { request } = await publicClient.simulateContract({
+    address: oov3Address,
+    abi: ASSERTION_ABI,
+    functionName: "settleAssertion",
+    args: [assertionId],
+    account: walletClient.account,
+  });
+
+  // Execute the actual transaction to try to settle the assertion
+  const txHash = await walletClient.writeContract(request);
+  expect(txHash).to.be.a("string");
+
+  // Wait for the transaction to be mined and verify it was successful
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  expect(receipt.status).to.equal("success");
+
+  // Return the transaction hash for reference or further processing
+  return txHash;
 };
 
 describe("Dispute Functions", () => {
@@ -54,7 +102,7 @@ describe("Dispute Functions", () => {
     });
     const txHash = await clientAWalletClient.sendTransaction({
       to: walletB.address,
-      value: parseEther("0.25"),
+      value: parseEther("0.50"),
     });
     await publicClient.waitForTransactionReceipt({ hash: txHash });
 
@@ -97,6 +145,7 @@ describe("Dispute Functions", () => {
       expect(response.disputeId).to.be.a("bigint");
       disputeId = response.disputeId;
     });
+
     it("should be able to counter existing dispute once", async () => {
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
@@ -106,7 +155,9 @@ describe("Dispute Functions", () => {
         counterEvidenceCID,
       });
       expect(ret.txHash).to.be.a("string").and.not.empty;
-      const secondDispute = clientB.dispute.disputeAssertion({
+
+      // should throw error if attempting to dispute assertion again
+      const secondDispute = await clientB.dispute.disputeAssertion({
         ipId: ipIdB,
         assertionId,
         counterEvidenceCID,
@@ -114,7 +165,7 @@ describe("Dispute Functions", () => {
           waitForTransaction: true,
         },
       });
-      await expect(secondDispute).to.be.rejectedWith("Execution reverted for an unknown reason");
+      expect(secondDispute.receipt?.status).to.equal("reverted");
     });
 
     it("should throw error when liveness is out of bounds", async () => {
@@ -189,10 +240,10 @@ describe("Dispute Functions", () => {
    *
    * On mainnet, disputes are judged by UMA's optimistic oracle. For testing purposes,
    * we simulate this process by setting up a whitelisted judge account that can
-   * directly set dispute judgement. The process creates a wallet client with the
+   * directly set dispute judgments. The process creates a wallet client with the
    * whitelisted judge account, after which a user raises a dispute through the dispute
-   * module. The judge account then sets the dispute judgement (simulating UMA's role),
-   * and finally the dispute can be resolved based on this judgement.
+   * module. The judge account then sets the dispute judgment (simulating UMA's role),
+   * and finally the dispute can be resolved based on this judgment.
    */
   describe("Dispute resolution", () => {
     let disputeId: bigint;
@@ -201,20 +252,6 @@ describe("Dispute Functions", () => {
     let licenseTermsId: bigint;
     let childIpId: Address;
     let childIpId2: Address;
-    let judgeWalletClient: WalletClient;
-
-    before(async function (this: Mocha.Context) {
-      // Skip tests if whitelisted judge private key is not configured
-      if (!process.env.JUDGE_PRIVATE_KEY) {
-        this.skip();
-      }
-      // Set up judge wallet client using whitelisted account
-      judgeWalletClient = createWalletClient({
-        chain: chainStringToViemChain("aeneid"),
-        transport: http(RPC),
-        account: privateKeyToAccount(process.env.JUDGE_PRIVATE_KEY as Address),
-      });
-    });
 
     beforeEach(async function (this: Mocha.Context) {
       // Setup NFT collection
@@ -305,29 +342,24 @@ describe("Dispute Functions", () => {
         targetIpId: parentIpId,
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
-        liveness: 2592000,
+        liveness: 1,
         bond: 0,
         txOptions: {
           waitForTransaction: true,
         },
       });
       disputeId = response.disputeId!;
+
+      // This timeout guarantees that the assertion is expired
+      // its intended to be longer than the current blocktime
+      // so it won't be included in the same block
+      await new Promise((resolve) => setTimeout(resolve, 3000));
     });
 
     it("should tag infringing ip", async () => {
-      // Step 1: Judge sets dispute judgement
-      // This simulates UMA's role on mainnet by directly setting the judgement
-      const { request } = await publicClient.simulateContract({
-        address: DISPUTE_MODULE_ADDRESS,
-        abi: [SET_DISPUTE_JUDGEMENT_ABI],
-        functionName: "setDisputeJudgement",
-        args: [disputeId, true, "0x"],
-        account: judgeWalletClient.account!,
-      });
-      const txHash = await judgeWalletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
+      await settleAssertion(clientA, disputeId);
 
-      // Step 2: Tag derivative IP as infringing
+      // Tag derivative IP as infringing
       const results = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
           {
@@ -347,23 +379,13 @@ describe("Dispute Functions", () => {
     it("should tag a single IP as infringing without using multicall", async () => {
       /**
        * Test Flow:
-       * 1. Set judgment on an existing dispute to mark it as valid
+       * 1. Set judgment on an existing dispute to mark it as valid (did in `before each` block)
        * 2. Verify the dispute state changed correctly after judgment
        * 3. Try to tag a derivative IP using the judged dispute
        */
 
-      // Step 1: Set dispute judgment using the judge wallet
-      // When judgment is true, the dispute's currentTag will be set to the targetTag
-      // When false, currentTag would be set to bytes32(0)
-      const { request } = await publicClient.simulateContract({
-        address: DISPUTE_MODULE_ADDRESS,
-        abi: [SET_DISPUTE_JUDGEMENT_ABI],
-        functionName: "setDisputeJudgement",
-        args: [disputeId, true, "0x"],
-        account: judgeWalletClient.account!,
-      });
-      const judgmentTxHash = await judgeWalletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+      // Step 1: Set judgment on an existing dispute to mark it as valid
+      await settleAssertion(clientA, disputeId);
 
       // Step 2: Verify dispute state
       // The disputes() function returns multiple values about the dispute:
@@ -415,7 +437,7 @@ describe("Dispute Functions", () => {
         targetIpId: parentIpId,
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
-        liveness: 2592000,
+        liveness: 1,
         bond: 0,
         txOptions: { waitForTransaction: true },
       });
@@ -435,15 +457,12 @@ describe("Dispute Functions", () => {
       });
       const childIpId2 = derivativeResponse2.ipId!;
 
-      const { request } = await publicClient.simulateContract({
-        address: DISPUTE_MODULE_ADDRESS,
-        abi: [SET_DISPUTE_JUDGEMENT_ABI],
-        functionName: "setDisputeJudgement",
-        args: [testDisputeId, true, "0x"],
-        account: judgeWalletClient.account!,
-      });
-      const judgmentTxHash = await judgeWalletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+      await settleAssertion(clientA, testDisputeId);
+
+      // This timeout guarantees that the assertion is expired
+      // its intended to be longer than the current blocktime
+      // so it won't be included in the same block
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
@@ -502,15 +521,7 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      const { request } = await publicClient.simulateContract({
-        address: DISPUTE_MODULE_ADDRESS,
-        abi: [SET_DISPUTE_JUDGEMENT_ABI],
-        functionName: "setDisputeJudgement",
-        args: [disputeId, true, "0x"],
-        account: judgeWalletClient.account!,
-      });
-      const judgmentTxHash = await judgeWalletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+      await settleAssertion(clientA, disputeId);
 
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
@@ -567,16 +578,7 @@ describe("Dispute Functions", () => {
     });
 
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
-      // First set judgment
-      const { request } = await publicClient.simulateContract({
-        address: DISPUTE_MODULE_ADDRESS,
-        abi: [SET_DISPUTE_JUDGEMENT_ABI],
-        functionName: "setDisputeJudgement",
-        args: [disputeId, true, "0x"],
-        account: judgeWalletClient.account!,
-      });
-      const judgmentTxHash = await judgeWalletClient.writeContract(request);
-      await publicClient.waitForTransactionReceipt({ hash: judgmentTxHash });
+      await settleAssertion(clientA, disputeId);
 
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
