@@ -51,11 +51,8 @@ export class DisputeClient {
   /**
    * Raises a dispute on a given ipId.
    *
-   * Submits a {@link DisputeRaised} event.
+   * Emits an on-chain `DisputeRaised` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L64 | IDisputeModule.sol}
-   * for a list of on-chain events emitted when a dispute is raised.
-   *
-   * @remarks `WipOptions.useMulticallWhenPossible` is disabled for this function due to disputeInitiator issue. It will be executed sequentially with several transactions.
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
@@ -142,16 +139,9 @@ export class DisputeClient {
 
   /**
    * Cancels an ongoing dispute
-   * @param request - The request object containing details to cancel the dispute.
-   *   @param request.disputeId The ID of the dispute to be cancelled.
-   *   @param request.data [Optional] additional data used in the cancellation process.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a CancelDisputeResponse containing the transaction hash.
-   * @throws NotInDisputeState, if the currentTag of the Dispute is not being disputed
-   * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
-   * @throws error if the Dispute's ArbitrationPolicy contract is not valid
-   * @calls cancelDispute(uint256 _disputeId, bytes calldata _data) external nonReentrant {
-   * @emits DisputeCancelled (_disputeId, _data);
+   *
+   * Emits an on-chain `DisputeCancelled` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L84 | IDisputeModule.sol}
    */
   public async cancelDispute(request: CancelDisputeRequest): Promise<CancelDisputeResponse> {
     try {
@@ -179,15 +169,10 @@ export class DisputeClient {
   }
 
   /**
-   * Resolves a dispute after it has been judged
-   * @param request - The request object containing details to resolve the dispute.
-   *   @param request.disputeId The ID of the dispute to be resolved.
-   *   @param request.data The data to resolve the dispute.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a ResolveDisputeResponse.
-   * @throws NotAbleToResolve, if currentTag is still in dispute (i.e still needs a judgement to be set)
-   * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
-   * @emits DisputeResolved (_disputeId)
+   * Resolves a dispute after it has been judged.
+   *
+   * Emits an on-chain `DisputeResolved` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L104 | IDisputeModule.sol}
    */
   public async resolveDispute(request: ResolveDisputeRequest): Promise<ResolveDisputeResponse> {
     try {
@@ -217,8 +202,8 @@ export class DisputeClient {
    * Tags a derivative if a parent has been tagged with an infringement tag
    * or a group ip if a group member has been tagged with an infringement tag.
    *
+   * Emits an on-chain `IpTaggedOnRelatedIpInfringement` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L93 | IDisputeModule.sol}
-   * for a list of on-chain events emitted when a derivative is tagged on an infringement.
    */
   public async tagIfRelatedIpInfringed(
     request: TagIfRelatedIpInfringedRequest,

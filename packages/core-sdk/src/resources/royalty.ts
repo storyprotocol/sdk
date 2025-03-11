@@ -309,11 +309,6 @@ export class RoyaltyClient {
 
   /**
    * Get total amount of revenue token claimable by a royalty token holder.
-   * @param request - The request object that contains all data needed to claim Revenue.
-   *   @param request.royaltyVaultIpId The id of the royalty vault.
-   *   @param request.claimer The address of the royalty token holder
-   *   @param request.token The revenue token to claim.
-   * @returns A Promise that contains the amount of revenue token claimable
    */
   public async claimableRevenue(
     request: ClaimableRevenueRequest,
@@ -334,8 +329,6 @@ export class RoyaltyClient {
 
   /**
    * Get the royalty vault proxy address of given royaltyVaultIpId.
-   * @param royaltyVaultIpId the id of the royalty vault.
-   * @returns A Promise that resolves to an object containing the royalty vault address.
    */
   public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<Address> {
     const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({

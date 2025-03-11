@@ -77,23 +77,41 @@ export type RegisterPILResponse = {
 };
 
 export type RegisterCommercialUsePILRequest = {
+  /** The fee to be paid when minting a license. */
   defaultMintingFee: string | number | bigint;
+  /** The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol. */
   currency: Address;
+  /**
+   * The address of the royalty policy contract.
+   * @default 0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E
+   */
   royaltyPolicyAddress?: Address;
   txOptions?: TxOptions;
 };
 
 export type RegisterCommercialRemixPILRequest = {
+  /** The fee to be paid when minting a license. */
   defaultMintingFee: string | number | bigint;
+  /** Percentage of revenue that must be shared with the licensor. Must be between 0 and 100 (where 100% represents 100_000_000). */
   commercialRevShare: number;
+  /** The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol. */
   currency: Address;
+  /**
+   * The address of the royalty policy contract.
+   * @default 0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E
+   */
   royaltyPolicyAddress?: Address;
   txOptions?: TxOptions;
 };
 
 export type AttachLicenseTermsRequest = {
+  /** The address of the IP ID to which the license terms are being attached. */
   ipId: Address;
   licenseTermsId: string | number | bigint;
+  /**
+   * The address of the license template.
+   * @default 0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316
+   */
   licenseTemplate?: Address;
   txOptions?: TxOptions;
 };
@@ -107,10 +125,21 @@ export type AttachLicenseTermsResponse = {
 export type MintLicenseTokensRequest = {
   licensorIpId: Address;
   licenseTermsId: string | number | bigint;
+  /**
+   * The address of the license template.
+   * @default 0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316
+   */
   licenseTemplate?: Address;
+  /** The maximum minting fee that the caller is willing to pay. if set to 0 then no limit. */
   maxMintingFee: bigint | string | number;
+  /** The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%). */
   maxRevenueShare: number | string;
+  /**
+   * The amount of license tokens to mint.
+   * @default 1
+   */
   amount?: number | string | bigint;
+  /** The address of the receiver. */
   receiver?: Address;
 } & WithTxOptions &
   WithWipOptions;
@@ -133,7 +162,12 @@ export type LicenseTermsId = string | number | bigint;
 export type PredictMintingLicenseFeeRequest = {
   licensorIpId: Address;
   licenseTermsId: LicenseTermsId;
+  /** The amount of license tokens to mint. */
   amount: string | number | bigint;
+  /**
+   * The address of the license template.
+   * @default 0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316
+   */
   licenseTemplate?: Address;
   receiver?: Address;
   txOptions?: TxOptions;

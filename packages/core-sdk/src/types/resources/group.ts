@@ -44,6 +44,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
   tokenId?: bigint;
 };
 export type RegisterGroupRequest = {
+  /** The address specifying how royalty will be split amongst the pool of IPs in the group. */
   groupPool: Address;
   txOptions?: TxOptions;
 };

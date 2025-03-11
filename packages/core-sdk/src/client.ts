@@ -34,9 +34,6 @@ export class StoryClient {
   private _group: GroupClient | null = null;
   private _wip: WipClient | null = null;
 
-  /**
-   * @param config - the configuration for the SDK client
-   */
   private constructor(config: StoryConfig) {
     this.config = {
       ...config,
@@ -73,8 +70,6 @@ export class StoryClient {
   }
   /**
    * Factory method for creating a SDK client with a signer.
-   *
-   * @param config StoryClient - the configuration for a new SDK client
    */
   static newClient(config: StoryConfig): StoryClient {
     return new StoryClient(config);
@@ -82,8 +77,6 @@ export class StoryClient {
 
   /**
    * Factory method for creating a SDK client with a signer.
-   *
-   * @param config WalletClientConfig - the configuration for a new SDK client
    */
   static newClientUseWallet(config: UseWalletStoryConfig): StoryClient {
     return new StoryClient({
@@ -95,8 +88,6 @@ export class StoryClient {
 
   /**
    * Factory method for creating a SDK client with a signer.
-   *
-   * @param config UseAccountStoryConfig - the configuration for a new SDK client
    */
   static newClientUseAccount(config: UseAccountStoryConfig): StoryClient {
     return new StoryClient({
@@ -109,8 +100,6 @@ export class StoryClient {
   /**
    * Getter for the ip asset client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the IPAssetClient instance
    */
   public get ipAsset(): IPAssetClient {
     if (this._ipAsset === null) {
@@ -123,8 +112,6 @@ export class StoryClient {
   /**
    * Getter for the permission client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the PermissionClient instance
    */
   public get permission(): PermissionClient {
     if (this._permission === null) {
@@ -137,8 +124,6 @@ export class StoryClient {
   /**
    * Getter for the license client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the LicenseClient instance
    */
   public get license(): LicenseClient {
     if (this._license === null) {
@@ -151,8 +136,6 @@ export class StoryClient {
   /**
    * Getter for the dispute client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the DisputeClient instance
    */
   public get dispute(): DisputeClient {
     if (this._dispute === null) {
@@ -165,8 +148,6 @@ export class StoryClient {
   /**
    * Getter for the ip account client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the IPAccountClient instance
    */
   public get ipAccount(): IPAccountClient {
     if (this._ipAccount === null) {
@@ -179,8 +160,6 @@ export class StoryClient {
   /**
    * Getter for the royalty client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the RoyaltyClient instance
    */
   public get royalty(): RoyaltyClient {
     if (this._royalty === null) {
@@ -193,8 +172,6 @@ export class StoryClient {
   /**
    * Getter for the NFT client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the NftClient instance
    */
   public get nftClient(): NftClient {
     if (this._nftClient === null) {
@@ -207,8 +184,6 @@ export class StoryClient {
   /**
    * Getter for the group client. The client is lazily created when
    * this method is called.
-   *
-   * @returns the GroupClient instance
    */
   public get groupClient(): GroupClient {
     if (this._group === null) {

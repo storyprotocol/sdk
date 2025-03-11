@@ -42,14 +42,23 @@ export type RegisterIpResponse = RegistrationResponse & {
 };
 
 export type RegisterRequest = {
+  /** The address of the NFT. */
   nftContract: Address;
+  /** The token identifier of the NFT. */
   tokenId: string | number | bigint;
+  /**
+   * The deadline of the transaction signature in seconds.
+   * @default 1000
+   */
   deadline?: string | number | bigint;
 } & IpMetadataAndTxOptions;
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
+  /** The derivative IP ID. */
   childIpId: Address;
+  /** The IDs of the license tokens. */
   licenseTokenIds: string[] | bigint[] | number[];
+  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number | string;
   txOptions?: TxOptions;
 };
@@ -174,6 +183,7 @@ type IPMetadataInfo = {
 export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
   WithWipOptions & {
     spgNftContract: Address;
+    /** The address of the recipient of the minted NFT. If not provided, the function will use the user's own wallet address. */
     recipient?: Address;
     /**
      * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -200,8 +210,11 @@ export type RegisterPilTermsAndAttachResponse = {
 
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
+  /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: string[] | bigint[] | number[];
+  /** The address of the recipient of the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
+  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number | string;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -214,9 +227,15 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
   tokenId: string | number | bigint;
+  /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: string[] | bigint[] | number[];
-  deadline?: string | number | bigint;
+  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number | string;
+  /**
+   * The deadline for the signature in seconds.
+   * @default 1000
+   */
+  deadline?: string | number | bigint;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -237,6 +256,9 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
 
 export type BatchRegisterDerivativeRequest = {
   args: RegisterDerivativeRequest[];
+  /** The deadline for the signature in seconds.
+   * @default 1000
+   */
   deadline?: string | number | bigint;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };

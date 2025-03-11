@@ -40,24 +40,14 @@ export class PermissionClient {
   }
 
   /**
-   * Sets the permission for a specific function call
+   * Sets the permission for a specific function call.
    * Each policy is represented as a mapping from an IP account address to a signer address to a recipient
-   * address to a function selector to a permission level. The permission level can be 0 (ABSTAIN), 1 (ALLOW), or
-   * 2 (DENY).
-   * By default, all policies are set to 0 (ABSTAIN), which means that the permission is not set.
+   * address to a function selector to a permission level. The permission level is an enum of `AccessPermission`.
+   * By default, all policies are set to ABSTAIN, which means that the permission is not set.
    * The owner of ipAccount by default has all permission.
-   * address(0) => wildcard
-   * bytes4(0) => wildcard
-   * Specific permission overrides wildcard permission.
-   * @param request - The request object containing necessary data to set `permission`.
-   *   @param request.ipId The IP ID that grants the permission for `signer`.
-   *   @param request.signer The address that can call `to` on behalf of the `ipAccount`.
-   *   @param request.to The address that can be called by the `signer` (currently only modules can be `to`).
-   *   @param request.permission The new permission level.
-   *   @param request.func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash.
-   * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
+   *
+   * Emits an on-chain `PermissionSet` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
   public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
@@ -91,16 +81,8 @@ export class PermissionClient {
   }
   /**
    * Specific permission overrides wildcard permission with signature.
-   * @param request - The request object containing necessary data to set permissions.
-   *   @param request.ipId The IP ID that grants the permission for `signer`
-   *   @param request.signer The address that can call `to` on behalf of the `ipAccount`
-   *   @param request.to The address that can be called by the `signer` (currently only modules can be `to`)
-   *   @param request.permission The new permission level.
-   *   @param request.func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
-   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash.
-   * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
+   * Emits an on-chain `PermissionSet` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
   public async createSetPermissionSignature(
     request: CreateSetPermissionSignatureRequest,
@@ -168,13 +150,8 @@ export class PermissionClient {
   }
   /**
    * Sets permission to a signer for all functions across all modules.
-   * @param request - The request object containing necessary data to set all permissions.
-   *   @param request.ipId The IP ID that grants the permission for `signer`
-   *   @param request.signer The address of the signer receiving the permissions.
-   *   @param request.permission The new permission.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash
-   * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
+   * Emits an on-chain `PermissionSet` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
   public async setAllPermissions(
     request: SetAllPermissionsRequest,
@@ -206,17 +183,8 @@ export class PermissionClient {
   }
   /**
    * Sets a batch of permissions in a single transaction.
-   * @param request - The request object containing necessary data to set all permissions.
-   * @param {Array} request.permissions - An array of `Permission` structure, each representing the permission to be set.
-   *   @param request.permissions[].ipId The IP ID that grants the permission for `signer`.
-   *   @param request.permissions[].signer The address that can call `to` on behalf of the `ipAccount`.
-   *   @param request.permissions[].to The address that can be called by the `signer` (currently only modules can be `to`).
-   *   @param request.permissions[].permission The new permission level.
-   *   @param request.permissions[].func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
-   *   @param request.deadline [Optional] The deadline for the signature in milliseconds, default is 1000ms.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash
-   * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
+   * Emits an on-chain `PermissionSet` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
   public async setBatchPermissions(
     request: SetBatchPermissionsRequest,
@@ -255,18 +223,8 @@ export class PermissionClient {
   }
   /**
    * Sets a batch of permissions in a single transaction with signature.
-   * @param request - The request object containing necessary data to set permissions.
-   *   @param request.ipId The IP ID that grants the permission for `signer`
-   *   @param {Array} request.permissions - An array of `Permission` structure, each representing the permission to be set.
-   *   @param request.permissions[].ipId The IP ID that grants the permission for `signer`.
-   *   @param request.permissions[].signer The address that can call `to` on behalf of the `ipAccount`.
-   *   @param request.permissions[].to The address that can be called by the `signer` (currently only modules can be `to`).
-   *   @param request.permissions[].permission The new permission level.
-   *   @param request.permissions[].func [Optional] The function selector string of `to` that can be called by the `signer` on behalf of the `ipAccount`. Be default, it allows all functions.
-   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash.
-   * @emits PermissionSet (ipAccountOwner, ipAccount, signer, to, func, permission)
+   * Emits an on-chain `PermissionSet` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
   public async createBatchPermissionSignature(
     request: CreateBatchPermissionSignatureRequest,

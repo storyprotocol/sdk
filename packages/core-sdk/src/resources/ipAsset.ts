@@ -3,11 +3,11 @@ import {
   PublicClient,
   zeroAddress,
   Address,
-  zeroHash,
   WalletClient,
   toHex,
   encodeFunctionData,
   TransactionReceipt,
+  zeroHash,
 } from "viem";
 
 import { chain, getAddress } from "../utils/utils";
@@ -38,7 +38,6 @@ import {
   RegisterIpResponse,
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
-  RegisterRequest,
   MintAndRegisterIpAndMakeDerivativeResponse,
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   DistributeRoyaltyTokens,
@@ -58,6 +57,7 @@ import {
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
   ValidatedLicenseTermsData,
+  RegisterRequest,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -170,18 +170,8 @@ export class IPAssetClient {
 
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
-   * @param request - The request object that contains all data needed to register IP.
-   *   @param request.nftContract The address of the NFT.
-   *   @param request.tokenId The token identifier of the NFT.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes IP ID, token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
+   * Emits an on-chain `IPRegistered` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
   public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
     try {
@@ -269,18 +259,9 @@ export class IPAssetClient {
 
   /**
    * Batch registers an NFT as IP, creating a corresponding IP record.
-   * @param request - The request object that contains all data needed to batch register IP.
-   *  @param {Array} request.args The array of objects containing the data needed to register IP.
-   *   @param request.args.nftContract The address of the NFT.
-   *   @param request.args.tokenId The token identifier of the NFT.
-   *   @param {Object} request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *    @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *    @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *    @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *    @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, return an array of containing IP ID, Token ID, NFT Contract.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, resolverAddr, metadataProviderAddress, metadata)
+   
+  * Emits an on-chain `IPRegistered` event.
+  * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
     try {
@@ -395,18 +376,8 @@ export class IPAssetClient {
 
   /**
    * Batch registers a derivative directly with parent IP's license terms.
-   * @param request - The request object that contains all data needed to batch register derivative IP.
-   *  @param {Array} request.args The array of objects containing the data needed to register derivative IP.
-   *    @param request.args.childIpId The derivative IP ID.
-   *    @param {Array} request.args.parentIpIds The parent IP IDs.
-   *    @param {Array} request.args.licenseTermsIds The IDs of the license terms that the parent IP supports.
-   *    @param request.args.maxMintingFee The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
-   *    @param request.args.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-   *    @param request.args.maxRevenueShare The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%).
-   *  @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *  @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxDataOnly option.
-   * @returns A Promise that resolves to a transaction hash.
-   */
+
+  */
   public async batchRegisterDerivative(
     request: BatchRegisterDerivativeRequest,
   ): Promise<BatchRegisterDerivativeResponse> {
@@ -495,12 +466,6 @@ export class IPAssetClient {
    * Registers a derivative with license tokens. The derivative IP is registered with license tokens minted from the parent IP's license terms.
    * The license terms of the parent IPs issued with license tokens are attached to the derivative IP.
    * The caller must be the derivative IP owner or an authorized operator.
-   * @param request - The request object that contains all data needed to register derivative license tokens.
-   *   @param request.childIpId The derivative IP ID.
-   *   @param {Array} request.licenseTokenIds The IDs of the license tokens.
-   *    @param request.args.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to an object containing the transaction hash.
    */
   public async registerDerivativeWithLicenseTokens(
     request: RegisterDerivativeWithLicenseTokensRequest,
@@ -544,10 +509,10 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT from a collection and register it as an IP.
-   * it emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate).
+   *
+   * Emits on-chain `IPRegistered` and `LicenseTermsAttached` events.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
-   * for a list of on-chain events emitted when an IP is minted and registered, and license terms are attached to an IP.
    */
   public async mintAndRegisterIpAssetWithPilTerms(
     request: MintAndRegisterIpAssetWithPilTermsRequest,
@@ -596,49 +561,10 @@ export class IPAssetClient {
 
   /**
    * Batch mint an NFT from a collection and register it as an IP.
-   * @param request - The request object that contains all data needed to batch mint and register ip.
-   *   @param {Array} request.args The array of mint and register IP requests.
-   *     @param request.args.spgNftContract The address of the NFT collection.
-   *     @param request.allowDuplicates Indicates whether the license terms can be attached to the same IP ID or not.
-   *     @param {Array} request.args.licenseTermsData The PIL terms and licensing configuration data to be attached to the IP.
-   *       @param {Object} request.args.licenseTermsData.terms The PIL terms to be used for the licensing.
-   *         @param request.args.licenseTermsData.terms.transferable Indicates whether the license is transferable or not.
-   *         @param request.args.licenseTermsData.terms.royaltyPolicy The address of the royalty policy contract which required to StoryProtocol in advance.
-   *         @param request.args.licenseTermsData.terms.mintingFee The fee to be paid when minting a license.
-   *         @param request.args.licenseTermsData.terms.expiration The expiration period of the license.
-   *         @param request.args.licenseTermsData.terms.commercialUse Indicates whether the work can be used commercially or not, Commercial use is required to deploy a royalty vault.
-   *         @param request.args.licenseTermsData.terms.commercialAttribution Whether attribution is required when reproducing the work commercially or not.
-   *         @param request.args.licenseTermsData.terms.commercializerChecker Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.
-   *         @param request.args.licenseTermsData.terms.commercializerCheckerData The data to be passed to the commercializer checker contract.
-   *         @param request.args.licenseTermsData.terms.commercialRevShare Percentage of revenue that must be shared with the licensor.
-   *         @param request.args.licenseTermsData.terms.commercialRevCeiling The maximum revenue that can be generated from the commercial use of the work.
-   *         @param request.args.licenseTermsData.terms.derivativesAllowed Indicates whether the licensee can create derivatives of his work or not.
-   *         @param request.args.licenseTermsData.terms.derivativesAttribution Indicates whether attribution is required for derivatives of the work or not.
-   *         @param request.args.licenseTermsData.terms.derivativesApproval Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.
-   *         @param request.args.licenseTermsData.terms.derivativesReciprocal Indicates whether the licensee must license derivatives of the work under the same terms or not.
-   *         @param request.args.licenseTermsData.terms.derivativeRevCeiling The maximum revenue that can be generated from the derivative use of the work.
-   *         @param request.args.licenseTermsData.terms.currency The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.
-   *         @param request.args.licenseTermsData.terms.uri The URI of the license terms, which can be used to fetch the offchain license terms.
-   *       @param {Object} request.args.licenseTermsData.licensingConfig The PIL terms and licensing configuration data to attach to the IP.
-   *         @param request.args.licenseTermsData.licensingConfig.isSet Whether the configuration is set or not.
-   *         @param request.args.licenseTermsData.licensingConfig.mintingFee The minting fee to be paid when minting license tokens.
-   *         @param request.args.licenseTermsData.licensingConfig.licensingHook The hook contract address for the licensing module, or zero address if none
-   *         @param request.args.licenseTermsData.licensingConfig.hookData The data to be used by the licensing hook.
-   *         @param request.args.licenseTermsData.licensingConfig.commercialRevShare The commercial revenue share percentage.
-   *         @param request.args.licenseTermsData.licensingConfig.disabled Whether the licensing is disabled or not.
-   *         @param request.args.licenseTermsData.licensingConfig.expectMinimumGroupRewardShare The minimum percentage of the group's reward share (from 0 to 100%, represented as 100 * 10 ** 6) that can be allocated to the IP when it is added to the group.
-   *         If the remaining reward share in the group is less than the minimumGroupRewardShare,the IP cannot be added to the group.
-   *         @param request.args.licenseTermsData.licensingConfig.expectGroupRewardPool The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or zero address if the IP does not want to be added to any group.
-   *     @param {Object} request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *       @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *       @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *       @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *       @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *     @param request.args.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
-   *    @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, return an array containing IP ID, Token ID, License Terms Ids, SPG NFT Contract.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
-   * @emits LicenseTermsAttached (caller, ipId, licenseTemplate, licenseTermsId)
+   *
+   * Emits on-chain `IPRegistered` and `LicenseTermsAttached` events.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
    */
   public async batchMintAndRegisterIpAssetWithPilTerms(
     request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
@@ -694,8 +620,10 @@ export class IPAssetClient {
   }
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.
+   *
+   * Emits on-chain `IPRegistered` and `LicenseTermsAttached` events.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
-   * for a list of on-chain events emitted when an ip is registered and license terms are attached to it.
    */
   public async registerIpAndAttachPilTerms(
     request: RegisterIpAndAttachPilTermsRequest,
@@ -726,7 +654,10 @@ export class IPAssetClient {
             ),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+            func: getFunctionSignature({
+              abi: coreMetadataModuleAbi,
+              methodName: "setAll",
+            }),
           },
           {
             ipId: ipIdAddress,
@@ -736,14 +667,20 @@ export class IPAssetClient {
             ),
             to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "attachLicenseTerms",
+            }),
           },
           {
             ipId: ipIdAddress,
             signer: this.licenseAttachmentWorkflowsClient.address,
             to: this.licensingModuleClient.address,
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "setLicensingConfig",
+            }),
           },
         ],
       });
@@ -789,8 +726,9 @@ export class IPAssetClient {
   }
   /**
    * Register the given NFT as a derivative IP with metadata without using license tokens.
+   *
+   * Emits an on-chain `IPRegistered` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * for a list of on-chain events emitted when a derivative IP is registered.
    */
   public async registerDerivativeIp(
     request: RegisterIpAndMakeDerivativeRequest,
@@ -815,14 +753,20 @@ export class IPAssetClient {
             signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+            func: getFunctionSignature({
+              abi: coreMetadataModuleAbi,
+              methodName: "setAll",
+            }),
           },
           {
             ipId: ipIdAddress,
             signer: this.derivativeWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "registerDerivative",
+            }),
           },
         ],
       });
@@ -864,8 +808,9 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
+   *
+   * Emits an on-chain `IPRegistered` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * for a list of on-chain events emitted when a derivative IP is minted and registered.
    */
   public async mintAndRegisterIpAndMakeDerivative(
     request: MintAndRegisterIpAndMakeDerivativeRequest,
@@ -908,22 +853,9 @@ export class IPAssetClient {
   }
   /**
    * Batch mint an NFT from a collection and register it as a derivative IP without license tokens.
-   * @param request - The request object that contains all data needed to batch mint and register ip and make derivative.
-   *  @param {Array} request.args The array of mint and register IP requests.
-   *   @param request.args.spgNftContract The address of the NFT collection.
-   *   @param {Object} request.args.derivData The derivative data to be used for registerDerivative.
-   *     @param {Array} request.args.derivData.parentIpIds The IDs of the parent IPs to link the registered derivative IP.
-   *     @param {Array} request.args.derivData.licenseTermsIds The IDs of the license terms to be used for the linking.
-   *     @param request.args.derivData.licenseTemplate [Optional] The address of the license template to be used for the linking.
-   *   @param {Object} request.args.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.args.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.args.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.args.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.args.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.arg.recipient [Optional] The address of the recipient of the minted NFT,default value is your wallet address.
-   *  @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property, without encodedTxData option.
-   * @returns A Promise that resolves to a transaction hash, if waitForTransaction is true, return an array of containing IP ID and token ID, SPG NFT Contract.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   *
+   * Emits an on-chain `IPRegistered` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
   public async batchMintAndRegisterIpAndMakeDerivative(
     request: BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -963,18 +895,9 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT from a SPGNFT collection and register it with metadata as an IP.
-   * @param request - The request object that contains all data needed to attach license terms.
-   *   @param request.spgNftContract The address of the SPGNFT collection.
-   *   @param request.recipient The address of the recipient of the minted NFT,default value is your wallet address.
-   *  @param request.allowDuplicates Set to true to allow minting an NFT with a duplicate metadata hash.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID and Token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   *
+   * Emits an on-chain `IPRegistered` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
   public async mintAndRegisterIp(request: MintAndRegisterIpRequest): Promise<RegisterIpResponse> {
     try {
@@ -1010,8 +933,9 @@ export class IPAssetClient {
   }
   /**
    * Register Programmable IP License Terms (if unregistered) and attach it to IP.
+   *
+   * Emits an on-chain `LicenseTermsAttached` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
-   * for a list of on-chain events emitted when a license terms is attached to an IP.
    */
   public async registerPilTermsAndAttach(
     request: RegisterPilTermsAndAttachRequest,
@@ -1043,7 +967,10 @@ export class IPAssetClient {
             ),
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "attachLicenseTerms",
+            }),
           },
           {
             ipId: ipId,
@@ -1053,7 +980,10 @@ export class IPAssetClient {
             ),
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "setLicensingConfig",
+            }),
           },
         ],
       });
@@ -1091,22 +1021,11 @@ export class IPAssetClient {
     }
   }
   /**
-   *  Mint an NFT from a collection and register it as a derivative IP using license tokens
+   * Mint an NFT from a collection and register it as a derivative IP using license tokens.
    * Requires caller to have the minter role or the SPG NFT to allow public minting. Caller must own the license tokens and have approved DerivativeWorkflows to transfer them.
-   * @param request - The request object that contains all data needed to mint and register ip and make derivative with license tokens.
-   *   @param request.spgNftContract The address of the NFT collection.
-   *   @param {Array} request.licenseTokenIds The IDs of the license tokens to be burned for linking the IP to parent IPs.
-   *   @param request.allowDuplicates Set to true to allow minting an NFT with a duplicate metadata hash.
-   *   @param request.maxRts The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.recipient - [Optional] The address to receive the minted NFT,default value is your wallet address.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID and Token ID.
-   * @emits IPRegistered (ipId, chainId, tokenContract, tokenId, name, uri, registrationDate)
+   *
+   * Emits an on-chain `IPRegistered` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
   public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
     request: MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
@@ -1159,18 +1078,9 @@ export class IPAssetClient {
   }
   /**
    * Register the given NFT as a derivative IP using license tokens.
-   * @param request - The request object that contains all data needed to register ip and make derivative with license tokens.
-   *   @param request.nftContract The address of the NFT collection.
-   *   @param {Array} request.licenseTokenIds The IDs of the license tokens to be burned for linking the IP to parent IPs.
-   *   @param request.tokenId The ID of the NFT.
-   *   @param {Object} request.ipMetadata - [Optional] The desired metadata for the newly minted NFT and newly registered IP.
-   *     @param request.ipMetadata.ipMetadataURI [Optional] The URI of the metadata for the IP.
-   *     @param request.ipMetadata.ipMetadataHash [Optional] The hash of the metadata for the IP.
-   *     @param request.ipMetadata.nftMetadataURI [Optional] The URI of the metadata for the NFT.
-   *     @param request.ipMetadata.nftMetadataHash [Optional] The hash of the metadata for the IP NFT.
-   *   @param request.deadline [Optional] The deadline for the signature in seconds, default is 1000s.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, or if waitForTransaction is true, includes IP ID, Token ID.
+   *
+   * Emits an on-chain `IPRegistered` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
   public async registerIpAndMakeDerivativeWithLicenseTokens(
     request: RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
@@ -1196,14 +1106,20 @@ export class IPAssetClient {
             signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+            func: getFunctionSignature({
+              abi: coreMetadataModuleAbi,
+              methodName: "setAll",
+            }),
           },
           {
             ipId: ipIdAddress,
             signer: this.derivativeWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "registerDerivativeWithLicenseTokens"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "registerDerivativeWithLicenseTokens",
+            }),
           },
         ],
       });
@@ -1249,9 +1165,10 @@ export class IPAssetClient {
   /**
    * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the first license terms attached to the IP must be
    * a commercial license.
+   *
+   * Emits on-chain `IPRegistered`, and `IpRoyaltyVaultDeployed` events.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88 | IRoyaltyModule}
-   * for a list of on-chain events emitted when an IP is registered, license terms are attached to an IP, and royalty tokens are distributed.
    */
   public async registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
@@ -1285,21 +1202,30 @@ export class IPAssetClient {
             ),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+            func: getFunctionSignature({
+              abi: coreMetadataModuleAbi,
+              methodName: "setAll",
+            }),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "attachLicenseTerms",
+            }),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
             to: this.licensingModuleClient.address,
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "setLicensingConfig",
+            }),
           },
         ],
       });
@@ -1356,9 +1282,10 @@ export class IPAssetClient {
   /**
    * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.  In order to successfully distribute royalty tokens, the license terms attached to the IP must be
    * a commercial license.
+   *
+   * Emits on-chain `IPRegistered` and `IpRoyaltyVaultDeployed` events.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| IRoyaltyModule}
-   * for a list of on-chain events emitted when a derivative IP is registered, license terms are attached to an IP, and royalty tokens are distributed.
    */
   public async registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
@@ -1381,14 +1308,20 @@ export class IPAssetClient {
             ),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+            func: getFunctionSignature({
+              abi: coreMetadataModuleAbi,
+              methodName: "setAll",
+            }),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
+            func: getFunctionSignature({
+              abi: licensingModuleAbi,
+              methodName: "registerDerivative",
+            }),
           },
         ],
       });
@@ -1469,9 +1402,10 @@ export class IPAssetClient {
 
   /**
    * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
+   *
+   * Emits on-chain `IPRegistered` and `IpRoyaltyVaultDeployed` events.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| IRoyaltyModule}
-   * for a list of on-chain events emitted when an IP is minted and registered, PIL terms are attached to an IP, and royalty tokens are distributed.
    */
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
@@ -1532,8 +1466,9 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
+   *
+   * Emits on-chain `IPRegistered` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * for a list of on-chain events emitted when an IP is minted and registered, a derivative IP is made, and royalty tokens are distributed.
    */
   public async mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
