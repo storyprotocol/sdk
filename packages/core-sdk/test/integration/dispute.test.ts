@@ -350,6 +350,9 @@ describe("Dispute Functions", () => {
       });
       disputeId = response.disputeId!;
 
+      // This timeout guarantees that the assertion is expired
+      // its intended to be longer than the current blocktime
+      // so it won't be included in the same block
       await new Promise((resolve) => setTimeout(resolve, 3000));
     });
 
@@ -456,6 +459,9 @@ describe("Dispute Functions", () => {
 
       await settleAssertion(clientA, testDisputeId);
 
+      // This timeout guarantees that the assertion is expired
+      // its intended to be longer than the current blocktime
+      // so it won't be included in the same block
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const disputeState = await publicClient.readContract({
