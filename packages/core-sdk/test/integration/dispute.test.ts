@@ -10,10 +10,9 @@ import {
   walletClient,
 } from "./utils/util";
 import chaiAsPromised from "chai-as-promised";
-import { Address, createWalletClient, http, maxUint256, parseEther, zeroAddress, Hex } from "viem";
+import { Address, createWalletClient, http, parseEther, zeroAddress, Hex } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
-  arbitrationPolicyUmaAddress,
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
@@ -23,7 +22,6 @@ import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
-import { WipTokenClient } from "../../src/utils/token";
 import { ASSERTION_ABI } from "../../src/abi/oov3Abi";
 import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
 
@@ -82,10 +80,6 @@ describe("Dispute Functions", () => {
       value: parseEther("0.50"),
     });
     await publicClient.waitForTransactionReceipt({ hash: txHash });
-
-    // clientA approves the arbitration policyUma module to spend the some tokens
-    const mockERC20 = new WipTokenClient(publicClient, walletClient);
-    await mockERC20.approve(arbitrationPolicyUmaAddress[aeneid], maxUint256);
 
     const txData = await clientA.nftClient.createNFTCollection({
       name: "test-collection",
