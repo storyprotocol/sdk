@@ -55,7 +55,10 @@ const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<
   const txHash = await walletClient.writeContract(request);
   expect(txHash).to.be.a("string");
 
-  return txHash as Hex;
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  expect(receipt.status).to.equal("success");
+
+  return txHash;
 };
 
 describe("Dispute Functions", () => {
