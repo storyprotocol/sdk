@@ -62,9 +62,14 @@ export class RoyaltyClient {
     this.walletAddress = wallet.account!.address;
   }
   /**
-   * Claims all revenue from the child IPs of an ancestor IP, then transfer.
+   * Claims all revenue from the child IPs of an ancestor IP, then transfer
    * all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
    * If claimed token is WIP, it will also be converted back to IP.
+   *
+   * @remarks
+   * Even if there are no child IPs, you must still populate {@link ClaimAllRevenueRequest.currencyTokens}
+   * with the token addresses you wish to claim. This is required for the claim operation to know which
+   * token balances to process.
    */
   public async claimAllRevenue(req: ClaimAllRevenueRequest): Promise<ClaimAllRevenueResponse> {
     try {
@@ -122,6 +127,11 @@ export class RoyaltyClient {
    * if multicall is disabled, it will call @link{claimAllRevenue} for each ancestor IP.
    * Then transfer all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
    * If claimed token is WIP, it will also be converted back to IP.
+   *
+   * @remarks
+   * Even if there are no child IPs, you must still populate `currencyTokens` in each ancestor IP
+   * with the token addresses you wish to claim. This is required for the claim operation to know which
+   * token balances to process.
    */
   public async batchClaimAllRevenue(
     request: BatchClaimAllRevenueRequest,
