@@ -17,7 +17,7 @@ import {
   IpAssetRegistryClient,
   SimpleWalletClient,
 } from "../abi/generated";
-import { chain, getAddress } from "../utils/utils";
+import { chain, validateAddress } from "../utils/utils";
 import { defaultFunctionSelector } from "../constants/common";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { ChainIds } from "../types/config";
@@ -114,8 +114,8 @@ export class PermissionClient {
         functionName: "setTransientPermission",
         args: [
           ipId,
-          getAddress(signer, "request.signer"),
-          getAddress(to, "request.to"),
+          validateAddress(signer),
+          validateAddress(to),
           func ? toFunctionSelector(func) : defaultFunctionSelector,
           permission,
         ],
@@ -141,7 +141,7 @@ export class PermissionClient {
         wallet: this.wallet as WalletClient,
       });
       const req = {
-        to: getAddress(this.accessControllerClient.address, "accessControllerClientAddress"),
+        to: validateAddress(this.accessControllerClient.address),
         value: BigInt(0),
         data,
         signer: signer,
@@ -302,10 +302,10 @@ export class PermissionClient {
         wallet: this.wallet as WalletClient,
       });
       const req = {
-        to: getAddress(this.accessControllerClient.address, "accessControllerAddress"),
+        to: validateAddress(this.accessControllerClient.address),
         value: BigInt(0),
         data,
-        signer: getAddress(this.wallet.account!.address, "walletAccountAddress"),
+        signer: validateAddress(this.wallet.account!.address),
         deadline: calculatedDeadline,
         signature,
       };
@@ -330,7 +330,7 @@ export class PermissionClient {
 
   private async checkIsRegistered(ipId: Address): Promise<void> {
     const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-      id: getAddress(ipId, "ipId"),
+      id: validateAddress(ipId),
     });
     if (!isRegistered) {
       throw new Error(`IP id with ${ipId} is not registered.`);
