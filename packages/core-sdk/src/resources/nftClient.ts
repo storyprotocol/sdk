@@ -11,7 +11,7 @@ import {
   CreateNFTCollectionResponse,
 } from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
-import { getAddress, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 
 export class NftClient {
   public registrationWorkflowsClient: RegistrationWorkflowsClient;
@@ -64,10 +64,8 @@ export class NftClient {
           maxSupply: request.maxSupply ?? Number(maxUint32),
           mintFee: request.mintFee ?? 0n,
           mintFeeToken: request.mintFeeToken ?? zeroAddress,
-          owner:
-            (request.owner && getAddress(request.owner, "request.owner")) ||
-            this.wallet.account!.address,
-          mintFeeRecipient: getAddress(request.mintFeeRecipient, "request.mintFeeRecipient"),
+          owner: validateAddress(request.owner || this.wallet.account!.address),
+          mintFeeRecipient: validateAddress(request.mintFeeRecipient),
           mintOpen: request.mintOpen,
           isPublicMinting: request.isPublicMinting,
           contractURI: request.contractURI,
