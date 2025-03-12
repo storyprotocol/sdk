@@ -1,4 +1,5 @@
 import { Abi, AbiFunction, AbiParameter } from "viem";
+
 /**
  * Gets the function signature from an ABI for a given method name
  * @param abi - The contract ABI
