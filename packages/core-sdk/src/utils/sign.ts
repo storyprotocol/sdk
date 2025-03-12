@@ -7,7 +7,7 @@ import {
 } from "viem";
 
 import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
-import { getAddress } from "./utils";
+import { validateAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
 import {
   PermissionSignatureRequest,
@@ -40,18 +40,18 @@ export const getPermissionSignature = async (
       : "setTransientPermission",
     args: isBatchPermissionFunction
       ? [
-          permissions.map((item, index) => ({
-            ipAccount: getAddress(item.ipId, `permissions[${index}].ipId`),
-            signer: getAddress(item.signer, `permissions[${index}].signer`),
-            to: getAddress(item.to, `permissions[${index}].to`),
+          permissions.map((item) => ({
+            ipAccount: validateAddress(item.ipId),
+            signer: validateAddress(item.signer),
+            to: validateAddress(item.to),
             func: item.func ? toFunctionSelector(item.func) : defaultFunctionSelector,
             permission: item.permission,
           })),
         ]
       : [
-          getAddress(permissions[0].ipId, "permissions[0].ipId"),
-          getAddress(permissions[0].signer, "permissions[0].signer"),
-          getAddress(permissions[0].to, "permissions[0].to"),
+          validateAddress(permissions[0].ipId),
+          validateAddress(permissions[0].signer),
+          validateAddress(permissions[0].to),
           permissions[0].func ? toFunctionSelector(permissions[0].func) : defaultFunctionSelector,
           permissions[0].permission,
         ],
