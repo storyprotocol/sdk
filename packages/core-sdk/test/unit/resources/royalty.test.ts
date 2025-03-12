@@ -161,7 +161,7 @@ describe("Test RoyaltyClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to calculate claimable revenue: The royalty vault IP with id 0x73fCB515cEE99e4991465ef586CfE2B072EbB512 is not registered.",
+          "Failed to calculate claimable revenue: The royalty vault IP with id 0x73fcb515cee99e4991465ef586cfe2b072ebb512 is not registered.",
         );
       }
     });
@@ -179,7 +179,7 @@ describe("Test RoyaltyClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equals(
-          "Failed to calculate claimable revenue: request.royaltyVaultIpId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to calculate claimable revenue: Invalid address: 0x.",
         );
       }
     });
