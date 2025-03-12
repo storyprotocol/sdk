@@ -13,12 +13,17 @@ on:
 
 jobs:
   Timestamp:
+    runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
+    steps:
+      - name: Debug Repo Info
+        run: |
+          echo "Head Repo: ${{ github.event.pull_request.head.repo.full_name }}"
+          echo "Base Repo: ${{ github.repository }}"
 
   pr_build_and_test:
-    if: always() && ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
     needs: [Timestamp]
+    if: always() && ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}
@@ -29,7 +34,7 @@ jobs:
       JUDGE_PRIVATE_KEY: ${{ secrets.JUDGE_PRIVATE_KEY }}
 
   push_build_and_test:
-    if: github.event_name == 'push'
+    if: ${{ github.event_name == 'push' }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
     with:
       sha: ${{ github.sha }}
