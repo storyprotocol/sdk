@@ -10,7 +10,7 @@ import {
   TransactionReceipt,
 } from "viem";
 
-import { chain, getAddress } from "../utils/utils";
+import { chain, validateAddress } from "../utils/utils";
 import { handleError } from "../utils/errors";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -193,7 +193,7 @@ export class IPAssetClient {
       }
       const object: RegistrationWorkflowsRegisterIpRequest = {
         tokenId,
-        nftContract: getAddress(request.nftContract, "request.nftContract"),
+        nftContract: validateAddress(request.nftContract),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigMetadata: {
           signer: zeroAddress,
@@ -212,18 +212,15 @@ export class IPAssetClient {
           permissions: [
             {
               ipId: ipIdAddress,
-              signer: getAddress(
-                this.registrationWorkflowsClient.address,
-                "registrationWorkflowsClient",
-              ),
-              to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+              signer: validateAddress(this.registrationWorkflowsClient.address),
+              to: validateAddress(this.coreMetadataModuleClient.address),
               permission: AccessPermission.ALLOW,
               func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
             },
           ],
         });
         object.sigMetadata = {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
           signature,
         };
@@ -412,10 +409,7 @@ export class IPAssetClient {
   ): Promise<BatchRegisterDerivativeResponse> {
     try {
       const contracts = [];
-      const licenseModuleAddress = getAddress(
-        this.licensingModuleClient.address,
-        "licensingModuleAddress",
-      );
+      const licenseModuleAddress = validateAddress(this.licensingModuleClient.address);
       for (const arg of request.args) {
         try {
           await this.registerDerivative({
@@ -434,7 +428,7 @@ export class IPAssetClient {
         const ipAccount = new IpAccountImplClient(
           this.rpcClient,
           this.wallet,
-          getAddress(arg.childIpId, "arg.childIpId"),
+          validateAddress(arg.childIpId),
         );
         const data = encodeFunctionData({
           abi: licensingModuleAbi,
@@ -507,7 +501,7 @@ export class IPAssetClient {
   ): Promise<RegisterDerivativeWithLicenseTokensResponse> {
     try {
       const req = {
-        childIpId: getAddress(request.childIpId, "request.childIpId"),
+        childIpId: validateAddress(request.childIpId),
         licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
         royaltyContext: zeroAddress,
         maxRts: Number(request.maxRts),
@@ -557,10 +551,8 @@ export class IPAssetClient {
         request.licenseTermsData,
       );
       const object: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest = {
-        spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
-        recipient:
-          (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-          this.wallet.account!.address,
+        spgNftContract: validateAddress(request.spgNftContract),
+        recipient: validateAddress(request.recipient || this.walletAddress),
         licenseTermsData,
         allowDuplicates: request.allowDuplicates || true,
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
@@ -720,21 +712,15 @@ export class IPAssetClient {
         permissions: [
           {
             ipId: ipIdAddress,
-            signer: getAddress(
-              this.licenseAttachmentWorkflowsClient.address,
-              "licenseAttachmentWorkflowsClient",
-            ),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            signer: validateAddress(this.licenseAttachmentWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
-            signer: getAddress(
-              this.licenseAttachmentWorkflowsClient.address,
-              "licenseAttachmentWorkflowsClient",
-            ),
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            signer: this.licenseAttachmentWorkflowsClient.address,
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
@@ -749,12 +735,12 @@ export class IPAssetClient {
       });
 
       const object: LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest = {
-        nftContract: getAddress(request.nftContract, "request.nftContract"),
+        nftContract: validateAddress(request.nftContract),
         tokenId: request.tokenId,
         licenseTermsData,
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigMetadataAndAttachAndConfig: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
           signature,
         },
@@ -812,15 +798,15 @@ export class IPAssetClient {
         permissions: [
           {
             ipId: ipIdAddress,
-            signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            signer: validateAddress(this.derivativeWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.derivativeWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
           },
@@ -828,7 +814,7 @@ export class IPAssetClient {
       });
       const derivData = await this.validateDerivativeData(request.derivData);
       const object: DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest = {
-        nftContract: getAddress(request.nftContract, "request.nftContract"),
+        nftContract: validateAddress(request.nftContract),
         tokenId: BigInt(request.tokenId),
         derivData,
         sigMetadataAndRegister: {
@@ -872,10 +858,8 @@ export class IPAssetClient {
   ): Promise<MintAndRegisterIpAndMakeDerivativeResponse> {
     try {
       const derivData = await this.validateDerivativeData(request.derivData);
-      const recipient =
-        (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-        this.walletAddress;
-      const spgNftContract = getAddress(request.spgNftContract, "spgNftContract");
+      const recipient = validateAddress(request.recipient || this.walletAddress);
+      const spgNftContract = validateAddress(request.spgNftContract);
       const object: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
         ...request,
         derivData,
@@ -979,10 +963,8 @@ export class IPAssetClient {
   public async mintAndRegisterIp(request: MintAndRegisterIpRequest): Promise<RegisterIpResponse> {
     try {
       const object: RegistrationWorkflowsMintAndRegisterIpRequest = {
-        spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
-        recipient:
-          (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-          this.wallet.account!.address,
+        spgNftContract: validateAddress(request.spgNftContract),
+        recipient: validateAddress(request.recipient || this.walletAddress),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         allowDuplicates: request.allowDuplicates || true,
       };
@@ -1037,21 +1019,15 @@ export class IPAssetClient {
         permissions: [
           {
             ipId: ipId,
-            signer: getAddress(
-              this.licenseAttachmentWorkflowsClient.address,
-              "licenseAttachmentWorkflowsClient",
-            ),
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            signer: validateAddress(this.licenseAttachmentWorkflowsClient.address),
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
           {
             ipId: ipId,
-            signer: getAddress(
-              this.licenseAttachmentWorkflowsClient.address,
-              "licenseAttachmentWorkflowsClient",
-            ),
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            signer: this.licenseAttachmentWorkflowsClient.address,
+            to: this.licensingModuleClient.address,
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
@@ -1061,7 +1037,7 @@ export class IPAssetClient {
         ipId: ipId,
         licenseTermsData,
         sigAttachAndConfig: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
           signature,
         },
@@ -1115,10 +1091,8 @@ export class IPAssetClient {
       const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
       const object: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest =
         {
-          spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
-          recipient:
-            (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-            this.walletAddress,
+          spgNftContract: validateAddress(request.spgNftContract),
+          recipient: validateAddress(request.recipient || this.walletAddress),
           ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
           licenseTokenIds: licenseTokenIds,
           royaltyContext: zeroAddress,
@@ -1193,15 +1167,15 @@ export class IPAssetClient {
         permissions: [
           {
             ipId: ipIdAddress,
-            signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            signer: validateAddress(this.derivativeWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.derivativeWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "registerDerivativeWithLicenseTokens"),
           },
@@ -1214,7 +1188,7 @@ export class IPAssetClient {
         royaltyContext: zeroAddress,
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigMetadataAndRegister: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
           signature,
         },
@@ -1263,7 +1237,7 @@ export class IPAssetClient {
       );
       const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
       const ipIdAddress = await this.getIpIdAddress(
-        getAddress(request.nftContract, "request.nftContract"),
+        validateAddress(request.nftContract),
         request.tokenId,
       );
       const isRegistered = await this.isRegistered(ipIdAddress);
@@ -1279,18 +1253,15 @@ export class IPAssetClient {
         permissions: [
           {
             ipId: ipIdAddress,
-            signer: getAddress(
-              this.royaltyTokenDistributionWorkflowsClient.address,
-              "royaltyTokenDistributionWorkflowsClient",
-            ),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            signer: validateAddress(this.royaltyTokenDistributionWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
@@ -1311,7 +1282,7 @@ export class IPAssetClient {
             ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
             licenseTermsData,
             sigMetadataAndAttachAndConfig: {
-              signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+              signer: validateAddress(this.walletAddress),
               deadline: calculatedDeadline,
               signature,
             },
@@ -1375,18 +1346,15 @@ export class IPAssetClient {
         permissions: [
           {
             ipId: ipIdAddress,
-            signer: getAddress(
-              this.royaltyTokenDistributionWorkflowsClient.address,
-              "royaltyTokenDistributionWorkflowsClient",
-            ),
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            signer: validateAddress(this.royaltyTokenDistributionWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
           },
@@ -1483,10 +1451,8 @@ export class IPAssetClient {
       const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
       const object: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest =
         {
-          spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
-          recipient:
-            (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-            this.walletAddress,
+          spgNftContract: validateAddress(request.spgNftContract),
+          recipient: validateAddress(request.recipient || this.walletAddress),
           ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
           licenseTermsData,
           royaltyShares,
@@ -1539,14 +1505,12 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse> {
     try {
-      const nftRecipient =
-        (request.recipient && getAddress(request.recipient, "request.recipient")) ||
-        this.walletAddress;
+      const nftRecipient = validateAddress(request.recipient || this.walletAddress);
       const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares);
       const derivData = await this.validateDerivativeData(request.derivData);
       const object: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest =
         {
-          spgNftContract: getAddress(request.spgNftContract, "request.spgNftContract"),
+          spgNftContract: validateAddress(request.spgNftContract),
           recipient: nftRecipient,
           ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
           derivData,
@@ -1610,11 +1574,7 @@ export class IPAssetClient {
         `The balance of the IP account in the IP Royalty Vault is insufficient to distribute the royalty tokens.`,
       );
     }
-    const ipAccount = new IpAccountImplClient(
-      this.rpcClient,
-      this.wallet,
-      getAddress(ipId, "arg.childIpId"),
-    );
+    const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
     const { result: state } = await ipAccount.state();
     const { signature: signatureApproveRoyaltyTokens } = await getSignature({
       verifyingContract: ipId,
@@ -1653,14 +1613,14 @@ export class IPAssetClient {
   ): Promise<Address> {
     const ipId = await this.ipAssetRegistryClient.ipId({
       chainId: BigInt(chain[this.chainId]),
-      tokenContract: getAddress(nftContract, "nftContract"),
+      tokenContract: validateAddress(nftContract),
       tokenId: BigInt(tokenId),
     });
     return ipId;
   }
 
   public async isRegistered(ipId: Hex): Promise<boolean> {
-    return await this.ipAssetRegistryClient.isRegistered({ id: getAddress(ipId, "ipId") });
+    return await this.ipAssetRegistryClient.isRegistered({ id: validateAddress(ipId) });
   }
 
   private async getLicenseTermsId(licenseTerms: LicenseTerms[]): Promise<bigint[]> {
@@ -1728,10 +1688,9 @@ export class IPAssetClient {
     const internalDerivativeData: InternalDerivativeData = {
       parentIpIds: derivativeData.parentIpIds,
       licenseTermsIds: derivativeData.licenseTermsIds.map((id) => BigInt(id)),
-      licenseTemplate:
-        (derivativeData.licenseTemplate &&
-          getAddress(derivativeData.licenseTemplate, "derivativeData.licenseTemplate")) ||
-        this.licenseTemplateClient.address,
+      licenseTemplate: validateAddress(
+        derivativeData.licenseTemplate || this.licenseTemplateClient.address,
+      ),
       royaltyContext: zeroAddress,
       maxMintingFee: BigInt(derivativeData.maxMintingFee || 0),
       maxRts: Number(derivativeData.maxRts || MAX_ROYALTY_TOKEN),

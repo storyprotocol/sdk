@@ -925,7 +925,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to mint and register IP and attach PIL terms: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to mint and register IP and attach PIL terms: Invalid address: 0x.",
         );
       }
     });
@@ -1606,7 +1606,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to mint and register IP: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to mint and register IP: Invalid address: 0x.",
         );
       }
     });
@@ -1624,7 +1624,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to mint and register IP: request.recipient address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to mint and register IP: Invalid address: 0x.",
         );
       }
     });
@@ -1726,7 +1726,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to register PIL terms and attach: ipId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to register PIL terms and attach: Invalid address: 0x.",
         );
       }
     });
@@ -2166,7 +2166,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch mint and register IP and attach PIL terms: Failed to mint and register IP and attach PIL terms: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to batch mint and register IP and attach PIL terms: Failed to mint and register IP and attach PIL terms: Invalid address: 0x.",
         );
       }
     });
@@ -2444,9 +2444,7 @@ describe("Test IpAssetClient", () => {
           ],
         });
       } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to batch register IP: nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-        );
+        expect((err as Error).message).equal("Failed to batch register IP: Invalid address: 0x.");
       }
     });
 
@@ -2547,7 +2545,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch register derivative: ipId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to batch register derivative: Invalid address: 0x.",
         );
       }
     });
@@ -3340,7 +3338,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: Invalid address: 0x.",
         );
       }
     });
