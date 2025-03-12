@@ -1,6 +1,7 @@
 name: Conditional Workflow
 
 on:
+  workflow_dispatch:  # Allows manual testing
   pull_request:
     branches:
       - main
@@ -14,16 +15,21 @@ on:
 jobs:
   Timestamp:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+    if: > 
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.head.repo.full_name, github.repository)
     steps:
-      - name: Debug Repo Info
+      - name: Debug GitHub Event
         run: |
+          echo "Event: ${{ github.event_name }}"
           echo "Head Repo: ${{ github.event.pull_request.head.repo.full_name }}"
           echo "Base Repo: ${{ github.repository }}"
 
   pr_build_and_test:
     needs: [Timestamp]
-    if: always() && ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+    if: always() && > 
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.head.repo.full_name, github.repository)
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}
