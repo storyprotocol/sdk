@@ -5,11 +5,11 @@ on:
     branches:
       - main
       - dev
-      - origin/bp/even-flows
+      - bp/even-flows
   push:
     branches:
       - dev
-      - origin/bp/even-flows
+      - bp/even-flows
 
 jobs:
   Timestamp:
