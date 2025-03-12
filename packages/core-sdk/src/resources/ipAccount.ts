@@ -19,7 +19,7 @@ import {
   SimpleWalletClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { getAddress, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
@@ -54,7 +54,7 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getAddress(request.ipId, "request.ipId"),
+        validateAddress(request.ipId),
       );
 
       const req = {
@@ -100,14 +100,14 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getAddress(request.ipId, "request.ipId"),
+        validateAddress(request.ipId),
       );
 
       const req = {
-        to: getAddress(request.to, "request.to"),
+        to: validateAddress(request.to),
         value: BigInt(request.value || 0),
         data: request.data,
-        signer: getAddress(request.signer, "request.signer"),
+        signer: validateAddress(request.signer),
         deadline: BigInt(request.deadline),
         signature: request.signature,
       };
@@ -135,11 +135,7 @@ export class IPAccountClient {
    */
   public async getIpAccountNonce(ipId: Address): Promise<IpAccountStateResponse> {
     try {
-      const ipAccount = new IpAccountImplClient(
-        this.rpcClient,
-        this.wallet,
-        getAddress(ipId, "ipId"),
-      );
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
       const { result: state } = await ipAccount.state();
       return state;
     } catch (error) {
@@ -153,11 +149,7 @@ export class IPAccountClient {
    */
   public async getToken(ipId: Address): Promise<TokenResponse> {
     try {
-      const ipAccount = new IpAccountImplClient(
-        this.rpcClient,
-        this.wallet,
-        getAddress(ipId, "ipId"),
-      );
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
       const [chainId, tokenContract, tokenId] = await ipAccount.token();
       return {
         chainId,
