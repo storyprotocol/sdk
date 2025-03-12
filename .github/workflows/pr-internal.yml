@@ -15,7 +15,7 @@ jobs:
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
   pr_build_and_test:
-    if: github.event_name == 'pull_request'
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
     needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
