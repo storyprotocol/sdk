@@ -1,24 +1,13 @@
 import { Abi, AbiFunction, AbiParameter } from "viem";
-
-type FunctionSignature = {
-  /** The contract ABI */
-  abi: Abi;
-  /** The name of the method to get the signature for */
-  methodName: string;
-  /** Optional index for overloaded functions (0-based) */
-  overloadIndex?: number;
-};
 /**
- * Gets the function signature from an ABI for a given method name.
- *
+ * Gets the function signature from an ABI for a given method name
+ * @param abi - The contract ABI
+ * @param methodName - The name of the method to get the signature for
+ * @param overloadIndex - Optional index for overloaded functions (0-based)
  * @returns The function signature in standard format (e.g. "methodName(uint256,address)")
  * @throws Error if method not found or if overloadIndex is required but not provided
  */
-export function getFunctionSignature({
-  abi,
-  methodName,
-  overloadIndex,
-}: FunctionSignature): string {
+export function getFunctionSignature(abi: Abi, methodName: string, overloadIndex?: number): string {
   const functions = abi.filter(
     (x): x is AbiFunction => x.type === "function" && x.name === methodName,
   );

@@ -654,10 +654,7 @@ export class IPAssetClient {
             ),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: coreMetadataModuleAbi,
-              methodName: "setAll",
-            }),
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
@@ -667,20 +664,14 @@ export class IPAssetClient {
             ),
             to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "attachLicenseTerms",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
           {
             ipId: ipIdAddress,
             signer: this.licenseAttachmentWorkflowsClient.address,
             to: this.licensingModuleClient.address,
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "setLicensingConfig",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
         ],
       });
@@ -753,20 +744,14 @@ export class IPAssetClient {
             signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: coreMetadataModuleAbi,
-              methodName: "setAll",
-            }),
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.derivativeWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "registerDerivative",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
           },
         ],
       });
@@ -967,10 +952,7 @@ export class IPAssetClient {
             ),
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "attachLicenseTerms",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
           {
             ipId: ipId,
@@ -980,10 +962,7 @@ export class IPAssetClient {
             ),
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "setLicensingConfig",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
         ],
       });
@@ -1106,20 +1085,14 @@ export class IPAssetClient {
             signer: getAddress(this.derivativeWorkflowsClient.address, "derivativeWorkflowsClient"),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: coreMetadataModuleAbi,
-              methodName: "setAll",
-            }),
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.derivativeWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "registerDerivativeWithLicenseTokens",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "registerDerivativeWithLicenseTokens"),
           },
         ],
       });
@@ -1202,30 +1175,21 @@ export class IPAssetClient {
             ),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: coreMetadataModuleAbi,
-              methodName: "setAll",
-            }),
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleClient"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "attachLicenseTerms",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
             to: this.licensingModuleClient.address,
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "setLicensingConfig",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
         ],
       });
@@ -1308,20 +1272,14 @@ export class IPAssetClient {
             ),
             to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: coreMetadataModuleAbi,
-              methodName: "setAll",
-            }),
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.royaltyTokenDistributionWorkflowsClient.address,
             to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
             permission: AccessPermission.ALLOW,
-            func: getFunctionSignature({
-              abi: licensingModuleAbi,
-              methodName: "registerDerivative",
-            }),
+            func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
           },
         ],
       });
