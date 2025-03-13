@@ -25,7 +25,10 @@ export type DerivativeData = {
    * @default 100
    */
   maxRevenueShare?: number | string;
-  /** The license template address, default value is Programmable IP License. */
+  /**
+   * The address of the license template.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} if not provided.
+   */
   licenseTemplate?: Address;
 };
 export type InternalDerivativeData = {

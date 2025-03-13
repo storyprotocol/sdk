@@ -7,6 +7,10 @@ import { IpMetadataAndTxOptions, LicensingConfig, ValidatedLicensingConfig } fro
 export type LicenseData = {
   licenseTermsId: string | bigint | number;
   licensingConfig?: LicensingConfig;
+  /**
+   * The address of the license template.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} if not provided.
+   */
   licenseTemplate?: Address;
 };
 
