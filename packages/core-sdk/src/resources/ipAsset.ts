@@ -170,6 +170,7 @@ export class IPAssetClient {
 
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
+   *
    * Emits an on-chain `IPRegistered` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
@@ -259,9 +260,9 @@ export class IPAssetClient {
 
   /**
    * Batch registers an NFT as IP, creating a corresponding IP record.
-   
-  * Emits an on-chain `IPRegistered` event.
-  * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   *
+   * Emits an on-chain `IPRegistered` event.
+   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
    */
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
     try {
@@ -376,8 +377,7 @@ export class IPAssetClient {
 
   /**
    * Batch registers a derivative directly with parent IP's license terms.
-
-  */
+   */
   public async batchRegisterDerivative(
     request: BatchRegisterDerivativeRequest,
   ): Promise<BatchRegisterDerivativeResponse> {

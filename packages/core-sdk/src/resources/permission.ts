@@ -81,6 +81,7 @@ export class PermissionClient {
   }
   /**
    * Specific permission overrides wildcard permission with signature.
+   * 
    * Emits an on-chain `PermissionSet` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
@@ -150,6 +151,7 @@ export class PermissionClient {
   }
   /**
    * Sets permission to a signer for all functions across all modules.
+   * 
    * Emits an on-chain `PermissionSet` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
@@ -183,6 +185,7 @@ export class PermissionClient {
   }
   /**
    * Sets a batch of permissions in a single transaction.
+   * 
    * Emits an on-chain `PermissionSet` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
@@ -223,6 +226,7 @@ export class PermissionClient {
   }
   /**
    * Sets a batch of permissions in a single transaction with signature.
+   * 
    * Emits an on-chain `PermissionSet` event.
    * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
    */
