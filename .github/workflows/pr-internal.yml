@@ -1,4 +1,4 @@
-name: Conditional Workflow
+name: Conditional Workflow for External PRs with Unit & Integration Tests
 
 on:
   pull_request:
