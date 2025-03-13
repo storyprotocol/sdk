@@ -34,4 +34,3 @@ jobs:
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
-      JUDGE_PRIVATE_KEY: ${{ secrets.JUDGE_PRIVATE_KEY }}
