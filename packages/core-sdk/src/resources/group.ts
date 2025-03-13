@@ -27,8 +27,8 @@ import { getPermissionSignature, getDeadline } from "../utils/sign";
 import { chain, validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import {
-  LicenseData,
   LicenseDataInput,
+  LicenseData,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
   RegisterGroupAndAttachLicenseAndAddIpsRequest,

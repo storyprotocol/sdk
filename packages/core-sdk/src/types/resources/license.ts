@@ -72,9 +72,11 @@ export type LicenseTermsInput = Omit<
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
 };
+
 export type RegisterPILTermsRequest = LicenseTermsInput & {
   txOptions?: TxOptions;
 };
+
 export type LicenseTermsIdResponse = bigint;
 
 export type RegisterPILResponse = {
