@@ -5,7 +5,7 @@ import { LicenseTerms, RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, ValidatedLicensingConfig } from "../common";
 
-export type DerivativeData = {
+export type DerivativeDataInput = {
   parentIpIds: Address[];
   /** The IDs of the license terms that the parent IP supports. */
   licenseTermsIds: bigint[] | string[] | number[];
@@ -30,7 +30,7 @@ export type DerivativeData = {
    */
   licenseTemplate?: Address;
 };
-export type InternalDerivativeData = {
+export type DerivativeData = {
   parentIpIds: readonly Address[];
   licenseTermsIds: readonly bigint[];
   royaltyContext: Hex;
@@ -71,7 +71,7 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
 };
 
 export type RegisterDerivativeRequest = WithWipOptions &
-  DerivativeData & {
+  DerivativeDataInput & {
     txOptions?: TxOptions;
     childIpId: Address;
   };
@@ -124,7 +124,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
    */
   deadline?: string | number | bigint;
   /** The derivative data to be used for register derivative. */
-  derivData: DerivativeData;
+  derivData: DerivativeDataInput;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -158,8 +158,8 @@ export type RegisterIpAndAttachPilTermsResponse = {
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
   /** The derivative data to be used for register derivative. */
-  derivData: DerivativeData;
-  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
+  derivData: DerivativeDataInput;
+  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
   recipient?: Address;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -338,7 +338,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
    */
   deadline?: string | number | bigint;
   /** The derivative data to be used for register derivative.*/
-  derivData: DerivativeData;
+  derivData: DerivativeDataInput;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
@@ -381,7 +381,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
   /** The derivative data to be used for register derivative. */
-  derivData: DerivativeData;
+  derivData: DerivativeDataInput;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   /**
@@ -407,7 +407,7 @@ export type CommonRegistrationParams = WithWipOptions & {
   spgNftContract?: Address;
   /** the spg contract in which the minting fee is paid to  */
   spgSpenderAddress: Address;
-  derivData?: InternalDerivativeData;
+  derivData?: DerivativeData;
   sender: Address;
   txOptions?: TxOptions;
 };

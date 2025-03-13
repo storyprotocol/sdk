@@ -52,9 +52,9 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
-  InternalDerivativeData,
-  LicenseTermsData,
   DerivativeData,
+  LicenseTermsData,
+  DerivativeDataInput,
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
   ValidatedLicenseTermsData,
@@ -1555,39 +1555,37 @@ export class IPAssetClient {
   }
 
   private async validateDerivativeData(
-    derivativeData: DerivativeData,
-  ): Promise<InternalDerivativeData> {
-    const internalDerivativeData: InternalDerivativeData = {
-      parentIpIds: derivativeData.parentIpIds,
-      licenseTermsIds: derivativeData.licenseTermsIds.map((id) => BigInt(id)),
+    derivativeDataInput: DerivativeDataInput,
+  ): Promise<DerivativeData> {
+    const derivativeData: DerivativeData = {
+      parentIpIds: derivativeDataInput.parentIpIds,
+      licenseTermsIds: derivativeDataInput.licenseTermsIds.map((id) => BigInt(id)),
       licenseTemplate: validateAddress(
-        derivativeData.licenseTemplate || this.licenseTemplateClient.address,
+        derivativeDataInput.licenseTemplate || this.licenseTemplateClient.address,
       ),
       royaltyContext: zeroAddress,
-      maxMintingFee: BigInt(derivativeData.maxMintingFee || 0),
-      maxRts: Number(derivativeData.maxRts || MAX_ROYALTY_TOKEN),
+      maxMintingFee: BigInt(derivativeDataInput.maxMintingFee || 0),
+      maxRts: Number(derivativeDataInput.maxRts || MAX_ROYALTY_TOKEN),
       maxRevenueShare: getRevenueShare(
-        derivativeData.maxRevenueShare || 100,
+        derivativeDataInput.maxRevenueShare || 100,
         RevShareType.MAX_REVENUE_SHARE,
       ),
     };
-    if (internalDerivativeData.parentIpIds.length === 0) {
+    if (derivativeData.parentIpIds.length === 0) {
       throw new Error("The parent IP IDs must be provided.");
     }
-    if (internalDerivativeData.licenseTermsIds.length === 0) {
+    if (derivativeData.licenseTermsIds.length === 0) {
       throw new Error("The license terms IDs must be provided.");
     }
-    if (
-      internalDerivativeData.parentIpIds.length !== internalDerivativeData.licenseTermsIds.length
-    ) {
+    if (derivativeData.parentIpIds.length !== derivativeData.licenseTermsIds.length) {
       throw new Error("The number of parent IP IDs must match the number of license terms IDs.");
     }
-    if (internalDerivativeData.maxMintingFee < 0) {
+    if (derivativeData.maxMintingFee < 0) {
       throw new Error(`The maxMintingFee must be greater than 0.`);
     }
-    this.validateMaxRts(internalDerivativeData.maxRts);
-    for (let i = 0; i < internalDerivativeData.parentIpIds.length; i++) {
-      const parentId = internalDerivativeData.parentIpIds[i];
+    this.validateMaxRts(derivativeData.maxRts);
+    for (let i = 0; i < derivativeData.parentIpIds.length; i++) {
+      const parentId = derivativeData.parentIpIds[i];
       const isParentIpRegistered = await this.isRegistered(parentId);
       if (!isParentIpRegistered) {
         throw new Error(`The parent IP with id ${parentId} is not registered.`);
@@ -1595,29 +1593,26 @@ export class IPAssetClient {
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: parentId,
-          licenseTemplate: internalDerivativeData.licenseTemplate,
-          licenseTermsId: internalDerivativeData.licenseTermsIds[i],
+          licenseTemplate: derivativeData.licenseTemplate,
+          licenseTermsId: derivativeData.licenseTermsIds[i],
         });
       if (!isAttachedLicenseTerms) {
         throw new Error(
-          `License terms id ${internalDerivativeData.licenseTermsIds[i]} must be attached to the parent ipId ${internalDerivativeData.parentIpIds[i]} before registering derivative.`,
+          `License terms id ${derivativeData.licenseTermsIds[i]} must be attached to the parent ipId ${derivativeData.parentIpIds[i]} before registering derivative.`,
         );
       }
       const { royaltyPercent } = await this.licenseRegistryReadOnlyClient.getRoyaltyPercent({
         ipId: parentId,
-        licenseTemplate: internalDerivativeData.licenseTemplate,
-        licenseTermsId: internalDerivativeData.licenseTermsIds[i],
+        licenseTemplate: derivativeData.licenseTemplate,
+        licenseTermsId: derivativeData.licenseTermsIds[i],
       });
-      if (
-        internalDerivativeData.maxRevenueShare !== 0 &&
-        royaltyPercent > internalDerivativeData.maxRevenueShare
-      ) {
+      if (derivativeData.maxRevenueShare !== 0 && royaltyPercent > derivativeData.maxRevenueShare) {
         throw new Error(
-          `The royalty percent for the parent IP with id ${parentId} is greater than the maximum revenue share ${internalDerivativeData.maxRevenueShare}.`,
+          `The royalty percent for the parent IP with id ${parentId} is greater than the maximum revenue share ${derivativeData.maxRevenueShare}.`,
         );
       }
     }
-    return internalDerivativeData;
+    return derivativeData;
   }
 
   private async validateLicenseTermsData(

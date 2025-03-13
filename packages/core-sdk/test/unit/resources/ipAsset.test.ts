@@ -16,7 +16,7 @@ import chaiAsPromised from "chai-as-promised";
 import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
 import { LicensingConfig } from "../../../src/types/common";
-import { DerivativeData } from "../../../src/types/resources/ipAsset";
+import { DerivativeDataInput } from "../../../src/types/resources/ipAsset";
 import { txHash, walletAddress } from "../mockData";
 const {
   RoyaltyModuleReadOnlyClient,
@@ -57,7 +57,7 @@ const licensingConfig: LicensingConfig = {
   expectMinimumGroupRewardShare: 0,
   expectGroupRewardPool: zeroAddress,
 };
-const derivData: DerivativeData = {
+const derivData: DerivativeDataInput = {
   parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
   licenseTermsIds: ["1"],
   maxMintingFee: 0n,
