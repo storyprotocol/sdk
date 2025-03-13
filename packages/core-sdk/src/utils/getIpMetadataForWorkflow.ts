@@ -12,12 +12,12 @@ export type IpMetadataForWorkflow = {
 };
 
 export const getIpMetadataForWorkflow = (
-  metadata?: Partial<IpMetadataForWorkflow>,
+  ipMetadata?: Partial<IpMetadataForWorkflow>,
 ): IpMetadataForWorkflow => {
   return {
-    ipMetadataURI: metadata?.ipMetadataURI || "",
-    ipMetadataHash: metadata?.ipMetadataHash || zeroHash,
-    nftMetadataURI: metadata?.nftMetadataURI || "",
-    nftMetadataHash: metadata?.nftMetadataHash || zeroHash,
+    ipMetadataURI: ipMetadata?.ipMetadataURI || "",
+    ipMetadataHash: ipMetadata?.ipMetadataHash || zeroHash,
+    nftMetadataURI: ipMetadata?.nftMetadataURI || "",
+    nftMetadataHash: ipMetadata?.nftMetadataHash || zeroHash,
   };
 };

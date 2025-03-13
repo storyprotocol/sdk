@@ -184,14 +184,14 @@ export class IPAssetClient {
       const object: RegistrationWorkflowsRegisterIpRequest = {
         tokenId,
         nftContract: validateAddress(request.nftContract),
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
         sigMetadata: {
           signer: zeroAddress,
           deadline: BigInt(0),
           signature: zeroHash,
         },
       };
-      if (request.ipMetadata) {
+      if (request.ipMetadataInput) {
         const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
         const { signature } = await getPermissionSignature({
           ipId: ipIdAddress,
@@ -216,7 +216,7 @@ export class IPAssetClient {
         };
       }
       if (request.txOptions?.encodedTxDataOnly) {
-        if (request.ipMetadata) {
+        if (request.ipMetadataInput) {
           return { encodedTxData: this.registrationWorkflowsClient.registerIpEncode(object) };
         } else {
           return {
@@ -229,7 +229,7 @@ export class IPAssetClient {
         }
       } else {
         let txHash: Hex;
-        if (request.ipMetadata) {
+        if (request.ipMetadataInput) {
           txHash = await this.registrationWorkflowsClient.registerIp(object);
         } else {
           txHash = await this.ipAssetRegistryClient.register({
@@ -276,7 +276,7 @@ export class IPAssetClient {
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
-        if (arg.ipMetadata) {
+        if (arg.ipMetadataInput) {
           spgContracts.push(encodedTxData);
         } else {
           contracts.push({
@@ -516,7 +516,7 @@ export class IPAssetClient {
         recipient: validateAddress(request.recipient || this.walletAddress),
         licenseTermsData,
         allowDuplicates: request.allowDuplicates || true,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
       };
 
       const encodedTxData =
@@ -658,7 +658,7 @@ export class IPAssetClient {
         nftContract: validateAddress(request.nftContract),
         tokenId: request.tokenId,
         licenseTermsData,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
         sigMetadataAndAttachAndConfig: {
           signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
@@ -742,7 +742,7 @@ export class IPAssetClient {
           deadline: calculatedDeadline,
           signature,
         },
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
       };
       const encodedTxData =
         this.derivativeWorkflowsClient.registerIpAndMakeDerivativeEncode(object);
@@ -783,7 +783,7 @@ export class IPAssetClient {
       const object: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
         ...request,
         derivData,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
         recipient,
         allowDuplicates: request.allowDuplicates || true,
         spgNftContract,
@@ -861,7 +861,7 @@ export class IPAssetClient {
       const object: RegistrationWorkflowsMintAndRegisterIpRequest = {
         spgNftContract: validateAddress(request.spgNftContract),
         recipient: validateAddress(request.recipient || this.walletAddress),
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
         allowDuplicates: request.allowDuplicates || true,
       };
       const encodedTxData = this.registrationWorkflowsClient.mintAndRegisterIpEncode(object);
@@ -977,7 +977,7 @@ export class IPAssetClient {
         {
           spgNftContract: validateAddress(request.spgNftContract),
           recipient: validateAddress(request.recipient || this.walletAddress),
-          ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+          ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
           licenseTokenIds: licenseTokenIds,
           royaltyContext: zeroAddress,
           maxRts: Number(request.maxRts),
@@ -1060,7 +1060,7 @@ export class IPAssetClient {
         tokenId,
         licenseTokenIds,
         royaltyContext: zeroAddress,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
         sigMetadataAndRegister: {
           signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
@@ -1153,7 +1153,7 @@ export class IPAssetClient {
           {
             nftContract: request.nftContract,
             tokenId: BigInt(request.tokenId),
-            ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+            ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
             licenseTermsData,
             sigMetadataAndAttachAndConfig: {
               signer: validateAddress(this.walletAddress),
@@ -1238,7 +1238,7 @@ export class IPAssetClient {
         {
           nftContract: request.nftContract,
           tokenId: BigInt(request.tokenId),
-          ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+          ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
           derivData,
           sigMetadataAndRegister: {
             signer: this.walletAddress,
@@ -1325,7 +1325,7 @@ export class IPAssetClient {
         {
           spgNftContract: validateAddress(request.spgNftContract),
           recipient: validateAddress(request.recipient || this.walletAddress),
-          ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+          ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
           licenseTermsData,
           royaltyShares,
           allowDuplicates: request.allowDuplicates || true,
@@ -1384,7 +1384,7 @@ export class IPAssetClient {
         {
           spgNftContract: validateAddress(request.spgNftContract),
           recipient: nftRecipient,
-          ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+          ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
           derivData,
           royaltyShares: royaltyShares,
           allowDuplicates: request.allowDuplicates || true,

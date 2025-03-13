@@ -4,7 +4,6 @@ import { TxOptions, WithWipOptions } from "../options";
 import { LicenseTerms, RegisterPILTermsRequest } from "./license";
 import { EncodedTxData } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, ValidatedLicensingConfig } from "../common";
-import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
 
 export type DerivativeData = {
   parentIpIds: Address[];
@@ -174,8 +173,8 @@ export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & 
   encodedTxData?: EncodedTxData;
 };
 
-type IPMetadataInfo = {
-  ipMetadata?: {
+type WithIpMetadataInput = {
+  ipMetadataInput?: {
     ipMetadataURI?: string;
     ipMetadataHash?: Hex;
     nftMetadataURI?: string;
@@ -301,7 +300,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo;
+} & WithIpMetadataInput;
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hex;
   distributeRoyaltyTokensTxHash: Hex;
@@ -342,10 +341,9 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   derivData: DerivativeData;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
-  /** The desired metadata for the newly minted NFT and newly registered IP. */
-  ipMetadata?: IpMetadataForWorkflow;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & WithWipOptions;
+} & WithWipOptions &
+  WithIpMetadataInput;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
@@ -369,7 +367,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo &
+} & WithIpMetadataInput &
   WithWipOptions;
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
@@ -394,7 +392,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo &
+} & WithIpMetadataInput &
   WithWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {

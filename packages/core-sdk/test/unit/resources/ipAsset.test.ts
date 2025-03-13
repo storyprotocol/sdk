@@ -244,7 +244,7 @@ describe("Test IpAssetClient", () => {
           nftContract: spgNftContract,
           tokenId: "3",
           deadline: "error",
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "1",
             ipMetadataHash: zeroHash,
           },
@@ -272,7 +272,7 @@ describe("Test IpAssetClient", () => {
           nftContract: spgNftContract,
           tokenId: "3",
           deadline: "12321",
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "",
           },
           txOptions: {
@@ -351,7 +351,7 @@ describe("Test IpAssetClient", () => {
       const response = await ipAssetClient.register({
         nftContract: spgNftContract,
         tokenId: "3",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: zeroHash,
           nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -387,7 +387,7 @@ describe("Test IpAssetClient", () => {
       const response = await ipAssetClient.register({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: zeroHash,
           nftMetadataHash: zeroHash,
@@ -947,7 +947,7 @@ describe("Test IpAssetClient", () => {
         ],
         allowDuplicates: false,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
         },
@@ -983,7 +983,7 @@ describe("Test IpAssetClient", () => {
           },
         ],
         allowDuplicates: false,
-        ipMetadata: {
+        ipMetadataInput: {
           nftMetadataHash: toHex(0, { size: 32 }),
         },
         txOptions: {
@@ -1024,7 +1024,7 @@ describe("Test IpAssetClient", () => {
           },
         ],
         allowDuplicates: false,
-        ipMetadata: {
+        ipMetadataInput: {
           nftMetadataHash: toHex(0, { size: 32 }),
         },
         txOptions: {
@@ -1048,7 +1048,7 @@ describe("Test IpAssetClient", () => {
           },
         ],
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
         },
@@ -1154,7 +1154,7 @@ describe("Test IpAssetClient", () => {
         nftContract: spgNftContract,
         tokenId: "3",
         derivData,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataHash: toHex(0, { size: 32 }),
           ipMetadataURI: "",
         },
@@ -1198,7 +1198,7 @@ describe("Test IpAssetClient", () => {
         nftContract: spgNftContract,
         tokenId: "3",
         derivData,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
         },
@@ -1246,7 +1246,7 @@ describe("Test IpAssetClient", () => {
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: "3",
         derivData,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
         },
@@ -1270,7 +1270,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.registerIpAndAttachPilTerms({
           nftContract: spgNftContract,
           tokenId: "3",
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "https://",
             ipMetadataHash: toHex("metadata", { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -1301,7 +1301,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract: spgNftContract,
         tokenId: "3",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataHash: toHex(0, { size: 32 }),
         },
         licenseTermsData: [
@@ -1341,7 +1341,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract: spgNftContract,
         tokenId: "3",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "https://",
         },
         licenseTermsData: [
@@ -1374,7 +1374,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c662ac",
         tokenId: "3",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "https://",
         },
         licenseTermsData: [
@@ -1444,7 +1444,7 @@ describe("Test IpAssetClient", () => {
         spgNftContract,
         derivData,
         allowDuplicates: false,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataHash: toHex(0, { size: 32 }),
         },
       });
@@ -1487,7 +1487,7 @@ describe("Test IpAssetClient", () => {
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         derivData,
         allowDuplicates: false,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
         },
@@ -1534,7 +1534,7 @@ describe("Test IpAssetClient", () => {
       const res = await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         derivData,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
         },
@@ -1598,7 +1598,7 @@ describe("Test IpAssetClient", () => {
       try {
         await ipAssetClient.mintAndRegisterIp({
           spgNftContract: "0x",
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
           },
@@ -1616,7 +1616,7 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.mintAndRegisterIp({
           spgNftContract,
           recipient: "0x",
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
           },
@@ -1635,7 +1635,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.mintAndRegisterIp({
         spgNftContract,
         allowDuplicates: false,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
         },
@@ -1661,7 +1661,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.mintAndRegisterIp({
         spgNftContract,
         allowDuplicates: false,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
         },
@@ -1681,7 +1681,7 @@ describe("Test IpAssetClient", () => {
         spgNftContract,
         allowDuplicates: false,
         recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
         },
         txOptions: {
@@ -1894,7 +1894,7 @@ describe("Test IpAssetClient", () => {
       const result = await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract,
         licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -1963,7 +1963,7 @@ describe("Test IpAssetClient", () => {
         allowDuplicates: false,
         spgNftContract,
         licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -2070,7 +2070,7 @@ describe("Test IpAssetClient", () => {
         maxRts: 0,
         tokenId: "3",
         licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
         },
@@ -2129,7 +2129,7 @@ describe("Test IpAssetClient", () => {
         tokenId: "3",
         maxRts: 0,
         licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -2150,7 +2150,7 @@ describe("Test IpAssetClient", () => {
           args: [
             {
               spgNftContract: "0x",
-              ipMetadata: {
+              ipMetadataInput: {
                 ipMetadataURI: "",
                 ipMetadataHash: toHex(0, { size: 32 }),
               },
@@ -2178,7 +2178,7 @@ describe("Test IpAssetClient", () => {
         args: [
           {
             spgNftContract,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "",
               ipMetadataHash: toHex(0, { size: 32 }),
             },
@@ -2193,7 +2193,7 @@ describe("Test IpAssetClient", () => {
           },
           {
             spgNftContract,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "",
               ipMetadataHash: toHex(0, { size: 32 }),
             },
@@ -2241,7 +2241,7 @@ describe("Test IpAssetClient", () => {
         args: [
           {
             spgNftContract,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "",
               ipMetadataHash: toHex(0, { size: 32 }),
             },
@@ -2256,7 +2256,7 @@ describe("Test IpAssetClient", () => {
           },
           {
             spgNftContract,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "",
               ipMetadataHash: toHex(0, { size: 32 }),
             },
@@ -2307,7 +2307,7 @@ describe("Test IpAssetClient", () => {
               recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
               derivData,
               allowDuplicates: false,
-              ipMetadata: {
+              ipMetadataInput: {
                 ipMetadataURI: "https://",
                 nftMetadataHash: toHex("nftMetadata", { size: 32 }),
               },
@@ -2344,7 +2344,7 @@ describe("Test IpAssetClient", () => {
             recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
             derivData,
             allowDuplicates: false,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "https://",
               nftMetadataHash: toHex("nftMetadata", { size: 32 }),
             },
@@ -2395,7 +2395,7 @@ describe("Test IpAssetClient", () => {
             recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
             derivData,
             allowDuplicates: false,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "https://",
               nftMetadataHash: toHex("nftMetadata", { size: 32 }),
             },
@@ -2405,7 +2405,7 @@ describe("Test IpAssetClient", () => {
             recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
             derivData,
             allowDuplicates: false,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "https://",
               nftMetadataHash: toHex("nftMetadata", { size: 32 }),
             },
@@ -2510,7 +2510,7 @@ describe("Test IpAssetClient", () => {
           {
             nftContract: spgNftContract,
             tokenId: "2",
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "",
               ipMetadataHash: toHex(0, { size: 32 }),
               nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -2930,7 +2930,7 @@ describe("Test IpAssetClient", () => {
         royaltyShares: [
           { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
         ],
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -3298,7 +3298,7 @@ describe("Test IpAssetClient", () => {
           royaltyShares: [
             { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
           ],
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -3386,7 +3386,7 @@ describe("Test IpAssetClient", () => {
             { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
           ],
           recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -3697,7 +3697,7 @@ describe("Test IpAssetClient", () => {
             maxRevenueShare: 100,
           },
           recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),

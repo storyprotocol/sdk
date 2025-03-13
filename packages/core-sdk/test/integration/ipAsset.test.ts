@@ -64,7 +64,7 @@ describe("IP Asset Functions", () => {
       const response = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "ipfs://test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataURI: "ipfs://test-nft-uri",
@@ -83,7 +83,7 @@ describe("IP Asset Functions", () => {
         client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId!,
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataHash: "0x123", // Invalid length hash
             nftMetadataHash: toHex("valid-hash", { size: 32 }),
           },
@@ -302,7 +302,7 @@ describe("IP Asset Functions", () => {
       const response = await client.ipAsset.register({
         nftContract,
         tokenId: tokenId!,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -428,7 +428,7 @@ describe("IP Asset Functions", () => {
     it("should mint and register IP", async () => {
       const result = await client.ipAsset.mintAndRegisterIp({
         spgNftContract: nftContract,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -501,7 +501,7 @@ describe("IP Asset Functions", () => {
         spgNftContract: nftContract,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -534,7 +534,7 @@ describe("IP Asset Functions", () => {
         tokenId: tokenId!,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
-        ipMetadata: {
+        ipMetadataInput: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -586,7 +586,7 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -647,7 +647,7 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -719,7 +719,7 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -1055,7 +1055,7 @@ describe("IP Asset Functions", () => {
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "test",
             ipMetadataHash: zeroHash,
             nftMetadataURI: "test",
@@ -1092,7 +1092,7 @@ describe("IP Asset Functions", () => {
             spgNftContract: nftContractWithMintingFee,
             licenseTokenIds: licenseTokenIds!,
             maxRts: MAX_ROYALTY_TOKEN,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "test",
               ipMetadataHash: zeroHash,
               nftMetadataURI: "test",
@@ -1137,7 +1137,7 @@ describe("IP Asset Functions", () => {
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
-          ipMetadata: {
+          ipMetadataInput: {
             ipMetadataURI: "test",
             ipMetadataHash: zeroHash,
             nftMetadataURI: "test",
@@ -1203,7 +1203,7 @@ describe("IP Asset Functions", () => {
               maxRts: MAX_ROYALTY_TOKEN,
               maxRevenueShare: 100,
             },
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "test",
               ipMetadataHash: zeroHash,
               nftMetadataURI: "test",
@@ -1424,7 +1424,7 @@ describe("IP Asset Functions", () => {
           {
             nftContract,
             tokenId: spgTokenId1!,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "test-uri2",
               ipMetadataHash: toHex("test-metadata-hash2", { size: 32 }),
               nftMetadataHash: toHex("test-nft-metadata-hash2", { size: 32 }),
@@ -1433,7 +1433,7 @@ describe("IP Asset Functions", () => {
           {
             nftContract,
             tokenId: spgTokenId2!,
-            ipMetadata: {
+            ipMetadataInput: {
               ipMetadataURI: "test-uri",
               ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
               nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
