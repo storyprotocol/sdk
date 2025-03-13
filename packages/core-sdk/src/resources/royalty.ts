@@ -67,8 +67,8 @@ export class RoyaltyClient {
    * If claimed token is WIP, it will also be converted back to IP.
    *
    * @remarks
-   * Even if there are no child IPs, you must still populate {@link ClaimAllRevenueRequest.currencyTokens}
-   * with the token addresses you wish to claim. This is required for the claim operation to know which
+   * Even if there are no child IPs, you must still populate {@link ClaimAllRevenueRequest.currencyTokens} with
+   * the token addresses you wish to claim. This is required for the claim operation to know which
    * token balances to process.
    */
   public async claimAllRevenue(req: ClaimAllRevenueRequest): Promise<ClaimAllRevenueResponse> {

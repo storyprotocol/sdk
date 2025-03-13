@@ -83,7 +83,7 @@ export type RegisterCommercialUsePILRequest = {
   currency: Address;
   /**
    * The address of the royalty policy contract.
-   * @default 0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP|} policy address if not provided.
    */
   royaltyPolicyAddress?: Address;
   txOptions?: TxOptions;
