@@ -18,16 +18,16 @@ import {
   IpAccountImplClient,
   Multicall3Client,
   SimpleWalletClient,
-  wrappedIpAddress,
   WrappedIpClient,
 } from "../abi/generated";
-import { chain, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { getAssertionDetails } from "../utils/oov3";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
@@ -61,7 +61,6 @@ export class DisputeClient {
     try {
       const liveness = BigInt(request.liveness);
       const bonds = BigInt(request.bond);
-      const tokenAddress = wrappedIpAddress[chain[this.chainId]];
       const [minLiveness, maxLiveness] = await Promise.all([
         this.arbitrationPolicyUmaClient.minLiveness(),
         this.arbitrationPolicyUmaClient.maxLiveness(),
@@ -73,7 +72,7 @@ export class DisputeClient {
       }
 
       const maxBonds = await this.arbitrationPolicyUmaClient.maxBonds({
-        token: tokenAddress,
+        token: WIP_TOKEN_ADDRESS,
       });
       if (bonds > maxBonds) {
         throw new Error(`Bonds must be less than ${maxBonds}.`);
@@ -84,7 +83,7 @@ export class DisputeClient {
           { name: "", type: "address" },
           { name: "", type: "uint256" },
         ],
-        [liveness, tokenAddress, bonds],
+        [liveness, WIP_TOKEN_ADDRESS, bonds],
       );
       const { allowed: isWhiteList } = await this.disputeModuleClient.isWhitelistedDisputeTag({
         tag,

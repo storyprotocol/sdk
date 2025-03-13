@@ -1,5 +1,5 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
+import { StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
 import {
   getStoryClient,
@@ -16,7 +16,6 @@ import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
-  wrappedIpAddress,
 } from "../../src/abi/generated";
 import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
@@ -289,7 +288,7 @@ describe("Dispute Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
