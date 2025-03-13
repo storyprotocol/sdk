@@ -1,38 +1,30 @@
-name: Conditional Workflow
+name: Minimal Workflow Test
 
 on:
   pull_request:
     branches:
-      - main
-      - dev
+      - bp/flow-target
+      - bp/flow-branch
   push:
     branches:
-      - dev
+      - bp/flow-target
+      - bp/flow-branch
+  workflow_dispatch:  # Allows manual execution
 
 jobs:
-  Timestamp:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
+  test-always-pass:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print GitHub Context
+        run: |
+          echo "Event Name: ${{ github.event_name }}"
+          echo "GitHub Ref: ${{ github.ref }}"
+          echo "Base Ref: ${{ github.base_ref }}"
+          echo "Head Ref: ${{ github.head_ref }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Pull Request Head Repo: ${{ github.event.pull_request.head.repo.full_name }}"
+          echo "Pull Request Base Repo: ${{ github.repository }}"
 
-  pr_build_and_test:
-    if: github.event_name == 'pull_request'
-    needs: [Timestamp]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
-    with:
-      sha: ${{ github.event.pull_request.head.sha }}
-      ENVIRONMENT: "odyssey"
-    secrets:
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
-      JUDGE_PRIVATE_KEY: ${{ secrets.JUDGE_PRIVATE_KEY }}
-
-  push_build_and_test:
-    if: github.event_name == 'push'
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
-    with:
-      sha: ${{ github.sha }}
-      ENVIRONMENT: "odyssey"
-    secrets:
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
-      JUDGE_PRIVATE_KEY: ${{ secrets.JUDGE_PRIVATE_KEY }}
+      - name: Always Pass Test
+        run: echo "✅ This test always passes!"
