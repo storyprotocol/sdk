@@ -18,7 +18,8 @@ export type SetPermissionsRequest = {
   permission: AccessPermission;
   /**
    * The function selector string of `to` that can be called by the `signer` on behalf of the IP Account {@link https://docs.story.foundation/docs/ip-account}.
-   * @default `0x00000000`
+   * Be default, it allows all functions.
+   * @default 0x00000000
    */
   func?: string;
   txOptions?: TxOptions;
@@ -41,7 +42,6 @@ export type SetAllPermissionsRequest = {
 };
 /**
  * Permission level
- * @enum {number}
  **/
 export enum AccessPermission {
   /** ABSTAIN means having not enough information to make decision at current level, deferred decision to up. */

@@ -6,11 +6,11 @@ import { EncodedTxData } from "../../abi/generated";
 export type CreateNFTCollectionRequest = {
   name: string;
   symbol: string;
-  /** Whether the minting is public. */
-  isPublicMinting: boolean;
-  /** Whether the minting is open. */
-  mintOpen: boolean;
   /** If true, anyone can mint from the collection. If false, only the addresses with the minter role can mint. */
+  isPublicMinting: boolean;
+  /** Whether the collection is open for minting on creation. */
+  mintOpen: boolean;
+  /** The address to receive mint fees. */
   mintFeeRecipient: Address;
   /** The contract URI for the collection. Follows ERC-7572 standard. See https://eips.ethereum.org/EIPS/eip-7572. */
   contractURI: string;

@@ -17,7 +17,10 @@ export type ClaimableRevenueRequest = {
   /** The revenue token to claim. */
   token: Address;
 };
+
+/** The amount of revenue token claimable. */
 export type ClaimableRevenueResponse = bigint;
+
 export type PayRoyaltyOnBehalfRequest = WithTxOptions &
   WithERC20Options &
   WithWipOptions & {
