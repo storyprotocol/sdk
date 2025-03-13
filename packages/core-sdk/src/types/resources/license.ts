@@ -2,7 +2,7 @@ import { Address, TransactionReceipt } from "viem";
 
 import { WithTxOptions, TxOptions, WithWipOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
-import { LicensingConfig } from "../common";
+import { LicensingConfigInput } from "../common";
 
 export type LicenseApiResponse = {
   data: License;
@@ -58,7 +58,8 @@ export type LicenseTerms = {
   /** The URI of the license terms, which can be used to fetch the offchain license terms. */
   uri: string;
 };
-export type RegisterPILTermsRequest = Omit<
+
+export type LicenseTermsInput = Omit<
   LicenseTerms,
   "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
 > & {
@@ -70,6 +71,8 @@ export type RegisterPILTermsRequest = Omit<
   commercialRevCeiling: bigint | string | number;
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
+};
+export type RegisterPILTermsRequest = LicenseTermsInput & {
   txOptions?: TxOptions;
 };
 export type LicenseTermsIdResponse = bigint;
@@ -188,7 +191,7 @@ export type SetLicensingConfigRequest = {
   /** The address of the license template used. */
   licenseTemplate: Address;
   /** The licensing configuration for the license. */
-  licensingConfig: LicensingConfig;
+  licensingConfig: LicensingConfigInput;
   txOptions?: TxOptions;
 };
 

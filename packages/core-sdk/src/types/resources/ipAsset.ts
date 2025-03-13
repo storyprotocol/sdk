@@ -159,7 +159,7 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
   /** The derivative data to be used for register derivative. */
   derivData: DerivativeDataInput;
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.

@@ -1,6 +1,6 @@
 import { Address, PublicClient, zeroAddress } from "viem";
 
-import { PIL_TYPE, LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
+import { PIL_TYPE, LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import { validateAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
@@ -79,7 +79,7 @@ export function getLicenseTermByType(
 }
 
 export async function validateLicenseTerms(
-  params: RegisterPILTermsRequest,
+  params: LicenseTermsInput,
   rpcClient: PublicClient,
 ): Promise<LicenseTerms> {
   const { royaltyPolicy, currency } = params;

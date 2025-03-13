@@ -27,8 +27,8 @@ import { getPermissionSignature, getDeadline } from "../utils/sign";
 import { chain, validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import {
-  ValidatedLicenseData,
   LicenseData,
+  LicenseDataInput,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
   RegisterGroupAndAttachLicenseAndAddIpsRequest,
@@ -385,7 +385,7 @@ export class GroupClient {
     }
   }
 
-  private getLicenseData(licenseData: LicenseData[] | LicenseData): ValidatedLicenseData[] {
+  private getLicenseData(licenseData: LicenseDataInput[] | LicenseDataInput): LicenseData[] {
     const isArray = Array.isArray(licenseData);
     if ((isArray && licenseData.length === 0) || !licenseData) {
       throw new Error("License data is required.");

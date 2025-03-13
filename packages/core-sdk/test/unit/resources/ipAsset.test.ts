@@ -15,7 +15,7 @@ import {
 import chaiAsPromised from "chai-as-promised";
 import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
-import { LicensingConfig } from "../../../src/types/common";
+import { LicensingConfigInput } from "../../../src/types/common";
 import { DerivativeDataInput } from "../../../src/types/resources/ipAsset";
 import { txHash, walletAddress } from "../mockData";
 const {
@@ -47,7 +47,7 @@ const licenseTerms: LicenseTerms = {
   uri: "",
 };
 
-const licensingConfig: LicensingConfig = {
+const licensingConfig: LicensingConfigInput = {
   isSet: true,
   mintingFee: BigInt(1),
   licensingHook: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
