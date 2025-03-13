@@ -27,7 +27,7 @@ jobs:
           echo "Pull Request Head Repo: ${{ github.event.pull_request.head.repo.full_name }}"
           echo "Pull Request Base Repo: ${{ github.repository }}"
 
-  pr_build_and_test:
+  pr_build_and_test:  # ✅ Runs unit tests (without JUDGE_PRIVATE_KEY)
     needs: [Timestamp]
     if: > 
       github.event_name == 'pull_request' &&
@@ -40,7 +40,7 @@ jobs:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}  # ✅ Removed JUDGE_PRIVATE_KEY
 
-  push_build_and_test:
+  push_build_and_test:  # ✅ Runs integration tests (with JUDGE_PRIVATE_KEY)
     if: ${{ github.event_name == 'push' }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
     with:
@@ -48,4 +48,5 @@ jobs:
       ENVIRONMENT: "odyssey"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}  # ✅ Removed JUDGE_PRIVATE_KEY
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+      JUDGE_PRIVATE_KEY: ${{ secrets.JUDGE_PRIVATE_KEY }}  # ✅ Kept JUDGE_PRIVATE_KEY only here
