@@ -110,7 +110,7 @@ export type AttachLicenseTermsRequest = {
   licenseTermsId: string | number | bigint;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} if not provided.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   txOptions?: TxOptions;
@@ -127,7 +127,7 @@ export type MintLicenseTokensRequest = {
   licenseTermsId: string | number | bigint;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} if not provided.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   /** The maximum minting fee that the caller is willing to pay. if set to 0 then no limit. */
@@ -166,7 +166,7 @@ export type PredictMintingLicenseFeeRequest = {
   amount: string | number | bigint;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} if not provided.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   receiver?: Address;

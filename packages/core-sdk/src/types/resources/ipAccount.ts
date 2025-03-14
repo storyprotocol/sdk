@@ -22,7 +22,7 @@ export type IPAccountExecuteResponse = {
 };
 
 export type IPAccountExecuteWithSigRequest = {
-  /** The IP ID to get IP Account {@link https://docs.story.foundation/docs/ip-account}.*/
+  /** The IP ID of the IP Account {@link https://docs.story.foundation/docs/ip-account}.*/
   ipId: Address;
   /** The recipient of the transaction. */
   to: Address;

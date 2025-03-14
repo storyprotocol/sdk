@@ -9,7 +9,7 @@ export type LicenseData = {
   licensingConfig?: LicensingConfig;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} if not provided.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
    */
   licenseTemplate?: Address;
 };
