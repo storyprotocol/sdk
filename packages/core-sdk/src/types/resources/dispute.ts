@@ -53,8 +53,11 @@ export type CancelDisputeResponse = {
 
 export type ResolveDisputeRequest = {
   disputeId: number | string | bigint;
-  /** The data to resolve the dispute. */
-  data: Address;
+  /**
+   * The data to resolve the dispute.
+   * Use `"0x"` if no additional data is needed.
+   */
+  data: Hex;
   txOptions?: TxOptions;
 };
 
