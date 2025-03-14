@@ -39,8 +39,11 @@ export function getXprvFromPrivateKey(privateKey: string | Hex): string {
     throw new Error("Private key must be 32 bytes (64 hex characters)");
   }
 
+  // Create a salt by hashing the private key with SHA256
+  const salt = crypto.createHash("sha256").update(Buffer.from(pkHex, "hex")).digest();
+
   // Derive additional entropy using HMAC-SHA512
-  const hmac = crypto.createHmac("sha512", "seed");
+  const hmac = crypto.createHmac("sha512", salt);
   hmac.update(Buffer.from(pkHex, "hex"));
   const seedBuffer = hmac.digest();
 
