@@ -10,11 +10,17 @@ import { WithERC20Options } from "../options";
 import { TokenAmountInput } from "../common";
 
 export type ClaimableRevenueRequest = {
+  /** The IP ID of the royalty vault. */
   royaltyVaultIpId: Address;
+  /** The address of the royalty token holder. */
   claimer: Address;
+  /** The revenue token to claim. */
   token: Address;
 };
+
+/** The amount of revenue token claimable. */
 export type ClaimableRevenueResponse = bigint;
+
 export type PayRoyaltyOnBehalfRequest = WithTxOptions &
   WithERC20Options &
   WithWipOptions & {

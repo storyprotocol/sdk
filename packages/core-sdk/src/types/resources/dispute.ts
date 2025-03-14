@@ -41,6 +41,7 @@ export type RaiseDisputeResponse = {
 
 export type CancelDisputeRequest = {
   disputeId: number | string | bigint;
+  /** Additional data used in the cancellation process. */
   data?: Address;
   txOptions?: TxOptions;
 };
@@ -52,6 +53,7 @@ export type CancelDisputeResponse = {
 
 export type ResolveDisputeRequest = {
   disputeId: number | string | bigint;
+  /** The data to resolve the dispute. */
   data: Address;
   txOptions?: TxOptions;
 };

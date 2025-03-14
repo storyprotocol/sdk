@@ -76,11 +76,8 @@ export class GroupClient {
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
   }
   /** Registers a Group IPA.
-   * @param request - The request object containing necessary data to register group.
-   *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
-   * @emits PGroupRegistered (groupId, groupPool);
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroup(request: RegisterGroupRequest): Promise<RegisterGroupResponse> {
     try {
@@ -109,8 +106,8 @@ export class GroupClient {
     }
   }
   /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * for a list of on-chain events emitted when an IP is minted and registered, license terms are attached to an IP, and it is added to a group.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -186,8 +183,8 @@ export class GroupClient {
   }
 
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * for a list of on-chain events emitted when an IP is registered, license terms are attached to an IP, and it is added to a group.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async registerIpAndAttachLicenseAndAddToGroup(
     request: RegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -298,8 +295,8 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
-   * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP .
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroupAndAttachLicense(
     request: RegisterGroupAndAttachLicenseRequest,
@@ -330,8 +327,8 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
-   * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP, and individual IPs are added to a group.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroupAndAttachLicenseAndAddIps(
     request: RegisterGroupAndAttachLicenseAndAddIpsRequest,

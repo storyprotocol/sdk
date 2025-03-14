@@ -17,14 +17,6 @@ import {
 
 /**
  * Get the signature for setting permissions.
- * @param param - The parameter object containing necessary data to get the signature.
- * @param param.ipId - The IP ID.
- * @param param.deadline - The deadline.
- * @param param.nonce - The nonce.
- * @param param.wallet - The wallet client.
- * @param param.chainId - The chain ID.
- * @param param.permissionFunc - The permission function,default function is setPermission.
- * @returns A Promise that resolves to the signature.
  */
 export const getPermissionSignature = async (
   param: PermissionSignatureRequest,
@@ -76,15 +68,6 @@ export const getDeadline = (unixTimestamp: bigint, deadline?: bigint | number | 
 
 /**
  * Get the signature.
- * @param param - The parameter object containing necessary data to get the signature.
- * @param param.state - The IP Account's state.
- * @param param.to - The recipient address.
- * @param param.encodeData - The encoded data.
- * @param param.wallet - The wallet client.
- * @param param.verifyingContract - The verifying contract.
- * @param param.deadline - The deadline.
- * @param param.chainId - The chain ID.
- * @returns A Promise that resolves to the signature.
  */
 export const getSignature = async ({
   state,
