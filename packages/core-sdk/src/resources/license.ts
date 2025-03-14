@@ -83,8 +83,7 @@ export class LicenseClient {
   /**
    * Registers new license terms and return the ID of the newly registered license terms.
    *
-   * Emits an on-chain `LicenseTermsRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | ILicenseTemplate}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
   public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
     try {
@@ -122,8 +121,7 @@ export class LicenseClient {
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
    *
-   * Emits an on-chain `LicenseTermsRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | ILicenseTemplate}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
   public async registerNonComSocialRemixingPIL(
     request?: RegisterNonComSocialRemixingPILRequest,
@@ -163,8 +161,7 @@ export class LicenseClient {
   /**
    * Convenient function to register a PIL commercial use license to the registry.
    *
-   * Emits an on-chain `LicenseTermsRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | ILicenseTemplate}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
   public async registerCommercialUsePIL(
     request: RegisterCommercialUsePILRequest,
@@ -211,8 +208,7 @@ export class LicenseClient {
   /**
    * Convenient function to register a PIL commercial Remix license to the registry.
    *
-   * Emits an on-chain `LicenseTermsRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | ILicenseTemplate}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
   public async registerCommercialRemixPIL(
     request: RegisterCommercialRemixPILRequest,
@@ -327,8 +323,7 @@ export class LicenseClient {
    * IP owners can configure the minting fee of their IPs or
    * configure the minting fee module to determine the minting fee.
    *
-   * Emits an on-chain `LicenseTokensMinted` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L34 | ILicensingModule}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L34 | `LicenseTokensMinted`} event.
    */
   public async mintLicenseTokens(
     request: MintLicenseTokensRequest,

@@ -19,52 +19,56 @@ export type RegisterNonComSocialRemixingPILRequest = {
 };
 
 /**
- * This structure defines the terms for a Programmable IP License (PIL). These terms can be attached to IP Assets. The legal document of the PIL can be found in this repository.
- * @type LicenseTerms
+ * This structure defines the terms for a Programmable IP License (PIL).
+ * These terms can be attached to IP Assets.
  **/
 export type LicenseTerms = {
-  /*Indicates whether the license is transferable or not.*/
+  /** Indicates whether the license is transferable or not. */
   transferable: boolean;
-  /*The address of the royalty policy contract which required to StoryProtocol in advance.*/
+  /** The address of the royalty policy contract which required to StoryProtocol in advance. */
   royaltyPolicy: Address;
-  /*The default minting fee to be paid when minting a license.*/
+  /** The default minting fee to be paid when minting a license. */
   defaultMintingFee: bigint;
-  /*The expiration period of the license.*/
+  /** The expiration period of the license. */
   expiration: bigint;
-  /*Indicates whether the work can be used commercially or not.*/
+  /** Indicates whether the work can be used commercially or not. */
   commercialUse: boolean;
-  /*Whether attribution is required when reproducing the work commercially or not.*/
+  /** Whether attribution is required when reproducing the work commercially or not. */
   commercialAttribution: boolean;
-  /*Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced.*/
+  /** Commercializers that are allowed to commercially exploit the work. If zero address, then no restrictions is enforced. */
   commercializerChecker: Address;
-  /*The data to be passed to the commercializer checker contract.*/
+  /** The data to be passed to the commercializer checker contract. */
   commercializerCheckerData: Address;
-  /**Percentage of revenue that must be shared with the licensor. Must be from 0-100.*/
+  /** *Percentage of revenue that must be shared with the licensor. Must be from 0-100. */
   commercialRevShare: number;
-  /*The maximum revenue that can be generated from the commercial use of the work.*/
+  /** The maximum revenue that can be generated from the commercial use of the work. */
   commercialRevCeiling: bigint;
-  /*Indicates whether the licensee can create derivatives of his work or not.*/
+  /** Indicates whether the licensee can create derivatives of his work or not. */
   derivativesAllowed: boolean;
-  /*Indicates whether attribution is required for derivatives of the work or not.*/
+  /** Indicates whether attribution is required for derivatives of the work or not. */
   derivativesAttribution: boolean;
-  /*Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not.*/
+  /** Indicates whether the licensor must approve derivatives of the work before they can be linked to the licensor IP ID or not. */
   derivativesApproval: boolean;
-  /*Indicates whether the licensee must license derivatives of the work under the same terms or not.*/
+  /** Indicates whether the licensee must license derivatives of the work under the same terms or not. */
   derivativesReciprocal: boolean;
-  /*The maximum revenue that can be generated from the derivative use of the work.*/
+  /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint;
-  /*The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol.*/
+  /** The ERC20 token to be used to pay the minting fee. the token must be registered in story protocol. */
   currency: Address;
-  /*The URI of the license terms, which can be used to fetch the offchain license terms.*/
+  /** The URI of the license terms, which can be used to fetch the offchain license terms. */
   uri: string;
 };
 export type RegisterPILTermsRequest = Omit<
   LicenseTerms,
   "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
 > & {
+  /** The default minting fee to be paid when minting a license. */
   defaultMintingFee: bigint | string | number;
+  /** The expiration period of the license. */
   expiration: bigint | string | number;
+  /** The maximum revenue that can be generated from the commercial use of the work. */
   commercialRevCeiling: bigint | string | number;
+  /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
   txOptions?: TxOptions;
 };
@@ -79,7 +83,7 @@ export type RegisterPILResponse = {
 export type RegisterCommercialUsePILRequest = {
   /** The fee to be paid when minting a license. */
   defaultMintingFee: string | number | bigint;
-  /** The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol. */
+  /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
   /**
    * The address of the royalty policy contract.
@@ -92,9 +96,12 @@ export type RegisterCommercialUsePILRequest = {
 export type RegisterCommercialRemixPILRequest = {
   /** The fee to be paid when minting a license. */
   defaultMintingFee: string | number | bigint;
-  /** Percentage of revenue that must be shared with the licensor. Must be between 0 and 100 (where 100% represents 100_000_000). */
+  /**
+   * Percentage of revenue that must be shared with the licensor.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
   commercialRevShare: number;
-  /** The ERC20 token to be used to pay the minting fee and the token must be registered in story protocol. */
+  /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
   /**
    * The address of the royalty policy contract.

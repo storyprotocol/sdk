@@ -171,8 +171,7 @@ export class IPAssetClient {
   /**
    * Registers an NFT as IP, creating a corresponding IP record.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
     try {
@@ -261,8 +260,7 @@ export class IPAssetClient {
   /**
    * Batch registers an NFT as IP, creating a corresponding IP record.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async batchRegister(request: BatchRegisterRequest): Promise<BatchRegisterResponse> {
     try {
@@ -510,9 +508,7 @@ export class IPAssetClient {
   /**
    * Mint an NFT from a collection and register it as an IP.
    *
-   * Emits on-chain `IPRegistered` and `LicenseTermsAttached` events.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
    */
   public async mintAndRegisterIpAssetWithPilTerms(
     request: MintAndRegisterIpAssetWithPilTermsRequest,
@@ -562,9 +558,7 @@ export class IPAssetClient {
   /**
    * Batch mint an NFT from a collection and register it as an IP.
    *
-   * Emits on-chain `IPRegistered` and `LicenseTermsAttached` events.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
    */
   public async batchMintAndRegisterIpAssetWithPilTerms(
     request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
@@ -621,9 +615,7 @@ export class IPAssetClient {
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.
    *
-   * Emits on-chain `IPRegistered` and `LicenseTermsAttached` events.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
    */
   public async registerIpAndAttachPilTerms(
     request: RegisterIpAndAttachPilTermsRequest,
@@ -718,8 +710,7 @@ export class IPAssetClient {
   /**
    * Register the given NFT as a derivative IP with metadata without using license tokens.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async registerDerivativeIp(
     request: RegisterIpAndMakeDerivativeRequest,
@@ -794,8 +785,7 @@ export class IPAssetClient {
   /**
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIpAndMakeDerivative(
     request: MintAndRegisterIpAndMakeDerivativeRequest,
@@ -839,8 +829,7 @@ export class IPAssetClient {
   /**
    * Batch mint an NFT from a collection and register it as a derivative IP without license tokens.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async batchMintAndRegisterIpAndMakeDerivative(
     request: BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -881,8 +870,7 @@ export class IPAssetClient {
   /**
    * Mint an NFT from a SPGNFT collection and register it with metadata as an IP.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIp(request: MintAndRegisterIpRequest): Promise<RegisterIpResponse> {
     try {
@@ -919,8 +907,7 @@ export class IPAssetClient {
   /**
    * Register Programmable IP License Terms (if unregistered) and attach it to IP.
    *
-   * Emits an on-chain `LicenseTermsAttached` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | ILicensingModule}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} event.
    */
   public async registerPilTermsAndAttach(
     request: RegisterPilTermsAndAttachRequest,
@@ -1003,8 +990,7 @@ export class IPAssetClient {
    * Mint an NFT from a collection and register it as a derivative IP using license tokens.
    * Requires caller to have the minter role or the SPG NFT to allow public minting. Caller must own the license tokens and have approved DerivativeWorkflows to transfer them.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
     request: MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
@@ -1058,8 +1044,7 @@ export class IPAssetClient {
   /**
    * Register the given NFT as a derivative IP using license tokens.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async registerIpAndMakeDerivativeWithLicenseTokens(
     request: RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
@@ -1136,12 +1121,11 @@ export class IPAssetClient {
   }
 
   /**
-   * Register the given NFT and attach license terms and distribute royalty tokens. In order to successfully distribute royalty tokens, the first license terms attached to the IP must be
-   * a commercial license.
+   * Register the given NFT and attach license terms and distribute royalty
+   * tokens. In order to successfully distribute royalty tokens, the first
+   * license terms attached to the IP must be a commercial license.
    *
-   * Emits on-chain `IPRegistered`, and `IpRoyaltyVaultDeployed` events.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88 | IRoyaltyModule}
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88 | `IpRoyaltyVaultDeployed`} events.
    */
   public async registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
@@ -1247,9 +1231,7 @@ export class IPAssetClient {
    * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.  In order to successfully distribute royalty tokens, the license terms attached to the IP must be
    * a commercial license.
    *
-   * Emits on-chain `IPRegistered` and `IpRoyaltyVaultDeployed` events.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| IRoyaltyModule}
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| `IpRoyaltyVaultDeployed`} events.
    */
   public async registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens(
     request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
@@ -1361,9 +1343,7 @@ export class IPAssetClient {
   /**
    * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
    *
-   * Emits on-chain `IPRegistered` and `IpRoyaltyVaultDeployed` events.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| IRoyaltyModule}
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| `IpRoyaltyVaultDeployed`} events.
    */
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
@@ -1425,8 +1405,7 @@ export class IPAssetClient {
   /**
    * Mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
    *
-   * Emits on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,

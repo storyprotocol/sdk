@@ -102,7 +102,7 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
   allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsData[];
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
@@ -160,7 +160,7 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
   /** The derivative data to be used for register derivative. */
   derivData: DerivativeData;
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -186,7 +186,7 @@ type IPMetadataInfo = {
 export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
   WithWipOptions & {
     spgNftContract: Address;
-    /** The address of the recipient of the minted NFT. If not provided, the function will use the user's own wallet address. */
+    /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
     recipient?: Address;
     /**
      * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -215,7 +215,7 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: string[] | bigint[] | number[];
-  /** The address of the recipient of the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number | string;
@@ -366,7 +366,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   licenseTermsData: LicenseTermsData[];
   /** Authors of the IP and their shares of the royalty tokens */
   royaltyShares: RoyaltyShare[];
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo &
@@ -391,7 +391,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
    * @default true
    */
   allowDuplicates?: boolean;
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & IPMetadataInfo &

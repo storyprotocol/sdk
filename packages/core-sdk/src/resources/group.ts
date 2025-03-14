@@ -77,8 +77,7 @@ export class GroupClient {
   }
   /** Registers a Group IPA.
    *
-   * Emits an on-chain `IPGroupRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroup(request: RegisterGroupRequest): Promise<RegisterGroupResponse> {
     try {
@@ -108,8 +107,7 @@ export class GroupClient {
   }
   /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -186,8 +184,7 @@ export class GroupClient {
 
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
    *
-   * Emits an on-chain `IPRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async registerIpAndAttachLicenseAndAddToGroup(
     request: RegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -299,8 +296,7 @@ export class GroupClient {
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
    *
-   * Emits an on-chain `IPGroupRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroupAndAttachLicense(
     request: RegisterGroupAndAttachLicenseRequest,
@@ -332,8 +328,7 @@ export class GroupClient {
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    *
-   * Emits an on-chain `IPGroupRegistered` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroupAndAttachLicenseAndAddIps(
     request: RegisterGroupAndAttachLicenseAndAddIpsRequest,

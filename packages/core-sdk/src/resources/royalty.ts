@@ -319,6 +319,7 @@ export class RoyaltyClient {
 
   /**
    * Get total amount of revenue token claimable by a royalty token holder.
+   * Returns the amount of revenue token claimable by the claimer.
    */
   public async claimableRevenue(
     request: ClaimableRevenueRequest,

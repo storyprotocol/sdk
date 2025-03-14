@@ -46,8 +46,7 @@ export class PermissionClient {
    * By default, all policies are set to ABSTAIN, which means that the permission is not set.
    * The owner of ipAccount by default has all permission.
    *
-   * Emits an on-chain `PermissionSet` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | `PermissionSet`} event.
    */
   public async setPermission(request: SetPermissionsRequest): Promise<SetPermissionsResponse> {
     try {
@@ -82,8 +81,7 @@ export class PermissionClient {
   /**
    * Specific permission overrides wildcard permission with signature.
    *
-   * Emits an on-chain `PermissionSet` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | `PermissionSet`} event.
    */
   public async createSetPermissionSignature(
     request: CreateSetPermissionSignatureRequest,
@@ -152,8 +150,7 @@ export class PermissionClient {
   /**
    * Sets permission to a signer for all functions across all modules.
    *
-   * Emits an on-chain `PermissionSet` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | `PermissionSet`} event.
    */
   public async setAllPermissions(
     request: SetAllPermissionsRequest,
@@ -186,8 +183,7 @@ export class PermissionClient {
   /**
    * Sets a batch of permissions in a single transaction.
    *
-   * Emits an on-chain `PermissionSet` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | `PermissionSet`} event.
    */
   public async setBatchPermissions(
     request: SetBatchPermissionsRequest,
@@ -227,8 +223,7 @@ export class PermissionClient {
   /**
    * Sets a batch of permissions in a single transaction with signature.
    *
-   * Emits an on-chain `PermissionSet` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | IAccessController}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/access/IAccessController.sol#L13 | `PermissionSet`} event.
    */
   public async createBatchPermissionSignature(
     request: CreateBatchPermissionSignatureRequest,

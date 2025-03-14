@@ -42,9 +42,12 @@ export type SetAllPermissionsRequest = {
 };
 /**
  * Permission level
- **/
+ */
 export enum AccessPermission {
-  /** ABSTAIN means having not enough information to make decision at current level, deferred decision to up. */
+  /**
+   * ABSTAIN means having not enough information to make decision at
+   * current level, deferred decision to up.
+   */
   ABSTAIN,
   /** ALLOW means the permission is granted to transaction signer to call the function. */
   ALLOW,

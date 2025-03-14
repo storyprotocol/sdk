@@ -51,8 +51,7 @@ export class DisputeClient {
   /**
    * Raises a dispute on a given ipId.
    *
-   * Emits an on-chain `DisputeRaised` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L64 | IDisputeModule.sol}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L64 | `DisputeRaised`} event.
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
@@ -140,8 +139,7 @@ export class DisputeClient {
   /**
    * Cancels an ongoing dispute
    *
-   * Emits an on-chain `DisputeCancelled` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L84 | IDisputeModule.sol}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L84 | `DisputeCancelled`} event.
    */
   public async cancelDispute(request: CancelDisputeRequest): Promise<CancelDisputeResponse> {
     try {
@@ -171,8 +169,7 @@ export class DisputeClient {
   /**
    * Resolves a dispute after it has been judged.
    *
-   * Emits an on-chain `DisputeResolved` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L104 | IDisputeModule.sol}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L104 | `DisputeResolved`} event.
    */
   public async resolveDispute(request: ResolveDisputeRequest): Promise<ResolveDisputeResponse> {
     try {
@@ -202,8 +199,7 @@ export class DisputeClient {
    * Tags a derivative if a parent has been tagged with an infringement tag
    * or a group ip if a group member has been tagged with an infringement tag.
    *
-   * Emits an on-chain `IpTaggedOnRelatedIpInfringement` event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L93 | IDisputeModule.sol}
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L93 | `IpTaggedOnRelatedIpInfringement`} event.
    */
   public async tagIfRelatedIpInfringed(
     request: TagIfRelatedIpInfringedRequest,
