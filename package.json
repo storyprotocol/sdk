@@ -10,13 +10,11 @@
     "lint": "turbo run lint",
     "fix": "turbo run fix",
     "test": "turbo run test --no-cache --concurrency=1",
-    "test:integration": "turbo run test:integration --no-cache --filter=!@story-protocol/react-sdk",
-    "prepare": "husky install"
+    "test:integration": "turbo run test:integration --no-cache --filter=!@story-protocol/react-sdk"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
-    "turbo": "^1.10.13",
-    "husky": "^8.0.0"
+    "turbo": "^1.10.13"
   },
   "engines": {
     "node": "^20.0.0"
