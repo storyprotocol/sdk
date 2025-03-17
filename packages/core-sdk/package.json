@@ -29,6 +29,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@scure/bip32": "^1.6.2",
     "abitype": "^0.10.2",
     "axios": "^1.5.1",
     "bs58": "^6.0.0",
