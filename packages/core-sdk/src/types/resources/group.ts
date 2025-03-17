@@ -121,11 +121,11 @@ export type CollectAndDistributeGroupRoyaltiesRequest = {
 export type CollectAndDistributeGroupRoyaltiesResponse = {
   txHash: Hash;
   receipts?: TransactionReceipt[];
-  collectedRoyalties?: GroupingModuleCollectedRoyaltiesToGroupPoolEvent[];
+  collectedRoyalties?: Omit<GroupingModuleCollectedRoyaltiesToGroupPoolEvent, "pool">[];
   royaltiesDistributed?: {
     ipId: Address;
     amount: bigint;
-    currencyToken: Address;
+    token: Address;
     amountAfterFee: bigint;
   }[];
 };

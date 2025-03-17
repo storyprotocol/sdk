@@ -448,14 +448,19 @@ export class GroupClient {
       if (!receipt) {
         return { txHash };
       }
-      const collectedRoyalties =
-        this.groupingModuleEventClient.parseTxCollectedRoyaltiesToGroupPoolEvent(receipt);
+      const collectedRoyalties = this.groupingModuleEventClient
+        .parseTxCollectedRoyaltiesToGroupPoolEvent(receipt)
+        .map(({ groupId, amount, token }) => ({
+          groupId,
+          amount,
+          token,
+        }));
       const royaltiesDistributed = this.royaltyModuleEventClient
         .parseTxRoyaltyPaidEvent(receipt)
         .map(({ receiverIpId, amount, token, amountAfterFee }) => ({
           ipId: receiverIpId,
           amount: amount,
-          currencyToken: token,
+          token: token,
           amountAfterFee: amountAfterFee,
         }));
       return { txHash, collectedRoyalties, royaltiesDistributed };
