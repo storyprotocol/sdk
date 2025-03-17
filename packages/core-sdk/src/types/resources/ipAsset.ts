@@ -174,7 +174,7 @@ export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & 
 };
 
 type WithIpMetadataInput = {
-  ipMetadataInput?: {
+  ipMetadata?: {
     ipMetadataURI?: string;
     ipMetadataHash?: Hex;
     nftMetadataURI?: string;
