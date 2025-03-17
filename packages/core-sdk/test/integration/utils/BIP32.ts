@@ -30,9 +30,7 @@ export function getPrivateKeyFromXprv(xprv: string): Hex {
  */
 export function getXprvFromPrivateKey(privateKey: string | Hex): string {
   // Remove 0x prefix if present
-  const pkHex = privateKey.toString().startsWith("0x")
-    ? privateKey.toString().slice(2)
-    : privateKey.toString();
+  const pkHex = privateKey.toString().replace(/^0x/, "");
 
   // Validate private key length (must be exactly 32 bytes / 64 hex characters)
   if (pkHex.length !== 64) {
