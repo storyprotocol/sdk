@@ -17,7 +17,6 @@ import {
   royaltyPolicyLapAddress,
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
-  wrappedIpAddress,
   erc20Address,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
@@ -270,7 +269,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -356,7 +355,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -387,7 +386,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "test case",
             },
             licensingConfig: {
@@ -462,7 +461,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -572,7 +571,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "test case",
               },
               licensingConfig: {
@@ -954,7 +953,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "test case",
               },
             },
@@ -1313,7 +1312,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: wrappedIpAddress[aeneid],
+                  currency: WIP_TOKEN_ADDRESS,
                   uri: "",
                 },
                 licensingConfig: {
@@ -1349,7 +1348,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: wrappedIpAddress[aeneid],
+                  currency: WIP_TOKEN_ADDRESS,
                   uri: "",
                 },
                 licensingConfig: {
@@ -1490,7 +1489,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "",
               },
               licensingConfig: {
@@ -1534,7 +1533,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "test case",
               },
               licensingConfig: {

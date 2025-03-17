@@ -2,12 +2,11 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
 import { aeneid, getStoryClient, mintBySpg } from "./utils/util";
-import { StoryClient } from "../../src";
+import { StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import {
   evenSplitGroupPoolAddress,
   piLicenseTemplateAddress,
   royaltyPolicyLrpAddress,
-  wrappedIpAddress,
 } from "../../src/abi/generated";
 
 chai.use(chaiAsPromised);
@@ -61,7 +60,7 @@ describe("Group Functions", () => {
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
-            currency: wrappedIpAddress[aeneid],
+            currency: WIP_TOKEN_ADDRESS,
             uri: "test case",
           },
           licensingConfig: {
