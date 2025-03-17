@@ -43,7 +43,7 @@ import {
   getRevenueShare,
   validateLicenseTerms,
 } from "../utils/licenseTermsHelper";
-import { chain, getAddress, validateAddress } from "../utils/utils";
+import { chain, validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
@@ -170,10 +170,9 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyAddress:
-          (request.royaltyPolicyAddress &&
-            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[chain[this.chainId]],
+        royaltyPolicyAddress: validateAddress(
+          request.royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+        ),
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
       if (licenseTermsId !== 0n) {
@@ -217,10 +216,9 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
-        royaltyPolicyAddress:
-          (request.royaltyPolicyAddress &&
-            getAddress(request.royaltyPolicyAddress, "request.royaltyPolicyAddress")) ||
-          royaltyPolicyLapAddress[chain[this.chainId]],
+        royaltyPolicyAddress: validateAddress(
+          request.royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+        ),
         commercialRevShare: request.commercialRevShare,
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
@@ -263,7 +261,7 @@ export class LicenseClient {
     try {
       request.licenseTermsId = BigInt(request.licenseTermsId);
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.ipId, "request.ipId"),
+        id: validateAddress(request.ipId),
       });
       if (!isRegistered) {
         throw new Error(`The IP with id ${request.ipId} is not registered.`);
@@ -277,10 +275,9 @@ export class LicenseClient {
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.ipId,
-          licenseTemplate:
-            (request.licenseTemplate &&
-              getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-            this.licenseTemplateClient.address,
+          licenseTemplate: validateAddress(
+            request.licenseTemplate || this.licenseTemplateClient.address,
+          ),
           licenseTermsId: request.licenseTermsId,
         });
       if (isAttachedLicenseTerms) {
@@ -329,15 +326,12 @@ export class LicenseClient {
     request: MintLicenseTokensRequest,
   ): Promise<MintLicenseTokensResponse> {
     try {
-      const receiver =
-        (request.receiver && getAddress(request.receiver, "request.receiver")) ||
-        this.walletAddress;
+      const receiver = validateAddress(request.receiver || this.walletAddress);
       const req: LicensingModuleMintLicenseTokensRequest = {
-        licensorIpId: getAddress(request.licensorIpId, "request.licensorIpId"),
-        licenseTemplate:
-          (request.licenseTemplate &&
-            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-          this.licenseTemplateClient.address,
+        licensorIpId: validateAddress(request.licensorIpId),
+        licenseTemplate: validateAddress(
+          request.licenseTemplate || this.licenseTemplateClient.address,
+        ),
         licenseTermsId: BigInt(request.licenseTermsId),
         amount: BigInt(request.amount || 1),
         receiver,
@@ -349,7 +343,7 @@ export class LicenseClient {
         throw new Error(`The maxMintingFee must be greater than 0.`);
       }
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.licensorIpId, "request.licensorIpId"),
+        id: validateAddress(request.licensorIpId),
       });
       if (!isLicenseIpIdRegistered) {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
@@ -363,10 +357,9 @@ export class LicenseClient {
       const isAttachedLicenseTerms =
         await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
           ipId: request.licensorIpId,
-          licenseTemplate:
-            (request.licenseTemplate &&
-              getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-            this.licenseTemplateClient.address,
+          licenseTemplate: validateAddress(
+            request.licenseTemplate || this.licenseTemplateClient.address,
+          ),
           licenseTermsId: req.licenseTermsId,
         });
       if (!isAttachedLicenseTerms) {
@@ -449,7 +442,7 @@ export class LicenseClient {
   ): Promise<LicensingModulePredictMintingLicenseFeeResponse> {
     try {
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.licensorIpId, "request.licensorIpId"),
+        id: validateAddress(request.licensorIpId),
       });
       if (!isLicenseIpIdRegistered) {
         throw new Error(`The licensor IP with id ${request.licensorIpId} is not registered.`);
@@ -463,15 +456,12 @@ export class LicenseClient {
       }
       const object: LicensingModulePredictMintingLicenseFeeRequest = {
         ...request,
-        receiver:
-          (request.receiver && getAddress(request.receiver, "request.receiver")) ||
-          this.wallet.account!.address,
+        receiver: validateAddress(request.receiver || this.walletAddress),
         amount: BigInt(request.amount),
         royaltyContext: zeroAddress,
-        licenseTemplate:
-          (request.licenseTemplate &&
-            getAddress(request.licenseTemplate, "request.licenseTemplate")) ||
-          this.licenseTemplateClient.address,
+        licenseTemplate: validateAddress(
+          request.licenseTemplate || this.licenseTemplateClient.address,
+        ),
         licenseTermsId,
       };
       return await this.licensingModuleClient.predictMintingLicenseFee(object);

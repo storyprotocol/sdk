@@ -32,7 +32,7 @@ import {
   SimpleWalletClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
+import { validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
@@ -326,12 +326,12 @@ export class RoyaltyClient {
   ): Promise<ClaimableRevenueResponse> {
     try {
       const proxyAddress = await this.getRoyaltyVaultAddress(
-        getAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
+        validateAddress(request.royaltyVaultIpId),
       );
       const ipRoyaltyVault = new IpRoyaltyVaultImplReadOnlyClient(this.rpcClient, proxyAddress);
       return await ipRoyaltyVault.claimableRevenue({
-        claimer: getAddress(request.claimer, "request.account"),
-        token: getAddress(request.token, "request.token"),
+        claimer: validateAddress(request.claimer),
+        token: validateAddress(request.token),
       });
     } catch (error) {
       handleError(error, "Failed to calculate claimable revenue");
@@ -343,7 +343,7 @@ export class RoyaltyClient {
    */
   public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<Address> {
     const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-      id: getAddress(royaltyVaultIpId, "royaltyVaultIpId"),
+      id: validateAddress(royaltyVaultIpId),
     });
     if (!isRoyaltyVaultIpIdRegistered) {
       throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);

@@ -53,7 +53,7 @@ describe("Test IPAccountClient", () => {
         await ipAccountClient.execute(request);
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to execute the IP Account transaction: request.ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to execute the IP Account transaction: Invalid address: 0x123.",
         );
       }
     });
@@ -114,7 +114,7 @@ describe("Test IPAccountClient", () => {
         await ipAccountClient.executeWithSig(request);
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to execute with signature for the IP Account transaction: request.ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to execute with signature for the IP Account transaction: Invalid address: 0x123.",
         );
       }
     });
@@ -174,7 +174,7 @@ describe("Test IPAccountClient", () => {
         await ipAccountClient.getIpAccountNonce("0x123");
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to get the IP Account nonce: ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to get the IP Account nonce: Invalid address: 0x123.",
         );
       }
     });
@@ -191,9 +191,7 @@ describe("Test IPAccountClient", () => {
       try {
         await ipAccountClient.getToken("0x123");
       } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to get the token: ipId address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-        );
+        expect((err as Error).message).equal("Failed to get the token: Invalid address: 0x123.");
       }
     });
 

@@ -8,7 +8,6 @@ import {
   ContractEventName,
   Hex,
   isAddress,
-  checksumAddress,
   Address,
   formatEther,
 } from "viem";
@@ -108,16 +107,6 @@ export function validateAddress(address: string): Address {
 export function validateAddresses(addresses: string[]): Address[] {
   return addresses.map((address) => validateAddress(address));
 }
-
-/** @deprecated use {@link validateAddress} */
-export const getAddress = (address: string, name: string, chainId?: number): Address => {
-  if (!isAddress(address, { strict: false })) {
-    throw Error(
-      `${name} address is invalid: ${address}, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
-    );
-  }
-  return checksumAddress(address, chainId);
-};
 
 export function getTokenAmountDisplay(amount: bigint, unit = "IP"): string {
   return `${formatEther(amount)}${unit}`;

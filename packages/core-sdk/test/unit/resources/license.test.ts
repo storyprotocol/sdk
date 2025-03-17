@@ -555,7 +555,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          `Failed to attach license terms: request.licenseTemplate address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          `Failed to attach license terms: Invalid address: invalid address.`,
         );
       }
     });
@@ -653,7 +653,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          `Failed to mint license tokens: request.licenseTemplate address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          `Failed to mint license tokens: Invalid address: invalid address.`,
         );
       }
     });
@@ -675,7 +675,7 @@ describe("Test LicenseClient", () => {
         });
       } catch (error) {
         expect((error as Error).message).equal(
-          `Failed to mint license tokens: request.receiver address is invalid: invalid address, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          `Failed to mint license tokens: Invalid address: invalid address.`,
         );
       }
     });

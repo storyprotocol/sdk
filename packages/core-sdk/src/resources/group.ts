@@ -24,7 +24,7 @@ import {
 import { AccessPermission } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
 import { getPermissionSignature, getDeadline } from "../utils/sign";
-import { chain, getAddress } from "../utils/utils";
+import { chain, validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import {
   ValidatedLicenseData,
@@ -82,7 +82,7 @@ export class GroupClient {
   public async registerGroup(request: RegisterGroupRequest): Promise<RegisterGroupResponse> {
     try {
       const object: GroupingModuleRegisterGroupRequest = {
-        groupPool: getAddress(request.groupPool, "request.groupPool"),
+        groupPool: validateAddress(request.groupPool),
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return {
@@ -115,7 +115,7 @@ export class GroupClient {
     try {
       const { groupId, recipient, spgNftContract, deadline } = request;
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(groupId, "groupId"),
+        id: validateAddress(groupId),
       });
       if (!isRegistered) {
         throw new Error(`Group IP ${groupId} is not registered.`);
@@ -133,8 +133,8 @@ export class GroupClient {
         permissions: [
           {
             ipId: groupId,
-            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
-            to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
+            signer: validateAddress(this.groupingWorkflowsClient.address),
+            to: validateAddress(this.groupingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(groupingModuleAbi, "addIp"),
           },
@@ -143,16 +143,15 @@ export class GroupClient {
       const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         ...request,
         allowDuplicates: request.allowDuplicates || true,
-        spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
-        recipient:
-          (recipient && getAddress(recipient, "request.recipient")) || this.wallet.account!.address,
+        spgNftContract: validateAddress(spgNftContract),
+        recipient: validateAddress(recipient || this.wallet.account!.address),
         maxAllowedRewardShare: BigInt(
           getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
         ),
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigAddToGroup: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature: sigAddToGroupSignature,
         },
@@ -192,11 +191,11 @@ export class GroupClient {
     try {
       const ipIdAddress = await this.ipAssetRegistryClient.ipId({
         chainId: BigInt(chain[this.chainId]),
-        tokenContract: getAddress(request.nftContract, "nftContract"),
+        tokenContract: validateAddress(request.nftContract),
         tokenId: BigInt(request.tokenId),
       });
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.groupId, "request.groupId"),
+        id: validateAddress(request.groupId),
       });
       if (!isRegistered) {
         throw new Error(`Group IP ${request.groupId} is not registered.`);
@@ -207,14 +206,14 @@ export class GroupClient {
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
 
       const { signature: sigAddToGroupSignature } = await getPermissionSignature({
-        ipId: getAddress(request.groupId, "request.groupId"),
+        ipId: request.groupId,
         deadline: calculatedDeadline,
         state,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
           {
-            ipId: getAddress(request.groupId, "request.groupId"),
+            ipId: request.groupId,
             signer: this.groupingWorkflowsClient.address,
             to: this.groupingModuleClient.address,
             permission: AccessPermission.ALLOW,
@@ -232,28 +231,28 @@ export class GroupClient {
           {
             ipId: ipIdAddress,
             signer: this.groupingWorkflowsClient.address,
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            to: validateAddress(this.coreMetadataModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.groupingWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
           {
             ipId: ipIdAddress,
             signer: this.groupingWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            to: this.licensingModuleClient.address,
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
         ],
       });
       const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
-        nftContract: getAddress(request.nftContract, "request.nftContract"),
+        nftContract: request.nftContract,
         groupId: request.groupId,
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
@@ -262,12 +261,12 @@ export class GroupClient {
           getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
         ),
         sigAddToGroup: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature: sigAddToGroupSignature,
         },
         sigMetadataAndAttachAndConfig: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: this.wallet.account!.address,
           deadline: calculatedDeadline,
           signature: sigMetadataAndAttachSignature,
         },
@@ -303,7 +302,7 @@ export class GroupClient {
   ): Promise<RegisterGroupAndAttachLicenseResponse> {
     try {
       const object: GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
-        groupPool: getAddress(request.groupPool, "request.groupPool"),
+        groupPool: validateAddress(request.groupPool),
         licenseData: this.getLicenseData(request.licenseData)[0],
       };
       if (request.txOptions?.encodedTxDataOnly) {
@@ -335,14 +334,14 @@ export class GroupClient {
   ): Promise<RegisterGroupAndAttachLicenseAndAddIpsResponse> {
     try {
       const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
-        groupPool: getAddress(request.groupPool, "request.groupPool"),
+        groupPool: validateAddress(request.groupPool),
         ipIds: request.ipIds,
         licenseData: this.getLicenseData(request.licenseData)[0],
         maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
       };
       for (let i = 0; i < request.ipIds.length; i++) {
         const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-          id: getAddress(request.ipIds[i], `request.ipIds${i}`),
+          id: validateAddress(request.ipIds[i]),
         });
         if (!isRegistered) {
           throw new Error(`IP ${request.ipIds[i]} is not registered.`);
@@ -392,14 +391,8 @@ export class GroupClient {
       throw new Error("License data is required.");
     }
     const licenseDataArray = isArray ? licenseData : [licenseData];
-    return licenseDataArray.map((item, index) => ({
-      licenseTemplate:
-        (item.licenseTemplate &&
-          getAddress(
-            item.licenseTemplate,
-            `request.licenseData.licenseTemplate${isArray ? `[${index}]` : ""}`,
-          )) ||
-        this.licenseTemplateClient.address,
+    return licenseDataArray.map((item) => ({
+      licenseTemplate: validateAddress(item.licenseTemplate || this.licenseTemplateClient.address),
       licenseTermsId: BigInt(item.licenseTermsId),
       licensingConfig: validateLicenseConfig(item.licensingConfig),
     }));
