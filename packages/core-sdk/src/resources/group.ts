@@ -149,7 +149,7 @@ export class GroupClient {
           getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
         ),
         licensesData: this.getLicenseData(request.licenseData),
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigAddToGroup: {
           signer: validateAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
@@ -255,7 +255,7 @@ export class GroupClient {
         nftContract: request.nftContract,
         groupId: request.groupId,
         licensesData: this.getLicenseData(request.licenseData),
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         tokenId: BigInt(request.tokenId),
         maxAllowedRewardShare: BigInt(
           getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),

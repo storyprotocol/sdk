@@ -52,12 +52,12 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
-  DerivativeDataInput,
-  LicenseTermsDataInput,
   DerivativeData,
+  LicenseTermsData,
+  DerivativeDataInput,
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
-  LicenseTermsData,
+  ValidatedLicenseTermsData,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -98,10 +98,10 @@ import {
 import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission } from "../types/resources/permission";
-import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
+import { LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
-import { LicensingConfigInput, RevShareType } from "../types/common";
+import { LicensingConfig, RevShareType } from "../types/common";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import {
@@ -184,14 +184,14 @@ export class IPAssetClient {
       const object: RegistrationWorkflowsRegisterIpRequest = {
         tokenId,
         nftContract: validateAddress(request.nftContract),
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigMetadata: {
           signer: zeroAddress,
           deadline: BigInt(0),
           signature: zeroHash,
         },
       };
-      if (request.ipMetadataInput) {
+      if (request.ipMetadata) {
         const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
         const { signature } = await getPermissionSignature({
           ipId: ipIdAddress,
@@ -216,7 +216,7 @@ export class IPAssetClient {
         };
       }
       if (request.txOptions?.encodedTxDataOnly) {
-        if (request.ipMetadataInput) {
+        if (request.ipMetadata) {
           return { encodedTxData: this.registrationWorkflowsClient.registerIpEncode(object) };
         } else {
           return {
@@ -229,7 +229,7 @@ export class IPAssetClient {
         }
       } else {
         let txHash: Hex;
-        if (request.ipMetadataInput) {
+        if (request.ipMetadata) {
           txHash = await this.registrationWorkflowsClient.registerIp(object);
         } else {
           txHash = await this.ipAssetRegistryClient.register({
@@ -276,7 +276,7 @@ export class IPAssetClient {
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
-        if (arg.ipMetadataInput) {
+        if (arg.ipMetadata) {
           spgContracts.push(encodedTxData);
         } else {
           contracts.push({
@@ -516,7 +516,7 @@ export class IPAssetClient {
         recipient: validateAddress(request.recipient || this.walletAddress),
         licenseTermsData,
         allowDuplicates: request.allowDuplicates || true,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
       };
 
       const encodedTxData =
@@ -658,7 +658,7 @@ export class IPAssetClient {
         nftContract: validateAddress(request.nftContract),
         tokenId: request.tokenId,
         licenseTermsData,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigMetadataAndAttachAndConfig: {
           signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
@@ -742,7 +742,7 @@ export class IPAssetClient {
           deadline: calculatedDeadline,
           signature,
         },
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
       };
       const encodedTxData =
         this.derivativeWorkflowsClient.registerIpAndMakeDerivativeEncode(object);
@@ -783,7 +783,7 @@ export class IPAssetClient {
       const object: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest = {
         ...request,
         derivData,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         recipient,
         allowDuplicates: request.allowDuplicates || true,
         spgNftContract,
@@ -861,7 +861,7 @@ export class IPAssetClient {
       const object: RegistrationWorkflowsMintAndRegisterIpRequest = {
         spgNftContract: validateAddress(request.spgNftContract),
         recipient: validateAddress(request.recipient || this.walletAddress),
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         allowDuplicates: request.allowDuplicates || true,
       };
       const encodedTxData = this.registrationWorkflowsClient.mintAndRegisterIpEncode(object);
@@ -977,7 +977,7 @@ export class IPAssetClient {
         {
           spgNftContract: validateAddress(request.spgNftContract),
           recipient: validateAddress(request.recipient || this.walletAddress),
-          ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+          ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
           licenseTokenIds: licenseTokenIds,
           royaltyContext: zeroAddress,
           maxRts: Number(request.maxRts),
@@ -1060,7 +1060,7 @@ export class IPAssetClient {
         tokenId,
         licenseTokenIds,
         royaltyContext: zeroAddress,
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadataInput),
+        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigMetadataAndRegister: {
           signer: validateAddress(this.walletAddress),
           deadline: calculatedDeadline,
@@ -1616,13 +1616,13 @@ export class IPAssetClient {
   }
 
   private async validateLicenseTermsData(
-    licenseTermsData: LicenseTermsDataInput<LicenseTermsInput, LicensingConfigInput>[],
+    licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[],
   ): Promise<{
     licenseTerms: LicenseTerms[];
-    licenseTermsData: LicenseTermsData[];
+    licenseTermsData: ValidatedLicenseTermsData[];
   }> {
     const licenseTerms: LicenseTerms[] = [];
-    const processedLicenseTermsData: LicenseTermsData[] = [];
+    const processedLicenseTermsData: ValidatedLicenseTermsData[] = [];
     for (let i = 0; i < licenseTermsData.length; i++) {
       const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
       const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);

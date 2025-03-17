@@ -10,7 +10,7 @@ export type TypedData = {
 
 export type IpMetadataAndTxOptions = WithTxOptions & {
   /** The desired metadata for the newly minted NFT and newly registered IP. */
-  ipMetadataInput?: Partial<IpMetadataForWorkflow>;
+  ipMetadata?: Partial<IpMetadataForWorkflow>;
 };
 
 /**

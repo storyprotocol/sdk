@@ -364,7 +364,7 @@ describe("Test IpAssetClient", () => {
         ],
         allowDuplicates: true,
         recipient: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        ipMetadataInput: {
+        ipMetadata: {
           ipMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -539,7 +539,7 @@ describe("Test IpAssetClient", () => {
             licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           },
         ],
-        ipMetadataInput: {
+        ipMetadata: {
           ipMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
