@@ -12,7 +12,7 @@ export type IPAccountExecuteRequest = {
   /** The amount of IP to send. */
   value: number;
   /** The data to send along with the transaction. */
-  data: Address;
+  data: Hex;
   txOptions?: TxOptions;
 };
 
@@ -27,7 +27,7 @@ export type IPAccountExecuteWithSigRequest = {
   /** The recipient of the transaction. */
   to: Address;
   /** The data to send along with the transaction. */
-  data: Address;
+  data: Hex;
   /** The signer of the transaction. */
   signer: Address;
   /** The deadline of the transaction signature in seconds. */
