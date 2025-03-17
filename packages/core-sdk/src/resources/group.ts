@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, toHex } from "viem";
+import { PublicClient, WalletClient, toHex, zeroAddress } from "viem";
 
 import {
   coreMetadataModuleAbi,
@@ -8,6 +8,7 @@ import {
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
   GroupingWorkflowsClient,
+  GroupingWorkflowsCollectRoyaltiesAndClaimRewardRequest,
   GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
   GroupingWorkflowsRegisterGroupAndAttachLicenseRequest,
@@ -19,12 +20,13 @@ import {
   licensingModuleAbi,
   LicensingModuleClient,
   PiLicenseTemplateClient,
+  RoyaltyModuleEventClient,
   SimpleWalletClient,
 } from "../abi/generated";
 import { AccessPermission } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
 import { getPermissionSignature, getDeadline } from "../utils/sign";
-import { chain, getAddress } from "../utils/utils";
+import { chain, getAddress, validateAddress, validateAddresses } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import {
   ValidatedLicenseData,
@@ -39,12 +41,15 @@ import {
   RegisterGroupResponse,
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
+  CollectAndDistributeGroupRoyaltiesRequest,
+  CollectAndDistributeGroupRoyaltiesResponse,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
 import { RevShareType } from "../types/common";
+import { handleTxOptions } from "../utils/txOptions";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -56,6 +61,7 @@ export class GroupClient {
   public coreMetadataModuleClient: CoreMetadataModuleClient;
   public licensingModuleClient: LicensingModuleClient;
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
+  public royaltyModuleEventClient: RoyaltyModuleEventClient;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -74,6 +80,7 @@ export class GroupClient {
     this.coreMetadataModuleClient = new CoreMetadataModuleClient(rpcClient, wallet);
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
+    this.royaltyModuleEventClient = new RoyaltyModuleEventClient(rpcClient);
   }
   /** Registers a Group IPA.
    * @param request - The request object containing necessary data to register group.
@@ -388,7 +395,74 @@ export class GroupClient {
       handleError(error, "Failed to register group and attach license and add ips");
     }
   }
-
+  /**
+   * Collect royalties for the entire group and distribute the rewards to each member IP's royalty vault.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L38 | `CollectedRoyaltiesToGroupPool`} event.
+   */
+  public async collectAndDistributeGroupRoyalties({
+    groupIpId,
+    currencyTokens,
+    memberIpIds,
+    txOptions,
+  }: CollectAndDistributeGroupRoyaltiesRequest): Promise<CollectAndDistributeGroupRoyaltiesResponse> {
+    try {
+      const object: GroupingWorkflowsCollectRoyaltiesAndClaimRewardRequest = {
+        groupIpId: validateAddress(groupIpId),
+        currencyTokens: validateAddresses(currencyTokens),
+        memberIpIds: validateAddresses(memberIpIds),
+      };
+      const isGroupRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: object.groupIpId,
+      });
+      if (!isGroupRegistered) {
+        throw new Error(`The group IP with ID ${object.groupIpId} is not registered.`);
+      }
+      if (!object.memberIpIds.length) {
+        throw new Error("At least one member IP ID is required.");
+      }
+      await Promise.all(
+        object.memberIpIds.map(async (ipId) => {
+          const isMemberRegistered = await this.ipAssetRegistryClient.isRegistered({
+            id: ipId,
+          });
+          if (!isMemberRegistered) {
+            throw new Error(`Member IP with ID ${ipId} is not registered .`);
+          }
+        }),
+      );
+      if (!object.currencyTokens.length) {
+        throw new Error("At least one currency token is required.");
+      }
+      object.currencyTokens.forEach((token) => {
+        if (token === zeroAddress) {
+          throw new Error("Currency token cannot be the zero address.");
+        }
+      });
+      const txHash = await this.groupingWorkflowsClient.collectRoyaltiesAndClaimReward(object);
+      const { receipt } = await handleTxOptions({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const collectedRoyalties =
+        this.groupingModuleEventClient.parseTxCollectedRoyaltiesToGroupPoolEvent(receipt);
+      const royaltiesDistributed = this.royaltyModuleEventClient
+        .parseTxRoyaltyPaidEvent(receipt)
+        .map(({ receiverIpId, amount, token, amountAfterFee }) => ({
+          ipId: receiverIpId,
+          amount: amount,
+          currencyToken: token,
+          amountAfterFee: amountAfterFee,
+        }));
+      return { txHash, collectedRoyalties, royaltiesDistributed };
+    } catch (error) {
+      handleError(error, "Failed to collect royalties and claim reward");
+    }
+  }
   private getLicenseData(licenseData: LicenseData[] | LicenseData): ValidatedLicenseData[] {
     const isArray = Array.isArray(licenseData);
     if ((isArray && licenseData.length === 0) || !licenseData) {

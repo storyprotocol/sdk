@@ -135,6 +135,8 @@ export type {
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
+  CollectAndDistributeGroupRoyaltiesRequest,
+  CollectAndDistributeGroupRoyaltiesResponse,
 } from "./types/resources/group";
 
 export type {
