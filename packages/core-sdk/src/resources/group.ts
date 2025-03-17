@@ -459,13 +459,13 @@ export class GroupClient {
         .parseTxRoyaltyPaidEvent(receipt)
         .map(({ receiverIpId, amount, token, amountAfterFee }) => ({
           ipId: receiverIpId,
-          amount: amount,
-          token: token,
-          amountAfterFee: amountAfterFee,
+          amount,
+          token,
+          amountAfterFee,
         }));
       return { txHash, collectedRoyalties, royaltiesDistributed };
     } catch (error) {
-      handleError(error, "Failed to collect royalties and claim reward");
+      handleError(error, "Failed to collect and distribute group royalties");
     }
   }
   private getLicenseData(licenseData: LicenseData[] | LicenseData): ValidatedLicenseData[] {

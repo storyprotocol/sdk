@@ -564,7 +564,7 @@ describe("Test IpAssetClient", () => {
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith(
-        `Failed to collect royalties and claim reward: The group IP with ID ${mockAddress} is not registered.`,
+        `Failed to collect and distribute group royalties: The group IP with ID ${mockAddress} is not registered.`,
       );
     });
 
@@ -581,7 +581,7 @@ describe("Test IpAssetClient", () => {
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith(
-        `Failed to collect royalties and claim reward: Member IP with ID ${mockAddress} is not registered .`,
+        `Failed to collect and distribute group royalties: Member IP with ID ${mockAddress} is not registered .`,
       );
     });
 
@@ -593,7 +593,7 @@ describe("Test IpAssetClient", () => {
         memberIpIds: [],
       });
       await expect(result).to.be.rejectedWith(
-        "Failed to collect royalties and claim reward: At least one member IP ID is required.",
+        "Failed to collect and distribute group royalties: At least one member IP ID is required.",
       );
     });
 
@@ -605,7 +605,7 @@ describe("Test IpAssetClient", () => {
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith(
-        "Failed to collect royalties and claim reward: Currency token cannot be the zero address.",
+        "Failed to collect and distribute group royalties: Currency token cannot be the zero address.",
       );
     });
 
@@ -617,7 +617,7 @@ describe("Test IpAssetClient", () => {
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith(
-        "Failed to collect royalties and claim reward: At least one currency token is required.",
+        "Failed to collect and distribute group royalties: At least one currency token is required.",
       );
     });
 
