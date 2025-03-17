@@ -412,14 +412,20 @@ export class GroupClient {
         currencyTokens: validateAddresses(currencyTokens),
         memberIpIds: validateAddresses(memberIpIds),
       };
+      if (!object.currencyTokens.length) {
+        throw new Error("At least one currency token is required.");
+      }
+      if (!object.memberIpIds.length) {
+        throw new Error("At least one member IP ID is required.");
+      }
+      if (object.currencyTokens.some((token) => token === zeroAddress)) {
+        throw new Error("Currency token cannot be the zero address.");
+      }
       const isGroupRegistered = await this.ipAssetRegistryClient.isRegistered({
         id: object.groupIpId,
       });
       if (!isGroupRegistered) {
         throw new Error(`The group IP with ID ${object.groupIpId} is not registered.`);
-      }
-      if (!object.memberIpIds.length) {
-        throw new Error("At least one member IP ID is required.");
       }
       await Promise.all(
         object.memberIpIds.map(async (ipId) => {
@@ -431,14 +437,7 @@ export class GroupClient {
           }
         }),
       );
-      if (!object.currencyTokens.length) {
-        throw new Error("At least one currency token is required.");
-      }
-      object.currencyTokens.forEach((token) => {
-        if (token === zeroAddress) {
-          throw new Error("Currency token cannot be the zero address.");
-        }
-      });
+
       const txHash = await this.groupingWorkflowsClient.collectRoyaltiesAndClaimReward(object);
       const { receipt } = await handleTxOptions({
         txHash,
