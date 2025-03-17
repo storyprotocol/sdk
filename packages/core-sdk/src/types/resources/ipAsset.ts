@@ -1,9 +1,9 @@
 import { Address, Hash, Hex, TransactionReceipt } from "viem";
 
 import { TxOptions, WithWipOptions } from "../options";
-import { LicenseTerms, RegisterPILTermsRequest } from "./license";
+import { LicenseTerms, LicenseTermsInput } from "./license";
 import { EncodedTxData } from "../../abi/generated";
-import { IpMetadataAndTxOptions, LicensingConfig, ValidatedLicensingConfig } from "../common";
+import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
 
 export type DerivativeDataInput = {
   parentIpIds: Address[];
@@ -80,16 +80,16 @@ export type RegisterDerivativeResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
 };
-export type LicenseTermsData<T = RegisterPILTermsRequest, C = LicensingConfig> = {
+export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
   terms: T;
   licensingConfig?: C;
 };
 
-export type ValidatedLicenseTermsData = Omit<
-  LicenseTermsData<LicenseTerms, ValidatedLicensingConfig>,
+export type LicenseTermsData = Omit<
+  LicenseTermsDataInput<LicenseTerms, LicensingConfig>,
   "licensingConfig"
 > & {
-  licensingConfig: ValidatedLicensingConfig;
+  licensingConfig: LicensingConfig;
 };
 
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
@@ -100,7 +100,7 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
    */
   allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
 } & IpMetadataAndTxOptions &
@@ -140,7 +140,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -173,7 +173,7 @@ export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & 
   encodedTxData?: EncodedTxData;
 };
 
-type WithIpMetadataInput = {
+type WithIpMetadata = {
   ipMetadata?: {
     ipMetadataURI?: string;
     ipMetadataHash?: Hex;
@@ -196,7 +196,7 @@ export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /** The deadline for the signature in seconds.
    * @default 1000
    */
@@ -291,7 +291,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   /** The data of the license and its configuration to be attached to the new group IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -300,7 +300,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & WithIpMetadataInput;
+} & WithIpMetadata;
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hex;
   distributeRoyaltyTokensTxHash: Hex;
@@ -343,7 +343,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & WithWipOptions &
-  WithIpMetadataInput;
+  WithIpMetadata;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
@@ -361,13 +361,13 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
    */
   allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the new group IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /** Authors of the IP and their shares of the royalty tokens */
   royaltyShares: RoyaltyShare[];
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & WithIpMetadataInput &
+} & WithIpMetadata &
   WithWipOptions;
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
@@ -392,7 +392,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & WithIpMetadataInput &
+} & WithIpMetadata &
   WithWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {

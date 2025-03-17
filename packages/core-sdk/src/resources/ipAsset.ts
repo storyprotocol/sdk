@@ -53,11 +53,11 @@ import {
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
   DerivativeData,
-  LicenseTermsData,
   DerivativeDataInput,
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
-  ValidatedLicenseTermsData,
+  LicenseTermsData,
+  LicenseTermsDataInput,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -98,10 +98,10 @@ import {
 import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { getDeadline, getPermissionSignature, getSignature } from "../utils/sign";
 import { AccessPermission } from "../types/resources/permission";
-import { LicenseTerms, RegisterPILTermsRequest } from "../types/resources/license";
+import { LicenseTerms } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
-import { LicensingConfig, RevShareType } from "../types/common";
+import { RevShareType } from "../types/common";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import {
@@ -1615,14 +1615,12 @@ export class IPAssetClient {
     return derivativeData;
   }
 
-  private async validateLicenseTermsData(
-    licenseTermsData: LicenseTermsData<RegisterPILTermsRequest, LicensingConfig>[],
-  ): Promise<{
+  private async validateLicenseTermsData(licenseTermsData: LicenseTermsDataInput[]): Promise<{
     licenseTerms: LicenseTerms[];
-    licenseTermsData: ValidatedLicenseTermsData[];
+    licenseTermsData: LicenseTermsData[];
   }> {
     const licenseTerms: LicenseTerms[] = [];
-    const processedLicenseTermsData: ValidatedLicenseTermsData[] = [];
+    const processedLicenseTermsData: LicenseTermsData[] = [];
     for (let i = 0; i < licenseTermsData.length; i++) {
       const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
       const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);

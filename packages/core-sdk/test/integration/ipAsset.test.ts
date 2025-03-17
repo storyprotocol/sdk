@@ -586,7 +586,7 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          ipMetadataInput: {
+          ipMetadata: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -647,7 +647,7 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          ipMetadataInput: {
+          ipMetadata: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -719,7 +719,7 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          ipMetadataInput: {
+          ipMetadata: {
             ipMetadataURI: "test-uri",
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
@@ -1137,7 +1137,7 @@ describe("IP Asset Functions", () => {
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
-          ipMetadataInput: {
+          ipMetadata: {
             ipMetadataURI: "test",
             ipMetadataHash: zeroHash,
             nftMetadataURI: "test",
@@ -1203,7 +1203,7 @@ describe("IP Asset Functions", () => {
               maxRts: MAX_ROYALTY_TOKEN,
               maxRevenueShare: 100,
             },
-            ipMetadataInput: {
+            ipMetadata: {
               ipMetadataURI: "test",
               ipMetadataHash: zeroHash,
               nftMetadataURI: "test",

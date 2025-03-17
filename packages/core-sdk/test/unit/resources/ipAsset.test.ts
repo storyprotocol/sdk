@@ -2930,7 +2930,7 @@ describe("Test IpAssetClient", () => {
         royaltyShares: [
           { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
         ],
-        ipMetadataInput: {
+        ipMetadata: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -3298,7 +3298,7 @@ describe("Test IpAssetClient", () => {
           royaltyShares: [
             { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
           ],
-          ipMetadataInput: {
+          ipMetadata: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -3386,7 +3386,7 @@ describe("Test IpAssetClient", () => {
             { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
           ],
           recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          ipMetadataInput: {
+          ipMetadata: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
@@ -3697,7 +3697,7 @@ describe("Test IpAssetClient", () => {
             maxRevenueShare: 100,
           },
           recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          ipMetadataInput: {
+          ipMetadata: {
             ipMetadataURI: "",
             ipMetadataHash: toHex(0, { size: 32 }),
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
