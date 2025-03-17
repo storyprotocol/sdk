@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
@@ -20,9 +20,9 @@ export type CreateNFTCollectionRequest = {
   /** The cost to mint a token. */
   mintFee?: bigint;
   /** The token to mint. */
-  mintFeeToken?: Hex;
+  mintFeeToken?: Address;
   /** The owner of the collection. */
-  owner?: Hex;
+  owner?: Address;
   txOptions?: TxOptions;
 };
 
