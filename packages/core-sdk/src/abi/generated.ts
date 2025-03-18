@@ -24913,6 +24913,70 @@ export class RoyaltyModuleClient extends RoyaltyModuleReadOnlyClient {
 
 // Contract RoyaltyPolicyLAP =============================================================
 
+/**
+ * RoyaltyPolicyLapTransferToVaultRequest
+ *
+ * @param ipId address
+ * @param ancestorIpId address
+ * @param token address
+ */
+export type RoyaltyPolicyLapTransferToVaultRequest = {
+  ipId: Address;
+  ancestorIpId: Address;
+  token: Address;
+};
+
+/**
+ * contract RoyaltyPolicyLAP write method
+ */
+export class RoyaltyPolicyLapClient {
+  protected readonly wallet: SimpleWalletClient;
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    this.address = address || getAddress(royaltyPolicyLapAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+    this.wallet = wallet;
+  }
+
+  /**
+   * method transferToVault for contract RoyaltyPolicyLAP
+   *
+   * @param request RoyaltyPolicyLapTransferToVaultRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async transferToVault(
+    request: RoyaltyPolicyLapTransferToVaultRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLapAbi,
+      address: this.address,
+      functionName: "transferToVault",
+      account: this.wallet.account,
+      args: [request.ipId, request.ancestorIpId, request.token],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method transferToVault for contract RoyaltyPolicyLAP with only encode
+   *
+   * @param request RoyaltyPolicyLapTransferToVaultRequest
+   * @return EncodedTxData
+   */
+  public transferToVaultEncode(request: RoyaltyPolicyLapTransferToVaultRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyPolicyLapAbi,
+        functionName: "transferToVault",
+        args: [request.ipId, request.ancestorIpId, request.token],
+      }),
+    };
+  }
+}
+
 // Contract RoyaltyPolicyLRP =============================================================
 
 /**

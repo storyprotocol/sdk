@@ -85,6 +85,9 @@ export type {
   ClaimAllRevenueResponse,
   BatchClaimAllRevenueRequest,
   BatchClaimAllRevenueResponse,
+  NativeRoyaltyPolicy,
+  TransferToVaultRequest,
+  RoyaltyPolicyInput,
 } from "./types/resources/royalty";
 
 export type {

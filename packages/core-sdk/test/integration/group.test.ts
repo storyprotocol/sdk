@@ -11,6 +11,7 @@ import {
   wrappedIpAddress,
 } from "../../src/abi/generated";
 import { ValidatedLicenseTermsData } from "../../src/types/resources/ipAsset";
+import { NativeRoyaltyPolicy } from "../../src/types/resources/royalty";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -374,14 +375,13 @@ describe("Group Functions", () => {
 
       //5. Transfer to vault
       const transferToVault = async (childIpId: Address, groupIpId: Address, token: Address) => {
-        const { request: call } = await publicClient.simulateContract({
-          abi: royaltyPolicyLrpAbi,
-          address: royaltyPolicyLrpAddress[aeneid],
-          functionName: "transferToVault",
-          account: walletClient.account,
-          args: [childIpId, groupIpId, token],
+        await client.royalty.transferToVault({
+          royaltyPolicy: NativeRoyaltyPolicy.LRP,
+          ipId: childIpId,
+          ancestorIpId: groupIpId,
+          token,
+          txOptions: { waitForTransaction: true },
         });
-        await walletClient.writeContract(call);
       };
       await transferToVault(childIpId1, groupIpId, WIP_TOKEN_ADDRESS);
       await transferToVault(childIpId2, groupIpId, WIP_TOKEN_ADDRESS);
