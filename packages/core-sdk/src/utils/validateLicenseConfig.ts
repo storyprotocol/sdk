@@ -1,12 +1,10 @@
 import { zeroAddress, zeroHash } from "viem";
 
-import { LicensingConfig, ValidatedLicensingConfig } from "../types/common";
+import { LicensingConfigInput, LicensingConfig } from "../types/common";
 import { getRevenueShare } from "./licenseTermsHelper";
 import { validateAddress } from "./utils";
 
-export const validateLicenseConfig = (
-  licensingConfig?: LicensingConfig,
-): ValidatedLicensingConfig => {
+export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): LicensingConfig => {
   if (!licensingConfig) {
     return {
       isSet: false,

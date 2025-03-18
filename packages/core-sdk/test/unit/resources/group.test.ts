@@ -4,14 +4,14 @@ import * as sinon from "sinon";
 import { PublicClient, WalletClient, Account, zeroAddress, zeroHash } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { GroupClient } from "../../../src";
-import { LicenseData } from "../../../src/types/resources/group";
 import { mockAddress, walletAddress } from "../mockData";
+import { LicenseDataInput } from "../../../src/types/resources/group";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e";
-const mockLicenseData: LicenseData = {
+const mockLicenseData: LicenseDataInput = {
   licenseTermsId: "100",
   licensingConfig: {
     isSet: true,

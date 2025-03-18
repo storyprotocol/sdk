@@ -18,7 +18,7 @@ export type IpMetadataAndTxOptions = WithTxOptions & {
  * when others are minting license tokens of their IP through the LicensingModule.
  * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/lib/Licensing.sol#L27 | Licensing.sol}
  */
-export type LicensingConfig = {
+export type LicensingConfigInput = {
   /** Whether the configuration is set or not */
   isSet: boolean;
   /** The minting fee to be paid when minting license tokens. */
@@ -40,7 +40,7 @@ export type LicensingConfig = {
   expectGroupRewardPool: Address;
 };
 
-export type ValidatedLicensingConfig = LicensingConfig & {
+export type LicensingConfig = LicensingConfigInput & {
   mintingFee: bigint;
   commercialRevShare: number;
   expectMinimumGroupRewardShare: number;
