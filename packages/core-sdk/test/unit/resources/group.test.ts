@@ -554,7 +554,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("collectAndDistributeGroupRoyalties", async () => {
+  describe("Test groupClient.collectAndDistributeGroupRoyalties", async () => {
     it("throws if group ipId is not registered", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
