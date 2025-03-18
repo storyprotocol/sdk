@@ -8,7 +8,6 @@ import {
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
   GroupingWorkflowsClient,
-  GroupingWorkflowsCollectRoyaltiesAndClaimRewardRequest,
   GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
   GroupingWorkflowsRegisterGroupAndAttachLicenseRequest,
@@ -407,28 +406,30 @@ export class GroupClient {
     txOptions,
   }: CollectAndDistributeGroupRoyaltiesRequest): Promise<CollectAndDistributeGroupRoyaltiesResponse> {
     try {
-      const object: GroupingWorkflowsCollectRoyaltiesAndClaimRewardRequest = {
+      if (!currencyTokens.length) {
+        throw new Error("At least one currency token is required.");
+      }
+      if (!memberIpIds.length) {
+        throw new Error("At least one member IP ID is required.");
+      }
+      if (currencyTokens.some((token) => token === zeroAddress)) {
+        throw new Error("Currency token cannot be the zero address.");
+      }
+      const collectAndClaimParams = {
         groupIpId: validateAddress(groupIpId),
         currencyTokens: validateAddresses(currencyTokens),
         memberIpIds: validateAddresses(memberIpIds),
       };
-      if (!object.currencyTokens.length) {
-        throw new Error("At least one currency token is required.");
-      }
-      if (!object.memberIpIds.length) {
-        throw new Error("At least one member IP ID is required.");
-      }
-      if (object.currencyTokens.some((token) => token === zeroAddress)) {
-        throw new Error("Currency token cannot be the zero address.");
-      }
       const isGroupRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: object.groupIpId,
+        id: collectAndClaimParams.groupIpId,
       });
       if (!isGroupRegistered) {
-        throw new Error(`The group IP with ID ${object.groupIpId} is not registered.`);
+        throw new Error(
+          `The group IP with ID ${collectAndClaimParams.groupIpId} is not registered.`,
+        );
       }
       await Promise.all(
-        object.memberIpIds.map(async (ipId) => {
+        collectAndClaimParams.memberIpIds.map(async (ipId) => {
           const isMemberRegistered = await this.ipAssetRegistryClient.isRegistered({
             id: ipId,
           });
@@ -438,7 +439,9 @@ export class GroupClient {
         }),
       );
 
-      const txHash = await this.groupingWorkflowsClient.collectRoyaltiesAndClaimReward(object);
+      const txHash = await this.groupingWorkflowsClient.collectRoyaltiesAndClaimReward(
+        collectAndClaimParams,
+      );
       const { receipt } = await handleTxOptions({
         txHash,
         txOptions,

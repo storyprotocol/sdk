@@ -126,6 +126,9 @@ export type CollectAndDistributeGroupRoyaltiesResponse = {
     ipId: Address;
     amount: bigint;
     token: Address;
+    /**
+     * Amount after the fee to the royalty module treasury.
+     */
     amountAfterFee: bigint;
   }[];
 };

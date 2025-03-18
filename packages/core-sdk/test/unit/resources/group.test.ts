@@ -554,8 +554,8 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.collectAndDistributeGroupRoyalties", async () => {
-    it("should throw error when call collectAndDistributeGroupRoyalties given group ip id is not registered", async () => {
+  describe("collectAndDistributeGroupRoyalties", async () => {
+    it("throws if group ipId is not registered", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       const result = groupClient.collectAndDistributeGroupRoyalties({
@@ -568,7 +568,7 @@ describe("Test IpAssetClient", () => {
       );
     });
 
-    it("should throw error when call collectAndDistributeGroupRoyalties given member ip ids is not registered", async () => {
+    it("throws if member ip ids is not registered", async () => {
       sinon
         .stub(groupClient.ipAssetRegistryClient, "isRegistered")
         .onFirstCall()
@@ -585,7 +585,7 @@ describe("Test IpAssetClient", () => {
       );
     });
 
-    it("should throw error when call collectAndDistributeGroupRoyalties given empty member ip ids", async () => {
+    it("throws if empty member ip ids", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
@@ -597,7 +597,7 @@ describe("Test IpAssetClient", () => {
       );
     });
 
-    it("should throw error when call collectAndDistributeGroupRoyalties given currency token is zero address", async () => {
+    it("throws if currency token is zero address", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
@@ -609,7 +609,7 @@ describe("Test IpAssetClient", () => {
       );
     });
 
-    it("should throw error when call collectAndDistributeGroupRoyalties given empty currency tokens", async () => {
+    it("throws if empty currency tokens", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
@@ -621,7 +621,7 @@ describe("Test IpAssetClient", () => {
       );
     });
 
-    it("should return txHash when call collectAndDistributeGroupRoyalties given correct args", async () => {
+    it("returns txHash given correct args", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward")
@@ -634,7 +634,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).equal(txHash);
     });
 
-    it("should return txHash and collectedRoyalties and royaltiesDistributed when call collectAndDistributeGroupRoyalties given correct args with waitForTransaction of true", async () => {
+    it("returns additional details when waitForTransaction is true", async () => {
       sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
