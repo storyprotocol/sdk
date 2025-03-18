@@ -73,7 +73,7 @@ export type WithClaimOptions = {
      * they are transferred.
      * Set this to false to disable this behavior.
      *
-     * @default false
+     * @default true
      */
     autoUnwrapIpTokens?: boolean;
   };
