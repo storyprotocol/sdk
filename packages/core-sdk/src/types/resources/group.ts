@@ -1,7 +1,10 @@
-import { Address } from "viem";
+import { Address, Hash, TransactionReceipt } from "viem";
 
 import { TxOptions } from "../options";
-import { EncodedTxData } from "../../abi/generated";
+import {
+  EncodedTxData,
+  GroupingModuleCollectedRoyaltiesToGroupPoolEvent,
+} from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, ValidatedLicensingConfig } from "../common";
 
 export type LicenseData = {
@@ -104,4 +107,28 @@ export type RegisterGroupAndAttachLicenseAndAddIpsResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
   groupId?: Address;
+};
+
+export type CollectAndDistributeGroupRoyaltiesRequest = {
+  groupIpId: Address;
+  /** The addresses of the currency (revenue) tokens to claim. */
+  currencyTokens: Address[];
+  /** The IDs of the member IPs to distribute the rewards to. */
+  memberIpIds: Address[];
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type CollectAndDistributeGroupRoyaltiesResponse = {
+  txHash: Hash;
+  receipts?: TransactionReceipt[];
+  collectedRoyalties?: Omit<GroupingModuleCollectedRoyaltiesToGroupPoolEvent, "pool">[];
+  royaltiesDistributed?: {
+    ipId: Address;
+    amount: bigint;
+    token: Address;
+    /**
+     * Amount after the fee to the royalty module treasury.
+     */
+    amountAfterFee: bigint;
+  }[];
 };
