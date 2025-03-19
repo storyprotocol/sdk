@@ -176,7 +176,7 @@ describe("Dispute Functions", () => {
           waitForTransaction: true,
         },
       });
-      expect(secondDispute).to.be.rejectedWith("Execution reverted for an unknown reason");
+      await expect(secondDispute).to.be.rejectedWith("Execution reverted for an unknown reason");
     });
 
     it("should throw error when liveness is out of bounds", async () => {
