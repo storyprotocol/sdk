@@ -276,9 +276,12 @@ export class DisputeClient {
         // Note: We must use client wallet directly because:
         // 1. The bond payment requires WrappedIP tokens
         // 2. Cannot use ipAccount.executeBatch since msg.sender would be the same as spender
-        await this.wrappedIpClient.approve({
+        const txHash = await this.wrappedIpClient.approve({
           spender: ipAccount.address,
           amount: maxUint256,
+        });
+        await this.rpcClient.waitForTransactionReceipt({
+          hash: txHash,
         });
       }
       const contractCall = () => {

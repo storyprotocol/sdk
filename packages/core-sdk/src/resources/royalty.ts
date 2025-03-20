@@ -19,6 +19,7 @@ import {
   PayRoyaltyOnBehalfRequest,
   PayRoyaltyOnBehalfResponse,
   TransferClaimedTokensFromIpToWalletParams,
+  TransferToVaultRequest,
 } from "../types/resources/royalty";
 import {
   IpAccountImplClient,
@@ -28,6 +29,7 @@ import {
   IpRoyaltyVaultImplRevenueTokenClaimedEvent,
   Multicall3Client,
   RoyaltyModuleClient,
+  royaltyPolicyLrpAbi,
   RoyaltyWorkflowsClient,
   SimpleWalletClient,
   WrappedIpClient,
@@ -36,6 +38,10 @@ import { validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
+import { TransactionResponse } from "../types/options";
+import { ChainIds } from "../types/config";
+import { royaltyPolicyInputToAddress } from "../utils/royalty";
+import { handleTxOptions } from "../utils/txOptions";
 
 export class RoyaltyClient {
   public royaltyModuleClient: RoyaltyModuleClient;
@@ -48,8 +54,9 @@ export class RoyaltyClient {
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly walletAddress: Address;
+  private readonly chainId: ChainIds;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient) {
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.royaltyModuleClient = new RoyaltyModuleClient(rpcClient, wallet);
     this.ipAssetRegistryClient = new IpAssetRegistryClient(rpcClient, wallet);
     this.ipRoyaltyVaultImplReadOnlyClient = new IpRoyaltyVaultImplReadOnlyClient(rpcClient);
@@ -59,6 +66,7 @@ export class RoyaltyClient {
     this.wrappedIpClient = new WrappedIpClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
+    this.chainId = chainId;
     this.walletAddress = wallet.account!.address;
   }
   /**
@@ -349,6 +357,37 @@ export class RoyaltyClient {
       throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
     }
     return await this.royaltyModuleClient.ipRoyaltyVaults({ ipId: royaltyVaultIpId });
+  }
+
+  /**
+   * Transfers to vault an amount of revenue tokens claimable via a royalty policy.
+   */
+  public async transferToVault({
+    txOptions,
+    ipId,
+    royaltyPolicy,
+    ancestorIpId,
+    token,
+  }: TransferToVaultRequest): Promise<TransactionResponse> {
+    const royaltyPolicyAddress = royaltyPolicyInputToAddress(royaltyPolicy, this.chainId);
+    const protocolArgs = [
+      validateAddress(ipId),
+      validateAddress(ancestorIpId),
+      validateAddress(token),
+    ] as const;
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyPolicyLrpAbi, // same abi for all royalty policies
+      address: royaltyPolicyAddress,
+      functionName: "transferToVault",
+      account: this.wallet.account,
+      args: protocolArgs,
+    });
+    const txHash = await this.wallet.writeContract(call);
+    return handleTxOptions({
+      txHash,
+      rpcClient: this.rpcClient,
+      txOptions,
+    });
   }
 
   private async transferClaimedTokensFromIpToWallet({

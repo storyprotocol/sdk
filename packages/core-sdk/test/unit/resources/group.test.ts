@@ -552,4 +552,136 @@ describe("Test IpAssetClient", () => {
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
+
+  describe("Test groupClient.collectAndDistributeGroupRoyalties", async () => {
+    it("throws if group ipId is not registered", async () => {
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      const result = groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [mockAddress],
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect and distribute group royalties: The group IP with ID ${mockAddress} is not registered.`,
+      );
+    });
+
+    it("throws if member ip ids is not registered", async () => {
+      sinon
+        .stub(groupClient.ipAssetRegistryClient, "isRegistered")
+        .onFirstCall()
+        .resolves(true)
+        .onSecondCall()
+        .resolves(false);
+      const result = groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [mockAddress],
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect and distribute group royalties: Member IP with ID ${mockAddress} is not registered .`,
+      );
+    });
+
+    it("throws if empty member ip ids", async () => {
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const result = groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [mockAddress],
+        memberIpIds: [],
+      });
+      await expect(result).to.be.rejectedWith(
+        "Failed to collect and distribute group royalties: At least one member IP ID is required.",
+      );
+    });
+
+    it("throws if currency token is zero address", async () => {
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const result = groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [zeroAddress],
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        "Failed to collect and distribute group royalties: Currency token cannot be the zero address.",
+      );
+    });
+
+    it("throws if empty currency tokens", async () => {
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const result = groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [],
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        "Failed to collect and distribute group royalties: At least one currency token is required.",
+      );
+    });
+
+    it("returns txHash given correct args", async () => {
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward")
+        .resolves(txHash);
+      const result = await groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [mockAddress],
+        memberIpIds: [mockAddress],
+      });
+      expect(result.txHash).equal(txHash);
+    });
+
+    it("returns additional details when waitForTransaction is true", async () => {
+      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon
+        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
+        .returns([
+          {
+            groupId: mockAddress,
+            amount: 100n,
+            token: mockAddress,
+            pool: mockAddress,
+          },
+        ]);
+      sinon.stub(groupClient.royaltyModuleEventClient, "parseTxRoyaltyPaidEvent").returns([
+        {
+          receiverIpId: mockAddress,
+          amount: 100n,
+          token: mockAddress,
+          amountAfterFee: 100n,
+          payerIpId: mockAddress,
+          sender: mockAddress,
+        },
+      ]);
+      sinon
+        .stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward")
+        .resolves(txHash);
+      const result = await groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [mockAddress],
+        memberIpIds: [mockAddress],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.collectedRoyalties).to.deep.equal([
+        {
+          amount: 100n,
+          token: mockAddress,
+          groupId: mockAddress,
+        },
+      ]);
+      expect(result.royaltiesDistributed).to.deep.equal([
+        {
+          ipId: mockAddress,
+          amount: 100n,
+          token: mockAddress,
+          amountAfterFee: 100n,
+        },
+      ]);
+    });
+  });
 });

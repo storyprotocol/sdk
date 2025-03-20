@@ -79,7 +79,7 @@ export type WithClaimOptions = {
      * they are transferred.
      * Set this to false to disable this behavior.
      *
-     * @default false
+     * @default true
      */
     autoUnwrapIpTokens?: boolean;
   };
@@ -121,4 +121,25 @@ export type ClaimAllRevenueResponse = {
 export type TransferClaimedTokensFromIpToWalletParams = {
   ipAccount: IpAccountImplClient;
   claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
+};
+
+/**
+ * Native royalty policy created by the Story team
+ */
+export enum NativeRoyaltyPolicy {
+  LAP = 0,
+  LRP,
+}
+
+/**
+ * Allow custom royalty policy address or use a native royalty policy enum
+ */
+export type RoyaltyPolicyInput = Address | NativeRoyaltyPolicy;
+
+export type TransferToVaultRequest = WithTxOptions & {
+  royaltyPolicy: RoyaltyPolicyInput;
+  ipId: Address;
+  ancestorIpId: Address;
+  /** the token address to transfer */
+  token: Address;
 };

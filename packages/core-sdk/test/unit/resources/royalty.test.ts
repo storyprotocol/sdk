@@ -1,7 +1,7 @@
 import chai from "chai";
-import { createMock } from "../testUtils";
+import { createMock, generateRandomAddress } from "../testUtils";
 import * as sinon from "sinon";
-import { PublicClient, WalletClient, Account } from "viem";
+import { PublicClient, WalletClient, Account, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { RoyaltyClient } from "../../../src/resources/royalty";
 import {
@@ -13,6 +13,7 @@ import { aeneid } from "../../integration/utils/util";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { ipId, mockAddress, walletAddress } from "../mockData";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
+import { NativeRoyaltyPolicy } from "../../../src/types/resources/royalty";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
@@ -28,7 +29,7 @@ describe("Test RoyaltyClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    royaltyClient = new RoyaltyClient(rpcMock, walletMock);
+    royaltyClient = new RoyaltyClient(rpcMock, walletMock, "1315");
   });
 
   afterEach(() => {
@@ -661,6 +662,39 @@ describe("Test RoyaltyClient", () => {
       expect(withdrawStub.calledOnce).to.be.false;
       expect(result.txHashes).to.be.an("array").and.lengthOf(2);
       expect(result.receipts).to.be.an("array").and.lengthOf(1);
+    });
+  });
+
+  describe("Test royaltyClient.transferToVault", async () => {
+    it("returns txHash when successful", async () => {
+      const simulateContractStub = sinon.stub().resolves({ request: {} });
+      rpcMock.simulateContract = simulateContractStub;
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      const result = await royaltyClient.transferToVault({
+        ipId,
+        ancestorIpId: generateRandomAddress(),
+        token: WIP_TOKEN_ADDRESS,
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
+        txOptions: { waitForTransaction: true },
+      });
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("throws if invalid input addresses", async () => {
+      const invalidAddress: Hex = "0x123";
+      const validAddress: Hex = ipId;
+      const validPolicy = NativeRoyaltyPolicy.LAP;
+      const testCases = [
+        { ipId: invalidAddress, ancestorIpId: validAddress, token: validAddress },
+        { ipId: validAddress, ancestorIpId: invalidAddress, token: validAddress },
+        { ipId: validAddress, ancestorIpId: validAddress, token: invalidAddress },
+      ];
+
+      for (const { ipId, ancestorIpId, token } of testCases) {
+        await expect(
+          royaltyClient.transferToVault({ ipId, ancestorIpId, token, royaltyPolicy: validPolicy }),
+        ).to.be.rejectedWith(`Invalid address: ${invalidAddress}`);
+      }
     });
   });
 });

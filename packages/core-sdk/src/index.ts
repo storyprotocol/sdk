@@ -86,6 +86,9 @@ export type {
   ClaimAllRevenueResponse,
   BatchClaimAllRevenueRequest,
   BatchClaimAllRevenueResponse,
+  NativeRoyaltyPolicy,
+  TransferToVaultRequest,
+  RoyaltyPolicyInput,
 } from "./types/resources/royalty";
 
 export type {
@@ -136,6 +139,8 @@ export type {
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
+  CollectAndDistributeGroupRoyaltiesRequest,
+  CollectAndDistributeGroupRoyaltiesResponse,
 } from "./types/resources/group";
 
 export type {

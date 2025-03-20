@@ -163,7 +163,7 @@ export class StoryClient {
    */
   public get royalty(): RoyaltyClient {
     if (this._royalty === null) {
-      this._royalty = new RoyaltyClient(this.rpcClient, this.wallet);
+      this._royalty = new RoyaltyClient(this.rpcClient, this.wallet, this.chainId);
     }
 
     return this._royalty;

@@ -9,9 +9,10 @@ import {
   TEST_WALLET_ADDRESS,
   walletClient,
 } from "./utils/util";
+import { getPrivateKeyFromXprv, getXprvFromPrivateKey } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
 import { Address, createWalletClient, http, parseEther, zeroAddress, Hex } from "viem";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount } from "viem/accounts";
 import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
@@ -88,7 +89,9 @@ describe("Dispute Functions", () => {
   let ipIdB: Address;
 
   before(async () => {
-    const privateKey = generatePrivateKey();
+    const xprv = getXprvFromPrivateKey(process.env.WALLET_PRIVATE_KEY as string);
+    const privateKey = getPrivateKeyFromXprv(xprv);
+
     clientA = getStoryClient();
     clientB = getStoryClient(privateKey);
     const walletB = privateKeyToAccount(privateKey);
@@ -97,13 +100,21 @@ describe("Dispute Functions", () => {
     const clientAWalletClient = createWalletClient({
       chain: chainStringToViemChain("aeneid"),
       transport: http(RPC),
-      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Address),
+      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
     });
-    const txHash = await clientAWalletClient.sendTransaction({
-      to: walletB.address,
-      value: parseEther("0.50"),
+
+    const clientBBalance = await publicClient.getBalance({
+      address: walletB.address,
     });
-    await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+    if (clientBBalance < parseEther("5")) {
+      // Less than 5 tokens (assuming 1 token = 0.01 ETH)
+      const txHash = await clientAWalletClient.sendTransaction({
+        to: walletB.address,
+        value: parseEther("5"),
+      });
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
+    }
 
     const txData = await clientA.nftClient.createNFTCollection({
       name: "test-collection",

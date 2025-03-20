@@ -289,6 +289,7 @@ export default defineConfig(async () => {
             "isWhitelistedRoyaltyToken",
             "ipRoyaltyVaults",
             "IpRoyaltyVaultDeployed",
+            "RoyaltyPaid",
           ],
           RoyaltyPolicyLAP: ["onRoyaltyPayment", "getRoyaltyData"],
           LicenseToken: ["ownerOf"],
@@ -298,6 +299,7 @@ export default defineConfig(async () => {
             "registerIpAndAttachLicenseAndAddToGroup",
             "registerGroupAndAttachLicense",
             "registerGroupAndAttachLicenseAndAddIps",
+            "collectRoyaltiesAndClaimReward",
           ],
           DerivativeWorkflows: [
             "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
@@ -353,6 +355,11 @@ export default defineConfig(async () => {
             "transferFrom",
             "mint",
             "transfer",
+          ],
+          GroupingModule: [
+            "CollectedRoyaltiesToGroupPool",
+            "registerGroup",
+            "IPGroupRegistered",
           ],
         },
       }),
