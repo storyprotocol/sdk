@@ -1,5 +1,6 @@
 module.exports = {
     parser: "@typescript-eslint/parser",
+    ignorePatterns: ["node_modules", "dist","coverage", "**/**/generated.ts"],
     extends: [
       "eslint:recommended",
       "turbo",
