@@ -2,12 +2,12 @@ import { WriteContractParameters } from "viem";
 
 import { SimulateAndWriteContractParams } from "../types/utils/contract";
 
-export async function simulateAndWriteContract({
+export const simulateAndWriteContract = async ({
   rpcClient,
   wallet,
   waitForTransaction,
   data,
-}: SimulateAndWriteContractParams) {
+}: SimulateAndWriteContractParams) => {
   const { request } = await rpcClient.simulateContract({
     ...data,
     account: wallet.account,
@@ -18,4 +18,4 @@ export async function simulateAndWriteContract({
     return { txHash, receipt };
   }
   return { txHash };
-}
+};

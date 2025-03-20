@@ -6,7 +6,7 @@ import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
 
-export function getLicenseTermByType(
+export const getLicenseTermByType = (
   type: PIL_TYPE,
   term?: {
     defaultMintingFee?: string | number | bigint;
@@ -14,7 +14,7 @@ export function getLicenseTermByType(
     royaltyPolicyAddress: Address;
     commercialRevShare?: number;
   },
-): LicenseTerms {
+): LicenseTerms => {
   const licenseTerms: LicenseTerms = {
     transferable: true,
     royaltyPolicy: zeroAddress,
@@ -76,12 +76,12 @@ export function getLicenseTermByType(
     licenseTerms.currency = validateAddress(term.currency);
     return licenseTerms;
   }
-}
+};
 
-export async function validateLicenseTerms(
+export const validateLicenseTerms = async (
   params: RegisterPILTermsRequest,
   rpcClient: PublicClient,
-): Promise<LicenseTerms> {
+): Promise<LicenseTerms> => {
   const { royaltyPolicy, currency } = params;
   const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
   if (validateAddress(royaltyPolicy) !== zeroAddress) {
@@ -123,7 +123,7 @@ export async function validateLicenseTerms(
     object.commercialRevShare = (object.commercialRevShare / 100) * 100000000;
   }
   return object;
-}
+};
 
 const verifyCommercialUse = (terms: LicenseTerms) => {
   if (!terms.commercialUse) {

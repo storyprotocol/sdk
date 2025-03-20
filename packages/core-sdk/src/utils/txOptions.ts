@@ -1,10 +1,10 @@
 import { HandleTxOptionsParams, TransactionResponse } from "../types/options";
 
-export async function handleTxOptions({
+export const handleTxOptions = async ({
   txOptions,
   rpcClient,
   txHash,
-}: HandleTxOptionsParams): Promise<TransactionResponse> {
+}: HandleTxOptionsParams): Promise<TransactionResponse> => {
   if (!txOptions || !txOptions.waitForTransaction) {
     return { txHash };
   }
@@ -13,4 +13,4 @@ export async function handleTxOptions({
     hash: txHash,
   });
   return { txHash, receipt };
-}
+};

@@ -18,6 +18,7 @@ module.exports = {
         "no-unused-expressions": "error",
         "no-useless-computed-key": "error",
         "no-console": "error",
+        "func-style": ["error"],
 
         // Typescript 
         "no-shadow": "off",

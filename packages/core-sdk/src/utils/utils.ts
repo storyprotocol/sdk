@@ -16,7 +16,7 @@ import {
 import { SupportedChainIds } from "../types/config";
 import { aeneid, mainnet } from "./chain";
 
-export async function waitTxAndFilterLog<
+export const waitTxAndFilterLog = async <
   const TAbi extends Abi | readonly unknown[],
   TEventName extends ContractEventName<TAbi> | undefined = ContractEventName<TAbi>,
   TTopics extends Hex[] = Hex[],
@@ -33,7 +33,7 @@ export async function waitTxAndFilterLog<
     pollingInterval?: number;
     timeout?: number;
   },
-): Promise<DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[]> {
+): Promise<DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[]> => {
   const txReceipt = await client.waitForTransactionReceipt({
     hash: txHash,
     confirmations: params.confirmations,
@@ -61,9 +61,9 @@ export async function waitTxAndFilterLog<
     throw new Error(`Not found event ${params.eventName} in target transaction`);
   }
   return targetLogs;
-}
+};
 
-export async function waitTx(
+export const waitTx = async (
   client: PublicClient,
   txHash: Hash,
   params?: {
@@ -71,14 +71,14 @@ export async function waitTx(
     pollingInterval?: number;
     timeout?: number;
   },
-): Promise<void> {
+): Promise<void> => {
   await client.waitForTransactionReceipt({
     hash: txHash,
     ...params,
   });
-}
+};
 
-export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
+export const chainStringToViemChain = (chainId: SupportedChainIds): Chain => {
   switch (chainId.toString()) {
     case "1315":
     case "aeneid":
@@ -89,7 +89,7 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     default:
       throw new Error(`ChainId ${chainId as string} not supported`);
   }
-}
+};
 
 export const chain: { [key in SupportedChainIds]: "1315" | "1514" } = {
   aeneid: "1315",
@@ -98,16 +98,16 @@ export const chain: { [key in SupportedChainIds]: "1315" | "1514" } = {
   mainnet: "1514",
 };
 
-export function validateAddress(address: string): Address {
+export const validateAddress = (address: string): Address => {
   if (!isAddress(address, { strict: false })) {
     throw Error(`Invalid address: ${address}.`);
   }
   return address;
-}
+};
 
-export function validateAddresses(addresses: string[]): Address[] {
+export const validateAddresses = (addresses: string[]): Address[] => {
   return addresses.map((address) => validateAddress(address));
-}
+};
 
 /** @deprecated use {@link validateAddress} */
 export const getAddress = (address: string, name: string, chainId?: number): Address => {
@@ -119,6 +119,6 @@ export const getAddress = (address: string, name: string, chainId?: number): Add
   return checksumAddress(address, chainId);
 };
 
-export function getTokenAmountDisplay(amount: bigint, unit = "IP"): string {
+export const getTokenAmountDisplay = (amount: bigint, unit = "IP"): string => {
   return `${formatEther(amount)}${unit}`;
-}
+};
