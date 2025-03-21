@@ -72,7 +72,7 @@ export class StoryClient {
     return this.config.chainId as ChainIds;
   }
   /**
-   * Factory method for creating a SDK client with a signer.
+   * Factory method for creating an SDK client with a signer.
    *
    * @param config StoryClient - the configuration for a new SDK client
    */
@@ -81,7 +81,7 @@ export class StoryClient {
   }
 
   /**
-   * Factory method for creating a SDK client with a signer.
+   * Factory method for creating an SDK client with a signer.
    *
    * @param config WalletClientConfig - the configuration for a new SDK client
    */
@@ -94,7 +94,7 @@ export class StoryClient {
   }
 
   /**
-   * Factory method for creating a SDK client with a signer.
+   * Factory method for creating an SDK client with a signer.
    *
    * @param config UseAccountStoryConfig - the configuration for a new SDK client
    */
