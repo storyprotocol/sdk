@@ -544,11 +544,11 @@ describe("Dispute Functions", () => {
       const responses = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
           {
-            ipId: derivativeResponse4.ipId!,
+            ipId: derivativeResponse3.ipId!,
             disputeId: disputeId,
           },
           {
-            ipId: derivativeResponse3.ipId!,
+            ipId: derivativeResponse4.ipId!,
             disputeId: disputeId,
           },
         ],
