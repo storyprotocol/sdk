@@ -223,9 +223,10 @@ export class DisputeClient {
         const txHash = await this.multicall3Client.aggregate3({ calls });
         txHashes.push(txHash);
       } else {
-        txHashes = await Promise.all(
-          objects.map((object) => this.disputeModuleClient.tagIfRelatedIpInfringed(object)),
-        );
+        for (const object of objects) {
+          const txHash = await this.disputeModuleClient.tagIfRelatedIpInfringed(object);
+          txHashes.push(txHash);
+        }
       }
       return await Promise.all(
         txHashes.map((txHash) =>

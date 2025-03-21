@@ -200,7 +200,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 2000000000000000000,
+        bond: parseEther("360"),
         txOptions: {
           waitForTransaction: true,
         },
@@ -541,21 +541,12 @@ describe("Dispute Functions", () => {
       });
       expect(disputeState[6]).to.equal(disputeState[5]);
 
-      const response1 = await clientA.dispute.tagIfRelatedIpInfringed({
+      const responses = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
           {
             ipId: derivativeResponse3.ipId!,
             disputeId: disputeId,
           },
-        ],
-        options: {
-          useMulticallWhenPossible: false,
-        },
-        txOptions: { waitForTransaction: true },
-      });
-
-      const response2 = await clientA.dispute.tagIfRelatedIpInfringed({
-        infringementTags: [
           {
             ipId: derivativeResponse4.ipId!,
             disputeId: disputeId,
@@ -567,7 +558,6 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      const responses = [...response1, ...response2];
       expect(responses).to.have.lengthOf(2);
       expect(responses[0].txHash).to.be.a("string").and.not.empty;
       expect(responses[1].txHash).to.be.a("string").and.not.empty;
