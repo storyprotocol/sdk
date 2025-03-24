@@ -10,7 +10,7 @@ import {
 } from "./utils/util";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
-import { Address, zeroAddress, Hex } from "viem";
+import { Address, zeroAddress, Hex, parseEther } from "viem";
 import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
