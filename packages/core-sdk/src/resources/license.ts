@@ -1,6 +1,7 @@
 import { Address, PublicClient, zeroAddress } from "viem";
 
 import {
+  IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseRegistryEventClient,
   LicenseRegistryReadOnlyClient,
@@ -354,18 +355,22 @@ export class LicenseClient {
       if (!isExisted) {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
       }
-      const isAttachedLicenseTerms =
-        await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
-          ipId: request.licensorIpId,
-          licenseTemplate: validateAddress(
-            request.licenseTemplate || this.licenseTemplateClient.address,
-          ),
-          licenseTermsId: req.licenseTermsId,
-        });
-      if (!isAttachedLicenseTerms) {
-        throw new Error(
-          `License terms id ${request.licenseTermsId} is not attached to the IP with id ${request.licensorIpId}.`,
-        );
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, req.licensorIpId);
+      const ipOwner = await ipAccount.owner();
+      if (ipOwner !== this.walletAddress) {
+        const isAttachedLicenseTerms =
+          await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+            ipId: req.licensorIpId,
+            licenseTemplate: validateAddress(
+              req.licenseTemplate || this.licenseTemplateClient.address,
+            ),
+            licenseTermsId: req.licenseTermsId,
+          });
+        if (!isAttachedLicenseTerms) {
+          throw new Error(
+            `License terms id ${req.licenseTermsId} is not attached to the IP with id ${req.licensorIpId}.`,
+          );
+        }
       }
       const encodedTxData = this.licensingModuleClient.mintLicenseTokensEncode(req);
       if (request.txOptions?.encodedTxDataOnly) {

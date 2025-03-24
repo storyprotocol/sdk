@@ -5,12 +5,14 @@ import { LicenseClient } from "../../../src";
 import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import {
+  IpAccountImplClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   RoyaltyModuleReadOnlyClient,
   WrappedIpClient,
 } from "../../../src/abi/generated";
 import { LicenseTerms } from "../../../src/types/resources/license";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
+import { ipId, mockAddress, walletAddress } from "../mockData";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -697,10 +699,45 @@ describe("Test LicenseClient", () => {
         );
       }
     });
+    it("should not call attached license terms given licensorIpId is owned by the caller", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      const hasIpAttachedLicenseTermsStub = sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      await licenseClient.mintLicenseTokens({
+        licensorIpId: ipId,
+        licenseTermsId: "1",
+        maxMintingFee: 1,
+        maxRevenueShare: 1,
+      });
 
+      expect(hasIpAttachedLicenseTermsStub.notCalled).to.be.true;
+    });
+
+    it("should call attached license terms given licensorIpId is not owned by the caller", async () => {
+      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      const hasIpAttachedLicenseTermsStub = sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
+      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      await licenseClient.mintLicenseTokens({
+        licensorIpId: ipId,
+        licenseTermsId: "1",
+        maxMintingFee: 1,
+        maxRevenueShare: 1,
+      });
+
+      expect(hasIpAttachedLicenseTermsStub.calledOnce).to.be.true;
+    });
     it("should throw attached error when call mintLicenseTokens given licenseTermsId is not attached", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
       sinon
         .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(false);
@@ -722,6 +759,7 @@ describe("Test LicenseClient", () => {
     it("should return txHash when call mintLicenseTokens given args is correct", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
       sinon
         .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
@@ -740,6 +778,7 @@ describe("Test LicenseClient", () => {
     it("should return txHash when call mintLicenseTokens given args is correct and waitForTransaction of true", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
       sinon
         .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
@@ -774,6 +813,7 @@ describe("Test LicenseClient", () => {
     it("should return txHash when call mintLicenseTokens given args is correct and waitForTransaction of true, amount of 5", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
       sinon
         .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
@@ -808,6 +848,7 @@ describe("Test LicenseClient", () => {
     it("should return encodedTxData when call mintLicenseTokens given txOptions.encodedTxDataOnly of true and args is correct", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
       sinon
         .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
@@ -861,6 +902,7 @@ describe("Test LicenseClient", () => {
         sinon
           .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
           .resolves(true);
+        sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
       });
 
       it("should auto convert IP to WIP", async () => {
