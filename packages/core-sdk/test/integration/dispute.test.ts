@@ -146,7 +146,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 1,
+        bond: 1000000000000000000,
         txOptions: {
           waitForTransaction: true,
         },
@@ -186,7 +186,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: Number(minLiveness) - 1,
-        bond: 0,
+        bond: 1000000000000000000,
         txOptions: { waitForTransaction: true },
       };
 
@@ -201,7 +201,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 2000000000000000000,
+        bond: 20000000000000000000000,
         txOptions: {
           waitForTransaction: true,
         },
@@ -218,7 +218,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "INVALID_TAG",
         liveness: 2592000,
-        bond: 0,
+        bond: 1000000000000000000,
         txOptions: { waitForTransaction: true },
       };
 
@@ -234,7 +234,7 @@ describe("Dispute Functions", () => {
       cid: await generateCID(),
       targetTag: "IMPROPER_REGISTRATION",
       liveness: 2592000,
-      bond: 0,
+      bond: 1000000000000000000,
       txOptions: { waitForTransaction: true },
     });
 
@@ -354,7 +354,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 1,
-        bond: 0,
+        bond: 1000000000000000000,
         txOptions: {
           waitForTransaction: true,
         },
@@ -449,7 +449,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 1,
-        bond: 0,
+        bond: 1000000000000000000,
         txOptions: { waitForTransaction: true },
       });
       const testDisputeId = disputeResponse.disputeId!;
