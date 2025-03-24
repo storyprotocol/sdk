@@ -5,20 +5,17 @@ import {
   getStoryClient,
   publicClient,
   aeneid,
-  RPC,
   TEST_WALLET_ADDRESS,
   walletClient,
 } from "./utils/util";
-import { getPrivateKeyFromXprv, getXprvFromPrivateKey } from "./utils/BIP32";
+import { getDerivedStoryClient } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
-import { Address, createWalletClient, http, parseEther, zeroAddress, Hex } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { Address, zeroAddress, Hex } from "viem";
 import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
 } from "../../src/abi/generated";
-import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
@@ -89,32 +86,8 @@ describe("Dispute Functions", () => {
   let ipIdB: Address;
 
   before(async () => {
-    const xprv = getXprvFromPrivateKey(process.env.WALLET_PRIVATE_KEY as string);
-    const privateKey = getPrivateKeyFromXprv(xprv);
-
     clientA = getStoryClient();
-    clientB = getStoryClient(privateKey);
-    const walletB = privateKeyToAccount(privateKey);
-
-    // ClientA transfer some funds to walletB
-    const clientAWalletClient = createWalletClient({
-      chain: chainStringToViemChain("aeneid"),
-      transport: http(RPC),
-      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
-    });
-
-    const clientBBalance = await publicClient.getBalance({
-      address: walletB.address,
-    });
-
-    if (clientBBalance < parseEther("5")) {
-      // Less than 5 tokens (assuming 1 token = 0.01 ETH)
-      const txHash = await clientAWalletClient.sendTransaction({
-        to: walletB.address,
-        value: parseEther("5"),
-      });
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
-    }
+    clientB = await getDerivedStoryClient();
 
     const txData = await clientA.nftClient.createNFTCollection({
       name: "test-collection",
