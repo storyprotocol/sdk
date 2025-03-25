@@ -28,6 +28,11 @@ export type UseWalletStoryConfig = {
 
 export type StoryConfig = {
   readonly transport: Transport;
+  /**
+   * The chain ID to use.
+   *
+   * @default 13_15
+   */
   readonly chainId?: SupportedChainIds;
   readonly wallet?: SimpleWalletClient;
   readonly account?: Account | Address;
