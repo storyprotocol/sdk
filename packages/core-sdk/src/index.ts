@@ -13,9 +13,9 @@ export { WipClient } from "./resources/wip";
 
 export * from "./types/config";
 export * from "./types/common";
-export * from "./types/resources/ipAsset";
 export * from "./types/options";
 
+export * from "./types/resources/ipAsset";
 export * from "./types/resources/ipMetadata";
 export * from "./types/resources/license";
 export * from "./types/resources/royalty";
