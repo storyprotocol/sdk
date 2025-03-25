@@ -113,6 +113,7 @@ describe("IP Asset Functions", () => {
           txOptions: { waitForTransaction: true },
         })
       ).ipId!;
+
       await client.license.attachLicenseTerms({
         ipId: parentIpId,
         licenseTermsId: noCommercialLicenseTermsId,
@@ -120,7 +121,7 @@ describe("IP Asset Functions", () => {
       });
 
       const response = await client.ipAsset.registerDerivative({
-        childIpId: childIpId2,
+        childIpId: childIpId,
         parentIpIds: [parentIpId],
         licenseTermsIds: [noCommercialLicenseTermsId],
         maxMintingFee: "0",
@@ -158,7 +159,7 @@ describe("IP Asset Functions", () => {
       });
 
       const response = await client.ipAsset.registerDerivative({
-        childIpId: childIpId,
+        childIpId: childIpId2,
         parentIpIds: [commercialParentIpId],
         licenseTermsIds: [licenseResponse.licenseTermsId!],
         maxMintingFee: "100",
