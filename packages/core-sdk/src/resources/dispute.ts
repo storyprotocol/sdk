@@ -174,7 +174,7 @@ export class DisputeClient {
     try {
       const req = {
         disputeId: BigInt(request.disputeId),
-        data: request.data,
+        data: request.data ?? "0x",
       };
 
       if (request.txOptions?.encodedTxDataOnly) {
