@@ -43,6 +43,7 @@ describe("IP Asset Functions", () => {
 
   describe("Basic IP Asset Operations", () => {
     let childIpId: Hex;
+    let childIpId2: Address;
 
     it("should register an IP Asset", async () => {
       const tokenId = await getTokenId();
@@ -72,6 +73,7 @@ describe("IP Asset Functions", () => {
         },
         txOptions: { waitForTransaction: true },
       });
+      childIpId2 = response.ipId!;
 
       expect(response.ipId).to.be.a("string").and.not.empty;
       expect(response.tokenId).to.be.a("bigint");
@@ -102,7 +104,34 @@ describe("IP Asset Functions", () => {
       ).to.be.rejected;
     });
 
-    it("should register derivative", async () => {
+    it("should register derivative with Non-Commercial Remix PIL", async () => {
+      const tokenId = await getTokenId();
+      parentIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          txOptions: { waitForTransaction: true },
+        })
+      ).ipId!;
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId,
+        licenseTermsId: noCommercialLicenseTermsId,
+        txOptions: { waitForTransaction: true },
+      });
+
+      const response = await client.ipAsset.registerDerivative({
+        childIpId: childIpId2,
+        parentIpIds: [parentIpId],
+        licenseTermsIds: [noCommercialLicenseTermsId],
+        maxMintingFee: "0",
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: "0",
+        txOptions: { waitForTransaction: true },
+      });
+      expect(response.txHash).to.be.a("string").and.not.empty;
+    });
+
+    it("should register derivative with Commercial Remix PIL", async () => {
       // Register commercial remix PIL
       const licenseResponse = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: 10n,
@@ -113,7 +142,7 @@ describe("IP Asset Functions", () => {
 
       // Register parent IP
       const tokenId = await getTokenId();
-      parentIpId = (
+      const commercialParentIpId = (
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId!,
@@ -123,14 +152,14 @@ describe("IP Asset Functions", () => {
 
       // Attach license terms to parent IP
       await client.license.attachLicenseTerms({
-        ipId: parentIpId,
+        ipId: commercialParentIpId,
         licenseTermsId: licenseResponse.licenseTermsId!,
         txOptions: { waitForTransaction: true },
       });
 
       const response = await client.ipAsset.registerDerivative({
         childIpId: childIpId,
-        parentIpIds: [parentIpId],
+        parentIpIds: [commercialParentIpId],
         licenseTermsIds: [licenseResponse.licenseTermsId!],
         maxMintingFee: "100",
         maxRts: 5 * 10 ** 6,
