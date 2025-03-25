@@ -358,7 +358,7 @@ export class IPAssetClient {
           contractCall,
           txOptions: request.txOptions,
           encodedTxs: [encodedTxData],
-          spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
+          spgSpenderAddress: this.royaltyModuleEventClient.address,
           wipOptions: {
             ...request.wipOptions,
             useMulticallWhenPossible: false,

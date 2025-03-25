@@ -103,6 +103,15 @@ describe("IP Asset Functions", () => {
     });
 
     it("should register derivative", async () => {
+      // Register commercial remix PIL
+      const licenseResponse = await client.license.registerCommercialRemixPIL({
+        defaultMintingFee: 10n,
+        commercialRevShare: 10,
+        currency: WIP_TOKEN_ADDRESS,
+        txOptions: { waitForTransaction: true },
+      });
+
+      // Register parent IP
       const tokenId = await getTokenId();
       parentIpId = (
         await client.ipAsset.register({
@@ -112,19 +121,20 @@ describe("IP Asset Functions", () => {
         })
       ).ipId!;
 
+      // Attach license terms to parent IP
       await client.license.attachLicenseTerms({
         ipId: parentIpId,
-        licenseTermsId: noCommercialLicenseTermsId,
+        licenseTermsId: licenseResponse.licenseTermsId!,
         txOptions: { waitForTransaction: true },
       });
 
       const response = await client.ipAsset.registerDerivative({
         childIpId: childIpId,
         parentIpIds: [parentIpId],
-        licenseTermsIds: [noCommercialLicenseTermsId],
-        maxMintingFee: "0",
+        licenseTermsIds: [licenseResponse.licenseTermsId!],
+        maxMintingFee: "100",
         maxRts: 5 * 10 ** 6,
-        maxRevenueShare: "0",
+        maxRevenueShare: "100",
         txOptions: { waitForTransaction: true },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
