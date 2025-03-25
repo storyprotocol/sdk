@@ -12,6 +12,7 @@ import {
 } from "./utils/util";
 import {
   erc20Address,
+  LicenseRegistryReadOnlyClient,
   licensingModuleAddress,
   piLicenseTemplateAddress,
 } from "../../src/abi/generated";
@@ -190,6 +191,23 @@ describe("License Functions", () => {
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
     });
 
+    it.only("should mint license token with default license terms", async () => {
+      // get default license terms id
+      const licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(publicClient);
+      const { licenseTermsId: defaultLicenseTermsId } =
+        await licenseRegistryReadOnlyClient.getDefaultLicenseTerms();
+
+      const result = await client.license.mintLicenseTokens({
+        licenseTermsId: defaultLicenseTermsId,
+        licensorIpId: ipId,
+        maxMintingFee: 0n,
+        maxRevenueShare: 1,
+        txOptions: { waitForTransaction: true },
+      });
+      
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
+    });
     it("should mint license tokens with fee and pay with IP", async () => {
       const balanceBefore = await client.getWalletBalance();
       const result = await client.license.mintLicenseTokens({

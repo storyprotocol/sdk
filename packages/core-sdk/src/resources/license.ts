@@ -310,16 +310,16 @@ export class LicenseClient {
 
   /**
    * Mints license tokens for the license terms attached to an IP.
-   * The license tokens are minted to the receiver.
-   * The license terms must be attached to the IP before calling this function.
-   * But it can mint license token of default license terms without attaching the default license terms,
-   * since it is attached to all IPs by default.
-   * IP owners can mint license tokens for their IPs for arbitrary license terms
-   * without attaching the license terms to IP.
    * It might require the caller pay the minting fee, depending on the license terms or configured by the iP owner.
    * The minting fee is paid in the minting fee token specified in the license terms or configured by the IP owner.
-   * IP owners can configure the minting fee of their IPs or
-   * configure the minting fee module to determine the minting fee.
+   * IP owners can configure the minting fee of their IPs or configure the minting fee module to determine the minting fee.
+   *
+   * @remarks
+   * Before minting license tokens, the license terms must be attached to the IP, with two exceptions:
+   * 1. Default license terms can be minted without explicit attachment since they are automatically
+   *    attached to all IPs by default
+   * 2. IP owners have special privileges and can mint license tokens for their own IPs using any
+   *    license terms, even if those terms are not explicitly attached
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L34 | `LicenseTokensMinted`} event.
    */
@@ -356,8 +356,10 @@ export class LicenseClient {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
       }
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, req.licensorIpId);
+      const { licenseTermsId: defaultLicenseTermsId } =
+        await this.licenseRegistryReadOnlyClient.getDefaultLicenseTerms();
       const ipOwner = await ipAccount.owner();
-      if (ipOwner !== this.walletAddress) {
+      if (ipOwner !== this.walletAddress || defaultLicenseTermsId !== req.licenseTermsId) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
             ipId: req.licensorIpId,
