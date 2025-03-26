@@ -16,11 +16,21 @@ export type SupportedChainIds = "aeneid" | "mainnet" | ChainIds;
  */
 export type UseAccountStoryConfig = {
   readonly account: Account | Address;
+  /**
+   * The chain ID to use, the default is `aeneid`.
+   *
+   * @default 13_15
+   */
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
 };
 
 export type UseWalletStoryConfig = {
+  /**
+   * The chain ID to use, the default is `aeneid`.
+   *
+   * @default 13_15
+   */
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
   readonly wallet: SimpleWalletClient;
@@ -29,7 +39,7 @@ export type UseWalletStoryConfig = {
 export type StoryConfig = {
   readonly transport: Transport;
   /**
-   * The chain ID to use.
+   * The chain ID to use, the default is `aeneid`.
    *
    * @default 13_15
    */
