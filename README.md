@@ -1,4 +1,4 @@
-# Story Protocol SDK &middot;[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/storyprotocol/sdk/blob/main/LICENSE.md)[![npm version](https://img.shields.io/npm/v/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)[![npm downloads](https://img.shields.io/npm/dm/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
+# Story Protocol SDK [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/storyprotocol/sdk/blob/main/LICENSE.md)[![npm version](https://img.shields.io/npm/v/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)[![npm downloads](https://img.shields.io/npm/dm/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
 
 Welcome to the Story Protocol SDK - a comprehensive toolkit for building applications on Story Protocol. This SDK empowers developers to seamlessly interact with intellectual property (IP) assets on the blockchain through an intuitive API interface.
 
@@ -6,9 +6,9 @@ Key Features:
 
 - IP Asset Module: Register, manage and track intellectual property assets on-chain
 - License Module: Create customizable license terms, attach them to IP assets, and mint transferable license tokens
-- Royalty Module: Configure revenue sharing, claim royalties, and manage payment distributions
+- Royalty Module: Claim royalties, and manage payment distributions
 - Dispute Module: Initiate, manage and resolve IP-related disputes through on-chain governance
-- Group Module: Create IP collections with shared revenue pools and manage group-wide settings
+- Group Module: Create IP collections with shared revenue pools
 - WIP Module: Wrap IP assets into ERC-20 tokens for DeFi integrations and liquidity
 
 The SDK provides robust support for the following networks:

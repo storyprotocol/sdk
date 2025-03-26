@@ -101,7 +101,7 @@ We welcome contributions of all kinds, including:
 Feel free to browse our issues list and find something that interests you. If you're unsure where to start, look for issues tagged with `good first issue` or `help wanted`.
 
 If you have questions about the development process,
-feel free to [file an issue](https://github.com/storyprotocol/project-nova/issues/new).
+feel free to [file an issue](https://github.com/storyprotocol/sdk/issues/new).
 
 ## Code Review
 
