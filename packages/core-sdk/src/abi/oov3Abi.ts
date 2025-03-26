@@ -1,5 +1,8 @@
 import { Abi } from "viem";
-
+/**
+ * The ABI for the OptimisticOracleV3 contract. Contract address may be changed.
+ * @see https://aeneid.storyscan.io/address/0xABac6a158431edED06EE6cba37eDE8779F599eE4?tab=contract_abi
+ */
 export const ASSERTION_ABI = [
   {
     inputs: [
@@ -120,6 +123,25 @@ export const ASSERTION_ABI = [
     name: "settleAssertion",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "currency",
+        type: "address",
+      },
+    ],
+    name: "getMinimumBond",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ] as const satisfies Abi;

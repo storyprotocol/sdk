@@ -23,3 +23,18 @@ export const getAssertionDetails = async (
 
   return bond;
 };
+
+export const getMinimumBond = async (
+  rpcClient: PublicClient,
+  arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient,
+  currency: Address,
+) => {
+  const oov3Contract = await getOov3Contract(arbitrationPolicyUmaClient);
+  const minimumBond = await rpcClient.readContract({
+    address: oov3Contract,
+    abi: ASSERTION_ABI,
+    functionName: "getMinimumBond",
+    args: [currency],
+  });
+  return minimumBond;
+};

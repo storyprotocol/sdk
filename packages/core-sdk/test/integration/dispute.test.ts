@@ -21,11 +21,10 @@ import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
 import { ASSERTION_ABI } from "../../src/abi/oov3Abi";
 import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
+import { getMinimumBond } from "../../src/utils/oov3";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
-
-const minimumBond = 1000000000000000000
 
 const generateCID = async () => {
   // Generate a random 32-byte buffer
@@ -86,11 +85,16 @@ describe("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
   let ipIdB: Address;
-
+  let minimumBond: bigint;
   before(async () => {
     clientA = getStoryClient();
-    const derivedClient = await getDerivedStoryClient();
-    clientB = derivedClient.clientB;
+
+    clientB = await getDerivedStoryClient();
+    minimumBond = await getMinimumBond(
+      publicClient,
+      new ArbitrationPolicyUmaClient(publicClient, walletClient),
+      WIP_TOKEN_ADDRESS,
+    );
 
     const txData = await clientA.nftClient.createNFTCollection({
       name: "test-collection",
@@ -183,7 +187,7 @@ describe("Dispute Functions", () => {
       };
 
       await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-        `Bonds must be less than`,
+        "Failed to raise dispute: Bonds must be between 100000000000000000 and 350000000000000000000.",
       );
     });
 

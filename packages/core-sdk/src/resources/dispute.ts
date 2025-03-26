@@ -26,7 +26,7 @@ import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 import { contractCallWithFees } from "../utils/feeUtils";
-import { getAssertionDetails } from "../utils/oov3";
+import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
 export class DisputeClient {
@@ -70,8 +70,13 @@ export class DisputeClient {
       const maxBonds = await this.arbitrationPolicyUmaClient.maxBonds({
         token: WIP_TOKEN_ADDRESS,
       });
-      if (bonds > maxBonds) {
-        throw new Error(`Bonds must be less than ${maxBonds}.`);
+      const minimumBond = await getMinimumBond(
+        this.rpcClient,
+        this.arbitrationPolicyUmaClient,
+        WIP_TOKEN_ADDRESS,
+      );
+      if (bonds > maxBonds || bonds < minimumBond) {
+        throw new Error(`Bonds must be between ${minimumBond} and ${maxBonds}.`);
       }
       const data = encodeAbiParameters(
         [
