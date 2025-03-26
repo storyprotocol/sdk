@@ -11,137 +11,24 @@ export { RoyaltyClient } from "./resources/royalty";
 export { GroupClient } from "./resources/group";
 export { WipClient } from "./resources/wip";
 
-export type { StoryConfig, SupportedChainIds } from "./types/config";
+export * from "./types/config";
+export * from "./types/common";
+export * from "./types/options";
 
-export type { LicensingConfig, LicensingConfigInput } from "./types/common";
-
-export type {
-  RegisterRequest,
-  RegisterIpResponse,
-  RegisterDerivativeResponse,
-  RegisterDerivativeRequest,
-  RegisterDerivativeWithLicenseTokensRequest,
-  RegisterDerivativeWithLicenseTokensResponse,
-  MintAndRegisterIpAssetWithPilTermsRequest,
-  MintAndRegisterIpAssetWithPilTermsResponse,
-  RegisterIpAndMakeDerivativeRequest,
-  RegisterIpAndMakeDerivativeResponse,
-  RegisterIpAndAttachPilTermsRequest,
-  RegisterIpAndAttachPilTermsResponse,
-  MintAndRegisterIpAndMakeDerivativeRequest,
-  MintAndRegisterIpAndMakeDerivativeResponse,
-  MintAndRegisterIpRequest,
-  RegisterPilTermsAndAttachRequest,
-  RegisterPilTermsAndAttachResponse,
-  MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  BatchMintAndRegisterIpAssetWithPilTermsRequest,
-  BatchMintAndRegisterIpAssetWithPilTermsResponse,
-  BatchMintAndRegisterIpAndMakeDerivativeRequest,
-  BatchMintAndRegisterIpAndMakeDerivativeResponse,
-  BatchRegisterRequest,
-  BatchRegisterResponse,
-  BatchRegisterDerivativeRequest,
-  BatchRegisterDerivativeResponse,
-  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
-  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
-  RoyaltyShare,
-  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
-  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
-  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
-  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
-  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
-  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
-  LicenseTermsData,
-  LicenseTermsDataInput,
-} from "./types/resources/ipAsset";
-
+export * from "./types/resources/ipAsset";
 export * from "./types/resources/ipMetadata";
-
-export type {
-  RegisterNonComSocialRemixingPILRequest,
-  RegisterCommercialUsePILRequest,
-  RegisterCommercialRemixPILRequest,
-  RegisterPILTermsRequest,
-  RegisterPILResponse,
-  AttachLicenseTermsRequest,
-  AttachLicenseTermsResponse,
-  MintLicenseTokensRequest,
-  MintLicenseTokensResponse,
-  LicenseTermsId,
-  LicenseTerms,
-  PredictMintingLicenseFeeRequest,
-  SetLicensingConfigRequest,
-  SetLicensingConfigResponse,
-} from "./types/resources/license";
+export * from "./types/resources/license";
+export * from "./types/resources/royalty";
+export * from "./types/resources/permission";
+export * from "./types/resources/dispute";
+export * from "./types/resources/ipAccount";
+export * from "./types/resources/nftClient";
+export * from "./types/resources/group";
+export * from "./types/resources/wip";
 
 export { PIL_TYPE } from "./types/resources/license";
 
-export type {
-  PayRoyaltyOnBehalfRequest,
-  PayRoyaltyOnBehalfResponse,
-  ClaimableRevenueRequest,
-  ClaimableRevenueResponse,
-  ClaimAllRevenueRequest,
-  ClaimAllRevenueResponse,
-  BatchClaimAllRevenueRequest,
-  BatchClaimAllRevenueResponse,
-  NativeRoyaltyPolicy,
-  TransferToVaultRequest,
-  RoyaltyPolicyInput,
-} from "./types/resources/royalty";
-
-export type {
-  SetPermissionsRequest,
-  SetPermissionsResponse,
-  CreateSetPermissionSignatureRequest,
-  SetAllPermissionsRequest,
-  SetBatchPermissionsRequest,
-  CreateBatchPermissionSignatureRequest,
-  PermissionSignatureRequest,
-  SignatureRequest,
-  SignatureResponse,
-} from "./types/resources/permission";
-
 export { AccessPermission } from "./types/resources/permission";
-
-export type {
-  RaiseDisputeRequest,
-  RaiseDisputeResponse,
-  CancelDisputeRequest,
-  CancelDisputeResponse,
-  ResolveDisputeRequest,
-  ResolveDisputeResponse,
-} from "./types/resources/dispute";
-
-export type {
-  IPAccountExecuteRequest,
-  IPAccountExecuteResponse,
-  IPAccountExecuteWithSigRequest,
-  IPAccountExecuteWithSigResponse,
-  IpAccountStateResponse,
-  TokenResponse,
-} from "./types/resources/ipAccount";
-
-export type {
-  CreateNFTCollectionRequest,
-  CreateNFTCollectionResponse,
-} from "./types/resources/nftClient";
-
-export type {
-  RegisterGroupRequest,
-  RegisterGroupResponse,
-  RegisterGroupAndAttachLicenseRequest,
-  RegisterGroupAndAttachLicenseResponse,
-  RegisterGroupAndAttachLicenseAndAddIpsRequest,
-  RegisterGroupAndAttachLicenseAndAddIpsResponse,
-  MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
-  MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
-  RegisterIpAndAttachLicenseAndAddToGroupRequest,
-  RegisterIpAndAttachLicenseAndAddToGroupResponse,
-  CollectAndDistributeGroupRoyaltiesRequest,
-  CollectAndDistributeGroupRoyaltiesResponse,
-} from "./types/resources/group";
 
 export type {
   PiLicenseTemplateGetLicenseTermsResponse,
@@ -152,16 +39,6 @@ export type {
 
 export { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "./abi/generated";
 
-export type {
-  DepositRequest,
-  WithdrawRequest,
-  ApproveRequest,
-  TransferRequest,
-  TransferFromRequest,
-} from "./types/resources/wip";
-
 export { getPermissionSignature, getSignature } from "./utils/sign";
 
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
-
-export type { TxOptions, TransactionResponse, WipOptions, ERC20Options } from "./types/options";
