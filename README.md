@@ -1,6 +1,9 @@
-# Story Protocol SDK
+# [Story Protocol SDK] [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/storyprotocol/sdk/blob/main/LICENSE.md)
 
-Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for developers to build applications with Story Protocol. By using the SDK, developers can create the resources like IP assets and perform actions to interact with the resource.
+[![npm version](https://img.shields.io/npm/v/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
+[![npm downloads](https://img.shields.io/npm/dm/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
+
+Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for developers to build applications with Story Protocol. By using the SDK, developers can create the resources like IP assets and perform actions to interact with the resource, such as enforcing proper usage of your IP via the `License` Module, paying & claiming revenue via the `Royalty` Module, and disputing infringing IP via the `Dispute` Module.
 
 ## How to use Story Protocol SDK in Your Project
 
@@ -40,18 +43,24 @@ The SDK supports using `viem` for initiating SDK client. Create a typescript fil
 
 ```typescript index.ts
 import { privateKeyToAccount } from "viem/accounts";
+import { Address } from "viem";
 
-const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "0x";
-const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY as Address;
+const account = privateKeyToAccount(PRIVATE_KEY);
 ```
 
 The preceding code created the `account` object for creating the SDK client.
 
 ## Set up SDK client
 
+The SDK currently supports the following networks:
+
+- [aeneid](https://docs.story.foundation/network/network-info/aeneid) - Testnet network for development and testing
+- [mainnet](https://docs.story.foundation/network/network-info/mainnet) - Production network for live deployments
+
 To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, utilizing the `account` we created previously.
 
-> :information-source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the Iliad network with `RPC_PROVIDER_URL=https://rpc.partner.testnet.storyprotocol.net`.
+> :information_source: Make sure to have RPC_PROVIDER_URL for your desired chain set up in your .env file. We recommend using the `aeneid` testnet network with `RPC_PROVIDER_URL=https://aeneid.storyrpc.io` for development and testing. For production deployments, use the `mainnet` network with `RPC_PROVIDER_URL=https://mainnet.storyrpc.io`.
 
 ```typescript index.ts
 import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
@@ -102,6 +111,10 @@ In your testing environment:
 
 - run `cd packages/wagmi-generator && npm run generate`
 
+## Documentation
+
+For more detailed information on using the SDK, refer to the [TypeScript SDK Guide](https://docs.story.foundation/developers/typescript-sdk/overview).
+
 ## Release
 
 | Package                           | Description                                     |
@@ -118,6 +131,6 @@ Please make sure to update tests as appropriate.
 
 ## License
 
-[MIT License](/LICENSE.md)
+[Copyright (c) 2023-Present Story Protocol Inc.](/LICENSE.md)
 
 ## Contact Us
