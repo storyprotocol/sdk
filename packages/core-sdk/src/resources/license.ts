@@ -360,7 +360,7 @@ export class LicenseClient {
       const { licenseTermsId: defaultLicenseTermsId } =
         await this.licenseRegistryReadOnlyClient.getDefaultLicenseTerms();
       const ipOwner = await ipAccount.owner();
-      if (ipOwner !== this.walletAddress || defaultLicenseTermsId !== req.licenseTermsId) {
+      if (ipOwner !== this.walletAddress && defaultLicenseTermsId !== req.licenseTermsId) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
             ipId: req.licensorIpId,
@@ -395,6 +395,7 @@ export class LicenseClient {
           amount: licenseMintingFee,
         });
       }
+      console.log("licenseMintingFee", licenseMintingFee);
       const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
         options: { wipOptions: request.wipOptions },

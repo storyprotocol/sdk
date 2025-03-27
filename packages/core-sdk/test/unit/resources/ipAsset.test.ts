@@ -75,6 +75,8 @@ describe("Test IpAssetClient", () => {
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
+    // Mock predictMintingLicenseFee
+    rpcMock.readContract = sinon.stub().resolves([zeroAddress, 0n]);
     ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1315");
     sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getDefaultLicenseTerms").resolves({
       licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
