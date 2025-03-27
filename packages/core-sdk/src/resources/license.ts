@@ -395,7 +395,6 @@ export class LicenseClient {
           amount: licenseMintingFee,
         });
       }
-      console.log("licenseMintingFee", licenseMintingFee);
       const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
         options: { wipOptions: request.wipOptions },
