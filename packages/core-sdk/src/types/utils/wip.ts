@@ -73,13 +73,3 @@ export type MulticallWithWrapIp = WithWipOptions & {
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
 };
-
-export type CalculateDerivativeMintFeeParams = {
-  multicall3Client: Multicall3Client;
-  licenseTemplateClient: PiLicenseTemplateClient;
-  licensingModuleClient: LicensingModuleClient;
-  parentIpId: Address;
-  licenseTermsId: bigint;
-  receiver: Address;
-  amount: bigint;
-};

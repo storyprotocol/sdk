@@ -191,7 +191,7 @@ describe("License Functions", () => {
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
     });
 
-    it.only("should mint license token with default license terms", async () => {
+    it("should mint license token with default license terms", async () => {
       // get default license terms id
       const licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(publicClient);
       const { licenseTermsId: defaultLicenseTermsId } =
@@ -204,10 +204,11 @@ describe("License Functions", () => {
         maxRevenueShare: 1,
         txOptions: { waitForTransaction: true },
       });
-      
+
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
     });
+
     it("should mint license tokens with fee and pay with IP", async () => {
       const balanceBefore = await client.getWalletBalance();
       const result = await client.license.mintLicenseTokens({

@@ -1668,13 +1668,17 @@ export class IPAssetClient {
       let totalDerivativeMintingFee = 0n;
       for (let i = 0; i < derivData.parentIpIds.length; i++) {
         const derivativeMintingFee = await calculateLicenseWipMintFee({
-          multicall3Client: this.multicall3Client,
-          licenseTemplateClient: this.licenseTemplateClient,
-          licensingModuleClient: this.licensingModuleClient,
-          parentIpId: derivData.parentIpIds[i],
-          licenseTermsId: derivData.licenseTermsIds[i],
-          receiver: sender,
-          amount: 1n,
+          predictMintingFeeRequest: {
+            licensorIpId: derivData.parentIpIds[i],
+            licenseTemplate: derivData.licenseTemplate,
+            licenseTermsId: derivData.licenseTermsIds[i],
+            receiver: sender,
+            amount: 1n,
+            royaltyContext: zeroAddress,
+          },
+          rpcClient: this.rpcClient,
+          chainId: this.chainId,
+          walletAddress: this.walletAddress,
         });
         totalDerivativeMintingFee += derivativeMintingFee;
       }

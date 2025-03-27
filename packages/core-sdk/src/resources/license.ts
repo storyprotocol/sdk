@@ -50,6 +50,7 @@ import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/feeUt
 import { Erc20Spender } from "../types/utils/wip";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { RevShareType } from "../types/common";
+import { predictMintingLicenseFee } from "../utils/predictMintingLicenseFee";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -381,13 +382,10 @@ export class LicenseClient {
 
       // get license token minting fee
       const licenseMintingFee = await calculateLicenseWipMintFee({
-        multicall3Client: this.multicall3Client,
-        licenseTemplateClient: this.licenseTemplateClient,
-        licensingModuleClient: this.licensingModuleClient,
-        parentIpId: req.licensorIpId,
-        licenseTermsId: req.licenseTermsId,
-        receiver,
-        amount: req.amount,
+        predictMintingFeeRequest: req,
+        rpcClient: this.rpcClient,
+        chainId: this.chainId,
+        walletAddress: this.walletAddress,
       });
 
       const wipSpenders: Erc20Spender[] = [];
@@ -471,7 +469,12 @@ export class LicenseClient {
         ),
         licenseTermsId,
       };
-      return await this.licensingModuleClient.predictMintingLicenseFee(object);
+      return await predictMintingLicenseFee({
+        predictMintingFeeRequest: object,
+        rpcClient: this.rpcClient,
+        chainId: this.chainId,
+        walletAddress: this.walletAddress,
+      });
     } catch (error) {
       handleError(error, "Failed to predict minting license fee");
     }
