@@ -1841,7 +1841,7 @@ describe("Test IpAssetClient", () => {
         isSet: false,
         mintingFee: 0n,
         licensingHook: zeroAddress,
-        hookData: zeroAddress,
+        hookData: zeroHash,
         commercialRevShare: 0,
         disabled: false,
         expectMinimumGroupRewardShare: 0,
