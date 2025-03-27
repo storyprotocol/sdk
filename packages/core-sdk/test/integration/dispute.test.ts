@@ -28,6 +28,8 @@ import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
+const minimumBond = 1000000000000000000
+
 const generateCID = async () => {
   // Generate a random 32-byte buffer
   const randomBytes = crypto.getRandomValues(new Uint8Array(32));
@@ -145,7 +147,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 1,
+        bond: minimumBond,
         txOptions: {
           waitForTransaction: true,
         },
@@ -185,7 +187,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: Number(minLiveness) - 1,
-        bond: 0,
+        bond: minimumBond,
         txOptions: { waitForTransaction: true },
       };
 
@@ -217,7 +219,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "INVALID_TAG",
         liveness: 2592000,
-        bond: 0,
+        bond: minimumBond,
         txOptions: { waitForTransaction: true },
       };
 
@@ -233,7 +235,7 @@ describe("Dispute Functions", () => {
       cid: await generateCID(),
       targetTag: "IMPROPER_REGISTRATION",
       liveness: 2592000,
-      bond: 0,
+      bond: minimumBond,
       txOptions: { waitForTransaction: true },
     });
 
@@ -353,7 +355,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 1,
-        bond: 0,
+        bond: minimumBond,
         txOptions: {
           waitForTransaction: true,
         },
@@ -448,7 +450,7 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 1,
-        bond: 0,
+        bond: minimumBond,
         txOptions: { waitForTransaction: true },
       });
       const testDisputeId = disputeResponse.disputeId!;

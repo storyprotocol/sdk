@@ -81,7 +81,7 @@ export class NftClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to create a SPG NFT collection");
+      handleError(error, "Failed to create an SPG NFT collection");
     }
   }
   /**
