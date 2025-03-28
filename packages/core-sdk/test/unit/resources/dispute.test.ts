@@ -270,6 +270,17 @@ describe("Test DisputeClient", () => {
       }
     });
 
+    it("should use default data when data is not provided", async () => {
+      const resolveDisputeStub = sinon
+        .stub(disputeClient.disputeModuleClient, "resolveDispute")
+        .resolves(txHash);
+      await disputeClient.resolveDispute({
+        disputeId: 1,
+      });
+
+      expect(resolveDisputeStub.calledWith({ disputeId: 1n, data: "0x" })).to.be.true;
+    });
+
     it("should return txHash when call resolveDispute successfully", async () => {
       sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").resolves(txHash);
       const result = await disputeClient.resolveDispute({
