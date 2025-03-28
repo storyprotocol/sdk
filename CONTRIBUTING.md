@@ -47,9 +47,13 @@ In your testing environment:
 
 - Run `yalc update` to pull the latest changes.
 
-### Steps to pull and compile latest Protocol Core & Periphery v1 Smart Contract ABIs (Currently pulls from the protocol-core-v1 and protocol-periphery-v1 `release-v1.x.x` branch)
+### How to update the latest Protocol Core & Periphery Smart Contract methods
 
-- run `cd packages/wagmi-generator && npm run generate`
+1. Install the dependencies: `cd packages/wagmi-generator && pnpm install`
+2. Update the `wagmi.config.ts` file with the latest contract addresses and chain IDs.
+3. Run the generator: `cd packages/wagmi-generator && pnpm run generate`
+
+It will generate the latest contract methods and events in the `packages/core-sdk/src/abi/generated` directory.
 
 ## Bug Reports
 
