@@ -244,10 +244,13 @@ export class DisputeClient {
 
   /**
    * Counters a dispute that was raised by another party on an IP using counter evidence.
+   * The counter evidence (e.g., documents, images) should be uploaded to IPFS,
+   * and its corresponding CID is converted to a hash for the request.
    *
-   * This method can only be called by the IP's owner to counter a dispute by providing
-   * counter evidence. The counter evidence (e.g., documents, images) should be
-   * uploaded to IPFS, and its corresponding CID is converted to a hash for the request.
+   * @remarks
+   *  The liveness period is split in two parts:
+   *  - the first part of the liveness period in which only the IP's owner can be called the method.
+   *  - a second part in which any address can be called the method.
    *
    * If you only have a `disputeId`, call {@link disputeIdToAssertionId} to get the `assertionId` needed here.
    */
