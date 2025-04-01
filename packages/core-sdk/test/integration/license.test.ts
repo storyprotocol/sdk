@@ -12,20 +12,23 @@ import {
 } from "./utils/util";
 import {
   erc20Address,
+  LicenseRegistryReadOnlyClient,
   licensingModuleAddress,
   piLicenseTemplateAddress,
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 import { ERC20Client } from "../../src/utils/token";
+import { getDerivedStoryClient } from "./utils/BIP32";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe("License Functions", () => {
   let client: StoryClient;
-
-  before(() => {
+  let clientB: StoryClient;
+  before(async () => {
     client = getStoryClient();
+    clientB = await getDerivedStoryClient();
   });
   describe("register license with different types", async () => {
     it("should register license ", async () => {
@@ -143,7 +146,7 @@ describe("License Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
 
-    it("should mint license tokens", async () => {
+    it("should mint license tokens with ip owner", async () => {
       const balanceBefore = await client.getWalletBalance();
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
@@ -154,6 +157,54 @@ describe("License Functions", () => {
           waitForTransaction: true,
         },
       });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
+    });
+
+    it("should mint license tokens with non ip owner", async () => {
+      // register ip with another wallet account
+      const tokenIdB = await getTokenId();
+      const registerResult = await clientB.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenIdB!,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      const ipIdB = registerResult.ipId!;
+
+      // attach license terms to the ip
+      await client.license.attachLicenseTerms({
+        ipId: ipIdB,
+        licenseTermsId: licenseId,
+        txOptions: { waitForTransaction: true },
+      });
+
+      const result = await client.license.mintLicenseTokens({
+        licenseTermsId: licenseId,
+        licensorIpId: ipIdB,
+        maxMintingFee: "1",
+        maxRevenueShare: "100",
+        txOptions: { waitForTransaction: true },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
+    });
+
+    it("should mint license token with default license terms", async () => {
+      // get default license terms id
+      const licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(publicClient);
+      const { licenseTermsId: defaultLicenseTermsId } =
+        await licenseRegistryReadOnlyClient.getDefaultLicenseTerms();
+
+      const result = await client.license.mintLicenseTokens({
+        licenseTermsId: defaultLicenseTermsId,
+        licensorIpId: ipId,
+        maxMintingFee: 0n,
+        maxRevenueShare: 1,
+        txOptions: { waitForTransaction: true },
+      });
+
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
     });
