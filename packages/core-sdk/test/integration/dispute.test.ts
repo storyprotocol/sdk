@@ -89,7 +89,8 @@ describe("Dispute Functions", () => {
 
   before(async () => {
     clientA = getStoryClient();
-    clientB = await getDerivedStoryClient();
+    const derivedClient = await getDerivedStoryClient();
+    clientB = derivedClient.clientB;
 
     const txData = await clientA.nftClient.createNFTCollection({
       name: "test-collection",
