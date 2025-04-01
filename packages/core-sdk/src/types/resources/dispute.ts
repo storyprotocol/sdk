@@ -25,7 +25,7 @@ export type RaiseDisputeRequest = WithTxOptions & {
    * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
    * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
    */
-  bond: bigint | number | string;
+  bond?: bigint | number | string;
   /**
    * Omit {@link WipOptions.useMulticallWhenPossible} for this function due to disputeInitiator issue.
    * It will be executed sequentially with several transactions.

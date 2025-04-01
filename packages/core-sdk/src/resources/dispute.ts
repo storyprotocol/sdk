@@ -56,25 +56,22 @@ export class DisputeClient {
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
       const liveness = BigInt(request.liveness);
-      const bonds = BigInt(request.bond);
       const [minLiveness, maxLiveness] = await Promise.all([
         this.arbitrationPolicyUmaClient.minLiveness(),
         this.arbitrationPolicyUmaClient.maxLiveness(),
       ]);
 
+      const [minimumBond, maxBonds] = await Promise.all([
+        getMinimumBond(this.rpcClient, this.arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS),
+        this.arbitrationPolicyUmaClient.maxBonds({
+          token: WIP_TOKEN_ADDRESS,
+        }),
+      ]);
+      const bonds = BigInt(request.bond || minimumBond);
       const tag = stringToHex(request.targetTag, { size: 32 });
       if (liveness < minLiveness || liveness > maxLiveness) {
         throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
       }
-
-      const maxBonds = await this.arbitrationPolicyUmaClient.maxBonds({
-        token: WIP_TOKEN_ADDRESS,
-      });
-      const minimumBond = await getMinimumBond(
-        this.rpcClient,
-        this.arbitrationPolicyUmaClient,
-        WIP_TOKEN_ADDRESS,
-      );
       if (bonds > maxBonds || bonds < minimumBond) {
         throw new Error(`Bonds must be between ${minimumBond} and ${maxBonds}.`);
       }

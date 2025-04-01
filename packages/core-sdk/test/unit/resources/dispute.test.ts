@@ -31,6 +31,9 @@ describe("Test DisputeClient", () => {
   });
 
   describe("raiseDispute", () => {
+    beforeEach(() => {
+      rpcMock.readContract = sinon.stub().resolves(1);
+    });
     it("throw address error when call raiseDispute with invalid targetIpId", async () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
@@ -43,7 +46,7 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
-          bond: 0,
+          bond: 1,
           liveness: 2592000,
         });
       } catch (e) {
@@ -59,7 +62,7 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
-          bond: 0,
+          bond: 1,
           liveness: 1,
         });
       } catch (e) {
@@ -83,7 +86,26 @@ describe("Test DisputeClient", () => {
         });
       } catch (e) {
         expect((e as Error).message).equal(
-          "Failed to raise dispute: Bonds must be less than 1000.",
+          "Failed to raise dispute: Bonds must be between 1 and 1000.",
+        );
+      }
+    });
+
+    it("throw bond error when call raiseDispute given bond less than min bonds", async () => {
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(1000n);
+      try {
+        await disputeClient.raiseDispute({
+          targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+          targetTag: "tag",
+          bond: 0,
+          liveness: 2592000,
+        });
+      } catch (e) {
+        expect((e as Error).message).equal(
+          "Failed to raise dispute: Bonds must be between 1 and 1000.",
         );
       }
     });
@@ -100,7 +122,7 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
-          bond: 0,
+          bond: 1,
           liveness: 2592000,
         });
       } catch (e) {
@@ -122,7 +144,7 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 0,
+        bond: 1,
         liveness: 2592000,
       });
 
@@ -153,7 +175,7 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 0,
+        bond: 1,
         liveness: 2592000,
         txOptions: { waitForTransaction: true },
       });
@@ -173,7 +195,7 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 0,
+        bond: 1,
         liveness: 2592000,
         txOptions: { encodedTxDataOnly: true },
       });
@@ -206,7 +228,6 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 1000,
         liveness: 2592000,
         txOptions: { waitForTransaction: true },
       });
