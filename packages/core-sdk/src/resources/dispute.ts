@@ -211,7 +211,7 @@ export class DisputeClient {
           infringerDisputeId: BigInt(arg.disputeId),
         }),
       );
-      let txHashes: Hex[] = [];
+      const txHashes: Hex[] = [];
       if (
         request.options?.useMulticallWhenPossible !== false &&
         request.infringementTags.length > 1
