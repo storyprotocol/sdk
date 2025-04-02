@@ -1,35 +1,30 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
+import { StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
 import {
   getStoryClient,
   publicClient,
   aeneid,
-  RPC,
   TEST_WALLET_ADDRESS,
   walletClient,
 } from "./utils/util";
-import { getPrivateKeyFromXprv, getXprvFromPrivateKey } from "./utils/BIP32";
+import { getDerivedStoryClient } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
-import { Address, createWalletClient, http, parseEther, zeroAddress, Hex } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { Address, zeroAddress, Hex, parseEther } from "viem";
 import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
-  wrappedIpAddress,
 } from "../../src/abi/generated";
-import { chainStringToViemChain } from "../../src/utils/utils";
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
 import { ASSERTION_ABI } from "../../src/abi/oov3Abi";
 import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
+import { getMinimumBond } from "../../src/utils/oov3";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
-
-const minimumBond = 1000000000000000000
 
 const generateCID = async () => {
   // Generate a random 32-byte buffer
@@ -90,34 +85,17 @@ describe("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
   let ipIdB: Address;
-
+  let minimumBond: bigint;
   before(async () => {
-    const xprv = getXprvFromPrivateKey(process.env.WALLET_PRIVATE_KEY as string);
-    const privateKey = getPrivateKeyFromXprv(xprv);
-
     clientA = getStoryClient();
-    clientB = getStoryClient(privateKey);
-    const walletB = privateKeyToAccount(privateKey);
 
-    // ClientA transfer some funds to walletB
-    const clientAWalletClient = createWalletClient({
-      chain: chainStringToViemChain("aeneid"),
-      transport: http(RPC),
-      account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
-    });
-
-    const clientBBalance = await publicClient.getBalance({
-      address: walletB.address,
-    });
-
-    if (clientBBalance < parseEther("5")) {
-      // Less than 5 tokens (assuming 1 token = 0.01 ETH)
-      const txHash = await clientAWalletClient.sendTransaction({
-        to: walletB.address,
-        value: parseEther("5"),
-      });
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
-    }
+    const derivedClient = await getDerivedStoryClient();
+    clientB = derivedClient.clientB;
+    minimumBond = await getMinimumBond(
+      publicClient,
+      new ArbitrationPolicyUmaClient(publicClient, walletClient),
+      WIP_TOKEN_ADDRESS,
+    );
 
     const txData = await clientA.nftClient.createNFTCollection({
       name: "test-collection",
@@ -203,14 +181,14 @@ describe("Dispute Functions", () => {
         cid: await generateCID(),
         targetTag: "IMPROPER_REGISTRATION",
         liveness: 2592000,
-        bond: 20000000000000000000000,
+        bond: parseEther("360"),
         txOptions: {
           waitForTransaction: true,
         },
       };
 
       await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-        `Bonds must be less than`,
+        "Failed to raise dispute: Bonds must be between 100000000000000000 and 350000000000000000000.",
       );
     });
 
@@ -302,7 +280,7 @@ describe("Dispute Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -544,21 +522,12 @@ describe("Dispute Functions", () => {
       });
       expect(disputeState[6]).to.equal(disputeState[5]);
 
-      const response1 = await clientA.dispute.tagIfRelatedIpInfringed({
+      const responses = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
           {
             ipId: derivativeResponse3.ipId!,
             disputeId: disputeId,
           },
-        ],
-        options: {
-          useMulticallWhenPossible: false,
-        },
-        txOptions: { waitForTransaction: true },
-      });
-
-      const response2 = await clientA.dispute.tagIfRelatedIpInfringed({
-        infringementTags: [
           {
             ipId: derivativeResponse4.ipId!,
             disputeId: disputeId,
@@ -570,7 +539,6 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      const responses = [...response1, ...response2];
       expect(responses).to.have.lengthOf(2);
       expect(responses[0].txHash).to.be.a("string").and.not.empty;
       expect(responses[1].txHash).to.be.a("string").and.not.empty;

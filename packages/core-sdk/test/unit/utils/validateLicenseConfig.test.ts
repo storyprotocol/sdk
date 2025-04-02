@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { zeroAddress } from "viem";
+import { zeroAddress, zeroHash } from "viem";
 import { validateLicenseConfig } from "../../../src/utils/validateLicenseConfig";
 
 describe("validateLicenseConfig", () => {
@@ -84,7 +84,7 @@ describe("validateLicenseConfig", () => {
       isSet: false,
       mintingFee: 0n,
       licensingHook: zeroAddress,
-      hookData: zeroAddress,
+      hookData: zeroHash,
       commercialRevShare: 0,
       disabled: false,
       expectMinimumGroupRewardShare: 0,

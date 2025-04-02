@@ -5,7 +5,7 @@ import { PublicClient, WalletClient } from "viem";
 
 import { NftClient } from "../../../src";
 import { createMock } from "../testUtils";
-import { mockERC20 } from "../mockData";
+import { mockAddress, mockERC20 } from "../mockData";
 import { SpgnftImplReadOnlyClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
@@ -19,7 +19,7 @@ describe("Test NftClient", () => {
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
-    walletMock = createMock<WalletClient>({ account: { address: "0x" } });
+    walletMock = createMock<WalletClient>({ account: { address: mockAddress } });
     nftClient = new NftClient(rpcMock, walletMock);
   });
 

@@ -25,10 +25,10 @@ import {
 import { AccessPermission } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
 import { getPermissionSignature, getDeadline } from "../utils/sign";
-import { chain, getAddress, validateAddress, validateAddresses } from "../utils/utils";
+import { chain, validateAddress, validateAddresses } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import {
-  ValidatedLicenseData,
+  LicenseDataInput,
   LicenseData,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
@@ -82,16 +82,13 @@ export class GroupClient {
     this.royaltyModuleEventClient = new RoyaltyModuleEventClient(rpcClient);
   }
   /** Registers a Group IPA.
-   * @param request - The request object containing necessary data to register group.
-   *   @param request.groupPool The address specifying how royalty will be split amongst the pool of IPs in the group.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a transaction hash, and if encodedTxDataOnly is true, includes encoded transaction data, and if waitForTransaction is true, includes group id.
-   * @emits PGroupRegistered (groupId, groupPool);
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroup(request: RegisterGroupRequest): Promise<RegisterGroupResponse> {
     try {
       const object: GroupingModuleRegisterGroupRequest = {
-        groupPool: getAddress(request.groupPool, "request.groupPool"),
+        groupPool: validateAddress(request.groupPool),
       };
       if (request.txOptions?.encodedTxDataOnly) {
         return {
@@ -115,8 +112,8 @@ export class GroupClient {
     }
   }
   /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * for a list of on-chain events emitted when an IP is minted and registered, license terms are attached to an IP, and it is added to a group.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIpAndAttachLicenseAndAddToGroup(
     request: MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -124,7 +121,7 @@ export class GroupClient {
     try {
       const { groupId, recipient, spgNftContract, deadline } = request;
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(groupId, "groupId"),
+        id: validateAddress(groupId),
       });
       if (!isRegistered) {
         throw new Error(`Group IP ${groupId} is not registered.`);
@@ -142,8 +139,8 @@ export class GroupClient {
         permissions: [
           {
             ipId: groupId,
-            signer: getAddress(this.groupingWorkflowsClient.address, "groupingWorkflowsClient"),
-            to: getAddress(this.groupingModuleClient.address, "groupingModuleClient"),
+            signer: validateAddress(this.groupingWorkflowsClient.address),
+            to: validateAddress(this.groupingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(groupingModuleAbi, "addIp"),
           },
@@ -152,16 +149,15 @@ export class GroupClient {
       const object: GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
         ...request,
         allowDuplicates: request.allowDuplicates || true,
-        spgNftContract: getAddress(spgNftContract, "request.spgNftContract"),
-        recipient:
-          (recipient && getAddress(recipient, "request.recipient")) || this.wallet.account!.address,
+        spgNftContract: validateAddress(spgNftContract),
+        recipient: validateAddress(recipient || this.wallet.account!.address),
         maxAllowedRewardShare: BigInt(
           getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
         ),
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         sigAddToGroup: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature: sigAddToGroupSignature,
         },
@@ -192,8 +188,8 @@ export class GroupClient {
   }
 
   /** Register an NFT as IP with metadata, attach license terms to the registered IP, and add it to a group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | IIPAssetRegistry}
-   * for a list of on-chain events emitted when an IP is registered, license terms are attached to an IP, and it is added to a group.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async registerIpAndAttachLicenseAndAddToGroup(
     request: RegisterIpAndAttachLicenseAndAddToGroupRequest,
@@ -201,11 +197,11 @@ export class GroupClient {
     try {
       const ipIdAddress = await this.ipAssetRegistryClient.ipId({
         chainId: BigInt(chain[this.chainId]),
-        tokenContract: getAddress(request.nftContract, "nftContract"),
+        tokenContract: validateAddress(request.nftContract),
         tokenId: BigInt(request.tokenId),
       });
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: getAddress(request.groupId, "request.groupId"),
+        id: validateAddress(request.groupId),
       });
       if (!isRegistered) {
         throw new Error(`Group IP ${request.groupId} is not registered.`);
@@ -216,14 +212,14 @@ export class GroupClient {
       const calculatedDeadline = getDeadline(blockTimestamp, request.deadline);
 
       const { signature: sigAddToGroupSignature } = await getPermissionSignature({
-        ipId: getAddress(request.groupId, "request.groupId"),
+        ipId: request.groupId,
         deadline: calculatedDeadline,
         state,
         wallet: this.wallet as WalletClient,
         chainId: chain[this.chainId],
         permissions: [
           {
-            ipId: getAddress(request.groupId, "request.groupId"),
+            ipId: request.groupId,
             signer: this.groupingWorkflowsClient.address,
             to: this.groupingModuleClient.address,
             permission: AccessPermission.ALLOW,
@@ -241,28 +237,28 @@ export class GroupClient {
           {
             ipId: ipIdAddress,
             signer: this.groupingWorkflowsClient.address,
-            to: getAddress(this.coreMetadataModuleClient.address, "coreMetadataModuleAddress"),
+            to: validateAddress(this.coreMetadataModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
           },
           {
             ipId: ipIdAddress,
             signer: this.groupingWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            to: validateAddress(this.licensingModuleClient.address),
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
           },
           {
             ipId: ipIdAddress,
             signer: this.groupingWorkflowsClient.address,
-            to: getAddress(this.licensingModuleClient.address, "licensingModuleAddress"),
+            to: this.licensingModuleClient.address,
             permission: AccessPermission.ALLOW,
             func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
           },
         ],
       });
       const object: GroupingWorkflowsRegisterIpAndAttachLicenseAndAddToGroupRequest = {
-        nftContract: getAddress(request.nftContract, "request.nftContract"),
+        nftContract: request.nftContract,
         groupId: request.groupId,
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
@@ -271,12 +267,12 @@ export class GroupClient {
           getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
         ),
         sigAddToGroup: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: validateAddress(this.wallet.account!.address),
           deadline: calculatedDeadline,
           signature: sigAddToGroupSignature,
         },
         sigMetadataAndAttachAndConfig: {
-          signer: getAddress(this.wallet.account!.address, "wallet.account.address"),
+          signer: this.wallet.account!.address,
           deadline: calculatedDeadline,
           signature: sigMetadataAndAttachSignature,
         },
@@ -304,15 +300,15 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
-   * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP .
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroupAndAttachLicense(
     request: RegisterGroupAndAttachLicenseRequest,
   ): Promise<RegisterGroupAndAttachLicenseResponse> {
     try {
       const object: GroupingWorkflowsRegisterGroupAndAttachLicenseRequest = {
-        groupPool: getAddress(request.groupPool, "request.groupPool"),
+        groupPool: validateAddress(request.groupPool),
         licenseData: this.getLicenseData(request.licenseData)[0],
       };
       if (request.txOptions?.encodedTxDataOnly) {
@@ -336,22 +332,22 @@ export class GroupClient {
     }
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | IGroupingModule}
-   * for a list of on-chain events emitted when a group IP is registered, license terms are attached to a group IP, and individual IPs are added to a group.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
    */
   public async registerGroupAndAttachLicenseAndAddIps(
     request: RegisterGroupAndAttachLicenseAndAddIpsRequest,
   ): Promise<RegisterGroupAndAttachLicenseAndAddIpsResponse> {
     try {
       const object: GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest = {
-        groupPool: getAddress(request.groupPool, "request.groupPool"),
+        groupPool: validateAddress(request.groupPool),
         ipIds: request.ipIds,
         licenseData: this.getLicenseData(request.licenseData)[0],
         maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
       };
       for (let i = 0; i < request.ipIds.length; i++) {
         const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-          id: getAddress(request.ipIds[i], `request.ipIds${i}`),
+          id: validateAddress(request.ipIds[i]),
         });
         if (!isRegistered) {
           throw new Error(`IP ${request.ipIds[i]} is not registered.`);
@@ -470,20 +466,15 @@ export class GroupClient {
       handleError(error, "Failed to collect and distribute group royalties");
     }
   }
-  private getLicenseData(licenseData: LicenseData[] | LicenseData): ValidatedLicenseData[] {
+
+  private getLicenseData(licenseData: LicenseDataInput[] | LicenseDataInput): LicenseData[] {
     const isArray = Array.isArray(licenseData);
     if ((isArray && licenseData.length === 0) || !licenseData) {
       throw new Error("License data is required.");
     }
     const licenseDataArray = isArray ? licenseData : [licenseData];
-    return licenseDataArray.map((item, index) => ({
-      licenseTemplate:
-        (item.licenseTemplate &&
-          getAddress(
-            item.licenseTemplate,
-            `request.licenseData.licenseTemplate${isArray ? `[${index}]` : ""}`,
-          )) ||
-        this.licenseTemplateClient.address,
+    return licenseDataArray.map((item) => ({
+      licenseTemplate: validateAddress(item.licenseTemplate || this.licenseTemplateClient.address),
       licenseTermsId: BigInt(item.licenseTermsId),
       licensingConfig: validateLicenseConfig(item.licensingConfig),
     }));

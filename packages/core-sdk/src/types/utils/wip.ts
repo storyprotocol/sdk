@@ -2,11 +2,8 @@ import { Address, Hash, PublicClient } from "viem";
 
 import {
   Multicall3Aggregate3Request,
-  Multicall3Client,
   EncodedTxData,
   SimpleWalletClient,
-  PiLicenseTemplateClient,
-  LicensingModuleClient,
   Erc20Client,
 } from "../../abi/generated";
 import { ERC20Options, TxOptions, WipOptions, WithWipOptions } from "../options";
@@ -72,14 +69,4 @@ export type MulticallWithWrapIp = WithWipOptions & {
   wipClient: WipTokenClient;
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
-};
-
-export type CalculateDerivativeMintFeeParams = {
-  multicall3Client: Multicall3Client;
-  licenseTemplateClient: PiLicenseTemplateClient;
-  licensingModuleClient: LicensingModuleClient;
-  parentIpId: Address;
-  licenseTermsId: bigint;
-  receiver: Address;
-  amount: bigint;
 };

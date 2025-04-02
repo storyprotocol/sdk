@@ -17,7 +17,6 @@ import {
   royaltyPolicyLapAddress,
   derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
-  wrappedIpAddress,
   erc20Address,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
@@ -44,6 +43,7 @@ describe("IP Asset Functions", () => {
 
   describe("Basic IP Asset Operations", () => {
     let childIpId: Hex;
+    let childIpId2: Address;
 
     it("should register an IP Asset", async () => {
       const tokenId = await getTokenId();
@@ -73,6 +73,7 @@ describe("IP Asset Functions", () => {
         },
         txOptions: { waitForTransaction: true },
       });
+      childIpId2 = response.ipId!;
 
       expect(response.ipId).to.be.a("string").and.not.empty;
       expect(response.tokenId).to.be.a("bigint");
@@ -103,7 +104,7 @@ describe("IP Asset Functions", () => {
       ).to.be.rejected;
     });
 
-    it("should register derivative", async () => {
+    it("should register derivative with Non-Commercial Remix PIL", async () => {
       const tokenId = await getTokenId();
       parentIpId = (
         await client.ipAsset.register({
@@ -126,6 +127,44 @@ describe("IP Asset Functions", () => {
         maxMintingFee: "0",
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "0",
+        txOptions: { waitForTransaction: true },
+      });
+      expect(response.txHash).to.be.a("string").and.not.empty;
+    });
+
+    it("should register derivative with Commercial Remix PIL", async () => {
+      // Register commercial remix PIL
+      const licenseResponse = await client.license.registerCommercialRemixPIL({
+        defaultMintingFee: 10n,
+        commercialRevShare: 10,
+        currency: WIP_TOKEN_ADDRESS,
+        txOptions: { waitForTransaction: true },
+      });
+
+      // Register parent IP
+      const tokenId = await getTokenId();
+      const commercialParentIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+          txOptions: { waitForTransaction: true },
+        })
+      ).ipId!;
+
+      // Attach license terms to parent IP
+      await client.license.attachLicenseTerms({
+        ipId: commercialParentIpId,
+        licenseTermsId: licenseResponse.licenseTermsId!,
+        txOptions: { waitForTransaction: true },
+      });
+
+      const response = await client.ipAsset.registerDerivative({
+        childIpId: childIpId2,
+        parentIpIds: [commercialParentIpId],
+        licenseTermsIds: [licenseResponse.licenseTermsId!],
+        maxMintingFee: "100",
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: "100",
         txOptions: { waitForTransaction: true },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -270,7 +309,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -356,7 +395,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -387,7 +426,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "test case",
             },
             licensingConfig: {
@@ -462,7 +501,7 @@ describe("IP Asset Functions", () => {
               derivativesApproval: false,
               derivativesReciprocal: true,
               derivativeRevCeiling: 0n,
-              currency: wrappedIpAddress[aeneid],
+              currency: WIP_TOKEN_ADDRESS,
               uri: "",
             },
             licensingConfig: {
@@ -572,7 +611,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "test case",
               },
               licensingConfig: {
@@ -954,7 +993,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "test case",
               },
             },
@@ -1313,7 +1352,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: wrappedIpAddress[aeneid],
+                  currency: WIP_TOKEN_ADDRESS,
                   uri: "",
                 },
                 licensingConfig: {
@@ -1349,7 +1388,7 @@ describe("IP Asset Functions", () => {
                   derivativesApproval: false,
                   derivativesReciprocal: true,
                   derivativeRevCeiling: 0n,
-                  currency: wrappedIpAddress[aeneid],
+                  currency: WIP_TOKEN_ADDRESS,
                   uri: "",
                 },
                 licensingConfig: {
@@ -1490,7 +1529,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "",
               },
               licensingConfig: {
@@ -1534,7 +1573,7 @@ describe("IP Asset Functions", () => {
                 derivativesApproval: false,
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
-                currency: wrappedIpAddress[aeneid],
+                currency: WIP_TOKEN_ADDRESS,
                 uri: "test case",
               },
               licensingConfig: {

@@ -34,7 +34,7 @@ import {
   SimpleWalletClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { getAddress, validateAddress, validateAddresses } from "../utils/utils";
+import { validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
@@ -70,9 +70,14 @@ export class RoyaltyClient {
     this.walletAddress = wallet.account!.address;
   }
   /**
-   * Claims all revenue from the child IPs of an ancestor IP, then transfer.
+   * Claims all revenue from the child IPs of an ancestor IP, then transfer
    * all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
    * If claimed token is WIP, it will also be converted back to IP.
+   *
+   * @remarks
+   * Even if there are no child IPs, you must still populate {@link ClaimAllRevenueRequest.currencyTokens} with
+   * the token addresses you wish to claim. This is required for the claim operation to know which
+   * token balances to process.
    */
   public async claimAllRevenue(req: ClaimAllRevenueRequest): Promise<ClaimAllRevenueResponse> {
     try {
@@ -130,6 +135,11 @@ export class RoyaltyClient {
    * if multicall is disabled, it will call @link{claimAllRevenue} for each ancestor IP.
    * Then transfer all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
    * If claimed token is WIP, it will also be converted back to IP.
+   *
+   * @remarks
+   * Even if there are no child IPs, you must still populate `currencyTokens` in each ancestor IP
+   * with the token addresses you wish to claim. This is required for the claim operation to know which
+   * token balances to process.
    */
   public async batchClaimAllRevenue(
     request: BatchClaimAllRevenueRequest,
@@ -317,23 +327,19 @@ export class RoyaltyClient {
 
   /**
    * Get total amount of revenue token claimable by a royalty token holder.
-   * @param request - The request object that contains all data needed to claim Revenue.
-   *   @param request.royaltyVaultIpId The id of the royalty vault.
-   *   @param request.claimer The address of the royalty token holder
-   *   @param request.token The revenue token to claim.
-   * @returns A Promise that contains the amount of revenue token claimable
+   * Returns the amount of revenue token claimable by the claimer.
    */
   public async claimableRevenue(
     request: ClaimableRevenueRequest,
   ): Promise<ClaimableRevenueResponse> {
     try {
       const proxyAddress = await this.getRoyaltyVaultAddress(
-        getAddress(request.royaltyVaultIpId, "request.royaltyVaultIpId"),
+        validateAddress(request.royaltyVaultIpId),
       );
       const ipRoyaltyVault = new IpRoyaltyVaultImplReadOnlyClient(this.rpcClient, proxyAddress);
       return await ipRoyaltyVault.claimableRevenue({
-        claimer: getAddress(request.claimer, "request.account"),
-        token: getAddress(request.token, "request.token"),
+        claimer: validateAddress(request.claimer),
+        token: validateAddress(request.token),
       });
     } catch (error) {
       handleError(error, "Failed to calculate claimable revenue");
@@ -342,12 +348,10 @@ export class RoyaltyClient {
 
   /**
    * Get the royalty vault proxy address of given royaltyVaultIpId.
-   * @param royaltyVaultIpId the id of the royalty vault.
-   * @returns A Promise that resolves to an object containing the royalty vault address.
    */
   public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<Address> {
     const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-      id: getAddress(royaltyVaultIpId, "royaltyVaultIpId"),
+      id: validateAddress(royaltyVaultIpId),
     });
     if (!isRoyaltyVaultIpIdRegistered) {
       throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
