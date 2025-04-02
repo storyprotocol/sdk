@@ -89,7 +89,8 @@ describe("Dispute Functions", () => {
   before(async () => {
     clientA = getStoryClient();
 
-    clientB = await getDerivedStoryClient();
+    const derivedClient = await getDerivedStoryClient();
+    clientB = derivedClient.clientB;
     minimumBond = await getMinimumBond(
       publicClient,
       new ArbitrationPolicyUmaClient(publicClient, walletClient),
