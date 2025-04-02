@@ -2,11 +2,8 @@ import { Address, Hash, PublicClient } from "viem";
 
 import {
   Multicall3Aggregate3Request,
-  Multicall3Client,
   EncodedTxData,
   SimpleWalletClient,
-  PiLicenseTemplateClient,
-  LicensingModuleClient,
   Erc20Client,
 } from "../../abi/generated";
 import { ERC20Options, TxOptions, WipOptions, WithWipOptions } from "../options";
