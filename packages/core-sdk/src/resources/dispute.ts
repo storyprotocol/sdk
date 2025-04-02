@@ -60,21 +60,20 @@ export class DisputeClient {
         this.arbitrationPolicyUmaClient.minLiveness(),
         this.arbitrationPolicyUmaClient.maxLiveness(),
       ]);
-
-      const [minimumBond, maxBonds] = await Promise.all([
+      if (liveness < minLiveness || liveness > maxLiveness) {
+        throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
+      }
+      const [minimumBond, maximumBond] = await Promise.all([
         getMinimumBond(this.rpcClient, this.arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS),
         this.arbitrationPolicyUmaClient.maxBonds({
           token: WIP_TOKEN_ADDRESS,
         }),
       ]);
       const bonds = BigInt(request.bond || minimumBond);
+      if (bonds > maximumBond || bonds < minimumBond) {
+        throw new Error(`Bonds must be between ${minimumBond} and ${maximumBond}.`);
+      }
       const tag = stringToHex(request.targetTag, { size: 32 });
-      if (liveness < minLiveness || liveness > maxLiveness) {
-        throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
-      }
-      if (bonds > maxBonds || bonds < minimumBond) {
-        throw new Error(`Bonds must be between ${minimumBond} and ${maxBonds}.`);
-      }
       const data = encodeAbiParameters(
         [
           { name: "", type: "uint64" },

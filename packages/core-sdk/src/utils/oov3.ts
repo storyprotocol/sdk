@@ -30,11 +30,10 @@ export const getMinimumBond = async (
   currency: Address,
 ) => {
   const oov3Contract = await getOov3Contract(arbitrationPolicyUmaClient);
-  const minimumBond = await rpcClient.readContract({
+  return await rpcClient.readContract({
     address: oov3Contract,
     abi: ASSERTION_ABI,
     functionName: "getMinimumBond",
     args: [currency],
   });
-  return minimumBond;
 };
