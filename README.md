@@ -28,11 +28,11 @@ yarn add @story-protocol/core-sdk viem@1.21.4
 
 Besides the Story Protocol SDK package `@story-protocol/core-sdk`, we also require the package `viem` (https://www.npmjs.com/package/viem) to access the DeFi wallet accounts.
 
-# Initiate SDK Client
+## Initiate SDK Client
 
 Next we can initiate the SDK Client by first setting up our wallet and then the client itself.
 
-## Set up your wallet
+### Set up your wallet
 
 The SDK supports using `viem` for initiating SDK client. Create a typescript file and write the following code to initiate the client with a private key:
 
@@ -47,7 +47,7 @@ const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
 
 The preceding code created the `account` object for creating the SDK client.
 
-## Set up SDK client
+### Set up SDK client
 
 To set up the SDK client, import `StoryClient` and `StoryConfig` from `@story-protocol/core-sdk`. Write the following code, utilizing the `account` we created previously.
 
@@ -104,10 +104,9 @@ In your testing environment:
 
 ## Release
 
-| Package                           | Description                                     |
-| :-------------------------------- | :---------------------------------------------- |
-| [core-sdk](./packages/core-sdk)   | The core sdk for interacting with the protocol  |
-| [react-sdk](./packages/react-sdk) | The react sdk for interacting with the protocol |
+| Package                         | Description                                     |
+| :------------------------------ | :---------------------------------------------- |
+| [core-sdk](./packages/core-sdk) | The core sdk for interacting with the protocol  |
 
 ## Contributing
 
@@ -119,5 +118,3 @@ Please make sure to update tests as appropriate.
 ## License
 
 [MIT License](/LICENSE.md)
-
-## Contact Us
