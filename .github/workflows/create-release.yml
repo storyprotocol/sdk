@@ -43,11 +43,8 @@ jobs:
       - name: Set Configuration File
         id: set_config
         run: |
-          if [ "${{ inputs.is_core_sdk }}" = "true" ]; then
-            echo "config_file=configs/configuration.json" >> $GITHUB_ENV
-          else
-            echo "config_file=configs/configuration_react.json" >> $GITHUB_ENV
-          fi
+          echo "config_file=configs/configuration.json" >> $GITHUB_ENV
+         
 
       - name: "Build Changelog"
         id: github_release
