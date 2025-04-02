@@ -31,6 +31,11 @@ describe("Test DisputeClient", () => {
   });
 
   describe("raiseDispute", () => {
+    const minimumBond: bigint = 10n;
+    beforeEach(() => {
+      // Mock the minimum bond to be 10
+      rpcMock.readContract = sinon.stub().resolves(minimumBond);
+    });
     it("throw address error when call raiseDispute with invalid targetIpId", async () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
@@ -43,7 +48,7 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
-          bond: 0,
+          bond: minimumBond + 1n,
           liveness: 2592000,
         });
       } catch (e) {
@@ -59,7 +64,7 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
-          bond: 0,
+          bond: 15,
           liveness: 1,
         });
       } catch (e) {
@@ -70,22 +75,39 @@ describe("Test DisputeClient", () => {
     });
 
     it("throw bond error when call raiseDispute given bond more than max bonds", async () => {
+      const maximumBond: bigint = 1000n;
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(1000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(maximumBond);
       try {
         await disputeClient.raiseDispute({
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
-          bond: 100000000001,
+          bond: maximumBond + 1n,
           liveness: 2592000,
         });
       } catch (e) {
         expect((e as Error).message).equal(
-          "Failed to raise dispute: Bonds must be less than 1000.",
+          `Bonds must be between ${minimumBond} and ${maximumBond}.`,
         );
       }
+    });
+
+    it("throw bond error given bond less than min bonds", async () => {
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(1000n);
+      const result = disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        targetTag: "tag",
+        bond: minimumBond - 1n,
+        liveness: 2592000,
+      });
+      await expect(result).to.be.rejectedWith(
+        `Bonds must be between ${minimumBond} and ${maximumBond}.`,
+      );
     });
 
     it("should throw tag error when call raiseDispute given tag not whitelisted", async () => {
@@ -100,7 +122,7 @@ describe("Test DisputeClient", () => {
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
           targetTag: "tag",
-          bond: 0,
+          bond: minimumBond + 1n,
           liveness: 2592000,
         });
       } catch (e) {
@@ -122,7 +144,7 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 0,
+        bond: minimumBond + 1n,
         liveness: 2592000,
       });
 
@@ -153,7 +175,7 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 0,
+        bond: minimumBond + 1n,
         liveness: 2592000,
         txOptions: { waitForTransaction: true },
       });
@@ -173,7 +195,7 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 0,
+        bond: minimumBond + 1n,
         liveness: 2592000,
         txOptions: { encodedTxDataOnly: true },
       });
@@ -206,7 +228,6 @@ describe("Test DisputeClient", () => {
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: "tag",
-        bond: 1000,
         liveness: 2592000,
         txOptions: { waitForTransaction: true },
       });

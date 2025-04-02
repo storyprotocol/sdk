@@ -26,7 +26,7 @@ import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 import { contractCallWithFees } from "../utils/feeUtils";
-import { getAssertionDetails } from "../utils/oov3";
+import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
 export class DisputeClient {
@@ -56,23 +56,24 @@ export class DisputeClient {
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
       const liveness = BigInt(request.liveness);
-      const bonds = BigInt(request.bond);
       const [minLiveness, maxLiveness] = await Promise.all([
         this.arbitrationPolicyUmaClient.minLiveness(),
         this.arbitrationPolicyUmaClient.maxLiveness(),
       ]);
-
-      const tag = stringToHex(request.targetTag, { size: 32 });
       if (liveness < minLiveness || liveness > maxLiveness) {
         throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
       }
-
-      const maxBonds = await this.arbitrationPolicyUmaClient.maxBonds({
-        token: WIP_TOKEN_ADDRESS,
-      });
-      if (bonds > maxBonds) {
-        throw new Error(`Bonds must be less than ${maxBonds}.`);
+      const [minimumBond, maximumBond] = await Promise.all([
+        getMinimumBond(this.rpcClient, this.arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS),
+        this.arbitrationPolicyUmaClient.maxBonds({
+          token: WIP_TOKEN_ADDRESS,
+        }),
+      ]);
+      const bonds = BigInt(request.bond || minimumBond);
+      if (bonds > maximumBond || bonds < minimumBond) {
+        throw new Error(`Bonds must be between ${minimumBond} and ${maximumBond}.`);
       }
+      const tag = stringToHex(request.targetTag, { size: 32 });
       const data = encodeAbiParameters(
         [
           { name: "", type: "uint64" },
