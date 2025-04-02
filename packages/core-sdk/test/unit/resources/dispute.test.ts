@@ -95,9 +95,10 @@ describe("Test DisputeClient", () => {
     });
 
     it("throw bond error given bond less than min bonds", async () => {
+      const maximumBond: bigint = 1000n;
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(1000n);
+      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(maximumBond);
       const result = disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
