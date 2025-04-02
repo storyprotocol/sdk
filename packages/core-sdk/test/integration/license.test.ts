@@ -28,7 +28,8 @@ describe("License Functions", () => {
   let clientB: StoryClient;
   before(async () => {
     client = getStoryClient();
-    clientB = await getDerivedStoryClient();
+    const derivedClient = await getDerivedStoryClient();
+    clientB = derivedClient.clientB;
   });
   describe("register license with different types", async () => {
     it("should register license ", async () => {

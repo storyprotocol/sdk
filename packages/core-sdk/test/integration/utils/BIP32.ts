@@ -85,5 +85,5 @@ export const getDerivedStoryClient = async () => {
     await publicClient.waitForTransactionReceipt({ hash: txHash });
   }
 
-  return clientB;
+  return { clientB, address: walletB.address };
 };
