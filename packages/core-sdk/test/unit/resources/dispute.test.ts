@@ -79,19 +79,16 @@ describe("Test DisputeClient", () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(maximumBond);
-      try {
-        await disputeClient.raiseDispute({
-          targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-          targetTag: "tag",
-          bond: maximumBond + 1n,
-          liveness: 2592000,
-        });
-      } catch (e) {
-        expect((e as Error).message).equal(
-          `Bonds must be between ${minimumBond} and ${maximumBond}.`,
-        );
-      }
+      const result = disputeClient.raiseDispute({
+        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
+        targetTag: "tag",
+        bond: maximumBond + 1n,
+        liveness: 2592000,
+      });
+      await expect(result).to.be.rejectedWith(
+        `Bonds must be between ${minimumBond} and ${maximumBond}.`,
+      );
     });
 
     it("throw bond error given bond less than min bonds", async () => {
