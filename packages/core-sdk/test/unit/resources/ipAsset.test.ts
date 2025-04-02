@@ -1,5 +1,5 @@
 import chai from "chai";
-import { createMock } from "../testUtils";
+import { createMock, generateRandomAddress } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient, LicenseTerms, StoryRelationship } from "../../../src";
 import {
@@ -1373,8 +1373,9 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerIpAndAttachPilTerms")
         .resolves(txHash);
+      const nftContract = generateRandomAddress();
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c662ac",
+        nftContract,
         tokenId: "3",
         ipMetadata: {
           ipMetadataURI: "https://",
