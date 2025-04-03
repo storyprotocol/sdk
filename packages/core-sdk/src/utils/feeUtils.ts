@@ -1,4 +1,4 @@
-import { maxUint256, zeroAddress } from "viem";
+import { maxUint256 } from "viem";
 
 import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
@@ -6,7 +6,6 @@ import { getTokenAmountDisplay } from "./utils";
 import {
   ApprovalCall,
   Multicall3ValueCall,
-  CalculateDerivativeMintFeeParams,
   MulticallWithWrapIp,
   ContractCallWithFees,
 } from "../types/utils/wip";
@@ -14,6 +13,10 @@ import { simulateAndWriteContract } from "./contract";
 import { handleTxOptions } from "./txOptions";
 import { TransactionResponse } from "../types/options";
 import { ERC20Client, WipTokenClient } from "./token";
+import {
+  predictMintingLicenseFee,
+  PredictMintingLicenseFeeParams,
+} from "./predictMintingLicenseFee";
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -73,14 +76,17 @@ const approvalAllSpenders = async ({
   return [];
 };
 
-export const calculateLicenseWipMintFee = async (params: CalculateDerivativeMintFeeParams) => {
-  const fee = await params.licensingModuleClient.predictMintingLicenseFee({
-    licensorIpId: params.parentIpId,
-    licenseTemplate: params.licenseTemplateClient.address,
-    licenseTermsId: params.licenseTermsId,
-    amount: params.amount,
-    receiver: params.receiver,
-    royaltyContext: zeroAddress,
+export const calculateLicenseWipMintFee = async ({
+  predictMintingFeeRequest,
+  rpcClient,
+  chainId,
+  walletAddress,
+}: PredictMintingLicenseFeeParams) => {
+  const fee = await predictMintingLicenseFee({
+    predictMintingFeeRequest,
+    rpcClient,
+    chainId,
+    walletAddress,
   });
   if (fee.currencyToken !== WIP_TOKEN_ADDRESS) {
     return 0n;

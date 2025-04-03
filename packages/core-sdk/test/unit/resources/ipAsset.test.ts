@@ -1,5 +1,5 @@
 import chai from "chai";
-import { createMock } from "../testUtils";
+import { createMock, generateRandomAddress } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient, LicenseTerms, StoryRelationship } from "../../../src";
 import {
@@ -15,8 +15,8 @@ import {
 import chaiAsPromised from "chai-as-promised";
 import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
-import { LicensingConfig } from "../../../src/types/common";
-import { DerivativeData } from "../../../src/types/resources/ipAsset";
+import { LicensingConfigInput } from "../../../src/types/common";
+import { DerivativeDataInput } from "../../../src/types/resources/ipAsset";
 import { txHash, walletAddress } from "../mockData";
 const {
   RoyaltyModuleReadOnlyClient,
@@ -47,7 +47,7 @@ const licenseTerms: LicenseTerms = {
   uri: "",
 };
 
-const licensingConfig: LicensingConfig = {
+const licensingConfig: LicensingConfigInput = {
   isSet: true,
   mintingFee: BigInt(1),
   licensingHook: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -57,7 +57,7 @@ const licensingConfig: LicensingConfig = {
   expectMinimumGroupRewardShare: 0,
   expectGroupRewardPool: zeroAddress,
 };
-const derivData: DerivativeData = {
+const derivData: DerivativeDataInput = {
   parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
   licenseTermsIds: ["1"],
   maxMintingFee: 0n,
@@ -75,6 +75,8 @@ describe("Test IpAssetClient", () => {
     walletMock = createMock<WalletClient>();
     const accountMock = createMock<LocalAccount>();
     walletMock.account = accountMock;
+    // Mock predictMintingLicenseFee
+    rpcMock.readContract = sinon.stub().resolves([zeroAddress, 0n]);
     ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1315");
     sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getDefaultLicenseTerms").resolves({
       licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -925,7 +927,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to mint and register IP and attach PIL terms: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to mint and register IP and attach PIL terms: Invalid address: 0x.",
         );
       }
     });
@@ -1371,8 +1373,9 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerIpAndAttachPilTerms")
         .resolves(txHash);
+      const nftContract = generateRandomAddress();
       const result = await ipAssetClient.registerIpAndAttachPilTerms({
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c662ac",
+        nftContract,
         tokenId: "3",
         ipMetadata: {
           ipMetadataURI: "https://",
@@ -1606,7 +1609,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to mint and register IP: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to mint and register IP: Invalid address: 0x.",
         );
       }
     });
@@ -1624,7 +1627,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to mint and register IP: request.recipient address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to mint and register IP: Invalid address: 0x.",
         );
       }
     });
@@ -1726,7 +1729,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to register PIL terms and attach: ipId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`,
+          "Failed to register PIL terms and attach: Invalid address: 0x.",
         );
       }
     });
@@ -1839,7 +1842,7 @@ describe("Test IpAssetClient", () => {
         isSet: false,
         mintingFee: 0n,
         licensingHook: zeroAddress,
-        hookData: zeroAddress,
+        hookData: zeroHash,
         commercialRevShare: 0,
         disabled: false,
         expectMinimumGroupRewardShare: 0,
@@ -2166,7 +2169,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch mint and register IP and attach PIL terms: Failed to mint and register IP and attach PIL terms: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to batch mint and register IP and attach PIL terms: Failed to mint and register IP and attach PIL terms: Invalid address: 0x.",
         );
       }
     });
@@ -2444,9 +2447,7 @@ describe("Test IpAssetClient", () => {
           ],
         });
       } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to batch register IP: nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-        );
+        expect((err as Error).message).equal("Failed to batch register IP: Invalid address: 0x.");
       }
     });
 
@@ -2547,7 +2548,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch register derivative: ipId address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to batch register derivative: Invalid address: 0x.",
         );
       }
     });
@@ -3340,7 +3341,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: request.spgNftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to mint and register IP and attach PIL terms and distribute royalty tokens: Invalid address: 0x.",
         );
       }
     });

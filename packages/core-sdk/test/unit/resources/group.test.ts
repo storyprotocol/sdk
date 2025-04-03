@@ -4,14 +4,14 @@ import * as sinon from "sinon";
 import { PublicClient, WalletClient, Account, zeroAddress, zeroHash } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import { GroupClient } from "../../../src";
-import { LicenseData } from "../../../src/types/resources/group";
 import { mockAddress, walletAddress } from "../mockData";
+import { LicenseDataInput } from "../../../src/types/resources/group";
 const { IpAccountImplClient } = require("../../../src/abi/generated");
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const txHash = "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e";
-const mockLicenseData: LicenseData = {
+const mockLicenseData: LicenseDataInput = {
   licenseTermsId: "100",
   licensingConfig: {
     isSet: true,
@@ -46,6 +46,7 @@ describe("Test IpAssetClient", () => {
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (groupClient.licensingModuleClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
+    (groupClient.licenseTemplateClient as any).address = mockAddress;
     sinon
       .stub(IpAccountImplClient.prototype, "state")
       .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
@@ -61,9 +62,7 @@ describe("Test IpAssetClient", () => {
           groupPool: "0x123",
         });
       } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to register group: request.groupPool address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
-        );
+        expect((err as Error).message).equal("Failed to register group: Invalid address: 0x123.");
       }
     });
 
@@ -114,7 +113,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register group and attach license: request.licenseData.licenseTemplate address is invalid: 0x123, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to register group and attach license: Invalid address: 0x123.",
         );
       }
     });
@@ -462,7 +461,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register IP and attach license and add to group: nftContract address is invalid: 0x, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.",
+          "Failed to register IP and attach license and add to group: Invalid address: 0x.",
         );
       }
     });

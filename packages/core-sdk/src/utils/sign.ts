@@ -7,7 +7,7 @@ import {
 } from "viem";
 
 import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
-import { getAddress } from "./utils";
+import { validateAddress } from "./utils";
 import { defaultFunctionSelector } from "../constants/common";
 import {
   PermissionSignatureRequest,
@@ -17,14 +17,6 @@ import {
 
 /**
  * Get the signature for setting permissions.
- * @param param - The parameter object containing necessary data to get the signature.
- * @param param.ipId - The IP ID.
- * @param param.deadline - The deadline.
- * @param param.nonce - The nonce.
- * @param param.wallet - The wallet client.
- * @param param.chainId - The chain ID.
- * @param param.permissionFunc - The permission function,default function is setPermission.
- * @returns A Promise that resolves to the signature.
  */
 export const getPermissionSignature = async (
   param: PermissionSignatureRequest,
@@ -40,18 +32,18 @@ export const getPermissionSignature = async (
       : "setTransientPermission",
     args: isBatchPermissionFunction
       ? [
-          permissions.map((item, index) => ({
-            ipAccount: getAddress(item.ipId, `permissions[${index}].ipId`),
-            signer: getAddress(item.signer, `permissions[${index}].signer`),
-            to: getAddress(item.to, `permissions[${index}].to`),
+          permissions.map((item) => ({
+            ipAccount: validateAddress(item.ipId),
+            signer: validateAddress(item.signer),
+            to: validateAddress(item.to),
             func: item.func ? toFunctionSelector(item.func) : defaultFunctionSelector,
             permission: item.permission,
           })),
         ]
       : [
-          getAddress(permissions[0].ipId, "permissions[0].ipId"),
-          getAddress(permissions[0].signer, "permissions[0].signer"),
-          getAddress(permissions[0].to, "permissions[0].to"),
+          validateAddress(permissions[0].ipId),
+          validateAddress(permissions[0].signer),
+          validateAddress(permissions[0].to),
           permissions[0].func ? toFunctionSelector(permissions[0].func) : defaultFunctionSelector,
           permissions[0].permission,
         ],
@@ -76,15 +68,6 @@ export const getDeadline = (unixTimestamp: bigint, deadline?: bigint | number | 
 
 /**
  * Get the signature.
- * @param param - The parameter object containing necessary data to get the signature.
- * @param param.state - The IP Account's state.
- * @param param.to - The recipient address.
- * @param param.encodeData - The encoded data.
- * @param param.wallet - The wallet client.
- * @param param.verifyingContract - The verifying contract.
- * @param param.deadline - The deadline.
- * @param param.chainId - The chain ID.
- * @returns A Promise that resolves to the signature.
  */
 export const getSignature = async ({
   state,

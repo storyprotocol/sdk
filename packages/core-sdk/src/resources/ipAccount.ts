@@ -19,7 +19,7 @@ import {
   SimpleWalletClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { getAddress, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
@@ -39,22 +39,15 @@ export class IPAccountClient {
     this.erc20Client = new Erc20Client(rpcClient, wallet);
   }
 
-  /** Executes a transaction from the IP Account.
-   * @param request - The request object containing necessary data to execute IP Account a transaction.
-   *   @param request.ipId The Ip Id to get ip account.
-   *   @param request.to The recipient of the transaction.
-   *   @param request.value The amount of Ether to send.
-   *   @param request.accountAddress The ipId to send.
-   *   @param request.data The data to send along with the transaction.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns Tx hash for the transaction.
+  /**
+   * Executes a transaction from the IP Account.
    */
   public async execute(request: IPAccountExecuteRequest): Promise<IPAccountExecuteResponse> {
     try {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getAddress(request.ipId, "request.ipId"),
+        validateAddress(request.ipId),
       );
 
       const req = {
@@ -81,17 +74,8 @@ export class IPAccountClient {
     }
   }
 
-  /** Executes a transaction from the IP Account.
-   * @param request - The request object containing necessary data to execute IP Account a transaction.
-   *   @param request.ipId The Ip Id to get ip account.
-   *   @param request.to The recipient of the transaction.
-   *   @param request.data The data to send along with the transaction.
-   *   @param request.signer The signer of the transaction.
-   *   @param request.deadline The deadline of the transaction signature.
-   *   @param request.signature The signature of the transaction, EIP-712 encoded.
-   *   @param request.value [Optional] The amount of Ether to send.
-   *   @param request.txOptions [Optional] This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns Tx hash for the transaction.
+  /**
+   * Executes a transaction from the IP Account with a signature.
    */
   public async executeWithSig(
     request: IPAccountExecuteWithSigRequest,
@@ -100,14 +84,14 @@ export class IPAccountClient {
       const ipAccountClient = new IpAccountImplClient(
         this.rpcClient,
         this.wallet,
-        getAddress(request.ipId, "request.ipId"),
+        validateAddress(request.ipId),
       );
 
       const req = {
-        to: getAddress(request.to, "request.to"),
+        to: validateAddress(request.to),
         value: BigInt(request.value || 0),
         data: request.data,
-        signer: getAddress(request.signer, "request.signer"),
+        signer: validateAddress(request.signer),
         deadline: BigInt(request.deadline),
         signature: request.signature,
       };
@@ -129,17 +113,12 @@ export class IPAccountClient {
     }
   }
 
-  /** Returns the IPAccount's internal nonce for transaction ordering.
-   * @param ipId The IP ID
-   * @returns A Promise that resolves to the IP Account's nonce.
+  /**
+   * Returns the IPAccount's internal nonce for transaction ordering.
    */
   public async getIpAccountNonce(ipId: Address): Promise<IpAccountStateResponse> {
     try {
-      const ipAccount = new IpAccountImplClient(
-        this.rpcClient,
-        this.wallet,
-        getAddress(ipId, "ipId"),
-      );
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
       const { result: state } = await ipAccount.state();
       return state;
     } catch (error) {
@@ -149,15 +128,10 @@ export class IPAccountClient {
 
   /**
    * Returns the identifier of the non-fungible token which owns the account
-   * @returns A Promise that resolves to an object containing the chain ID, token contract address, and token ID.
    */
   public async getToken(ipId: Address): Promise<TokenResponse> {
     try {
-      const ipAccount = new IpAccountImplClient(
-        this.rpcClient,
-        this.wallet,
-        getAddress(ipId, "ipId"),
-      );
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
       const [chainId, tokenContract, tokenId] = await ipAccount.token();
       return {
         chainId,
