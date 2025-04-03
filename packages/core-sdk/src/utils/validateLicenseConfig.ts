@@ -1,18 +1,16 @@
-import { zeroAddress } from "viem";
+import { zeroAddress, zeroHash } from "viem";
 
-import { LicensingConfig, ValidatedLicensingConfig } from "../types/common";
+import { LicensingConfigInput, LicensingConfig } from "../types/common";
 import { getRevenueShare } from "./licenseTermsHelper";
 import { validateAddress } from "./utils";
 
-export const validateLicenseConfig = (
-  licensingConfig?: LicensingConfig,
-): ValidatedLicensingConfig => {
+export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): LicensingConfig => {
   if (!licensingConfig) {
     return {
       isSet: false,
       mintingFee: 0n,
       licensingHook: zeroAddress,
-      hookData: zeroAddress,
+      hookData: zeroHash,
       commercialRevShare: 0,
       disabled: false,
       expectMinimumGroupRewardShare: 0,

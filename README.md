@@ -1,24 +1,27 @@
-# Story Protocol SDK
+# Story Protocol SDK [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/storyprotocol/sdk/blob/main/LICENSE.md)[![npm version](https://img.shields.io/npm/v/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)[![npm downloads](https://img.shields.io/npm/dm/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
 
-Welcome to the documents for Story Protocol SDK. The SDK provides the APIs for developers to build applications with Story Protocol. By using the SDK, developers can create the resources like IP assets and perform actions to interact with the resource.
+Welcome to the Story Protocol SDK - a comprehensive toolkit for building applications on Story Protocol. This SDK empowers developers to seamlessly interact with intellectual property (IP) assets on the blockchain through an intuitive API interface.
 
-## How to use Story Protocol SDK in Your Project
+Key Features:
 
-### Install Story Protocol core SDK
+- IP Asset Module: Register, and manage intellectual property assets on-chain
+- License Module: Create customizable license terms, attach them to IP assets, and mint transferable license tokens
+- Royalty Module: Claim royalties, and manage payment distributions
+- Dispute Module: Initiate, manage and resolve IP-related disputes through on-chain governance
+- Group Module: Create IP collections with shared revenue pools
+- WIP Module: Wrap native IP into ERC-20 tokens for DeFi integrations
+- NFT Client Module: Mint a new SPG collection for use with Story Protocol.
 
-Suppose you already have a node project or created a new node project. First, you need to install `@story-protocol/core-sdk` in your project. You can use one of the following command to install the package:
+The SDK provides robust support for the following networks:
 
-Use `npm`:
+- [aeneid](https://docs.story.foundation/network/network-info/aeneid) - A dedicated testnet environment for development and testing
+- [mainnet](https://docs.story.foundation/network/network-info/mainnet) - The production network for live deployments
 
-```
-npm install --save @story-protocol/core-sdk viem@1.21.4
-```
+# Documentation
 
-Use `pnpm`:
+For more detailed information on using the SDK, refer to the [TypeScript SDK Guide](https://docs.story.foundation/developers/typescript-sdk/overview).
 
-```
-pnpm install @story-protocol/core-sdk viem@1.21.4
-```
+The documentation is divided into the following sections:
 
 Use `yarn`:
 
@@ -108,6 +111,16 @@ In your testing environment:
 | :------------------------------ | :---------------------------------------------- |
 | [core-sdk](./packages/core-sdk) | The core sdk for interacting with the protocol  |
 
+- [Overview](https://docs.story.foundation/developers/typescript-sdk/overview)
+- [Setup](https://docs.story.foundation/developers/typescript-sdk/setup)
+- [Register an IP Asset](https://docs.story.foundation/developers/typescript-sdk/register-ip-asset)
+- [Attach Terms to an IPA](https://docs.story.foundation/developers/typescript-sdk/attach-terms)
+- [Mint a License Token](https://docs.story.foundation/developers/typescript-sdk/mint-license)
+- [Register a Derivative](https://docs.story.foundation/developers/typescript-sdk/register-derivative)
+- [Pay an IPA](https://docs.story.foundation/developers/typescript-sdk/pay-ipa)
+- [Claim Revenue](https://docs.story.foundation/developers/typescript-sdk/claim-revenue)
+- [Raise a Dispute](https://docs.story.foundation/developers/typescript-sdk/raise-dispute)
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
@@ -118,3 +131,5 @@ Please make sure to update tests as appropriate.
 ## License
 
 [MIT License](/LICENSE.md)
+[Copyright (c) 2023-Present Story Protocol Inc.](/LICENSE.md)
+

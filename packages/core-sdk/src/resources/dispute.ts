@@ -18,16 +18,16 @@ import {
   IpAccountImplClient,
   Multicall3Client,
   SimpleWalletClient,
-  wrappedIpAddress,
   WrappedIpClient,
 } from "../abi/generated";
-import { chain, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
 import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 import { contractCallWithFees } from "../utils/feeUtils";
-import { getAssertionDetails } from "../utils/oov3";
+import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
@@ -51,40 +51,36 @@ export class DisputeClient {
   /**
    * Raises a dispute on a given ipId.
    *
-   * Submits a {@link DisputeRaised} event.
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L64 | IDisputeModule.sol}
-   * for a list of on-chain events emitted when a dispute is raised.
-   *
-   * @remarks `WipOptions.useMulticallWhenPossible` is disabled for this function due to disputeInitiator issue. It will be executed sequentially with several transactions.
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L64 | `DisputeRaised`} event.
    */
   public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
     try {
       const liveness = BigInt(request.liveness);
-      const bonds = BigInt(request.bond);
-      const tokenAddress = wrappedIpAddress[chain[this.chainId]];
       const [minLiveness, maxLiveness] = await Promise.all([
         this.arbitrationPolicyUmaClient.minLiveness(),
         this.arbitrationPolicyUmaClient.maxLiveness(),
       ]);
-
-      const tag = stringToHex(request.targetTag, { size: 32 });
       if (liveness < minLiveness || liveness > maxLiveness) {
         throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
       }
-
-      const maxBonds = await this.arbitrationPolicyUmaClient.maxBonds({
-        token: tokenAddress,
-      });
-      if (bonds > maxBonds) {
-        throw new Error(`Bonds must be less than ${maxBonds}.`);
+      const [minimumBond, maximumBond] = await Promise.all([
+        getMinimumBond(this.rpcClient, this.arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS),
+        this.arbitrationPolicyUmaClient.maxBonds({
+          token: WIP_TOKEN_ADDRESS,
+        }),
+      ]);
+      const bonds = BigInt(request.bond || minimumBond);
+      if (bonds > maximumBond || bonds < minimumBond) {
+        throw new Error(`Bonds must be between ${minimumBond} and ${maximumBond}.`);
       }
+      const tag = stringToHex(request.targetTag, { size: 32 });
       const data = encodeAbiParameters(
         [
           { name: "", type: "uint64" },
           { name: "", type: "address" },
           { name: "", type: "uint256" },
         ],
-        [liveness, tokenAddress, bonds],
+        [liveness, WIP_TOKEN_ADDRESS, bonds],
       );
       const { allowed: isWhiteList } = await this.disputeModuleClient.isWhitelistedDisputeTag({
         tag,
@@ -142,16 +138,8 @@ export class DisputeClient {
 
   /**
    * Cancels an ongoing dispute
-   * @param request - The request object containing details to cancel the dispute.
-   *   @param request.disputeId The ID of the dispute to be cancelled.
-   *   @param request.data [Optional] additional data used in the cancellation process.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a CancelDisputeResponse containing the transaction hash.
-   * @throws NotInDisputeState, if the currentTag of the Dispute is not being disputed
-   * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
-   * @throws error if the Dispute's ArbitrationPolicy contract is not valid
-   * @calls cancelDispute(uint256 _disputeId, bytes calldata _data) external nonReentrant {
-   * @emits DisputeCancelled (_disputeId, _data);
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L84 | `DisputeCancelled`} event.
    */
   public async cancelDispute(request: CancelDisputeRequest): Promise<CancelDisputeResponse> {
     try {
@@ -179,21 +167,15 @@ export class DisputeClient {
   }
 
   /**
-   * Resolves a dispute after it has been judged
-   * @param request - The request object containing details to resolve the dispute.
-   *   @param request.disputeId The ID of the dispute to be resolved.
-   *   @param request.data The data to resolve the dispute.
-   *   @param request.txOptions - [Optional] transaction. This extends `WaitForTransactionReceiptParameters` from the Viem library, excluding the `hash` property.
-   * @returns A Promise that resolves to a ResolveDisputeResponse.
-   * @throws NotAbleToResolve, if currentTag is still in dispute (i.e still needs a judgement to be set)
-   * @throws NotDisputeInitiator, if the transaction executor is not the one that initiated the dispute
-   * @emits DisputeResolved (_disputeId)
+   * Resolves a dispute after it has been judged.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L104 | `DisputeResolved`} event.
    */
   public async resolveDispute(request: ResolveDisputeRequest): Promise<ResolveDisputeResponse> {
     try {
       const req = {
         disputeId: BigInt(request.disputeId),
-        data: request.data,
+        data: request.data ?? "0x",
       };
 
       if (request.txOptions?.encodedTxDataOnly) {
@@ -217,8 +199,7 @@ export class DisputeClient {
    * Tags a derivative if a parent has been tagged with an infringement tag
    * or a group ip if a group member has been tagged with an infringement tag.
    *
-   * @see {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L93 | IDisputeModule.sol}
-   * for a list of on-chain events emitted when a derivative is tagged on an infringement.
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L93 | `IpTaggedOnRelatedIpInfringement`} event.
    */
   public async tagIfRelatedIpInfringed(
     request: TagIfRelatedIpInfringedRequest,
@@ -230,7 +211,7 @@ export class DisputeClient {
           infringerDisputeId: BigInt(arg.disputeId),
         }),
       );
-      let txHashes: Hex[] = [];
+      const txHashes: Hex[] = [];
       if (
         request.options?.useMulticallWhenPossible !== false &&
         request.infringementTags.length > 1
@@ -243,9 +224,10 @@ export class DisputeClient {
         const txHash = await this.multicall3Client.aggregate3({ calls });
         txHashes.push(txHash);
       } else {
-        txHashes = await Promise.all(
-          objects.map((object) => this.disputeModuleClient.tagIfRelatedIpInfringed(object)),
-        );
+        for (const object of objects) {
+          const txHash = await this.disputeModuleClient.tagIfRelatedIpInfringed(object);
+          txHashes.push(txHash);
+        }
       }
       return await Promise.all(
         txHashes.map((txHash) =>
@@ -263,10 +245,13 @@ export class DisputeClient {
 
   /**
    * Counters a dispute that was raised by another party on an IP using counter evidence.
+   * The counter evidence (e.g., documents, images) should be uploaded to IPFS,
+   * and its corresponding CID is converted to a hash for the request.
    *
-   * This method can only be called by the IP's owner to counter a dispute by providing
-   * counter evidence. The counter evidence (e.g., documents, images) should be
-   * uploaded to IPFS, and its corresponding CID is converted to a hash for the request.
+   * @remarks
+   *  The liveness period is split in two parts:
+   *  - the first part of the liveness period in which only the IP's owner can be called the method.
+   *  - a second part in which any address can be called the method.
    *
    * If you only have a `disputeId`, call {@link disputeIdToAssertionId} to get the `assertionId` needed here.
    */
