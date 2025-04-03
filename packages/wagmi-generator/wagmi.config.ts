@@ -361,6 +361,12 @@ export default defineConfig(async () => {
             "registerGroup",
             "IPGroupRegistered",
           ],
+          LicenseRegistry: [
+            "getLicensingConfig",
+            "hasIpAttachedLicenseTerms",
+            "getDefaultLicenseTerms",
+            "getRoyaltyPercent",
+          ],
         },
       }),
     ],
