@@ -28,7 +28,6 @@ jobs:
           git tag -a $TAG_VERSION -m "Release $TAG_VERSION"
           git push origin $TAG_VERSION
           echo "The tag $TAG_VERSION has been created and pushed to the repository"
-          echo "The tag $LATEST_TAG has been created and pushed to the repository"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
