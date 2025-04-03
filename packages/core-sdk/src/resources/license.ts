@@ -363,9 +363,7 @@ export class LicenseClient {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
             ipId: req.licensorIpId,
-            licenseTemplate: validateAddress(
-              req.licenseTemplate || this.licenseTemplateClient.address,
-            ),
+            licenseTemplate: req.licenseTemplate,
             licenseTermsId: req.licenseTermsId,
           });
         if (!isAttachedLicenseTerms) {
@@ -551,7 +549,7 @@ export class LicenseClient {
       handleError(error, "Failed to get licensing config");
     }
   }
-  
+
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;

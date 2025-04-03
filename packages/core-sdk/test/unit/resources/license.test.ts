@@ -1,7 +1,7 @@
 import chai from "chai";
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import * as sinon from "sinon";
-import { LicenseClient } from "../../../src";
+import { LicenseClient, LicensingConfig } from "../../../src";
 import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import {
@@ -22,7 +22,6 @@ describe("Test LicenseClient", () => {
   let licenseClient: LicenseClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
-  let predictMintingLicenseFeeStub: sinon.SinonStub;
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -33,12 +32,6 @@ describe("Test LicenseClient", () => {
     licenseClient = new LicenseClient(rpcMock, walletMock, "1315");
     (licenseClient.licenseTemplateClient as any).address = generateRandomAddress();
     (licenseClient.licensingModuleClient as any).address = generateRandomAddress();
-    predictMintingLicenseFeeStub = sinon
-      .stub(licenseClient.licensingModuleClient, "predictMintingLicenseFee")
-      .resolves({
-        currencyToken: WIP_TOKEN_ADDRESS,
-        tokenAmount: 0n,
-      });
   });
 
   afterEach(() => {
@@ -607,6 +600,7 @@ describe("Test LicenseClient", () => {
 
   describe("Test licenseClient.mintLicenseTokens", async () => {
     beforeEach(() => {
+      // Mock `predictMintingLicenseFee` method
       rpcMock.readContract = sinon.stub().resolves([WIP_TOKEN_ADDRESS, 0n]);
     });
     it("should throw licensor ipId error when call mintLicenseTokens given licensorIpId is not registered", async () => {
@@ -733,6 +727,7 @@ describe("Test LicenseClient", () => {
         licenseTermsId: "1",
         maxMintingFee: 1,
         maxRevenueShare: 1,
+        licenseTemplate: mockAddress,
       });
 
       expect(hasIpAttachedLicenseTermsStub.calledOnce).to.be.true;
@@ -1352,6 +1347,42 @@ describe("Test LicenseClient", () => {
 
       expect(result.txHash).to.equal(txHash);
       expect(result.success).to.equal(true);
+    });
+  });
+
+  describe("Test licenseClient.getLicensingConfig", async () => {
+    it("should throw error given rpc error", async () => {
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig")
+        .rejects(new Error("rpc error"));
+      const result = licenseClient.getLicensingConfig({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        licenseTemplate: zeroAddress,
+      });
+      await expect(result).to.rejectedWith("Failed to get licensing config: rpc error");
+    });
+
+    it("should return licensing config given args is correct", async () => {
+      const mockLicensingConfig: LicensingConfig = {
+        isSet: false,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: zeroAddress,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: zeroAddress,
+      };
+      sinon
+        .stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig")
+        .resolves(mockLicensingConfig);
+      const result = await licenseClient.getLicensingConfig({
+        ipId: zeroAddress,
+        licenseTermsId: "1",
+        licenseTemplate: zeroAddress,
+      });
+      expect(result).to.deep.equal(mockLicensingConfig);
     });
   });
 });
