@@ -18772,12 +18772,36 @@ export type GroupingModuleIpGroupRegisteredEvent = {
 };
 
 /**
+ * GroupingModuleAddIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ * @param maxAllowedRewardShare uint256
+ */
+export type GroupingModuleAddIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
+  maxAllowedRewardShare: bigint;
+};
+
+/**
  * GroupingModuleRegisterGroupRequest
  *
  * @param groupPool address
  */
 export type GroupingModuleRegisterGroupRequest = {
   groupPool: Address;
+};
+
+/**
+ * GroupingModuleRemoveIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleRemoveIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
 };
 
 /**
@@ -18887,6 +18911,40 @@ export class GroupingModuleClient extends GroupingModuleEventClient {
   }
 
   /**
+   * method addIp for contract GroupingModule
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async addIp(request: GroupingModuleAddIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "addIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method addIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return EncodedTxData
+   */
+  public addIpEncode(request: GroupingModuleAddIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "addIp",
+        args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
+      }),
+    };
+  }
+
+  /**
    * method registerGroup for contract GroupingModule
    *
    * @param request GroupingModuleRegisterGroupRequest
@@ -18918,6 +18976,40 @@ export class GroupingModuleClient extends GroupingModuleEventClient {
         abi: groupingModuleAbi,
         functionName: "registerGroup",
         args: [request.groupPool],
+      }),
+    };
+  }
+
+  /**
+   * method removeIp for contract GroupingModule
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async removeIp(request: GroupingModuleRemoveIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "removeIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method removeIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return EncodedTxData
+   */
+  public removeIpEncode(request: GroupingModuleRemoveIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "removeIp",
+        args: [request.groupIpId, request.ipIds],
       }),
     };
   }
@@ -24912,70 +25004,6 @@ export class RoyaltyModuleClient extends RoyaltyModuleReadOnlyClient {
 }
 
 // Contract RoyaltyPolicyLAP =============================================================
-
-/**
- * RoyaltyPolicyLapTransferToVaultRequest
- *
- * @param ipId address
- * @param ancestorIpId address
- * @param token address
- */
-export type RoyaltyPolicyLapTransferToVaultRequest = {
-  ipId: Address;
-  ancestorIpId: Address;
-  token: Address;
-};
-
-/**
- * contract RoyaltyPolicyLAP write method
- */
-export class RoyaltyPolicyLapClient {
-  protected readonly wallet: SimpleWalletClient;
-  protected readonly rpcClient: PublicClient;
-  public readonly address: Address;
-
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
-    this.address = address || getAddress(royaltyPolicyLapAddress, rpcClient.chain?.id);
-    this.rpcClient = rpcClient;
-    this.wallet = wallet;
-  }
-
-  /**
-   * method transferToVault for contract RoyaltyPolicyLAP
-   *
-   * @param request RoyaltyPolicyLapTransferToVaultRequest
-   * @return Promise<WriteContractReturnType>
-   */
-  public async transferToVault(
-    request: RoyaltyPolicyLapTransferToVaultRequest,
-  ): Promise<WriteContractReturnType> {
-    const { request: call } = await this.rpcClient.simulateContract({
-      abi: royaltyPolicyLapAbi,
-      address: this.address,
-      functionName: "transferToVault",
-      account: this.wallet.account,
-      args: [request.ipId, request.ancestorIpId, request.token],
-    });
-    return await this.wallet.writeContract(call as WriteContractParameters);
-  }
-
-  /**
-   * method transferToVault for contract RoyaltyPolicyLAP with only encode
-   *
-   * @param request RoyaltyPolicyLapTransferToVaultRequest
-   * @return EncodedTxData
-   */
-  public transferToVaultEncode(request: RoyaltyPolicyLapTransferToVaultRequest): EncodedTxData {
-    return {
-      to: this.address,
-      data: encodeFunctionData({
-        abi: royaltyPolicyLapAbi,
-        functionName: "transferToVault",
-        args: [request.ipId, request.ancestorIpId, request.token],
-      }),
-    };
-  }
-}
 
 // Contract RoyaltyPolicyLRP =============================================================
 

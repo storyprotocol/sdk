@@ -360,6 +360,8 @@ export default defineConfig(async () => {
             "CollectedRoyaltiesToGroupPool",
             "registerGroup",
             "IPGroupRegistered",
+            "addIp",
+            "removeIp",
           ],
         },
       }),
