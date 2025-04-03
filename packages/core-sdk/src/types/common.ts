@@ -28,7 +28,7 @@ export type LicensingConfigInput = {
    * The licensingHook is an address to a smart contract that implements the `ILicensingHook` interface.
    * This contract's `beforeMintLicenseTokens` function is executed before a user mints a License Token,
    * allowing for custom validation or business logic to be enforced during the minting process.
-   * @see {@link https://docs.story.foundation/concepts/hooks#licensing-hooks}
+   * For detailed documentation on licensing hook, visit {@link https://docs.story.foundation/concepts/hooks#licensing-hooks}
    */
   licensingHook: Address;
   /**
@@ -38,7 +38,7 @@ export type LicensingConfigInput = {
   hookData: Hex;
   /** The commercial revenue share percentage (from 0 to 100%, represented as 100_000_000). */
   commercialRevShare: number | string;
-  /** Whether the licensing is disabled or not. if this is true, then no licenses can be minted and no more derivatives can be attached at all. */
+  /** Whether the licensing is disabled or not. If this is true, then no licenses can be minted and no more derivatives can be attached at all. */
   disabled: boolean;
   /** The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100_000_000) that can be allocated to the IP when it is added to the group. */
   expectMinimumGroupRewardShare: number | string;

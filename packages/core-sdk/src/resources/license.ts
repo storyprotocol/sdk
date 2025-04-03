@@ -539,12 +539,12 @@ export class LicenseClient {
 
   public async getLicensingConfig(request: GetLicensingConfigRequest): Promise<LicensingConfig> {
     try {
-      const req: LicenseRegistryGetLicensingConfigRequest = {
-        ipId: request.ipId,
+      const licensingConfigParam: LicenseRegistryGetLicensingConfigRequest = {
+        ipId: validateAddress(request.ipId),
         licenseTemplate: validateAddress(request.licenseTemplate),
         licenseTermsId: BigInt(request.licenseTermsId),
       };
-      return await this.licenseRegistryReadOnlyClient.getLicensingConfig(req);
+      return await this.licenseRegistryReadOnlyClient.getLicensingConfig(licensingConfigParam);
     } catch (error) {
       handleError(error, "Failed to get licensing config");
     }

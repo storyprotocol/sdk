@@ -727,7 +727,6 @@ describe("Test LicenseClient", () => {
         licenseTermsId: "1",
         maxMintingFee: 1,
         maxRevenueShare: 1,
-        licenseTemplate: mockAddress,
       });
 
       expect(hasIpAttachedLicenseTermsStub.calledOnce).to.be.true;
