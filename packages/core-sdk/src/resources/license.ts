@@ -357,10 +357,8 @@ export class LicenseClient {
         throw new Error(`License terms id ${request.licenseTermsId} do not exist.`);
       }
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, req.licensorIpId);
-      const { licenseTermsId: defaultLicenseTermsId } =
-        await this.licenseRegistryReadOnlyClient.getDefaultLicenseTerms();
       const ipOwner = await ipAccount.owner();
-      if (ipOwner !== this.walletAddress && defaultLicenseTermsId !== req.licenseTermsId) {
+      if (ipOwner !== this.walletAddress) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
             ipId: req.licensorIpId,
