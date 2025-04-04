@@ -1,12 +1,11 @@
 import { Address, Hash, Hex, TransactionReceipt } from "viem";
 
 import { TxOptions, WithWipOptions } from "../options";
-import { LicenseTerms, RegisterPILTermsRequest } from "./license";
+import { LicenseTerms, LicenseTermsInput } from "./license";
 import { EncodedTxData } from "../../abi/generated";
-import { IpMetadataAndTxOptions, LicensingConfig, ValidatedLicensingConfig } from "../common";
-import { IpMetadataForWorkflow } from "../../utils/getIpMetadataForWorkflow";
+import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
 
-export type DerivativeData = {
+export type DerivativeDataInput = {
   parentIpIds: Address[];
   /** The IDs of the license terms that the parent IP supports. */
   licenseTermsIds: bigint[] | string[] | number[];
@@ -25,10 +24,13 @@ export type DerivativeData = {
    * @default 100
    */
   maxRevenueShare?: number | string;
-  /** The license template address, default value is Programmable IP License. */
+  /**
+   * The address of the license template.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} address if not provided.
+   */
   licenseTemplate?: Address;
 };
-export type InternalDerivativeData = {
+export type DerivativeData = {
   parentIpIds: readonly Address[];
   licenseTermsIds: readonly bigint[];
   royaltyContext: Hex;
@@ -42,14 +44,23 @@ export type RegisterIpResponse = RegistrationResponse & {
 };
 
 export type RegisterRequest = {
+  /** The address of the NFT. */
   nftContract: Address;
+  /** The token identifier of the NFT. */
   tokenId: string | number | bigint;
+  /**
+   * The deadline of the transaction signature in seconds.
+   * @default 1000
+   */
   deadline?: string | number | bigint;
 } & IpMetadataAndTxOptions;
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
+  /** The derivative IP ID. */
   childIpId: Address;
+  /** The IDs of the license tokens. */
   licenseTokenIds: string[] | bigint[] | number[];
+  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number | string;
   txOptions?: TxOptions;
 };
@@ -60,7 +71,7 @@ export type RegisterDerivativeWithLicenseTokensResponse = {
 };
 
 export type RegisterDerivativeRequest = WithWipOptions &
-  DerivativeData & {
+  DerivativeDataInput & {
     txOptions?: TxOptions;
     childIpId: Address;
   };
@@ -69,16 +80,16 @@ export type RegisterDerivativeResponse = {
   txHash?: Hex;
   encodedTxData?: EncodedTxData;
 };
-export type LicenseTermsData<T = RegisterPILTermsRequest, C = LicensingConfig> = {
+export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
   terms: T;
   licensingConfig?: C;
 };
 
-export type ValidatedLicenseTermsData = Omit<
-  LicenseTermsData<LicenseTerms, ValidatedLicensingConfig>,
+export type LicenseTermsData = Omit<
+  LicenseTermsDataInput<LicenseTerms, LicensingConfig>,
   "licensingConfig"
 > & {
-  licensingConfig: ValidatedLicensingConfig;
+  licensingConfig: LicensingConfig;
 };
 
 export type MintAndRegisterIpAssetWithPilTermsRequest = {
@@ -89,8 +100,8 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
    */
   allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsData[];
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  licenseTermsData: LicenseTermsDataInput[];
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
@@ -113,7 +124,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
    */
   deadline?: string | number | bigint;
   /** The derivative data to be used for register derivative. */
-  derivData: DerivativeData;
+  derivData: DerivativeDataInput;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -129,7 +140,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -147,8 +158,8 @@ export type RegisterIpAndAttachPilTermsResponse = {
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
   /** The derivative data to be used for register derivative. */
-  derivData: DerivativeData;
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  derivData: DerivativeDataInput;
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -162,7 +173,7 @@ export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & 
   encodedTxData?: EncodedTxData;
 };
 
-type IPMetadataInfo = {
+type WithIpMetadata = {
   ipMetadata?: {
     ipMetadataURI?: string;
     ipMetadataHash?: Hex;
@@ -174,6 +185,7 @@ type IPMetadataInfo = {
 export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
   WithWipOptions & {
     spgNftContract: Address;
+    /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
     recipient?: Address;
     /**
      * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -184,7 +196,7 @@ export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
 export type RegisterPilTermsAndAttachRequest = {
   ipId: Address;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /** The deadline for the signature in seconds.
    * @default 1000
    */
@@ -200,8 +212,11 @@ export type RegisterPilTermsAndAttachResponse = {
 
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
+  /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: string[] | bigint[] | number[];
+  /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
+  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number | string;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
@@ -214,9 +229,15 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
   tokenId: string | number | bigint;
+  /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: string[] | bigint[] | number[];
-  deadline?: string | number | bigint;
+  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number | string;
+  /**
+   * The deadline for the signature in seconds.
+   * @default 1000
+   */
+  deadline?: string | number | bigint;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -237,6 +258,9 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
 
 export type BatchRegisterDerivativeRequest = {
   args: RegisterDerivativeRequest[];
+  /** The deadline for the signature in seconds.
+   * @default 1000
+   */
   deadline?: string | number | bigint;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
@@ -267,7 +291,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
   tokenId: bigint | string | number;
   /** The data of the license and its configuration to be attached to the new group IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -276,7 +300,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo;
+} & WithIpMetadata;
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hex;
   distributeRoyaltyTokensTxHash: Hex;
@@ -314,13 +338,12 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
    */
   deadline?: string | number | bigint;
   /** The derivative data to be used for register derivative.*/
-  derivData: DerivativeData;
+  derivData: DerivativeDataInput;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
-  /** The desired metadata for the newly minted NFT and newly registered IP. */
-  ipMetadata?: IpMetadataForWorkflow;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & WithWipOptions;
+} & WithWipOptions &
+  WithIpMetadata;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
@@ -338,13 +361,13 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
    */
   allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the new group IP. */
-  licenseTermsData: LicenseTermsData[];
+  licenseTermsData: LicenseTermsDataInput[];
   /** Authors of the IP and their shares of the royalty tokens */
   royaltyShares: RoyaltyShare[];
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo &
+} & WithIpMetadata &
   WithWipOptions;
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
@@ -358,7 +381,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
   spgNftContract: Address;
   /** The derivative data to be used for register derivative. */
-  derivData: DerivativeData;
+  derivData: DerivativeDataInput;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   /**
@@ -366,10 +389,10 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
    * @default true
    */
   allowDuplicates?: boolean;
-  /** The address to receive the minted NFT. If not provided, the function will use the user's own wallet address. */
+  /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & IPMetadataInfo &
+} & WithIpMetadata &
   WithWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {
@@ -384,7 +407,7 @@ export type CommonRegistrationParams = WithWipOptions & {
   spgNftContract?: Address;
   /** the spg contract in which the minting fee is paid to  */
   spgSpenderAddress: Address;
-  derivData?: InternalDerivativeData;
+  derivData?: DerivativeData;
   sender: Address;
   txOptions?: TxOptions;
 };

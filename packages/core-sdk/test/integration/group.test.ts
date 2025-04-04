@@ -1,16 +1,13 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
-import { aeneid, getStoryClient, mintBySpg, publicClient, walletClient } from "./utils/util";
-import { StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
+import { aeneid, getStoryClient, mintBySpg } from "./utils/util";
+import { LicenseTermsData, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import {
   evenSplitGroupPoolAddress,
   piLicenseTemplateAddress,
-  royaltyPolicyLrpAbi,
   royaltyPolicyLrpAddress,
-  wrappedIpAddress,
 } from "../../src/abi/generated";
-import { ValidatedLicenseTermsData } from "../../src/types/resources/ipAsset";
 import { NativeRoyaltyPolicy } from "../../src/types/resources/royalty";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -63,7 +60,7 @@ describe("Group Functions", () => {
             derivativesApproval: false,
             derivativesReciprocal: true,
             derivativeRevCeiling: BigInt(0),
-            currency: wrappedIpAddress[aeneid],
+            currency: WIP_TOKEN_ADDRESS,
             uri: "test case",
           },
           licensingConfig: {
@@ -262,7 +259,7 @@ describe("Group Functions", () => {
     const ipIds: Address[] = [];
     let groupIpId: Address;
     //1. Use the same license terms data for all IP IDs
-    const licenseTermsData: ValidatedLicenseTermsData[] = [
+    const licenseTermsData: LicenseTermsData[] = [
       {
         terms: {
           commercialAttribution: true,

@@ -5,14 +5,13 @@ import { Address, LocalAccount, PublicClient, WalletClient, maxUint256, parseEth
 import {
   royaltyModuleAddress,
   derivativeWorkflowsAddress,
-  wrappedIpAddress,
   multicall3Address,
   erc20Address,
 } from "../../../src/abi/generated";
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import { aeneid, txHash } from "../mockData";
 import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
-import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
+import { WIP_TOKEN_ADDRESS } from "../../../src";
 import { ContractCallWithFees } from "../../../src/types/utils/wip";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { contractCallWithFees } from "../../../src/utils/feeUtils";
@@ -36,7 +35,7 @@ describe("Erc20 Token Fee Utilities", () => {
     walletMock.account = accountMock;
     walletMock.writeContract = sinon.stub().resolves(generateRandomHash());
     rpcWaitForTxMock = rpcMock.waitForTransactionReceipt as sinon.SinonStub;
-    sinon.stub(WipTokenClient.prototype, "address").get(() => wrappedIpAddress[aeneid]);
+    sinon.stub(WipTokenClient.prototype, "address").get(() => WIP_TOKEN_ADDRESS);
   });
 
   afterEach(() => {
