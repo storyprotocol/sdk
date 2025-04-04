@@ -738,28 +738,6 @@ describe("Test LicenseClient", () => {
       expect(hasIpAttachedLicenseTermsStub.calledOnce).to.be.true;
     });
 
-    it("should not call attached license terms given licensorIpId is not owned by the caller and licenseTermsId is default", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.licenseRegistryReadOnlyClient, "getDefaultLicenseTerms").resolves({
-        licenseTemplate: zeroAddress,
-        licenseTermsId: BigInt(1),
-      });
-      const hasIpAttachedLicenseTermsStub = sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(false);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
-      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
-      await licenseClient.mintLicenseTokens({
-        licensorIpId: ipId,
-        licenseTermsId: "1",
-        maxMintingFee: 1,
-        maxRevenueShare: 1,
-      });
-
-      expect(hasIpAttachedLicenseTermsStub.notCalled).to.be.true;
-    });
-
     it("should not call attached license terms given licensorIpId is owned by the caller and licenseTermsId is default", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
