@@ -10,7 +10,7 @@
     "lint": "turbo run lint",
     "fix": "turbo run fix",
     "test": "turbo run test --no-cache --concurrency=1",
-    "test:integration": "turbo run test:integration --no-cache --filter=!@story-protocol/react-sdk"
+    "test:integration": "turbo run test:integration --no-cache"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
