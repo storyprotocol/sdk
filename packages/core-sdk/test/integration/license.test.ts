@@ -1,5 +1,5 @@
 import chai from "chai";
-import { StoryClient } from "../../src";
+import { LicensingConfig, StoryClient } from "../../src";
 import { Hex, maxUint256, zeroAddress } from "viem";
 import chaiAsPromised from "chai-as-promised";
 import {
@@ -239,27 +239,39 @@ describe("License Functions", () => {
       expect(result.tokenAmount).to.be.a("bigint");
     });
 
-    it("should set licensing config", async () => {
-      const result = await client.license.setLicensingConfig({
-        ipId: ipId,
-        licenseTermsId: licenseId,
-        licenseTemplate: piLicenseTemplateAddress[aeneid],
-        licensingConfig: {
-          mintingFee: 0,
-          isSet: true,
-          licensingHook: zeroAddress,
-          hookData: "0xFcd3243590d29B131a26B1554B0b21a5B43e622e",
-          commercialRevShare: 0,
-          disabled: false,
-          expectMinimumGroupRewardShare: "1",
-          expectGroupRewardPool: zeroAddress,
-        },
-        txOptions: {
-          waitForTransaction: true,
-        },
+    describe("set and get licensing config", () => {
+      const licensingConfig: LicensingConfig = {
+        mintingFee: 0n,
+        isSet: true,
+        licensingHook: zeroAddress,
+        hookData: "0xfcd3243590d29b131a26b1554b0b21a5b43e622e",
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 1,
+        expectGroupRewardPool: zeroAddress,
+      };
+      it("should set licensing config", async () => {
+        const result = await client.license.setLicensingConfig({
+          ipId: ipId,
+          licenseTermsId: licenseId,
+          licenseTemplate: piLicenseTemplateAddress[aeneid],
+          licensingConfig,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        });
+        expect(result.txHash).to.be.a("string").and.not.empty;
+        expect(result.success).to.be.true;
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.success).to.be.true;
+
+      it("should get licensing config", async () => {
+        const result = await client.license.getLicensingConfig({
+          ipId: ipId,
+          licenseTermsId: licenseId,
+          licenseTemplate: piLicenseTemplateAddress[aeneid],
+        });
+        expect(result).to.deep.equal(licensingConfig);
+      });
     });
   });
 });

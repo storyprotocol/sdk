@@ -26,6 +26,8 @@ import { getMinimumBond } from "../../src/utils/oov3";
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
+const minimumBond = 1000000000000000000;
+
 const generateCID = async () => {
   // Generate a random 32-byte buffer
   const randomBytes = crypto.getRandomValues(new Uint8Array(32));
