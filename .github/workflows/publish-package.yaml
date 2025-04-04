@@ -135,7 +135,6 @@ jobs:
     uses: ./.github/workflows/create-release.yml
     with:
       tag_version: "@story-protocol/core-sdk@${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}"
-      is_core_sdk: true
       last_tag: ${{ needs.fetch_last_tag.outputs.CORE_SDK_LATEST_TAG }}
 
   send_slack_notif-core-sdk:
