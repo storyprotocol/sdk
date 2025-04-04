@@ -134,7 +134,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' && needs.fail_if_version_is_same.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
     uses: ./.github/workflows/create-release.yml
     with:
-      tag_name: "@story-protocol/core-sdk@${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}"
+      tag_version: "@story-protocol/core-sdk@${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}"
       is_core_sdk: true
       last_tag: ${{ needs.fetch_last_tag.outputs.CORE_SDK_LATEST_TAG }}
 
