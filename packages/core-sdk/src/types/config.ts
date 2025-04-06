@@ -4,15 +4,11 @@ import { SimpleWalletClient } from "../abi/generated";
 
 /**
  * Supported chains. For convenience, both name or chain ID are supported.
- *
- * @public
  */
 export type SupportedChainIds = "aeneid" | "mainnet" | ChainIds;
 
 /**
  * Configuration for the SDK Client.
- *
- * @public
  */
 export type UseAccountStoryConfig = {
   readonly account: Account | Address;

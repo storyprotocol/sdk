@@ -173,13 +173,15 @@ export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & 
   encodedTxData?: EncodedTxData;
 };
 
+export type IPMetadataInput = {
+  ipMetadataURI?: string;
+  ipMetadataHash?: Hex;
+  nftMetadataURI?: string;
+  nftMetadataHash?: Hex;
+};
+
 type WithIpMetadata = {
-  ipMetadata?: {
-    ipMetadataURI?: string;
-    ipMetadataHash?: Hex;
-    nftMetadataURI?: string;
-    nftMetadataHash?: Hex;
-  };
+  ipMetadata?: IPMetadataInput;
 };
 
 export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
@@ -351,6 +353,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRes
   ipId: Address;
   tokenId: bigint;
   ipRoyaltyVault: Address;
+  txHash: Hex;
 };
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest = {
   /** The address of the SPG NFT contract. */

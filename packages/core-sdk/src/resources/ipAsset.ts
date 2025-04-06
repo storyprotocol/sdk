@@ -112,6 +112,13 @@ import {
 import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
+import {
+  LinkDerivativeInput,
+  NewRegisterDerivativeRequest,
+  NewRegisterRequest,
+  NewRegisterResponse,
+} from "../types/resources/new-ipAsset";
+import { TransactionResponse } from "../types/options";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -166,6 +173,166 @@ export class IPAssetClient {
 
   public generateIpMetadata(metadata: IpMetadata): IpMetadata {
     return metadata;
+  }
+
+  public async linkDerivative(request: LinkDerivativeInput): Promise<Partial<TransactionResponse>> {
+    if (request.method === "license-tokens") {
+      return this.registerDerivativeWithLicenseTokens({
+        ...request,
+        maxRts: request.maxRts || MAX_ROYALTY_TOKEN,
+      });
+    } else if (request.method === "parent-ip") {
+      return this.registerDerivative({
+        ...request,
+        maxRts: request.maxRts || MAX_ROYALTY_TOKEN,
+      });
+    }
+    throw new Error("Invalid register derivative method");
+  }
+
+  public async newRegister(request: NewRegisterRequest): Promise<NewRegisterResponse> {
+    const { nft, royaltyShares, txOptions, ipMetadata, license } = request;
+
+    if (nft.type === "minted") {
+      const baseParams = {
+        nftContract: nft.nftContract,
+        tokenId: nft.tokenId,
+        ipMetadata,
+        txOptions,
+      };
+
+      if (license && royaltyShares) {
+        // registerIpAndAttachPILTermsAndDeployRoyaltyVault - then call distributeRoyaltyTokens
+        return this.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+          ...baseParams,
+          licenseTermsData: license,
+          royaltyShares,
+        });
+      } else if (license) {
+        // registerIpAndAttachPILTerms
+        return this.registerIpAndAttachPilTerms({
+          ...baseParams,
+          licenseTermsData: license,
+        });
+      } else if (royaltyShares) {
+        // not supported for now - throw error
+        throw new Error("Royalty shares must be provided with license terms for new ips.");
+      } else {
+        return this.register(baseParams);
+      }
+    } else if (nft.type === "spg-collection") {
+      // mint and register new ip
+      const baseParams = {
+        spgNftContract: nft.spgNftContract,
+        recipient: nft.recipient,
+        allowDuplicates: nft.allowDuplicates || true,
+      };
+
+      if (license && royaltyShares) {
+        return this.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
+          ...baseParams,
+          licenseTermsData: license,
+          royaltyShares,
+        });
+      } else if (license) {
+        return this.mintAndRegisterIpAssetWithPilTerms({
+          ...baseParams,
+          licenseTermsData: license,
+        });
+      } else if (royaltyShares) {
+        // not supported - throw error
+        throw new Error("Royalty shares must be provided with license terms for new ips.");
+      } else {
+        return this.mintAndRegisterIp(baseParams);
+      }
+    }
+
+    throw new Error("Invalid nft type");
+  }
+
+  public async newRegisterDerivative(
+    request: NewRegisterDerivativeRequest,
+  ): Promise<Partial<TransactionResponse>> {
+    const { method, royaltyShares, txOptions } = request;
+
+    if (method === "license-tokens") {
+      if (request.nft.type === "minted") {
+        if (royaltyShares) {
+          // not supported - throw error
+          throw new Error("Register derivative with license tokens does not support royalties.");
+        } else {
+          return this.registerIpAndMakeDerivativeWithLicenseTokens({
+            nftContract: request.nft.nftContract,
+            tokenId: request.nft.tokenId,
+            ipMetadata: request.ipMetadata,
+            licenseTokenIds: request.licenseTokenIds,
+            maxRts: request.maxRts || MAX_ROYALTY_TOKEN,
+            txOptions,
+          });
+        }
+      } else if (request.nft.type === "spg-collection") {
+        if (royaltyShares) {
+          // not supported - throw error
+          throw new Error("Register derivative with license tokens does not support royalties.");
+        } else {
+          return this.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+            spgNftContract: request.nft.spgNftContract,
+            ipMetadata: request.ipMetadata,
+            recipient: request.nft.recipient,
+            allowDuplicates: request.nft.allowDuplicates,
+            licenseTokenIds: request.licenseTokenIds,
+            maxRts: request.maxRts || MAX_ROYALTY_TOKEN,
+            txOptions,
+          });
+        }
+      } else {
+        throw new Error("Invalid nft type");
+      }
+    } else if (method === "parent-ip") {
+      if (request.nft.type === "minted") {
+        if (royaltyShares) {
+          // registerIpAndMakeDerivativeAndDeployRoyaltyVault - then call distributeRoyaltyTokens
+          return this.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+            derivData: request.derivative,
+            nftContract: request.nft.nftContract,
+            tokenId: request.nft.tokenId,
+            ipMetadata: request.ipMetadata,
+            royaltyShares,
+          });
+        } else {
+          // registerIpAndMakeDerivative
+          return this.registerDerivativeIp({
+            derivData: request.derivative,
+            nftContract: request.nft.nftContract,
+            ipMetadata: request.ipMetadata,
+            tokenId: request.nft.tokenId,
+          });
+        }
+      } else if (request.nft.type === "spg-collection") {
+        if (royaltyShares) {
+          return this.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+            spgNftContract: request.nft.spgNftContract,
+            recipient: request.nft.recipient,
+            allowDuplicates: request.nft.allowDuplicates,
+            ipMetadata: request.ipMetadata,
+            derivData: request.derivative,
+            royaltyShares,
+          });
+        } else {
+          return this.mintAndRegisterIpAndMakeDerivative({
+            spgNftContract: request.nft.spgNftContract,
+            recipient: request.nft.recipient,
+            ipMetadata: request.ipMetadata,
+            allowDuplicates: request.nft.allowDuplicates,
+            derivData: request.derivative,
+          });
+        }
+      } else {
+        throw new Error("Invalid nft type");
+      }
+    }
+
+    throw new Error("Invalid register derivative method");
   }
 
   /**
@@ -1299,6 +1466,7 @@ export class IPAssetClient {
         ipId,
         tokenId,
         ipRoyaltyVault,
+        txHash,
       };
     } catch (error) {
       handleError(

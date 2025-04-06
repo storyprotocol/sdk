@@ -67,7 +67,11 @@ export type LicenseTermsInput = Omit<
   defaultMintingFee: bigint | string | number;
   /** The expiration period of the license. */
   expiration: bigint | string | number;
-  /** The maximum revenue that can be generated from the commercial use of the work. */
+  /**
+   * The maximum revenue that can be generated from the commercial
+   * use of the work.
+   * @example 10
+   */
   commercialRevCeiling: bigint | string | number;
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
