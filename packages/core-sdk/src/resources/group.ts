@@ -474,7 +474,7 @@ export class GroupClient {
    * Adds IPs to group.
    * The function must be called by the Group IP owner or an authorized operator.
    */
-  public async addIp({
+  public async addIpsToGroup({
     groupIpId,
     ipIds,
     maxAllowedRewardShare,

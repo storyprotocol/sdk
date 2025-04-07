@@ -687,7 +687,7 @@ describe("Test IpAssetClient", () => {
 
   describe("Test groupClient.addIp", async () => {
     it("should throw error when given ipId is wrong address", async () => {
-      const result = groupClient.addIp({
+      const result = groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: ["0x"],
         maxAllowedRewardShare: 5,
@@ -697,7 +697,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when call addIp successfully", async () => {
       sinon.stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
-      const result = await groupClient.addIp({
+      const result = await groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
         maxAllowedRewardShare: 5,

@@ -255,7 +255,7 @@ describe("Group Functions", () => {
       ).to.be.rejectedWith("Failed to register group and attach license and add ips");
     });
 
-    it("should successfully add IP to group", async () => {
+    it("should successfully add multiple IPs to group", async () => {
       const registerResult = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
         args: [
           {
@@ -275,7 +275,7 @@ describe("Group Functions", () => {
       });
       const ipIds = registerResult.results?.map((result) => result.ipId);
 
-      const result = await client.groupClient.addIp({
+      const result = await client.groupClient.addIpsToGroup({
         groupIpId: groupId,
         ipIds: ipIds!,
         maxAllowedRewardShare: 5,
