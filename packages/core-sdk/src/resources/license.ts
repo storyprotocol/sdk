@@ -486,7 +486,9 @@ export class LicenseClient {
     try {
       const req: LicensingModuleSetLicensingConfigRequest = {
         ipId: request.ipId,
-        licenseTemplate: validateAddress(request.licenseTemplate),
+        licenseTemplate: validateAddress(
+          request.licenseTemplate || this.licenseTemplateClient.address,
+        ),
         licenseTermsId: BigInt(request.licenseTermsId),
         licensingConfig: validateLicenseConfig(request.licensingConfig),
       };
@@ -541,7 +543,9 @@ export class LicenseClient {
     try {
       const licensingConfigParam: LicenseRegistryGetLicensingConfigRequest = {
         ipId: validateAddress(request.ipId),
-        licenseTemplate: validateAddress(request.licenseTemplate),
+        licenseTemplate: validateAddress(
+          request.licenseTemplate || this.licenseTemplateClient.address,
+        ),
         licenseTermsId: BigInt(request.licenseTermsId),
       };
       return await this.licenseRegistryReadOnlyClient.getLicensingConfig(licensingConfigParam);

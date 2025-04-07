@@ -1110,7 +1110,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
-          licenseTermsId: "1",
+          licenseTermsId: 1,
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
@@ -1136,7 +1136,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
-          licenseTermsId: "1",
+          licenseTermsId: 1,
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
@@ -1163,7 +1163,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
-          licenseTermsId: "1",
+          licenseTermsId: 1,
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
@@ -1189,7 +1189,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
-          licenseTermsId: "1",
+          licenseTermsId: 1,
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
@@ -1216,7 +1216,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
-          licenseTermsId: "1",
+          licenseTermsId: 1,
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
@@ -1242,7 +1242,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
-          licenseTermsId: "1",
+          licenseTermsId: 1,
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
@@ -1271,7 +1271,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.setLicensingConfig({
         ipId: zeroAddress,
-        licenseTermsId: "1",
+        licenseTermsId: 1,
         licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         licensingConfig: {
           isSet: false,
@@ -1302,7 +1302,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.setLicensingConfig({
         ipId: zeroAddress,
-        licenseTermsId: "1",
+        licenseTermsId: 1,
         licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         licensingConfig: {
           isSet: false,
@@ -1327,8 +1327,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.setLicensingConfig({
         ipId: zeroAddress,
-        licenseTermsId: "1",
-        licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        licenseTermsId: 1,
         licensingConfig: {
           isSet: false,
           mintingFee: "",
@@ -1356,7 +1355,7 @@ describe("Test LicenseClient", () => {
         .rejects(new Error("rpc error"));
       const result = licenseClient.getLicensingConfig({
         ipId: zeroAddress,
-        licenseTermsId: "1",
+        licenseTermsId: 1,
         licenseTemplate: zeroAddress,
       });
       await expect(result).to.rejectedWith("Failed to get licensing config: rpc error");
@@ -1378,8 +1377,7 @@ describe("Test LicenseClient", () => {
         .resolves(mockLicensingConfig);
       const result = await licenseClient.getLicensingConfig({
         ipId: zeroAddress,
-        licenseTermsId: "1",
-        licenseTemplate: zeroAddress,
+        licenseTermsId: 1,
       });
       expect(result).to.deep.equal(mockLicensingConfig);
     });

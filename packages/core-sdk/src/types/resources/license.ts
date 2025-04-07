@@ -201,7 +201,10 @@ export type GetLicensingConfigRequest = {
   /** The address of the IP for which the configuration is being set. */
   ipId: Address;
   /** The ID of the license terms within the license template. */
-  licenseTermsId: string | number | bigint;
-  /** The address of the license template used. */
-  licenseTemplate: Address;
+  licenseTermsId: number | bigint;
+  /**
+   * The address of the license template.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   */
+  licenseTemplate?: Address;
 };

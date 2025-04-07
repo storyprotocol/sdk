@@ -14,11 +14,11 @@ import {
   erc20Address,
   LicenseRegistryReadOnlyClient,
   licensingModuleAddress,
-  piLicenseTemplateAddress,
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 import { ERC20Client } from "../../src/utils/token";
 import { getDerivedStoryClient } from "./utils/BIP32";
+import { generateHex } from "./utils/generateHex";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -240,11 +240,12 @@ describe("License Functions", () => {
     });
 
     describe("set and get licensing config", () => {
+      const randomHookData = generateHex();
       const licensingConfig: LicensingConfig = {
         mintingFee: 0n,
         isSet: true,
         licensingHook: zeroAddress,
-        hookData: "0xfcd3243590d29b131a26b1554b0b21a5b43e622e",
+        hookData: randomHookData,
         commercialRevShare: 0,
         disabled: false,
         expectMinimumGroupRewardShare: 1,
@@ -254,7 +255,6 @@ describe("License Functions", () => {
         const result = await client.license.setLicensingConfig({
           ipId: ipId,
           licenseTermsId: licenseId,
-          licenseTemplate: piLicenseTemplateAddress[aeneid],
           licensingConfig,
           txOptions: {
             waitForTransaction: true,
@@ -268,7 +268,6 @@ describe("License Functions", () => {
         const result = await client.license.getLicensingConfig({
           ipId: ipId,
           licenseTermsId: licenseId,
-          licenseTemplate: piLicenseTemplateAddress[aeneid],
         });
         expect(result).to.deep.equal(licensingConfig);
       });
