@@ -4,6 +4,7 @@ import {
   coreMetadataModuleAbi,
   CoreMetadataModuleClient,
   groupingModuleAbi,
+  GroupingModuleAddIpRequest,
   GroupingModuleClient,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
@@ -42,6 +43,7 @@ import {
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
   CollectAndDistributeGroupRoyaltiesRequest,
   CollectAndDistributeGroupRoyaltiesResponse,
+  AddIpRequest,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -49,6 +51,7 @@ import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
 import { RevShareType } from "../types/common";
 import { handleTxOptions } from "../utils/txOptions";
+import { TransactionResponse } from "../types/options";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -464,6 +467,35 @@ export class GroupClient {
       return { txHash, collectedRoyalties, royaltiesDistributed };
     } catch (error) {
       handleError(error, "Failed to collect and distribute group royalties");
+    }
+  }
+
+  /**
+   * Adds IPs to group.
+   * The function must be called by the Group IP owner or an authorized operator.
+   */
+  public async addIp({
+    groupIpId,
+    ipIds,
+    maxAllowedRewardShare,
+    txOptions,
+  }: AddIpRequest): Promise<TransactionResponse> {
+    try {
+      const addIpParam: GroupingModuleAddIpRequest = {
+        groupIpId: validateAddress(groupIpId),
+        ipIds: validateAddresses(ipIds),
+        maxAllowedRewardShare: BigInt(
+          getRevenueShare(maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+        ),
+      };
+      const txHash = await this.groupingModuleClient.addIp(addIpParam);
+      return await handleTxOptions({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      handleError(error, "Failed to add IP to group");
     }
   }
 

@@ -18746,6 +18746,17 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
 // Contract GroupingModule =============================================================
 
 /**
+ * GroupingModuleAddedIpToGroupEvent
+ *
+ * @param groupId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleAddedIpToGroupEvent = {
+  groupId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
  * GroupingModuleCollectedRoyaltiesToGroupPoolEvent
  *
  * @param groupId address
@@ -18814,6 +18825,47 @@ export class GroupingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(groupingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AddedIpToGroup for contract GroupingModule
+   */
+  public watchAddedIpToGroupEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleAddedIpToGroupEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "AddedIpToGroup",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AddedIpToGroup for contract GroupingModule
+   */
+  public parseTxAddedIpToGroupEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleAddedIpToGroupEvent> {
+    const targetLogs: Array<GroupingModuleAddedIpToGroupEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "AddedIpToGroup",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AddedIpToGroup") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**

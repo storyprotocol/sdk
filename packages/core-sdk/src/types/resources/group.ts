@@ -137,3 +137,18 @@ export type CollectAndDistributeGroupRoyaltiesResponse = {
     amountAfterFee: bigint;
   }[];
 };
+
+export type AddIpRequest = {
+  groupIpId: Address;
+  /**
+   * The addresses of the IPs to add to the Group IP.
+   * IP IDs must be attached to the group IP license terms.
+   */
+  ipIds: Address[];
+  /**
+   * The maximum reward share percentage that can be allocated to each member IP.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
+  maxAllowedRewardShare: number | string;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};

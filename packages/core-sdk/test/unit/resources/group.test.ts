@@ -684,4 +684,28 @@ describe("Test IpAssetClient", () => {
       ]);
     });
   });
+
+  describe("Test groupClient.addIp", async () => {
+    it("should throw error when given ipId is wrong address", async () => {
+      const result = groupClient.addIp({
+        groupIpId: mockAddress,
+        ipIds: ["0x"],
+        maxAllowedRewardShare: 5,
+      });
+      await expect(result).to.be.rejectedWith("Failed to add IP to group: Invalid address: 0x.");
+    });
+
+    it("should return txHash when call addIp successfully", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
+      const result = await groupClient.addIp({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+        maxAllowedRewardShare: 5,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+    });
+  });
 });
