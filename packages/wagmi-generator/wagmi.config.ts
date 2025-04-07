@@ -361,7 +361,6 @@ export default defineConfig(async () => {
             "registerGroup",
             "IPGroupRegistered",
             "addIp",
-            "removeIp",
           ],
         },
       }),
