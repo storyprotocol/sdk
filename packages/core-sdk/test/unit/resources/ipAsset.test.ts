@@ -77,7 +77,7 @@ describe("Test IpAssetClient", () => {
     walletMock.account = accountMock;
     // Mock predictMintingLicenseFee
     rpcMock.readContract = sinon.stub().resolves([zeroAddress, 0n]);
-    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1315");
+    ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1512");
     sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getDefaultLicenseTerms").resolves({
       licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       licenseTermsId: 5n,
@@ -259,7 +259,7 @@ describe("Test IpAssetClient", () => {
     it("should throw account error when register given wallet have no signTypedData ", async () => {
       const walletMock = createMock<WalletClient>();
       walletMock.account = createMock<Account>();
-      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1315");
+      ipAssetClient = new IPAssetClient(rpcMock, walletMock, "1512");
       (ipAssetClient.registrationWorkflowsClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       (ipAssetClient.coreMetadataModuleClient as any).address =

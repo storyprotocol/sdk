@@ -29,7 +29,7 @@ describe("Test RoyaltyClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
     walletMock.account = accountMock;
-    royaltyClient = new RoyaltyClient(rpcMock, walletMock, "1315");
+    royaltyClient = new RoyaltyClient(rpcMock, walletMock, "1512");
   });
 
   afterEach(() => {

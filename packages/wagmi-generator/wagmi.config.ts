@@ -4,7 +4,7 @@ import type { Evaluate } from "@wagmi/cli/src/types";
 import type { ContractConfig } from "@wagmi/cli/src/config";
 import { resolveProxyContracts } from "./resolveProxyContracts";
 import { optimizedBlockExplorer } from "./optimizedBlockExplorer";
-const aeneidChainId = 1315;
+const aeneidChainId = 1512;
 const mainnetChainId = 1514;
 import "dotenv/config";
 
@@ -218,7 +218,7 @@ export default defineConfig(async () => {
         baseUrl: "https://aeneid.storyscan.xyz/api",
         name: "aeneid",
         getAddress: await resolveProxyContracts({
-          baseUrl: "https://aeneid.storyrpc.io",
+          baseUrl: "https://rpc.devnet.storyrpc.io",
           contracts: contracts,
           chainId: aeneidChainId,
         }),

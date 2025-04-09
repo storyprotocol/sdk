@@ -37,7 +37,7 @@ describe("Test IpAssetClient", () => {
     walletMock.signTypedData = sinon
       .stub()
       .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-    groupClient = new GroupClient(rpcMock, walletMock, "1315");
+    groupClient = new GroupClient(rpcMock, walletMock, "1512");
     (groupClient.groupingWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (groupClient.groupingModuleClient as any).address =

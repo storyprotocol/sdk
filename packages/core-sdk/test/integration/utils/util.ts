@@ -7,8 +7,8 @@ import {
   licenseTokenAddress,
   spgnftBeaconAddress,
 } from "../../../src/abi/generated";
-export const RPC = "https://aeneid.storyrpc.io";
-export const aeneid = 1315;
+export const RPC = "https://rpc.devnet.storyrpc.io";
+export const aeneid = 1512;
 export const mockERC721 = "0xa1119092ea911202E0a65B743a13AE28C5CF2f21";
 export const licenseToken = licenseTokenAddress[aeneid];
 export const spgNftBeacon = spgnftBeaconAddress[aeneid];

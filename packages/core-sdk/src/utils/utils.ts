@@ -79,7 +79,7 @@ export async function waitTx(
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId.toString()) {
-    case "1315":
+    case "1512":
     case "aeneid":
       return aeneid;
     case "1514":
@@ -90,9 +90,9 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   }
 }
 
-export const chain: { [key in SupportedChainIds]: "1315" | "1514" } = {
-  aeneid: "1315",
-  1315: "1315",
+export const chain: { [key in SupportedChainIds]: "1512" | "1514" } = {
+  aeneid: "1512",
+  1512: "1512",
   1514: "1514",
   mainnet: "1514",
 };

@@ -23,7 +23,7 @@ describe("Test DisputeClient", () => {
     const accountMock = createMock<Account>();
     accountMock.address = mockAddress;
     walletMock.account = accountMock;
-    disputeClient = new DisputeClient(rpcMock, walletMock, "1315");
+    disputeClient = new DisputeClient(rpcMock, walletMock, "1512");
   });
 
   afterEach(() => {
@@ -416,7 +416,7 @@ describe("Test DisputeClient", () => {
   describe("disputeAssertion", () => {
     beforeEach(() => {
       rpcMock.readContract = sinon.stub().resolves({ bond: 0n });
-      disputeClient = new DisputeClient(rpcMock, walletMock, "1315");
+      disputeClient = new DisputeClient(rpcMock, walletMock, "1512");
       (disputeClient.arbitrationPolicyUmaClient as any).address = mockAddress;
     });
 
