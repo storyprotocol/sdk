@@ -477,7 +477,7 @@ export class GroupClient {
   public async addIpsToGroup({
     groupIpId,
     ipIds,
-    maxAllowedRewardShare,
+    maxAllowedRewardSharePercentage,
     txOptions,
   }: AddIpRequest): Promise<TransactionResponse> {
     try {
@@ -485,7 +485,10 @@ export class GroupClient {
         groupIpId: validateAddress(groupIpId),
         ipIds: validateAddresses(ipIds),
         maxAllowedRewardShare: BigInt(
-          getRevenueShare(maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+          getRevenueShare(
+            maxAllowedRewardSharePercentage || 100,
+            RevShareType.MAX_ALLOWED_REWARD_SHARE,
+          ),
         ),
       };
       const txHash = await this.groupingModuleClient.addIp(addIpParam);

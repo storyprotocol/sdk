@@ -686,13 +686,13 @@ describe("Test IpAssetClient", () => {
   });
 
   describe("Test groupClient.addIp", async () => {
-    it("should throw error when given ipId is wrong address", async () => {
+    it("should throw error when call fail", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "addIp").rejects(new Error("rpc error"));
       const result = groupClient.addIpsToGroup({
         groupIpId: mockAddress,
-        ipIds: ["0x"],
-        maxAllowedRewardShare: 5,
+        ipIds: [mockAddress],
       });
-      await expect(result).to.be.rejectedWith("Failed to add IP to group: Invalid address: 0x.");
+      await expect(result).to.be.rejectedWith("Failed to add IP to group: rpc error");
     });
 
     it("should return txHash when call addIp successfully", async () => {
@@ -700,7 +700,7 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardSharePercentage: 5,
         txOptions: {
           waitForTransaction: true,
         },

@@ -278,7 +278,7 @@ describe("Group Functions", () => {
       const result = await client.groupClient.addIpsToGroup({
         groupIpId: groupId,
         ipIds: ipIds!,
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardSharePercentage: 5,
         txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
