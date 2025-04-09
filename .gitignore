@@ -38,3 +38,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# Integration Test Reports
+report-*.txt
