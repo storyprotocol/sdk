@@ -1,9 +1,22 @@
-import { Address, Hash, Hex, TransactionReceipt } from "viem";
+import { Address, Hash, Hex, TransactionReceipt, WaitForTransactionReceiptParameters } from "viem";
 
 import { TxOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
-import { EncodedTxData } from "../../abi/generated";
+import {
+  DerivativeWorkflowsClient,
+  DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
+  DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
+  EncodedTxData,
+  LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
+  LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
+  RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
+  RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
+} from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
+import { Erc20Spender } from "../utils/wip";
 
 export type DerivativeDataInput = {
   parentIpIds: Address[];
@@ -310,7 +323,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
 };
 export type DistributeRoyaltyTokens = {
   ipId: Address;
-  deadline: bigint;
+  deadline?: bigint | number | string;
   ipRoyaltyVault: Address;
   royaltyShares: RoyaltyShare[];
   totalAmount: number;
@@ -443,4 +456,64 @@ export type GeneratePrefixRegisterSignatureRequest = {
   totalAmount?: number;
   state?: Hex;
   encodeData?: Hex;
+};
+
+export type MintSpgNftRegistrationRequest = Omit<
+  | MintAndRegisterIpAndMakeDerivativeRequest
+  | MintAndRegisterIpAssetWithPilTermsRequest
+  | MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest
+  | MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  "txOptions" | "wipOptions"
+>;
+export type RegisterRegistrationRequest = Omit<
+  | RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest
+  | RegisterIpAndAttachPilTermsRequest
+  | RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest
+  | RegisterIpAndMakeDerivativeRequest,
+  "txOptions" | "wipOptions"
+>;
+
+export type IpRegistrationWorkflowRequest =
+  | MintSpgNftRegistrationRequest
+  | RegisterRegistrationRequest
+  | DistributeRoyaltyTokens;
+
+export type TransformIpRegistrationWorkflowRequest =
+  | RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest
+  | LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest
+  | RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest
+  | DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest
+  | RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
+  | LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest
+  | RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
+  | DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
+  | RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest;
+
+export type BatchRegisterIpWithOptions = WithWipOptions & {
+  requests: IpRegistrationWorkflowRequest[];
+  txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
+};
+export type BatchRegisterIpWithOptionsResponse = {
+  results: {
+    txHash: Hex;
+    ipIds: Address[];
+  }[];
+};
+
+export type BatchRegistrationMethodsConfig = {
+  workflowClient?: DerivativeWorkflowsClient;
+  spenders: Erc20Spender[];
+  totalFees: bigint;
+  callData: EncodedTxData[];
+};
+
+export type ProcessMintAndRegisterRequest = WithWipOptions & {
+  requests: Omit<
+    | MintAndRegisterIpAndMakeDerivativeRequest
+    | MintAndRegisterIpAssetWithPilTermsRequest
+    | MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest
+    | MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+    "txOptions" | "wipOptions"
+  >[];
+  txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
 };
