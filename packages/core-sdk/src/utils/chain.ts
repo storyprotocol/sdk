@@ -17,7 +17,7 @@ export const aeneid = defineChain({
   },
   contracts: {
     multicall3: {
-      address: "0xca11bde05977b3631167028862be2a173976ca11",
+      address: "0x9A373b27dcB4cbB35017ff1290d44A36e25689e9",
       blockCreated: 1792,
     },
   },

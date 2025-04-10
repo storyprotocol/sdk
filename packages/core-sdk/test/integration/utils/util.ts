@@ -9,7 +9,7 @@ import {
 } from "../../../src/abi/generated";
 export const RPC = "https://rpc.devnet.storyrpc.io";
 export const aeneid = 1512;
-export const mockERC721 = "0xa1119092ea911202E0a65B743a13AE28C5CF2f21";
+export const mockERC721 = "0xBD961c2894B3E39af256CE6C6A99F246c6C0991C";
 export const licenseToken = licenseTokenAddress[aeneid];
 export const spgNftBeacon = spgnftBeaconAddress[aeneid];
 export const TEST_WALLET_ADDRESS = process.env.TEST_WALLET_ADDRESS! as Address;

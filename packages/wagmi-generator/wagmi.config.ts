@@ -191,7 +191,7 @@ export default defineConfig(async () => {
     {
       name: "ERC20",
       address: {
-        [aeneidChainId]: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
+        [aeneidChainId]: "0x688abA77b2daA886c0aF029961Dc5fd219cEc3f6",
         [mainnetChainId]: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
       },
     },
@@ -205,7 +205,7 @@ export default defineConfig(async () => {
     {
       name: "Multicall3",
       address: {
-        [aeneidChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
+        [aeneidChainId]: "0x9A373b27dcB4cbB35017ff1290d44A36e25689e9",
         [mainnetChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
       },
     },

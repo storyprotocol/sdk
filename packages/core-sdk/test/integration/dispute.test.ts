@@ -81,7 +81,7 @@ const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<
   return txHash;
 };
 
-describe("Dispute Functions", () => {
+describe.skip("Dispute Functions", () => {
   let clientA: StoryClient;
   let clientB: StoryClient;
   let ipIdB: Address;

@@ -2934,7 +2934,7 @@ export const erc20Abi = [
 
 */
 export const erc20Address = {
-  1512: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
+  1512: "0x688abA77b2daA886c0aF029961Dc5fd219cEc3f6",
   1514: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
 } as const;
 
@@ -10399,7 +10399,7 @@ export const multicall3Abi = [
 
 */
 export const multicall3Address = {
-  1512: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  1512: "0x9A373b27dcB4cbB35017ff1290d44A36e25689e9",
   1514: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as const;
 
