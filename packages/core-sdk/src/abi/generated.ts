@@ -10399,7 +10399,7 @@ export const multicall3Abi = [
 
 */
 export const multicall3Address = {
-  1512: "0x9A373b27dcB4cbB35017ff1290d44A36e25689e9",
+  1512: "0xfa9576089ef0528a10da54118f96D3090c6fc7E3",
   1514: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as const;
 

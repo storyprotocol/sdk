@@ -205,7 +205,7 @@ export default defineConfig(async () => {
     {
       name: "Multicall3",
       address: {
-        [aeneidChainId]: "0x9A373b27dcB4cbB35017ff1290d44A36e25689e9",
+        [aeneidChainId]: "0xfa9576089ef0528a10da54118f96D3090c6fc7E3",
         [mainnetChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
       },
     },
