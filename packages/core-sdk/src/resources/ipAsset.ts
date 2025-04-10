@@ -1603,7 +1603,7 @@ export class IPAssetClient {
     totalAmount,
     state,
     encodeData,
-  }: GeneratePrefixRegisterSignatureRequest) {
+  }: GeneratePrefixRegisterSignatureRequest): Promise<Hex> {
     const baseConfig = {
       ipId: ipIdAddress,
       deadline,
