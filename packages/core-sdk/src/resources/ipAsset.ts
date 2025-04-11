@@ -1284,48 +1284,49 @@ export class IPAssetClient {
     } else if ("nftContract" in request && "tokenId" in request) {
       return this.handleNftRequest<T>(request);
     } else if ("ipRoyaltyVault" in request) {
-      //distributeRoyaltyTokens request
-      const { ipId, deadline, ipRoyaltyVault, totalAmount } = request;
-      const calculatedDeadline = await this.getCalculatedDeadline(deadline);
-      const ipRoyaltyVaultImpl = new IpRoyaltyVaultImplReadOnlyClient(
-        this.rpcClient,
-        ipRoyaltyVault,
-      );
-      const balance = await ipRoyaltyVaultImpl.balanceOf({ account: ipId });
-      if (BigInt(balance) < BigInt(totalAmount)) {
-        throw new Error(
-          `The balance of the IP account in the IP Royalty Vault is insufficient to distribute the royalty tokens.`,
-        );
-      }
-      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
-      const { result: state } = await ipAccount.state();
-      const signatureApproveRoyaltyTokens = await this.generateOperationSignature({
-        ipIdAddress: ipId,
-        methodType: SignatureMethodType.DISTRIBUTE_ROYALTY_TOKENS,
-        deadline: calculatedDeadline,
-        ipRoyaltyVault: ipRoyaltyVault,
-        totalAmount: totalAmount,
-        state,
-        encodeData: encodeFunctionData({
-          abi: ipRoyaltyVaultImplAbi,
-          functionName: "approve",
-          args: [this.royaltyTokenDistributionWorkflowsClient.address, BigInt(totalAmount)],
-        }),
-      });
-      return {
-        ipId,
-        royaltyShares: request.royaltyShares,
-        sigApproveRoyaltyTokens: {
-          signer: this.wallet.account!.address,
-          deadline: calculatedDeadline,
-          signature: signatureApproveRoyaltyTokens,
-        },
-      } as T;
+      return this.handleDistributeRoyaltyTokensRequest<T>(request);
     }
 
     throw new Error("Invalid registration request type");
   }
 
+  private async handleDistributeRoyaltyTokensRequest<
+    T extends TransformIpRegistrationWorkflowRequest,
+  >(request: DistributeRoyaltyTokens): Promise<T> {
+    const { ipId, deadline, ipRoyaltyVault, totalAmount } = request;
+    const calculatedDeadline = await this.getCalculatedDeadline(deadline);
+    const ipRoyaltyVaultImpl = new IpRoyaltyVaultImplReadOnlyClient(this.rpcClient, ipRoyaltyVault);
+    const balance = await ipRoyaltyVaultImpl.balanceOf({ account: ipId });
+    if (BigInt(balance) < BigInt(totalAmount)) {
+      throw new Error(
+        `The balance of the IP account in the IP Royalty Vault is insufficient to distribute the royalty tokens.`,
+      );
+    }
+    const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
+    const { result: state } = await ipAccount.state();
+    const signatureApproveRoyaltyTokens = await this.generateOperationSignature({
+      ipIdAddress: ipId,
+      methodType: SignatureMethodType.DISTRIBUTE_ROYALTY_TOKENS,
+      deadline: calculatedDeadline,
+      ipRoyaltyVault: ipRoyaltyVault,
+      totalAmount: totalAmount,
+      state,
+      encodeData: encodeFunctionData({
+        abi: ipRoyaltyVaultImplAbi,
+        functionName: "approve",
+        args: [this.royaltyTokenDistributionWorkflowsClient.address, BigInt(totalAmount)],
+      }),
+    });
+    return {
+      ipId,
+      royaltyShares: request.royaltyShares,
+      sigApproveRoyaltyTokens: {
+        signer: this.wallet.account!.address,
+        deadline: calculatedDeadline,
+        signature: signatureApproveRoyaltyTokens,
+      },
+    } as T;
+  }
   private async handleSpgNftRequest<T extends TransformIpRegistrationWorkflowRequest>(
     request: MintSpgNftRegistrationRequest,
   ): Promise<T> {
