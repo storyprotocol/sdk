@@ -7,8 +7,10 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   EncodedTxData,
+  LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
+  RoyaltyTokenDistributionWorkflowsClient,
   RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
   RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
   RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
@@ -488,6 +490,18 @@ export type TransformIpRegistrationWorkflowRequest =
   | RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
   | DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
   | RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest;
+
+export type TransformIpRegistrationWorkflowResponse<
+  T extends TransformIpRegistrationWorkflowRequest,
+> = {
+  transformRequest: T;
+  workflowClient?:
+    | RoyaltyTokenDistributionWorkflowsClient
+    | LicenseAttachmentWorkflowsClient
+    | DerivativeWorkflowsClient; // if use multicall3, it undefined
+  spenders?: Erc20Spender[];
+  totalFees?: bigint;
+};
 
 export type BatchRegisterIpWithOptions = WithWipOptions & {
   requests: IpRegistrationWorkflowRequest[];

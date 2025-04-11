@@ -361,6 +361,7 @@ export default defineConfig(async () => {
             "registerGroup",
             "IPGroupRegistered",
           ],
+          SPGNFTImpl: ["publicMinting", "mintFeeToken", "mintFee"],
         },
       }),
     ],
