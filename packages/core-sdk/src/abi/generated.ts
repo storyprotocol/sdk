@@ -18746,6 +18746,17 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
 // Contract GroupingModule =============================================================
 
 /**
+ * GroupingModuleAddedIpToGroupEvent
+ *
+ * @param groupId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleAddedIpToGroupEvent = {
+  groupId: Address;
+  ipIds: readonly Address[];
+};
+
+/**
  * GroupingModuleCollectedRoyaltiesToGroupPoolEvent
  *
  * @param groupId address
@@ -18772,12 +18783,36 @@ export type GroupingModuleIpGroupRegisteredEvent = {
 };
 
 /**
+ * GroupingModuleAddIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ * @param maxAllowedRewardShare uint256
+ */
+export type GroupingModuleAddIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
+  maxAllowedRewardShare: bigint;
+};
+
+/**
  * GroupingModuleRegisterGroupRequest
  *
  * @param groupPool address
  */
 export type GroupingModuleRegisterGroupRequest = {
   groupPool: Address;
+};
+
+/**
+ * GroupingModuleRemoveIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleRemoveIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
 };
 
 /**
@@ -18790,6 +18825,47 @@ export class GroupingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(groupingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event AddedIpToGroup for contract GroupingModule
+   */
+  public watchAddedIpToGroupEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleAddedIpToGroupEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "AddedIpToGroup",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event AddedIpToGroup for contract GroupingModule
+   */
+  public parseTxAddedIpToGroupEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleAddedIpToGroupEvent> {
+    const targetLogs: Array<GroupingModuleAddedIpToGroupEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "AddedIpToGroup",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "AddedIpToGroup") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**
@@ -18887,6 +18963,40 @@ export class GroupingModuleClient extends GroupingModuleEventClient {
   }
 
   /**
+   * method addIp for contract GroupingModule
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async addIp(request: GroupingModuleAddIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "addIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method addIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleAddIpRequest
+   * @return EncodedTxData
+   */
+  public addIpEncode(request: GroupingModuleAddIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "addIp",
+        args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
+      }),
+    };
+  }
+
+  /**
    * method registerGroup for contract GroupingModule
    *
    * @param request GroupingModuleRegisterGroupRequest
@@ -18918,6 +19028,40 @@ export class GroupingModuleClient extends GroupingModuleEventClient {
         abi: groupingModuleAbi,
         functionName: "registerGroup",
         args: [request.groupPool],
+      }),
+    };
+  }
+
+  /**
+   * method removeIp for contract GroupingModule
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async removeIp(request: GroupingModuleRemoveIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "removeIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method removeIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return EncodedTxData
+   */
+  public removeIpEncode(request: GroupingModuleRemoveIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "removeIp",
+        args: [request.groupIpId, request.ipIds],
       }),
     };
   }
