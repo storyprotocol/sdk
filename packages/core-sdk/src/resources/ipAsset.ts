@@ -1792,197 +1792,184 @@ export class IPAssetClient {
       wallet: this.wallet as WalletClient,
       chainId: chain[this.chainId],
     };
-    let signatureRequest: PermissionSignatureRequest | SignatureRequest | undefined;
-
-    switch (methodType) {
-      case SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_AND_DEPLOY_ROYALTY_VAULT:
-        signatureRequest = {
-          ...baseConfig,
-          permissions: [
-            {
-              ipId: ipIdAddress,
-              signer: validateAddress(this.royaltyTokenDistributionWorkflowsClient.address),
-              to: validateAddress(this.coreMetadataModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.royaltyTokenDistributionWorkflowsClient.address,
-              to: validateAddress(this.licensingModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
-            },
-          ],
-        };
-        break;
-      case SignatureMethodType.DISTRIBUTE_ROYALTY_TOKENS:
-        if (!ipRoyaltyVault || !state || !totalAmount || !encodeData) {
-          throw new Error(
-            "ipRoyaltyVault, state, totalAmount, and encodeData are required for distributing royalty tokens.",
-          );
-        }
-        signatureRequest = {
-          ...baseConfig,
-          verifyingContract: ipIdAddress,
-          deadline,
-          state: state,
-          to: ipRoyaltyVault,
-          encodeData,
-        };
-        break;
-      case SignatureMethodType.REGISTER_DERIVATIVE_IP:
-        signatureRequest = {
-          ...baseConfig,
-          permissions: [
-            {
-              ipId: ipIdAddress,
-              signer: validateAddress(this.derivativeWorkflowsClient.address),
-              to: validateAddress(this.coreMetadataModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.derivativeWorkflowsClient.address,
-              to: validateAddress(this.licensingModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
-            },
-          ],
-        };
-        break;
-      case SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS_AND_DEPLOY_ROYALTY_VAULT:
-        signatureRequest = {
-          ...baseConfig,
-          permissions: [
-            {
-              ipId: ipIdAddress,
-              signer: validateAddress(this.royaltyTokenDistributionWorkflowsClient.address),
-              to: validateAddress(this.coreMetadataModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.royaltyTokenDistributionWorkflowsClient.address,
-              to: validateAddress(this.licensingModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.royaltyTokenDistributionWorkflowsClient.address,
-              to: this.licensingModuleClient.address,
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
-            },
-          ],
-        };
-        break;
-      case SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS:
-        signatureRequest = {
-          ...baseConfig,
-          permissions: [
-            {
-              ipId: ipIdAddress,
-              signer: validateAddress(this.licenseAttachmentWorkflowsClient.address),
-              to: validateAddress(this.coreMetadataModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.licenseAttachmentWorkflowsClient.address,
-              to: validateAddress(this.licensingModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.licenseAttachmentWorkflowsClient.address,
-              to: this.licensingModuleClient.address,
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
-            },
-          ],
-        };
-        break;
-      case SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_WITH_LICENSE_TOKENS:
-        signatureRequest = {
-          ...baseConfig,
-          permissions: [
-            {
-              ipId: ipIdAddress,
-              signer: validateAddress(this.derivativeWorkflowsClient.address),
-              to: validateAddress(this.coreMetadataModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.derivativeWorkflowsClient.address,
-              to: validateAddress(this.licensingModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "registerDerivativeWithLicenseTokens"),
-            },
-          ],
-        };
-        break;
-      case SignatureMethodType.REGISTER_PIL_TERMS_AND_ATTACH:
-        if (!state) {
-          throw new Error("State is required for registering PIL terms and attaching.");
-        }
-        signatureRequest = {
-          ...baseConfig,
-          state,
-          permissions: [
-            {
-              ipId: ipIdAddress,
-              signer: validateAddress(this.licenseAttachmentWorkflowsClient.address),
-              to: validateAddress(this.licensingModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
-            },
-            {
-              ipId: ipIdAddress,
-              signer: this.licenseAttachmentWorkflowsClient.address,
-              to: this.licensingModuleClient.address,
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
-            },
-          ],
-        };
-        break;
-      case SignatureMethodType.REGISTER:
-        signatureRequest = {
-          ...baseConfig,
-          permissions: [
-            {
-              ipId: ipIdAddress,
-              signer: validateAddress(this.registrationWorkflowsClient.address),
-              to: validateAddress(this.coreMetadataModuleClient.address),
-              permission: AccessPermission.ALLOW,
-              func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
-            },
-          ],
-        };
-        break;
-      case SignatureMethodType.BATCH_REGISTER_DERIVATIVE:
-        if (!state || !encodeData) {
-          throw new Error("State and encodeData are required for batch registering derivative.");
-        }
-        signatureRequest = {
-          ...baseConfig,
-          state,
-          to: this.licensingModuleClient.address,
-          encodeData,
-          verifyingContract: ipIdAddress,
-        };
-        break;
-      default:
-        throw new Error(`Method type of ${methodType as string} is not supported.`);
+    if (
+      methodType === SignatureMethodType.DISTRIBUTE_ROYALTY_TOKENS &&
+      (!ipRoyaltyVault || !state || !totalAmount || !encodeData)
+    ) {
+      throw new Error(
+        "ipRoyaltyVault, state, totalAmount, and encodeData are required for distributing royalty tokens.",
+      );
+    } else if (methodType === SignatureMethodType.REGISTER_PIL_TERMS_AND_ATTACH && !state) {
+      throw new Error("State is required for registering PIL terms and attaching.");
+    } else if (
+      methodType === SignatureMethodType.BATCH_REGISTER_DERIVATIVE &&
+      (!state || !encodeData)
+    ) {
+      throw new Error("State and encodeData are required for batch registering derivative.");
     }
+
+    const signatureConfigs: Record<
+      SignatureMethodType,
+      PermissionSignatureRequest | SignatureRequest
+    > = {
+      [SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_AND_DEPLOY_ROYALTY_VAULT]: {
+        ...baseConfig,
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: validateAddress(this.royaltyTokenDistributionWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.royaltyTokenDistributionWorkflowsClient.address,
+            to: validateAddress(this.licensingModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
+          },
+        ],
+      },
+      [SignatureMethodType.DISTRIBUTE_ROYALTY_TOKENS]: {
+        ...baseConfig,
+        verifyingContract: ipIdAddress,
+        deadline,
+        state: state!,
+        to: ipRoyaltyVault!,
+        encodeData: encodeData!,
+      },
+      [SignatureMethodType.REGISTER_DERIVATIVE_IP]: {
+        ...baseConfig,
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: validateAddress(this.derivativeWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.derivativeWorkflowsClient.address,
+            to: validateAddress(this.licensingModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "registerDerivative"),
+          },
+        ],
+      },
+      [SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS_AND_DEPLOY_ROYALTY_VAULT]: {
+        ...baseConfig,
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: validateAddress(this.royaltyTokenDistributionWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.royaltyTokenDistributionWorkflowsClient.address,
+            to: validateAddress(this.licensingModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.royaltyTokenDistributionWorkflowsClient.address,
+            to: this.licensingModuleClient.address,
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+          },
+        ],
+      },
+      [SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS]: {
+        ...baseConfig,
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: validateAddress(this.licenseAttachmentWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.licenseAttachmentWorkflowsClient.address,
+            to: validateAddress(this.licensingModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.licenseAttachmentWorkflowsClient.address,
+            to: this.licensingModuleClient.address,
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+          },
+        ],
+      },
+      [SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_WITH_LICENSE_TOKENS]: {
+        ...baseConfig,
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: validateAddress(this.derivativeWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.derivativeWorkflowsClient.address,
+            to: validateAddress(this.licensingModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "registerDerivativeWithLicenseTokens"),
+          },
+        ],
+      },
+      [SignatureMethodType.REGISTER_PIL_TERMS_AND_ATTACH]: {
+        ...baseConfig,
+        state: state!,
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: validateAddress(this.licenseAttachmentWorkflowsClient.address),
+            to: validateAddress(this.licensingModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "attachLicenseTerms"),
+          },
+          {
+            ipId: ipIdAddress,
+            signer: this.licenseAttachmentWorkflowsClient.address,
+            to: this.licensingModuleClient.address,
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(licensingModuleAbi, "setLicensingConfig"),
+          },
+        ],
+      },
+      [SignatureMethodType.REGISTER]: {
+        ...baseConfig,
+        permissions: [
+          {
+            ipId: ipIdAddress,
+            signer: validateAddress(this.registrationWorkflowsClient.address),
+            to: validateAddress(this.coreMetadataModuleClient.address),
+            permission: AccessPermission.ALLOW,
+            func: getFunctionSignature(coreMetadataModuleAbi, "setAll"),
+          },
+        ],
+      },
+      [SignatureMethodType.BATCH_REGISTER_DERIVATIVE]: {
+        ...baseConfig,
+        state: state!,
+        to: this.licensingModuleClient.address,
+        encodeData: encodeData!,
+        verifyingContract: ipIdAddress,
+      },
+    };
+    const signatureRequest = signatureConfigs[methodType];
     if (
       (methodType === SignatureMethodType.DISTRIBUTE_ROYALTY_TOKENS ||
         methodType === SignatureMethodType.BATCH_REGISTER_DERIVATIVE) &&
