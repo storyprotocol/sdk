@@ -13,7 +13,7 @@ import {
   Address,
 } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
+import { IpAssetRegistryClient, LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
 import { LicensingConfigInput } from "../../../src/types/common";
 import { DerivativeDataInput } from "../../../src/types/resources/ipAsset";
@@ -222,7 +222,7 @@ describe("Test IpAssetClient", () => {
   describe("Test ipAssetClient.register", async () => {
     it("should return ipId when register given tokenId have registered", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
@@ -237,7 +237,7 @@ describe("Test IpAssetClient", () => {
 
     it("should throw invalid address error when register given deadline is string", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -265,7 +265,7 @@ describe("Test IpAssetClient", () => {
       (ipAssetClient.coreMetadataModuleClient as any).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       const waitForTransaction: boolean = true;
@@ -290,7 +290,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when register given tokenId have no registered", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "register").resolves(txHash);
@@ -305,7 +305,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return ipId and txHash when register a IP and given waitForTransaction of true and tokenId is not registered ", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "register").resolves(txHash);
@@ -335,7 +335,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return ipId and txHash when register a IP given correct args, waitForTransaction is true and metadata", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon.stub(ipAssetClient.registrationWorkflowsClient, "registerIp").resolves(txHash);
@@ -369,7 +369,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return encoded tx data when register a IP given correct args, encodedTxDataOnly is true and metadata", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
@@ -404,7 +404,7 @@ describe("Test IpAssetClient", () => {
 
     it("should throw error when request fails", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "register").throws(new Error("revert error"));
@@ -423,7 +423,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return encoded tx data when register a IP given correct args, encodedTxDataOnly is true and metadata", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
@@ -473,7 +473,7 @@ describe("Test IpAssetClient", () => {
 
     it("should throw parentIpId error when registerDerivative given parentIpId is not registered", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .stub(IpAssetRegistryClient.prototype, "isRegistered")
         .onCall(0)
         .resolves(true)
         .onCall(1)
@@ -556,7 +556,7 @@ describe("Test IpAssetClient", () => {
       }
     });
     it("should throw maxRevenueShare error when registerDerivative given maxRevenueShare is less than royalty percent", async () => {
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100000000,
       });
       sinon
@@ -591,10 +591,10 @@ describe("Test IpAssetClient", () => {
         .onCall(1)
         .resolves(true);
       sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .stub(LicenseRegistryReadOnlyClient.prototype, "hasIpAttachedLicenseTerms")
         .resolves(false);
 
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
 
@@ -625,7 +625,7 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
       sinon.stub(ipAssetClient.licensingModuleClient, "registerDerivative").resolves(txHash);
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
 
@@ -652,7 +652,7 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
       sinon.stub(ipAssetClient.licensingModuleClient, "registerDerivative").resolves(txHash);
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
       // Because registerDerivative doesn't call trigger IPRegistered event, but the `handleRegistrationWithFees`
@@ -688,7 +688,7 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(ipAssetClient.licensingModuleClient, "registerDerivative")
         .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
 
@@ -721,7 +721,7 @@ describe("Test IpAssetClient", () => {
       const registerDerivativeStub = sinon
         .stub(ipAssetClient.licensingModuleClient, "registerDerivative")
         .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
 
@@ -1089,7 +1089,7 @@ describe("Test IpAssetClient", () => {
   describe("Test ipAssetClient.registerDerivativeIp", async () => {
     it("should throw ipId have registered error when registerDerivativeIp given tokenId have registered", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
@@ -1108,16 +1108,16 @@ describe("Test IpAssetClient", () => {
 
     it("should throw not attach error when registerDerivativeIp given licenseTermsIds is not attached parentIpIds", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .stub(IpAssetRegistryClient.prototype, "isRegistered")
         .onFirstCall()
         .resolves(false)
         .onSecondCall()
         .resolves(true);
       sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .stub(LicenseRegistryReadOnlyClient.prototype, "hasIpAttachedLicenseTerms")
         .resolves(false);
 
       try {
@@ -1134,7 +1134,7 @@ describe("Test IpAssetClient", () => {
     });
     it("should return txHash when registerDerivativeIp given correct args", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -1167,7 +1167,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash and ipId when registerDerivativeIp given correct args and waitForTransaction of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -1215,7 +1215,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return encoded tx data when registerDerivativeIp given correct args and encodedTxDataOnly of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -1264,7 +1264,7 @@ describe("Test IpAssetClient", () => {
   describe("Test ipAssetClient.registerIpAndAttachPilTerms", async () => {
     it("should throw ipId have registered error when registerIpAndAttachPilTerms given tokenId have registered", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
@@ -1296,7 +1296,7 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerIpAndAttachPilTerms")
         .resolves(txHash);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -1319,7 +1319,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash and ipId when registerIpAndAttachPilTerms given correct args and waitForTransaction of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -1364,7 +1364,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return encoded tx data when registerIpAndAttachPilTerms given correct args and encodedTxDataOnly of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
@@ -1401,13 +1401,13 @@ describe("Test IpAssetClient", () => {
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .stub(IpAssetRegistryClient.prototype, "isRegistered")
         .onFirstCall()
         .resolves(true)
         .onSecondCall()
         .resolves(false);
       sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .stub(LicenseRegistryReadOnlyClient.prototype, "hasIpAttachedLicenseTerms")
         .resolves(false);
 
       try {
@@ -1425,7 +1425,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when call mintAndRegisterIpAndMakeDerivative given correct args", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -1456,7 +1456,7 @@ describe("Test IpAssetClient", () => {
     });
     it("should return txHash and ipId when call mintAndRegisterIpAndMakeDerivative given correct args and waitForTransaction of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -1505,7 +1505,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return encoded tx data when call mintAndRegisterIpAndMakeDerivative given correct args and encodedTxDataOnly of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -1551,7 +1551,7 @@ describe("Test IpAssetClient", () => {
 
     it("should call with default values when mintAndRegisterIpAndMakeDerivative without providing allowDuplicates, ipMetadata", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -2020,7 +2020,7 @@ describe("Test IpAssetClient", () => {
   describe("Test ipAssetClient.registerIpAndMakeDerivativeWithLicenseTokens", async () => {
     beforeEach(() => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
     });
     it("should throw tokenId error when registerIpAndMakeDerivativeWithLicenseTokens given tokenId is registered", async () => {
@@ -2299,9 +2299,9 @@ describe("Test IpAssetClient", () => {
   describe("Test ipAssetClient.batchMintAndRegisterIpAndMakeDerivative", async () => {
     it("should throw ipId and licenseTerms error when batchMintAndRegisterIpAndMakeDerivative given ipId and licenseTerms is not match", async () => {
       sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
+        .stub(LicenseRegistryReadOnlyClient.prototype, "hasIpAttachedLicenseTerms")
         .resolves(false);
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      sinon.stub(IpAssetRegistryClient.prototype, "isRegistered").resolves(true);
       try {
         await ipAssetClient.batchMintAndRegisterIpAndMakeDerivative({
           args: [
@@ -2333,7 +2333,7 @@ describe("Test IpAssetClient", () => {
         .resolves(txHash);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
@@ -2453,7 +2453,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txhash when call batchRegister given correct args", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon.stub(ipAssetClient.registrationWorkflowsClient, "registerIpEncode").returns({
@@ -2475,7 +2475,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txhash and ipId when call batchRegister given correct args and waitForTransaction of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon.stub(ipAssetClient.registrationWorkflowsClient, "registerIpEncode").returns({
@@ -2618,7 +2618,7 @@ describe("Test IpAssetClient", () => {
   describe("Test ipAssetClient.isRegistered", async () => {
     beforeEach(() => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
     });
     it("should return true if IP asset is registered", async () => {
@@ -2640,7 +2640,7 @@ describe("Test IpAssetClient", () => {
     it("should throw ipId registered error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given ipId is registered", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       try {
         await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
@@ -2766,7 +2766,7 @@ describe("Test IpAssetClient", () => {
     it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(
@@ -2827,7 +2827,7 @@ describe("Test IpAssetClient", () => {
       IpRoyaltyVaultImplReadOnlyClient.prototype.balanceOf = sinon.stub().resolves(100);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(
@@ -2883,7 +2883,7 @@ describe("Test IpAssetClient", () => {
     it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args  and waitForTransaction of true", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(
@@ -2958,7 +2958,7 @@ describe("Test IpAssetClient", () => {
     it("should throw ipId registered error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given ipId is registered", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
@@ -2989,7 +2989,7 @@ describe("Test IpAssetClient", () => {
     });
     it("should throw maxRts error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given maxRts is less than 0", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
@@ -3018,7 +3018,7 @@ describe("Test IpAssetClient", () => {
     });
     it("should throw maxRts error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given maxRts is greater than 100000000", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
@@ -3047,7 +3047,7 @@ describe("Test IpAssetClient", () => {
     });
     it("should throw maxMintingFee error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given maxMintingFee is less than 0", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
@@ -3077,7 +3077,7 @@ describe("Test IpAssetClient", () => {
     it("should throw parentIpIds and licenseTermsIds not match error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given parentIpIds and licenseTermsIds not match", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent")
@@ -3108,7 +3108,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should throw parentIpId not registered error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given parentIpId not registered", async () => {
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      sinon.stub(IpAssetRegistryClient.prototype, "isRegistered").resolves(false);
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -3135,9 +3135,9 @@ describe("Test IpAssetClient", () => {
     });
     it("should throw maxRevenueShare error when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given maxRevenueShare is less than royaltyPercent", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 1000000000,
       });
       sinon
@@ -3173,13 +3173,13 @@ describe("Test IpAssetClient", () => {
     });
     it("should return txHash when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .stub(IpAssetRegistryClient.prototype, "isRegistered")
         .onFirstCall()
         .resolves(true)
         .onSecondCall()
         .resolves(false);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(
@@ -3244,13 +3244,13 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args with waitForTransaction of true", async () => {
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .stub(IpAssetRegistryClient.prototype, "isRegistered")
         .onFirstCall()
         .resolves(true)
         .onSecondCall()
         .resolves(false);
       sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "ipId")
+        .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       sinon
         .stub(

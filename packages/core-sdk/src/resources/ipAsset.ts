@@ -40,7 +40,6 @@ import {
   MintAndRegisterIpAndMakeDerivativeResponse,
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   DistributeRoyaltyTokens,
-  RoyaltyShare,
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
   BatchMintAndRegisterIpAssetWithPilTermsResult,
   IpIdAndTokenId,
@@ -50,14 +49,8 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
-  DerivativeData,
-  DerivativeDataInput,
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
-  LicenseTermsData,
-  LicenseTermsDataInput,
-  TransformIpRegistrationWorkflowRequest,
-  TransformIpRegistrationWorkflowResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -69,7 +62,6 @@ import {
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   IpAccountImplClient,
   IpAssetRegistryClient,
-  IpRoyaltyVaultImplReadOnlyClient,
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
@@ -93,31 +85,29 @@ import {
   SpgnftImplReadOnlyClient,
   WrappedIpClient,
   ipAccountImplAbi,
-  ipRoyaltyVaultImplAbi,
   licensingModuleAbi,
 } from "../abi/generated";
 import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
-import { getDeadline } from "../utils/sign";
 import { LicenseTerms } from "../types/resources/license";
-import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
+import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
-import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import {
-  calculateLicenseWipMintFee,
-  calculateSPGWipMintFee,
-  contractCallWithFees,
-} from "../utils/feeUtils";
+import { calculateSPGWipMintFee, contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
-import { generateOperationSignature, getPublicMinting } from "../utils/batchRegisterHelper";
 import {
-  IpRegistrationWorkflowRequest,
-  MintSpgNftRegistrationRequest,
-  RegisterRegistrationRequest,
-  SignatureMethodType,
-} from "../types/utils/batchRegisterHelper";
+  calculateDerivativeMintingFee,
+  generateOperationSignature,
+  getCalculatedDeadline,
+  getIpIdAddress,
+  getRoyaltyShares,
+  transformRegistrationRequest,
+  validateLicenseTermsData,
+  validateMaxRts,
+  validateDerivativeData,
+} from "../utils/registerHelper";
+import { SignatureMethodType } from "../types/utils/registerHelper";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -182,7 +172,13 @@ export class IPAssetClient {
   public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
     try {
       const tokenId = BigInt(request.tokenId);
-      const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
+      const ipIdAddress = await getIpIdAddress({
+        nftContract: request.nftContract,
+        tokenId,
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         return { ipId: ipIdAddress };
@@ -198,7 +194,7 @@ export class IPAssetClient {
         },
       };
       if (request.ipMetadata) {
-        const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
+        const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
         const signature = await generateOperationSignature({
           ipIdAddress,
           methodType: SignatureMethodType.REGISTER,
@@ -337,7 +333,12 @@ export class IPAssetClient {
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
-      const derivativeData = await this.validateDerivativeData(request);
+      const derivativeData = await validateDerivativeData({
+        derivativeDataInput: request,
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       const object = {
         childIpId: request.childIpId,
         ...derivativeData,
@@ -389,7 +390,7 @@ export class IPAssetClient {
             (error as Error).message.replace("Failed to register derivative:", "").trim(),
           );
         }
-        const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
+        const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
 
         const ipAccount = new IpAccountImplClient(
           this.rpcClient,
@@ -466,7 +467,7 @@ export class IPAssetClient {
         royaltyContext: zeroAddress,
         maxRts: Number(request.maxRts),
       };
-      this.validateMaxRts(req.maxRts);
+      validateMaxRts(req.maxRts);
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
@@ -505,10 +506,18 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      const { licenseTerms } = await this.validateLicenseTermsData(request.licenseTermsData);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.rpcClient,
+      );
       const { transformRequest } =
-        await this.transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
-          request,
+        await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
+          {
+            request,
+            rpcClient: this.rpcClient,
+            wallet: this.wallet,
+            chainId: this.chainId,
+          },
         );
 
       const encodedTxData =
@@ -610,15 +619,29 @@ export class IPAssetClient {
   ): Promise<RegisterIpAndAttachPilTermsResponse> {
     try {
       request.tokenId = BigInt(request.tokenId);
-      const ipIdAddress = await this.getIpIdAddress(request.nftContract, request.tokenId);
+      const ipIdAddress = await getIpIdAddress({
+        nftContract: request.nftContract,
+        tokenId: request.tokenId,
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
-      const { licenseTerms } = await this.validateLicenseTermsData(request.licenseTermsData);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.rpcClient,
+      );
       const { transformRequest } =
-        await this.transformRegistrationRequest<LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest>(
-          request,
+        await transformRegistrationRequest<LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest>(
+          {
+            request,
+            rpcClient: this.rpcClient,
+            wallet: this.wallet,
+            chainId: this.chainId,
+          },
         );
       if (request.txOptions?.encodedTxDataOnly) {
         return {
@@ -659,15 +682,24 @@ export class IPAssetClient {
   ): Promise<RegisterIpAndMakeDerivativeResponse> {
     try {
       const tokenId = BigInt(request.tokenId);
-      const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
+      const ipIdAddress = await getIpIdAddress({
+        nftContract: request.nftContract,
+        tokenId,
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
       }
       const { transformRequest } =
-        await this.transformRegistrationRequest<DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest>(
+        await transformRegistrationRequest<DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest>({
           request,
-        );
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          chainId: this.chainId,
+        });
       const encodedTxData =
         this.derivativeWorkflowsClient.registerIpAndMakeDerivativeEncode(transformRequest);
       if (request.txOptions?.encodedTxDataOnly) {
@@ -703,8 +735,13 @@ export class IPAssetClient {
     try {
       const spgNftContract = validateAddress(request.spgNftContract);
       const { transformRequest } =
-        await this.transformRegistrationRequest<DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest>(
-          request,
+        await transformRegistrationRequest<DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest>(
+          {
+            request,
+            rpcClient: this.rpcClient,
+            wallet: this.wallet,
+            chainId: this.chainId,
+          },
         );
       const encodedTxData =
         this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeEncode(transformRequest);
@@ -818,10 +855,11 @@ export class IPAssetClient {
       if (!isRegistered) {
         throw new Error(`The IP with id ${ipId} is not registered.`);
       }
-      const { licenseTerms, licenseTermsData } = await this.validateLicenseTermsData(
+      const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
         request.licenseTermsData,
+        this.rpcClient,
       );
-      const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
+      const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
       const { result: state } = await ipAccount.state();
       const signature = await generateOperationSignature({
@@ -886,7 +924,7 @@ export class IPAssetClient {
           maxRts: Number(request.maxRts),
           allowDuplicates: request.allowDuplicates || true,
         };
-      this.validateMaxRts(object.maxRts);
+      validateMaxRts(object.maxRts);
 
       const encodedTxData =
         this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
@@ -928,13 +966,19 @@ export class IPAssetClient {
   ): Promise<RegisterIpResponse> {
     try {
       const tokenId = BigInt(request.tokenId);
-      const ipIdAddress = await this.getIpIdAddress(request.nftContract, tokenId);
+      const ipIdAddress = await getIpIdAddress({
+        nftContract: request.nftContract,
+        tokenId,
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${tokenId} is already registered as IP.`);
       }
       const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
-      const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
+      const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const signature = await generateOperationSignature({
         ipIdAddress,
         methodType: SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_WITH_LICENSE_TOKENS,
@@ -955,7 +999,7 @@ export class IPAssetClient {
         },
         maxRts: Number(request.maxRts),
       };
-      this.validateMaxRts(object.maxRts);
+      validateMaxRts(object.maxRts);
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
@@ -992,20 +1036,31 @@ export class IPAssetClient {
     request: RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
     try {
-      const { royaltyShares, totalAmount } = this.getRoyaltyShares(request.royaltyShares);
-      const { licenseTerms } = await this.validateLicenseTermsData(request.licenseTermsData);
-      const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
-      const ipIdAddress = await this.getIpIdAddress(
-        validateAddress(request.nftContract),
-        request.tokenId,
+      const { royaltyShares, totalAmount } = getRoyaltyShares(request.royaltyShares);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.rpcClient,
       );
+      const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
+      const ipIdAddress = await getIpIdAddress({
+        nftContract: validateAddress(request.nftContract),
+        tokenId: BigInt(request.tokenId),
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
       const { transformRequest } =
-        await this.transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest>(
-          request,
+        await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest>(
+          {
+            request,
+            rpcClient: this.rpcClient,
+            wallet: this.wallet,
+            chainId: this.chainId,
+          },
         );
       const registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash =
         await this.royaltyTokenDistributionWorkflowsClient.registerIpAndAttachPilTermsAndDeployRoyaltyVault(
@@ -1057,15 +1112,23 @@ export class IPAssetClient {
     request: RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
     try {
-      const ipIdAddress = await this.getIpIdAddress(
-        validateAddress(request.nftContract),
-        request.tokenId,
-      );
+      const ipIdAddress = await getIpIdAddress({
+        nftContract: validateAddress(request.nftContract),
+        tokenId: BigInt(request.tokenId),
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       const { transformRequest } =
-        await this.transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest>(
-          request,
+        await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest>(
+          {
+            request,
+            rpcClient: this.rpcClient,
+            wallet: this.wallet,
+            chainId: this.chainId,
+          },
         );
-      const { royaltyShares, totalAmount } = this.getRoyaltyShares(request.royaltyShares);
+      const { royaltyShares, totalAmount } = getRoyaltyShares(request.royaltyShares);
       const isRegistered = await this.isRegistered(ipIdAddress);
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
@@ -1136,10 +1199,18 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
     try {
-      const { licenseTerms } = await this.validateLicenseTermsData(request.licenseTermsData);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.rpcClient,
+      );
       const { transformRequest } =
-        await this.transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest>(
-          request,
+        await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest>(
+          {
+            request,
+            rpcClient: this.rpcClient,
+            wallet: this.wallet,
+            chainId: this.chainId,
+          },
         );
       const encodedTxData =
         this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensEncode(
@@ -1189,8 +1260,13 @@ export class IPAssetClient {
   ): Promise<MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse> {
     try {
       const { transformRequest } =
-        await this.transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest>(
-          request,
+        await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest>(
+          {
+            request,
+            rpcClient: this.rpcClient,
+            wallet: this.wallet,
+            chainId: this.chainId,
+          },
         );
 
       const encodedTxData =
@@ -1219,31 +1295,16 @@ export class IPAssetClient {
       );
     }
   }
-  private getRoyaltyShares(royaltyShares: RoyaltyShare[]) {
-    let actualTotal = 0;
-    let sum = 0;
-    const shares = royaltyShares.map((share) => {
-      if (share.percentage <= 0) {
-        throw new Error("The percentage of the royalty shares must be greater than 0.");
-      }
-      if (share.percentage > 100) {
-        throw new Error("The percentage of the royalty shares must be less than or equal to 100.");
-      }
-      sum += share.percentage;
-      if (sum > 100) {
-        throw new Error("The sum of the royalty shares cannot exceeds 100.");
-      }
-      const value = (share.percentage / 100) * royaltySharesTotalSupply;
-      actualTotal += value;
-      return { ...share, percentage: value };
-    });
-    return { royaltyShares: shares, totalAmount: actualTotal } as const;
-  }
 
   private async distributeRoyaltyTokens(request: DistributeRoyaltyTokens): Promise<Hex> {
     const { transformRequest } =
-      await this.transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
-        request,
+      await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
+        {
+          request,
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          chainId: this.chainId,
+        },
       );
     const txHash = await this.royaltyTokenDistributionWorkflowsClient.distributeRoyaltyTokens(
       transformRequest,
@@ -1256,17 +1317,6 @@ export class IPAssetClient {
       return txHash;
     }
     return txHash;
-  }
-  private async getIpIdAddress(
-    nftContract: Address,
-    tokenId: bigint | string | number,
-  ): Promise<Address> {
-    const ipId = await this.ipAssetRegistryClient.ipId({
-      chainId: BigInt(chain[this.chainId]),
-      tokenContract: validateAddress(nftContract),
-      tokenId: BigInt(tokenId),
-    });
-    return ipId;
   }
 
   public async isRegistered(ipId: Hex): Promise<boolean> {
@@ -1282,287 +1332,6 @@ export class IPAssetClient {
       licenseTermsIds.push(licenseRes.selectedLicenseTermsId);
     }
     return licenseTermsIds;
-  }
-
-  private async transformRegistrationRequest<T extends TransformIpRegistrationWorkflowRequest>(
-    request: IpRegistrationWorkflowRequest,
-  ): Promise<TransformIpRegistrationWorkflowResponse<T>> {
-    if ("spgNftContract" in request) {
-      return this.handleSpgNftRequest<T>(request);
-    } else if ("nftContract" in request && "tokenId" in request) {
-      return this.handleNftRequest<T>(request);
-    } else if ("ipRoyaltyVault" in request) {
-      return this.handleDistributeRoyaltyTokensRequest<T>(request);
-    }
-
-    throw new Error("Invalid registration request type");
-  }
-
-  private async handleDistributeRoyaltyTokensRequest<
-    T extends TransformIpRegistrationWorkflowRequest,
-  >(request: DistributeRoyaltyTokens): Promise<TransformIpRegistrationWorkflowResponse<T>> {
-    const { ipId, deadline, ipRoyaltyVault, totalAmount } = request;
-    const calculatedDeadline = await this.getCalculatedDeadline(deadline);
-    const ipRoyaltyVaultImpl = new IpRoyaltyVaultImplReadOnlyClient(this.rpcClient, ipRoyaltyVault);
-    const balance = await ipRoyaltyVaultImpl.balanceOf({ account: ipId });
-    if (BigInt(balance) < BigInt(totalAmount)) {
-      throw new Error(
-        `The balance of the IP account in the IP Royalty Vault is insufficient to distribute the royalty tokens.`,
-      );
-    }
-    const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, validateAddress(ipId));
-    const { result: state } = await ipAccount.state();
-    const signatureApproveRoyaltyTokens = await generateOperationSignature({
-      ipIdAddress: ipId,
-      methodType: SignatureMethodType.DISTRIBUTE_ROYALTY_TOKENS,
-      deadline: calculatedDeadline,
-      ipRoyaltyVault: ipRoyaltyVault,
-      totalAmount: totalAmount,
-      state,
-      encodeData: encodeFunctionData({
-        abi: ipRoyaltyVaultImplAbi,
-        functionName: "approve",
-        args: [this.royaltyTokenDistributionWorkflowsClient.address, BigInt(totalAmount)],
-      }),
-      wallet: this.wallet,
-      chainId: this.chainId,
-    });
-    return {
-      transformRequest: {
-        ipId,
-        royaltyShares: request.royaltyShares,
-        sigApproveRoyaltyTokens: {
-          signer: this.wallet.account!.address,
-          deadline: calculatedDeadline,
-          signature: signatureApproveRoyaltyTokens,
-        },
-      },
-      workflowClient: this.royaltyTokenDistributionWorkflowsClient,
-    } as TransformIpRegistrationWorkflowResponse<T>;
-  }
-  private async handleSpgNftRequest<T extends TransformIpRegistrationWorkflowRequest>(
-    request: MintSpgNftRegistrationRequest,
-  ): Promise<TransformIpRegistrationWorkflowResponse<T>> {
-    const isPublicMinting = await getPublicMinting(request.spgNftContract, this.rpcClient);
-    const nftMintFee = await calculateSPGWipMintFee(
-      new SpgnftImplReadOnlyClient(this.rpcClient, request.spgNftContract),
-    );
-    const baseRequest = {
-      spgNftContract: validateAddress(request.spgNftContract),
-      recipient: validateAddress(request.recipient || this.walletAddress),
-      ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
-      allowDuplicates: request.allowDuplicates ?? true,
-    };
-    if ("licenseTermsData" in request) {
-      const { licenseTermsData } = await this.validateLicenseTermsData(
-        request.licenseTermsData as LicenseTermsDataInput[],
-      );
-      const requestWithTerms = { ...baseRequest, licenseTermsData };
-
-      if ("royaltyShares" in request) {
-        const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares as RoyaltyShare[]);
-        // mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens request
-        return {
-          transformRequest: {
-            ...requestWithTerms,
-            royaltyShares,
-          },
-          workflowClient: isPublicMinting
-            ? undefined
-            : this.royaltyTokenDistributionWorkflowsClient,
-          spenders: [{ address: baseRequest.spgNftContract, amount: nftMintFee }],
-          totalFees: nftMintFee,
-        } as TransformIpRegistrationWorkflowResponse<T>;
-      }
-      // mintAndRegisterIpAssetWithPilTerms request
-      return {
-        transformRequest: {
-          ...requestWithTerms,
-          licenseTermsData,
-        },
-        workflowClient: isPublicMinting ? undefined : this.licenseAttachmentWorkflowsClient,
-        spenders: [{ address: baseRequest.spgNftContract, amount: nftMintFee }],
-        totalFees: nftMintFee,
-      } as TransformIpRegistrationWorkflowResponse<T>;
-    }
-    if ("derivData" in request) {
-      const derivData = await this.validateDerivativeData(request.derivData as DerivativeDataInput);
-      const totalDerivativeMintingFee = await this.calculateDerivativeMintingFee(
-        derivData,
-        this.walletAddress,
-      );
-      const totalFees = nftMintFee + totalDerivativeMintingFee;
-      const requestWithDeriv = { ...baseRequest, derivData };
-
-      if ("royaltyShares" in request) {
-        const { royaltyShares } = this.getRoyaltyShares(request.royaltyShares as RoyaltyShare[]);
-        // mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens request
-        /**
-         * TODO: Consider the scenario where the SPG token is WIP and the derivative token is ERC20.
-         * The SDK should handle both cases in the `contractCallWithFees` method.
-         * Currently, it only supports WIP tokens and does not handle ERC20 tokens, such as approving ERC20 tokens.
-         * In the future, ensure that the SDK checks whether the token is WIP or ERC20, as all WIP options should be supported.
-         */
-        return {
-          transformRequest: {
-            ...requestWithDeriv,
-            royaltyShares,
-          },
-          workflowClient: isPublicMinting
-            ? undefined
-            : this.royaltyTokenDistributionWorkflowsClient,
-          spenders: [
-            {
-              address: this.royaltyTokenDistributionWorkflowsClient.address,
-              amount: totalDerivativeMintingFee,
-            },
-            { address: baseRequest.spgNftContract, amount: nftMintFee },
-          ],
-          totalFees,
-        } as TransformIpRegistrationWorkflowResponse<T>;
-      }
-      // mintAndRegisterIpAndMakeDerivative request
-      return {
-        transformRequest: {
-          ...requestWithDeriv,
-          derivData,
-        },
-        workflowClient: isPublicMinting ? undefined : this.derivativeWorkflowsClient,
-        spenders: [
-          {
-            address: this.derivativeWorkflowsClient.address,
-            amount: totalDerivativeMintingFee,
-          },
-          { address: baseRequest.spgNftContract, amount: nftMintFee },
-        ],
-        totalFees,
-      } as TransformIpRegistrationWorkflowResponse<T>;
-    }
-
-    throw new Error("Invalid SPG NFT request type");
-  }
-
-  private async handleNftRequest<T extends TransformIpRegistrationWorkflowRequest>(
-    request: RegisterRegistrationRequest,
-  ): Promise<TransformIpRegistrationWorkflowResponse<T>> {
-    const ipIdAddress = await this.getIpIdAddress(
-      validateAddress(request.nftContract),
-      request.tokenId,
-    );
-
-    const baseRequest = {
-      nftContract: validateAddress(request.nftContract),
-      tokenId: BigInt(request.tokenId),
-      ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
-    };
-
-    const calculatedDeadline = await this.getCalculatedDeadline(request.deadline);
-
-    // Handle license terms requests
-    if ("licenseTermsData" in request) {
-      const { licenseTermsData } = await this.validateLicenseTermsData(
-        request.licenseTermsData as LicenseTermsDataInput[],
-      );
-      const requestWithTerms = { ...baseRequest, licenseTermsData };
-
-      if ("royaltyShares" in request) {
-        const signature = await generateOperationSignature({
-          ipIdAddress,
-          methodType: SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS_AND_DEPLOY_ROYALTY_VAULT,
-          deadline: calculatedDeadline,
-          wallet: this.wallet,
-          chainId: this.chainId,
-        });
-        // registerIpAndAttachPilTermsAndDeployRoyaltyVault request
-        return {
-          transformRequest: {
-            ...requestWithTerms,
-            sigMetadataAndAttachAndConfig: {
-              signer: validateAddress(this.walletAddress),
-              deadline: calculatedDeadline,
-              signature,
-            },
-          },
-          workflowClient: this.royaltyTokenDistributionWorkflowsClient,
-        } as TransformIpRegistrationWorkflowResponse<T>;
-      }
-
-      const signature = await generateOperationSignature({
-        ipIdAddress,
-        methodType: SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS,
-        deadline: calculatedDeadline,
-        wallet: this.wallet,
-        chainId: this.chainId,
-      });
-      // registerIpAndAttachPilTerms request
-      return {
-        transformRequest: {
-          ...requestWithTerms,
-          sigMetadataAndAttachAndConfig: {
-            signer: validateAddress(this.walletAddress),
-            deadline: calculatedDeadline,
-            signature,
-          },
-        },
-        workflowClient: this.licenseAttachmentWorkflowsClient,
-      } as TransformIpRegistrationWorkflowResponse<T>;
-    }
-
-    if ("derivData" in request) {
-      const derivData = await this.validateDerivativeData(request.derivData as DerivativeDataInput);
-      const totalFees = await this.calculateDerivativeMintingFee(derivData, this.walletAddress);
-      const requestWithDeriv = { ...baseRequest, derivData };
-
-      if ("royaltyShares" in request) {
-        const signature = await generateOperationSignature({
-          ipIdAddress,
-          methodType: SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_AND_DEPLOY_ROYALTY_VAULT,
-          deadline: calculatedDeadline,
-          wallet: this.wallet,
-          chainId: this.chainId,
-        });
-        // registerIpAndMakeDerivativeAndDeployRoyaltyVault request
-        return {
-          transformRequest: {
-            ...requestWithDeriv,
-            sigMetadataAndRegister: {
-              signer: this.walletAddress,
-              deadline: calculatedDeadline,
-              signature,
-            },
-          },
-          workflowClient: this.royaltyTokenDistributionWorkflowsClient,
-          spenders: [
-            { address: this.royaltyTokenDistributionWorkflowsClient.address, amount: totalFees },
-          ],
-          totalFees,
-        } as TransformIpRegistrationWorkflowResponse<T>;
-      }
-
-      const signature = await generateOperationSignature({
-        ipIdAddress,
-        methodType: SignatureMethodType.REGISTER_DERIVATIVE_IP,
-        deadline: calculatedDeadline,
-        wallet: this.wallet,
-        chainId: this.chainId,
-      });
-      // registerDerivativeIp request
-      return {
-        transformRequest: {
-          ...requestWithDeriv,
-          sigMetadataAndRegister: {
-            signer: this.walletAddress,
-            deadline: calculatedDeadline,
-            signature,
-          },
-        },
-        workflowClient: this.derivativeWorkflowsClient,
-        spenders: [{ address: this.derivativeWorkflowsClient.address, amount: totalFees }],
-        totalFees,
-      } as TransformIpRegistrationWorkflowResponse<T>;
-    }
-
-    throw new Error("Invalid existing NFT request type");
   }
 
   private async validateLicenseTokenIds(
@@ -1599,103 +1368,6 @@ export class IPAssetClient {
       return baseResult as IpIdAndTokenId<K>;
     });
   }
-  private async getCalculatedDeadline(requestDeadline?: string | number | bigint): Promise<bigint> {
-    const blockTimestamp = (await this.rpcClient.getBlock()).timestamp;
-    return getDeadline(blockTimestamp, requestDeadline);
-  }
-
-  private validateMaxRts(maxRts: number) {
-    if (isNaN(maxRts)) {
-      throw new Error(`The maxRts must be a number.`);
-    }
-    if (maxRts < 0 || maxRts > MAX_ROYALTY_TOKEN) {
-      throw new Error(`The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
-    }
-  }
-
-  private async validateDerivativeData(
-    derivativeDataInput: DerivativeDataInput,
-  ): Promise<DerivativeData> {
-    const derivativeData: DerivativeData = {
-      parentIpIds: derivativeDataInput.parentIpIds,
-      licenseTermsIds: derivativeDataInput.licenseTermsIds.map((id) => BigInt(id)),
-      licenseTemplate: validateAddress(
-        derivativeDataInput.licenseTemplate || this.licenseTemplateClient.address,
-      ),
-      royaltyContext: zeroAddress,
-      maxMintingFee: BigInt(derivativeDataInput.maxMintingFee || 0),
-      maxRts: Number(derivativeDataInput.maxRts || MAX_ROYALTY_TOKEN),
-      maxRevenueShare: getRevenueShare(
-        derivativeDataInput.maxRevenueShare || 100,
-        RevShareType.MAX_REVENUE_SHARE,
-      ),
-    };
-    if (derivativeData.parentIpIds.length === 0) {
-      throw new Error("The parent IP IDs must be provided.");
-    }
-    if (derivativeData.licenseTermsIds.length === 0) {
-      throw new Error("The license terms IDs must be provided.");
-    }
-    if (derivativeData.parentIpIds.length !== derivativeData.licenseTermsIds.length) {
-      throw new Error("The number of parent IP IDs must match the number of license terms IDs.");
-    }
-    if (derivativeData.maxMintingFee < 0) {
-      throw new Error(`The maxMintingFee must be greater than 0.`);
-    }
-    this.validateMaxRts(derivativeData.maxRts);
-    for (let i = 0; i < derivativeData.parentIpIds.length; i++) {
-      const parentId = derivativeData.parentIpIds[i];
-      const isParentIpRegistered = await this.isRegistered(parentId);
-      if (!isParentIpRegistered) {
-        throw new Error(`The parent IP with id ${parentId} is not registered.`);
-      }
-      const isAttachedLicenseTerms =
-        await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
-          ipId: parentId,
-          licenseTemplate: derivativeData.licenseTemplate,
-          licenseTermsId: derivativeData.licenseTermsIds[i],
-        });
-      if (!isAttachedLicenseTerms) {
-        throw new Error(
-          `License terms id ${derivativeData.licenseTermsIds[i]} must be attached to the parent ipId ${derivativeData.parentIpIds[i]} before registering derivative.`,
-        );
-      }
-      const { royaltyPercent } = await this.licenseRegistryReadOnlyClient.getRoyaltyPercent({
-        ipId: parentId,
-        licenseTemplate: derivativeData.licenseTemplate,
-        licenseTermsId: derivativeData.licenseTermsIds[i],
-      });
-      if (derivativeData.maxRevenueShare !== 0 && royaltyPercent > derivativeData.maxRevenueShare) {
-        throw new Error(
-          `The royalty percent for the parent IP with id ${parentId} is greater than the maximum revenue share ${derivativeData.maxRevenueShare}.`,
-        );
-      }
-    }
-    return derivativeData;
-  }
-
-  private async validateLicenseTermsData(licenseTermsData: LicenseTermsDataInput[]): Promise<{
-    licenseTerms: LicenseTerms[];
-    licenseTermsData: LicenseTermsData[];
-  }> {
-    const licenseTerms: LicenseTerms[] = [];
-    const processedLicenseTermsData: LicenseTermsData[] = [];
-    for (let i = 0; i < licenseTermsData.length; i++) {
-      const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
-      const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
-      if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
-        throw new Error(
-          "A royalty policy must be provided when the minting fee is greater than 0.",
-        );
-      }
-      licenseTerms.push(licenseTerm);
-      processedLicenseTermsData.push({
-        terms: licenseTerm,
-        licensingConfig: licensingConfig,
-      });
-    }
-    return { licenseTerms, licenseTermsData: processedLicenseTermsData };
-  }
 
   private async handleRegistrationWithFees({
     sender,
@@ -1724,7 +1396,12 @@ export class IPAssetClient {
 
     // get derivative minting fee
     if (derivData) {
-      const totalDerivativeMintingFee = await this.calculateDerivativeMintingFee(derivData, sender);
+      const totalDerivativeMintingFee = await calculateDerivativeMintingFee({
+        derivData,
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
       totalFees += totalDerivativeMintingFee;
       if (totalDerivativeMintingFee > 0) {
         wipSpenders.push({
@@ -1733,7 +1410,6 @@ export class IPAssetClient {
         });
       }
     }
-
     if (totalFees < 0) {
       throw new Error(
         `Total fees for registering derivative should never be negative: ${totalFees}`,
@@ -1764,26 +1440,5 @@ export class IPAssetClient {
       };
     }
     return { txHash };
-  }
-
-  private async calculateDerivativeMintingFee(derivData: DerivativeData, sender: Address) {
-    let totalDerivativeMintingFee = 0n;
-    for (let i = 0; i < derivData.parentIpIds.length; i++) {
-      const derivativeMintingFee = await calculateLicenseWipMintFee({
-        predictMintingFeeRequest: {
-          licensorIpId: derivData.parentIpIds[i],
-          licenseTemplate: derivData.licenseTemplate,
-          licenseTermsId: derivData.licenseTermsIds[i],
-          receiver: sender,
-          amount: 1n,
-          royaltyContext: zeroAddress,
-        },
-        rpcClient: this.rpcClient,
-        chainId: this.chainId,
-        walletAddress: this.walletAddress,
-      });
-      totalDerivativeMintingFee += derivativeMintingFee;
-    }
-    return totalDerivativeMintingFee;
   }
 }
