@@ -6,6 +6,7 @@ import {
   zeroHash,
   encodeFunctionData,
   TransactionReceipt,
+  Hash,
 } from "viem";
 
 import { chain, validateAddress } from "../utils/utils";
@@ -51,6 +52,9 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
+  BatchRegisterIpWithOptions,
+  BatchRegisterIpWithOptionsResponse,
+  TransformIpRegistrationWorkflowResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -60,6 +64,7 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  EncodedTxData,
   IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
@@ -106,8 +111,10 @@ import {
   validateLicenseTermsData,
   validateMaxRts,
   validateDerivativeData,
+  mergeSpenders,
 } from "../utils/registerHelper";
 import { SignatureMethodType } from "../types/utils/registerHelper";
+import { TransactionResponse } from "../types/options";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -1321,6 +1328,110 @@ export class IPAssetClient {
 
   public async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: validateAddress(ipId) });
+  }
+
+  public async batchRegisterIpWithOptions(
+    request: BatchRegisterIpWithOptions,
+  ): Promise<BatchRegisterIpWithOptionsResponse[]> {
+    try {
+      const transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[] = [];
+      for (const req of request.requests) {
+        const res = await transformRegistrationRequest({
+          request: req,
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          chainId: this.chainId,
+        });
+        transferWorkflowResponses.push(res);
+      }
+
+      const aggregateRegistrationRequest: Record<
+        string,
+        {
+          spenders: Erc20Spender[];
+          totalFees: bigint;
+          encodedTxData: EncodedTxData[];
+          contractCall: Array<() => Promise<Hash>>;
+        }
+      > = {};
+      for (const res of transferWorkflowResponses) {
+        const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
+        if (isUseMulticall3) {
+          const multicall3Address = this.multicall3Client.address;
+          aggregateRegistrationRequest[multicall3Address].spenders = mergeSpenders(
+            aggregateRegistrationRequest[multicall3Address].spenders,
+            spenders || [],
+          );
+          aggregateRegistrationRequest[multicall3Address].totalFees += totalFees || 0n;
+          aggregateRegistrationRequest[multicall3Address].encodedTxData.concat(encodedTxData || []);
+          aggregateRegistrationRequest[multicall3Address].contractCall.concat(res.contractCall);
+        } else {
+          const spgMulticall3Address = workflowClient.address;
+          aggregateRegistrationRequest[spgMulticall3Address] = {
+            spenders: mergeSpenders(
+              aggregateRegistrationRequest[spgMulticall3Address].spenders,
+              spenders || [],
+            ),
+            totalFees:
+              aggregateRegistrationRequest[spgMulticall3Address].totalFees + (totalFees || 0n),
+            encodedTxData:
+              aggregateRegistrationRequest[spgMulticall3Address].encodedTxData.concat(
+                encodedTxData,
+              ),
+            contractCall: [
+              () => {
+                return workflowClient.multicall({
+                  data: aggregateRegistrationRequest[spgMulticall3Address].encodedTxData.map(
+                    (tx) => tx.data,
+                  ),
+                });
+              },
+            ],
+          };
+        }
+      }
+      const txHashes: TransactionResponse[] = [];
+      for (const key in aggregateRegistrationRequest) {
+        const { spenders, totalFees, encodedTxData, contractCall } =
+          aggregateRegistrationRequest[key];
+        const contractCalls = async () => {
+          return await Promise.all(contractCall.map((call) => call()));
+        };
+        const txResponse = await contractCallWithFees({
+          totalFees,
+          options: {
+            wipOptions: {
+              ...request.wipOptions,
+              useMulticallWhenPossible: key === this.multicall3Client.address,
+            },
+          },
+          multicall3Address: this.multicall3Client.address,
+          rpcClient: this.rpcClient,
+          tokenSpenders: spenders,
+          contractCall: contractCalls,
+          sender: this.walletAddress,
+          wallet: this.wallet,
+          encodedTxs: encodedTxData,
+          txOptions: { waitForTransaction: true },
+        });
+        txHashes.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
+      }
+      const responses: BatchRegisterIpWithOptionsResponse[] = [];
+      for (const { txHash, receipt } of txHashes) {
+        const event = this.getIpIdAndTokenIdsFromEvent(receipt!)?.[0];
+        responses.push({
+          txHash,
+          receipt: receipt!,
+          ...(event && {
+            ipId: event.ipId ?? undefined,
+            tokenId: event.tokenId ?? undefined,
+          }),
+        });
+      }
+      return responses;
+    } catch (error) {
+      handleError(error, "Failed to batch register IP with options");
+    }
   }
 
   private async getLicenseTermsId(licenseTerms: LicenseTerms[]): Promise<bigint[]> {

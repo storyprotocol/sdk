@@ -203,7 +203,7 @@ export const contractCallWithFees = async ({
   encodedTxs,
   rpcClient,
   token,
-}: ContractCallWithFees): Promise<TransactionResponse> => {
+}: ContractCallWithFees): Promise<TransactionResponse | TransactionResponse[]> => {
   const wipTokenClient = new WipTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
   const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;

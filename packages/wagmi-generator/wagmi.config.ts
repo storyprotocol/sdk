@@ -330,6 +330,7 @@ export default defineConfig(async () => {
             "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
             "distributeRoyaltyTokens",
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+            "multicall",
           ],
           ArbitrationPolicyUMA: [
             "maxBonds",

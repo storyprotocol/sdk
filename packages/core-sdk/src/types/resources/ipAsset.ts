@@ -450,15 +450,18 @@ export type TransformIpRegistrationWorkflowRequest =
   | RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest;
 
 export type TransformIpRegistrationWorkflowResponse<
-  T extends TransformIpRegistrationWorkflowRequest,
+  T extends TransformIpRegistrationWorkflowRequest = TransformIpRegistrationWorkflowRequest,
 > = {
   transformRequest: T;
-  workflowClient?:
-    | RoyaltyTokenDistributionWorkflowsClient
-    | LicenseAttachmentWorkflowsClient
-    | DerivativeWorkflowsClient; // if use multicall3, it undefined
+  contractCall: () => Promise<Hash>;
+  encodedTxData: EncodedTxData;
+  isUseMulticall3?: boolean;
   spenders?: Erc20Spender[];
   totalFees?: bigint;
+  workflowClient:
+    | DerivativeWorkflowsClient
+    | LicenseAttachmentWorkflowsClient
+    | RoyaltyTokenDistributionWorkflowsClient;
 };
 
 export type BatchRegisterIpWithOptions = WithWipOptions & {
@@ -466,10 +469,10 @@ export type BatchRegisterIpWithOptions = WithWipOptions & {
   txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
 };
 export type BatchRegisterIpWithOptionsResponse = {
-  results: {
-    txHash: Hex;
-    ipIds: Address[];
-  }[];
+  txHash: Hash;
+  ipId: Address;
+  tokenId: bigint;
+  receipt: TransactionReceipt;
 };
 
 export type BatchRegistrationMethodsConfig = {

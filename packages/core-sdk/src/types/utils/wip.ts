@@ -47,7 +47,7 @@ export type ContractCallWithFees = {
   multicall3Address: Address;
   /** all possible spenders of the erc20 token */
   tokenSpenders: Erc20Spender[];
-  contractCall: () => Promise<Hash>;
+  contractCall: () => Promise<Hash | Hash[]>;
   encodedTxs: EncodedTxData[];
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
