@@ -1329,7 +1329,28 @@ export class IPAssetClient {
   public async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: validateAddress(ipId) });
   }
-
+  /**
+   * Batch register IP with options which supports the following methods:
+   * - {@link mintAndRegisterIpAndMakeDerivative}
+   * - {@link mintAndRegisterIpAssetWithPilTerms}
+   * - {@link mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens}
+   * - {@link mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens}
+   * - {@link registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens}
+   * - {@link registerIpAndAttachPilTerms}
+   * - {@link registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens}
+   * - {@link registerDerivativeIp}
+   *
+   * This method allows for efficient batch processing of multiple IP registration operations
+   * in a single transaction, optimizing gas costs and improving throughput.
+   *
+   * @remark The `useMulticallWhenPossible` option will be overridden (set to false) in the following cases:
+   * 1. For methods prefixed with `mintAndRegister` when the `spgNftContract` has public minting enabled:
+   *    In this case, we use SPG's multicall to batch the minting and registering operations.
+   * 2. For methods prefixed with `register`:
+   *    We use SPG's multicall to batch the registration operations.
+   *
+   * In all other scenarios, the `useMulticallWhenPossible` value from the request will be respected.
+   */
   public async batchRegisterIpWithOptions(
     request: BatchRegisterIpWithOptions,
   ): Promise<BatchRegisterIpWithOptionsResponse[]> {
@@ -1397,12 +1418,16 @@ export class IPAssetClient {
         const contractCalls = async () => {
           return await Promise.all(contractCall.map((call) => call()));
         };
+        const useMulticallWhenPossible =
+          key === this.multicall3Client.address
+            ? request.wipOptions?.useMulticallWhenPossible
+            : false;
         const txResponse = await contractCallWithFees({
           totalFees,
           options: {
             wipOptions: {
               ...request.wipOptions,
-              useMulticallWhenPossible: key === this.multicall3Client.address,
+              useMulticallWhenPossible,
             },
           },
           multicall3Address: this.multicall3Client.address,
@@ -1527,7 +1552,7 @@ export class IPAssetClient {
       );
     }
 
-    const { txHash, receipt } = await contractCallWithFees({
+    const txResponse = await contractCallWithFees({
       totalFees,
       options: { wipOptions },
       multicall3Address: this.multicall3Client.address,
@@ -1539,6 +1564,7 @@ export class IPAssetClient {
       txOptions,
       encodedTxs,
     });
+    const { txHash, receipt } = txResponse as TransactionResponse;
     if (receipt) {
       const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
       return {
