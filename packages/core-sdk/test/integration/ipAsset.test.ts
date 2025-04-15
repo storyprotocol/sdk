@@ -28,7 +28,7 @@ const expect = chai.expect;
 const pool = evenSplitGroupPoolAddress[aeneid];
 const walletAddress = process.env.TEST_WALLET_ADDRESS! as Address;
 
-describe.only("IP Asset Functions", () => {
+describe("IP Asset Functions", () => {
   let client: StoryClient;
   let noCommercialLicenseTermsId: bigint;
   let parentIpId: Hex;
