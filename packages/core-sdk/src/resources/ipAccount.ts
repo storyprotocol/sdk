@@ -207,7 +207,7 @@ export class IPAccountClient {
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
-      });
+      }) as Promise<TransactionResponse>;
     } catch (error) {
       handleError(error, "Failed to transfer Erc20");
     }

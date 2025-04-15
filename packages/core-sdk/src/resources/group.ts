@@ -49,6 +49,7 @@ import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
 import { RevShareType } from "../types/common";
 import { handleTxOptions } from "../utils/txOptions";
+import { TransactionResponse } from "../types/options";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;
@@ -438,11 +439,12 @@ export class GroupClient {
       const txHash = await this.groupingWorkflowsClient.collectRoyaltiesAndClaimReward(
         collectAndClaimParams,
       );
-      const { receipt } = await handleTxOptions({
+      const txResponse = await handleTxOptions({
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
       });
+      const { receipt } = txResponse as TransactionResponse;
       if (!receipt) {
         return { txHash };
       }

@@ -11,7 +11,7 @@ import {
 import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
 import { aeneid, txHash } from "../mockData";
 import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
-import { WIP_TOKEN_ADDRESS } from "../../../src";
+import { TransactionResponse, WIP_TOKEN_ADDRESS } from "../../../src";
 import { ContractCallWithFees } from "../../../src/types/utils/wip";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { contractCallWithFees } from "../../../src/utils/feeUtils";
@@ -68,7 +68,8 @@ describe("Erc20 Token Fee Utilities", () => {
   describe("No Fees", () => {
     it("should call contract directly if no fees", async () => {
       const params = getDefaultParams({ totalFees: 0n });
-      const { txHash } = await contractCallWithFees(params);
+      const txResponse = await contractCallWithFees(params);
+      const { txHash } = txResponse as TransactionResponse;
       expect(contractCallMock.calledOnce).to.be.true;
       expect(rpcWaitForTxMock.notCalled).to.be.true;
       expect(txHash).not.to.be.empty;
@@ -79,7 +80,8 @@ describe("Erc20 Token Fee Utilities", () => {
         totalFees: 0n,
         txOptions: { waitForTransaction: true },
       });
-      const { txHash } = await contractCallWithFees(params);
+      const txResponse = await contractCallWithFees(params);
+      const { txHash } = txResponse as TransactionResponse;
       expect(contractCallMock.calledOnce).to.be.true;
       expect(rpcWaitForTxMock.calledOnce).to.be.true;
       expect(txHash).not.to.be.empty;
@@ -102,7 +104,8 @@ describe("Erc20 Token Fee Utilities", () => {
           totalFees: 100n,
           options: { erc20Options: { enableAutoApprove: false } },
         });
-        const { txHash, receipt } = await contractCallWithFees(params);
+        const txResponse = await contractCallWithFees(params);
+        const { txHash, receipt } = txResponse as TransactionResponse;
         expect(receipt).to.be.undefined;
         expect(contractCallMock.calledOnce).to.be.true;
         expect(rpcWaitForTxMock.notCalled).to.be.true;
@@ -127,7 +130,8 @@ describe("Erc20 Token Fee Utilities", () => {
         });
         const allowanceMock = sinon.stub(WipTokenClient.prototype, "allowance").resolves(50n);
 
-        const { txHash, receipt } = await contractCallWithFees(params);
+        const txResponse = await contractCallWithFees(params);
+        const { txHash, receipt } = txResponse as TransactionResponse;
         expect(receipt).to.be.undefined;
         expect(allowanceMock.calledTwice).to.be.true;
         expect(
@@ -159,7 +163,8 @@ describe("Erc20 Token Fee Utilities", () => {
           txOptions: { waitForTransaction: true },
         });
         sinon.stub(WipTokenClient.prototype, "allowance").resolves(15n);
-        const { txHash, receipt } = await contractCallWithFees(params);
+        const txResponse = await contractCallWithFees(params);
+        const { txHash, receipt } = txResponse as TransactionResponse;
         expect(receipt).not.to.be.undefined;
         expect(contractCallMock.calledOnce).to.be.true;
         expect(approveMock.calledOnce).to.be.true;
@@ -207,10 +212,11 @@ describe("Erc20 Token Fee Utilities", () => {
 
       describe("no multicall", () => {
         it("should deposit, approve, and call contract separately", async () => {
-          const { txHash, receipt } = await contractCallWithFees({
+          const txResponse = await contractCallWithFees({
             ...params,
             options: { wipOptions: { useMulticallWhenPossible: false } },
           });
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).to.be.undefined;
           expect(simulateContractMock.calledOnce).to.be.true;
           expect(simulateContractMock.firstCall.args[0]).to.include({
@@ -231,13 +237,14 @@ describe("Erc20 Token Fee Utilities", () => {
         });
 
         it("should support wait for tx", async () => {
-          const { txHash, receipt } = await contractCallWithFees({
+          const txResponse = await contractCallWithFees({
             ...params,
             options: {
               wipOptions: { useMulticallWhenPossible: false },
             },
             txOptions: { waitForTransaction: true },
           });
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).not.to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -247,12 +254,13 @@ describe("Erc20 Token Fee Utilities", () => {
         });
 
         it("should not call approval if enableAutoApprove is false", async () => {
-          const { txHash, receipt } = await contractCallWithFees({
+          const txResponse = await contractCallWithFees({
             ...params,
             options: {
               wipOptions: { enableAutoApprove: false, useMulticallWhenPossible: false },
             },
           });
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -262,7 +270,7 @@ describe("Erc20 Token Fee Utilities", () => {
         });
 
         it("should not call approval if spender has enough allowance", async () => {
-          const { txHash, receipt } = await contractCallWithFees({
+          const txResponse = await contractCallWithFees({
             ...params,
             tokenSpenders: [
               {
@@ -278,6 +286,7 @@ describe("Erc20 Token Fee Utilities", () => {
               wipOptions: { useMulticallWhenPossible: false },
             },
           });
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -303,7 +312,8 @@ describe("Erc20 Token Fee Utilities", () => {
         });
 
         it("should deposit, approve, and call contract in one multicall", async () => {
-          const { txHash, receipt } = await contractCallWithFees(params);
+          const txResponse = await contractCallWithFees(params);
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(depositEncodeMock.calledOnce).to.be.true;
@@ -324,10 +334,11 @@ describe("Erc20 Token Fee Utilities", () => {
         });
 
         it("should support wait for tx", async () => {
-          const { txHash, receipt } = await contractCallWithFees({
+          const txResponse = await contractCallWithFees({
             ...params,
             txOptions: { waitForTransaction: true },
           });
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).not.to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -337,12 +348,13 @@ describe("Erc20 Token Fee Utilities", () => {
         });
 
         it("should not include approvals if enableAutoApprove is false", async () => {
-          const { txHash, receipt } = await contractCallWithFees({
+          const txResponse = await contractCallWithFees({
             ...params,
             options: {
               wipOptions: { enableAutoApprove: false },
             },
           });
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -353,7 +365,7 @@ describe("Erc20 Token Fee Utilities", () => {
         });
 
         it("should only include approves if enough allowances", async () => {
-          const { txHash, receipt } = await contractCallWithFees({
+          const txResponse = await contractCallWithFees({
             ...params,
             tokenSpenders: [
               {
@@ -366,6 +378,7 @@ describe("Erc20 Token Fee Utilities", () => {
               },
             ],
           });
+          const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).to.be.undefined;
           expect(txHash).not.to.be.empty;
           expect(simulateContractMock.calledOnce).to.be.true;
@@ -412,7 +425,8 @@ describe("Erc20 Token Fee Utilities", () => {
           erc20Options: { enableAutoApprove: false },
         },
       });
-      const { txHash, receipt } = await contractCallWithFees(params);
+      const txResponse = await contractCallWithFees(params);
+      const { txHash, receipt } = txResponse as TransactionResponse;
       expect(receipt).to.be.undefined;
       expect(contractCallMock.calledOnce).to.be.true;
       expect(rpcWaitForTxMock.notCalled).to.be.true;
@@ -438,7 +452,8 @@ describe("Erc20 Token Fee Utilities", () => {
       });
       allowanceMock.resolves(1001n);
 
-      const { txHash, receipt } = await contractCallWithFees(params);
+      const txResponse = await contractCallWithFees(params);
+      const { txHash, receipt } = txResponse as TransactionResponse;
       expect(receipt).to.be.undefined;
       expect(allowanceMock.calledTwice).to.be.true;
       expect(
@@ -475,7 +490,8 @@ describe("Erc20 Token Fee Utilities", () => {
         txOptions: { waitForTransaction: true },
       });
       allowanceMock.resolves(15n);
-      const { txHash, receipt } = await contractCallWithFees(params);
+      const txResponse = await contractCallWithFees(params);
+      const { txHash, receipt } = txResponse as TransactionResponse;
       expect(receipt).not.to.be.undefined;
       expect(contractCallMock.calledOnce).to.be.true;
       expect(approveMock.calledTwice).to.be.true;

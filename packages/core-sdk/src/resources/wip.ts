@@ -12,6 +12,7 @@ import {
   WithdrawRequest,
 } from "../types/resources/wip";
 import { handleTxOptions } from "../utils/txOptions";
+import { TransactionResponse } from "../types/options";
 
 export class WipClient {
   public wrappedIpClient: WrappedIpClient;
@@ -45,7 +46,7 @@ export class WipClient {
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
-      });
+      }) as Promise<TransactionResponse>;
     } catch (error) {
       handleError(error, "Failed to deposit IP for WIP");
     }
@@ -65,7 +66,7 @@ export class WipClient {
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
-      });
+      }) as Promise<TransactionResponse>;
     } catch (error) {
       handleError(error, "Failed to withdraw WIP");
     }
@@ -89,7 +90,7 @@ export class WipClient {
         txHash,
         txOptions: req.txOptions,
         rpcClient: this.rpcClient,
-      });
+      }) as Promise<TransactionResponse>;
     } catch (error) {
       handleError(error, "Failed to approve WIP");
     }
@@ -121,7 +122,7 @@ export class WipClient {
         txHash,
         txOptions: request.txOptions,
         rpcClient: this.rpcClient,
-      });
+      }) as Promise<TransactionResponse>;
     } catch (error) {
       handleError(error, "Failed to transfer WIP");
     }
@@ -145,7 +146,7 @@ export class WipClient {
         txHash,
         txOptions: request.txOptions,
         rpcClient: this.rpcClient,
-      });
+      }) as Promise<TransactionResponse>;
     } catch (error) {
       handleError(error, "Failed to transfer WIP");
     }

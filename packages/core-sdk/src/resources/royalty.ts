@@ -307,7 +307,7 @@ export class RoyaltyClient {
           amount: payAmount,
         },
       ];
-      return contractCallWithFees({
+      const txResponse = await contractCallWithFees({
         totalFees: payAmount,
         options: { erc20Options, wipOptions },
         multicall3Address: this.multicall3Client.address,
@@ -320,6 +320,8 @@ export class RoyaltyClient {
         txOptions,
         encodedTxs: [encodedTxData],
       });
+      const { txHash, receipt } = txResponse as TransactionResponse;
+      return { txHash, receipt };
     } catch (error) {
       handleError(error, "Failed to pay royalty on behalf");
     }
@@ -387,7 +389,7 @@ export class RoyaltyClient {
       txHash,
       rpcClient: this.rpcClient,
       txOptions,
-    });
+    }) as Promise<TransactionResponse>;
   }
 
   private async transferClaimedTokensFromIpToWallet({

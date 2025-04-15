@@ -63,7 +63,7 @@ export type ContractCallWithFees = {
 export type MulticallWithWrapIp = WithWipOptions & {
   calls: Multicall3ValueCall[];
   ipAmountToWrap: bigint;
-  contractCall: () => Promise<Hash>;
+  contractCall: () => Promise<Hash | Hash[]>;
   wipSpenders: Erc20Spender[];
   multicall3Address: Address;
   wipClient: WipTokenClient;

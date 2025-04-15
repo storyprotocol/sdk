@@ -1,4 +1,4 @@
-import { Address, Hex, WalletClient } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData, SimpleWalletClient } from "../../abi/generated";
