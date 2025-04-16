@@ -1,6 +1,6 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { StoryClient } from "../../src";
+import { IpRegistrationWorkflowRequest, StoryClient } from "../../src";
 import { Address, Hex, maxUint256, toHex, zeroAddress, zeroHash } from "viem";
 import {
   mockERC721,
@@ -1028,7 +1028,7 @@ describe("IP Asset Functions", () => {
           });
         }
 
-        // create a nft collection that requires minting fee
+        // create a nft collection that requires minting G
         const rsp = await client.nftClient.createNFTCollection({
           name: "Premium Collection",
           symbol: "PC",
@@ -1815,6 +1815,353 @@ describe("IP Asset Functions", () => {
           }),
         ).to.be.rejected;
       });
+    });
+  });
+
+  describe("Batch Register IP With Options", () => {
+    let spgNftContractWithPublicMinting: Address;
+    let spgNftContractWithPrivateMinting: Address;
+    let parentIpId: Hex;
+    let licenseTermsId: bigint;
+    before(async () => {
+      const res1 = await client.nftClient.createNFTCollection({
+        name: "test",
+        symbol: "test",
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: walletAddress,
+        mintFee: 10n,
+        mintFeeToken: WIP_TOKEN_ADDRESS,
+        contractURI: "",
+        txOptions: { waitForTransaction: true },
+      });
+      spgNftContractWithPublicMinting = res1.spgNftContract!;
+      const res2 = await client.nftClient.createNFTCollection({
+        name: "test",
+        symbol: "test",
+        isPublicMinting: false,
+        mintOpen: true,
+        mintFeeRecipient: walletAddress,
+        contractURI: "",
+        txOptions: { waitForTransaction: true },
+      });
+      spgNftContractWithPrivateMinting = res2.spgNftContract!;
+      const res3 = await client.license.registerCommercialRemixPIL({
+        defaultMintingFee: 10n,
+        commercialRevShare: 10,
+        currency: WIP_TOKEN_ADDRESS,
+        txOptions: { waitForTransaction: true },
+      });
+      licenseTermsId = res3.licenseTermsId!;
+      const res4 = await client.ipAsset.mintAndRegisterIp({
+        spgNftContract: spgNftContractWithPublicMinting,
+        txOptions: { waitForTransaction: true },
+      });
+      parentIpId = res4.ipId!;
+      const res5 = await client.license.attachLicenseTerms({
+        ipId: parentIpId,
+        licenseTermsId: licenseTermsId,
+        txOptions: { waitForTransaction: true },
+      });
+    });
+    it("should successfully pass given spg nft contract", async () => {
+      const userBalanceBefore = await client.getBalance(walletAddress);
+      const requests: IpRegistrationWorkflowRequest[] = [
+        //mintAndRegisterIpAndMakeDerivative and total fees: 10
+        {
+          spgNftContract: spgNftContractWithPrivateMinting,
+          derivData: {
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [licenseTermsId],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        //mintAndRegisterIpAssetWithPilTerms and total fees: 0
+        {
+          spgNftContract: spgNftContractWithPrivateMinting,
+          allowDuplicates: true,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
+            },
+          ],
+        },
+        //mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens and total fees: 20
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          derivData: {
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [licenseTermsId],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        //mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens and total fees: 10
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "test case",
+              },
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 10, // 100%
+            },
+          ],
+        },
+      ];
+      const result = await client.ipAsset.batchRegisterIpWithOptions({
+        requests: requests,
+      });
+      const totalFees = 10 + 0 + 20 + 10;
+      const userBalanceAfter = await client.getBalance(walletAddress);
+      expect(result.length).equal(requests.length);
+      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
+      const wipBalance = await client.wipClient.balanceOf(walletAddress);
+      expect(wipBalance).equal(0n);
+      expect(result.map((r) => r.ipIdAndTokenId.length).reduce((a, b) => a + b, 0)).equal(
+        requests.length,
+      );
+    });
+
+    it("should successfully pass given nft contract", async () => {
+      const tokenId1 = await getTokenId();
+      const tokenId2 = await getTokenId();
+      const tokenId3 = await getTokenId();
+      const tokenId4 = await getTokenId();
+      const userBalanceBefore = await client.getBalance(walletAddress);
+      const requests: IpRegistrationWorkflowRequest[] = [
+        // registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens and total fees: 10
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId1!,
+          derivData: {
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [licenseTermsId],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        // registerIpAndAttachPilTerms and total fees: 0
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId2!,
+          deadline: 1000n,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: zeroAddress,
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: false,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 10000n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+        },
+        // registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens and total fees: 0
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId3!,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: erc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 43,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 17,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 2,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 38,
+            },
+          ],
+        },
+        // registerDerivativeIp and total fees: 10
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId4!,
+          derivData: {
+            parentIpIds: [parentIpId],
+            licenseTermsIds: [licenseTermsId],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+      ];
+      const totalFees = 10 + 0 + 0 + 10;
+      const result = await client.ipAsset.batchRegisterIpWithOptions({
+        requests: requests,
+      });
+      const userBalanceAfter = await client.getBalance(walletAddress);
+      expect(result.length).equal(requests.length - 1);
+      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
+      const wipBalance = await client.wipClient.balanceOf(walletAddress);
+      expect(wipBalance).equal(0n);
+      expect(result.map((r) => r.ipIdAndTokenId.length).reduce((a, b) => a + b, 0)).equal(
+        requests.length,
+      );
     });
   });
 });
