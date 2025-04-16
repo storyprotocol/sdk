@@ -6,7 +6,6 @@ import {
   zeroHash,
   encodeFunctionData,
   TransactionReceipt,
-  Hash,
 } from "viem";
 
 import { chain, validateAddress } from "../utils/utils";
@@ -64,7 +63,6 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  EncodedTxData,
   IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
@@ -111,7 +109,8 @@ import {
   validateLicenseTermsData,
   validateMaxRts,
   validateDerivativeData,
-  mergeSpenders,
+  prepareRoyaltyTokensDistribution,
+  handleMulticall,
 } from "../utils/registerHelper";
 import { SignatureMethodType } from "../types/utils/registerHelper";
 import { TransactionResponse } from "../types/options";
@@ -839,6 +838,8 @@ export class IPAssetClient {
         encodedTxs: [encodedTxData],
         contractCall,
         txOptions: request.txOptions,
+        //TODO: Need to create another pr to fix this bug
+        spgNftContract: object.spgNftContract,
         wipOptions: {
           ...request.wipOptions,
           useMulticallWhenPossible: false,
@@ -1202,6 +1203,7 @@ export class IPAssetClient {
    *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| `IpRoyaltyVaultDeployed`} events.
    */
+  //TODO: need to consider multicall3 error
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
@@ -1366,93 +1368,77 @@ export class IPAssetClient {
         transferWorkflowResponses.push(res);
       }
 
-      const aggregateRegistrationRequest: Record<
-        string,
-        {
-          spenders: Erc20Spender[];
-          totalFees: bigint;
-          encodedTxData: EncodedTxData[];
-          contractCall: Array<() => Promise<Hash>>;
-        }
-      > = {};
-      for (const res of transferWorkflowResponses) {
-        const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
-        if (isUseMulticall3) {
-          const multicall3Address = this.multicall3Client.address;
-          aggregateRegistrationRequest[multicall3Address].spenders = mergeSpenders(
-            aggregateRegistrationRequest[multicall3Address].spenders,
-            spenders || [],
-          );
-          aggregateRegistrationRequest[multicall3Address].totalFees += totalFees || 0n;
-          aggregateRegistrationRequest[multicall3Address].encodedTxData.concat(encodedTxData || []);
-          aggregateRegistrationRequest[multicall3Address].contractCall.concat(res.contractCall);
-        } else {
-          const spgMulticall3Address = workflowClient.address;
-          aggregateRegistrationRequest[spgMulticall3Address] = {
-            spenders: mergeSpenders(
-              aggregateRegistrationRequest[spgMulticall3Address].spenders,
-              spenders || [],
-            ),
-            totalFees:
-              aggregateRegistrationRequest[spgMulticall3Address].totalFees + (totalFees || 0n),
-            encodedTxData:
-              aggregateRegistrationRequest[spgMulticall3Address].encodedTxData.concat(
-                encodedTxData,
-              ),
-            contractCall: [
-              () => {
-                return workflowClient.multicall({
-                  data: aggregateRegistrationRequest[spgMulticall3Address].encodedTxData.map(
-                    (tx) => tx.data,
-                  ),
-                });
-              },
-            ],
-          };
-        }
-      }
-      const txHashes: TransactionResponse[] = [];
-      for (const key in aggregateRegistrationRequest) {
-        const { spenders, totalFees, encodedTxData, contractCall } =
-          aggregateRegistrationRequest[key];
-        const contractCalls = async () => {
-          return await Promise.all(contractCall.map((call) => call()));
-        };
-        const useMulticallWhenPossible =
-          key === this.multicall3Client.address
-            ? request.wipOptions?.useMulticallWhenPossible
-            : false;
-        const txResponse = await contractCallWithFees({
-          totalFees,
-          options: {
-            wipOptions: {
-              ...request.wipOptions,
-              useMulticallWhenPossible,
-            },
-          },
-          multicall3Address: this.multicall3Client.address,
-          rpcClient: this.rpcClient,
-          tokenSpenders: spenders,
-          contractCall: contractCalls,
-          sender: this.walletAddress,
-          wallet: this.wallet,
-          encodedTxs: encodedTxData,
-          txOptions: { waitForTransaction: true },
-        });
-        txHashes.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
-      }
+      // Extract royalty distribution requests from workflow responses
+      const royaltyDistributionRequests = (
+        transferWorkflowResponses.filter(
+          (res) => res.extraData?.royaltyShares,
+        ) as TransformIpRegistrationWorkflowResponse<
+          | RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
+          | RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
+        >[]
+      ).map((res) => ({
+        nftContract: res.transformRequest.nftContract,
+        tokenId: res.transformRequest.tokenId,
+        royaltyShares: res.extraData!.royaltyShares,
+        deadline: res.extraData!.deadline,
+      }));
+
+      // Process initial registration transactions
+      const txResponses = await handleMulticall({
+        transferWorkflowResponses,
+        multicall3Address: this.multicall3Client.address,
+        rpcClient: this.rpcClient,
+        wallet: this.wallet,
+        walletAddress: this.walletAddress,
+        wipOptions: request.wipOptions,
+        chainId: this.chainId,
+      });
+
       const responses: BatchRegisterIpWithOptionsResponse[] = [];
-      for (const { txHash, receipt } of txHashes) {
-        const event = this.getIpIdAndTokenIdsFromEvent(receipt!)?.[0];
+      const prepareRoyaltyTokensDistributionResponses: TransformIpRegistrationWorkflowResponse[] =
+        [];
+
+      // Process each transaction response
+      for (const { txHash, receipt } of txResponses) {
+        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt!);
+        const ipRoyaltyVaultEvent =
+          this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt!);
+
+        // Prepare royalty distribution if needed
+        const response = await prepareRoyaltyTokensDistribution({
+          royaltyDistributionRequests,
+          ipRegisteredLog: iPRegisteredLog,
+          ipRoyaltyVault: ipRoyaltyVaultEvent,
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          chainId: this.chainId,
+        });
+
+        const ipIdAndTokenIdEvent = this.getIpIdAndTokenIdsFromEvent(receipt!);
+        prepareRoyaltyTokensDistributionResponses.push(...response);
+
         responses.push({
           txHash,
           receipt: receipt!,
-          ...(event && {
-            ipId: event.ipId ?? undefined,
-            tokenId: event.tokenId ?? undefined,
-          }),
+          ipIdAndTokenId: ipIdAndTokenIdEvent,
+          ipRoyaltyVault: ipRoyaltyVaultEvent,
         });
       }
+
+      // Process royalty distribution transactions if any
+      //TODO: not sure if it should return txhash
+      if (prepareRoyaltyTokensDistributionResponses.length > 0) {
+        await handleMulticall({
+          transferWorkflowResponses: prepareRoyaltyTokensDistributionResponses,
+          multicall3Address: this.multicall3Client.address,
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          walletAddress: this.walletAddress,
+          wipOptions: request.wipOptions,
+          chainId: this.chainId,
+        });
+      }
+
       return responses;
     } catch (error) {
       handleError(error, "Failed to batch register IP with options");
