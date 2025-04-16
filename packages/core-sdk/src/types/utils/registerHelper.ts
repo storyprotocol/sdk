@@ -1,7 +1,12 @@
-import { Hex, Address, PublicClient } from "viem";
+import { Hex, Address, PublicClient, Hash } from "viem";
 
 import { ChainIds } from "../config";
-import { SimpleWalletClient } from "../../abi/generated";
+import {
+  EncodedTxData,
+  IpAssetRegistryIpRegisteredEvent,
+  RoyaltyModuleIpRoyaltyVaultDeployedEvent,
+  SimpleWalletClient,
+} from "../../abi/generated";
 import {
   DerivativeData,
   DerivativeDataInput,
@@ -9,7 +14,11 @@ import {
   IpRegistrationWorkflowRequest,
   MintSpgNftRegistrationRequest,
   RegisterRegistrationRequest,
+  RoyaltyShare,
+  TransformIpRegistrationWorkflowResponse,
 } from "../resources/ipAsset";
+import { Erc20Spender } from "./wip";
+import { WipOptions } from "../options";
 
 export type GeneratePrefixRegisterSignatureRequest = {
   deadline: bigint;
@@ -53,7 +62,7 @@ export type HandleNftRequestConfig = BasicConfig & {
 };
 
 export type HandleDistributeRoyaltyTokensRequestConfig = BasicConfig & {
-  request: DistributeRoyaltyTokens;
+  request: Omit<DistributeRoyaltyTokens, "txOptions">;
 };
 
 export type CalculateDerivativeMintingFeeConfig = BasicConfig & {
@@ -65,4 +74,33 @@ export type GetIpIdAddressConfig = BasicConfig & {
 };
 export type ValidateDerivativeDataConfig = BasicConfig & {
   derivativeDataInput: DerivativeDataInput;
+};
+
+export type PrepareDistributeRoyaltyTokensRequestConfig = BasicConfig & {
+  royaltyDistributionRequests: RoyaltyDistributionRequest[];
+  ipRegisteredLog: IpAssetRegistryIpRegisteredEvent[];
+  ipRoyaltyVault: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
+};
+export type RoyaltyDistributionRequest = {
+  nftContract: Address;
+  tokenId: bigint;
+  royaltyShares: RoyaltyShare[];
+  deadline?: bigint;
+};
+
+export type AggregateRegistrationRequest = Record<
+  string,
+  {
+    spenders: Erc20Spender[];
+    totalFees: bigint;
+    encodedTxData: EncodedTxData[];
+    contractCall: Array<() => Promise<Hash>>;
+  }
+>;
+
+export type HandleMulticallConfig = BasicConfig & {
+  transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[];
+  multicall3Address: Address;
+  wipOptions?: WipOptions;
+  walletAddress: Address;
 };

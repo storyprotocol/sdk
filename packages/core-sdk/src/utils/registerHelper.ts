@@ -22,15 +22,19 @@ import {
   royaltyTokenDistributionWorkflowsAbi,
   licenseAttachmentWorkflowsAbi,
   derivativeWorkflowsAbi,
+  RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
 } from "../abi/generated";
 import { chain, validateAddress } from "./utils";
 import {
+  AggregateRegistrationRequest,
   CalculateDerivativeMintingFeeConfig,
   GeneratePrefixRegisterSignatureRequest,
   GetIpIdAddressConfig,
   HandleDistributeRoyaltyTokensRequestConfig,
+  HandleMulticallConfig,
   HandleNftRequestConfig,
   HandleSpgNftRequestConfig,
+  PrepareDistributeRoyaltyTokensRequestConfig,
   SignatureMethodType,
   TransformRegistrationRequestConfig,
   ValidateDerivativeDataConfig,
@@ -44,14 +48,17 @@ import { getSignature, getPermissionSignature, getDeadline } from "./sign";
 import { getFunctionSignature } from "./getFunctionSignature";
 import {
   DerivativeData,
-  DerivativeDataInput,
   LicenseTermsData,
   LicenseTermsDataInput,
   RoyaltyShare,
   TransformIpRegistrationWorkflowRequest,
   TransformIpRegistrationWorkflowResponse,
 } from "../types/resources/ipAsset";
-import { calculateLicenseWipMintFee, calculateSPGWipMintFee } from "./feeUtils";
+import {
+  calculateLicenseWipMintFee,
+  calculateSPGWipMintFee,
+  contractCallWithFees,
+} from "./feeUtils";
 import { getIpMetadataForWorkflow } from "./getIpMetadataForWorkflow";
 import { LicenseTerms } from "../types/resources/license";
 import { getRevenueShare, validateLicenseTerms } from "./licenseTermsHelper";
@@ -59,6 +66,7 @@ import { validateLicenseConfig } from "./validateLicenseConfig";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../constants/common";
 import { RevShareType } from "../types/common";
 import { Erc20Spender } from "../types/utils/wip";
+import { TransactionResponse } from "../types/options";
 
 export const getPublicMinting = async (
   spgNftContract: Address,
@@ -387,7 +395,7 @@ export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkf
     const requestWithTerms = { ...baseRequest, licenseTermsData };
 
     if ("royaltyShares" in request) {
-      const { royaltyShares } = getRoyaltyShares(request.royaltyShares as RoyaltyShare[]);
+      const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
       const transformRequest = {
         ...requestWithTerms,
         royaltyShares,
@@ -395,7 +403,8 @@ export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkf
       // mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens request
       return {
         transformRequest: transformRequest as T,
-        isUseMulticall3: isPublicMinting,
+        //TODO: Because mint tokens is given `msg.sender` as the recipient, so we need to set `useMulticall3` to false.
+        isUseMulticall3: false,
         contractCall: () => {
           return royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
             transformRequest,
@@ -455,7 +464,7 @@ export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkf
   }
   if ("derivData" in request) {
     const derivData = await validateDerivativeData({
-      derivativeDataInput: request.derivData as DerivativeDataInput,
+      derivativeDataInput: request.derivData,
       rpcClient,
       wallet,
       chainId,
@@ -466,11 +475,11 @@ export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkf
       chainId,
       wallet,
     });
-    const totalFees = nftMintFee + totalDerivativeMintingFee;
+   const totalFees = nftMintFee + totalDerivativeMintingFee;
     const requestWithDeriv = { ...baseRequest, derivData };
 
     if ("royaltyShares" in request) {
-      const { royaltyShares } = getRoyaltyShares(request.royaltyShares as RoyaltyShare[]);
+      const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
       /**
        * TODO: Consider the scenario where the SPG token is WIP and the derivative token is ERC20.
        * The SDK should handle both cases in the `contractCallWithFees` method.
@@ -776,6 +785,10 @@ export const handleNftRequest = async <T extends TransformIpRegistrationWorkflow
             ],
           }),
         },
+        extraData: {
+          royaltyShares: request.royaltyShares,
+          deadline: calculatedDeadline,
+        },
       } as TransformIpRegistrationWorkflowResponse<T>;
     }
 
@@ -821,7 +834,7 @@ export const handleNftRequest = async <T extends TransformIpRegistrationWorkflow
 
   if ("derivData" in request) {
     const derivData = await validateDerivativeData({
-      derivativeDataInput: request.derivData as DerivativeDataInput,
+      derivativeDataInput: request.derivData,
       rpcClient,
       chainId,
       wallet,
@@ -874,6 +887,10 @@ export const handleNftRequest = async <T extends TransformIpRegistrationWorkflow
               transformRequest.sigMetadataAndRegister,
             ],
           }),
+        },
+        extraData: {
+          royaltyShares: request.royaltyShares,
+          deadline: calculatedDeadline,
         },
       } as TransformIpRegistrationWorkflowResponse<T>;
     }
@@ -992,4 +1009,140 @@ export const mergeSpenders = (
     },
     [...previousSpenders],
   );
+};
+
+export const prepareRoyaltyTokensDistribution = async ({
+  royaltyDistributionRequests,
+  ipRegisteredLog,
+  ipRoyaltyVault,
+  rpcClient,
+  wallet,
+  chainId,
+}: PrepareDistributeRoyaltyTokensRequestConfig): Promise<
+  TransformIpRegistrationWorkflowResponse[]
+> => {
+  if (royaltyDistributionRequests.length === 0) {
+    return [];
+  }
+
+  const results: TransformIpRegistrationWorkflowResponse[] = [];
+
+  for (const req of royaltyDistributionRequests) {
+    const filterIpIdAndTokenId = ipRegisteredLog.find(
+      ({ tokenContract, tokenId }) => tokenContract === req.nftContract && tokenId === req.tokenId,
+    );
+
+    if (filterIpIdAndTokenId) {
+      const { royaltyShares, totalAmount } = getRoyaltyShares(req.royaltyShares ?? []);
+      const calculatedDeadline = await getCalculatedDeadline(rpcClient, req.deadline);
+
+      const response =
+        await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
+          {
+            request: {
+              ipId: filterIpIdAndTokenId.ipId,
+              ipRoyaltyVault: ipRoyaltyVault.find(
+                (item) => item.ipId === filterIpIdAndTokenId.ipId,
+              )!.ipRoyaltyVault,
+              royaltyShares,
+              totalAmount,
+              deadline: calculatedDeadline,
+            },
+            rpcClient,
+            wallet,
+            chainId,
+          },
+        );
+
+      results.push(response);
+    }
+  }
+
+  return results;
+};
+
+const aggregateTransformIpRegistrationWorkflow = (
+  transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[],
+  multicall3Address: Address,
+): AggregateRegistrationRequest => {
+  const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
+
+  for (const res of transferWorkflowResponses) {
+    const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
+    const targetAddress = isUseMulticall3 ? multicall3Address : workflowClient.address;
+
+    if (!aggregateRegistrationRequest[targetAddress]) {
+      aggregateRegistrationRequest[targetAddress] = {
+        spenders: [],
+        totalFees: 0n,
+        encodedTxData: [],
+        contractCall: [],
+      };
+    }
+
+    const currentRequest = aggregateRegistrationRequest[targetAddress];
+    currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
+    currentRequest.totalFees += totalFees || 0n;
+    currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
+    if (isUseMulticall3) {
+      currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
+    } else {
+      currentRequest.contractCall = [
+        () => {
+          return workflowClient.multicall({
+            data: currentRequest.encodedTxData.map((tx) => tx.data),
+          });
+        },
+      ];
+    }
+  }
+
+  return aggregateRegistrationRequest;
+};
+
+export const handleMulticall = async ({
+  transferWorkflowResponses,
+  multicall3Address,
+  wipOptions,
+  rpcClient,
+  wallet,
+  walletAddress,
+}: HandleMulticallConfig): Promise<TransactionResponse[]> => {
+  const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
+    transferWorkflowResponses,
+    multicall3Address,
+  );
+  const txResponses: TransactionResponse[] = [];
+  for (const key in aggregateRegistrationRequest) {
+    const { spenders, totalFees, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
+    const contractCalls = async () => {
+      const txHashes: Hex[] = [];
+      for (const call of contractCall) {
+        const txHash = await call();
+        txHashes.push(txHash);
+      }
+      return txHashes;
+    };
+    const useMulticallWhenPossible =
+      key === multicall3Address ? wipOptions?.useMulticallWhenPossible !== false : false;
+    const txResponse = await contractCallWithFees({
+      totalFees,
+      options: {
+        wipOptions: {
+          ...wipOptions,
+          useMulticallWhenPossible,
+        },
+      },
+      multicall3Address,
+      rpcClient,
+      tokenSpenders: spenders,
+      contractCall: contractCalls,
+      sender: walletAddress,
+      wallet,
+      encodedTxs: encodedTxData,
+      txOptions: { waitForTransaction: true },
+    });
+    txResponses.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
+  }
+  return txResponses;
 };
