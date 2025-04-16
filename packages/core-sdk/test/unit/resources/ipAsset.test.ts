@@ -3713,7 +3713,9 @@ describe("Test IpAssetClient", () => {
         });
       expect(result).to.deep.equal({
         txHash: txHash,
-        receipt: {},
+        receipt: {
+          "transactionHash": txHash,
+        },
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 0n,
       });
