@@ -6,6 +6,7 @@ import {
   zeroHash,
   encodeFunctionData,
   TransactionReceipt,
+  Hash,
 } from "viem";
 
 import { chain, validateAddress } from "../utils/utils";
@@ -54,6 +55,7 @@ import {
   BatchRegisterIpWithOptions,
   BatchRegisterIpWithOptionsResponse,
   TransformIpRegistrationWorkflowResponse,
+  BatchRegistrationResult,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -1355,7 +1357,7 @@ export class IPAssetClient {
    */
   public async batchRegisterIpWithOptions(
     request: BatchRegisterIpWithOptions,
-  ): Promise<BatchRegisterIpWithOptionsResponse[]> {
+  ): Promise<BatchRegisterIpWithOptionsResponse> {
     try {
       const transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[] = [];
       for (const req of request.requests) {
@@ -1382,7 +1384,6 @@ export class IPAssetClient {
         royaltyShares: res.extraData!.royaltyShares,
         deadline: res.extraData!.deadline,
       }));
-
       // Process initial registration transactions
       const txResponses = await handleMulticall({
         transferWorkflowResponses,
@@ -1394,7 +1395,7 @@ export class IPAssetClient {
         chainId: this.chainId,
       });
 
-      const responses: BatchRegisterIpWithOptionsResponse[] = [];
+      const responses: BatchRegistrationResult[] = [];
       const prepareRoyaltyTokensDistributionResponses: TransformIpRegistrationWorkflowResponse[] =
         [];
 
@@ -1421,14 +1422,12 @@ export class IPAssetClient {
           txHash,
           receipt: receipt!,
           ipIdAndTokenId: ipIdAndTokenIdEvent,
-          ipRoyaltyVault: ipRoyaltyVaultEvent,
         });
       }
-
+      let distributeTxHashes: Hash[] | undefined;
       // Process royalty distribution transactions if any
-      //TODO: not sure if it should return txhash
       if (prepareRoyaltyTokensDistributionResponses.length > 0) {
-        await handleMulticall({
+        const txResponse = await handleMulticall({
           transferWorkflowResponses: prepareRoyaltyTokensDistributionResponses,
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
@@ -1437,9 +1436,13 @@ export class IPAssetClient {
           wipOptions: request.wipOptions,
           chainId: this.chainId,
         });
+        distributeTxHashes = txResponse.map((tx) => tx.txHash);
       }
 
-      return responses;
+      return {
+        registrationResults: responses,
+        ...(distributeTxHashes && { distributeTxHashes }),
+      };
     } catch (error) {
       handleError(error, "Failed to batch register IP with options");
     }

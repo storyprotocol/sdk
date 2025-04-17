@@ -475,7 +475,7 @@ export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkf
       chainId,
       wallet,
     });
-   const totalFees = nftMintFee + totalDerivativeMintingFee;
+    const totalFees = nftMintFee + totalDerivativeMintingFee;
     const requestWithDeriv = { ...baseRequest, derivData };
 
     if ("royaltyShares" in request) {
@@ -1064,12 +1064,13 @@ export const prepareRoyaltyTokensDistribution = async ({
 const aggregateTransformIpRegistrationWorkflow = (
   transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[],
   multicall3Address: Address,
+  disableMulticallWhenPossible: boolean,
 ): AggregateRegistrationRequest => {
   const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
-
   for (const res of transferWorkflowResponses) {
     const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
-    const targetAddress = isUseMulticall3 ? multicall3Address : workflowClient.address;
+    const shouldUseMulticall = !disableMulticallWhenPossible && isUseMulticall3;
+    const targetAddress = shouldUseMulticall ? multicall3Address : workflowClient.address;
 
     if (!aggregateRegistrationRequest[targetAddress]) {
       aggregateRegistrationRequest[targetAddress] = {
@@ -1084,7 +1085,7 @@ const aggregateTransformIpRegistrationWorkflow = (
     currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
     currentRequest.totalFees += totalFees || 0n;
     currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
-    if (isUseMulticall3) {
+    if (isUseMulticall3 || disableMulticallWhenPossible) {
       currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
     } else {
       currentRequest.contractCall = [
@@ -1111,6 +1112,7 @@ export const handleMulticall = async ({
   const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
     transferWorkflowResponses,
     multicall3Address,
+    wipOptions?.useMulticallWhenPossible === false,
   );
   const txResponses: TransactionResponse[] = [];
   for (const key in aggregateRegistrationRequest) {

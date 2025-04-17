@@ -474,6 +474,11 @@ export type BatchRegisterIpWithOptions = WithWipOptions & {
   txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
 };
 export type BatchRegisterIpWithOptionsResponse = {
+  distributeTxHashes?: Hash[];
+  registrationResults: BatchRegistrationResult[];
+};
+
+export type BatchRegistrationResult = {
   txHash: Hash;
   receipt: TransactionReceipt;
   ipRoyaltyVault?: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
