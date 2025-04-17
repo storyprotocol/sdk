@@ -1821,12 +1821,15 @@ describe("IP Asset Functions", () => {
   describe("Batch Register IP With Options", () => {
     let spgNftContractWithPublicMinting: Address;
     let spgNftContractWithPrivateMinting: Address;
-    let parentIpId: Hex;
-    let licenseTermsId: bigint;
+    let parentIpId1: Hex;
+    let parentIpId2: Hex;
+    let licenseTermsId1: bigint;
+    let licenseTermsId2: bigint;
     before(async () => {
-      const res1 = await client.nftClient.createNFTCollection({
-        name: "test",
-        symbol: "test",
+      // Create a public minting NFT collection
+      const publicMintingCollectionResult = await client.nftClient.createNFTCollection({
+        name: "Public Minting Collection",
+        symbol: "PMC",
         isPublicMinting: true,
         mintOpen: true,
         mintFeeRecipient: walletAddress,
@@ -1835,50 +1838,119 @@ describe("IP Asset Functions", () => {
         contractURI: "",
         txOptions: { waitForTransaction: true },
       });
-      spgNftContractWithPublicMinting = res1.spgNftContract!;
-      const res2 = await client.nftClient.createNFTCollection({
-        name: "test",
-        symbol: "test",
+      spgNftContractWithPublicMinting = publicMintingCollectionResult.spgNftContract!;
+
+      // Create a private minting NFT collection
+      const privateMintingCollectionResult = await client.nftClient.createNFTCollection({
+        name: "Private Minting Collection",
+        symbol: "PRC",
         isPublicMinting: false,
         mintOpen: true,
         mintFeeRecipient: walletAddress,
         contractURI: "",
         txOptions: { waitForTransaction: true },
       });
-      spgNftContractWithPrivateMinting = res2.spgNftContract!;
-      const res3 = await client.license.registerCommercialRemixPIL({
+      spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
+
+      // Register a commercial remix PIL license
+      const commercialRemixPILResult = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: 10n,
         commercialRevShare: 10,
         currency: WIP_TOKEN_ADDRESS,
         txOptions: { waitForTransaction: true },
       });
-      licenseTermsId = res3.licenseTermsId!;
-      const res4 = await client.ipAsset.mintAndRegisterIp({
+      licenseTermsId1 = commercialRemixPILResult.licenseTermsId!;
+
+      // Register a commercial use PIL license
+      const commercialUsePILResult = await client.license.registerPILTerms({
+        transferable: true,
+        royaltyPolicy: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+        defaultMintingFee: 5n,
+        expiration: 0n,
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        commercialRevShare: 10,
+        commercialRevCeiling: 0n,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        derivativeRevCeiling: 0n,
+        currency: WIP_TOKEN_ADDRESS,
+        uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
+        txOptions: { waitForTransaction: true },
+      });
+      licenseTermsId2 = commercialUsePILResult.licenseTermsId!;
+
+      // Mint and register IP with public minting contract
+      const publicMintingIpResult = await client.ipAsset.mintAndRegisterIp({
         spgNftContract: spgNftContractWithPublicMinting,
         txOptions: { waitForTransaction: true },
       });
-      parentIpId = res4.ipId!;
-      const res5 = await client.license.attachLicenseTerms({
-        ipId: parentIpId,
-        licenseTermsId: licenseTermsId,
+      parentIpId1 = publicMintingIpResult.ipId!;
+
+      // Attach license terms to the first IP
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId1,
+        licenseTermsId: licenseTermsId1,
+        txOptions: { waitForTransaction: true },
+      });
+
+      // Mint and register IP with private minting contract
+      const privateMintingIpResult = await client.ipAsset.mintAndRegisterIp({
+        spgNftContract: spgNftContractWithPrivateMinting,
+        txOptions: { waitForTransaction: true },
+      });
+      parentIpId2 = privateMintingIpResult.ipId!;
+
+      // Attach license terms to the second IP
+      await client.license.attachLicenseTerms({
+        ipId: parentIpId2,
+        licenseTermsId: licenseTermsId2,
         txOptions: { waitForTransaction: true },
       });
     });
-    it("should successfully pass given spg nft contract", async () => {
+
+    it("should successfully batch register multiple IP assets with SPG NFT contracts", async () => {
       const userBalanceBefore = await client.getBalance(walletAddress);
       const requests: IpRegistrationWorkflowRequest[] = [
-        //mintAndRegisterIpAndMakeDerivative and total fees: 10
+        /**
+         * mintAndRegisterIpAndMakeDerivative workflow
+         * - Total fees: 10(10+0) WIP tokens
+         * - Uses `derivativeWorkflowsClient` multicall due to the private minting
+         */
         {
           spgNftContract: spgNftContractWithPrivateMinting,
           derivData: {
-            parentIpIds: [parentIpId],
-            licenseTermsIds: [licenseTermsId],
+            parentIpIds: [parentIpId1],
+            licenseTermsIds: [licenseTermsId1],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
         },
-        //mintAndRegisterIpAssetWithPilTerms and total fees: 0
+        /**
+         * mintAndRegisterIpAndMakeDerivative workflow
+         * - Total fees: 15(10+5) WIP tokens
+         * - Uses `multicall3Client` multicall3 due to the public minting
+         */
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        /**
+         * mintAndRegisterIpAssetWithPilTerms workflow
+         * - Total fees: 0 WIP tokens
+         * - Uses `licenseAttachmentWorkflowsClient` multicall due to the private minting
+         */
         {
           spgNftContract: spgNftContractWithPrivateMinting,
           allowDuplicates: true,
@@ -1916,12 +1988,58 @@ describe("IP Asset Functions", () => {
             },
           ],
         },
-        //mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens and total fees: 20
+        /**
+         * mintAndRegisterIpAssetWithPilTerms workflow
+         * - Total fees: 10(10+0) WIP tokens
+         * - Uses `multicall3Client` multicall3 due to the public minting
+         */
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          allowDuplicates: true,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
+            },
+          ],
+        },
+        /**
+         * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+         * - Total fees: 20(10+10) WIP tokens
+         * - Uses `multicall3Client` multicall3 due to the public minting
+         */
         {
           spgNftContract: spgNftContractWithPublicMinting,
           derivData: {
-            parentIpIds: [parentIpId],
-            licenseTermsIds: [licenseTermsId],
+            parentIpIds: [parentIpId1],
+            licenseTermsIds: [licenseTermsId1],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -1933,7 +2051,32 @@ describe("IP Asset Functions", () => {
             },
           ],
         },
-        //mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens and total fees: 10
+        /**
+         * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+         * - Total fees: 5(0+5) WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the private minting
+         */
+        {
+          spgNftContract: spgNftContractWithPrivateMinting,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        /**
+         * mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 10(10+0) WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the mint tokens is given `msg.sender` as the recipient
+         */
         {
           spgNftContract: spgNftContractWithPublicMinting,
           licenseTermsData: [
@@ -1962,39 +2105,97 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: walletAddress,
-              percentage: 10, // 100%
+              percentage: 10,
+            },
+          ],
+        },
+        /**
+         * mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 0 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the mint tokens is given `msg.sender` as the recipient
+         */
+        {
+          spgNftContract: spgNftContractWithPrivateMinting,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "test case",
+              },
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 10,
             },
           ],
         },
       ];
+      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
       const result = await client.ipAsset.batchRegisterIpWithOptions({
         requests: requests,
       });
-      const totalFees = 10 + 0 + 20 + 10;
+      const totalFees = 10 + 15 + 0 + 10 + 20 + 5 + 10 + 0;
       const userBalanceAfter = await client.getBalance(walletAddress);
-      expect(result.length).equal(requests.length);
+      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
       expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
-      const wipBalance = await client.wipClient.balanceOf(walletAddress);
-      expect(wipBalance).equal(0n);
-      expect(result.map((r) => r.ipIdAndTokenId.length).reduce((a, b) => a + b, 0)).equal(
+      expect(wipBalanceAfter).equal(wipBalanceBefore);
+      /**
+       * Transaction breakdown:
+       * - derivativeWorkflowsClient: 1 arg
+       * - multicall3Client: 3 args
+       * - licenseAttachmentWorkflowsClient: 1 arg
+       * - royaltyTokenDistributionWorkflowsClient: 3 args
+       *
+       * Summary:
+       * - Total transactions: 4 (4 unique transaction hashes)
+       * - Total IP assets registered: 8
+       */
+      expect(result.registrationResults.length).equal(4);
+      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
+      expect(result.distributeTxHashes).undefined;
     });
 
-    it("should successfully pass given nft contract", async () => {
+    it("should successfully batch register multiple IP assets with NFT contracts", async () => {
       const tokenId1 = await getTokenId();
       const tokenId2 = await getTokenId();
       const tokenId3 = await getTokenId();
       const tokenId4 = await getTokenId();
+      const tokenId5 = await getTokenId();
+      const tokenId6 = await getTokenId();
+      const tokenId7 = await getTokenId();
       const userBalanceBefore = await client.getBalance(walletAddress);
       const requests: IpRegistrationWorkflowRequest[] = [
-        // registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens and total fees: 10
+        /**
+         * registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 10 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
+         * - Need to distribute royalty tokens
+         */
         {
           nftContract: mockERC721,
           tokenId: tokenId1!,
           derivData: {
-            parentIpIds: [parentIpId],
-            licenseTermsIds: [licenseTermsId],
+            parentIpIds: [parentIpId1],
+            licenseTermsIds: [licenseTermsId1],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2006,10 +2207,37 @@ describe("IP Asset Functions", () => {
             },
           ],
         },
-        // registerIpAndAttachPilTerms and total fees: 0
+        /**
+         * registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 5 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
+         * - Need to distribute royalty tokens
+         */
         {
           nftContract: mockERC721,
           tokenId: tokenId2!,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        /**
+         * registerIpAndAttachPilTerms  workflow
+         * - Total fees: 0 WIP tokens
+         * - Uses `licenseAttachmentWorkflowsClient` multicall
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId3!,
           deadline: 1000n,
           licenseTermsData: [
             {
@@ -2076,10 +2304,15 @@ describe("IP Asset Functions", () => {
             },
           ],
         },
-        // registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens and total fees: 0
+        /**
+         * registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 0 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
+         * - Need to distribute royalty tokens
+         */
         {
           nftContract: mockERC721,
-          tokenId: tokenId3!,
+          tokenId: tokenId4!,
           licenseTermsData: [
             {
               terms: {
@@ -2137,31 +2370,557 @@ describe("IP Asset Functions", () => {
             },
           ],
         },
-        // registerDerivativeIp and total fees: 10
+        /**
+         * registerDerivativeIp workflow
+         * - Total fees: 5 WIP tokens
+         * - Uses `derivativeWorkflowsClient` multicall
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId5!,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        /**
+         * registerDerivativeIp workflow
+         * - Total fees: 10 WIP tokens
+         * - Uses `derivativeWorkflowsClient` multicall
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId6!,
+          derivData: {
+            parentIpIds: [parentIpId1],
+            licenseTermsIds: [licenseTermsId1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        /**
+         * registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 5 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
+         * - Need to distribute royalty tokens
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId7!,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 10, // 100%
+            },
+          ],
+        },
+      ];
+      const totalFees = 10 + 5 + 0 + 0 + 5 + 10 + 5;
+      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
+      const result = await client.ipAsset.batchRegisterIpWithOptions({
+        requests: requests,
+      });
+      console.log("result", result);
+      const userBalanceAfter = await client.getBalance(walletAddress);
+      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
+      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
+      expect(wipBalanceAfter).equal(wipBalanceBefore);
+      /**
+       * Transaction breakdown:
+       * - royaltyTokenDistributionWorkflowsClient: 4 args
+       * - licenseAttachmentWorkflowsClient: 1 arg
+       * - derivativeWorkflowsClient: 2 args
+       *
+       * Summary:
+       * - Total transactions: 3 (3 unique transaction hashes)
+       * - Total IP assets registered: 7
+       */
+      expect(result.registrationResults.length).equal(3);
+      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
+        requests.length,
+      );
+      expect(result.distributeTxHashes).not.undefined;
+    });
+
+    it("should successfully register IP assets using a combination of NFT contracts and SPG NFT contracts", async () => {
+      const tokenId1 = await getTokenId();
+      const tokenId2 = await getTokenId();
+      const tokenId3 = await getTokenId();
+      const tokenId4 = await getTokenId();
+      const requests: IpRegistrationWorkflowRequest[] = [
+        /**
+         * mintAndRegisterIpAndMakeDerivative workflow
+         * - Total fees: 15(10+5) WIP tokens
+         * - Uses `multicall3Client` multicall3 due to the public minting
+         */
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        /**
+         * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+         * - Total fees: 5(0+5) WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the private minting
+         */
+        {
+          spgNftContract: spgNftContractWithPrivateMinting,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        /**
+         * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+         * - Total fees: 20(10+10) WIP tokens
+         * - Uses `multicall3Client` multicall3 due to the public minting
+         */
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          derivData: {
+            parentIpIds: [parentIpId1],
+            licenseTermsIds: [licenseTermsId1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        /**
+         * mintAndRegisterIpAndMakeDerivative workflow
+         * - Total fees: 10(10+0) WIP tokens
+         * - Uses `derivativeWorkflowsClient` multicall due to the private minting
+         */
+        {
+          spgNftContract: spgNftContractWithPrivateMinting,
+          derivData: {
+            parentIpIds: [parentIpId1],
+            licenseTermsIds: [licenseTermsId1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        /**
+         * registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 5 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
+         * - Need to distribute royalty tokens
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId1!,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 10, // 100%
+            },
+          ],
+        },
+        /**
+         * registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 0 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
+         * - Need to distribute royalty tokens
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId2!,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: erc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 43,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 17,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 2,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 38,
+            },
+          ],
+        },
+        /**
+         * registerIpAndAttachPilTerms  workflow
+         * - Total fees: 0 WIP tokens
+         * - Uses `licenseAttachmentWorkflowsClient` multicall
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId3!,
+          deadline: 1000n,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: zeroAddress,
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: false,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 10000n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+        },
+        /**
+         * registerDerivativeIp workflow
+         * - Total fees: 10 WIP tokens
+         * - Uses `derivativeWorkflowsClient` multicall
+         */
         {
           nftContract: mockERC721,
           tokenId: tokenId4!,
           derivData: {
-            parentIpIds: [parentIpId],
-            licenseTermsIds: [licenseTermsId],
+            parentIpIds: [parentIpId1],
+            licenseTermsIds: [licenseTermsId1],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
         },
       ];
-      const totalFees = 10 + 0 + 0 + 10;
+      const totalFees = 15 + 5 + 20 + 10 + 5 + 0 + 0 + 10;
+      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
+      const userBalanceBefore = await client.getBalance(walletAddress);
       const result = await client.ipAsset.batchRegisterIpWithOptions({
         requests: requests,
       });
       const userBalanceAfter = await client.getBalance(walletAddress);
-      expect(result.length).equal(requests.length - 1);
+      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
       expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
-      const wipBalance = await client.wipClient.balanceOf(walletAddress);
-      expect(wipBalance).equal(0n);
-      expect(result.map((r) => r.ipIdAndTokenId.length).reduce((a, b) => a + b, 0)).equal(
+      expect(wipBalanceAfter).equal(wipBalanceBefore);
+      /**
+       * Transaction breakdown:
+       * - multicall3Client: 2 args
+       * - royaltyTokenDistributionWorkflowsClient: 3 args
+       * - derivativeWorkflowsClient: 2 args
+       * - licenseAttachmentWorkflowsClient: 1 arg
+       *
+       * Summary:
+       * - Total transactions: 4 (4 unique transaction hashes)
+       * - Total IP assets registered: 8
+       */
+      expect(result.registrationResults.length).equal(4);
+      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
+      expect(result.distributeTxHashes).not.undefined;
+    });
+
+    it("should successfully register IP assets with multicall disabled", async () => {
+      const tokenId1 = await getTokenId();
+      const tokenId2 = await getTokenId();
+
+      const requests: IpRegistrationWorkflowRequest[] = [
+        /**
+         * mintAndRegisterIpAndMakeDerivative workflow
+         * - Total fees: 15(10+5) WIP tokens
+         * - Uses `derivativeWorkflowsClient` to call the this method
+         */
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        /**
+         * mintAndRegisterIpAssetWithPilTerms workflow
+         * - Total fees: 0 WIP tokens
+         * - Uses `licenseAttachmentWorkflowsClient` to call the this method
+         */
+        {
+          spgNftContract: spgNftContractWithPrivateMinting,
+          allowDuplicates: true,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
+            },
+          ],
+        },
+        /**
+         * mintAndRegisterIpAssetWithPilTerms workflow
+         * - Total fees: 10(10+0) WIP tokens
+         * - Uses `licenseAttachmentWorkflowsClient` to call the this method
+         */
+        {
+          spgNftContract: spgNftContractWithPublicMinting,
+          allowDuplicates: true,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
+            },
+          ],
+        },
+        /**
+         * registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 5 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient`to call the this method
+         * - Need to distribute royalty tokens
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId1!,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        /**
+         * registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
+         * - Total fees: 5 WIP tokens
+         * - Uses `royaltyTokenDistributionWorkflowsClient`to call the this method
+         * - Need to distribute royalty tokens
+         */
+        {
+          nftContract: mockERC721,
+          tokenId: tokenId2!,
+          derivData: {
+            parentIpIds: [parentIpId2],
+            licenseTermsIds: [licenseTermsId2],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+      ];
+      const userBalanceBefore = await client.getBalance(walletAddress);
+      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
+      const totalFees = 15 + 0 + 10 + 5 + 5;
+      const result = await client.ipAsset.batchRegisterIpWithOptions({
+        requests: requests,
+        wipOptions: {
+          useMulticallWhenPossible: false,
+        },
+      });
+      console.log("result", result);
+      const userBalanceAfter = await client.getBalance(walletAddress);
+      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
+
+      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
+      expect(wipBalanceAfter).equal(wipBalanceBefore);
+      /**
+       * Transaction breakdown:
+       * - derivativeWorkflowsClient: 1 args
+       * - licenseAttachmentWorkflowsClient: 1 args
+       * - royaltyTokenDistributionWorkflowsClient: 1 arg
+       * - licenseAttachmentWorkflowsClient: 1 arg
+       *
+       * Summary:
+       * - Total transactions: 4 (4 unique transaction hashes)
+       * - Total IP assets registered: 4
+       */
+      expect(result.registrationResults.length).equal(requests.length);
+      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
+        requests.length,
+      );
+      expect(result.distributeTxHashes?.length).equal(2);
     });
   });
 });
