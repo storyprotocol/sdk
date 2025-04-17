@@ -2431,7 +2431,6 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.batchRegisterIpWithOptions({
         requests: requests,
       });
-      console.log("result", result);
       const userBalanceAfter = await client.getBalance(walletAddress);
       expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
       const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
@@ -2899,7 +2898,6 @@ describe("IP Asset Functions", () => {
           useMulticallWhenPossible: false,
         },
       });
-      console.log("result", result);
       const userBalanceAfter = await client.getBalance(walletAddress);
       const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
 
