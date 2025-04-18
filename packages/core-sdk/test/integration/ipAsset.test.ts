@@ -958,7 +958,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: walletAddress,
-              percentage: 10, // 100%
+              percentage: 10,
             },
           ],
         });
@@ -1001,7 +1001,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: walletAddress,
-              percentage: 10, // 100%
+              percentage: 10,
             },
           ],
           txOptions: { waitForTransaction: true },
@@ -1028,7 +1028,7 @@ describe("IP Asset Functions", () => {
           });
         }
 
-        // create a nft collection that requires minting G
+        // create a nft collection that requires minting fee
         const rsp = await client.nftClient.createNFTCollection({
           name: "Premium Collection",
           symbol: "PC",
@@ -1818,7 +1818,7 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe("Batch Register IP With Options", () => {
+  describe("Batch Register IP Assets With Optimized Workflows", () => {
     let spgNftContractWithPublicMinting: Address;
     let spgNftContractWithPrivateMinting: Address;
     let parentIpId1: Hex;
@@ -2171,7 +2171,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeTxHashes).undefined;
+      expect(result.distributeRoyaltyTokensTxHashes).undefined;
     });
 
     it("should successfully batch register multiple IP assets with NFT contracts", async () => {
@@ -2421,7 +2421,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: walletAddress,
-              percentage: 10, // 100%
+              percentage: 10,
             },
           ],
         },
@@ -2449,7 +2449,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeTxHashes).not.undefined;
+      expect(result.distributeRoyaltyTokensTxHashes).not.undefined;
     });
 
     it("should successfully register IP assets using a combination of NFT contracts and SPG NFT contracts", async () => {
@@ -2549,7 +2549,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: walletAddress,
-              percentage: 10, // 100%
+              percentage: 10,
             },
           ],
         },
@@ -2735,7 +2735,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeTxHashes).not.undefined;
+      expect(result.distributeRoyaltyTokensTxHashes).not.undefined;
     });
 
     it("should successfully register IP assets with multicall disabled", async () => {
@@ -2918,7 +2918,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeTxHashes?.length).equal(2);
+      expect(result.distributeRoyaltyTokensTxHashes?.length).equal(2);
     });
   });
 });

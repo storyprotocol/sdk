@@ -1,4 +1,4 @@
-import { Hash, maxUint256 } from "viem";
+import { Hash, maxUint256, PublicClient, WaitForTransactionReceiptParameters } from "viem";
 
 import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
@@ -17,6 +17,7 @@ import {
   predictMintingLicenseFee,
   PredictMintingLicenseFeeParams,
 } from "./predictMintingLicenseFee";
+import { TxOptions } from "../types/options";
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -211,14 +212,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
-    if (Array.isArray(txHash)) {
-      return waitForTxReceipts({
-        rpcClient,
-        txOptions,
-        txHashes: txHash,
-      }) as ContractCallWithFeesResponse<T>;
-    }
-    return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
+    return handleTransactionResponse(txHash, rpcClient, txOptions);
   }
   const balance = await tokenClient.balanceOf(sender);
   const autoApprove = selectedOptions?.enableAutoApprove !== false;
@@ -238,14 +232,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
       });
     }
     const txHash = await contractCall();
-    if (Array.isArray(txHash)) {
-      return waitForTxReceipts({
-        rpcClient,
-        txOptions,
-        txHashes: txHash,
-      }) as ContractCallWithFeesResponse<T>;
-    }
-    return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
+    return handleTransactionResponse(txHash, rpcClient, txOptions);
   }
 
   if (!isWip) {
@@ -290,6 +277,14 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     wallet,
     calls,
   });
+  return handleTransactionResponse(txHash, rpcClient, txOptions) as ContractCallWithFeesResponse<T>;
+};
+
+export const handleTransactionResponse = <T extends Hash | Hash[] = Hash>(
+  txHash: T,
+  rpcClient: PublicClient,
+  txOptions?: TxOptions,
+) => {
   if (Array.isArray(txHash)) {
     return waitForTxReceipts({
       rpcClient,

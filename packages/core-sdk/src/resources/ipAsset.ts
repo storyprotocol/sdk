@@ -1430,7 +1430,7 @@ export class IPAssetClient {
           ipIdAndTokenId: ipIdAndTokenIdEvent,
         });
       }
-      let distributeTxHashes: Hash[] | undefined;
+      let distributeRoyaltyTokensTxHashes: Hash[] | undefined;
       // Process royalty distribution transactions if any
       if (prepareRoyaltyTokensDistributionResponses.length > 0) {
         const txResponse = await handleMulticall({
@@ -1442,12 +1442,14 @@ export class IPAssetClient {
           wipOptions: request.wipOptions,
           chainId: this.chainId,
         });
-        distributeTxHashes = txResponse.map((tx) => tx.txHash);
+        distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);
       }
 
       return {
         registrationResults: responses,
-        ...(distributeTxHashes && { distributeRoyaltyTokensTxHashes: distributeTxHashes }),
+        ...(distributeRoyaltyTokensTxHashes && {
+          distributeRoyaltyTokensTxHashes,
+        }),
       };
     } catch (error) {
       handleError(error, "Failed to batch register IP assets with optimized workflows");
@@ -1548,7 +1550,7 @@ export class IPAssetClient {
       );
     }
 
-    const { receipt, txHash } = await contractCallWithFees({
+    const { txHash, receipt } = await contractCallWithFees({
       totalFees,
       options: { wipOptions },
       multicall3Address: this.multicall3Client.address,

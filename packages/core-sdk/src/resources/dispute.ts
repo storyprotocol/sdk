@@ -99,7 +99,7 @@ export class DisputeClient {
         return { encodedTxData };
       } else {
         const contractCall = () => this.disputeModuleClient.raiseDispute(req);
-        const txResponse = await contractCallWithFees({
+        const { txHash, receipt } = await contractCallWithFees({
           totalFees: bonds,
           options: {
             wipOptions: {
@@ -122,7 +122,6 @@ export class DisputeClient {
           txOptions: request.txOptions,
           sender: this.wallet.account!.address,
         });
-        const { txHash, receipt } = txResponse;
         if (!receipt) {
           return { txHash };
         }
@@ -324,7 +323,7 @@ export class DisputeClient {
         });
       };
 
-      const txResponse = await contractCallWithFees({
+      const { txHash, receipt } = await contractCallWithFees({
         totalFees: bond,
         options: {
           wipOptions: {
@@ -349,7 +348,6 @@ export class DisputeClient {
         sender: this.wallet.account!.address,
         txOptions: request.txOptions,
       });
-      const { txHash, receipt } = txResponse;
       if (!receipt) {
         return { txHash };
       }
