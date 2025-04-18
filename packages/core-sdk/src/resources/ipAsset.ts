@@ -838,6 +838,7 @@ export class IPAssetClient {
         spgSpenderAddress: this.registrationWorkflowsClient.address,
         encodedTxs: [encodedTxData],
         contractCall,
+        spgNftContract: object.spgNftContract,
         txOptions: request.txOptions,
         wipOptions: {
           ...request.wipOptions,
