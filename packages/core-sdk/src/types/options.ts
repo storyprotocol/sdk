@@ -68,8 +68,15 @@ export type WithWipOptions = {
   /** options to configure WIP behavior */
   wipOptions?: WipOptions;
 };
-export type HandleTxOptionsParams = {
-  txHash: Hash | Hash[];
+
+export type WaitForTransactionReceiptRequest = {
+  txHash: Hash;
+  txOptions?: TxOptions;
+  rpcClient: PublicClient;
+};
+
+export type WaitForTransactionReceiptsRequest = {
+  txHashes: Hash[];
   txOptions?: TxOptions;
   rpcClient: PublicClient;
 };

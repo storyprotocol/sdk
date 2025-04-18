@@ -23,7 +23,7 @@ import {
 import { validateAddress } from "../utils/utils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
-import { handleTxOptions } from "../utils/txOptions";
+import { waitForTxReceipt } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
@@ -231,13 +231,12 @@ export class DisputeClient {
         }
       }
       return await Promise.all(
-        txHashes.map(
-          (txHash) =>
-            handleTxOptions({
-              txHash,
-              txOptions: request.txOptions,
-              rpcClient: this.rpcClient,
-            }) as Promise<TransactionResponse>,
+        txHashes.map((txHash) =>
+          waitForTxReceipt({
+            txHash,
+            txOptions: request.txOptions,
+            rpcClient: this.rpcClient,
+          }),
         ),
       );
     } catch (error) {

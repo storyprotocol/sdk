@@ -10,7 +10,7 @@ import {
   ContractCallWithFees,
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
-import { handleTxOptions } from "./txOptions";
+import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
 import { TransactionResponse } from "../types/options";
 import { ERC20Client, WipTokenClient } from "./token";
 import {
@@ -211,7 +211,10 @@ export const contractCallWithFees = async ({
   // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
-    return handleTxOptions({ rpcClient, txOptions, txHash });
+    if (Array.isArray(txHash)) {
+      return waitForTxReceipts({ rpcClient, txOptions, txHashes: txHash });
+    }
+    return waitForTxReceipt({ rpcClient, txOptions, txHash });
   }
   const balance = await tokenClient.balanceOf(sender);
   const autoApprove = selectedOptions?.enableAutoApprove !== false;
@@ -231,7 +234,10 @@ export const contractCallWithFees = async ({
       });
     }
     const txHash = await contractCall();
-    return handleTxOptions({ rpcClient, txOptions, txHash });
+    if (Array.isArray(txHash)) {
+      return waitForTxReceipts({ rpcClient, txOptions, txHashes: txHash });
+    }
+    return waitForTxReceipt({ rpcClient, txOptions, txHash });
   }
 
   if (!isWip) {
@@ -276,5 +282,8 @@ export const contractCallWithFees = async ({
     wallet,
     calls,
   });
-  return handleTxOptions({ rpcClient, txOptions, txHash });
+  if (Array.isArray(txHash)) {
+    return waitForTxReceipts({ rpcClient, txOptions, txHashes: txHash });
+  }
+  return waitForTxReceipt({ rpcClient, txOptions, txHash });
 };
