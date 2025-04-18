@@ -28,7 +28,7 @@ import { chain, validateAddress } from "./utils";
 import {
   AggregateRegistrationRequest,
   CalculateDerivativeMintingFeeConfig,
-  GeneratePrefixRegisterSignatureRequest,
+  GenerateOperationSignatureRequest,
   GetIpIdAddressConfig,
   HandleDistributeRoyaltyTokensRequestConfig,
   HandleMulticallConfig,
@@ -84,6 +84,11 @@ export const getPublicMinting = async (
   return await spgNftContractImpl.publicMinting();
 };
 
+/**
+ * Generates a signature for various IP registration and management operations.
+ * This function handles different signature types based on the provided method type,
+ * including distributing royalty tokens, registering PIL terms, making derivatives, etc.
+ */
 export const generateOperationSignature = async ({
   deadline,
   ipIdAddress,
@@ -94,7 +99,7 @@ export const generateOperationSignature = async ({
   encodeData,
   wallet,
   chainId,
-}: GeneratePrefixRegisterSignatureRequest): Promise<Hex> => {
+}: GenerateOperationSignatureRequest): Promise<Hex> => {
   const baseConfig = {
     ipId: ipIdAddress,
     deadline,
@@ -400,7 +405,7 @@ export const handleMintAndRegisterRequest = async <
       request.licenseTermsData as LicenseTermsDataInput[],
       rpcClient,
     );
-    const requestWithTerms = { ...baseRequest, licenseTermsData } as const;
+    const requestWithTerms = { ...baseRequest, licenseTermsData };
 
     if ("royaltyShares" in request) {
       return transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest({
@@ -591,8 +596,9 @@ export const calculateDerivativeMintingFee = async ({
   rpcClient,
   chainId,
   wallet,
+  sender,
 }: CalculateDerivativeMintingFeeConfig): Promise<bigint> => {
-  const walletAddress = wallet.account!.address;
+  const walletAddress = sender || wallet.account!.address;
   let totalDerivativeMintingFee = 0n;
   for (let i = 0; i < derivData.parentIpIds.length; i++) {
     const derivativeMintingFee = await calculateLicenseWipMintFee({
@@ -755,7 +761,6 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
   chainId,
   totalDerivativeMintingFee,
 }: TransferMintAndRegisterIpAndMakeDerivativeRequestConfig): TransformIpRegistrationWorkflowResponse<T> => {
-  // mintAndRegisterIpAndMakeDerivative request
   return {
     transformRequest: request as T,
     isUseMulticall3: isPublicMinting,
@@ -925,7 +930,6 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
       signature,
     },
   };
-  // registerIpAndMakeDerivativeAndDeployRoyaltyVault request
   return {
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
@@ -986,7 +990,6 @@ const transferRegisterDerivativeIpRequest = async <
       signature,
     },
   };
-  // registerDerivativeIp request
   return {
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
@@ -1114,94 +1117,6 @@ export const prepareRoyaltyTokensDistribution = async ({
   return results;
 };
 
-const aggregateTransformIpRegistrationWorkflow = (
-  transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[],
-  multicall3Address: Address,
-  disableMulticallWhenPossible: boolean,
-): AggregateRegistrationRequest => {
-  const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
-  for (const res of transferWorkflowResponses) {
-    const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
-    const shouldUseMulticall = !disableMulticallWhenPossible && isUseMulticall3;
-    const targetAddress = shouldUseMulticall ? multicall3Address : workflowClient.address;
-
-    if (!aggregateRegistrationRequest[targetAddress]) {
-      aggregateRegistrationRequest[targetAddress] = {
-        spenders: [],
-        totalFees: 0n,
-        encodedTxData: [],
-        contractCall: [],
-      };
-    }
-
-    const currentRequest = aggregateRegistrationRequest[targetAddress];
-    currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
-    currentRequest.totalFees += totalFees || 0n;
-    currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
-    if (isUseMulticall3 || disableMulticallWhenPossible) {
-      currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
-    } else {
-      currentRequest.contractCall = [
-        () => {
-          return workflowClient.multicall({
-            data: currentRequest.encodedTxData.map((tx) => tx.data),
-          });
-        },
-      ];
-    }
-  }
-
-  return aggregateRegistrationRequest;
-};
-
-export const handleMulticall = async ({
-  transferWorkflowResponses,
-  multicall3Address,
-  wipOptions,
-  rpcClient,
-  wallet,
-  walletAddress,
-}: HandleMulticallConfig): Promise<TransactionResponse[]> => {
-  const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
-    transferWorkflowResponses,
-    multicall3Address,
-    wipOptions?.useMulticallWhenPossible === false,
-  );
-  const txResponses: TransactionResponse[] = [];
-  for (const key in aggregateRegistrationRequest) {
-    const { spenders, totalFees, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
-    const contractCalls = async () => {
-      const txHashes: Hex[] = [];
-      for (const call of contractCall) {
-        const txHash = await call();
-        txHashes.push(txHash);
-      }
-      return txHashes;
-    };
-    const useMulticallWhenPossible =
-      key === multicall3Address ? wipOptions?.useMulticallWhenPossible !== false : false;
-    const txResponse = await contractCallWithFees({
-      totalFees,
-      options: {
-        wipOptions: {
-          ...wipOptions,
-          useMulticallWhenPossible,
-        },
-      },
-      multicall3Address,
-      rpcClient,
-      tokenSpenders: spenders,
-      contractCall: contractCalls,
-      sender: walletAddress,
-      wallet,
-      encodedTxs: encodedTxData,
-      txOptions: { waitForTransaction: true },
-    });
-    txResponses.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
-  }
-  return txResponses;
-};
-
 export const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRequest>({
   request,
   rpcClient,
@@ -1231,7 +1146,7 @@ export const handleRegisterRequest = async <T extends TransformIpRegistrationWor
 
   if ("licenseTermsData" in request) {
     const { licenseTermsData } = await validateLicenseTermsData(
-      request.licenseTermsData as LicenseTermsDataInput[],
+      request.licenseTermsData,
       rpcClient,
     );
     const requestWithTerms = { ...baseRequest, licenseTermsData };
@@ -1321,4 +1236,92 @@ export const transformRegistrationRequest = async <
   }
 
   throw new Error("Invalid registration request type");
+};
+
+const aggregateTransformIpRegistrationWorkflow = (
+  transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[],
+  multicall3Address: Address,
+  disableMulticallWhenPossible: boolean,
+): AggregateRegistrationRequest => {
+  const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
+  for (const res of transferWorkflowResponses) {
+    const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
+    const shouldUseMulticall = !disableMulticallWhenPossible && isUseMulticall3;
+    const targetAddress = shouldUseMulticall ? multicall3Address : workflowClient.address;
+
+    if (!aggregateRegistrationRequest[targetAddress]) {
+      aggregateRegistrationRequest[targetAddress] = {
+        spenders: [],
+        totalFees: 0n,
+        encodedTxData: [],
+        contractCall: [],
+      };
+    }
+
+    const currentRequest = aggregateRegistrationRequest[targetAddress];
+    currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
+    currentRequest.totalFees += totalFees || 0n;
+    currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
+    if (isUseMulticall3 || disableMulticallWhenPossible) {
+      currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
+    } else {
+      currentRequest.contractCall = [
+        () => {
+          return workflowClient.multicall({
+            data: currentRequest.encodedTxData.map((tx) => tx.data),
+          });
+        },
+      ];
+    }
+  }
+
+  return aggregateRegistrationRequest;
+};
+
+export const handleMulticall = async ({
+  transferWorkflowResponses,
+  multicall3Address,
+  wipOptions,
+  rpcClient,
+  wallet,
+  walletAddress,
+}: HandleMulticallConfig): Promise<TransactionResponse[]> => {
+  const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
+    transferWorkflowResponses,
+    multicall3Address,
+    wipOptions?.useMulticallWhenPossible === false,
+  );
+  const txResponses: TransactionResponse[] = [];
+  for (const key in aggregateRegistrationRequest) {
+    const { spenders, totalFees, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
+    const contractCalls = async () => {
+      const txHashes: Hex[] = [];
+      for (const call of contractCall) {
+        const txHash = await call();
+        txHashes.push(txHash);
+      }
+      return txHashes;
+    };
+    const useMulticallWhenPossible =
+      key === multicall3Address ? wipOptions?.useMulticallWhenPossible !== false : false;
+    const txResponse = await contractCallWithFees({
+      totalFees,
+      options: {
+        wipOptions: {
+          ...wipOptions,
+          useMulticallWhenPossible,
+        },
+      },
+      multicall3Address,
+      rpcClient,
+      tokenSpenders: spenders,
+      contractCall: contractCalls,
+      sender: walletAddress,
+      wallet,
+      encodedTxs: encodedTxData,
+      txOptions: { waitForTransaction: true },
+    });
+    txResponses.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
+  }
+  return txResponses;
 };

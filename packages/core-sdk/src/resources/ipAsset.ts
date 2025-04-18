@@ -840,8 +840,6 @@ export class IPAssetClient {
         encodedTxs: [encodedTxData],
         contractCall,
         txOptions: request.txOptions,
-        //TODO: Need to create another pr to fix this bug
-        spgNftContract: object.spgNftContract,
         wipOptions: {
           ...request.wipOptions,
           useMulticallWhenPossible: false,
@@ -1205,7 +1203,6 @@ export class IPAssetClient {
    *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| `IpRoyaltyVaultDeployed`} events.
    */
-  //TODO: need to consider multicall3 error
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
@@ -1334,7 +1331,7 @@ export class IPAssetClient {
     return await this.ipAssetRegistryClient.isRegistered({ id: validateAddress(ipId) });
   }
   /**
-   * Batch register IP assets with options, supporting multiple registration methods:
+   * Batch register multiple IP assets in optimized transactions, supporting various registration methods:
    * - {@link mintAndRegisterIpAndMakeDerivative}
    * - {@link mintAndRegisterIpAssetWithPilTerms}
    * - {@link mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens}
@@ -1451,10 +1448,10 @@ export class IPAssetClient {
 
       return {
         registrationResults: responses,
-        ...(distributeTxHashes && { distributeTxHashes }),
+        ...(distributeTxHashes && { distributeRoyaltyTokensTxHashes: distributeTxHashes }),
       };
     } catch (error) {
-      handleError(error, "Failed to batch register IP with options");
+      handleError(error, "Failed to batch register IP assets with optimized workflows");
     }
   }
 
@@ -1536,6 +1533,7 @@ export class IPAssetClient {
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         chainId: this.chainId,
+        sender,
       });
       totalFees += totalDerivativeMintingFee;
       if (totalDerivativeMintingFee > 0) {

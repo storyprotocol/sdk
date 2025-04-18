@@ -474,7 +474,7 @@ export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions 
   txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
 };
 export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
-  distributeTxHashes?: Hash[];
+  distributeRoyaltyTokensTxHashes?: Hash[];
   registrationResults: BatchRegistrationResult[];
 };
 
@@ -487,14 +487,6 @@ export type BatchRegistrationResult = {
     tokenId: bigint;
   }[];
 };
-
-export type BatchRegistrationMethodsConfig = {
-  workflowClient?: DerivativeWorkflowsClient;
-  spenders: Erc20Spender[];
-  totalFees: bigint;
-  callData: EncodedTxData[];
-};
-
 export type MintSpgNftRegistrationRequest = RemoveOptionsFields<
   | MintAndRegisterIpAndMakeDerivativeRequest
   | MintAndRegisterIpAssetWithPilTermsRequest

@@ -30,7 +30,7 @@ import {
 import { Erc20Spender } from "./wip";
 import { WipOptions } from "../options";
 
-export type GeneratePrefixRegisterSignatureRequest = {
+export type GenerateOperationSignatureRequest = {
   deadline: bigint;
   ipIdAddress: Address;
   methodType: SignatureMethodType;
@@ -53,7 +53,8 @@ export enum SignatureMethodType {
   REGISTER = "register",
   BATCH_REGISTER_DERIVATIVE = "batchRegisterDerivative",
 }
-export type BasicConfig = {
+
+type BasicConfig = {
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
   chainId: ChainIds;
@@ -77,6 +78,7 @@ export type HandleDistributeRoyaltyTokensRequestConfig = BasicConfig & {
 
 export type CalculateDerivativeMintingFeeConfig = BasicConfig & {
   derivData: DerivativeData;
+  sender?: Address;
 };
 export type GetIpIdAddressConfig = BasicConfig & {
   nftContract: Address;
