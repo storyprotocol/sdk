@@ -3,7 +3,7 @@ import { Address, PublicClient, zeroAddress } from "viem";
 import {
   IpAccountImplClient,
   IpAssetRegistryClient,
-  LicenseRegistryEventClient,
+  LicenseRegistryGetLicensingConfigRequest,
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
   LicensingModuleMintLicenseTokensRequest,
@@ -37,6 +37,7 @@ import {
   PredictMintingLicenseFeeRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
+  GetLicensingConfigRequest,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import {
@@ -49,11 +50,10 @@ import { ChainIds } from "../types/config";
 import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/feeUtils";
 import { Erc20Spender } from "../types/utils/wip";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
-import { RevShareType } from "../types/common";
+import { LicensingConfig, RevShareType } from "../types/common";
 import { predictMintingLicenseFee } from "../utils/predictMintingLicenseFee";
 
 export class LicenseClient {
-  public licenseRegistryClient: LicenseRegistryEventClient;
   public licensingModuleClient: LicensingModuleClient;
   public ipAssetRegistryClient: IpAssetRegistryClient;
   public piLicenseTemplateReadOnlyClient: PiLicenseTemplateReadOnlyClient;
@@ -69,7 +69,6 @@ export class LicenseClient {
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
-    this.licenseRegistryClient = new LicenseRegistryEventClient(rpcClient);
     this.piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
     this.licenseTemplateClient = new PiLicenseTemplateClient(rpcClient, wallet);
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
@@ -362,9 +361,7 @@ export class LicenseClient {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
             ipId: req.licensorIpId,
-            licenseTemplate: validateAddress(
-              req.licenseTemplate || this.licenseTemplateClient.address,
-            ),
+            licenseTemplate: req.licenseTemplate,
             licenseTermsId: req.licenseTermsId,
           });
         if (!isAttachedLicenseTerms) {
@@ -487,7 +484,9 @@ export class LicenseClient {
     try {
       const req: LicensingModuleSetLicensingConfigRequest = {
         ipId: request.ipId,
-        licenseTemplate: validateAddress(request.licenseTemplate),
+        licenseTemplate: validateAddress(
+          request.licenseTemplate || this.licenseTemplateClient.address,
+        ),
         licenseTermsId: BigInt(request.licenseTermsId),
         licensingConfig: validateLicenseConfig(request.licensingConfig),
       };
@@ -537,6 +536,22 @@ export class LicenseClient {
       handleError(error, "Failed to set licensing config");
     }
   }
+
+  public async getLicensingConfig(request: GetLicensingConfigRequest): Promise<LicensingConfig> {
+    try {
+      const licensingConfigParam: LicenseRegistryGetLicensingConfigRequest = {
+        ipId: validateAddress(request.ipId),
+        licenseTemplate: validateAddress(
+          request.licenseTemplate || this.licenseTemplateClient.address,
+        ),
+        licenseTermsId: BigInt(request.licenseTermsId),
+      };
+      return await this.licenseRegistryReadOnlyClient.getLicensingConfig(licensingConfigParam);
+    } catch (error) {
+      handleError(error, "Failed to get licensing config");
+    }
+  }
+
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;

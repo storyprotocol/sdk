@@ -1,4 +1,4 @@
-import { Hash, maxUint256, PublicClient, WaitForTransactionReceiptParameters } from "viem";
+import { Hash, maxUint256, PublicClient } from "viem";
 
 import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
