@@ -1,4 +1,4 @@
-import { Address, Hex, WalletClient } from "viem";
+import { Address, Hex } from "viem";
 
 import { TxOptions } from "../options";
 import { EncodedTxData, SimpleWalletClient } from "../../abi/generated";
@@ -83,7 +83,7 @@ export type PermissionSignatureRequest = {
   state: Hex;
   /** The deadline for the signature in seconds. */
   deadline: string | number | bigint;
-  wallet: WalletClient;
+  wallet: SimpleWalletClient;
   chainId: string | number | bigint;
   permissions: Omit<SetPermissionsRequest, "txOptions">[];
 };

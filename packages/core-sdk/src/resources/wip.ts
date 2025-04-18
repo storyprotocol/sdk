@@ -11,7 +11,7 @@ import {
   TransferRequest,
   WithdrawRequest,
 } from "../types/resources/wip";
-import { handleTxOptions } from "../utils/txOptions";
+import { waitForTxReceipt } from "../utils/txOptions";
 
 export class WipClient {
   public wrappedIpClient: WrappedIpClient;
@@ -41,7 +41,7 @@ export class WipClient {
         value: BigInt(amount),
       });
       const txHash = await this.wallet.writeContract(call as WriteContractParameters);
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
@@ -61,7 +61,7 @@ export class WipClient {
         throw new Error("WIP withdraw amount must be greater than 0.");
       }
       const txHash = await this.wrappedIpClient.withdraw({ value: targetAmt });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
@@ -85,7 +85,7 @@ export class WipClient {
         spender,
         amount,
       });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions: req.txOptions,
         rpcClient: this.rpcClient,
@@ -117,7 +117,7 @@ export class WipClient {
         to: validateAddress(request.to),
         amount,
       });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions: request.txOptions,
         rpcClient: this.rpcClient,
@@ -141,7 +141,7 @@ export class WipClient {
         amount,
         from: validateAddress(request.from),
       });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions: request.txOptions,
         rpcClient: this.rpcClient,

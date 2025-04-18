@@ -21,7 +21,7 @@ import {
 } from "../abi/generated";
 import { validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
-import { handleTxOptions } from "../utils/txOptions";
+import { waitForTxReceipt } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
@@ -203,7 +203,7 @@ export class IPAccountClient {
         };
       });
       const txHash = await ipAccount.executeBatch({ calls, operation: 0 });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions,
         rpcClient: this.rpcClient,

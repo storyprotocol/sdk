@@ -330,6 +330,7 @@ export default defineConfig(async () => {
             "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
             "distributeRoyaltyTokens",
             "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+            "multicall",
           ],
           ArbitrationPolicyUMA: [
             "maxBonds",
@@ -368,6 +369,7 @@ export default defineConfig(async () => {
             "getDefaultLicenseTerms",
             "getRoyaltyPercent",
           ],
+          SPGNFTImpl: ["publicMinting", "mintFeeToken", "mintFee"],
         },
       }),
     ],
