@@ -415,7 +415,6 @@ export const handleMintAndRegisterRequest = async <
         },
         royaltyTokenDistributionWorkflowsClient,
         nftMintFee,
-        chainId,
       });
     }
     return transferMintAndRegisterIpAssetWithPilTermsRequest({
@@ -426,7 +425,6 @@ export const handleMintAndRegisterRequest = async <
       licenseAttachmentWorkflowsClient,
       nftMintFee,
       isPublicMinting,
-      chainId,
     });
   }
   if ("derivData" in request) {
@@ -452,7 +450,6 @@ export const handleMintAndRegisterRequest = async <
         },
         nftMintFee,
         isPublicMinting,
-        chainId,
         totalDerivativeMintingFee,
         royaltyTokenDistributionWorkflowsClient,
       });
@@ -465,7 +462,6 @@ export const handleMintAndRegisterRequest = async <
       derivativeWorkflowsClient,
       nftMintFee,
       isPublicMinting,
-      chainId,
       totalDerivativeMintingFee,
     });
   }
@@ -625,7 +621,6 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
   request,
   royaltyTokenDistributionWorkflowsClient,
   nftMintFee,
-  chainId,
 }: TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest): TransformIpRegistrationWorkflowResponse<T> => {
   const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
   const transformRequest = {
@@ -644,7 +639,7 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
     spenders: [{ address: transformRequest.spgNftContract, amount: nftMintFee }],
     totalFees: nftMintFee,
     encodedTxData: {
-      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      to: royaltyTokenDistributionWorkflowsClient.address,
       data: encodeFunctionData({
         abi: royaltyTokenDistributionWorkflowsAbi,
         functionName: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
@@ -668,7 +663,6 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
   licenseAttachmentWorkflowsClient,
   nftMintFee,
   isPublicMinting,
-  chainId,
 }: TransferMintAndRegisterIpAssetWithPilTermsConfig): TransformIpRegistrationWorkflowResponse<T> => {
   return {
     transformRequest: request as T,
@@ -676,7 +670,7 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
     spenders: [{ address: request.spgNftContract, amount: nftMintFee }],
     totalFees: nftMintFee,
     encodedTxData: {
-      to: licenseAttachmentWorkflowsAddress[chainId],
+      to: licenseAttachmentWorkflowsClient.address,
       data: encodeFunctionData({
         abi: licenseAttachmentWorkflowsAbi,
         functionName: "mintAndRegisterIpAndAttachPILTerms",
@@ -702,7 +696,6 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
   request,
   nftMintFee,
   isPublicMinting,
-  chainId,
   totalDerivativeMintingFee,
   royaltyTokenDistributionWorkflowsClient,
 }: TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig): TransformIpRegistrationWorkflowResponse<T> => {
@@ -728,7 +721,7 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
     ],
     totalFees: totalDerivativeMintingFee + nftMintFee,
     encodedTxData: {
-      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      to: royaltyTokenDistributionWorkflowsClient.address,
       data: encodeFunctionData({
         abi: royaltyTokenDistributionWorkflowsAbi,
         functionName: "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
@@ -758,7 +751,6 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
   derivativeWorkflowsClient,
   nftMintFee,
   isPublicMinting,
-  chainId,
   totalDerivativeMintingFee,
 }: TransferMintAndRegisterIpAndMakeDerivativeRequestConfig): TransformIpRegistrationWorkflowResponse<T> => {
   return {
@@ -773,7 +765,7 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
     ],
     totalFees: totalDerivativeMintingFee + nftMintFee,
     encodedTxData: {
-      to: derivativeWorkflowsAddress[chainId],
+      to: derivativeWorkflowsClient.address,
       data: encodeFunctionData({
         abi: derivativeWorkflowsAbi,
         functionName: "mintAndRegisterIpAndMakeDerivative",
@@ -831,7 +823,7 @@ const transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest = async <
     },
     workflowClient: royaltyTokenDistributionWorkflowsClient,
     encodedTxData: {
-      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      to: royaltyTokenDistributionWorkflowsClient.address,
       data: encodeFunctionData({
         abi: royaltyTokenDistributionWorkflowsAbi,
         functionName: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
@@ -885,7 +877,7 @@ const transferRegisterIpAndAttachPilTermsRequest = async <
     },
     workflowClient: licenseAttachmentWorkflowsClient,
     encodedTxData: {
-      to: licenseAttachmentWorkflowsAddress[chainId],
+      to: licenseAttachmentWorkflowsClient.address,
       data: encodeFunctionData({
         abi: licenseAttachmentWorkflowsAbi,
         functionName: "registerIpAndAttachPILTerms",
@@ -933,7 +925,7 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
   return {
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    spenders: [{ address: royaltyTokenDistributionWorkflowsAddress[chainId], amount: totalFees }],
+    spenders: [{ address: royaltyTokenDistributionWorkflowsClient.address, amount: totalFees }],
     totalFees,
     contractCall: () => {
       return royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
@@ -942,7 +934,7 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
     },
     workflowClient: royaltyTokenDistributionWorkflowsClient,
     encodedTxData: {
-      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      to: royaltyTokenDistributionWorkflowsClient.address,
       data: encodeFunctionData({
         abi: royaltyTokenDistributionWorkflowsAbi,
         functionName: "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
@@ -1000,7 +992,7 @@ const transferRegisterDerivativeIpRequest = async <
     },
     workflowClient: derivativeWorkflowsClient,
     encodedTxData: {
-      to: derivativeWorkflowsAddress[chainId],
+      to: derivativeWorkflowsClient.address,
       data: encodeFunctionData({
         abi: derivativeWorkflowsAbi,
         functionName: "registerIpAndMakeDerivative",

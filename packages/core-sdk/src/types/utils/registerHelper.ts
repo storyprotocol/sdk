@@ -166,7 +166,6 @@ export type TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens
   request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest;
   nftMintFee: bigint;
   isPublicMinting: boolean;
-  chainId: ChainIds;
   totalDerivativeMintingFee: bigint;
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
 };
@@ -175,7 +174,6 @@ export type TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyToken
   request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest;
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
   nftMintFee: bigint;
-  chainId: ChainIds;
 };
 
 export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
@@ -183,7 +181,6 @@ export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
   licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
   nftMintFee: bigint;
   isPublicMinting: boolean;
-  chainId: ChainIds;
 };
 
 export type TransferMintAndRegisterIpAndMakeDerivativeRequestConfig = {
@@ -191,6 +188,5 @@ export type TransferMintAndRegisterIpAndMakeDerivativeRequestConfig = {
   derivativeWorkflowsClient: DerivativeWorkflowsClient;
   nftMintFee: bigint;
   isPublicMinting: boolean;
-  chainId: ChainIds;
   totalDerivativeMintingFee: bigint;
 };
