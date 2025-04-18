@@ -1,4 +1,4 @@
-import { maxUint256 } from "viem";
+import { Hash, maxUint256 } from "viem";
 
 import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
@@ -8,10 +8,10 @@ import {
   Multicall3ValueCall,
   MulticallWithWrapIp,
   ContractCallWithFees,
+  ContractCallWithFeesResponse,
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
 import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
-import { TransactionResponse } from "../types/options";
 import { ERC20Client, WipTokenClient } from "./token";
 import {
   predictMintingLicenseFee,
@@ -191,7 +191,7 @@ const multiCallWrapIp = async ({
  * If the user have enough token, it will check for if approvals are needed
  * for each spender address and approve it, unless disabled via `disableAutoApprove`.
  */
-export const contractCallWithFees = async ({
+export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   totalFees,
   options,
   multicall3Address,
@@ -203,7 +203,7 @@ export const contractCallWithFees = async ({
   encodedTxs,
   rpcClient,
   token,
-}: ContractCallWithFees): Promise<TransactionResponse | TransactionResponse[]> => {
+}: ContractCallWithFees<T>): ContractCallWithFeesResponse<T> => {
   const wipTokenClient = new WipTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
   const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;
@@ -212,9 +212,13 @@ export const contractCallWithFees = async ({
   if (totalFees === 0n) {
     const txHash = await contractCall();
     if (Array.isArray(txHash)) {
-      return waitForTxReceipts({ rpcClient, txOptions, txHashes: txHash });
+      return waitForTxReceipts({
+        rpcClient,
+        txOptions,
+        txHashes: txHash,
+      }) as ContractCallWithFeesResponse<T>;
     }
-    return waitForTxReceipt({ rpcClient, txOptions, txHash });
+    return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
   }
   const balance = await tokenClient.balanceOf(sender);
   const autoApprove = selectedOptions?.enableAutoApprove !== false;
@@ -235,9 +239,13 @@ export const contractCallWithFees = async ({
     }
     const txHash = await contractCall();
     if (Array.isArray(txHash)) {
-      return waitForTxReceipts({ rpcClient, txOptions, txHashes: txHash });
+      return waitForTxReceipts({
+        rpcClient,
+        txOptions,
+        txHashes: txHash,
+      }) as ContractCallWithFeesResponse<T>;
     }
-    return waitForTxReceipt({ rpcClient, txOptions, txHash });
+    return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
   }
 
   if (!isWip) {
@@ -283,7 +291,11 @@ export const contractCallWithFees = async ({
     calls,
   });
   if (Array.isArray(txHash)) {
-    return waitForTxReceipts({ rpcClient, txOptions, txHashes: txHash });
+    return waitForTxReceipts({
+      rpcClient,
+      txOptions,
+      txHashes: txHash,
+    }) as ContractCallWithFeesResponse<T>;
   }
-  return waitForTxReceipt({ rpcClient, txOptions, txHash });
+  return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
 };

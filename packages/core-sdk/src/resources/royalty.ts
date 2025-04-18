@@ -307,7 +307,7 @@ export class RoyaltyClient {
           amount: payAmount,
         },
       ];
-      const txResponse = await contractCallWithFees({
+      const { txHash, receipt } = await contractCallWithFees({
         totalFees: payAmount,
         options: { erc20Options, wipOptions },
         multicall3Address: this.multicall3Client.address,
@@ -320,7 +320,6 @@ export class RoyaltyClient {
         txOptions,
         encodedTxs: [encodedTxData],
       });
-      const { txHash, receipt } = txResponse as TransactionResponse;
       return { txHash, receipt };
     } catch (error) {
       handleError(error, "Failed to pay royalty on behalf");

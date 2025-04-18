@@ -115,7 +115,6 @@ import {
   handleMulticall,
 } from "../utils/registerHelper";
 import { SignatureMethodType } from "../types/utils/registerHelper";
-import { TransactionResponse } from "../types/options";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -1549,7 +1548,7 @@ export class IPAssetClient {
       );
     }
 
-    const txResponse = await contractCallWithFees({
+    const { receipt, txHash } = await contractCallWithFees({
       totalFees,
       options: { wipOptions },
       multicall3Address: this.multicall3Client.address,
@@ -1561,7 +1560,6 @@ export class IPAssetClient {
       txOptions,
       encodedTxs,
     });
-    const { txHash, receipt } = txResponse as TransactionResponse;
     if (receipt) {
       const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
       return {

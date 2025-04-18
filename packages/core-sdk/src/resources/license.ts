@@ -51,7 +51,6 @@ import { Erc20Spender } from "../types/utils/wip";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { RevShareType } from "../types/common";
 import { predictMintingLicenseFee } from "../utils/predictMintingLicenseFee";
-import { TransactionResponse } from "../types/options";
 
 export class LicenseClient {
   public licenseRegistryClient: LicenseRegistryEventClient;
@@ -394,7 +393,7 @@ export class LicenseClient {
           amount: licenseMintingFee,
         });
       }
-      const txResponse = await contractCallWithFees({
+      const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
         options: { wipOptions: request.wipOptions },
         multicall3Address: this.multicall3Client.address,
@@ -408,7 +407,6 @@ export class LicenseClient {
         txOptions: request.txOptions,
         encodedTxs: [encodedTxData],
       });
-      const { txHash, receipt } = txResponse as TransactionResponse;
       if (!receipt) {
         return { txHash };
       }

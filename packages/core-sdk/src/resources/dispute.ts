@@ -122,7 +122,7 @@ export class DisputeClient {
           txOptions: request.txOptions,
           sender: this.wallet.account!.address,
         });
-        const { txHash, receipt } = txResponse as TransactionResponse;
+        const { txHash, receipt } = txResponse;
         if (!receipt) {
           return { txHash };
         }
@@ -349,7 +349,7 @@ export class DisputeClient {
         sender: this.wallet.account!.address,
         txOptions: request.txOptions,
       });
-      const { txHash, receipt } = txResponse as TransactionResponse;
+      const { txHash, receipt } = txResponse;
       if (!receipt) {
         return { txHash };
       }
