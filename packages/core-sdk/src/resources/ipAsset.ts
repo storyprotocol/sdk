@@ -52,10 +52,10 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
-  BatchRegisterIpWithOptions,
-  BatchRegisterIpWithOptionsResponse,
   TransformIpRegistrationWorkflowResponse,
   BatchRegistrationResult,
+  BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
+  BatchRegisterIpAssetsWithOptimizedWorkflowsResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -1334,7 +1334,7 @@ export class IPAssetClient {
     return await this.ipAssetRegistryClient.isRegistered({ id: validateAddress(ipId) });
   }
   /**
-   * Batch register IP with options which supports the following methods:
+   * Batch register IP assets with options, supporting multiple registration methods:
    * - {@link mintAndRegisterIpAndMakeDerivative}
    * - {@link mintAndRegisterIpAssetWithPilTerms}
    * - {@link mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens}
@@ -1344,21 +1344,31 @@ export class IPAssetClient {
    * - {@link registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens}
    * - {@link registerDerivativeIp}
    *
-   * This method allows for efficient batch processing of multiple IP registration operations
-   * in a single transaction, optimizing gas costs and improving throughput.
+   * This method optimizes transaction processing by:
+   * 1. Transforming all requests into appropriate workflow formats
+   * 2. Grouping related workflow requests together
+   * 3. Intelligently selecting between multicall3 and SPG's multicall based on compatibility
    *
-   * @remark The `useMulticallWhenPossible` option will be overridden (set to false) in the following cases:
-   * 1. For methods prefixed with `mintAndRegister` when the `spgNftContract` has public minting enabled:
-   *    In this case, we use SPG's multicall to batch the minting and registering operations.
-   * 2. For methods prefixed with `register`:
-   *    We use SPG's multicall to batch the registration operations.
+   * The batching strategy significantly reduces gas costs and improves transaction throughput
+   * by minimizing the number of separate blockchain transactions. It also handles complex
+   * workflows like royalty token distribution automatically.
    *
-   * In all other scenarios, the `useMulticallWhenPossible` value from the request will be respected.
+   * @remark Multicall selection logic:
+   *
+   * 1. For `mintAndRegister*` methods:
+   *    - When `spgNftContract` has public minting disabled: Uses SPG's multicall
+   *    - When `spgNftContract` has public minting enabled: Uses multicall3
+   *    - Exception: {@link mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens} always uses
+   *      SPG's multicall due to contract logic
+   *
+   * 2. For `register*` methods:
+   *    - Always uses SPG's multicall for batching registration operations
    */
-  public async batchRegisterIpWithOptions(
-    request: BatchRegisterIpWithOptions,
-  ): Promise<BatchRegisterIpWithOptionsResponse> {
+  public async batchRegisterIpAssetsWithOptimizedWorkflows(
+    request: BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
+  ): Promise<BatchRegisterIpAssetsWithOptimizedWorkflowsResponse> {
     try {
+      // Transform requests into workflow format
       const transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[] = [];
       for (const req of request.requests) {
         const res = await transformRegistrationRequest({

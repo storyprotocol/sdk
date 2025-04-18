@@ -2,9 +2,19 @@ import { Hex, Address, PublicClient, Hash } from "viem";
 
 import { ChainIds } from "../config";
 import {
+  DerivativeWorkflowsClient,
+  DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
+  DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   EncodedTxData,
   IpAssetRegistryIpRegisteredEvent,
+  LicenseAttachmentWorkflowsClient,
+  LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
+  LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
   RoyaltyModuleIpRoyaltyVaultDeployedEvent,
+  RoyaltyTokenDistributionWorkflowsClient,
+  RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
 } from "../../abi/generated";
 import {
@@ -53,11 +63,11 @@ export type TransformRegistrationRequestConfig = BasicConfig & {
   request: IpRegistrationWorkflowRequest;
 };
 
-export type HandleSpgNftRequestConfig = BasicConfig & {
+export type HandleMintAndRegisterRequestConfig = BasicConfig & {
   request: MintSpgNftRegistrationRequest;
 };
 
-export type HandleNftRequestConfig = BasicConfig & {
+export type HandleRegisterRequestConfig = BasicConfig & {
   request: RegisterRegistrationRequest;
 };
 
@@ -103,4 +113,82 @@ export type HandleMulticallConfig = BasicConfig & {
   multicall3Address: Address;
   wipOptions?: WipOptions;
   walletAddress: Address;
+};
+
+export type TransferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultConfig = {
+  request: Omit<
+    RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
+    "sigMetadataAndAttachAndConfig"
+  >;
+  royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
+  chainId: ChainIds;
+  wallet: SimpleWalletClient;
+  calculatedDeadline: bigint;
+  ipIdAddress: Hex;
+  royaltyShares: RoyaltyShare[];
+};
+
+export type TransferRegisterIpAndAttachPilTermsConfig = {
+  request: Omit<
+    LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
+    "sigMetadataAndAttachAndConfig"
+  >;
+  licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
+  calculatedDeadline: bigint;
+  ipIdAddress: Hex;
+  wallet: SimpleWalletClient;
+  chainId: ChainIds;
+};
+
+export type TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfig = {
+  request: Omit<DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest, "sigMetadataAndRegister">;
+  calculatedDeadline: bigint;
+  ipIdAddress: Address;
+  wallet: SimpleWalletClient;
+  chainId: ChainIds;
+  royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
+  totalFees: bigint;
+  royaltyShares: RoyaltyShare[];
+};
+export type TransferRegisterDerivativeIpRequestConfig = {
+  request: Omit<DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest, "sigMetadataAndRegister">;
+  calculatedDeadline: bigint;
+  ipIdAddress: Address;
+  wallet: SimpleWalletClient;
+  chainId: ChainIds;
+  derivativeWorkflowsClient: DerivativeWorkflowsClient;
+  totalFees: bigint;
+};
+
+export type TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig = {
+  request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest;
+  nftMintFee: bigint;
+  isPublicMinting: boolean;
+  chainId: ChainIds;
+  totalDerivativeMintingFee: bigint;
+  royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
+};
+
+export type TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest = {
+  request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest;
+  royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
+  nftMintFee: bigint;
+  chainId: ChainIds;
+};
+
+export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
+  request: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest;
+  licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
+  nftMintFee: bigint;
+  isPublicMinting: boolean;
+  chainId: ChainIds;
+};
+
+export type TransferMintAndRegisterIpAndMakeDerivativeRequestConfig = {
+  request: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest;
+  derivativeWorkflowsClient: DerivativeWorkflowsClient;
+  nftMintFee: bigint;
+  isPublicMinting: boolean;
+  chainId: ChainIds;
+  totalDerivativeMintingFee: bigint;
 };

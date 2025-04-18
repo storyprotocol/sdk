@@ -2148,7 +2148,7 @@ describe("IP Asset Functions", () => {
         },
       ];
       const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
-      const result = await client.ipAsset.batchRegisterIpWithOptions({
+      const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
       const totalFees = 10 + 15 + 0 + 10 + 20 + 5 + 10 + 0;
@@ -2428,7 +2428,7 @@ describe("IP Asset Functions", () => {
       ];
       const totalFees = 10 + 5 + 0 + 0 + 5 + 10 + 5;
       const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
-      const result = await client.ipAsset.batchRegisterIpWithOptions({
+      const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
       const userBalanceAfter = await client.getBalance(walletAddress);
@@ -2713,7 +2713,7 @@ describe("IP Asset Functions", () => {
       const totalFees = 15 + 5 + 20 + 10 + 5 + 0 + 0 + 10;
       const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
       const userBalanceBefore = await client.getBalance(walletAddress);
-      const result = await client.ipAsset.batchRegisterIpWithOptions({
+      const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
       const userBalanceAfter = await client.getBalance(walletAddress);
@@ -2892,7 +2892,7 @@ describe("IP Asset Functions", () => {
       const userBalanceBefore = await client.getBalance(walletAddress);
       const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
       const totalFees = 15 + 0 + 10 + 5 + 5;
-      const result = await client.ipAsset.batchRegisterIpWithOptions({
+      const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
         wipOptions: {
           useMulticallWhenPossible: false,

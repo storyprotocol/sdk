@@ -469,11 +469,11 @@ export type TransformIpRegistrationWorkflowResponse<
   };
 };
 
-export type BatchRegisterIpWithOptions = WithWipOptions & {
+export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions & {
   requests: IpRegistrationWorkflowRequest[];
   txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
 };
-export type BatchRegisterIpWithOptionsResponse = {
+export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
   distributeTxHashes?: Hash[];
   registrationResults: BatchRegistrationResult[];
 };
@@ -510,7 +510,7 @@ export type RegisterRegistrationRequest = RemoveOptionsFields<
 >;
 
 /**
- * Utility type that removes option-related fields from a type.
+ * Utility type that removes option-related fields (txOptions and wipOptions) from a type.
  * This preserves discriminated unions unlike using Omit directly.
  */
 type RemoveOptionsFields<Type> = {

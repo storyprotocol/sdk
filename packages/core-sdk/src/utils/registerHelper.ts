@@ -32,12 +32,20 @@ import {
   GetIpIdAddressConfig,
   HandleDistributeRoyaltyTokensRequestConfig,
   HandleMulticallConfig,
-  HandleNftRequestConfig,
-  HandleSpgNftRequestConfig,
+  HandleMintAndRegisterRequestConfig,
   PrepareDistributeRoyaltyTokensRequestConfig,
   SignatureMethodType,
   TransformRegistrationRequestConfig,
   ValidateDerivativeDataConfig,
+  HandleRegisterRequestConfig,
+  TransferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultConfig,
+  TransferRegisterIpAndAttachPilTermsConfig,
+  TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfig,
+  TransferRegisterDerivativeIpRequestConfig,
+  TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig,
+  TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
+  TransferMintAndRegisterIpAssetWithPilTermsConfig,
+  TransferMintAndRegisterIpAndMakeDerivativeRequestConfig,
 } from "../types/utils/registerHelper";
 import {
   AccessPermission,
@@ -303,8 +311,7 @@ export const handleDistributeRoyaltyTokensRequest = async <
   TransformIpRegistrationWorkflowResponse<T>
 > => {
   const { ipId, deadline, ipRoyaltyVault, totalAmount } = request;
-  const blockTimestamp = (await rpcClient.getBlock()).timestamp;
-  const calculatedDeadline = getDeadline(blockTimestamp, deadline);
+  const calculatedDeadline = await getCalculatedDeadline(rpcClient, deadline);
   const ipRoyaltyVaultImpl = new IpRoyaltyVaultImplReadOnlyClient(rpcClient, ipRoyaltyVault);
   const balance = await ipRoyaltyVaultImpl.balanceOf({ account: ipId });
   const royaltyTokenDistributionWorkflowsClient = new RoyaltyTokenDistributionWorkflowsClient(
@@ -361,22 +368,23 @@ export const handleDistributeRoyaltyTokensRequest = async <
         ],
       }),
     },
-  } as TransformIpRegistrationWorkflowResponse<T>;
+  };
 };
 
-export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkflowRequest>({
+export const handleMintAndRegisterRequest = async <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
   request,
   rpcClient,
   wallet,
   chainId,
-}: HandleSpgNftRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
+}: HandleMintAndRegisterRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
   const royaltyTokenDistributionWorkflowsClient = new RoyaltyTokenDistributionWorkflowsClient(
     rpcClient,
     wallet,
   );
   const licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
   const derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
-  const royaltyTokenDistributionWorkflowsAddr = royaltyTokenDistributionWorkflowsAddress[chainId];
   const isPublicMinting = await getPublicMinting(request.spgNftContract, rpcClient);
   const nftMintFee = await calculateSPGWipMintFee(
     new SpgnftImplReadOnlyClient(rpcClient, request.spgNftContract),
@@ -392,75 +400,29 @@ export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkf
       request.licenseTermsData as LicenseTermsDataInput[],
       rpcClient,
     );
-    const requestWithTerms = { ...baseRequest, licenseTermsData };
+    const requestWithTerms = { ...baseRequest, licenseTermsData } as const;
 
     if ("royaltyShares" in request) {
-      const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
-      const transformRequest = {
-        ...requestWithTerms,
-        royaltyShares,
-      };
-      // mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens request
-      return {
-        transformRequest: transformRequest as T,
-        //TODO: Because mint tokens is given `msg.sender` as the recipient, so we need to set `useMulticall3` to false.
-        isUseMulticall3: false,
-        contractCall: () => {
-          return royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
-            transformRequest,
-          );
+      return transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest({
+        request: {
+          ...requestWithTerms,
+          royaltyShares: request.royaltyShares,
         },
-        spenders: [{ address: baseRequest.spgNftContract, amount: nftMintFee }],
-        totalFees: nftMintFee,
-        encodedTxData: {
-          to: royaltyTokenDistributionWorkflowsAddr,
-          data: encodeFunctionData({
-            abi: royaltyTokenDistributionWorkflowsAbi,
-            functionName: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
-            args: [
-              transformRequest.spgNftContract,
-              transformRequest.recipient,
-              transformRequest.ipMetadata,
-              transformRequest.licenseTermsData,
-              transformRequest.royaltyShares,
-              transformRequest.allowDuplicates,
-            ],
-          }),
-        },
-        workflowClient: royaltyTokenDistributionWorkflowsClient,
-      } as TransformIpRegistrationWorkflowResponse<T>;
+        royaltyTokenDistributionWorkflowsClient,
+        nftMintFee,
+        chainId,
+      });
     }
-    const transformRequest = {
-      ...requestWithTerms,
-      licenseTermsData,
-    };
-    // mintAndRegisterIpAssetWithPilTerms request
-    return {
-      transformRequest: transformRequest as T,
-      isUseMulticall3: isPublicMinting,
-      spenders: [{ address: baseRequest.spgNftContract, amount: nftMintFee }],
-      totalFees: nftMintFee,
-      encodedTxData: {
-        to: licenseAttachmentWorkflowsAddress[chainId],
-        data: encodeFunctionData({
-          abi: licenseAttachmentWorkflowsAbi,
-          functionName: "mintAndRegisterIpAndAttachPILTerms",
-          args: [
-            transformRequest.spgNftContract,
-            transformRequest.recipient,
-            transformRequest.ipMetadata,
-            transformRequest.licenseTermsData,
-            transformRequest.allowDuplicates,
-          ],
-        }),
+    return transferMintAndRegisterIpAssetWithPilTermsRequest({
+      request: {
+        ...requestWithTerms,
+        licenseTermsData,
       },
-      contractCall: () => {
-        return licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
-          transformRequest,
-        );
-      },
-      workflowClient: licenseAttachmentWorkflowsClient,
-    } as TransformIpRegistrationWorkflowResponse<T>;
+      licenseAttachmentWorkflowsClient,
+      nftMintFee,
+      isPublicMinting,
+      chainId,
+    });
   }
   if ("derivData" in request) {
     const derivData = await validateDerivativeData({
@@ -475,93 +437,34 @@ export const handleSpgNftRequest = async <T extends TransformIpRegistrationWorkf
       chainId,
       wallet,
     });
-    const totalFees = nftMintFee + totalDerivativeMintingFee;
     const requestWithDeriv = { ...baseRequest, derivData };
 
     if ("royaltyShares" in request) {
-      const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
-      /**
-       * TODO: Consider the scenario where the SPG token is WIP and the derivative token is ERC20.
-       * The SDK should handle both cases in the `contractCallWithFees` method.
-       * Currently, it only supports WIP tokens and does not handle ERC20 tokens, such as approving ERC20 tokens.
-       * In the future, ensure that the SDK checks whether the token is WIP or ERC20, as all WIP options should be supported.
-       */
-      const transformRequest = {
-        ...requestWithDeriv,
-        royaltyShares,
-      };
-      // mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens request
-      return {
-        transformRequest: transformRequest as T,
-        isUseMulticall3: isPublicMinting,
-        spenders: [
-          {
-            address: royaltyTokenDistributionWorkflowsClient.address,
-            amount: totalDerivativeMintingFee,
-          },
-          { address: baseRequest.spgNftContract, amount: nftMintFee },
-        ],
-        totalFees,
-        encodedTxData: {
-          to: royaltyTokenDistributionWorkflowsAddr,
-          data: encodeFunctionData({
-            abi: royaltyTokenDistributionWorkflowsAbi,
-            functionName: "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
-            args: [
-              transformRequest.spgNftContract,
-              transformRequest.recipient,
-              transformRequest.ipMetadata,
-              transformRequest.derivData,
-              transformRequest.royaltyShares,
-              transformRequest.allowDuplicates,
-            ],
-          }),
+      return transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest({
+        request: {
+          ...requestWithDeriv,
+          royaltyShares: request.royaltyShares,
         },
-        workflowClient: royaltyTokenDistributionWorkflowsClient,
-        contractCall: () => {
-          return royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
-            transformRequest,
-          );
-        },
-      } as TransformIpRegistrationWorkflowResponse<T>;
+        nftMintFee,
+        isPublicMinting,
+        chainId,
+        totalDerivativeMintingFee,
+        royaltyTokenDistributionWorkflowsClient,
+      });
     }
-    const transformRequest = {
-      ...requestWithDeriv,
-      derivData,
-    };
-    // mintAndRegisterIpAndMakeDerivative request
-    return {
-      transformRequest: transformRequest as T,
-      isUseMulticall3: isPublicMinting,
-      spenders: [
-        {
-          address: derivativeWorkflowsClient.address,
-          amount: totalDerivativeMintingFee,
-        },
-        { address: baseRequest.spgNftContract, amount: nftMintFee },
-      ],
-      totalFees,
-      encodedTxData: {
-        to: derivativeWorkflowsAddress[chainId],
-        data: encodeFunctionData({
-          abi: derivativeWorkflowsAbi,
-          functionName: "mintAndRegisterIpAndMakeDerivative",
-          args: [
-            transformRequest.spgNftContract,
-            transformRequest.derivData,
-            transformRequest.ipMetadata,
-            transformRequest.recipient,
-            transformRequest.allowDuplicates,
-          ],
-        }),
+    return transferMintAndRegisterIpAndMakeDerivativeRequest({
+      request: {
+        ...requestWithDeriv,
+        derivData,
       },
-      contractCall: () => {
-        return derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
-      },
-      workflowClient: derivativeWorkflowsClient,
-    } as TransformIpRegistrationWorkflowResponse<T>;
+      derivativeWorkflowsClient,
+      nftMintFee,
+      isPublicMinting,
+      chainId,
+      totalDerivativeMintingFee,
+    });
   }
-  throw new Error("Invalid SPG NFT request type");
+  throw new Error("Invalid mint and register request type");
 };
 export const validateLicenseTermsData = async (
   licenseTermsData: LicenseTermsDataInput[],
@@ -710,235 +613,404 @@ export const calculateDerivativeMintingFee = async ({
   return totalDerivativeMintingFee;
 };
 
-export const handleNftRequest = async <T extends TransformIpRegistrationWorkflowRequest>({
+const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest = <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
   request,
-  rpcClient,
-  wallet,
+  royaltyTokenDistributionWorkflowsClient,
+  nftMintFee,
   chainId,
-}: HandleNftRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
-  const walletAddress = wallet.account!.address;
-  const ipIdAddress = await getIpIdAddress({
-    nftContract: validateAddress(request.nftContract),
-    tokenId: BigInt(request.tokenId),
-    rpcClient,
+}: TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest): TransformIpRegistrationWorkflowResponse<T> => {
+  const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
+  const transformRequest = {
+    ...request,
+    royaltyShares,
+  };
+  return {
+    transformRequest: transformRequest as T,
+    // Because mint tokens is given `msg.sender` as the recipient, so we need to set `useMulticall3` to false.
+    isUseMulticall3: false,
+    contractCall: () => {
+      return royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
+        transformRequest,
+      );
+    },
+    spenders: [{ address: transformRequest.spgNftContract, amount: nftMintFee }],
+    totalFees: nftMintFee,
+    encodedTxData: {
+      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens",
+        args: [
+          transformRequest.spgNftContract,
+          transformRequest.recipient,
+          transformRequest.ipMetadata,
+          transformRequest.licenseTermsData,
+          transformRequest.royaltyShares,
+          transformRequest.allowDuplicates,
+        ],
+      }),
+    },
+    workflowClient: royaltyTokenDistributionWorkflowsClient,
+  };
+};
+const transferMintAndRegisterIpAssetWithPilTermsRequest = <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  licenseAttachmentWorkflowsClient,
+  nftMintFee,
+  isPublicMinting,
+  chainId,
+}: TransferMintAndRegisterIpAssetWithPilTermsConfig): TransformIpRegistrationWorkflowResponse<T> => {
+  return {
+    transformRequest: request as T,
+    isUseMulticall3: isPublicMinting,
+    spenders: [{ address: request.spgNftContract, amount: nftMintFee }],
+    totalFees: nftMintFee,
+    encodedTxData: {
+      to: licenseAttachmentWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: licenseAttachmentWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndAttachPILTerms",
+        args: [
+          request.spgNftContract,
+          request.recipient,
+          request.ipMetadata,
+          request.licenseTermsData,
+          request.allowDuplicates,
+        ],
+      }),
+    },
+    contractCall: () => {
+      return licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(request);
+    },
+    workflowClient: licenseAttachmentWorkflowsClient,
+  };
+};
+
+const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  nftMintFee,
+  isPublicMinting,
+  chainId,
+  totalDerivativeMintingFee,
+  royaltyTokenDistributionWorkflowsClient,
+}: TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig): TransformIpRegistrationWorkflowResponse<T> => {
+  const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
+  /**
+   * TODO: Consider the scenario where the SPG token is WIP and the derivative token is ERC20.
+   * The SDK should handle both cases in the `contractCallWithFees` method.
+   * Currently, it only supports WIP tokens and does not handle ERC20 tokens, such as approving ERC20 tokens.
+   */
+  const transformRequest = {
+    ...request,
+    royaltyShares,
+  };
+  return {
+    transformRequest: transformRequest as T,
+    isUseMulticall3: isPublicMinting,
+    spenders: [
+      {
+        address: royaltyTokenDistributionWorkflowsClient.address,
+        amount: totalDerivativeMintingFee,
+      },
+      { address: request.spgNftContract, amount: nftMintFee },
+    ],
+    totalFees: totalDerivativeMintingFee + nftMintFee,
+    encodedTxData: {
+      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+        args: [
+          request.spgNftContract,
+          request.recipient,
+          request.ipMetadata,
+          request.derivData,
+          request.royaltyShares,
+          request.allowDuplicates,
+        ],
+      }),
+    },
+    workflowClient: royaltyTokenDistributionWorkflowsClient,
+    contractCall: () => {
+      return royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
+        transformRequest,
+      );
+    },
+  };
+};
+
+const transferMintAndRegisterIpAndMakeDerivativeRequest = <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  derivativeWorkflowsClient,
+  nftMintFee,
+  isPublicMinting,
+  chainId,
+  totalDerivativeMintingFee,
+}: TransferMintAndRegisterIpAndMakeDerivativeRequestConfig): TransformIpRegistrationWorkflowResponse<T> => {
+  // mintAndRegisterIpAndMakeDerivative request
+  return {
+    transformRequest: request as T,
+    isUseMulticall3: isPublicMinting,
+    spenders: [
+      {
+        address: derivativeWorkflowsClient.address,
+        amount: totalDerivativeMintingFee,
+      },
+      { address: request.spgNftContract, amount: nftMintFee },
+    ],
+    totalFees: totalDerivativeMintingFee + nftMintFee,
+    encodedTxData: {
+      to: derivativeWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "mintAndRegisterIpAndMakeDerivative",
+        args: [
+          request.spgNftContract,
+          request.derivData,
+          request.ipMetadata,
+          request.recipient,
+          request.allowDuplicates,
+        ],
+      }),
+    },
+    contractCall: () => {
+      return derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(request);
+    },
+    workflowClient: derivativeWorkflowsClient,
+  };
+};
+
+const transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest = async <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  royaltyTokenDistributionWorkflowsClient,
+  chainId,
+  wallet,
+  calculatedDeadline,
+  ipIdAddress,
+  royaltyShares,
+}: TransferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultConfig): Promise<
+  TransformIpRegistrationWorkflowResponse<T>
+> => {
+  const signature = await generateOperationSignature({
+    ipIdAddress,
+    methodType: SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS_AND_DEPLOY_ROYALTY_VAULT,
+    deadline: calculatedDeadline,
     wallet,
     chainId,
   });
-
-  const baseRequest = {
-    nftContract: validateAddress(request.nftContract),
-    tokenId: BigInt(request.tokenId),
-    ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+  const transformRequest = {
+    ...request,
+    sigMetadataAndAttachAndConfig: {
+      signer: wallet.account!.address,
+      deadline: calculatedDeadline,
+      signature,
+    },
   };
-  const calculatedDeadline = await getCalculatedDeadline(rpcClient, request.deadline);
-  const royaltyTokenDistributionWorkflowsClient = new RoyaltyTokenDistributionWorkflowsClient(
-    rpcClient,
+  return {
+    transformRequest: transformRequest as T,
+    isUseMulticall3: false,
+    contractCall: () => {
+      return royaltyTokenDistributionWorkflowsClient.registerIpAndAttachPilTermsAndDeployRoyaltyVault(
+        transformRequest,
+      );
+    },
+    workflowClient: royaltyTokenDistributionWorkflowsClient,
+    encodedTxData: {
+      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
+        args: [
+          transformRequest.nftContract,
+          transformRequest.tokenId,
+          transformRequest.ipMetadata,
+          transformRequest.licenseTermsData,
+          transformRequest.sigMetadataAndAttachAndConfig,
+        ],
+      }),
+    },
+    extraData: {
+      royaltyShares,
+      deadline: calculatedDeadline,
+    },
+  };
+};
+const transferRegisterIpAndAttachPilTermsRequest = async <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  licenseAttachmentWorkflowsClient,
+  calculatedDeadline,
+  ipIdAddress,
+  wallet,
+  chainId,
+}: TransferRegisterIpAndAttachPilTermsConfig): Promise<
+  TransformIpRegistrationWorkflowResponse<T>
+> => {
+  const signature = await generateOperationSignature({
+    ipIdAddress,
+    methodType: SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS,
+    deadline: calculatedDeadline,
     wallet,
-  );
-  const licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
-  const derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
-
-  if ("licenseTermsData" in request) {
-    const { licenseTermsData } = await validateLicenseTermsData(
-      request.licenseTermsData as LicenseTermsDataInput[],
-      rpcClient,
-    );
-    const requestWithTerms = { ...baseRequest, licenseTermsData };
-
-    if ("royaltyShares" in request) {
-      const signature = await generateOperationSignature({
-        ipIdAddress,
-        methodType: SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS_AND_DEPLOY_ROYALTY_VAULT,
-        deadline: calculatedDeadline,
-        wallet,
-        chainId,
-      });
-      const transformRequest = {
-        ...requestWithTerms,
-        sigMetadataAndAttachAndConfig: {
-          signer: walletAddress,
-          deadline: calculatedDeadline,
-          signature,
-        },
-      };
-      // registerIpAndAttachPilTermsAndDeployRoyaltyVault request
-      return {
-        transformRequest: transformRequest as T,
-        isUseMulticall3: false,
-        contractCall: () => {
-          return royaltyTokenDistributionWorkflowsClient.registerIpAndAttachPilTermsAndDeployRoyaltyVault(
-            transformRequest,
-          );
-        },
-        workflowClient: royaltyTokenDistributionWorkflowsClient,
-        encodedTxData: {
-          to: royaltyTokenDistributionWorkflowsAddress[chainId],
-          data: encodeFunctionData({
-            abi: royaltyTokenDistributionWorkflowsAbi,
-            functionName: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
-            args: [
-              transformRequest.nftContract,
-              transformRequest.tokenId,
-              transformRequest.ipMetadata,
-              transformRequest.licenseTermsData,
-              transformRequest.sigMetadataAndAttachAndConfig,
-            ],
-          }),
-        },
-        extraData: {
-          royaltyShares: request.royaltyShares,
-          deadline: calculatedDeadline,
-        },
-      } as TransformIpRegistrationWorkflowResponse<T>;
-    }
-
-    const signature = await generateOperationSignature({
-      ipIdAddress,
-      methodType: SignatureMethodType.REGISTER_IP_AND_ATTACH_PIL_TERMS,
+    chainId,
+  });
+  const transformRequest = {
+    ...request,
+    sigMetadataAndAttachAndConfig: {
+      signer: wallet.account!.address,
       deadline: calculatedDeadline,
-      wallet,
-      chainId,
-    });
-    const transformRequest = {
-      ...requestWithTerms,
-      sigMetadataAndAttachAndConfig: {
-        signer: walletAddress,
-        deadline: calculatedDeadline,
-        signature,
-      },
-    };
-    // registerIpAndAttachPilTerms request
-    return {
-      transformRequest: transformRequest as T,
-      isUseMulticall3: false,
-      contractCall: () => {
-        return licenseAttachmentWorkflowsClient.registerIpAndAttachPilTerms(transformRequest);
-      },
-      workflowClient: licenseAttachmentWorkflowsClient,
-      encodedTxData: {
-        to: licenseAttachmentWorkflowsAddress[chainId],
-        data: encodeFunctionData({
-          abi: licenseAttachmentWorkflowsAbi,
-          functionName: "registerIpAndAttachPILTerms",
-          args: [
-            transformRequest.nftContract,
-            transformRequest.tokenId,
-            transformRequest.ipMetadata,
-            transformRequest.licenseTermsData,
-            transformRequest.sigMetadataAndAttachAndConfig,
-          ],
-        }),
-      },
-    } as TransformIpRegistrationWorkflowResponse<T>;
-  }
+      signature,
+    },
+  };
+  return {
+    transformRequest: transformRequest as T,
+    isUseMulticall3: false,
+    contractCall: () => {
+      return licenseAttachmentWorkflowsClient.registerIpAndAttachPilTerms(transformRequest);
+    },
+    workflowClient: licenseAttachmentWorkflowsClient,
+    encodedTxData: {
+      to: licenseAttachmentWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: licenseAttachmentWorkflowsAbi,
+        functionName: "registerIpAndAttachPILTerms",
+        args: [
+          transformRequest.nftContract,
+          transformRequest.tokenId,
+          transformRequest.ipMetadata,
+          transformRequest.licenseTermsData,
+          transformRequest.sigMetadataAndAttachAndConfig,
+        ],
+      }),
+    },
+  };
+};
 
-  if ("derivData" in request) {
-    const derivData = await validateDerivativeData({
-      derivativeDataInput: request.derivData,
-      rpcClient,
-      chainId,
-      wallet,
-    });
-    const totalFees = await calculateDerivativeMintingFee({
-      derivData,
-      rpcClient,
-      chainId,
-      wallet,
-    });
-    if ("royaltyShares" in request) {
-      const signature = await generateOperationSignature({
-        ipIdAddress,
-        methodType: SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_AND_DEPLOY_ROYALTY_VAULT,
-        deadline: calculatedDeadline,
-        wallet,
-        chainId,
-      });
-      const transformRequest = {
-        ...baseRequest,
-        derivData,
-        sigMetadataAndRegister: {
-          signer: walletAddress,
-          deadline: calculatedDeadline,
-          signature,
-        },
-      };
-      // registerIpAndMakeDerivativeAndDeployRoyaltyVault request
-      return {
-        transformRequest: transformRequest as T,
-        isUseMulticall3: false,
-        spenders: [{ address: royaltyTokenDistributionWorkflowsClient.address, amount: totalFees }],
-        totalFees,
-        contractCall: () => {
-          return royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
-            transformRequest,
-          );
-        },
-        workflowClient: royaltyTokenDistributionWorkflowsClient,
-        encodedTxData: {
-          to: royaltyTokenDistributionWorkflowsAddress[chainId],
-          data: encodeFunctionData({
-            abi: royaltyTokenDistributionWorkflowsAbi,
-            functionName: "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
-            args: [
-              transformRequest.nftContract,
-              transformRequest.tokenId,
-              transformRequest.ipMetadata,
-              transformRequest.derivData,
-              transformRequest.sigMetadataAndRegister,
-            ],
-          }),
-        },
-        extraData: {
-          royaltyShares: request.royaltyShares,
-          deadline: calculatedDeadline,
-        },
-      } as TransformIpRegistrationWorkflowResponse<T>;
-    }
-
-    const signature = await generateOperationSignature({
-      ipIdAddress,
-      methodType: SignatureMethodType.REGISTER_DERIVATIVE_IP,
+const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  calculatedDeadline,
+  ipIdAddress,
+  wallet,
+  chainId,
+  royaltyTokenDistributionWorkflowsClient,
+  totalFees,
+  royaltyShares,
+}: TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfig): Promise<
+  TransformIpRegistrationWorkflowResponse<T>
+> => {
+  const signature = await generateOperationSignature({
+    ipIdAddress,
+    methodType: SignatureMethodType.REGISTER_IP_AND_MAKE_DERIVATIVE_AND_DEPLOY_ROYALTY_VAULT,
+    deadline: calculatedDeadline,
+    wallet,
+    chainId,
+  });
+  const transformRequest = {
+    ...request,
+    sigMetadataAndRegister: {
+      signer: wallet.account!.address,
       deadline: calculatedDeadline,
-      wallet,
-      chainId,
-    });
-    const transformRequest = {
-      ...baseRequest,
-      derivData,
-      sigMetadataAndRegister: {
-        signer: walletAddress,
-        deadline: calculatedDeadline,
-        signature,
-      },
-    };
-    // registerDerivativeIp request
-    return {
-      transformRequest: transformRequest as T,
-      isUseMulticall3: false,
-      spenders: [{ address: derivativeWorkflowsClient.address, amount: totalFees }],
-      totalFees,
-      contractCall: () => {
-        return derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
-      },
-      workflowClient: derivativeWorkflowsClient,
-      encodedTxData: {
-        to: derivativeWorkflowsAddress[chainId],
-        data: encodeFunctionData({
-          abi: derivativeWorkflowsAbi,
-          functionName: "registerIpAndMakeDerivative",
-          args: [
-            transformRequest.nftContract,
-            transformRequest.tokenId,
-            transformRequest.derivData,
-            transformRequest.ipMetadata,
-            transformRequest.sigMetadataAndRegister,
-          ],
-        }),
-      },
-    } as TransformIpRegistrationWorkflowResponse<T>;
-  }
+      signature,
+    },
+  };
+  // registerIpAndMakeDerivativeAndDeployRoyaltyVault request
+  return {
+    transformRequest: transformRequest as T,
+    isUseMulticall3: false,
+    spenders: [{ address: royaltyTokenDistributionWorkflowsAddress[chainId], amount: totalFees }],
+    totalFees,
+    contractCall: () => {
+      return royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
+        transformRequest,
+      );
+    },
+    workflowClient: royaltyTokenDistributionWorkflowsClient,
+    encodedTxData: {
+      to: royaltyTokenDistributionWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+        args: [
+          transformRequest.nftContract,
+          transformRequest.tokenId,
+          transformRequest.ipMetadata,
+          transformRequest.derivData,
+          transformRequest.sigMetadataAndRegister,
+        ],
+      }),
+    },
+    extraData: {
+      royaltyShares,
+      deadline: calculatedDeadline,
+    },
+  };
+};
 
-  throw new Error("Invalid existing NFT request type");
+const transferRegisterDerivativeIpRequest = async <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  calculatedDeadline,
+  ipIdAddress,
+  wallet,
+  chainId,
+  derivativeWorkflowsClient,
+  totalFees,
+}: TransferRegisterDerivativeIpRequestConfig): Promise<
+  TransformIpRegistrationWorkflowResponse<T>
+> => {
+  const signature = await generateOperationSignature({
+    ipIdAddress,
+    methodType: SignatureMethodType.REGISTER_DERIVATIVE_IP,
+    deadline: calculatedDeadline,
+    wallet,
+    chainId,
+  });
+  const transformRequest = {
+    ...request,
+    sigMetadataAndRegister: {
+      signer: wallet.account!.address,
+      deadline: calculatedDeadline,
+      signature,
+    },
+  };
+  // registerDerivativeIp request
+  return {
+    transformRequest: transformRequest as T,
+    isUseMulticall3: false,
+    spenders: [{ address: derivativeWorkflowsClient.address, amount: totalFees }],
+    totalFees,
+    contractCall: () => {
+      return derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
+    },
+    workflowClient: derivativeWorkflowsClient,
+    encodedTxData: {
+      to: derivativeWorkflowsAddress[chainId],
+      data: encodeFunctionData({
+        abi: derivativeWorkflowsAbi,
+        functionName: "registerIpAndMakeDerivative",
+        args: [
+          transformRequest.nftContract,
+          transformRequest.tokenId,
+          transformRequest.derivData,
+          transformRequest.ipMetadata,
+          transformRequest.sigMetadataAndRegister,
+        ],
+      }),
+    },
+  };
 };
 
 export const getIpIdAddress = async ({
@@ -963,25 +1035,6 @@ export const getCalculatedDeadline = async (
 ): Promise<bigint> => {
   const blockTimestamp = (await rpcClient.getBlock()).timestamp;
   return getDeadline(blockTimestamp, requestDeadline);
-};
-
-export const transformRegistrationRequest = async <
-  T extends TransformIpRegistrationWorkflowRequest,
->({
-  request,
-  rpcClient,
-  wallet,
-  chainId,
-}: TransformRegistrationRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
-  if ("spgNftContract" in request) {
-    return handleSpgNftRequest<T>({ request, rpcClient, wallet, chainId });
-  } else if ("nftContract" in request && "tokenId" in request) {
-    return handleNftRequest<T>({ request, rpcClient, wallet, chainId });
-  } else if ("ipRoyaltyVault" in request) {
-    return handleDistributeRoyaltyTokensRequest<T>({ request, rpcClient, wallet, chainId });
-  }
-
-  throw new Error("Invalid registration request type");
 };
 
 export const mergeSpenders = (
@@ -1147,4 +1200,125 @@ export const handleMulticall = async ({
     txResponses.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
   }
   return txResponses;
+};
+
+export const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRequest>({
+  request,
+  rpcClient,
+  wallet,
+  chainId,
+}: HandleRegisterRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
+  const ipIdAddress = await getIpIdAddress({
+    nftContract: validateAddress(request.nftContract),
+    tokenId: BigInt(request.tokenId),
+    rpcClient,
+    wallet,
+    chainId,
+  });
+
+  const baseRequest = {
+    nftContract: validateAddress(request.nftContract),
+    tokenId: BigInt(request.tokenId),
+    ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
+  };
+  const calculatedDeadline = await getCalculatedDeadline(rpcClient, request.deadline);
+  const royaltyTokenDistributionWorkflowsClient = new RoyaltyTokenDistributionWorkflowsClient(
+    rpcClient,
+    wallet,
+  );
+  const licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
+  const derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
+
+  if ("licenseTermsData" in request) {
+    const { licenseTermsData } = await validateLicenseTermsData(
+      request.licenseTermsData as LicenseTermsDataInput[],
+      rpcClient,
+    );
+    const requestWithTerms = { ...baseRequest, licenseTermsData };
+
+    if ("royaltyShares" in request) {
+      return await transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest({
+        request: requestWithTerms,
+        royaltyTokenDistributionWorkflowsClient,
+        chainId,
+        wallet,
+        calculatedDeadline,
+        ipIdAddress,
+        royaltyShares: request.royaltyShares,
+      });
+    }
+
+    return await transferRegisterIpAndAttachPilTermsRequest({
+      request: requestWithTerms,
+      licenseAttachmentWorkflowsClient,
+      calculatedDeadline,
+      ipIdAddress,
+      wallet,
+      chainId,
+    });
+  }
+
+  if ("derivData" in request) {
+    const derivData = await validateDerivativeData({
+      derivativeDataInput: request.derivData,
+      rpcClient,
+      chainId,
+      wallet,
+    });
+    const totalFees = await calculateDerivativeMintingFee({
+      derivData,
+      rpcClient,
+      chainId,
+      wallet,
+    });
+    if ("royaltyShares" in request) {
+      return await transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest({
+        request: {
+          ...baseRequest,
+          derivData,
+        },
+        calculatedDeadline,
+        ipIdAddress,
+        wallet,
+        chainId,
+        royaltyTokenDistributionWorkflowsClient,
+        totalFees,
+        royaltyShares: request.royaltyShares,
+      });
+    }
+
+    return await transferRegisterDerivativeIpRequest({
+      request: {
+        ...baseRequest,
+        derivData,
+      },
+      calculatedDeadline,
+      ipIdAddress,
+      wallet,
+      chainId,
+      derivativeWorkflowsClient,
+      totalFees,
+    });
+  }
+
+  throw new Error("Invalid register request type");
+};
+
+export const transformRegistrationRequest = async <
+  T extends TransformIpRegistrationWorkflowRequest,
+>({
+  request,
+  rpcClient,
+  wallet,
+  chainId,
+}: TransformRegistrationRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
+  if ("spgNftContract" in request) {
+    return handleMintAndRegisterRequest<T>({ request, rpcClient, wallet, chainId });
+  } else if ("nftContract" in request && "tokenId" in request) {
+    return handleRegisterRequest<T>({ request, rpcClient, wallet, chainId });
+  } else if ("ipRoyaltyVault" in request) {
+    return handleDistributeRoyaltyTokensRequest<T>({ request, rpcClient, wallet, chainId });
+  }
+
+  throw new Error("Invalid registration request type");
 };
