@@ -10,7 +10,7 @@ import {
   publicClient,
   walletClient,
 } from "./utils/util";
-import {mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens
+import {
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
   erc20Address,
@@ -44,6 +44,7 @@ describe("Batch IP Registration with Royalty Distribution", () => {
     });
     nftContract = txData.spgNftContract!;
     
+
     mockERC20 = new ERC20Client(
       publicClient,
       walletClient,
@@ -54,6 +55,7 @@ describe("Batch IP Registration with Royalty Distribution", () => {
 
   describe("Batch mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens Tests", () => {
     it("should batch process royalty distributions with complex distribution schemas", async () => {
+
       const commercialLicenseTermsData = {
         terms: {
           transferable: true,
@@ -79,7 +81,7 @@ describe("Batch IP Registration with Royalty Distribution", () => {
       const simpleDistribution = [
         {
           recipient: walletAddress,
-          percentage: 100, 
+          percentage: 100,
         }
       ];
 
@@ -90,11 +92,11 @@ describe("Batch IP Registration with Royalty Distribution", () => {
         },
         {
           recipient: walletAddress, 
-          percentage: 25, 
+          percentage: 25,
         },
         {
           recipient: walletAddress, 
-          percentage: 20,
+          percentage: 20, 
         },
         {
           recipient: walletAddress, 
@@ -174,7 +176,6 @@ describe("Batch IP Registration with Royalty Distribution", () => {
     });
 
     it("should batch register and distribute royalty tokens with the maximum allowed recipients per IP", async () => {
-      
       const commercialLicenseTermsData = {
         terms: {
           transferable: true,
