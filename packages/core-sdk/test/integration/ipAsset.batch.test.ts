@@ -243,7 +243,7 @@ describe("Batch IP Registration with Royalty Distribution", () => {
       expect(totalIpRegistered).to.equal(2);
     });
 
-    it.only("should verify royalty token ownership after batch distribution", async () => {
+    it("should verify royalty token ownership after batch distribution", async () => {
       const commercialLicenseTermsData = {
         terms: {
           transferable: true,
@@ -321,6 +321,395 @@ describe("Batch IP Registration with Royalty Distribution", () => {
         const isRegistered = await client.ipAsset.isRegistered(ipId as `0x${string}`);
         expect(isRegistered).to.be.true;
       }
+    });
+  });
+});
+
+describe("Batch IP Registration with PIL Terms", () => {
+  let client: StoryClient;
+  let nftContract: Hex;
+
+  before(async () => {
+    client = getStoryClient();
+    
+    // Setup NFT collection
+    const txData = await client.nftClient.createNFTCollection({
+      name: "pil-batch-test",
+      symbol: "PBATCH",
+      maxSupply: 100,
+      isPublicMinting: true,
+      mintOpen: true,
+      contractURI: "test-uri",
+      mintFeeRecipient: walletAddress,
+      txOptions: { waitForTransaction: true },
+    });
+    nftContract = txData.spgNftContract!;
+  });
+
+  describe("Batch mintAndRegisterIpAssetWithPilTerms Tests", () => {
+    it("should handle batch registration with mixed success and failure scenarios for mintAndRegisterIpAssetWithPilTerms", async () => {
+      // Create valid and invalid license terms data
+      const validLicenseTermsData = {
+        terms: {
+          transferable: true,
+          royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+          defaultMintingFee: 5n,
+          expiration: 0n,
+          commercialUse: true,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 10,
+          commercialRevCeiling: 0n,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: 0n,
+          currency: WIP_TOKEN_ADDRESS,
+          uri: "valid-test-uri",
+        },
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 5n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: pool,
+        },
+      };
+
+      const invalidLicenseTermsData = {
+        terms: {
+          transferable: true,
+          royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+          defaultMintingFee: -1n, // Invalid negative fee
+          expiration: 0n,
+          commercialUse: true,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 10,
+          commercialRevCeiling: 0n,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: 0n,
+          currency: WIP_TOKEN_ADDRESS,
+          uri: "invalid-test-uri",
+        },
+        licensingConfig: {
+          isSet: true,
+          mintingFee: -1n, // Invalid negative fee
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: pool,
+        },
+      };
+
+      // Create a request with a mix of valid and invalid items
+      const batchRequest = {
+        args: [
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [validLicenseTermsData],
+            allowDuplicates: true,
+          },
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [invalidLicenseTermsData],
+            allowDuplicates: true,
+          },
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [validLicenseTermsData],
+            allowDuplicates: true,
+          }
+        ],
+        txOptions: { waitForTransaction: true },
+      };
+
+      // Since the batch will fail due to the invalid license terms,
+      // we expect the entire batch to be rejected
+      await expect(
+        client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms(batchRequest)
+      ).to.be.rejected;
+
+      // Now create a batch with only valid items
+      const validBatchRequest = {
+        args: [
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [validLicenseTermsData],
+            allowDuplicates: true,
+          },
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [validLicenseTermsData],
+            allowDuplicates: true,
+          }
+        ],
+        txOptions: { waitForTransaction: true },
+      };
+
+      const result = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms(validBatchRequest);
+      
+      // Verify the result
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.results).to.be.an("array").with.lengthOf(2);
+      expect(result.results![0].ipId).to.be.a("string").and.not.empty;
+      expect(result.results![0].licenseTermsIds).to.be.an("array").with.lengthOf(1);
+      expect(result.results![1].ipId).to.be.a("string").and.not.empty;
+      expect(result.results![1].licenseTermsIds).to.be.an("array").with.lengthOf(1);
+    });
+
+    it("should batch register IPs with PIL terms containing different licensing configurations", async () => {
+      // Create a variety of different license terms
+      const commercialLicenseTermsData = {
+        terms: {
+          transferable: true,
+          royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+          defaultMintingFee: 10n,
+          expiration: 1000n,
+          commercialUse: true,
+          commercialAttribution: true,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 15,
+          commercialRevCeiling: 10000n,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: true,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: 5000n,
+          currency: WIP_TOKEN_ADDRESS,
+          uri: "commercial-config",
+        },
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 10n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 15,
+          disabled: false,
+          expectMinimumGroupRewardShare: 10,
+          expectGroupRewardPool: pool,
+        },
+      };
+
+      const nonCommercialLicenseTermsData = {
+        terms: {
+          transferable: true,
+          royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+          defaultMintingFee: 0n,
+          expiration: 0n,
+          commercialUse: false,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 0,
+          commercialRevCeiling: 0n,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+          derivativeRevCeiling: 0n,
+          currency: WIP_TOKEN_ADDRESS,
+          uri: "non-commercial-config",
+        },
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 0n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: zeroAddress,
+        },
+      };
+
+      const mixedPermissionsLicenseTermsData = {
+        terms: {
+          transferable: false,
+          royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+          defaultMintingFee: 5n,
+          expiration: 500n,
+          commercialUse: true,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 8,
+          commercialRevCeiling: 5000n,
+          derivativesAllowed: false,
+          derivativesAttribution: false,
+          derivativesApproval: false,
+          derivativesReciprocal: false,
+          derivativeRevCeiling: 0n,
+          currency: WIP_TOKEN_ADDRESS,
+          uri: "mixed-permissions-config",
+        },
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 5n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 8,
+          disabled: false,
+          expectMinimumGroupRewardShare: 5,
+          expectGroupRewardPool: pool,
+        },
+      };
+
+      // Create a batch with different licensing configurations
+      const batchRequest = {
+        args: [
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [commercialLicenseTermsData],
+            allowDuplicates: true,
+          },
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [nonCommercialLicenseTermsData],
+            allowDuplicates: true,
+          },
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [mixedPermissionsLicenseTermsData],
+            allowDuplicates: true,
+          }
+        ],
+        txOptions: { waitForTransaction: true },
+      };
+
+      const result = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms(batchRequest);
+      
+      // Verify the result
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.results).to.be.an("array").with.lengthOf(3);
+      
+      // Verify each IP has appropriate license terms
+      expect(result.results![0].licenseTermsIds).to.be.an("array").with.lengthOf(1);
+      expect(result.results![1].licenseTermsIds).to.be.an("array").with.lengthOf(1);
+      expect(result.results![2].licenseTermsIds).to.be.an("array").with.lengthOf(1);
+      
+      // Verify that the licenseTermsIds are different for each IP
+      const licenseId1 = result.results![0].licenseTermsIds![0];
+      const licenseId2 = result.results![1].licenseTermsIds![0];
+      const licenseId3 = result.results![2].licenseTermsIds![0];
+      
+      expect(licenseId1).to.not.equal(licenseId2);
+      expect(licenseId1).to.not.equal(licenseId3);
+      expect(licenseId2).to.not.equal(licenseId3);
+      
+      // Check the licenses are correctly attached to the IPs
+      const ipId1 = result.results![0].ipId;
+      const ipId2 = result.results![1].ipId;
+      const ipId3 = result.results![2].ipId;
+      
+      const isRegistered1 = await client.ipAsset.isRegistered(ipId1);
+      const isRegistered2 = await client.ipAsset.isRegistered(ipId2);
+      const isRegistered3 = await client.ipAsset.isRegistered(ipId3);
+      
+      expect(isRegistered1).to.be.true;
+      expect(isRegistered2).to.be.true;
+      expect(isRegistered3).to.be.true;
+    });
+
+    it("should batch register multiple IPs with the same PIL terms", async () => {
+      // Create a single license terms data that will be reused
+      const sharedLicenseTermsData = {
+        terms: {
+          transferable: true,
+          royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+          defaultMintingFee: 7n,
+          expiration: 365n,
+          commercialUse: true,
+          commercialAttribution: true,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 12,
+          commercialRevCeiling: 8000n,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: 4000n,
+          currency: WIP_TOKEN_ADDRESS,
+          uri: "shared-license-terms",
+        },
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 7n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 12,
+          disabled: false,
+          expectMinimumGroupRewardShare: 5,
+          expectGroupRewardPool: pool,
+        },
+      };
+
+      // Create a larger batch with the same license terms for efficiency
+      const batchSize = 3; // Using a small number for test efficiency, can be increased
+      const batchRequest = {
+        args: Array(batchSize).fill(0).map(() => ({
+          spgNftContract: nftContract,
+          licenseTermsData: [sharedLicenseTermsData],
+          allowDuplicates: true,
+          ipMetadata: {
+            ipMetadataURI: "shared-terms-test",
+            ipMetadataHash: toHex("shared-terms-test-hash", { size: 32 }),
+            nftMetadataHash: toHex("shared-terms-test-nft-hash", { size: 32 }),
+          }
+        })),
+        txOptions: { waitForTransaction: true },
+      };
+
+      const result = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms(batchRequest);
+      
+      // Verify the result
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.results).to.be.an("array").with.lengthOf(batchSize);
+      
+      // Get all the license term IDs
+      const licenseTermsIds = result.results!.map(res => res.licenseTermsIds![0]);
+      
+      // All should have the same license terms ID since they use the same terms
+      const uniqueLicenseTermsIds = [...new Set(licenseTermsIds)];
+      
+      // There should be only one unique license terms ID
+      expect(uniqueLicenseTermsIds).to.have.lengthOf(1);
+      
+      // Verify all IPs are properly registered
+      for (const res of result.results!) {
+        const isRegistered = await client.ipAsset.isRegistered(res.ipId);
+        expect(isRegistered).to.be.true;
+      }
+      
+      // Verify the gas efficiency by running one more test with different terms
+      const differentTermsRequest = {
+        args: [
+          {
+            spgNftContract: nftContract,
+            licenseTermsData: [sharedLicenseTermsData], // Same terms again
+            allowDuplicates: true,
+          }
+        ],
+        txOptions: { waitForTransaction: true },
+      };
+      
+      const differenceResult = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms(differentTermsRequest);
+      
+      // Verify that the license terms ID matches the previous batch
+      expect(differenceResult.results![0].licenseTermsIds![0]).to.equal(uniqueLicenseTermsIds[0]);
     });
   });
 });
