@@ -113,6 +113,7 @@ import {
   validateDerivativeData,
   prepareRoyaltyTokensDistribution,
   handleMulticall,
+  handleDistributeRoyaltyTokensRequest,
 } from "../utils/registerHelper";
 import { SignatureMethodType } from "../types/utils/registerHelper";
 
@@ -1306,7 +1307,7 @@ export class IPAssetClient {
 
   private async distributeRoyaltyTokens(request: DistributeRoyaltyTokens): Promise<Hex> {
     const { transformRequest } =
-      await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
+      await handleDistributeRoyaltyTokensRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
         {
           request,
           rpcClient: this.rpcClient,

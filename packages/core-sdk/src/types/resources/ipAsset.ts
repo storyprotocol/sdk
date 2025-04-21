@@ -486,8 +486,7 @@ export type MintSpgNftRegistrationRequest = RemoveOptionsFields<
 
 export type IpRegistrationWorkflowRequest =
   | MintSpgNftRegistrationRequest
-  | RegisterRegistrationRequest
-  | RemoveOptionsFields<DistributeRoyaltyTokens>;
+  | RegisterRegistrationRequest;
 
 export type RegisterRegistrationRequest = RemoveOptionsFields<
   | RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest

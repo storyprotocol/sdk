@@ -1085,7 +1085,7 @@ export const prepareRoyaltyTokensDistribution = async ({
       const calculatedDeadline = await getCalculatedDeadline(rpcClient, req.deadline);
 
       const response =
-        await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
+        await handleDistributeRoyaltyTokensRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
           {
             request: {
               ipId: filterIpIdAndTokenId.ipId,
@@ -1223,8 +1223,6 @@ export const transformRegistrationRequest = async <
     return handleMintAndRegisterRequest<T>({ request, rpcClient, wallet, chainId });
   } else if ("nftContract" in request && "tokenId" in request) {
     return handleRegisterRequest<T>({ request, rpcClient, wallet, chainId });
-  } else if ("ipRoyaltyVault" in request) {
-    return handleDistributeRoyaltyTokensRequest<T>({ request, rpcClient, wallet, chainId });
   }
 
   throw new Error("Invalid registration request type");
