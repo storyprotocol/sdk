@@ -1422,13 +1422,15 @@ export class IPAssetClient {
           chainId: this.chainId,
         });
 
-        const ipIdAndTokenIdEvent = this.getIpIdAndTokenIdsFromEvent(receipt!);
         prepareRoyaltyTokensDistributionResponses.push(...response);
 
         responses.push({
           txHash,
           receipt: receipt!,
-          ipIdAndTokenId: ipIdAndTokenIdEvent,
+          ipIdAndTokenId: iPRegisteredLog.map((log) => ({
+            ipId: log.ipId,
+            tokenId: log.tokenId,
+          })),
         });
       }
       let distributeRoyaltyTokensTxHashes: Hash[] | undefined;
