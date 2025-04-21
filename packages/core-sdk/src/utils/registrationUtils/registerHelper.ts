@@ -1,11 +1,13 @@
 import { Address, Hex } from "viem";
 
-import { TransactionResponse } from "../types/options";
-import { TransformIpRegistrationWorkflowResponse } from "../types/resources/ipAsset";
-import { AggregateRegistrationRequest, HandleMulticallConfig } from "../types/utils/registerHelper";
-import { contractCallWithFees } from "./feeUtils";
-import { mergeSpenders } from "./registrationUtils/registerValidation";
-
+import {
+  AggregateRegistrationRequest,
+  HandleMulticallConfig,
+} from "../../types/utils/registerHelper";
+import { TransformIpRegistrationWorkflowResponse } from "../../types/resources/ipAsset";
+import { contractCallWithFees } from "../feeUtils";
+import { TransactionResponse } from "../../types/options";
+import { mergeSpenders } from "./registerValidation";
 /**
  * Aggregates the registration requests for the given workflow responses.
  *
@@ -34,9 +36,13 @@ const aggregateTransformIpRegistrationWorkflow = (
   const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
   for (const res of transferWorkflowResponses) {
     const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
-    const shouldUseMulticall = !disableMulticallWhenPossible && isUseMulticall3;
-    const targetAddress = shouldUseMulticall ? multicall3Address : workflowClient.address;
+    let shouldUseMulticall = isUseMulticall3;
+    if (disableMulticallWhenPossible) {
+      shouldUseMulticall = false;
+    }
 
+    // const shouldUseMulticall = !disableMulticallWhenPossible && isUseMulticall3;
+    const targetAddress = shouldUseMulticall ? multicall3Address : workflowClient.address;
     if (!aggregateRegistrationRequest[targetAddress]) {
       aggregateRegistrationRequest[targetAddress] = {
         spenders: [],
@@ -90,8 +96,7 @@ export const handleMulticall = async ({
       }
       return txHashes;
     };
-    const useMulticallWhenPossible =
-      key === multicall3Address ? wipOptions?.useMulticallWhenPossible !== false : false;
+    const useMulticallWhenPossible = key === multicall3Address ? true : false;
     const txResponse = await contractCallWithFees({
       totalFees,
       options: {

@@ -97,25 +97,29 @@ import { LicenseTerms } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { calculateSPGWipMintFee, contractCallWithFees } from "../utils/feeUtils";
+import { contractCallWithFees } from "../utils/feeUtils";
+import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
 import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
+import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
-  calculateDerivativeMintingFee,
-  generateOperationSignature,
   getCalculatedDeadline,
   getIpIdAddress,
+} from "../utils/registrationUtils/registerValidation";
+import {
   getRoyaltyShares,
-  transformRegistrationRequest,
-  validateLicenseTermsData,
   validateMaxRts,
   validateDerivativeData,
-  prepareRoyaltyTokensDistribution,
-  handleMulticall,
-  handleDistributeRoyaltyTokensRequest,
-} from "../utils/registerHelper";
+} from "../utils/registrationUtils/registerValidation";
+import { validateLicenseTermsData } from "../utils/registrationUtils/registerValidation";
+import {
+  prepareRoyaltyTokensDistributionRequests,
+  transferDistributeRoyaltyTokensRequest,
+  transformRegistrationRequest,
+} from "../utils/registrationUtils/transformRegistrationRequest";
 import { SignatureMethodType } from "../types/utils/registerHelper";
+import { generateOperationSignature } from "../utils/generateOperationSignature";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -1307,7 +1311,7 @@ export class IPAssetClient {
 
   private async distributeRoyaltyTokens(request: DistributeRoyaltyTokens): Promise<Hex> {
     const { transformRequest } =
-      await handleDistributeRoyaltyTokensRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
+      await transferDistributeRoyaltyTokensRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
         {
           request,
           rpcClient: this.rpcClient,
@@ -1351,6 +1355,11 @@ export class IPAssetClient {
    * by minimizing the number of separate blockchain transactions. It also handles complex
    * workflows like royalty token distribution automatically.
    *
+   * The method supports automatic token handling for minting fees:
+   * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
+   * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
+   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   *
    * @remark Multicall selection logic:
    *
    * 1. For `mintAndRegister*` methods:
@@ -1377,8 +1386,11 @@ export class IPAssetClient {
         });
         transferWorkflowResponses.push(res);
       }
-
-      // Extract royalty distribution requests from workflow responses
+      /**
+       * Extract royalty distribution requests from workflow responses that contain royalty shares
+       * We need to handle `distributeRoyaltyTokens` separately because this method requires
+       * a signature with the royalty vault address, which is only available after the initial registration
+       */
       const royaltyDistributionRequests = (
         transferWorkflowResponses.filter(
           (res) => res.extraData?.royaltyShares,
@@ -1414,7 +1426,7 @@ export class IPAssetClient {
           this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt!);
 
         // Prepare royalty distribution if needed
-        const response = await prepareRoyaltyTokensDistribution({
+        const response = await prepareRoyaltyTokensDistributionRequests({
           royaltyDistributionRequests,
           ipRegisteredLog: iPRegisteredLog,
           ipRoyaltyVault: ipRoyaltyVaultEvent,

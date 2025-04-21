@@ -47,11 +47,12 @@ import {
 } from "../utils/licenseTermsHelper";
 import { chain, validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
-import { calculateLicenseWipMintFee, contractCallWithFees } from "../utils/feeUtils";
+import { contractCallWithFees } from "../utils/feeUtils";
+import { calculateLicenseWipMintFee } from "../utils/calculateMintFee";
 import { Erc20Spender } from "../types/utils/wip";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { LicensingConfig, RevShareType } from "../types/common";
-import { predictMintingLicenseFee } from "../utils/predictMintingLicenseFee";
+import { predictMintingLicenseFee } from "../utils/calculateMintFee";
 
 export class LicenseClient {
   public licensingModuleClient: LicensingModuleClient;
