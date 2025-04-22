@@ -1,7 +1,6 @@
 import { Hash, maxUint256, PublicClient } from "viem";
 
-import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
 import { getTokenAmountDisplay } from "./utils";
 import {
   ApprovalCall,
@@ -13,10 +12,6 @@ import {
 import { simulateAndWriteContract } from "./contract";
 import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
 import { ERC20Client, WipTokenClient } from "./token";
-import {
-  predictMintingLicenseFee,
-  PredictMintingLicenseFeeParams,
-} from "./predictMintingLicenseFee";
 import { TxOptions } from "../types/options";
 
 /**
@@ -75,32 +70,6 @@ const approvalAllSpenders = async ({
     await rpcClient.waitForTransactionReceipt({ hash });
   }
   return [];
-};
-
-export const calculateLicenseWipMintFee = async ({
-  predictMintingFeeRequest,
-  rpcClient,
-  chainId,
-  walletAddress,
-}: PredictMintingLicenseFeeParams) => {
-  const fee = await predictMintingLicenseFee({
-    predictMintingFeeRequest,
-    rpcClient,
-    chainId,
-    walletAddress,
-  });
-  if (fee.currencyToken !== WIP_TOKEN_ADDRESS) {
-    return 0n;
-  }
-  return fee.tokenAmount;
-};
-
-export const calculateSPGWipMintFee = async (spgNftClient: SpgnftImplReadOnlyClient) => {
-  const token = await spgNftClient.mintFeeToken();
-  if (token !== WIP_TOKEN_ADDRESS) {
-    return 0n;
-  }
-  return await spgNftClient.mintFee();
 };
 
 const multiCallWrapIp = async ({
