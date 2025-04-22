@@ -48,11 +48,47 @@ export const getTokenId = async (): Promise<number | undefined> => {
     return parseInt(logs[0].topics[3], 16);
   }
 };
-export const mintBySpg = async (
-  nftContract: Hex,
+/**
+ * Mints an NFT using the SPG contract without a mint fee.
+ *
+ * @remarks
+ * This function calls the mint function on the SPG NFT contract.
+ * When successful, it will emit a Mint event. The token Id is extracted from the first log (index 0).
+ */
+export const mintBySpgWithoutMintFee = async (
+  spgNftContract: Hex,
   nftMetadataURI?: string,
   nftMetadataHash?: Hex,
-) => {
+): Promise<number | undefined> => {
+  const logs = await mintBySpg(spgNftContract, nftMetadataURI, nftMetadataHash);
+  if (logs && logs.length > 0 && logs[0].topics[3]) {
+    return parseInt(logs[0].topics[3], 16);
+  }
+  return undefined;
+};
+
+/**
+ * Mints an NFT using the SPG contract with a mint fee.
+ *
+ * @remarks
+ * This function calls the mint function on the SPG NFT contract with a mint fee.
+ * When successful, it will emit multiple events including an ERC20 transfer event for the fee
+ * and a Mint event. The tokenId is extracted from the second log (index 1) which contains
+ * the Mint event data.
+ */
+export const mintBySpgWithMintFee = async (
+  spgNftContract: Hex,
+  nftMetadataURI?: string,
+  nftMetadataHash?: Hex,
+): Promise<number | undefined> => {
+  const logs = await mintBySpg(spgNftContract, nftMetadataURI, nftMetadataHash);
+  if (logs && logs.length > 1 && logs[1].topics[3]) {
+    return parseInt(logs[1].topics[3], 16);
+  }
+  return undefined;
+};
+
+const mintBySpg = async (spgNftContract: Hex, nftMetadataURI?: string, nftMetadataHash?: Hex) => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -90,25 +126,19 @@ export const mintBySpg = async (
         type: "function",
       },
     ],
-    address: nftContract,
+    address: spgNftContract,
     functionName: "mint",
-    args: [
-      process.env.TEST_WALLET_ADDRESS! as Address,
-      nftMetadataURI || "",
-      nftMetadataHash || zeroHash,
-      true,
-    ],
+    args: [TEST_WALLET_ADDRESS, nftMetadataURI || "", nftMetadataHash || zeroHash, true],
     account: walletClient.account,
   });
+
   const hash = await walletClient.writeContract(request);
   const { logs } = await publicClient.waitForTransactionReceipt({
     hash,
   });
-  if (logs[0].topics[3]) {
-    return parseInt(logs[0].topics[3], 16);
-  }
-};
 
+  return logs;
+};
 export const approveForLicenseToken = async (address: Address, tokenId: bigint) => {
   const { request: call } = await publicClient.simulateContract({
     abi: licenseTokenAbi,

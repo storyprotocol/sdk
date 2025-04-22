@@ -1,10 +1,11 @@
 import { StoryClient } from "../../src";
-import { getStoryClient } from "./utils/util";
-import { Address } from "viem";
+import { getStoryClient, mintBySpgWithMintFee, publicClient, walletClient } from "./utils/util";
+import { Address, maxUint256 } from "viem";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { erc20Address } from "../../src/abi/generated";
 import { aeneid } from "../unit/mockData";
+import { ERC20Client } from "../../src/utils/token";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -153,6 +154,41 @@ describe("nftClient Functions", () => {
     it("should successfully get mint fee", async () => {
       const mintFee = await client.nftClient.getMintFee(spgNftContract);
       expect(mintFee).to.equal(10000000n);
+    });
+  });
+
+  describe("set and get tokenURI", () => {
+    it("should successfully set token URI", async () => {
+      spgNftContract = "0x41aEEBD6E86c86C09947781f063f814FEF13f9d4";
+      // Setup: Approve the contract for ERC20 transfers
+      const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
+      const txHash = await erc20Client.approve(spgNftContract, maxUint256);
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+      // Mint a new token with initial metadata
+      const tokenId = await mintBySpgWithMintFee(spgNftContract, "ipfs://QmTest/");
+      expect(tokenId).to.not.be.undefined;
+
+      // Update the token URI
+      const updatedMetadata = "ipfs://QmUpdated/metadata.json";
+      const result = await client.nftClient.setTokenURI({
+        tokenId: tokenId!,
+        tokenURI: updatedMetadata,
+        spgNftContract,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+
+      // Verify the transaction was successful
+      expect(result.txHash).to.be.a("string").and.not.empty;
+
+      // Verification that the URI
+      const tokenURI = await client.nftClient.getTokenURI({
+        tokenId: tokenId!,
+        spgNftContract,
+      });
+      expect(tokenURI).to.equal(updatedMetadata);
     });
   });
 });
