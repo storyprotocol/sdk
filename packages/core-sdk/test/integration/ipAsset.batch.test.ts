@@ -509,7 +509,7 @@ describe("Batch IP Registration with PIL Terms", () => {
           royaltyPolicy: royaltyPolicyLapAddress[aeneid],
           defaultMintingFee: 0n,
           expiration: 0n,
-          commercialUse: false,
+          commercialUse: true,
           commercialAttribution: false,
           commercializerChecker: zeroAddress,
           commercializerCheckerData: zeroAddress,
