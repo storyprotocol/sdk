@@ -118,7 +118,7 @@ export default defineConfig(async () => {
     {
       name: "SPGNFTImpl",
       address: {
-        [aeneidChainId]: "0xc09e3788Fdfbd3dd8CDaa2aa481B52CcFAb74a42",
+        [aeneidChainId]: "0x5266215a00c31AaA2f2BB7b951Ea0028Ea8b4e37",
         [mainnetChainId]: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
       },
     },
@@ -367,6 +367,13 @@ export default defineConfig(async () => {
             "hasIpAttachedLicenseTerms",
             "getDefaultLicenseTerms",
             "getRoyaltyPercent",
+          ],
+          SPGNFTImpl: [
+            "publicMinting",
+            "mintFeeToken",
+            "mintFee",
+            "setTokenURI",
+            "tokenURI",
           ],
         },
       }),
