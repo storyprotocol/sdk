@@ -53,7 +53,8 @@ export const getTokenId = async (): Promise<number | undefined> => {
  *
  * @remarks
  * This function calls the mint function on the SPG NFT contract.
- * When successful, it will emit a Mint event. The token Id is extracted from the first log (index 0).
+ * When successful, it will emit a Transfer event for the spgNftContract.
+ * The token ID is extracted from the third topic (topics[3]) of the first log (index 0).
  */
 export const mintBySpgWithoutMintFee = async (
   spgNftContract: Hex,
@@ -72,9 +73,12 @@ export const mintBySpgWithoutMintFee = async (
  *
  * @remarks
  * This function calls the mint function on the SPG NFT contract with a mint fee.
- * When successful, it will emit multiple events including an ERC20 transfer event for the fee
- * and a Mint event. The tokenId is extracted from the second log (index 1) which contains
- * the Mint event data.
+ * When successful, it will emit multiple events including:
+ * - An ERC20 Transfer event for the mint fee payment (index 0)
+ * - An NFT Transfer event from the SPG contract (index 1)
+ *
+ * The tokenId is extracted from the second log (index 1) which contains
+ * the NFT Transfer event data in the third topic (topics[3]).
  */
 export const mintBySpgWithMintFee = async (
   spgNftContract: Hex,

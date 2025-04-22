@@ -159,7 +159,6 @@ describe("nftClient Functions", () => {
 
   describe("set and get tokenURI", () => {
     it("should successfully set token URI", async () => {
-      spgNftContract = "0x41aEEBD6E86c86C09947781f063f814FEF13f9d4";
       // Setup: Approve the contract for ERC20 transfers
       const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
       const txHash = await erc20Client.approve(spgNftContract, maxUint256);
@@ -180,10 +179,10 @@ describe("nftClient Functions", () => {
         },
       });
 
-      // Verify the transaction was successful
+      // Verify the transaction
       expect(result.txHash).to.be.a("string").and.not.empty;
 
-      // Verification that the URI
+      // Verification that the URI was updated
       const tokenURI = await client.nftClient.getTokenURI({
         tokenId: tokenId!,
         spgNftContract,
