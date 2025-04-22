@@ -6,7 +6,7 @@ import { PublicClient, WalletClient } from "viem";
 import { NftClient } from "../../../src";
 import { createMock } from "../testUtils";
 import { mockAddress, mockERC20 } from "../mockData";
-import { SpgnftImplReadOnlyClient } from "../../../src/abi/generated";
+import { SpgnftImplClient, SpgnftImplReadOnlyClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
 
@@ -144,6 +144,42 @@ describe("Test NftClient", () => {
       sinon.stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(1n);
       const mintFee = await nftClient.getMintFee(mockERC20);
       expect(mintFee).equal(1n);
+    });
+  });
+
+  describe("test for setTokenURI", () => {
+    it("should throw error when call setTokenURI fail", async () => {
+      sinon.stub(SpgnftImplClient.prototype, "setTokenUri").throws(new Error("rpc error"));
+      await expect(
+        nftClient.setTokenURI({
+          tokenId: 1n,
+          tokenURI: "test-uri",
+          spgNftContract: mockERC20,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        }),
+      ).to.be.rejectedWith("Failed to set token URI: rpc error");
+    });
+    it("should successfully set token URI", async () => {
+      sinon.stub(SpgnftImplClient.prototype, "setTokenUri").resolves(txHash);
+      const result = await nftClient.setTokenURI({
+        tokenId: 1n,
+        tokenURI: "test-uri",
+        spgNftContract: mockERC20,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+    });
+  });
+
+  describe("test for getTokenURI", () => {
+    it("should successfully get token URI", async () => {
+      sinon.stub(SpgnftImplReadOnlyClient.prototype, "tokenUri").resolves("test-uri");
+      const tokenURI = await nftClient.getTokenURI({ tokenId: 1n, spgNftContract: mockERC20 });
+      expect(tokenURI).equal("test-uri");
     });
   });
 });
