@@ -1,22 +1,18 @@
-import { maxUint256 } from "viem";
+import { Hash, maxUint256, PublicClient } from "viem";
 
-import { multicall3Abi, SpgnftImplReadOnlyClient, wrappedIpAbi } from "../abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
 import { getTokenAmountDisplay } from "./utils";
 import {
   ApprovalCall,
   Multicall3ValueCall,
   MulticallWithWrapIp,
   ContractCallWithFees,
+  ContractCallWithFeesResponse,
 } from "../types/utils/wip";
 import { simulateAndWriteContract } from "./contract";
-import { handleTxOptions } from "./txOptions";
-import { TransactionResponse } from "../types/options";
+import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
 import { ERC20Client, WipTokenClient } from "./token";
-import {
-  predictMintingLicenseFee,
-  PredictMintingLicenseFeeParams,
-} from "./predictMintingLicenseFee";
+import { TxOptions } from "../types/options";
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -74,32 +70,6 @@ const approvalAllSpenders = async ({
     await rpcClient.waitForTransactionReceipt({ hash });
   }
   return [];
-};
-
-export const calculateLicenseWipMintFee = async ({
-  predictMintingFeeRequest,
-  rpcClient,
-  chainId,
-  walletAddress,
-}: PredictMintingLicenseFeeParams) => {
-  const fee = await predictMintingLicenseFee({
-    predictMintingFeeRequest,
-    rpcClient,
-    chainId,
-    walletAddress,
-  });
-  if (fee.currencyToken !== WIP_TOKEN_ADDRESS) {
-    return 0n;
-  }
-  return fee.tokenAmount;
-};
-
-export const calculateSPGWipMintFee = async (spgNftClient: SpgnftImplReadOnlyClient) => {
-  const token = await spgNftClient.mintFeeToken();
-  if (token !== WIP_TOKEN_ADDRESS) {
-    return 0n;
-  }
-  return await spgNftClient.mintFee();
 };
 
 const multiCallWrapIp = async ({
@@ -191,7 +161,7 @@ const multiCallWrapIp = async ({
  * If the user have enough token, it will check for if approvals are needed
  * for each spender address and approve it, unless disabled via `disableAutoApprove`.
  */
-export const contractCallWithFees = async ({
+export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   totalFees,
   options,
   multicall3Address,
@@ -203,7 +173,7 @@ export const contractCallWithFees = async ({
   encodedTxs,
   rpcClient,
   token,
-}: ContractCallWithFees): Promise<TransactionResponse | TransactionResponse[]> => {
+}: ContractCallWithFees<T>): ContractCallWithFeesResponse<T> => {
   const wipTokenClient = new WipTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
   const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;
@@ -211,7 +181,7 @@ export const contractCallWithFees = async ({
   // if no fees, skip all logic
   if (totalFees === 0n) {
     const txHash = await contractCall();
-    return handleTxOptions({ rpcClient, txOptions, txHash });
+    return handleTransactionResponse(txHash, rpcClient, txOptions);
   }
   const balance = await tokenClient.balanceOf(sender);
   const autoApprove = selectedOptions?.enableAutoApprove !== false;
@@ -231,7 +201,7 @@ export const contractCallWithFees = async ({
       });
     }
     const txHash = await contractCall();
-    return handleTxOptions({ rpcClient, txOptions, txHash });
+    return handleTransactionResponse(txHash, rpcClient, txOptions);
   }
 
   if (!isWip) {
@@ -276,5 +246,20 @@ export const contractCallWithFees = async ({
     wallet,
     calls,
   });
-  return handleTxOptions({ rpcClient, txOptions, txHash });
+  return handleTransactionResponse(txHash, rpcClient, txOptions) as ContractCallWithFeesResponse<T>;
+};
+
+export const handleTransactionResponse = <T extends Hash | Hash[] = Hash>(
+  txHash: T,
+  rpcClient: PublicClient,
+  txOptions?: TxOptions,
+) => {
+  if (Array.isArray(txHash)) {
+    return waitForTxReceipts({
+      rpcClient,
+      txOptions,
+      txHashes: txHash,
+    }) as ContractCallWithFeesResponse<T>;
+  }
+  return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
 };

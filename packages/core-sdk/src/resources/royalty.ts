@@ -41,7 +41,7 @@ import { Erc20Spender } from "../types/utils/wip";
 import { TransactionResponse } from "../types/options";
 import { ChainIds } from "../types/config";
 import { royaltyPolicyInputToAddress } from "../utils/royalty";
-import { handleTxOptions } from "../utils/txOptions";
+import { waitForTxReceipt } from "../utils/txOptions";
 
 export class RoyaltyClient {
   public royaltyModuleClient: RoyaltyModuleClient;
@@ -307,7 +307,7 @@ export class RoyaltyClient {
           amount: payAmount,
         },
       ];
-      const txResponse = await contractCallWithFees({
+      return await contractCallWithFees({
         totalFees: payAmount,
         options: { erc20Options, wipOptions },
         multicall3Address: this.multicall3Client.address,
@@ -320,8 +320,6 @@ export class RoyaltyClient {
         txOptions,
         encodedTxs: [encodedTxData],
       });
-      const { txHash, receipt } = txResponse as TransactionResponse;
-      return { txHash, receipt };
     } catch (error) {
       handleError(error, "Failed to pay royalty on behalf");
     }
@@ -385,11 +383,11 @@ export class RoyaltyClient {
       args: protocolArgs,
     });
     const txHash = await this.wallet.writeContract(call);
-    return handleTxOptions({
+    return waitForTxReceipt({
       txHash,
       rpcClient: this.rpcClient,
       txOptions,
-    }) as Promise<TransactionResponse>;
+    });
   }
 
   private async transferClaimedTokensFromIpToWallet({

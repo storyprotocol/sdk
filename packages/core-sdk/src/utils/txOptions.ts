@@ -1,19 +1,14 @@
-import { HandleTxOptionsParams, TransactionResponse } from "../types/options";
+import {
+  WaitForTransactionReceiptRequest,
+  TransactionResponse,
+  WaitForTransactionReceiptsRequest,
+} from "../types/options";
 
-export async function handleTxOptions({
+export async function waitForTxReceipt({
   txOptions,
   rpcClient,
   txHash,
-}: HandleTxOptionsParams): Promise<TransactionResponse | TransactionResponse[]> {
-  if (Array.isArray(txHash)) {
-    if (!txOptions || !txOptions.waitForTransaction) {
-      return txHash.map((hash) => ({ txHash: hash }));
-    }
-    const receipts = await Promise.all(
-      txHash.map((hash) => rpcClient.waitForTransactionReceipt({ ...txOptions, hash })),
-    );
-    return receipts.map((receipt) => ({ txHash: receipt.transactionHash, receipt }));
-  }
+}: WaitForTransactionReceiptRequest): Promise<TransactionResponse> {
   if (!txOptions || !txOptions.waitForTransaction) {
     return { txHash };
   }
@@ -22,4 +17,18 @@ export async function handleTxOptions({
     hash: txHash,
   });
   return { txHash, receipt };
+}
+
+export async function waitForTxReceipts({
+  txOptions,
+  rpcClient,
+  txHashes,
+}: WaitForTransactionReceiptsRequest): Promise<TransactionResponse[]> {
+  if (!txOptions || !txOptions.waitForTransaction) {
+    return txHashes.map((hash) => ({ txHash: hash }));
+  }
+  const receipts = await Promise.all(
+    txHashes.map((hash) => rpcClient.waitForTransactionReceipt({ ...txOptions, hash })),
+  );
+  return receipts.map((receipt) => ({ txHash: receipt.transactionHash, receipt }));
 }

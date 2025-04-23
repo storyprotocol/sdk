@@ -19,6 +19,39 @@ describe("Group Functions", () => {
   let ipId: Address;
   let licenseTermsId: bigint;
   const groupPoolAddress = evenSplitGroupPoolAddress[aeneid];
+  const licenseTermsData: LicenseTermsData[] = [
+    {
+      terms: {
+        transferable: true,
+        royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
+        defaultMintingFee: 0n,
+        expiration: BigInt(1000),
+        commercialUse: true,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        commercialRevShare: 0,
+        commercialRevCeiling: BigInt(0),
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        derivativeRevCeiling: BigInt(0),
+        currency: WIP_TOKEN_ADDRESS,
+        uri: "test case",
+      },
+      licensingConfig: {
+        isSet: true,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: zeroAddress,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: groupPoolAddress,
+      },
+    },
+  ];
 
   // Setup - create necessary contracts and initial IP
   before(async () => {
@@ -42,39 +75,7 @@ describe("Group Functions", () => {
     const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
       spgNftContract,
       allowDuplicates: false,
-      licenseTermsData: [
-        {
-          terms: {
-            transferable: true,
-            royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
-            defaultMintingFee: 0n,
-            expiration: BigInt(1000),
-            commercialUse: true,
-            commercialAttribution: false,
-            commercializerChecker: zeroAddress,
-            commercializerCheckerData: zeroAddress,
-            commercialRevShare: 0,
-            commercialRevCeiling: BigInt(0),
-            derivativesAllowed: true,
-            derivativesAttribution: true,
-            derivativesApproval: false,
-            derivativesReciprocal: true,
-            derivativeRevCeiling: BigInt(0),
-            currency: WIP_TOKEN_ADDRESS,
-            uri: "test case",
-          },
-          licensingConfig: {
-            isSet: true,
-            mintingFee: 0n,
-            licensingHook: zeroAddress,
-            hookData: zeroAddress,
-            commercialRevShare: 0,
-            disabled: false,
-            expectMinimumGroupRewardShare: 0,
-            expectGroupRewardPool: groupPoolAddress,
-          },
-        },
-      ],
+      licenseTermsData,
       txOptions: { waitForTransaction: true },
     });
 
@@ -252,6 +253,35 @@ describe("Group Functions", () => {
           txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("Failed to register group and attach license and add ips");
+    });
+
+    it("should successfully add multiple IPs to group", async () => {
+      const registerResult = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
+        args: [
+          {
+            spgNftContract,
+            licenseTermsData,
+          },
+          {
+            spgNftContract,
+            licenseTermsData,
+          },
+          {
+            spgNftContract,
+            licenseTermsData,
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+      const ipIds = registerResult.results?.map((result) => result.ipId);
+
+      const result = await client.groupClient.addIpsToGroup({
+        groupIpId: groupId,
+        ipIds: ipIds!,
+        maxAllowedRewardSharePercentage: 5,
+        txOptions: { waitForTransaction: true },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
     });
   });
 

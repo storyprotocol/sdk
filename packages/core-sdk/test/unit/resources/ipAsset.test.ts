@@ -13,11 +13,28 @@ import {
   Address,
 } from "viem";
 import chaiAsPromised from "chai-as-promised";
-import { IpAssetRegistryClient, LicenseRegistryReadOnlyClient } from "../../../src/abi/generated";
-import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../../src/constants/common";
+import {
+  DerivativeWorkflowsClient,
+  erc20Address,
+  IpAssetRegistryClient,
+  LicenseAttachmentWorkflowsClient,
+  LicenseRegistryReadOnlyClient,
+  RoyaltyModuleEventClient,
+  royaltyPolicyLapAddress,
+  RoyaltyTokenDistributionWorkflowsClient,
+} from "../../../src/abi/generated";
+import {
+  MAX_ROYALTY_TOKEN,
+  royaltySharesTotalSupply,
+  WIP_TOKEN_ADDRESS,
+} from "../../../src/constants/common";
 import { LicensingConfigInput } from "../../../src/types/common";
-import { DerivativeDataInput } from "../../../src/types/resources/ipAsset";
-import { txHash, walletAddress } from "../mockData";
+import {
+  DerivativeDataInput,
+  IpRegistrationWorkflowRequest,
+} from "../../../src/types/resources/ipAsset";
+import { aeneid, ipId, mockAddress, txHash, walletAddress } from "../mockData";
+import { mockERC721 } from "../../integration/utils/util";
 const {
   RoyaltyModuleReadOnlyClient,
   IpRoyaltyVaultImplReadOnlyClient,
@@ -109,7 +126,8 @@ describe("Test IpAssetClient", () => {
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
     (ipAssetClient.derivativeWorkflowsClient as any).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
-    sinon.stub(SpgnftImplReadOnlyClient.prototype, "mintFeeToken").resolves(zeroAddress);
+    (ipAssetClient.multicall3Client as any).address = mockAddress;
+    sinon.stub(SpgnftImplReadOnlyClient.prototype, "mintFeeToken").resolves(WIP_TOKEN_ADDRESS);
     sinon.stub(LicensingModuleClient.prototype, "predictMintingLicenseFee").resolves({
       currencyToken: zeroAddress,
       tokenAmount: 0n,
@@ -3767,6 +3785,911 @@ describe("Test IpAssetClient", () => {
       expect(
         mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.args[0][0].recipient,
       ).to.equal(walletAddress);
+    });
+  });
+
+  describe("Test ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows", async () => {
+    /**
+     * We need to mock the entire module instead of individual methods because
+     * the code needs to access the `address` property from workflow clients,
+     * which is impossible to mock individually. This approach ensures all
+     * required properties and methods are properly mocked for testing.
+     */
+
+    const contractModules = require("../../../src/abi/generated");
+    let royaltyTokenDistributionWorkflowsMulticallStub: sinon.SinonStub;
+    let derivativeWorkflowsMulticallStub: sinon.SinonStub;
+    let licenseAttachmentWorkflowsMulticallStub: sinon.SinonStub;
+    let mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub: sinon.SinonStub;
+    let mintAndRegisterIpAndMakeDerivativeStub: sinon.SinonStub;
+    let registerIpAndMakeDerivativeStub: sinon.SinonStub;
+    let registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub: sinon.SinonStub;
+    let distributeRoyaltyTokensStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      rpcMock.getBalance = sinon.stub().resolves(10n);
+      // Mock deposit with WIP
+      rpcMock.simulateContract = sinon.stub().resolves({ request: {} });
+      walletMock.writeContract = sinon.stub().resolves(txHash);
+      sinon.stub(IpAssetRegistryClient.prototype, "ipId").resolves(ipId);
+      // RoyaltyTokenDistributionWorkflowsClient
+      mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub = sinon.stub(
+        RoyaltyTokenDistributionWorkflowsClient.prototype,
+        "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+      );
+      royaltyTokenDistributionWorkflowsMulticallStub = sinon.stub(
+        RoyaltyTokenDistributionWorkflowsClient.prototype,
+        "multicall",
+      );
+      registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub = sinon.stub(
+        RoyaltyTokenDistributionWorkflowsClient.prototype,
+        "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+      );
+      distributeRoyaltyTokensStub = sinon.stub(
+        RoyaltyTokenDistributionWorkflowsClient.prototype,
+        "distributeRoyaltyTokens",
+      );
+      sinon.stub(contractModules, "RoyaltyTokenDistributionWorkflowsClient").returns({
+        multicall: royaltyTokenDistributionWorkflowsMulticallStub.resolves(txHash),
+        address: mockAddress + 1,
+        mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens:
+          mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.resolves(txHash),
+        registerIpAndMakeDerivativeAndDeployRoyaltyVault:
+          registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.resolves(txHash),
+        distributeRoyaltyTokens: distributeRoyaltyTokensStub.resolves(txHash),
+      });
+      // DerivativeWorkflowsClient
+      registerIpAndMakeDerivativeStub = sinon.stub(
+        DerivativeWorkflowsClient.prototype,
+        "registerIpAndMakeDerivative",
+      );
+      mintAndRegisterIpAndMakeDerivativeStub = sinon.stub(
+        DerivativeWorkflowsClient.prototype,
+        "mintAndRegisterIpAndMakeDerivative",
+      );
+      derivativeWorkflowsMulticallStub = sinon.stub(
+        DerivativeWorkflowsClient.prototype,
+        "multicall",
+      );
+      sinon.stub(contractModules, "DerivativeWorkflowsClient").returns({
+        multicall: derivativeWorkflowsMulticallStub.resolves(txHash),
+        address: mockAddress + 2,
+        mintAndRegisterIpAndMakeDerivative: mintAndRegisterIpAndMakeDerivativeStub.resolves(txHash),
+        registerIpAndMakeDerivative: registerIpAndMakeDerivativeStub.resolves(txHash),
+      });
+      // LicenseAttachmentWorkflowsClient
+      licenseAttachmentWorkflowsMulticallStub = sinon.stub(
+        LicenseAttachmentWorkflowsClient.prototype,
+        "multicall",
+      );
+      sinon.stub(contractModules, "LicenseAttachmentWorkflowsClient").returns({
+        multicall: licenseAttachmentWorkflowsMulticallStub.resolves(txHash),
+        address: mockAddress + 3,
+      });
+
+      //RoyaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent
+      sinon.stub(RoyaltyModuleEventClient.prototype, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+        {
+          ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          ipId: ipId,
+        },
+      ]);
+    });
+    afterEach(() => {
+      sinon.reset();
+    });
+    it("should empty  given requests is empty", async () => {
+      const result = await ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows({
+        requests: [],
+      });
+      expect(result.distributeRoyaltyTokensTxHashes).to.undefined;
+      expect(result.registrationResults).to.deep.equal([]);
+    });
+
+    it("should throw error given parentIpIds is empty", async () => {
+      const result = ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows({
+        requests: [
+          {
+            nftContract: mockERC721,
+            tokenId: 5,
+            derivData: {
+              parentIpIds: [],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+          },
+        ],
+      });
+
+      await expect(result).to.be.rejectedWith(
+        "Failed to batch register IP assets with optimized workflows: The parent IP IDs must be provided.",
+      );
+    });
+
+    it("should success given requests are the nft contracts", async () => {
+      sinon
+        .stub(IpAssetRegistryClient.prototype, "parseTxIpRegisteredEvent")
+        .onFirstCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 1n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 2n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 3n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 4n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .onSecondCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 5n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .onThirdCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 6n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 7n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ]);
+
+      const requests: IpRegistrationWorkflowRequest[] = [
+        // royaltyTokenDistributionWorkflowsClient workflow + royaltyTokenDistributionWorkflowsClient(distributeRoyaltyTokens)
+        {
+          nftContract: mockERC721,
+          tokenId: 1,
+          derivData: {
+            parentIpIds: [ipId],
+            licenseTermsIds: [1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        // royaltyTokenDistributionWorkflowsClient workflow + royaltyTokenDistributionWorkflowsClient(distributeRoyaltyTokens)
+        {
+          nftContract: mockERC721,
+          tokenId: 2,
+          derivData: {
+            parentIpIds: [ipId],
+            licenseTermsIds: [1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 100,
+            },
+          ],
+        },
+        // licenseAttachmentWorkflowsClient  workflow
+        {
+          nftContract: mockERC721,
+          tokenId: 3,
+          deadline: 1000n,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: zeroAddress,
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: false,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+        },
+        // royaltyTokenDistributionWorkflowsClient workflow + royaltyTokenDistributionWorkflowsClient(distributeRoyaltyTokens)
+        {
+          nftContract: mockERC721,
+          tokenId: 4,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: erc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 43,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 17,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 2,
+            },
+            {
+              recipient: walletAddress,
+              percentage: 38,
+            },
+          ],
+        },
+        // derivativeWorkflowsClient workflow
+        {
+          nftContract: mockERC721,
+          tokenId: 5,
+          derivData: {
+            parentIpIds: [ipId],
+            licenseTermsIds: [1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        // derivativeWorkflowsClient workflow
+        {
+          nftContract: mockERC721,
+          tokenId: 6,
+          derivData: {
+            parentIpIds: [ipId],
+            licenseTermsIds: [1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+        },
+        // royaltyTokenDistributionWorkflowsClient workflow + royaltyTokenDistributionWorkflowsClient(distributeRoyaltyTokens)
+        {
+          nftContract: mockERC721,
+          tokenId: 7,
+          derivData: {
+            parentIpIds: [ipId],
+            licenseTermsIds: [1],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: walletAddress,
+              percentage: 10,
+            },
+          ],
+        },
+      ];
+      const result = await ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows({
+        requests,
+      });
+      expect(royaltyTokenDistributionWorkflowsMulticallStub.callCount).to.equal(2); // nft contracts + distribute royalty tokens
+      expect(royaltyTokenDistributionWorkflowsMulticallStub.args[0][0].data.length).to.equal(4);
+      expect(
+        royaltyTokenDistributionWorkflowsMulticallStub.secondCall.args[0].data.length,
+      ).to.equal(4); // distribute royalty tokens
+      expect(derivativeWorkflowsMulticallStub.callCount).to.equal(1);
+      expect(derivativeWorkflowsMulticallStub.args[0][0].data.length).to.equal(2);
+      expect(licenseAttachmentWorkflowsMulticallStub.callCount).to.equal(1);
+      expect(licenseAttachmentWorkflowsMulticallStub.args[0][0].data.length).to.equal(1);
+      expect(result.distributeRoyaltyTokensTxHashes).to.deep.equal([txHash]);
+      expect(result.registrationResults).to.deep.equal([
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 1n,
+            },
+            {
+              ipId: ipId,
+              tokenId: 2n,
+            },
+            {
+              ipId: ipId,
+              tokenId: 3n,
+            },
+            {
+              ipId: ipId,
+              tokenId: 4n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 5n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 6n,
+            },
+            {
+              ipId: ipId,
+              tokenId: 7n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+      ]);
+    });
+
+    it("should return success given request are the spg contracts", async () => {
+      sinon
+        .stub(SpgnftImplReadOnlyClient.prototype, "publicMinting")
+        .onFirstCall()
+        .returns(false)
+        .onSecondCall()
+        .returns(false)
+        .returns(true);
+      sinon
+        .stub(IpAssetRegistryClient.prototype, "parseTxIpRegisteredEvent")
+        .onFirstCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 1n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .onSecondCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 2n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .onThirdCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 3n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 4n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 5n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ]);
+      const result = await ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows({
+        requests: [
+          /**
+           * mintAndRegisterIpAndMakeDerivative workflow
+           * - Total fees: 0 WIP tokens
+           * - Uses `derivativeWorkflowsClient` multicall due to the private minting
+           */
+          {
+            spgNftContract: mockERC721,
+            derivData: {
+              parentIpIds: [ipId],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+          },
+          /**
+           * mintAndRegisterIpAssetWithPilTerms workflow
+           * - Total fees: 0 WIP tokens
+           * - Uses `licenseAttachmentWorkflowsClient` multicall due to the private minting
+           */
+          {
+            spgNftContract: mockERC721,
+            allowDuplicates: true,
+            licenseTermsData: [
+              {
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                  defaultMintingFee: 0n,
+                  expiration: 0n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 90,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: WIP_TOKEN_ADDRESS,
+                  uri: "",
+                },
+                licensingConfig: {
+                  isSet: true,
+                  mintingFee: 0n,
+                  licensingHook: zeroAddress,
+                  hookData: zeroAddress,
+                  commercialRevShare: 0,
+                  disabled: false,
+                  expectMinimumGroupRewardShare: 0,
+                  expectGroupRewardPool: mockAddress,
+                },
+              },
+            ],
+          },
+          /**
+           * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+           * - Total fees: 0 WIP tokens
+           * - Uses `mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens`to call due to 0 fee
+           */
+          {
+            spgNftContract: mockERC721,
+            derivData: {
+              parentIpIds: [ipId],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+            royaltyShares: [
+              {
+                recipient: walletAddress,
+                percentage: 100,
+              },
+            ],
+          },
+          /**
+           * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+           * - Total fees: 0 WIP tokens
+           * - Uses `mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens`to call due to 0 fee
+           */
+          {
+            spgNftContract: mockERC721,
+            derivData: {
+              parentIpIds: [ipId],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+            royaltyShares: [
+              {
+                recipient: walletAddress,
+                percentage: 100,
+              },
+            ],
+          },
+          /**
+           * mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens workflow
+           * - Total fees: 0 WIP tokens
+           * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the mint tokens is given `msg.sender` as the recipient
+           */
+          {
+            spgNftContract: mockERC721,
+            licenseTermsData: [
+              {
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                  defaultMintingFee: 10000n,
+                  expiration: 1000n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 0,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: WIP_TOKEN_ADDRESS,
+                  uri: "test case",
+                },
+              },
+            ],
+            royaltyShares: [
+              {
+                recipient: walletAddress,
+                percentage: 10,
+              },
+            ],
+          },
+        ],
+      });
+      expect(mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.callCount).to.equal(
+        2,
+      );
+      expect(mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.args.length).to.equal(
+        2,
+      );
+      expect(derivativeWorkflowsMulticallStub.callCount).to.equal(1);
+      expect(derivativeWorkflowsMulticallStub.args.length).to.equal(1);
+      expect(licenseAttachmentWorkflowsMulticallStub.callCount).to.equal(1);
+      expect(licenseAttachmentWorkflowsMulticallStub.args.length).to.equal(1);
+      expect(royaltyTokenDistributionWorkflowsMulticallStub.callCount).to.equal(1);
+      expect(royaltyTokenDistributionWorkflowsMulticallStub.args.length).to.equal(1);
+      expect(result.distributeRoyaltyTokensTxHashes).to.undefined;
+      expect(result.registrationResults).to.deep.equal([
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 1n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 2n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 3n,
+            },
+            {
+              ipId: ipId,
+              tokenId: 4n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 5n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 5n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+      ]);
+    });
+
+    it("should return success given request are mixed of spg and non-spg contracts and disableMulticallWhenPossible is true", async () => {
+      sinon.stub(SpgnftImplReadOnlyClient.prototype, "publicMinting").returns(true);
+      sinon.stub(SpgnftImplReadOnlyClient.prototype, "mintFee").returns(10n);
+      sinon
+        .stub(IpAssetRegistryClient.prototype, "parseTxIpRegisteredEvent")
+        .onFirstCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 1n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .onSecondCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 2n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .onThirdCall()
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 3n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ])
+        .returns([
+          {
+            ipId: ipId,
+            chainId: 0n,
+            tokenContract: mockERC721,
+            tokenId: 4n,
+            name: "",
+            uri: "",
+            registrationDate: 0n,
+          },
+        ]);
+      const result = await ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows({
+        requests: [
+          // royaltyTokenDistributionWorkflowsClient workflow + royaltyTokenDistributionWorkflowsClient(distributeRoyaltyTokens)
+          {
+            nftContract: mockERC721,
+            tokenId: 2,
+            derivData: {
+              parentIpIds: [ipId],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+            royaltyShares: [
+              {
+                recipient: walletAddress,
+                percentage: 100,
+              },
+            ],
+          },
+          // derivativeWorkflowsClient workflow
+          {
+            nftContract: mockERC721,
+            tokenId: 5,
+            derivData: {
+              parentIpIds: [ipId],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+          },
+          // derivativeWorkflowsClient workflow
+          {
+            nftContract: mockERC721,
+            tokenId: 5,
+            derivData: {
+              parentIpIds: [ipId],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+          },
+          /**
+           * mintAndRegisterIpAndMakeDerivative workflow
+           * - Total fees: 0 WIP tokens
+           * - Uses `multicall3Address` multicall due to the public minting
+           */
+          {
+            spgNftContract: mockERC721,
+            derivData: {
+              parentIpIds: [ipId],
+              licenseTermsIds: [1],
+              maxMintingFee: 0,
+              maxRts: MAX_ROYALTY_TOKEN,
+              maxRevenueShare: 100,
+            },
+          },
+        ],
+        wipOptions: {
+          useMulticallWhenPossible: false,
+        },
+      });
+      expect(mintAndRegisterIpAndMakeDerivativeStub.callCount).to.equal(1);
+      expect(mintAndRegisterIpAndMakeDerivativeStub.args.length).to.equal(1);
+      expect(registerIpAndMakeDerivativeStub.callCount).to.equal(2);
+      expect(registerIpAndMakeDerivativeStub.args.length).to.equal(2);
+      expect(registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.callCount).to.equal(1);
+      expect(registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args.length).to.equal(1);
+      expect(distributeRoyaltyTokensStub.callCount).to.equal(1);
+      expect(distributeRoyaltyTokensStub.args.length).to.equal(1);
+      expect(result.distributeRoyaltyTokensTxHashes).to.deep.equal([txHash]);
+      expect(result.registrationResults).to.deep.equal([
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 1n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 2n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 3n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+        {
+          ipIdAndTokenId: [
+            {
+              ipId: ipId,
+              tokenId: 4n,
+            },
+          ],
+          receipt: {
+            transactionHash: txHash,
+          },
+          txHash: txHash,
+        },
+      ]);
     });
   });
 });

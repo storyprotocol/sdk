@@ -326,7 +326,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
 };
 export type DistributeRoyaltyTokens = {
   ipId: Address;
-  deadline?: bigint | number | string;
+  deadline?: bigint | string | number;
   ipRoyaltyVault: Address;
   royaltyShares: RoyaltyShare[];
   totalAmount: number;
@@ -456,38 +456,25 @@ export type TransformIpRegistrationWorkflowResponse<
   transformRequest: T;
   contractCall: () => Promise<Hash>;
   encodedTxData: EncodedTxData;
-  isUseMulticall3?: boolean;
-  spenders?: Erc20Spender[];
-  totalFees?: bigint;
+  isUseMulticall3: boolean;
   workflowClient:
     | DerivativeWorkflowsClient
     | LicenseAttachmentWorkflowsClient
     | RoyaltyTokenDistributionWorkflowsClient;
+  spenders?: Erc20Spender[];
+  totalFees?: bigint;
   extraData?: {
     royaltyShares: RoyaltyShare[];
     deadline?: bigint;
   };
 };
 
-export type BatchRegisterIpWithOptions = WithWipOptions & {
-  requests: IpRegistrationWorkflowRequest[];
-  txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
-};
-export type BatchRegisterIpWithOptionsResponse = {
-  txHash: Hash;
-  receipt: TransactionReceipt;
-  ipRoyaltyVault?: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
-  ipIdAndTokenId: {
-    ipId: Address;
-    tokenId: bigint;
-  }[];
-};
-
-export type BatchRegistrationMethodsConfig = {
-  workflowClient?: DerivativeWorkflowsClient;
-  spenders: Erc20Spender[];
-  totalFees: bigint;
-  callData: EncodedTxData[];
+/**
+ * Utility type that removes option-related fields (txOptions and wipOptions) from a type.
+ * This preserves discriminated unions unlike using Omit directly.
+ */
+type RemoveOptionsFields<Type> = {
+  [Property in keyof Type as Exclude<Property, "txOptions" | "wipOptions">]: Type[Property];
 };
 
 export type MintSpgNftRegistrationRequest = RemoveOptionsFields<
@@ -497,6 +484,10 @@ export type MintSpgNftRegistrationRequest = RemoveOptionsFields<
   | MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest
 >;
 
+export type IpRegistrationWorkflowRequest =
+  | MintSpgNftRegistrationRequest
+  | RegisterRegistrationRequest;
+
 export type RegisterRegistrationRequest = RemoveOptionsFields<
   | RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest
   | RegisterIpAndAttachPilTermsRequest
@@ -504,15 +495,22 @@ export type RegisterRegistrationRequest = RemoveOptionsFields<
   | RegisterIpAndMakeDerivativeRequest
 >;
 
-/**
- * Utility type that removes option-related fields from a type.
- * This preserves discriminated unions unlike using Omit directly.
- */
-type RemoveOptionsFields<Type> = {
-  [Property in keyof Type as Exclude<Property, "txOptions" | "wipOptions">]: Type[Property];
+export type BatchRegistrationResult = {
+  txHash: Hash;
+  receipt: TransactionReceipt;
+  ipRoyaltyVault?: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
+  ipIdAndTokenId: {
+    ipId: Address;
+    tokenId: bigint;
+  }[];
 };
 
-export type IpRegistrationWorkflowRequest =
-  | MintSpgNftRegistrationRequest
-  | RegisterRegistrationRequest
-  | RemoveOptionsFields<DistributeRoyaltyTokens>;
+export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions & {
+  requests: IpRegistrationWorkflowRequest[];
+  txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
+};
+
+export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
+  distributeRoyaltyTokensTxHashes?: Hash[];
+  registrationResults: BatchRegistrationResult[];
+};

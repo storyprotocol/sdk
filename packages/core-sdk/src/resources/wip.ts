@@ -11,8 +11,7 @@ import {
   TransferRequest,
   WithdrawRequest,
 } from "../types/resources/wip";
-import { handleTxOptions } from "../utils/txOptions";
-import { TransactionResponse } from "../types/options";
+import { waitForTxReceipt } from "../utils/txOptions";
 
 export class WipClient {
   public wrappedIpClient: WrappedIpClient;
@@ -42,11 +41,11 @@ export class WipClient {
         value: BigInt(amount),
       });
       const txHash = await this.wallet.writeContract(call as WriteContractParameters);
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
-      }) as Promise<TransactionResponse>;
+      });
     } catch (error) {
       handleError(error, "Failed to deposit IP for WIP");
     }
@@ -62,11 +61,11 @@ export class WipClient {
         throw new Error("WIP withdraw amount must be greater than 0.");
       }
       const txHash = await this.wrappedIpClient.withdraw({ value: targetAmt });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
-      }) as Promise<TransactionResponse>;
+      });
     } catch (error) {
       handleError(error, "Failed to withdraw WIP");
     }
@@ -86,11 +85,11 @@ export class WipClient {
         spender,
         amount,
       });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions: req.txOptions,
         rpcClient: this.rpcClient,
-      }) as Promise<TransactionResponse>;
+      });
     } catch (error) {
       handleError(error, "Failed to approve WIP");
     }
@@ -118,11 +117,11 @@ export class WipClient {
         to: validateAddress(request.to),
         amount,
       });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions: request.txOptions,
         rpcClient: this.rpcClient,
-      }) as Promise<TransactionResponse>;
+      });
     } catch (error) {
       handleError(error, "Failed to transfer WIP");
     }
@@ -142,11 +141,11 @@ export class WipClient {
         amount,
         from: validateAddress(request.from),
       });
-      return handleTxOptions({
+      return waitForTxReceipt({
         txHash,
         txOptions: request.txOptions,
         rpcClient: this.rpcClient,
-      }) as Promise<TransactionResponse>;
+      });
     } catch (error) {
       handleError(error, "Failed to transfer WIP");
     }

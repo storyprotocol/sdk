@@ -6,6 +6,7 @@ import {
   zeroHash,
   encodeFunctionData,
   TransactionReceipt,
+  Hash,
 } from "viem";
 
 import { chain, validateAddress } from "../utils/utils";
@@ -51,9 +52,10 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
   CommonRegistrationTxResponse,
   CommonRegistrationParams,
-  BatchRegisterIpWithOptions,
-  BatchRegisterIpWithOptionsResponse,
   TransformIpRegistrationWorkflowResponse,
+  BatchRegistrationResult,
+  BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
+  BatchRegisterIpAssetsWithOptimizedWorkflowsResponse,
 } from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
@@ -95,25 +97,29 @@ import { LicenseTerms } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { calculateSPGWipMintFee, contractCallWithFees } from "../utils/feeUtils";
+import { contractCallWithFees } from "../utils/feeUtils";
+import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
 import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
+import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
-  calculateDerivativeMintingFee,
-  generateOperationSignature,
   getCalculatedDeadline,
   getIpIdAddress,
+} from "../utils/registrationUtils/registerValidation";
+import {
   getRoyaltyShares,
-  transformRegistrationRequest,
-  validateLicenseTermsData,
   validateMaxRts,
   validateDerivativeData,
-  prepareRoyaltyTokensDistribution,
-  handleMulticall,
-} from "../utils/registerHelper";
+} from "../utils/registrationUtils/registerValidation";
+import { validateLicenseTermsData } from "../utils/registrationUtils/registerValidation";
+import {
+  prepareRoyaltyTokensDistributionRequests,
+  transferDistributeRoyaltyTokensRequest,
+  transformRegistrationRequest,
+} from "../utils/registrationUtils/transformRegistrationRequest";
 import { SignatureMethodType } from "../types/utils/registerHelper";
-import { TransactionResponse } from "../types/options";
+import { generateOperationSignature } from "../utils/generateOperationSignature";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -837,9 +843,8 @@ export class IPAssetClient {
         spgSpenderAddress: this.registrationWorkflowsClient.address,
         encodedTxs: [encodedTxData],
         contractCall,
-        txOptions: request.txOptions,
-        //TODO: Need to create another pr to fix this bug
         spgNftContract: object.spgNftContract,
+        txOptions: request.txOptions,
         wipOptions: {
           ...request.wipOptions,
           useMulticallWhenPossible: false,
@@ -1203,7 +1208,6 @@ export class IPAssetClient {
    *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| `IpRoyaltyVaultDeployed`} events.
    */
-  //TODO: need to consider multicall3 error
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
@@ -1307,7 +1311,7 @@ export class IPAssetClient {
 
   private async distributeRoyaltyTokens(request: DistributeRoyaltyTokens): Promise<Hex> {
     const { transformRequest } =
-      await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
+      await transferDistributeRoyaltyTokensRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
         {
           request,
           rpcClient: this.rpcClient,
@@ -1332,7 +1336,7 @@ export class IPAssetClient {
     return await this.ipAssetRegistryClient.isRegistered({ id: validateAddress(ipId) });
   }
   /**
-   * Batch register IP with options which supports the following methods:
+   * Batch register multiple IP assets in optimized transactions, supporting various registration methods:
    * - {@link mintAndRegisterIpAndMakeDerivative}
    * - {@link mintAndRegisterIpAssetWithPilTerms}
    * - {@link mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens}
@@ -1342,21 +1346,36 @@ export class IPAssetClient {
    * - {@link registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens}
    * - {@link registerDerivativeIp}
    *
-   * This method allows for efficient batch processing of multiple IP registration operations
-   * in a single transaction, optimizing gas costs and improving throughput.
+   * This method optimizes transaction processing by:
+   * 1. Transforming all requests into appropriate workflow formats
+   * 2. Grouping related workflow requests together
+   * 3. Intelligently selecting between multicall3 and SPG's multicall based on compatibility
    *
-   * @remark The `useMulticallWhenPossible` option will be overridden (set to false) in the following cases:
-   * 1. For methods prefixed with `mintAndRegister` when the `spgNftContract` has public minting enabled:
-   *    In this case, we use SPG's multicall to batch the minting and registering operations.
-   * 2. For methods prefixed with `register`:
-   *    We use SPG's multicall to batch the registration operations.
+   * The batching strategy significantly reduces gas costs and improves transaction throughput
+   * by minimizing the number of separate blockchain transactions. It also handles complex
+   * workflows like royalty token distribution automatically.
    *
-   * In all other scenarios, the `useMulticallWhenPossible` value from the request will be respected.
+   * The method supports automatic token handling for minting fees:
+   * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
+   * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
+   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   *
+   * @remark Multicall selection logic:
+   *
+   * 1. For `mintAndRegister*` methods:
+   *    - When `spgNftContract` has public minting disabled: Uses SPG's multicall
+   *    - When `spgNftContract` has public minting enabled: Uses multicall3
+   *    - Exception: {@link mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens} always uses
+   *      SPG's multicall due to contract logic
+   *
+   * 2. For `register*` methods:
+   *    - Always uses SPG's multicall for batching registration operations
    */
-  public async batchRegisterIpWithOptions(
-    request: BatchRegisterIpWithOptions,
-  ): Promise<BatchRegisterIpWithOptionsResponse[]> {
+  public async batchRegisterIpAssetsWithOptimizedWorkflows(
+    request: BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
+  ): Promise<BatchRegisterIpAssetsWithOptimizedWorkflowsResponse> {
     try {
+      // Transform requests into workflow format
       const transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[] = [];
       for (const req of request.requests) {
         const res = await transformRegistrationRequest({
@@ -1367,8 +1386,11 @@ export class IPAssetClient {
         });
         transferWorkflowResponses.push(res);
       }
-
-      // Extract royalty distribution requests from workflow responses
+      /**
+       * Extract royalty distribution requests from workflow responses that contain royalty shares
+       * We need to handle `distributeRoyaltyTokens` separately because this method requires
+       * a signature with the royalty vault address, which is only available after the initial registration
+       */
       const royaltyDistributionRequests = (
         transferWorkflowResponses.filter(
           (res) => res.extraData?.royaltyShares,
@@ -1382,7 +1404,6 @@ export class IPAssetClient {
         royaltyShares: res.extraData!.royaltyShares,
         deadline: res.extraData!.deadline,
       }));
-
       // Process initial registration transactions
       const txResponses = await handleMulticall({
         transferWorkflowResponses,
@@ -1394,7 +1415,7 @@ export class IPAssetClient {
         chainId: this.chainId,
       });
 
-      const responses: BatchRegisterIpWithOptionsResponse[] = [];
+      const responses: BatchRegistrationResult[] = [];
       const prepareRoyaltyTokensDistributionResponses: TransformIpRegistrationWorkflowResponse[] =
         [];
 
@@ -1405,7 +1426,7 @@ export class IPAssetClient {
           this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt!);
 
         // Prepare royalty distribution if needed
-        const response = await prepareRoyaltyTokensDistribution({
+        const response = await prepareRoyaltyTokensDistributionRequests({
           royaltyDistributionRequests,
           ipRegisteredLog: iPRegisteredLog,
           ipRoyaltyVault: ipRoyaltyVaultEvent,
@@ -1414,21 +1435,21 @@ export class IPAssetClient {
           chainId: this.chainId,
         });
 
-        const ipIdAndTokenIdEvent = this.getIpIdAndTokenIdsFromEvent(receipt!);
         prepareRoyaltyTokensDistributionResponses.push(...response);
 
         responses.push({
           txHash,
           receipt: receipt!,
-          ipIdAndTokenId: ipIdAndTokenIdEvent,
-          ipRoyaltyVault: ipRoyaltyVaultEvent,
+          ipIdAndTokenId: iPRegisteredLog.map((log) => ({
+            ipId: log.ipId,
+            tokenId: log.tokenId,
+          })),
         });
       }
-
+      let distributeRoyaltyTokensTxHashes: Hash[] | undefined;
       // Process royalty distribution transactions if any
-      //TODO: not sure if it should return txhash
       if (prepareRoyaltyTokensDistributionResponses.length > 0) {
-        await handleMulticall({
+        const txResponse = await handleMulticall({
           transferWorkflowResponses: prepareRoyaltyTokensDistributionResponses,
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
@@ -1437,11 +1458,17 @@ export class IPAssetClient {
           wipOptions: request.wipOptions,
           chainId: this.chainId,
         });
+        distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);
       }
 
-      return responses;
+      return {
+        registrationResults: responses,
+        ...(distributeRoyaltyTokensTxHashes && {
+          distributeRoyaltyTokensTxHashes,
+        }),
+      };
     } catch (error) {
-      handleError(error, "Failed to batch register IP with options");
+      handleError(error, "Failed to batch register IP assets with optimized workflows");
     }
   }
 
@@ -1523,6 +1550,7 @@ export class IPAssetClient {
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         chainId: this.chainId,
+        sender,
       });
       totalFees += totalDerivativeMintingFee;
       if (totalDerivativeMintingFee > 0) {
@@ -1538,7 +1566,7 @@ export class IPAssetClient {
       );
     }
 
-    const txResponse = await contractCallWithFees({
+    const { txHash, receipt } = await contractCallWithFees({
       totalFees,
       options: { wipOptions },
       multicall3Address: this.multicall3Client.address,
@@ -1550,7 +1578,6 @@ export class IPAssetClient {
       txOptions,
       encodedTxs,
     });
-    const { txHash, receipt } = txResponse as TransactionResponse;
     if (receipt) {
       const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
       return {

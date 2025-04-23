@@ -185,13 +185,7 @@ export type PredictMintingLicenseFeeRequest = {
   txOptions?: TxOptions;
 };
 
-export type SetLicensingConfigRequest = {
-  /** The address of the IP for which the configuration is being set. */
-  ipId: Address;
-  /** The ID of the license terms within the license template. */
-  licenseTermsId: string | number | bigint;
-  /** The address of the license template used. */
-  licenseTemplate: Address;
+export type SetLicensingConfigRequest = GetLicensingConfigRequest & {
   /** The licensing configuration for the license. */
   licensingConfig: LicensingConfigInput;
   txOptions?: TxOptions;
@@ -201,4 +195,16 @@ export type SetLicensingConfigResponse = {
   txHash?: string;
   encodedTxData?: EncodedTxData;
   success?: boolean;
+};
+
+export type GetLicensingConfigRequest = {
+  /** The address of the IP for which the configuration is being set. */
+  ipId: Address;
+  /** The ID of the license terms within the license template. */
+  licenseTermsId: number | bigint;
+  /**
+   * The address of the license template.
+   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   */
+  licenseTemplate?: Address;
 };

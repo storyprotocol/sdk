@@ -4,6 +4,7 @@ import {
   coreMetadataModuleAbi,
   CoreMetadataModuleClient,
   groupingModuleAbi,
+  GroupingModuleAddIpRequest,
   GroupingModuleClient,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
@@ -42,13 +43,14 @@ import {
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
   CollectAndDistributeGroupRoyaltiesRequest,
   CollectAndDistributeGroupRoyaltiesResponse,
+  AddIpRequest,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
 import { RevShareType } from "../types/common";
-import { handleTxOptions } from "../utils/txOptions";
+import { waitForTxReceipt } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
 
 export class GroupClient {
@@ -439,12 +441,11 @@ export class GroupClient {
       const txHash = await this.groupingWorkflowsClient.collectRoyaltiesAndClaimReward(
         collectAndClaimParams,
       );
-      const txResponse = await handleTxOptions({
+      const { receipt } = await waitForTxReceipt({
         txHash,
         txOptions,
         rpcClient: this.rpcClient,
       });
-      const { receipt } = txResponse as TransactionResponse;
       if (!receipt) {
         return { txHash };
       }
@@ -466,6 +467,38 @@ export class GroupClient {
       return { txHash, collectedRoyalties, royaltiesDistributed };
     } catch (error) {
       handleError(error, "Failed to collect and distribute group royalties");
+    }
+  }
+
+  /**
+   * Adds IPs to group.
+   * The function must be called by the Group IP owner or an authorized operator.
+   */
+  public async addIpsToGroup({
+    groupIpId,
+    ipIds,
+    maxAllowedRewardSharePercentage,
+    txOptions,
+  }: AddIpRequest): Promise<TransactionResponse> {
+    try {
+      const addIpParam: GroupingModuleAddIpRequest = {
+        groupIpId: validateAddress(groupIpId),
+        ipIds: validateAddresses(ipIds),
+        maxAllowedRewardShare: BigInt(
+          getRevenueShare(
+            maxAllowedRewardSharePercentage || 100,
+            RevShareType.MAX_ALLOWED_REWARD_SHARE,
+          ),
+        ),
+      };
+      const txHash = await this.groupingModuleClient.addIp(addIpParam);
+      return await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      handleError(error, "Failed to add IP to group");
     }
   }
 

@@ -361,6 +361,13 @@ export default defineConfig(async () => {
             "CollectedRoyaltiesToGroupPool",
             "registerGroup",
             "IPGroupRegistered",
+            "addIp",
+          ],
+          LicenseRegistry: [
+            "getLicensingConfig",
+            "hasIpAttachedLicenseTerms",
+            "getDefaultLicenseTerms",
+            "getRoyaltyPercent",
           ],
           SPGNFTImpl: ["publicMinting", "mintFeeToken", "mintFee"],
         },

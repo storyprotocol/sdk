@@ -684,4 +684,28 @@ describe("Test IpAssetClient", () => {
       ]);
     });
   });
+
+  describe("Test groupClient.addIp", async () => {
+    it("should throw error when call fail", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "addIp").rejects(new Error("rpc error"));
+      const result = groupClient.addIpsToGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith("Failed to add IP to group: rpc error");
+    });
+
+    it("should return txHash when call addIp successfully", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
+      const result = await groupClient.addIpsToGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+        maxAllowedRewardSharePercentage: 5,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+    });
+  });
 });
