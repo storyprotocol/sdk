@@ -15,8 +15,8 @@ import {
 } from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
 import { validateAddress } from "../utils/utils";
-import { handleTxOptions } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
+import { waitForTxReceipt } from "../utils/txOptions";
 
 export class NftClient {
   public registrationWorkflowsClient: RegistrationWorkflowsClient;
@@ -128,7 +128,7 @@ export class NftClient {
         tokenId: BigInt(tokenId),
         tokenUri: tokenURI,
       });
-      return handleTxOptions({ txHash, txOptions, rpcClient: this.rpcClient });
+      return waitForTxReceipt({ txHash, txOptions, rpcClient: this.rpcClient });
     } catch (error) {
       handleError(error, "Failed to set token URI");
     }
