@@ -1,9 +1,25 @@
-import { Address, Hash, Hex, TransactionReceipt } from "viem";
+import { Address, Hash, Hex, TransactionReceipt, WaitForTransactionReceiptParameters } from "viem";
 
 import { TxOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
-import { EncodedTxData } from "../../abi/generated";
+import {
+  DerivativeWorkflowsClient,
+  DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
+  DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
+  EncodedTxData,
+  LicenseAttachmentWorkflowsClient,
+  LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
+  LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
+  RoyaltyModuleIpRoyaltyVaultDeployedEvent,
+  RoyaltyTokenDistributionWorkflowsClient,
+  RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
+  RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
+} from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
+import { Erc20Spender } from "../utils/wip";
 
 export type DerivativeDataInput = {
   parentIpIds: Address[];
@@ -310,7 +326,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
 };
 export type DistributeRoyaltyTokens = {
   ipId: Address;
-  deadline: bigint;
+  deadline?: bigint | string | number;
   ipRoyaltyVault: Address;
   royaltyShares: RoyaltyShare[];
   totalAmount: number;
@@ -421,4 +437,80 @@ export type RegistrationResponse = {
 
 export type CommonRegistrationTxResponse = RegistrationResponse & {
   txHash: Hex;
+};
+
+export type TransformIpRegistrationWorkflowRequest =
+  | RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest
+  | LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest
+  | RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest
+  | DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest
+  | RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
+  | LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest
+  | RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
+  | DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
+  | RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest;
+
+export type TransformIpRegistrationWorkflowResponse<
+  T extends TransformIpRegistrationWorkflowRequest = TransformIpRegistrationWorkflowRequest,
+> = {
+  transformRequest: T;
+  contractCall: () => Promise<Hash>;
+  encodedTxData: EncodedTxData;
+  isUseMulticall3: boolean;
+  workflowClient:
+    | DerivativeWorkflowsClient
+    | LicenseAttachmentWorkflowsClient
+    | RoyaltyTokenDistributionWorkflowsClient;
+  spenders?: Erc20Spender[];
+  totalFees?: bigint;
+  extraData?: {
+    royaltyShares: RoyaltyShare[];
+    deadline?: bigint;
+  };
+};
+
+/**
+ * Utility type that removes option-related fields (txOptions and wipOptions) from a type.
+ * This preserves discriminated unions unlike using Omit directly.
+ */
+type RemoveOptionsFields<Type> = {
+  [Property in keyof Type as Exclude<Property, "txOptions" | "wipOptions">]: Type[Property];
+};
+
+export type MintSpgNftRegistrationRequest = RemoveOptionsFields<
+  | MintAndRegisterIpAndMakeDerivativeRequest
+  | MintAndRegisterIpAssetWithPilTermsRequest
+  | MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest
+  | MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest
+>;
+
+export type IpRegistrationWorkflowRequest =
+  | MintSpgNftRegistrationRequest
+  | RegisterRegistrationRequest;
+
+export type RegisterRegistrationRequest = RemoveOptionsFields<
+  | RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest
+  | RegisterIpAndAttachPilTermsRequest
+  | RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest
+  | RegisterIpAndMakeDerivativeRequest
+>;
+
+export type BatchRegistrationResult = {
+  txHash: Hash;
+  receipt: TransactionReceipt;
+  ipRoyaltyVault?: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
+  ipIdAndTokenId: {
+    ipId: Address;
+    tokenId: bigint;
+  }[];
+};
+
+export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions & {
+  requests: IpRegistrationWorkflowRequest[];
+  txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
+};
+
+export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
+  distributeRoyaltyTokensTxHashes?: Hash[];
+  registrationResults: BatchRegistrationResult[];
 };
