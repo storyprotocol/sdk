@@ -1,4 +1,4 @@
-import { Hex, PublicClient, TransactionReceipt, WaitForTransactionReceiptParameters } from "viem";
+import { Hash, PublicClient, TransactionReceipt, WaitForTransactionReceiptParameters } from "viem";
 
 export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash"> & {
   /**
@@ -68,14 +68,21 @@ export type WithWipOptions = {
   /** options to configure WIP behavior */
   wipOptions?: WipOptions;
 };
-export type HandleTxOptionsParams = {
-  txHash: Hex;
+
+export type WaitForTransactionReceiptRequest = {
+  txHash: Hash;
+  txOptions?: TxOptions;
+  rpcClient: PublicClient;
+};
+
+export type WaitForTransactionReceiptsRequest = {
+  txHashes: Hash[];
   txOptions?: TxOptions;
   rpcClient: PublicClient;
 };
 
 export type TransactionResponse = {
-  txHash: Hex;
+  txHash: Hash;
 
   /** Transaction receipt, only available if waitForTransaction is set to true */
   receipt?: TransactionReceipt;

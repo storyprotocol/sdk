@@ -24375,6 +24375,15 @@ export type RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeA
   }
 
 /**
+ * RoyaltyTokenDistributionWorkflowsMulticallRequest
+ *
+ * @param data bytes[]
+ */
+export type RoyaltyTokenDistributionWorkflowsMulticallRequest = {
+  data: readonly Hex[]
+}
+
+/**
  * RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
  *
  * @param nftContract address
@@ -24636,6 +24645,44 @@ export class RoyaltyTokenDistributionWorkflowsClient {
           request.royaltyShares,
           request.allowDuplicates,
         ],
+      }),
+    }
+  }
+
+  /**
+   * method multicall for contract RoyaltyTokenDistributionWorkflows
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsMulticallRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async multicall(
+    request: RoyaltyTokenDistributionWorkflowsMulticallRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: royaltyTokenDistributionWorkflowsAbi,
+      address: this.address,
+      functionName: 'multicall',
+      account: this.wallet.account,
+      args: [request.data],
+    })
+    return await this.wallet.writeContract(call as WriteContractParameters)
+  }
+
+  /**
+   * method multicall for contract RoyaltyTokenDistributionWorkflows with only encode
+   *
+   * @param request RoyaltyTokenDistributionWorkflowsMulticallRequest
+   * @return EncodedTxData
+   */
+  public multicallEncode(
+    request: RoyaltyTokenDistributionWorkflowsMulticallRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: royaltyTokenDistributionWorkflowsAbi,
+        functionName: 'multicall',
+        args: [request.data],
       }),
     }
   }
