@@ -278,7 +278,7 @@ describe("Group Functions", () => {
 
         const result = await client.groupClient.addIpsToGroup({
           groupIpId: groupId,
-          ipIds: ipIds!,
+          ipIds: ipIds,
           maxAllowedRewardSharePercentage: 5,
           txOptions: { waitForTransaction: true },
         });
@@ -288,7 +288,7 @@ describe("Group Functions", () => {
       it("should successfully remove IPs from group", async () => {
         const result = await client.groupClient.removeIpsFromGroup({
           groupIpId: groupId,
-          ipIds: ipIds!,
+          ipIds: ipIds,
           txOptions: { waitForTransaction: true },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;

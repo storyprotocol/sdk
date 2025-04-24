@@ -503,7 +503,10 @@ export class GroupClient {
       handleError(error, "Failed to add IP to group");
     }
   }
-
+  /**
+   * Removes IPs from group.
+   * The function must be called by the Group IP owner or an authorized operator.
+   */
   public async removeIpsFromGroup({
     groupIpId,
     ipIds,
