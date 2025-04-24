@@ -685,8 +685,8 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.addIp", async () => {
-    it("should throw error when call fail", async () => {
+  describe("Test groupClient.addIpsToGroup", async () => {
+    it("should throw error when call fails", async () => {
       sinon.stub(groupClient.groupingModuleClient, "addIp").rejects(new Error("rpc error"));
       const result = groupClient.addIpsToGroup({
         groupIpId: mockAddress,
@@ -695,12 +695,35 @@ describe("Test IpAssetClient", () => {
       await expect(result).to.be.rejectedWith("Failed to add IP to group: rpc error");
     });
 
-    it("should return txHash when call addIp successfully", async () => {
+    it("should return txHash when call succeeds", async () => {
       sinon.stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
       const result = await groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
         maxAllowedRewardSharePercentage: 5,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+    });
+  });
+
+  describe("Test groupClient.removeIpsFromGroup", async () => {
+    it("should throw error when call fails", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "removeIp").rejects(new Error("rpc error"));
+      const result = groupClient.removeIpsFromGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith("Failed to remove IP from group: rpc error");
+    });
+
+    it("should return txHash when call succeeds", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "removeIp").resolves(txHash);
+      const result = await groupClient.removeIpsFromGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
         txOptions: {
           waitForTransaction: true,
         },
