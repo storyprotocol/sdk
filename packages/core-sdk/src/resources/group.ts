@@ -5,6 +5,7 @@ import {
   CoreMetadataModuleClient,
   groupingModuleAbi,
   GroupingModuleAddIpRequest,
+  GroupingModuleClaimRewardRequest,
   GroupingModuleClient,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
@@ -44,6 +45,8 @@ import {
   CollectAndDistributeGroupRoyaltiesRequest,
   CollectAndDistributeGroupRoyaltiesResponse,
   AddIpRequest,
+  ClaimRewardRequest,
+  ClaimRewardResponse,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -501,7 +504,36 @@ export class GroupClient {
       handleError(error, "Failed to add IP to group");
     }
   }
-
+  /**
+   * Claims reward.
+   */
+  public async claimReward({
+    groupIpId,
+    currencyToken,
+    memberIpIds,
+    txOptions,
+  }: ClaimRewardRequest): Promise<ClaimRewardResponse> {
+    try {
+      const claimRewardParam: GroupingModuleClaimRewardRequest = {
+        groupId: validateAddress(groupIpId),
+        ipIds: validateAddresses(memberIpIds),
+        token: validateAddress(currencyToken),
+      };
+      const txHash = await this.groupingModuleClient.claimReward(claimRewardParam);
+      const { receipt } = await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const claimedReward = this.groupingModuleEventClient.parseTxClaimedRewardEvent(receipt);
+      return { txHash, claimedReward };
+    } catch (error) {
+      handleError(error, "Failed to claim reward");
+    }
+  }
   private getLicenseData(licenseData: LicenseDataInput[] | LicenseDataInput): LicenseData[] {
     const isArray = Array.isArray(licenseData);
     if ((isArray && licenseData.length === 0) || !licenseData) {
