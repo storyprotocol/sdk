@@ -506,11 +506,13 @@ export class GroupClient {
   }
   /**
    * Claims reward.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L31 | `ClaimedReward`} event.
    */
   public async claimReward({
     groupIpId,
     currencyToken,
-    memberIpIds,
+    memberIpIds,  
     txOptions,
   }: ClaimRewardRequest): Promise<ClaimRewardResponse> {
     try {

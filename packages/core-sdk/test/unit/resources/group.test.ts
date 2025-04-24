@@ -729,5 +729,34 @@ describe("Test IpAssetClient", () => {
       });
       expect(result.txHash).equal(txHash);
     });
+
+    it("should return additional details when waitForTransaction is true", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      sinon.stub(groupClient.groupingModuleEventClient, "parseTxClaimedRewardEvent").returns([
+        {
+          ipId: [mockAddress],
+          amount: [100n],
+          token: mockAddress,
+          groupId: mockAddress,
+        },
+      ]);
+      const result = await groupClient.claimReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.claimedReward).to.deep.equal([
+        {
+          ipId: [mockAddress],
+          amount: [100n],
+          token: mockAddress,
+          groupId: mockAddress,
+        },
+      ]);
+    });
   });
 });
