@@ -716,7 +716,7 @@ describe("Test IpAssetClient", () => {
         groupIpId: mockAddress,
         ipIds: [mockAddress],
       });
-      await expect(result).to.be.rejectedWith("Failed to remove IP from group: rpc error");
+      await expect(result).to.be.rejectedWith("Failed to remove IPs from group: rpc error");
     });
 
     it("should return txHash when call succeeds", async () => {
