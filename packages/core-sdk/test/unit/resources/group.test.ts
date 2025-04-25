@@ -708,4 +708,28 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).equal(txHash);
     });
   });
+
+  describe("Test groupClient.getClaimableReward", async () => {
+    it("should throw error when call fail", async () => {
+      sinon
+        .stub(groupClient.groupingModuleClient, "getClaimableReward")
+        .rejects(new Error("rpc error"));
+      const result = groupClient.getClaimableReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith("Failed to get claimable reward: rpc error");
+    });
+
+    it("should return claimable reward when call successfully", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = await groupClient.getClaimableReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+      });
+      expect(result).to.deep.equal([10n]);
+    });
+  });
 });

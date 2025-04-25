@@ -153,3 +153,9 @@ export type AddIpRequest = {
   maxAllowedRewardSharePercentage?: number;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
+
+export type GetClaimableRewardRequest = {
+  groupIpId: Address;
+  currencyToken: Address;
+  memberIpIds: Address[];
+};
