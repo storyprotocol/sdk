@@ -365,6 +365,7 @@ export default defineConfig(async () => {
             "claimReward",
             "ClaimedReward",
             "removeIp",
+            "getClaimableReward",
           ],
           LicenseRegistry: [
             "getLicensingConfig",

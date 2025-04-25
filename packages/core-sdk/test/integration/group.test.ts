@@ -458,5 +458,14 @@ describe("Group Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.claimedReward?.[0].amount[0]).to.equal(10n);
     });
+
+    it("should successfully get claimable reward", async () => {
+      const result = await client.groupClient.getClaimableReward({
+        groupIpId: groupIpId,
+        currencyToken: WIP_TOKEN_ADDRESS,
+        memberIpIds: [ipIds[1]],
+      });
+      expect(result).to.deep.equal([10n]);
+    });
   });
 });

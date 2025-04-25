@@ -173,3 +173,8 @@ export type RemoveIpsFromGroupRequest = {
   ipIds: Address[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
+export type GetClaimableRewardRequest = {
+  groupIpId: Address;
+  currencyToken: Address;
+  memberIpIds: Address[];
+};
