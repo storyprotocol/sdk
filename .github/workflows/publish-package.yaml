@@ -82,7 +82,7 @@ jobs:
         id: get_last_tag
         run: |
           git fetch --tags
-          CORE_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/core-sdk|core-sdk" | tail -n1)
+          CORE_SDK_LATEST_TAG=$(git tag --sort=creatordate | grep -E "@story-protocol/core-sdk|core-sdk|^v[0-9]" | tail -n1)
           echo "CORE_SDK_LATEST_TAG=$CORE_SDK_LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Last tag for @story-protocol/core-sdk is $CORE_SDK_LATEST_TAG"
 
@@ -123,22 +123,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  create-release-core-sdk:
-    needs:
-      [
-        build-test-publish,
-        fetch_last_tag,
-        fail_if_version_is_same,
-        print_version_to_publish,
-      ]
-    if: ${{ github.event_name == 'workflow_dispatch' && needs.fail_if_version_is_same.outputs.IS_PUBLISH_CORE_SDK == 'true'}}
-    uses: ./.github/workflows/create-release.yml
-    with:
-      tag_version: "@story-protocol/core-sdk@${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED }}"
-      last_tag: ${{ needs.fetch_last_tag.outputs.CORE_SDK_LATEST_TAG }}
-
   send_slack_notif-core-sdk:
-    needs: [print_version_to_publish, create-release-core-sdk]
+    needs: [print_version_to_publish]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
     with:
       short-desc: "${{ github.repository }}: @story-protocol/core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED}}"
