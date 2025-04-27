@@ -69,7 +69,7 @@ export const mintBySpg = async (
   spgNftContract: Hex,
   nftMetadataURI?: string,
   nftMetadataHash?: Hex,
-): Promise<number | undefined> => {
+): Promise<number> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -117,14 +117,9 @@ export const mintBySpg = async (
   const { logs } = await publicClient.waitForTransactionReceipt({
     hash,
   });
-  if (logs.length == 1) {
-    if (logs[0].topics[3]) {
-      return parseInt(logs[0].topics[3], 16);
-    }
-  } else if (logs.length > 1) {
-    if (logs[1].topics[3]) {
-      return parseInt(logs[1].topics[3], 16);
-    }
+  const tokenId = logs.length == 1 ? logs[0].topics[3] : logs[1].topics[3];
+  if (tokenId) {
+    return parseInt(tokenId, 16);
   }
   throw new Error("Failed to mint NFT");
 };
