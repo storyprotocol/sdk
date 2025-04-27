@@ -1,5 +1,5 @@
 import { StoryClient } from "../../src";
-import { getStoryClient, mintBySpgWithMintFee, publicClient, walletClient } from "./utils/util";
+import { getStoryClient, mintBySpg, publicClient, walletClient } from "./utils/util";
 import { Address, maxUint256 } from "viem";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -165,7 +165,7 @@ describe("nftClient Functions", () => {
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       // Mint a new token with initial metadata
-      const tokenId = await mintBySpgWithMintFee(spgNftContract, "ipfs://QmTest/");
+      const tokenId = await mintBySpg(spgNftContract, "ipfs://QmTest/");
       expect(tokenId).to.not.be.undefined;
 
       // Update the token URI

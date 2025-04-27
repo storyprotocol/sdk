@@ -1,7 +1,7 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
-import { aeneid, getStoryClient, mintBySpgWithoutMintFee } from "./utils/util";
+import { aeneid, getStoryClient, mintBySpg } from "./utils/util";
 import { LicenseTermsData, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import {
   evenSplitGroupPoolAddress,
@@ -178,7 +178,7 @@ describe("Group Functions", () => {
 
   describe("Advanced Group Operations", () => {
     it("should successfully register existing IP with license and add to group", async () => {
-      const tokenId = await mintBySpgWithoutMintFee(spgNftContract, "test-metadata");
+      const tokenId = await mintBySpg(spgNftContract, "test-metadata");
       const result = await client.groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId,
         nftContract: spgNftContract,

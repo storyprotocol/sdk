@@ -49,50 +49,27 @@ export const getTokenId = async (): Promise<number | undefined> => {
   }
 };
 /**
- * Mints an NFT using the SPG contract without a mint fee.
+ * Mints an NFT using the SPG contract.
  *
  * @remarks
  * This function calls the mint function on the SPG NFT contract.
- * When successful, it will emit a Transfer event for the spgNftContract.
- * The token ID is extracted from the third topic (topics[3]) of the first log (index 0).
+ *
+ * When minting without a mint fee:
+ * - It will emit a Transfer event for the spgNftContract.
+ * - The token ID is extracted from the third topic (topics[3]) of the first log (index 0).
+ *
+ * When minting with a mint fee:
+ * - It will emit multiple events including:
+ *   - An ERC20 Transfer event for the mint fee payment (index 0)
+ *   - An NFT Transfer event from the SPG contract (index 1)
+ * - The tokenId is extracted from the second log (index 1) which contains
+ *   the NFT Transfer event data in the third topic (topics[3]).
  */
-export const mintBySpgWithoutMintFee = async (
+export const mintBySpg = async (
   spgNftContract: Hex,
   nftMetadataURI?: string,
   nftMetadataHash?: Hex,
 ): Promise<number | undefined> => {
-  const logs = await mintBySpg(spgNftContract, nftMetadataURI, nftMetadataHash);
-  if (logs && logs.length > 0 && logs[0].topics[3]) {
-    return parseInt(logs[0].topics[3], 16);
-  }
-  return undefined;
-};
-
-/**
- * Mints an NFT using the SPG contract with a mint fee.
- *
- * @remarks
- * This function calls the mint function on the SPG NFT contract with a mint fee.
- * When successful, it will emit multiple events including:
- * - An ERC20 Transfer event for the mint fee payment (index 0)
- * - An NFT Transfer event from the SPG contract (index 1)
- *
- * The tokenId is extracted from the second log (index 1) which contains
- * the NFT Transfer event data in the third topic (topics[3]).
- */
-export const mintBySpgWithMintFee = async (
-  spgNftContract: Hex,
-  nftMetadataURI?: string,
-  nftMetadataHash?: Hex,
-): Promise<number | undefined> => {
-  const logs = await mintBySpg(spgNftContract, nftMetadataURI, nftMetadataHash);
-  if (logs && logs.length > 1 && logs[1].topics[3]) {
-    return parseInt(logs[1].topics[3], 16);
-  }
-  return undefined;
-};
-
-const mintBySpg = async (spgNftContract: Hex, nftMetadataURI?: string, nftMetadataHash?: Hex) => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -140,9 +117,18 @@ const mintBySpg = async (spgNftContract: Hex, nftMetadataURI?: string, nftMetada
   const { logs } = await publicClient.waitForTransactionReceipt({
     hash,
   });
-
-  return logs;
+  if (logs.length == 1) {
+    if (logs[0].topics[3]) {
+      return parseInt(logs[0].topics[3], 16);
+    }
+  } else if (logs.length > 1) {
+    if (logs[1].topics[3]) {
+      return parseInt(logs[1].topics[3], 16);
+    }
+  }
+  throw new Error("Failed to mint NFT");
 };
+
 export const approveForLicenseToken = async (address: Address, tokenId: bigint) => {
   const { request: call } = await publicClient.simulateContract({
     abi: licenseTokenAbi,
