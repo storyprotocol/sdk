@@ -1268,7 +1268,7 @@ describe("IP Asset Functions", () => {
       let parentIpId: Address;
       beforeEach(async () => {
         const privateMintingCollectionResult = await client.nftClient.createNFTCollection({
-          name: "Public Minting Collection",
+          name: "Private Minting Collection",
           symbol: "PMC",
           isPublicMinting: false,
           mintOpen: true,
