@@ -363,6 +363,7 @@ export default defineConfig(async () => {
             "IPGroupRegistered",
             "addIp",
             "getClaimableReward",
+            "removeIp",
           ],
           LicenseRegistry: [
             "getLicensingConfig",

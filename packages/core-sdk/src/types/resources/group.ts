@@ -159,3 +159,9 @@ export type GetClaimableRewardRequest = {
   currencyToken: Address;
   memberIpIds: Address[];
 };
+
+export type RemoveIpsFromGroupRequest = {
+  groupIpId: Address;
+  ipIds: Address[];
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};

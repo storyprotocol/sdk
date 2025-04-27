@@ -254,34 +254,45 @@ describe("Group Functions", () => {
         }),
       ).to.be.rejectedWith("Failed to register group and attach license and add ips");
     });
+    describe("Add IPs to Group and Remove IPs from Group", () => {
+      let ipIds: Address[];
+      it("should successfully add multiple IPs to group", async () => {
+        const registerResult = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
+          args: [
+            {
+              spgNftContract,
+              licenseTermsData,
+            },
+            {
+              spgNftContract,
+              licenseTermsData,
+            },
+            {
+              spgNftContract,
+              licenseTermsData,
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        });
+        ipIds = registerResult.results?.map((result) => result.ipId) ?? [];
 
-    it("should successfully add multiple IPs to group", async () => {
-      const registerResult = await client.ipAsset.batchMintAndRegisterIpAssetWithPilTerms({
-        args: [
-          {
-            spgNftContract,
-            licenseTermsData,
-          },
-          {
-            spgNftContract,
-            licenseTermsData,
-          },
-          {
-            spgNftContract,
-            licenseTermsData,
-          },
-        ],
-        txOptions: { waitForTransaction: true },
+        const result = await client.groupClient.addIpsToGroup({
+          groupIpId: groupId,
+          ipIds: ipIds,
+          maxAllowedRewardSharePercentage: 5,
+          txOptions: { waitForTransaction: true },
+        });
+        expect(result.txHash).to.be.a("string").and.not.empty;
       });
-      const ipIds = registerResult.results?.map((result) => result.ipId);
 
-      const result = await client.groupClient.addIpsToGroup({
-        groupIpId: groupId,
-        ipIds: ipIds!,
-        maxAllowedRewardSharePercentage: 5,
-        txOptions: { waitForTransaction: true },
+      it("should successfully remove IPs from group", async () => {
+        const result = await client.groupClient.removeIpsFromGroup({
+          groupIpId: groupId,
+          ipIds: ipIds,
+          txOptions: { waitForTransaction: true },
+        });
+        expect(result.txHash).to.be.a("string").and.not.empty;
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
     });
   });
 

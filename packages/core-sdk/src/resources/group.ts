@@ -8,6 +8,7 @@ import {
   GroupingModuleClient,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
+  GroupingModuleRemoveIpRequest,
   GroupingWorkflowsClient,
   GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
@@ -45,6 +46,7 @@ import {
   CollectAndDistributeGroupRoyaltiesResponse,
   AddIpRequest,
   GetClaimableRewardRequest,
+  RemoveIpsFromGroupRequest,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -524,6 +526,30 @@ export class GroupClient {
     }
   }
 
+  /**
+   * Removes IPs from group.
+   * The function must be called by the Group IP owner or an authorized operator.
+   */
+  public async removeIpsFromGroup({
+    groupIpId,
+    ipIds,
+    txOptions,
+  }: RemoveIpsFromGroupRequest): Promise<TransactionResponse> {
+    try {
+      const removeIpParam: GroupingModuleRemoveIpRequest = {
+        groupIpId: validateAddress(groupIpId),
+        ipIds: validateAddresses(ipIds),
+      };
+      const txHash = await this.groupingModuleClient.removeIp(removeIpParam);
+      return await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      handleError(error, "Failed to remove IPs from group");
+    }
+  }
   private getLicenseData(licenseData: LicenseDataInput[] | LicenseDataInput): LicenseData[] {
     const isArray = Array.isArray(licenseData);
     if ((isArray && licenseData.length === 0) || !licenseData) {
