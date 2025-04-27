@@ -6,6 +6,7 @@ import {
   licenseTokenAbi,
   licenseTokenAddress,
   spgnftBeaconAddress,
+  SpgnftImplEventClient,
 } from "../../../src/abi/generated";
 export const RPC = "https://aeneid.storyrpc.io";
 export const aeneid = 1315;
@@ -48,28 +49,12 @@ export const getTokenId = async (): Promise<number | undefined> => {
     return parseInt(logs[0].topics[3], 16);
   }
 };
-/**
- * Mints an NFT using the SPG contract.
- *
- * @remarks
- * This function calls the mint function on the SPG NFT contract.
- *
- * When minting without a mint fee:
- * - It will emit a Transfer event for the spgNftContract.
- * - The token ID is extracted from the third topic (topics[3]) of the first log (index 0).
- *
- * When minting with a mint fee:
- * - It will emit multiple events including:
- *   - An ERC20 Transfer event for the mint fee payment (index 0)
- *   - An NFT Transfer event from the SPG contract (index 1)
- * - The tokenId is extracted from the second log (index 1) which contains
- *   the NFT Transfer event data in the third topic (topics[3]).
- */
+
 export const mintBySpg = async (
   spgNftContract: Hex,
   nftMetadataURI?: string,
   nftMetadataHash?: Hex,
-): Promise<number> => {
+): Promise<bigint> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -114,14 +99,12 @@ export const mintBySpg = async (
   });
 
   const hash = await walletClient.writeContract(request);
-  const { logs } = await publicClient.waitForTransactionReceipt({
+  const receipt = await publicClient.waitForTransactionReceipt({
     hash,
   });
-  const tokenId = logs.length == 1 ? logs[0].topics[3] : logs[1].topics[3];
-  if (tokenId) {
-    return parseInt(tokenId, 16);
-  }
-  throw new Error("Failed to mint NFT");
+  const spgnftImplEventClient = new SpgnftImplEventClient(publicClient);
+  const events = spgnftImplEventClient.parseTxTransferEvent(receipt);
+  return events[0].tokenId;
 };
 
 export const approveForLicenseToken = async (address: Address, tokenId: bigint) => {

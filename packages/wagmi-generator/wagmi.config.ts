@@ -375,6 +375,7 @@ export default defineConfig(async () => {
             "mintFee",
             "setTokenURI",
             "tokenURI",
+            "Transfer",
           ],
         },
       }),

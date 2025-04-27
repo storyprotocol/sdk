@@ -24399,6 +24399,19 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
 
 // Contract SPGNFTImpl =============================================================
 
+/**
+ * SpgnftImplTransferEvent
+ *
+ * @param from address
+ * @param to address
+ * @param tokenId uint256
+ */
+export type SpgnftImplTransferEvent = {
+  from: Address;
+  to: Address;
+  tokenId: bigint;
+};
+
 export type SpgnftImplMintFeeResponse = bigint;
 
 export type SpgnftImplMintFeeTokenResponse = Address;
@@ -24428,15 +24441,63 @@ export type SpgnftImplSetTokenUriRequest = {
 };
 
 /**
- * contract SPGNFTImpl readonly method
+ * contract SPGNFTImpl event
  */
-export class SpgnftImplReadOnlyClient {
+export class SpgnftImplEventClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(spgnftImplAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event Transfer for contract SPGNFTImpl
+   */
+  public watchTransferEvent(
+    onLogs: (txHash: Hex, ev: Partial<SpgnftImplTransferEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: spgnftImplAbi,
+      address: this.address,
+      eventName: "Transfer",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Transfer for contract SPGNFTImpl
+   */
+  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<SpgnftImplTransferEvent> {
+    const targetLogs: Array<SpgnftImplTransferEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: spgnftImplAbi,
+          eventName: "Transfer",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Transfer") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract SPGNFTImpl readonly method
+ */
+export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
   }
 
   /**
