@@ -168,3 +168,8 @@ export type ClaimRewardResponse = {
   txHash: Hash;
   claimedReward?: GroupingModuleClaimedRewardEvent[];
 };
+export type RemoveIpsFromGroupRequest = {
+  groupIpId: Address;
+  ipIds: Address[];
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
