@@ -153,3 +153,9 @@ export type AddIpRequest = {
   maxAllowedRewardSharePercentage?: number;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
+
+export type RemoveIpsFromGroupRequest = {
+  groupIpId: Address;
+  ipIds: Address[];
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};

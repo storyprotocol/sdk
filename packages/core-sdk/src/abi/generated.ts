@@ -58,6 +58,14 @@ export const accessControllerAbi = [
     type: "error",
     inputs: [
       { name: "ipAccount", internalType: "address", type: "address" },
+      { name: "owner", internalType: "address", type: "address" },
+    ],
+    name: "AccessController__OwnerIsIPAccount",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "ipAccount", internalType: "address", type: "address" },
       { name: "signer", internalType: "address", type: "address" },
       { name: "to", internalType: "address", type: "address" },
       { name: "func", internalType: "bytes4", type: "bytes4" },
@@ -633,6 +641,12 @@ export const arbitrationPolicyUmaAbi = [
     anonymous: false,
     inputs: [
       {
+        name: "disputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
         name: "assertionId",
         internalType: "bytes32",
         type: "bytes32",
@@ -668,6 +682,12 @@ export const arbitrationPolicyUmaAbi = [
         name: "disputeId",
         internalType: "uint256",
         type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "assertionId",
+        internalType: "bytes32",
+        type: "bytes32",
         indexed: false,
       },
       {
@@ -1448,7 +1468,17 @@ export const derivativeWorkflowsAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicensingHelper__ParentIpIdsAndLicenseTermsIdsMismatch",
+  },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [],
+    name: "PermissionHelper__ModulesAndSelectorsMismatch",
+  },
   {
     type: "error",
     inputs: [{ name: "token", internalType: "address", type: "address" }],
@@ -1669,71 +1699,6 @@ export const derivativeWorkflowsAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "spgNftContract", internalType: "address", type: "address" },
-      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      { name: "recipient", internalType: "address", type: "address" },
-    ],
-    name: "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "spgNftContract", internalType: "address", type: "address" },
-      {
-        name: "derivData",
-        internalType: "struct WorkflowStructs.MakeDerivativeDEPR",
-        type: "tuple",
-        components: [
-          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
-          { name: "licenseTemplate", internalType: "address", type: "address" },
-          {
-            name: "licenseTermsIds",
-            internalType: "uint256[]",
-            type: "uint256[]",
-          },
-          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      { name: "recipient", internalType: "address", type: "address" },
-    ],
-    name: "mintAndRegisterIpAndMakeDerivative_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
     name: "multicall",
     outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
@@ -1838,105 +1803,6 @@ export const derivativeWorkflowsAbi = [
       },
     ],
     name: "registerIpAndMakeDerivativeWithLicenseTokens",
-    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "licenseTokenIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigRegister",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndMakeDerivativeWithLicenseTokens_deprecated",
-    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      {
-        name: "derivData",
-        internalType: "struct WorkflowStructs.MakeDerivativeDEPR",
-        type: "tuple",
-        components: [
-          { name: "parentIpIds", internalType: "address[]", type: "address[]" },
-          { name: "licenseTemplate", internalType: "address", type: "address" },
-          {
-            name: "licenseTermsIds",
-            internalType: "uint256[]",
-            type: "uint256[]",
-          },
-          { name: "royaltyContext", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigRegister",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndMakeDerivative_deprecated",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
@@ -2298,6 +2164,12 @@ export const disputeModuleAbi = [
     type: "event",
     anonymous: false,
     inputs: [
+      {
+        name: "disputeId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
       {
         name: "infringingIpId",
         internalType: "address",
@@ -4058,6 +3930,11 @@ export const groupingWorkflowsAbi = [
   { type: "error", inputs: [], name: "GroupingWorkflows__ZeroAddressParam" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [],
+    name: "PermissionHelper__ModulesAndSelectorsMismatch",
+  },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -4212,28 +4089,6 @@ export const groupingWorkflowsAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "groupIpId", internalType: "address", type: "address" },
-      { name: "currencyTokens", internalType: "address[]", type: "address[]" },
-      {
-        name: "groupSnapshotIds",
-        internalType: "uint256[]",
-        type: "uint256[]",
-      },
-      { name: "memberIpIds", internalType: "address[]", type: "address[]" },
-    ],
-    name: "collectRoyaltiesAndClaimReward_deprecated",
-    outputs: [
-      {
-        name: "collectedRoyalties",
-        internalType: "uint256[]",
-        type: "uint256[]",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
     outputs: [],
@@ -4321,43 +4176,6 @@ export const groupingWorkflowsAbi = [
       { name: "allowDuplicates", internalType: "bool", type: "bool" },
     ],
     name: "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "spgNftContract", internalType: "address", type: "address" },
-      { name: "groupId", internalType: "address", type: "address" },
-      { name: "recipient", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "sigAddToGroup",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "mintAndRegisterIpAndAttachLicenseAndAddToGroup_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
@@ -4497,29 +4315,6 @@ export const groupingWorkflowsAbi = [
   {
     type: "function",
     inputs: [
-      { name: "groupPool", internalType: "address", type: "address" },
-      { name: "ipIds", internalType: "address[]", type: "address[]" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "registerGroupAndAttachLicenseAndAddIps_deprecated",
-    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "groupPool", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    name: "registerGroupAndAttachLicense_deprecated",
-    outputs: [{ name: "groupId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
       { name: "nftContract", internalType: "address", type: "address" },
       { name: "tokenId", internalType: "uint256", type: "uint256" },
       { name: "groupId", internalType: "address", type: "address" },
@@ -4601,50 +4396,6 @@ export const groupingWorkflowsAbi = [
       },
     ],
     name: "registerIpAndAttachLicenseAndAddToGroup",
-    outputs: [{ name: "ipId", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "groupId", internalType: "address", type: "address" },
-      { name: "licenseTemplate", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "sigMetadataAndAttachAndConfig",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigAddToGroup",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndAttachLicenseAndAddToGroup_deprecated",
     outputs: [{ name: "ipId", internalType: "address", type: "address" }],
     stateMutability: "nonpayable",
   },
@@ -6310,6 +6061,11 @@ export const licenseAttachmentWorkflowsAbi = [
     name: "LicenseAttachmentWorkflows__ZeroAddressParam",
   },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [],
+    name: "PermissionHelper__ModulesAndSelectorsMismatch",
+  },
   { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
   {
     type: "error",
@@ -6601,160 +6357,6 @@ export const licenseAttachmentWorkflowsAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "spgNftContract", internalType: "address", type: "address" },
-      { name: "recipient", internalType: "address", type: "address" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-    ],
-    name: "mintAndRegisterIpAndAttachPILTerms_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "spgNftContract", internalType: "address", type: "address" },
-      { name: "recipient", internalType: "address", type: "address" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "terms",
-        internalType: "struct PILTerms[]",
-        type: "tuple[]",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-    ],
-    name: "mintAndRegisterIpAndAttachPILTerms_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
     name: "multicall",
     outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
@@ -6957,198 +6559,6 @@ export const licenseAttachmentWorkflowsAbi = [
   {
     type: "function",
     inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigAttach",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndAttachPILTerms_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "terms",
-        internalType: "struct PILTerms[]",
-        type: "tuple[]",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigAttach",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndAttachPILTerms_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
       { name: "ipId", internalType: "address", type: "address" },
       {
         name: "licenseTermsData",
@@ -7273,148 +6683,6 @@ export const licenseAttachmentWorkflowsAbi = [
     ],
     name: "registerPILTermsAndAttach",
     outputs: [{ name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      {
-        name: "terms",
-        internalType: "struct PILTerms[]",
-        type: "tuple[]",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-      {
-        name: "sigAttach",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerPILTermsAndAttach_deprecated",
-    outputs: [{ name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" }],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      {
-        name: "terms",
-        internalType: "struct PILTerms",
-        type: "tuple",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-      {
-        name: "sigAttach",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerPILTermsAndAttach_deprecated",
-    outputs: [{ name: "licenseTermsId", internalType: "uint256", type: "uint256" }],
     stateMutability: "nonpayable",
   },
   {
@@ -8193,6 +7461,16 @@ export const licenseRegistryAbi = [
     type: "function",
     inputs: [{ name: "accessManager", internalType: "address", type: "address" }],
     name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "ipId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+    ],
+    name: "initializeLicenseTemplate",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -9317,6 +8595,22 @@ export const licensingModuleAbi = [
       },
     ],
     name: "LicensingModule__LicensingConfigMintingFeeBelowLicenseTerms",
+  },
+  {
+    type: "error",
+    inputs: [
+      {
+        name: "licensingHookMintingFee",
+        internalType: "uint256",
+        type: "uint256",
+      },
+      {
+        name: "licenseTermsMintingFee",
+        internalType: "uint256",
+        type: "uint256",
+      },
+    ],
+    name: "LicensingModule__LicensingHookMintingFeeBelowLicenseTerms",
   },
   {
     type: "error",
@@ -11403,30 +10697,6 @@ export const registrationWorkflowsAbi = [
   },
   {
     type: "function",
-    inputs: [
-      { name: "spgNftContract", internalType: "address", type: "address" },
-      { name: "recipient", internalType: "address", type: "address" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-    ],
-    name: "mintAndRegisterIp_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     inputs: [{ name: "data", internalType: "bytes[]", type: "bytes[]" }],
     name: "multicall",
     outputs: [{ name: "results", internalType: "bytes[]", type: "bytes[]" }],
@@ -12474,6 +11744,7 @@ export const royaltyPolicyLapAbi = [
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__AboveMaxPercent" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__CallFailed" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__NotRoyaltyModule" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLAP__SameIpTransfer" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroAccessManager" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroClaimableRoyalty" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLAP__ZeroIPGraphACL" },
@@ -12843,6 +12114,7 @@ export const royaltyPolicyLrpAbi = [
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__AboveMaxPercent" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__CallFailed" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__NotRoyaltyModule" },
+  { type: "error", inputs: [], name: "RoyaltyPolicyLRP__SameIpTransfer" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroAccessManager" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroClaimableRoyalty" },
   { type: "error", inputs: [], name: "RoyaltyPolicyLRP__ZeroIPGraphACL" },
@@ -13189,7 +12461,7 @@ export const royaltyTokenDistributionWorkflowsAbi = [
       { name: "licensingModule", internalType: "address", type: "address" },
       { name: "pilTemplate", internalType: "address", type: "address" },
       { name: "royaltyModule", internalType: "address", type: "address" },
-      { name: "royaltyPolicyLAP", internalType: "address", type: "address" },
+      { name: "royaltyPolicyLRP", internalType: "address", type: "address" },
       { name: "wip", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
@@ -13225,7 +12497,17 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   { type: "error", inputs: [], name: "ERC1967NonPayable" },
   { type: "error", inputs: [], name: "FailedCall" },
   { type: "error", inputs: [], name: "InvalidInitialization" },
+  {
+    type: "error",
+    inputs: [],
+    name: "LicensingHelper__ParentIpIdsAndLicenseTermsIdsMismatch",
+  },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [],
+    name: "PermissionHelper__ModulesAndSelectorsMismatch",
+  },
   {
     type: "error",
     inputs: [
@@ -13372,7 +12654,7 @@ export const royaltyTokenDistributionWorkflowsAbi = [
   {
     type: "function",
     inputs: [],
-    name: "ROYALTY_POLICY_LAP",
+    name: "ROYALTY_POLICY_LRP",
     outputs: [{ name: "", internalType: "address", type: "address" }],
     stateMutability: "view",
   },
@@ -13601,92 +12883,6 @@ export const royaltyTokenDistributionWorkflowsAbi = [
         ],
       },
       {
-        name: "terms",
-        internalType: "struct PILTerms[]",
-        type: "tuple[]",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-      {
-        name: "royaltyShares",
-        internalType: "struct WorkflowStructs.RoyaltyShare[]",
-        type: "tuple[]",
-        components: [
-          { name: "recipient", internalType: "address", type: "address" },
-          { name: "percentage", internalType: "uint32", type: "uint32" },
-        ],
-      },
-    ],
-    name: "mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens_deprecated",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "spgNftContract", internalType: "address", type: "address" },
-      { name: "recipient", internalType: "address", type: "address" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
         name: "derivData",
         internalType: "struct WorkflowStructs.MakeDerivative",
         type: "tuple",
@@ -13886,103 +13082,6 @@ export const royaltyTokenDistributionWorkflowsAbi = [
       },
     ],
     name: "registerIpAndAttachPILTermsAndDeployRoyaltyVault",
-    outputs: [
-      { name: "ipId", internalType: "address", type: "address" },
-      { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
-      { name: "ipRoyaltyVault", internalType: "address", type: "address" },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "nftContract", internalType: "address", type: "address" },
-      { name: "tokenId", internalType: "uint256", type: "uint256" },
-      {
-        name: "ipMetadata",
-        internalType: "struct WorkflowStructs.IPMetadata",
-        type: "tuple",
-        components: [
-          { name: "ipMetadataURI", internalType: "string", type: "string" },
-          { name: "ipMetadataHash", internalType: "bytes32", type: "bytes32" },
-          { name: "nftMetadataURI", internalType: "string", type: "string" },
-          { name: "nftMetadataHash", internalType: "bytes32", type: "bytes32" },
-        ],
-      },
-      {
-        name: "terms",
-        internalType: "struct PILTerms[]",
-        type: "tuple[]",
-        components: [
-          { name: "transferable", internalType: "bool", type: "bool" },
-          { name: "royaltyPolicy", internalType: "address", type: "address" },
-          {
-            name: "defaultMintingFee",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "expiration", internalType: "uint256", type: "uint256" },
-          { name: "commercialUse", internalType: "bool", type: "bool" },
-          { name: "commercialAttribution", internalType: "bool", type: "bool" },
-          {
-            name: "commercializerChecker",
-            internalType: "address",
-            type: "address",
-          },
-          {
-            name: "commercializerCheckerData",
-            internalType: "bytes",
-            type: "bytes",
-          },
-          {
-            name: "commercialRevShare",
-            internalType: "uint32",
-            type: "uint32",
-          },
-          {
-            name: "commercialRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "derivativesAllowed", internalType: "bool", type: "bool" },
-          {
-            name: "derivativesAttribution",
-            internalType: "bool",
-            type: "bool",
-          },
-          { name: "derivativesApproval", internalType: "bool", type: "bool" },
-          { name: "derivativesReciprocal", internalType: "bool", type: "bool" },
-          {
-            name: "derivativeRevCeiling",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "currency", internalType: "address", type: "address" },
-          { name: "uri", internalType: "string", type: "string" },
-        ],
-      },
-      {
-        name: "sigMetadata",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-      {
-        name: "sigAttach",
-        internalType: "struct WorkflowStructs.SignatureData",
-        type: "tuple",
-        components: [
-          { name: "signer", internalType: "address", type: "address" },
-          { name: "deadline", internalType: "uint256", type: "uint256" },
-          { name: "signature", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-    name: "registerIpAndAttachPILTermsAndDeployRoyaltyVault_deprecated",
     outputs: [
       { name: "ipId", internalType: "address", type: "address" },
       { name: "licenseTermsIds", internalType: "uint256[]", type: "uint256[]" },
@@ -18746,17 +17845,6 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
 // Contract GroupingModule =============================================================
 
 /**
- * GroupingModuleAddedIpToGroupEvent
- *
- * @param groupId address
- * @param ipIds address[]
- */
-export type GroupingModuleAddedIpToGroupEvent = {
-  groupId: Address;
-  ipIds: readonly Address[];
-};
-
-/**
  * GroupingModuleCollectedRoyaltiesToGroupPoolEvent
  *
  * @param groupId address
@@ -18825,47 +17913,6 @@ export class GroupingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(groupingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
-  }
-
-  /**
-   * event AddedIpToGroup for contract GroupingModule
-   */
-  public watchAddedIpToGroupEvent(
-    onLogs: (txHash: Hex, ev: Partial<GroupingModuleAddedIpToGroupEvent>) => void,
-  ): WatchContractEventReturnType {
-    return this.rpcClient.watchContractEvent({
-      abi: groupingModuleAbi,
-      address: this.address,
-      eventName: "AddedIpToGroup",
-      onLogs: (evs) => {
-        evs.forEach((it) => onLogs(it.transactionHash, it.args));
-      },
-    });
-  }
-
-  /**
-   * parse tx receipt event AddedIpToGroup for contract GroupingModule
-   */
-  public parseTxAddedIpToGroupEvent(
-    txReceipt: TransactionReceipt,
-  ): Array<GroupingModuleAddedIpToGroupEvent> {
-    const targetLogs: Array<GroupingModuleAddedIpToGroupEvent> = [];
-    for (const log of txReceipt.logs) {
-      try {
-        const event = decodeEventLog({
-          abi: groupingModuleAbi,
-          eventName: "AddedIpToGroup",
-          data: log.data,
-          topics: log.topics,
-        });
-        if (event.eventName === "AddedIpToGroup") {
-          targetLogs.push(event.args);
-        }
-      } catch (e) {
-        /* empty */
-      }
-    }
-    return targetLogs;
   }
 
   /**
