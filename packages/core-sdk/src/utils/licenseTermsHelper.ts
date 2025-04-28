@@ -68,7 +68,7 @@ export function getLicenseTermByType(
       "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json";
 
     return licenseTerms;
-  } else if (type === PIL_TYPE.COMMERCIAL_REMIX) {
+  } else {
     if (
       !term ||
       term.defaultMintingFee === undefined ||
@@ -90,7 +90,6 @@ export function getLicenseTermByType(
     licenseTerms.currency = validateAddress(term.currency);
     return licenseTerms;
   }
-  return licenseTerms;
 }
 
 export async function validateLicenseTerms(
