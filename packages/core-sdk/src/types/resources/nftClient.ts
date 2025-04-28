@@ -31,3 +31,16 @@ export type CreateNFTCollectionResponse = {
   encodedTxData?: EncodedTxData;
   spgNftContract?: Address;
 };
+
+export type SetTokenURIRequest = {
+  tokenId: bigint | number;
+  /** The new metadata URI to associate with the token. */
+  tokenURI: string;
+  spgNftContract: Address;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type GetTokenURIRequest = {
+  tokenId: bigint | number;
+  spgNftContract: Address;
+};
