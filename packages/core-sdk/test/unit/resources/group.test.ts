@@ -780,7 +780,7 @@ describe("Test IpAssetClient", () => {
       ]);
     });
   });
-  describe("Test groupClient.getClaimableReward", async () => {
+  describe("Test groupClient.getClaimableReward", () => {
     it("should throw error when call fail", async () => {
       sinon
         .stub(groupClient.groupingModuleClient, "getClaimableReward")
@@ -801,6 +801,54 @@ describe("Test IpAssetClient", () => {
         memberIpIds: [mockAddress],
       });
       expect(result).to.deep.equal([10n]);
+    });
+  });
+  describe("Test groupClient.collectRoyalties", () => {
+    it("should throw error when call fails", async () => {
+      sinon
+        .stub(groupClient.groupingModuleClient, "collectRoyalties")
+        .rejects(new Error("rpc error"));
+
+      const result = groupClient.collectRoyalties({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+      });
+      await expect(result).to.be.rejectedWith("Failed to collect royalties: rpc error");
+    });
+
+    it("should return txHash when call successfully", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
+
+      const result = await groupClient.collectRoyalties({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.collectedRoyalties).to.undefined;
+    });
+
+    it("should return additional details when waitForTransaction is true", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
+      sinon
+        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
+        .returns([
+          {
+            groupId: mockAddress,
+            amount: 100n,
+            token: mockAddress,
+            pool: mockAddress,
+          },
+        ]);
+
+      const result = await groupClient.collectRoyalties({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.collectedRoyalties).to.equal(100n);
     });
   });
 });

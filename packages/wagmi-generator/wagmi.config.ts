@@ -366,6 +366,8 @@ export default defineConfig(async () => {
             "ClaimedReward",
             "removeIp",
             "getClaimableReward",
+            "collectRoyalties",
+            "CollectedRoyaltiesToGroupPool",
           ],
           LicenseRegistry: [
             "getLicensingConfig",

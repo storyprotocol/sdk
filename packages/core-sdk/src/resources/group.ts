@@ -7,6 +7,7 @@ import {
   GroupingModuleAddIpRequest,
   GroupingModuleClaimRewardRequest,
   GroupingModuleClient,
+  GroupingModuleCollectRoyaltiesRequest,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
   GroupingModuleRemoveIpRequest,
@@ -50,6 +51,8 @@ import {
   ClaimRewardResponse,
   RemoveIpsFromGroupRequest,
   GetClaimableRewardRequest,
+  CollectRoyaltiesRequest,
+  CollectRoyaltiesResponse,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -539,7 +542,7 @@ export class GroupClient {
   public async claimReward({
     groupIpId,
     currencyToken,
-    memberIpIds,  
+    memberIpIds,
     txOptions,
   }: ClaimRewardRequest): Promise<ClaimRewardResponse> {
     try {
@@ -582,6 +585,38 @@ export class GroupClient {
       return claimableReward as bigint[];
     } catch (error) {
       handleError(error, "Failed to get claimable reward");
+    }
+  }
+
+  /**
+   * Collects royalties into the pool, making them claimable by group member IPs.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L38 | `CollectedRoyaltiesToGroupPool`} event.
+   */
+  public async collectRoyalties({
+    groupIpId,
+    currencyToken,
+    txOptions,
+  }: CollectRoyaltiesRequest): Promise<CollectRoyaltiesResponse> {
+    try {
+      const collectRoyaltiesParam: GroupingModuleCollectRoyaltiesRequest = {
+        groupId: validateAddress(groupIpId),
+        token: validateAddress(currencyToken),
+      };
+      const txHash = await this.groupingModuleClient.collectRoyalties(collectRoyaltiesParam);
+      const { receipt } = await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const collectedRoyalties =
+        this.groupingModuleEventClient.parseTxCollectedRoyaltiesToGroupPoolEvent(receipt)[0].amount;
+      return { txHash, collectedRoyalties };
+    } catch (error) {
+      handleError(error, "Failed to collect royalties");
     }
   }
 

@@ -297,10 +297,11 @@ describe("Group Functions", () => {
   });
 
   describe("Collect Royalty and Claim Reward", () => {
-    const ipIds: Address[] = [];
+    let ipId: Address;
     let groupIpId: Address;
     let licenseTermsId: bigint;
-    //1. Use the same license terms data for all IP IDs
+
+    // Use the same license terms data for all IP IDs
     const licenseTermsData: LicenseTermsData[] = [
       {
         terms: {
@@ -335,24 +336,73 @@ describe("Group Functions", () => {
       },
     ];
 
-    before(async () => {
-      // 2. Get IP IDs
-      const result1 = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+    /**
+     * Helper to mint and register an IP asset with PIL terms
+     */
+    const mintAndRegisterIpAssetWithPilTermsHelper = async () => {
+      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract,
         licenseTermsData,
         txOptions: { waitForTransaction: true },
       });
-      const result2 = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract,
-        licenseTermsData,
-        txOptions: { waitForTransaction: true },
-      });
-      ipIds.push(result1.ipId!);
-      ipIds.push(result2.ipId!);
-      licenseTermsId = result1.licenseTermsIds![0];
+      return result;
+    };
 
-      //3. Register group id
-      const result3 = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
+    /**
+     * Helper to mint and register an IP and make it a derivative of another IP
+     */
+    const mintAndRegisterIpAndMakeDerivativeHelper = async (
+      groupIpId: Address,
+      licenseTermsId: bigint,
+    ) => {
+      const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract,
+        derivData: {
+          parentIpIds: [groupIpId],
+          licenseTermsIds: [licenseTermsId],
+          licenseTemplate: piLicenseTemplateAddress[aeneid],
+          maxMintingFee: 0,
+          maxRts: 10,
+          maxRevenueShare: 0,
+        },
+        txOptions: { waitForTransaction: true },
+      });
+      return result.ipId!;
+    };
+
+    /**
+     * Helper to pay royalty on behalf and transfer to vault
+     */
+    const payRoyaltyAndTransferToVaultHelper = async (
+      childIpId: Address,
+      groupIpId: Address,
+      token: Address,
+      amount: bigint,
+    ) => {
+      await client.royalty.payRoyaltyOnBehalf({
+        receiverIpId: childIpId,
+        payerIpId: groupIpId,
+        token,
+        amount,
+        txOptions: { waitForTransaction: true },
+      });
+      await client.royalty.transferToVault({
+        royaltyPolicy: NativeRoyaltyPolicy.LRP,
+        ipId: childIpId,
+        ancestorIpId: groupIpId,
+        token,
+        txOptions: { waitForTransaction: true },
+      });
+    };
+
+    /**
+     * Helper to register a group and attach license
+     */
+    const registerGroupAndAttachLicenseHelper = async (
+      licenseTermsId: bigint,
+      ipIds: Address[],
+    ) => {
+      const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: groupPoolAddress,
         maxAllowedRewardShare: 100,
         ipIds,
@@ -366,92 +416,63 @@ describe("Group Functions", () => {
         },
         txOptions: { waitForTransaction: true },
       });
-      groupIpId = result3.groupId!;
+      return result.groupId!;
+    };
 
-      //3. Mint and register child ip id
-      const result4 = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
-        spgNftContract,
-        derivData: {
-          parentIpIds: [groupIpId],
-          licenseTermsIds: [licenseTermsId],
-          licenseTemplate: piLicenseTemplateAddress[aeneid],
-          maxMintingFee: 0,
-          maxRts: 10,
-          maxRevenueShare: 0,
-        },
-        txOptions: { waitForTransaction: true },
-      });
-      const childIpId1 = result4.ipId!;
-      const result5 = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
-        spgNftContract,
-        derivData: {
-          parentIpIds: [groupIpId],
-          licenseTermsIds: [licenseTermsId],
-          licenseTemplate: piLicenseTemplateAddress[aeneid],
-          maxMintingFee: 0,
-          maxRts: 10,
-          maxRevenueShare: 0,
-        },
-        txOptions: { waitForTransaction: true },
-      });
-      const childIpId2 = result5.ipId!;
+    before(async () => {
+      // Register IP id
+      const result1 = await mintAndRegisterIpAssetWithPilTermsHelper();
+      ipId = result1.ipId!;
+      licenseTermsId = result1.licenseTermsIds![0];
 
-      //4. Pay royalties from child IPs to group IP ID
-      await client.royalty.payRoyaltyOnBehalf({
-        receiverIpId: childIpId1,
-        payerIpId: groupIpId,
-        token: WIP_TOKEN_ADDRESS,
-        amount: 100,
-        txOptions: { waitForTransaction: true },
-      });
-      await client.royalty.payRoyaltyOnBehalf({
-        receiverIpId: childIpId2,
-        payerIpId: groupIpId,
-        token: WIP_TOKEN_ADDRESS,
-        amount: 100,
-        txOptions: { waitForTransaction: true },
-      });
-
-      //5. Transfer to vault
-      const transferToVault = async (childIpId: Address, groupIpId: Address, token: Address) => {
-        await client.royalty.transferToVault({
-          royaltyPolicy: NativeRoyaltyPolicy.LRP,
-          ipId: childIpId,
-          ancestorIpId: groupIpId,
-          token,
-          txOptions: { waitForTransaction: true },
-        });
-      };
-      await transferToVault(childIpId1, groupIpId, WIP_TOKEN_ADDRESS);
-      await transferToVault(childIpId2, groupIpId, WIP_TOKEN_ADDRESS);
+      // Register group id
+      groupIpId = await registerGroupAndAttachLicenseHelper(licenseTermsId, [ipId]);
     });
-    it("should successfully collect royalties and claim reward", async () => {
-      const result = await client.groupClient.collectAndDistributeGroupRoyalties({
-        groupIpId: groupIpId,
-        currencyTokens: [WIP_TOKEN_ADDRESS],
-        memberIpIds: [ipIds[0]],
+
+    it("should successfully collect royalties", async () => {
+      // Mint and register child IP id
+      const childIpId = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
+
+      // Pay royalties from child IP id to group IP id and transfer to vault
+      await payRoyaltyAndTransferToVaultHelper(childIpId, groupIpId, WIP_TOKEN_ADDRESS, 100n);
+
+      // Collect royalties
+      const result = await client.groupClient.collectRoyalties({
+        groupIpId,
+        currencyToken: WIP_TOKEN_ADDRESS,
         txOptions: { waitForTransaction: true },
       });
+
       expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.collectedRoyalties?.[0].amount).to.equal(20n);
-      expect(result.royaltiesDistributed?.[0].amount).to.equal(10n);
+      expect(result.collectedRoyalties).to.equal(10n);
+    });
+
+    it("should successfully get claimable reward", async () => {
+      const result = await client.groupClient.getClaimableReward({
+        groupIpId: groupIpId,
+        currencyToken: WIP_TOKEN_ADDRESS,
+        memberIpIds: [ipId],
+      });
+
+      expect(result).to.deep.equal([10n]);
     });
 
     it("should successfully claim reward", async () => {
-      // Deploy a royalty vault
+      // Mint license tokens to the IP id which doesn't have a royalty vault
       await client.license.mintLicenseTokens({
-        licensorIpId: ipIds[1],
+        licensorIpId: ipId,
         licenseTermsId,
         amount: 100,
         maxMintingFee: 1,
         maxRevenueShare: 100,
         txOptions: { waitForTransaction: true },
       });
+
       // Claim reward
       const result = await client.groupClient.claimReward({
         groupIpId: groupIpId,
         currencyToken: WIP_TOKEN_ADDRESS,
-        memberIpIds: [ipIds[1]],
+        memberIpIds: [ipId],
         txOptions: { waitForTransaction: true },
       });
 
@@ -459,13 +480,40 @@ describe("Group Functions", () => {
       expect(result.claimedReward?.[0].amount[0]).to.equal(10n);
     });
 
-    it("should successfully get claimable reward", async () => {
-      const result = await client.groupClient.getClaimableReward({
+    it("should successfully collect royalties and claim reward in one transaction", async () => {
+      const ipIds: Address[] = [];
+
+      // 1. Create two IP assets
+      const result1 = await mintAndRegisterIpAssetWithPilTermsHelper();
+      const result2 = await mintAndRegisterIpAssetWithPilTermsHelper();
+      ipIds.push(result1.ipId!);
+      ipIds.push(result2.ipId!);
+      licenseTermsId = result1.licenseTermsIds![0];
+
+      // 2. Register group id and add IPs to group
+      const groupIpId = await registerGroupAndAttachLicenseHelper(licenseTermsId, ipIds);
+
+      // 3. Create two derivative IPs
+      const childIpId1 = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
+      const childIpId2 = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
+
+      // 4. Pay royalties from child IPs to group IP ID and transfer to vault
+      await payRoyaltyAndTransferToVaultHelper(childIpId1, groupIpId, WIP_TOKEN_ADDRESS, 100n);
+      await payRoyaltyAndTransferToVaultHelper(childIpId2, groupIpId, WIP_TOKEN_ADDRESS, 100n);
+
+      // 5. Collect and distribute royalties in one transaction
+      const result = await client.groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: groupIpId,
-        currencyToken: WIP_TOKEN_ADDRESS,
-        memberIpIds: [ipIds[1]],
+        currencyTokens: [WIP_TOKEN_ADDRESS],
+        memberIpIds: ipIds,
+        txOptions: { waitForTransaction: true },
       });
-      expect(result).to.deep.equal([10n]);
+
+      // Verify results
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.collectedRoyalties?.[0].amount).to.equal(20n);
+      expect(result.royaltiesDistributed?.[0].amount).to.equal(10n);
+      expect(result.royaltiesDistributed?.[1].amount).to.equal(10n);
     });
   });
 });
