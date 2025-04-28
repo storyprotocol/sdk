@@ -38,6 +38,7 @@ import {
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
   GetLicensingConfigRequest,
+  RegisterCreativeCommonsAttributionPILRequest,
 } from "../types/resources/license";
 import { handleError } from "../utils/errors";
 import {
@@ -53,6 +54,7 @@ import { Erc20Spender } from "../types/utils/wip";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { LicensingConfig, RevShareType } from "../types/common";
 import { predictMintingLicenseFee } from "../utils/calculateMintFee";
+import { waitForTxReceipt } from "../utils/txOptions";
 
 export class LicenseClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -253,7 +255,46 @@ export class LicenseClient {
       handleError(error, "Failed to register commercial remix PIL");
     }
   }
+  /**
+   * Convenient function to register a PIL creative commons attribution license to the registry.
+   * Creates a Creative Commons Attribution (CC-BY) license terms flavor.
+   *
+   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%234%3A-creative-commons-attribution | Creative Commons Attribution PIL}.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
+   */
+  public async registerCreativeCommonsAttributionPIL({
+    currency,
+    royaltyPolicyAddress,
+    txOptions,
+  }: RegisterCreativeCommonsAttributionPILRequest): Promise<RegisterPILResponse> {
+    try {
+      const licenseTerms = getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
+        currency,
+        royaltyPolicyAddress: royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+      });
+      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
+      if (licenseTermsId !== 0n) {
+        return { licenseTermsId: licenseTermsId };
+      }
+      const txHash = await this.licenseTemplateClient.registerLicenseTerms({
+        terms: licenseTerms,
+      });
 
+      const { receipt } = await waitForTxReceipt({
+        ...txOptions,
+        rpcClient: this.rpcClient,
+        txHash,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(receipt);
+      return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+    } catch (error) {
+      handleError(error, "Failed to register creative commons attribution PIL");
+    }
+  }
   /**
    * Attaches license terms to an IP.
    */

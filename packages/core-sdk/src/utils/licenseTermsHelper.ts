@@ -54,7 +54,21 @@ export function getLicenseTermByType(
     licenseTerms.derivativesAllowed = false;
     licenseTerms.derivativesAttribution = false;
     return licenseTerms;
-  } else {
+  } else if (type === PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION) {
+    if (!term || !term.royaltyPolicyAddress || !term.currency) {
+      throw new Error(
+        "royaltyPolicyAddress and currency are required for creative commons attribution PIL.",
+      );
+    }
+    licenseTerms.royaltyPolicy = validateAddress(term.royaltyPolicyAddress);
+    licenseTerms.currency = validateAddress(term.currency);
+    licenseTerms.commercialUse = true;
+    licenseTerms.commercialAttribution = true;
+    licenseTerms.uri =
+      "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json";
+
+    return licenseTerms;
+  } else if (type === PIL_TYPE.COMMERCIAL_REMIX) {
     if (
       !term ||
       term.defaultMintingFee === undefined ||

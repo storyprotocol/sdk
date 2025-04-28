@@ -1360,4 +1360,53 @@ describe("Test LicenseClient", () => {
       expect(result).to.deep.equal(mockLicensingConfig);
     });
   });
+
+  describe("Test licenseClient.registerCreativeCommonsAttributionPIL", () => {
+    it("should throw error given rpc error", async () => {
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
+        .rejects(new Error("rpc error"));
+      const result = licenseClient.registerCreativeCommonsAttributionPIL({
+        currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
+      });
+      await expect(result).to.rejectedWith(
+        "Failed to register creative commons attribution PIL: rpc error",
+      );
+    });
+    it("should return licenseTermsId when call given args is registered", async () => {
+      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 1n,
+      });
+      const result = await licenseClient.registerCreativeCommonsAttributionPIL({
+        currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
+      });
+      expect(result.licenseTermsId).to.equal(1n);
+      expect(result.txHash).to.undefined;
+    });
+
+    it("should return txHash when call given args is correct", async () => {
+      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+      const result = await licenseClient.registerCreativeCommonsAttributionPIL({
+        currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsId).to.undefined;
+    });
+
+    it("should return txHash and success when call given args is correct and waitForTransaction of true", async () => {
+      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+      const result = await licenseClient.registerCreativeCommonsAttributionPIL({
+        currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsId).to.undefined;
+    });
+  });
 });
