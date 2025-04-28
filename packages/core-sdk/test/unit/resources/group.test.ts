@@ -708,6 +708,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).equal(txHash);
     });
   });
+
   describe("Test groupClient.removeIpsFromGroup", () => {
     it("should throw error when call fails", async () => {
       sinon.stub(groupClient.groupingModuleClient, "removeIp").rejects(new Error("rpc error"));
@@ -730,6 +731,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).equal(txHash);
     });
   });
+
   describe("Test groupClient.claimReward", () => {
     it("should throw error when call fail", async () => {
       sinon.stub(groupClient.groupingModuleClient, "claimReward").rejects(new Error("rpc error"));
@@ -780,6 +782,7 @@ describe("Test IpAssetClient", () => {
       ]);
     });
   });
+
   describe("Test groupClient.getClaimableReward", () => {
     it("should throw error when call fail", async () => {
       sinon
@@ -803,6 +806,7 @@ describe("Test IpAssetClient", () => {
       expect(result).to.deep.equal([10n]);
     });
   });
+  
   describe("Test groupClient.collectRoyalties", () => {
     it("should throw error when call fails", async () => {
       sinon
