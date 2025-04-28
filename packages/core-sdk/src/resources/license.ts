@@ -55,6 +55,7 @@ import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { LicensingConfig, RevShareType } from "../types/common";
 import { predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { waitForTxReceipt } from "../utils/txOptions";
+import { TxOptions } from "../types/options";
 
 export class LicenseClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -96,34 +97,16 @@ export class LicenseClient {
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
       }
-      if (request?.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: object,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: object,
-        });
-        if (request?.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
+      return await this.registerPILTermsHelper(object, request.txOptions);
     } catch (error) {
       handleError(error, "Failed to register license terms");
     }
   }
+
   /**
    * Convenient function to register a PIL non commercial social remix license to the registry
+   *
+   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%231%3A-non-commercial-social-remixing | Non Commercial Social Remixing}.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
@@ -132,38 +115,15 @@ export class LicenseClient {
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      if (request?.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: licenseTerms,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: licenseTerms,
-        });
-        if (request?.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
+      return await this.registerPILTermsHelper(licenseTerms, request?.txOptions);
     } catch (error) {
       handleError(error, "Failed to register non commercial social remixing PIL");
     }
   }
   /**
    * Convenient function to register a PIL commercial use license to the registry.
+   *
+   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%232%3A-commercial-use | Commercial Use}.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
@@ -178,38 +138,15 @@ export class LicenseClient {
           request.royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
         ),
       });
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: licenseTerms,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: licenseTerms,
-        });
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
+      return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
       handleError(error, "Failed to register commercial use PIL");
     }
   }
   /**
    * Convenient function to register a PIL commercial Remix license to the registry.
+   *
+   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%233%3A-commercial-remix | Commercial Remix }.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
@@ -225,32 +162,7 @@ export class LicenseClient {
         ),
         commercialRevShare: request.commercialRevShare,
       });
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-            terms: licenseTerms,
-          }),
-        };
-      } else {
-        const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-          terms: licenseTerms,
-        });
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(txReceipt);
-          return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
-        } else {
-          return { txHash: txHash };
-        }
-      }
+      return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
       handleError(error, "Failed to register commercial remix PIL");
     }
@@ -259,7 +171,7 @@ export class LicenseClient {
    * Convenient function to register a PIL creative commons attribution license to the registry.
    * Creates a Creative Commons Attribution (CC-BY) license terms flavor.
    *
-   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%234%3A-creative-commons-attribution | Creative Commons Attribution PIL}.
+   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%234%3A-creative-commons-attribution | Creative Commons Attribution}.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
@@ -269,28 +181,14 @@ export class LicenseClient {
     txOptions,
   }: RegisterCreativeCommonsAttributionPILRequest): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
-        currency,
-        royaltyPolicyAddress: royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
-      });
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-        terms: licenseTerms,
-      });
-
-      const { receipt } = await waitForTxReceipt({
-        ...txOptions,
-        rpcClient: this.rpcClient,
-        txHash,
-      });
-      if (!receipt) {
-        return { txHash };
-      }
-      const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(receipt);
-      return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+      return await this.registerPILTermsHelper(
+        getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
+          currency,
+          royaltyPolicyAddress:
+            royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+        }),
+        txOptions,
+      );
     } catch (error) {
       handleError(error, "Failed to register creative commons attribution PIL");
     }
@@ -597,5 +495,37 @@ export class LicenseClient {
   private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
     const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
     return licenseRes.selectedLicenseTermsId;
+  }
+
+  private async registerPILTermsHelper(
+    licenseTerms: LicenseTerms,
+    txOptions?: TxOptions,
+  ): Promise<RegisterPILResponse> {
+    if (txOptions?.encodedTxDataOnly) {
+      return {
+        encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
+          terms: licenseTerms,
+        }),
+      };
+    } else {
+      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
+      if (licenseTermsId !== 0n) {
+        return { licenseTermsId: licenseTermsId };
+      }
+      const txHash = await this.licenseTemplateClient.registerLicenseTerms({
+        terms: licenseTerms,
+      });
+
+      const { receipt } = await waitForTxReceipt({
+        txOptions,
+        rpcClient: this.rpcClient,
+        txHash,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(receipt);
+      return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+    }
   }
 }

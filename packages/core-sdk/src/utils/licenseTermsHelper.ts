@@ -90,6 +90,7 @@ export function getLicenseTermByType(
     licenseTerms.currency = validateAddress(term.currency);
     return licenseTerms;
   }
+  return licenseTerms;
 }
 
 export async function validateLicenseTerms(

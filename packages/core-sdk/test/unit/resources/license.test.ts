@@ -1366,6 +1366,9 @@ describe("Test LicenseClient", () => {
       sinon
         .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
         .rejects(new Error("rpc error"));
+      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 0n,
+      });
       const result = licenseClient.registerCreativeCommonsAttributionPIL({
         currency: zeroAddress,
         royaltyPolicyAddress: zeroAddress,
@@ -1387,6 +1390,9 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call given args is correct", async () => {
+      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 0n,
+      });
       sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
         currency: zeroAddress,
@@ -1398,6 +1404,18 @@ describe("Test LicenseClient", () => {
 
     it("should return txHash and success when call given args is correct and waitForTransaction of true", async () => {
       sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 0n,
+      });
+      sinon
+        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
+        .returns([
+          {
+            licenseTermsId: 1n,
+            licenseTemplate: zeroAddress,
+            licenseTerms: zeroAddress,
+          },
+        ]);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
         currency: zeroAddress,
         royaltyPolicyAddress: zeroAddress,
@@ -1406,7 +1424,7 @@ describe("Test LicenseClient", () => {
         },
       });
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsId).to.undefined;
+      expect(result.licenseTermsId).to.equal(1n);
     });
   });
 });

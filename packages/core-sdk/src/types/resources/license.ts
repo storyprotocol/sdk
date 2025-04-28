@@ -116,7 +116,7 @@ export type RegisterCommercialRemixPILRequest = {
   txOptions?: TxOptions;
 };
 
-export type RegisterCreativeCommonsAttributionPILRequest = {
+export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
   /** The ERC20 or WIP token to be used to pay the minting fee. */
   currency: Address;
   /**
@@ -124,7 +124,6 @@ export type RegisterCreativeCommonsAttributionPILRequest = {
    * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
    */
   royaltyPolicyAddress?: Address;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
 export type AttachLicenseTermsRequest = {
