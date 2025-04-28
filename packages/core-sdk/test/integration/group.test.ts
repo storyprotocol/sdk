@@ -347,8 +347,20 @@ describe("Group Functions", () => {
         licenseTermsData,
         txOptions: { waitForTransaction: true },
       });
+      const result6 = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract,
+        licenseTermsData,
+        txOptions: { waitForTransaction: true },
+      });
+      const result7 = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract,
+        licenseTermsData,
+        txOptions: { waitForTransaction: true },
+      });
       ipIds.push(result1.ipId!);
       ipIds.push(result2.ipId!);
+      ipIds.push(result6.ipId!);
+      ipIds.push(result7.ipId!);
       licenseTermsId = result1.licenseTermsIds![0];
 
       //3. Register group id
@@ -434,7 +446,7 @@ describe("Group Functions", () => {
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.collectedRoyalties?.[0].amount).to.equal(20n);
-      expect(result.royaltiesDistributed?.[0].amount).to.equal(10n);
+      expect(result.royaltiesDistributed?.[0].amount).to.equal(5n);
     });
 
     it("should successfully claim reward", async () => {
@@ -456,7 +468,63 @@ describe("Group Functions", () => {
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.claimedReward?.[0].amount[0]).to.equal(10n);
+      expect(result.claimedReward?.[0].amount[0]).to.equal(5n);
+    });
+
+    it("should successfully claim reward for multiple IP members", async () => {
+      await client.license.mintLicenseTokens({
+        licensorIpId: ipIds[2],
+        licenseTermsId,
+        amount: 50,
+        maxMintingFee: 1,
+        maxRevenueShare: 100,
+        txOptions: { waitForTransaction: true },
+      });
+      
+      await client.license.mintLicenseTokens({
+        licensorIpId: ipIds[3],
+        licenseTermsId,
+        amount: 50,
+        maxMintingFee: 1,
+        maxRevenueShare: 100,
+        txOptions: { waitForTransaction: true },
+      });
+      
+      const result = await client.groupClient.claimReward({
+        groupIpId: groupIpId,
+        currencyToken: WIP_TOKEN_ADDRESS,
+        memberIpIds: [ipIds[2], ipIds[3]],
+        txOptions: { waitForTransaction: true },
+      });
+      expect(result.txHash).to.be.a("string").and.not.empty;
+
+      expect(result.claimedReward?.[0].ipId.length).to.equal(2);
+      expect(result.claimedReward?.[0].amount[0]).to.equal(5n);
+      expect(result.claimedReward?.[0].amount[0]).to.equal(5n);
+    });
+
+    it("should fail when trying to claim reward for a non-existent group", async () => {
+      const nonExistentGroupId = zeroAddress;
+      await expect(
+        client.groupClient.claimReward({
+          groupIpId: nonExistentGroupId,
+          currencyToken: WIP_TOKEN_ADDRESS,
+          memberIpIds: ipIds,
+          txOptions: { waitForTransaction: true },
+        })
+      ).to.be.rejectedWith("Failed to claim reward");
+    });
+
+    it("should fail when trying to claim reward with invalid token address", async () => {
+      const invalidTokenAddress = zeroAddress;
+      await expect(
+        client.groupClient.claimReward({
+          groupIpId: groupIpId,
+          currencyToken: invalidTokenAddress,
+          memberIpIds: ipIds,
+          txOptions: { waitForTransaction: true },
+        })
+      ).to.be.rejectedWith("Failed to claim reward");
     });
   });
 });
