@@ -428,13 +428,21 @@ describe("Group Functions", () => {
       const result = await client.groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: groupIpId,
         currencyTokens: [WIP_TOKEN_ADDRESS],
-        memberIpIds: ipIds,
+        memberIpIds: [ipIds[0]],
         txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.collectedRoyalties?.[0].amount).to.equal(20n);
       expect(result.royaltiesDistributed?.[0].amount).to.equal(10n);
-      expect(result.royaltiesDistributed?.[1].amount).to.equal(10n);
+    });
+
+    it("should successfully get claimable reward", async () => {
+      const result = await client.groupClient.getClaimableReward({
+        groupIpId: groupIpId,
+        currencyToken: WIP_TOKEN_ADDRESS,
+        memberIpIds: [ipIds[1]],
+      });
+      expect(result).to.deep.equal([10n]);
     });
   });
 });

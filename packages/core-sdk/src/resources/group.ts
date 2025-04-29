@@ -45,6 +45,7 @@ import {
   CollectAndDistributeGroupRoyaltiesRequest,
   CollectAndDistributeGroupRoyaltiesResponse,
   AddIpRequest,
+  GetClaimableRewardRequest,
   RemoveIpsFromGroupRequest,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
@@ -503,6 +504,28 @@ export class GroupClient {
       handleError(error, "Failed to add IP to group");
     }
   }
+
+  /**
+   * Returns the available reward for each IP in the group.
+   */
+  public async getClaimableReward({
+    groupIpId,
+    currencyToken,
+    memberIpIds,
+  }: GetClaimableRewardRequest): Promise<bigint[]> {
+    try {
+      const claimableReward = await this.groupingModuleClient.getClaimableReward({
+        groupId: validateAddress(groupIpId),
+        ipIds: validateAddresses(memberIpIds),
+        token: validateAddress(currencyToken),
+      });
+      // The result is cast as bigint[] because the `claimableReward` array is of type `readonly bigint[]`.
+      return claimableReward as bigint[];
+    } catch (error) {
+      handleError(error, "Failed to get claimable reward");
+    }
+  }
+
   /**
    * Removes IPs from group.
    * The function must be called by the Group IP owner or an authorized operator.

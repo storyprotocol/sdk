@@ -154,6 +154,12 @@ export type AddIpRequest = {
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
+export type GetClaimableRewardRequest = {
+  groupIpId: Address;
+  currencyToken: Address;
+  memberIpIds: Address[];
+};
+
 export type RemoveIpsFromGroupRequest = {
   groupIpId: Address;
   ipIds: Address[];
