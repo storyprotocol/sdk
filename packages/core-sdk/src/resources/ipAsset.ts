@@ -106,6 +106,7 @@ import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
   getCalculatedDeadline,
   getIpIdAddress,
+  getPublicMinting,
 } from "../utils/registrationUtils/registerValidation";
 import {
   getRoyaltyShares,
@@ -1530,12 +1531,25 @@ export class IPAssetClient {
   }: CommonRegistrationParams): Promise<CommonRegistrationTxResponse> {
     let totalFees = 0n;
     const wipSpenders: Erc20Spender[] = [];
+    let useMulticallWhenPossible = wipOptions?.useMulticallWhenPossible ?? true;
 
     // get spg minting fee
     if (spgNftContract) {
       const nftMintFee = await calculateSPGWipMintFee(
         new SpgnftImplReadOnlyClient(this.rpcClient, spgNftContract),
       );
+      const publicMinting = await getPublicMinting(spgNftContract, this.rpcClient);
+      /**
+       * If the SPG NFT contract's public minting is disabled, we need to check if the caller has the `minter role`.
+       * When public minting is disabled, we can't use multicall because we need to perform additional role checks
+       * that aren't compatible with batched transactions.
+       *
+       * This is because role-based access control requires the transaction's msg.sender to be verified directly,
+       * which is not preserved when using multicall (where the multicall contract becomes the sender).
+       */
+      if (!publicMinting) {
+        useMulticallWhenPossible = false;
+      }
       totalFees += nftMintFee;
       wipSpenders.push({
         address: spgNftContract,
@@ -1568,7 +1582,7 @@ export class IPAssetClient {
 
     const { txHash, receipt } = await contractCallWithFees({
       totalFees,
-      options: { wipOptions },
+      options: { wipOptions: { ...wipOptions, useMulticallWhenPossible } },
       multicall3Address: this.multicall3Client.address,
       rpcClient: this.rpcClient,
       tokenSpenders: wipSpenders,
