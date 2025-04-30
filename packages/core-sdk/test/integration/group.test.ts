@@ -299,6 +299,7 @@ describe("Group Functions", () => {
   describe("Collect Royalty and Claim Reward", () => {
     const ipIds: Address[] = [];
     let groupIpId: Address;
+    let licenseTermsId: bigint;
     //1. Use the same license terms data for all IP IDs
     const licenseTermsData: LicenseTermsData[] = [
       {
@@ -348,7 +349,7 @@ describe("Group Functions", () => {
       });
       ipIds.push(result1.ipId!);
       ipIds.push(result2.ipId!);
-      const licenseTermsId = result1.licenseTermsIds![0];
+      licenseTermsId = result1.licenseTermsIds![0];
 
       //3. Register group id
       const result3 = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
@@ -436,6 +437,27 @@ describe("Group Functions", () => {
       expect(result.royaltiesDistributed?.[0].amount).to.equal(10n);
     });
 
+    it("should successfully claim reward", async () => {
+      // Deploy a royalty vault
+      await client.license.mintLicenseTokens({
+        licensorIpId: ipIds[1],
+        licenseTermsId,
+        amount: 100,
+        maxMintingFee: 1,
+        maxRevenueShare: 100,
+        txOptions: { waitForTransaction: true },
+      });
+      // Claim reward
+      const result = await client.groupClient.claimReward({
+        groupIpId: groupIpId,
+        currencyToken: WIP_TOKEN_ADDRESS,
+        memberIpIds: [ipIds[1]],
+        txOptions: { waitForTransaction: true },
+      });
+
+      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.claimedReward?.[0].amount[0]).to.equal(10n);
+    });
     it("should successfully get claimable reward", async () => {
       const result = await client.groupClient.getClaimableReward({
         groupIpId: groupIpId,

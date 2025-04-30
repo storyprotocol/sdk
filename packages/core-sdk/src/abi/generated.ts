@@ -18406,6 +18406,21 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
 // Contract GroupingModule =============================================================
 
 /**
+ * GroupingModuleClaimedRewardEvent
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipId address[]
+ * @param amount uint256[]
+ */
+export type GroupingModuleClaimedRewardEvent = {
+  groupId: Address
+  token: Address
+  ipId: readonly Address[]
+  amount: readonly bigint[]
+}
+
+/**
  * GroupingModuleCollectedRoyaltiesToGroupPoolEvent
  *
  * @param groupId address
@@ -18460,6 +18475,19 @@ export type GroupingModuleAddIpRequest = {
 }
 
 /**
+ * GroupingModuleClaimRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleClaimRewardRequest = {
+  groupId: Address
+  token: Address
+  ipIds: readonly Address[]
+}
+
+/**
  * GroupingModuleRegisterGroupRequest
  *
  * @param groupPool address
@@ -18490,6 +18518,50 @@ export class GroupingModuleEventClient {
     this.address =
       address || getAddress(groupingModuleAddress, rpcClient.chain?.id)
     this.rpcClient = rpcClient
+  }
+
+  /**
+   * event ClaimedReward for contract GroupingModule
+   */
+  public watchClaimedRewardEvent(
+    onLogs: (
+      txHash: Hex,
+      ev: Partial<GroupingModuleClaimedRewardEvent>,
+    ) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: 'ClaimedReward',
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args))
+      },
+    })
+  }
+
+  /**
+   * parse tx receipt event ClaimedReward for contract GroupingModule
+   */
+  public parseTxClaimedRewardEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleClaimedRewardEvent> {
+    const targetLogs: Array<GroupingModuleClaimedRewardEvent> = []
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: 'ClaimedReward',
+          data: log.data,
+          topics: log.topics,
+        })
+        if (event.eventName === 'ClaimedReward') {
+          targetLogs.push(event.args)
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs
   }
 
   /**
@@ -18655,6 +18727,44 @@ export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
         abi: groupingModuleAbi,
         functionName: 'addIp',
         args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
+      }),
+    }
+  }
+
+  /**
+   * method claimReward for contract GroupingModule
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async claimReward(
+    request: GroupingModuleClaimRewardRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: 'claimReward',
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.ipIds],
+    })
+    return await this.wallet.writeContract(call as WriteContractParameters)
+  }
+
+  /**
+   * method claimReward for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return EncodedTxData
+   */
+  public claimRewardEncode(
+    request: GroupingModuleClaimRewardRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: 'claimReward',
+        args: [request.groupId, request.token, request.ipIds],
       }),
     }
   }
