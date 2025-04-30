@@ -197,7 +197,7 @@ describe("Royalty Functions", () => {
   describe("Revenue Queries", () => {
     it("should return claimable revenue amount", async () => {
       const response = await client.royalty.claimableRevenue({
-        royaltyVaultIpId: parentIpId,
+        ipId: parentIpId,
         claimer: process.env.TEST_WALLET_ADDRESS as Address,
         token: erc20Address[aeneid],
       });
@@ -228,7 +228,7 @@ describe("Royalty Functions", () => {
 
     it("should return zero for claimable revenue with invalid token", async () => {
       const response = await client.royalty.claimableRevenue({
-        royaltyVaultIpId: parentIpId,
+        ipId: parentIpId,
         claimer: process.env.TEST_WALLET_ADDRESS as Address,
         token: "0x0000000000000000000000000000000000000000" as Address,
       });
