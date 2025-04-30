@@ -732,7 +732,7 @@ describe("Test IpAssetClient", () => {
       expect(result).to.deep.equal([10n]);
     });
   });
-  
+
   describe("Test groupClient.removeIpsFromGroup", () => {
     it("should throw error when call fails", async () => {
       sinon.stub(groupClient.groupingModuleClient, "removeIp").rejects(new Error("rpc error"));
