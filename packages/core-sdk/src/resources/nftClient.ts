@@ -4,14 +4,19 @@ import {
   RegistrationWorkflowsClient,
   RegistrationWorkflowsCreateCollectionRequest,
   SimpleWalletClient,
+  SpgnftImplClient,
   SpgnftImplReadOnlyClient,
 } from "../abi/generated";
 import {
   CreateNFTCollectionRequest,
   CreateNFTCollectionResponse,
+  GetTokenURIRequest,
+  SetTokenURIRequest,
 } from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
 import { validateAddress } from "../utils/utils";
+import { TransactionResponse } from "../types/options";
+import { waitForTxReceipt } from "../utils/txOptions";
 
 export class NftClient {
   public registrationWorkflowsClient: RegistrationWorkflowsClient;
@@ -104,5 +109,36 @@ export class NftClient {
       validateAddress(spgNftContract),
     );
     return spgNftClient.mintFee();
+  }
+  /**
+   * Sets the token URI for a specific token id.
+   *
+   * @remarks
+   * Only callable by the owner of the token.
+   */
+  public async setTokenURI({
+    tokenId,
+    tokenURI,
+    spgNftContract,
+    txOptions,
+  }: SetTokenURIRequest): Promise<TransactionResponse> {
+    try {
+      const spgNftClient = new SpgnftImplClient(this.rpcClient, this.wallet, spgNftContract);
+      const txHash = await spgNftClient.setTokenUri({
+        tokenId: BigInt(tokenId),
+        tokenUri: tokenURI,
+      });
+      return waitForTxReceipt({ txHash, txOptions, rpcClient: this.rpcClient });
+    } catch (error) {
+      handleError(error, "Failed to set token URI");
+    }
+  }
+
+  /**
+   * Returns the token URI for a specific token id.
+   */
+  public async getTokenURI({ tokenId, spgNftContract }: GetTokenURIRequest): Promise<string> {
+    const spgNftClient = new SpgnftImplReadOnlyClient(this.rpcClient, spgNftContract);
+    return await spgNftClient.tokenUri({ tokenId: BigInt(tokenId) });
   }
 }

@@ -6,6 +6,7 @@ import {
   licenseTokenAbi,
   licenseTokenAddress,
   spgnftBeaconAddress,
+  SpgnftImplEventClient,
 } from "../../../src/abi/generated";
 export const RPC = "https://aeneid.storyrpc.io";
 export const aeneid = 1315;
@@ -48,11 +49,12 @@ export const getTokenId = async (): Promise<number | undefined> => {
     return parseInt(logs[0].topics[3], 16);
   }
 };
+
 export const mintBySpg = async (
-  nftContract: Hex,
+  spgNftContract: Hex,
   nftMetadataURI?: string,
   nftMetadataHash?: Hex,
-) => {
+): Promise<bigint> => {
   const { request } = await publicClient.simulateContract({
     abi: [
       {
@@ -90,23 +92,19 @@ export const mintBySpg = async (
         type: "function",
       },
     ],
-    address: nftContract,
+    address: spgNftContract,
     functionName: "mint",
-    args: [
-      process.env.TEST_WALLET_ADDRESS! as Address,
-      nftMetadataURI || "",
-      nftMetadataHash || zeroHash,
-      true,
-    ],
+    args: [TEST_WALLET_ADDRESS, nftMetadataURI || "", nftMetadataHash || zeroHash, true],
     account: walletClient.account,
   });
+
   const hash = await walletClient.writeContract(request);
-  const { logs } = await publicClient.waitForTransactionReceipt({
+  const receipt = await publicClient.waitForTransactionReceipt({
     hash,
   });
-  if (logs[0].topics[3]) {
-    return parseInt(logs[0].topics[3], 16);
-  }
+  const spgnftImplEventClient = new SpgnftImplEventClient(publicClient);
+  const events = spgnftImplEventClient.parseTxTransferEvent(receipt);
+  return events[0].tokenId;
 };
 
 export const approveForLicenseToken = async (address: Address, tokenId: bigint) => {
