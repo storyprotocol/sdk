@@ -3,6 +3,7 @@ import { Address, Hash, TransactionReceipt } from "viem";
 import { TxOptions } from "../options";
 import {
   EncodedTxData,
+  GroupingModuleClaimedRewardEvent,
   GroupingModuleCollectedRoyaltiesToGroupPoolEvent,
 } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfigInput, LicensingConfig } from "../common";
@@ -154,8 +155,39 @@ export type AddIpRequest = {
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
+export type ClaimRewardRequest = {
+  groupIpId: Address;
+  /** The address of the currency (revenue) token to claim. */
+  currencyToken: Address;
+  /** The IDs of the member IPs to distribute the rewards to. */
+  memberIpIds: Address[];
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type ClaimRewardResponse = {
+  txHash: Hash;
+  claimedReward?: GroupingModuleClaimedRewardEvent[];
+};
+export type GetClaimableRewardRequest = {
+  groupIpId: Address;
+  currencyToken: Address;
+  memberIpIds: Address[];
+};
+
 export type RemoveIpsFromGroupRequest = {
   groupIpId: Address;
   ipIds: Address[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type CollectRoyaltiesRequest = {
+  groupIpId: Address;
+  currencyToken: Address;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type CollectRoyaltiesResponse = {
+  txHash: Hash;
+  /** The amount of royalties collected. */
+  collectedRoyalties?: bigint;
 };

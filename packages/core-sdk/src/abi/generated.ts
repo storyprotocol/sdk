@@ -13570,6 +13570,15 @@ export const spgnftImplAbi = [
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
   { type: "error", inputs: [], name: "SPGNFT__CallerNotFeeRecipientOrAdmin" },
+  {
+    type: "error",
+    inputs: [
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "owner", internalType: "address", type: "address" },
+    ],
+    name: "SPGNFT__CallerNotOwner",
+  },
   { type: "error", inputs: [], name: "SPGNFT__CallerNotPeripheryContract" },
   {
     type: "error",
@@ -14088,6 +14097,16 @@ export const spgnftImplAbi = [
   },
   {
     type: "function",
+    inputs: [
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "tokenUri", internalType: "string", type: "string" },
+    ],
+    name: "setTokenURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
     name: "supportsInterface",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -14138,7 +14157,7 @@ export const spgnftImplAbi = [
 
 */
 export const spgnftImplAddress = {
-  1315: "0xc09e3788Fdfbd3dd8CDaa2aa481B52CcFAb74a42",
+  1315: "0x5266215a00c31AaA2f2BB7b951Ea0028Ea8b4e37",
   1514: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
 } as const;
 
@@ -17845,6 +17864,21 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
 // Contract GroupingModule =============================================================
 
 /**
+ * GroupingModuleClaimedRewardEvent
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipId address[]
+ * @param amount uint256[]
+ */
+export type GroupingModuleClaimedRewardEvent = {
+  groupId: Address;
+  token: Address;
+  ipId: readonly Address[];
+  amount: readonly bigint[];
+};
+
+/**
  * GroupingModuleCollectedRoyaltiesToGroupPoolEvent
  *
  * @param groupId address
@@ -17871,6 +17905,21 @@ export type GroupingModuleIpGroupRegisteredEvent = {
 };
 
 /**
+ * GroupingModuleGetClaimableRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleGetClaimableRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+export type GroupingModuleGetClaimableRewardResponse = readonly bigint[];
+
+/**
  * GroupingModuleAddIpRequest
  *
  * @param groupIpId address
@@ -17881,6 +17930,30 @@ export type GroupingModuleAddIpRequest = {
   groupIpId: Address;
   ipIds: readonly Address[];
   maxAllowedRewardShare: bigint;
+};
+
+/**
+ * GroupingModuleClaimRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleClaimRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleCollectRoyaltiesRequest
+ *
+ * @param groupId address
+ * @param token address
+ */
+export type GroupingModuleCollectRoyaltiesRequest = {
+  groupId: Address;
+  token: Address;
 };
 
 /**
@@ -17913,6 +17986,47 @@ export class GroupingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(groupingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event ClaimedReward for contract GroupingModule
+   */
+  public watchClaimedRewardEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleClaimedRewardEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "ClaimedReward",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event ClaimedReward for contract GroupingModule
+   */
+  public parseTxClaimedRewardEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleClaimedRewardEvent> {
+    const targetLogs: Array<GroupingModuleClaimedRewardEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "ClaimedReward",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "ClaimedReward") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**
@@ -17999,9 +18113,35 @@ export class GroupingModuleEventClient {
 }
 
 /**
+ * contract GroupingModule readonly method
+ */
+export class GroupingModuleReadOnlyClient extends GroupingModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method getClaimableReward for contract GroupingModule
+   *
+   * @param request GroupingModuleGetClaimableRewardRequest
+   * @return Promise<GroupingModuleGetClaimableRewardResponse>
+   */
+  public async getClaimableReward(
+    request: GroupingModuleGetClaimableRewardRequest,
+  ): Promise<GroupingModuleGetClaimableRewardResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "getClaimableReward",
+      args: [request.groupId, request.token, request.ipIds],
+    });
+  }
+}
+
+/**
  * contract GroupingModule write method
  */
-export class GroupingModuleClient extends GroupingModuleEventClient {
+export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
   protected readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
@@ -18039,6 +18179,78 @@ export class GroupingModuleClient extends GroupingModuleEventClient {
         abi: groupingModuleAbi,
         functionName: "addIp",
         args: [request.groupIpId, request.ipIds, request.maxAllowedRewardShare],
+      }),
+    };
+  }
+
+  /**
+   * method claimReward for contract GroupingModule
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async claimReward(
+    request: GroupingModuleClaimRewardRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "claimReward",
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method claimReward for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return EncodedTxData
+   */
+  public claimRewardEncode(request: GroupingModuleClaimRewardRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "claimReward",
+        args: [request.groupId, request.token, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method collectRoyalties for contract GroupingModule
+   *
+   * @param request GroupingModuleCollectRoyaltiesRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async collectRoyalties(
+    request: GroupingModuleCollectRoyaltiesRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "collectRoyalties",
+      account: this.wallet.account,
+      args: [request.groupId, request.token],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method collectRoyalties for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleCollectRoyaltiesRequest
+   * @return EncodedTxData
+   */
+  public collectRoyaltiesEncode(request: GroupingModuleCollectRoyaltiesRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "collectRoyalties",
+        args: [request.groupId, request.token],
       }),
     };
   }
@@ -24425,6 +24637,19 @@ export class SpgnftBeaconClient extends SpgnftBeaconReadOnlyClient {
 
 // Contract SPGNFTImpl =============================================================
 
+/**
+ * SpgnftImplTransferEvent
+ *
+ * @param from address
+ * @param to address
+ * @param tokenId uint256
+ */
+export type SpgnftImplTransferEvent = {
+  from: Address;
+  to: Address;
+  tokenId: bigint;
+};
+
 export type SpgnftImplMintFeeResponse = bigint;
 
 export type SpgnftImplMintFeeTokenResponse = Address;
@@ -24432,15 +24657,85 @@ export type SpgnftImplMintFeeTokenResponse = Address;
 export type SpgnftImplPublicMintingResponse = boolean;
 
 /**
- * contract SPGNFTImpl readonly method
+ * SpgnftImplTokenUriRequest
+ *
+ * @param tokenId uint256
  */
-export class SpgnftImplReadOnlyClient {
+export type SpgnftImplTokenUriRequest = {
+  tokenId: bigint;
+};
+
+export type SpgnftImplTokenUriResponse = string;
+
+/**
+ * SpgnftImplSetTokenUriRequest
+ *
+ * @param tokenId uint256
+ * @param tokenUri string
+ */
+export type SpgnftImplSetTokenUriRequest = {
+  tokenId: bigint;
+  tokenUri: string;
+};
+
+/**
+ * contract SPGNFTImpl event
+ */
+export class SpgnftImplEventClient {
   protected readonly rpcClient: PublicClient;
   public readonly address: Address;
 
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(spgnftImplAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event Transfer for contract SPGNFTImpl
+   */
+  public watchTransferEvent(
+    onLogs: (txHash: Hex, ev: Partial<SpgnftImplTransferEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: spgnftImplAbi,
+      address: this.address,
+      eventName: "Transfer",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event Transfer for contract SPGNFTImpl
+   */
+  public parseTxTransferEvent(txReceipt: TransactionReceipt): Array<SpgnftImplTransferEvent> {
+    const targetLogs: Array<SpgnftImplTransferEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: spgnftImplAbi,
+          eventName: "Transfer",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "Transfer") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
+  }
+}
+
+/**
+ * contract SPGNFTImpl readonly method
+ */
+export class SpgnftImplReadOnlyClient extends SpgnftImplEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
   }
 
   /**
@@ -24483,6 +24778,69 @@ export class SpgnftImplReadOnlyClient {
       address: this.address,
       functionName: "publicMinting",
     });
+  }
+
+  /**
+   * method tokenURI for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplTokenUriRequest
+   * @return Promise<SpgnftImplTokenUriResponse>
+   */
+  public async tokenUri(request: SpgnftImplTokenUriRequest): Promise<SpgnftImplTokenUriResponse> {
+    return await this.rpcClient.readContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "tokenURI",
+      args: [request.tokenId],
+    });
+  }
+}
+
+/**
+ * contract SPGNFTImpl write method
+ */
+export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method setTokenURI for contract SPGNFTImpl
+   *
+   * @param request SpgnftImplSetTokenUriRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setTokenUri(
+    request: SpgnftImplSetTokenUriRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: spgnftImplAbi,
+      address: this.address,
+      functionName: "setTokenURI",
+      account: this.wallet.account,
+      args: [request.tokenId, request.tokenUri],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setTokenURI for contract SPGNFTImpl with only encode
+   *
+   * @param request SpgnftImplSetTokenUriRequest
+   * @return EncodedTxData
+   */
+  public setTokenUriEncode(request: SpgnftImplSetTokenUriRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: spgnftImplAbi,
+        functionName: "setTokenURI",
+        args: [request.tokenId, request.tokenUri],
+      }),
+    };
   }
 }
 
