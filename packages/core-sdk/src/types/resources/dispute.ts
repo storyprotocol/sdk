@@ -121,14 +121,14 @@ export type DisputeAssertionRequest = {
  * @see {@link https://docs.story.foundation/docs/dispute-module#dispute-tags | Dispute Tags}
  */
 export enum DisputeTargetTag {
-  /**Refers to registration of IP that already exists. */
+  /** Refers to registration of IP that already exists. */
   IMPROPER_REGISTRATION = "IMPROPER_REGISTRATION",
   /**
-   * Refers to improper use of an IP Asset across multiple items (examples on the left).
-   * These items can be found in more detail in the {@link https://docs.story.foundation/concepts/programmable-ip-license/overview  | 💊 Programmable IP License (PIL) } legal document .
+   * Refers to improper use of an IP Asset across multiple items.
+   * For more details, see the {@link https://docs.story.foundation/concepts/programmable-ip-license/overview | Programmable IP License (PIL)} documentation.
    */
   IMPROPER_USAGE = "IMPROPER_USAGE",
-  /**Refers to missing payments associated with an IP. */
+  /** Refers to missing payments associated with an IP. */
   IMPROPER_PAYMENT = "IMPROPER_PAYMENT",
   /**
    * Refers to “No-Hate”, “Suitable-for-All-Ages”, “No-Drugs-or-Weapons” and “No-Pornography”.
