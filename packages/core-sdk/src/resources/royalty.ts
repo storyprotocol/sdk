@@ -333,9 +333,7 @@ export class RoyaltyClient {
     request: ClaimableRevenueRequest,
   ): Promise<ClaimableRevenueResponse> {
     try {
-      const proxyAddress = await this.getRoyaltyVaultAddress(
-        validateAddress(request.royaltyVaultIpId),
-      );
+      const proxyAddress = await this.getRoyaltyVaultAddress(validateAddress(request.ipId));
       const ipRoyaltyVault = new IpRoyaltyVaultImplReadOnlyClient(this.rpcClient, proxyAddress);
       return await ipRoyaltyVault.claimableRevenue({
         claimer: validateAddress(request.claimer),
@@ -347,16 +345,16 @@ export class RoyaltyClient {
   }
 
   /**
-   * Get the royalty vault proxy address of given royaltyVaultIpId.
+   * Get the royalty vault proxy address of given ip id of the royalty vault.
    */
-  public async getRoyaltyVaultAddress(royaltyVaultIpId: Hex): Promise<Address> {
+  public async getRoyaltyVaultAddress(ipId: Hex): Promise<Address> {
     const isRoyaltyVaultIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
-      id: validateAddress(royaltyVaultIpId),
+      id: validateAddress(ipId),
     });
     if (!isRoyaltyVaultIpIdRegistered) {
-      throw new Error(`The royalty vault IP with id ${royaltyVaultIpId} is not registered.`);
+      throw new Error(`The royalty vault IP with id ${ipId} is not registered.`);
     }
-    return await this.royaltyModuleClient.ipRoyaltyVaults({ ipId: royaltyVaultIpId });
+    return await this.royaltyModuleClient.ipRoyaltyVaults({ ipId });
   }
 
   /**
