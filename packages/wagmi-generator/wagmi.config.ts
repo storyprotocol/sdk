@@ -366,7 +366,6 @@ export default defineConfig(async () => {
             "ClaimedReward",
             "getClaimableReward",
             "removeIp",
-            "getClaimableReward",
             "collectRoyalties",
             "CollectedRoyaltiesToGroupPool",
           ],
