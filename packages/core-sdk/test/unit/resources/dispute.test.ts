@@ -119,7 +119,7 @@ describe("Test DisputeClient", () => {
         await disputeClient.raiseDispute({
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-          targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
+          targetTag: "tag" as DisputeTargetTag,
           bond: minimumBond + 1n,
           liveness: 2592000,
         });
