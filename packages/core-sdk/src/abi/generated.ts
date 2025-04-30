@@ -17864,6 +17864,21 @@ export class EvenSplitGroupPoolClient extends EvenSplitGroupPoolReadOnlyClient {
 // Contract GroupingModule =============================================================
 
 /**
+ * GroupingModuleClaimedRewardEvent
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipId address[]
+ * @param amount uint256[]
+ */
+export type GroupingModuleClaimedRewardEvent = {
+  groupId: Address;
+  token: Address;
+  ipId: readonly Address[];
+  amount: readonly bigint[];
+};
+
+/**
  * GroupingModuleCollectedRoyaltiesToGroupPoolEvent
  *
  * @param groupId address
@@ -17890,6 +17905,21 @@ export type GroupingModuleIpGroupRegisteredEvent = {
 };
 
 /**
+ * GroupingModuleGetClaimableRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleGetClaimableRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+export type GroupingModuleGetClaimableRewardResponse = readonly bigint[];
+
+/**
  * GroupingModuleAddIpRequest
  *
  * @param groupIpId address
@@ -17903,12 +17933,47 @@ export type GroupingModuleAddIpRequest = {
 };
 
 /**
+ * GroupingModuleClaimRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleClaimRewardRequest = {
+  groupId: Address;
+  token: Address;
+  ipIds: readonly Address[];
+};
+
+/**
+ * GroupingModuleCollectRoyaltiesRequest
+ *
+ * @param groupId address
+ * @param token address
+ */
+export type GroupingModuleCollectRoyaltiesRequest = {
+  groupId: Address;
+  token: Address;
+};
+
+/**
  * GroupingModuleRegisterGroupRequest
  *
  * @param groupPool address
  */
 export type GroupingModuleRegisterGroupRequest = {
   groupPool: Address;
+};
+
+/**
+ * GroupingModuleRemoveIpRequest
+ *
+ * @param groupIpId address
+ * @param ipIds address[]
+ */
+export type GroupingModuleRemoveIpRequest = {
+  groupIpId: Address;
+  ipIds: readonly Address[];
 };
 
 /**
@@ -17921,6 +17986,47 @@ export class GroupingModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     this.address = address || getAddress(groupingModuleAddress, rpcClient.chain?.id);
     this.rpcClient = rpcClient;
+  }
+
+  /**
+   * event ClaimedReward for contract GroupingModule
+   */
+  public watchClaimedRewardEvent(
+    onLogs: (txHash: Hex, ev: Partial<GroupingModuleClaimedRewardEvent>) => void,
+  ): WatchContractEventReturnType {
+    return this.rpcClient.watchContractEvent({
+      abi: groupingModuleAbi,
+      address: this.address,
+      eventName: "ClaimedReward",
+      onLogs: (evs) => {
+        evs.forEach((it) => onLogs(it.transactionHash, it.args));
+      },
+    });
+  }
+
+  /**
+   * parse tx receipt event ClaimedReward for contract GroupingModule
+   */
+  public parseTxClaimedRewardEvent(
+    txReceipt: TransactionReceipt,
+  ): Array<GroupingModuleClaimedRewardEvent> {
+    const targetLogs: Array<GroupingModuleClaimedRewardEvent> = [];
+    for (const log of txReceipt.logs) {
+      try {
+        const event = decodeEventLog({
+          abi: groupingModuleAbi,
+          eventName: "ClaimedReward",
+          data: log.data,
+          topics: log.topics,
+        });
+        if (event.eventName === "ClaimedReward") {
+          targetLogs.push(event.args);
+        }
+      } catch (e) {
+        /* empty */
+      }
+    }
+    return targetLogs;
   }
 
   /**
@@ -18007,9 +18113,35 @@ export class GroupingModuleEventClient {
 }
 
 /**
+ * contract GroupingModule readonly method
+ */
+export class GroupingModuleReadOnlyClient extends GroupingModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address);
+  }
+
+  /**
+   * method getClaimableReward for contract GroupingModule
+   *
+   * @param request GroupingModuleGetClaimableRewardRequest
+   * @return Promise<GroupingModuleGetClaimableRewardResponse>
+   */
+  public async getClaimableReward(
+    request: GroupingModuleGetClaimableRewardRequest,
+  ): Promise<GroupingModuleGetClaimableRewardResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "getClaimableReward",
+      args: [request.groupId, request.token, request.ipIds],
+    });
+  }
+}
+
+/**
  * contract GroupingModule write method
  */
-export class GroupingModuleClient extends GroupingModuleEventClient {
+export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
   protected readonly wallet: SimpleWalletClient;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
@@ -18052,6 +18184,78 @@ export class GroupingModuleClient extends GroupingModuleEventClient {
   }
 
   /**
+   * method claimReward for contract GroupingModule
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async claimReward(
+    request: GroupingModuleClaimRewardRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "claimReward",
+      account: this.wallet.account,
+      args: [request.groupId, request.token, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method claimReward for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleClaimRewardRequest
+   * @return EncodedTxData
+   */
+  public claimRewardEncode(request: GroupingModuleClaimRewardRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "claimReward",
+        args: [request.groupId, request.token, request.ipIds],
+      }),
+    };
+  }
+
+  /**
+   * method collectRoyalties for contract GroupingModule
+   *
+   * @param request GroupingModuleCollectRoyaltiesRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async collectRoyalties(
+    request: GroupingModuleCollectRoyaltiesRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "collectRoyalties",
+      account: this.wallet.account,
+      args: [request.groupId, request.token],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method collectRoyalties for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleCollectRoyaltiesRequest
+   * @return EncodedTxData
+   */
+  public collectRoyaltiesEncode(request: GroupingModuleCollectRoyaltiesRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "collectRoyalties",
+        args: [request.groupId, request.token],
+      }),
+    };
+  }
+
+  /**
    * method registerGroup for contract GroupingModule
    *
    * @param request GroupingModuleRegisterGroupRequest
@@ -18083,6 +18287,40 @@ export class GroupingModuleClient extends GroupingModuleEventClient {
         abi: groupingModuleAbi,
         functionName: "registerGroup",
         args: [request.groupPool],
+      }),
+    };
+  }
+
+  /**
+   * method removeIp for contract GroupingModule
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async removeIp(request: GroupingModuleRemoveIpRequest): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: "removeIp",
+      account: this.wallet.account,
+      args: [request.groupIpId, request.ipIds],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method removeIp for contract GroupingModule with only encode
+   *
+   * @param request GroupingModuleRemoveIpRequest
+   * @return EncodedTxData
+   */
+  public removeIpEncode(request: GroupingModuleRemoveIpRequest): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: groupingModuleAbi,
+        functionName: "removeIp",
+        args: [request.groupIpId, request.ipIds],
       }),
     };
   }

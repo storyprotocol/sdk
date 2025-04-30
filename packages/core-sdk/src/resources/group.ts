@@ -5,9 +5,12 @@ import {
   CoreMetadataModuleClient,
   groupingModuleAbi,
   GroupingModuleAddIpRequest,
+  GroupingModuleClaimRewardRequest,
   GroupingModuleClient,
+  GroupingModuleCollectRoyaltiesRequest,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
+  GroupingModuleRemoveIpRequest,
   GroupingWorkflowsClient,
   GroupingWorkflowsMintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   GroupingWorkflowsRegisterGroupAndAttachLicenseAndAddIpsRequest,
@@ -44,6 +47,12 @@ import {
   CollectAndDistributeGroupRoyaltiesRequest,
   CollectAndDistributeGroupRoyaltiesResponse,
   AddIpRequest,
+  ClaimRewardRequest,
+  ClaimRewardResponse,
+  GetClaimableRewardRequest,
+  RemoveIpsFromGroupRequest,
+  CollectRoyaltiesRequest,
+  CollectRoyaltiesResponse,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -499,6 +508,116 @@ export class GroupClient {
       });
     } catch (error) {
       handleError(error, "Failed to add IP to group");
+    }
+  }
+  /**
+   * Returns the available reward for each IP in the group.
+   */
+  public async getClaimableReward({
+    groupIpId,
+    currencyToken,
+    memberIpIds,
+  }: GetClaimableRewardRequest): Promise<bigint[]> {
+    try {
+      const claimableReward = await this.groupingModuleClient.getClaimableReward({
+        groupId: validateAddress(groupIpId),
+        ipIds: validateAddresses(memberIpIds),
+        token: validateAddress(currencyToken),
+      });
+      // The result is cast as bigint[] because the `claimableReward` array is of type `readonly bigint[]`.
+      return claimableReward as bigint[];
+    } catch (error) {
+      handleError(error, "Failed to get claimable reward");
+    }
+  }
+
+  /**
+   * Removes IPs from group.
+   * The function must be called by the Group IP owner or an authorized operator.
+   */
+  public async removeIpsFromGroup({
+    groupIpId,
+    ipIds,
+    txOptions,
+  }: RemoveIpsFromGroupRequest): Promise<TransactionResponse> {
+    try {
+      const removeIpParam: GroupingModuleRemoveIpRequest = {
+        groupIpId: validateAddress(groupIpId),
+        ipIds: validateAddresses(ipIds),
+      };
+      const txHash = await this.groupingModuleClient.removeIp(removeIpParam);
+      return await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      handleError(error, "Failed to remove IPs from group");
+    }
+  }
+
+  /**
+   * Claims reward.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L31 | `ClaimedReward`} event.
+   */
+  public async claimReward({
+    groupIpId,
+    currencyToken,
+    memberIpIds,
+    txOptions,
+  }: ClaimRewardRequest): Promise<ClaimRewardResponse> {
+    try {
+      const claimRewardParam: GroupingModuleClaimRewardRequest = {
+        groupId: validateAddress(groupIpId),
+        ipIds: validateAddresses(memberIpIds),
+        token: validateAddress(currencyToken),
+      };
+      const txHash = await this.groupingModuleClient.claimReward(claimRewardParam);
+      const { receipt } = await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const claimedReward = this.groupingModuleEventClient.parseTxClaimedRewardEvent(receipt);
+      return { txHash, claimedReward };
+    } catch (error) {
+      handleError(error, "Failed to claim reward");
+    }
+  }
+
+  /**
+   * Collects royalties into the pool, making them claimable by group member IPs.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L38 | `CollectedRoyaltiesToGroupPool`} event.
+   */
+  public async collectRoyalties({
+    groupIpId,
+    currencyToken,
+    txOptions,
+  }: CollectRoyaltiesRequest): Promise<CollectRoyaltiesResponse> {
+    try {
+      const collectRoyaltiesParam: GroupingModuleCollectRoyaltiesRequest = {
+        groupId: validateAddress(groupIpId),
+        token: validateAddress(currencyToken),
+      };
+      const txHash = await this.groupingModuleClient.collectRoyalties(collectRoyaltiesParam);
+      const { receipt } = await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const collectedRoyalties =
+        this.groupingModuleEventClient.parseTxCollectedRoyaltiesToGroupPoolEvent(receipt)[0].amount;
+      return { txHash, collectedRoyalties };
+    } catch (error) {
+      handleError(error, "Failed to collect royalties");
     }
   }
 

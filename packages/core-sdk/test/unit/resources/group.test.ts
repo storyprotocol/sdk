@@ -685,8 +685,8 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.addIp", async () => {
-    it("should throw error when call fail", async () => {
+  describe("Test groupClient.addIpsToGroup", async () => {
+    it("should throw error when call fails", async () => {
       sinon.stub(groupClient.groupingModuleClient, "addIp").rejects(new Error("rpc error"));
       const result = groupClient.addIpsToGroup({
         groupIpId: mockAddress,
@@ -695,7 +695,7 @@ describe("Test IpAssetClient", () => {
       await expect(result).to.be.rejectedWith("Failed to add IP to group: rpc error");
     });
 
-    it("should return txHash when call addIp successfully", async () => {
+    it("should return txHash when call succeeds", async () => {
       sinon.stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
       const result = await groupClient.addIpsToGroup({
         groupIpId: mockAddress,
@@ -706,6 +706,153 @@ describe("Test IpAssetClient", () => {
         },
       });
       expect(result.txHash).equal(txHash);
+    });
+  });
+
+  describe("Test groupClient.getClaimableReward", () => {
+    it("should throw error when call fail", async () => {
+      sinon
+        .stub(groupClient.groupingModuleClient, "getClaimableReward")
+        .rejects(new Error("rpc error"));
+      const result = groupClient.getClaimableReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith("Failed to get claimable reward: rpc error");
+    });
+
+    it("should return claimable reward when call successfully", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = await groupClient.getClaimableReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+      });
+      expect(result).to.deep.equal([10n]);
+    });
+  });
+
+  describe("Test groupClient.removeIpsFromGroup", () => {
+    it("should throw error when call fails", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "removeIp").rejects(new Error("rpc error"));
+      const result = groupClient.removeIpsFromGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith("Failed to remove IPs from group: rpc error");
+    });
+
+    it("should return txHash when call succeeds", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "removeIp").resolves(txHash);
+      const result = await groupClient.removeIpsFromGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+    });
+  });
+
+  describe("Test groupClient.claimReward", () => {
+    it("should throw error when call fail", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "claimReward").rejects(new Error("rpc error"));
+      const result = groupClient.claimReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith("Failed to claim reward: rpc error");
+    });
+
+    it("should return txHash when call successfully", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      const result = await groupClient.claimReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+      });
+      expect(result.txHash).equal(txHash);
+    });
+
+    it("should return additional details when waitForTransaction is true", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      sinon.stub(groupClient.groupingModuleEventClient, "parseTxClaimedRewardEvent").returns([
+        {
+          ipId: [mockAddress],
+          amount: [100n],
+          token: mockAddress,
+          groupId: mockAddress,
+        },
+      ]);
+      const result = await groupClient.claimReward({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        memberIpIds: [mockAddress],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.claimedReward).to.deep.equal([
+        {
+          ipId: [mockAddress],
+          amount: [100n],
+          token: mockAddress,
+          groupId: mockAddress,
+        },
+      ]);
+    });
+  });
+
+  describe("Test groupClient.collectRoyalties", () => {
+    it("should throw error when call fails", async () => {
+      sinon
+        .stub(groupClient.groupingModuleClient, "collectRoyalties")
+        .rejects(new Error("rpc error"));
+
+      const result = groupClient.collectRoyalties({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+      });
+      await expect(result).to.be.rejectedWith("Failed to collect royalties: rpc error");
+    });
+
+    it("should return txHash when call successfully", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
+
+      const result = await groupClient.collectRoyalties({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.collectedRoyalties).to.undefined;
+    });
+
+    it("should return additional details when waitForTransaction is true", async () => {
+      sinon.stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
+      sinon
+        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
+        .returns([
+          {
+            groupId: mockAddress,
+            amount: 100n,
+            token: mockAddress,
+            pool: mockAddress,
+          },
+        ]);
+
+      const result = await groupClient.collectRoyalties({
+        groupIpId: mockAddress,
+        currencyToken: mockAddress,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.txHash).equal(txHash);
+      expect(result.collectedRoyalties).to.equal(100n);
     });
   });
 });
