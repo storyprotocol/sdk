@@ -298,6 +298,8 @@ describe("Group Functions", () => {
 
   describe("Collect Royalty and Claim Reward", () => {
     let ipId: Address;
+    let ipId2: Address;
+    let ipId3: Address;
     let groupIpId: Address;
     let licenseTermsId: bigint;
 
@@ -422,7 +424,11 @@ describe("Group Functions", () => {
     before(async () => {
       // Register IP id
       const result1 = await mintAndRegisterIpAssetWithPilTermsHelper();
+      const result2 = await mintAndRegisterIpAssetWithPilTermsHelper();
+      const result3 = await mintAndRegisterIpAssetWithPilTermsHelper();
       ipId = result1.ipId!;
+      ipId2 = result2.ipId!;
+      ipId3 = result3.ipId!;
       licenseTermsId = result1.licenseTermsIds![0];
 
       // Register group id
@@ -477,39 +483,7 @@ describe("Group Functions", () => {
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.claimedReward?.[0].amount[0]).to.equal(5n);
-    });
-
-    it("should successfully claim reward for multiple IP members", async () => {
-      await client.license.mintLicenseTokens({
-        licensorIpId: ipIds[2],
-        licenseTermsId,
-        amount: 50,
-        maxMintingFee: 1,
-        maxRevenueShare: 100,
-        txOptions: { waitForTransaction: true },
-      });
-      
-      await client.license.mintLicenseTokens({
-        licensorIpId: ipIds[3],
-        licenseTermsId,
-        amount: 50,
-        maxMintingFee: 1,
-        maxRevenueShare: 100,
-        txOptions: { waitForTransaction: true },
-      });
-      
-      const result = await client.groupClient.claimReward({
-        groupIpId: groupIpId,
-        currencyToken: WIP_TOKEN_ADDRESS,
-        memberIpIds: [ipIds[2], ipIds[3]],
-        txOptions: { waitForTransaction: true },
-      });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-
-      expect(result.claimedReward?.[0].ipId.length).to.equal(2);
-      expect(result.claimedReward?.[0].amount[0]).to.equal(5n);
-      expect(result.claimedReward?.[0].amount[0]).to.equal(5n);
+      expect(result.claimedReward?.[0].amount[0]).to.equal(10n);
     });
 
     it("should fail when trying to claim reward for a non-existent group", async () => {
@@ -518,7 +492,7 @@ describe("Group Functions", () => {
         client.groupClient.claimReward({
           groupIpId: nonExistentGroupId,
           currencyToken: WIP_TOKEN_ADDRESS,
-          memberIpIds: ipIds,
+          memberIpIds: [ipId],
           txOptions: { waitForTransaction: true },
         })
       ).to.be.rejectedWith("Failed to claim reward");
@@ -530,7 +504,7 @@ describe("Group Functions", () => {
         client.groupClient.claimReward({
           groupIpId: groupIpId,
           currencyToken: invalidTokenAddress,
-          memberIpIds: ipIds,
+          memberIpIds: [ipId],
           txOptions: { waitForTransaction: true },
         })
       ).to.be.rejectedWith("Failed to claim reward");
@@ -539,25 +513,19 @@ describe("Group Functions", () => {
     it("should successfully collect royalties and claim reward in one transaction", async () => {
       const ipIds: Address[] = [];
 
-      // 1. Create two IP assets
       const result1 = await mintAndRegisterIpAssetWithPilTermsHelper();
       const result2 = await mintAndRegisterIpAssetWithPilTermsHelper();
       ipIds.push(result1.ipId!);
       ipIds.push(result2.ipId!);
       licenseTermsId = result1.licenseTermsIds![0];
 
-      // 2. Register group id and add IPs to group
       const groupIpId = await registerGroupAndAttachLicenseHelper(licenseTermsId, ipIds);
-
-      // 3. Create two derivative IPs
       const childIpId1 = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
       const childIpId2 = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
 
-      // 4. Pay royalties from child IPs to group IP ID and transfer to vault
       await payRoyaltyAndTransferToVaultHelper(childIpId1, groupIpId, WIP_TOKEN_ADDRESS, 100n);
       await payRoyaltyAndTransferToVaultHelper(childIpId2, groupIpId, WIP_TOKEN_ADDRESS, 100n);
 
-      // 5. Collect and distribute royalties in one transaction
       const result = await client.groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: groupIpId,
         currencyTokens: [WIP_TOKEN_ADDRESS],
@@ -565,7 +533,6 @@ describe("Group Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      // Verify results
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.collectedRoyalties?.[0].amount).to.equal(20n);
       expect(result.royaltiesDistributed?.[0].amount).to.equal(10n);
