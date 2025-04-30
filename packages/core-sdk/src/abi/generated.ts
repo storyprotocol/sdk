@@ -18447,6 +18447,21 @@ export type GroupingModuleIpGroupRegisteredEvent = {
 }
 
 /**
+ * GroupingModuleGetClaimableRewardRequest
+ *
+ * @param groupId address
+ * @param token address
+ * @param ipIds address[]
+ */
+export type GroupingModuleGetClaimableRewardRequest = {
+  groupId: Address
+  token: Address
+  ipIds: readonly Address[]
+}
+
+export type GroupingModuleGetClaimableRewardResponse = readonly bigint[]
+
+/**
  * GroupingModuleAddIpRequest
  *
  * @param groupIpId address
@@ -18640,9 +18655,35 @@ export class GroupingModuleEventClient {
 }
 
 /**
+ * contract GroupingModule readonly method
+ */
+export class GroupingModuleReadOnlyClient extends GroupingModuleEventClient {
+  constructor(rpcClient: PublicClient, address?: Address) {
+    super(rpcClient, address)
+  }
+
+  /**
+   * method getClaimableReward for contract GroupingModule
+   *
+   * @param request GroupingModuleGetClaimableRewardRequest
+   * @return Promise<GroupingModuleGetClaimableRewardResponse>
+   */
+  public async getClaimableReward(
+    request: GroupingModuleGetClaimableRewardRequest,
+  ): Promise<GroupingModuleGetClaimableRewardResponse> {
+    return await this.rpcClient.readContract({
+      abi: groupingModuleAbi,
+      address: this.address,
+      functionName: 'getClaimableReward',
+      args: [request.groupId, request.token, request.ipIds],
+    })
+  }
+}
+
+/**
  * contract GroupingModule write method
  */
-export class GroupingModuleClient extends GroupingModuleEventClient {
+export class GroupingModuleClient extends GroupingModuleReadOnlyClient {
   protected readonly wallet: SimpleWalletClient
 
   constructor(
