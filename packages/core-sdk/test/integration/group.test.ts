@@ -298,8 +298,6 @@ describe("Group Functions", () => {
 
   describe("Collect Royalty and Claim Reward", () => {
     let ipId: Address;
-    let ipId2: Address;
-    let ipId3: Address;
     let groupIpId: Address;
     let licenseTermsId: bigint;
 
@@ -424,11 +422,7 @@ describe("Group Functions", () => {
     before(async () => {
       // Register IP id
       const result1 = await mintAndRegisterIpAssetWithPilTermsHelper();
-      const result2 = await mintAndRegisterIpAssetWithPilTermsHelper();
-      const result3 = await mintAndRegisterIpAssetWithPilTermsHelper();
       ipId = result1.ipId!;
-      ipId2 = result2.ipId!;
-      ipId3 = result3.ipId!;
       licenseTermsId = result1.licenseTermsIds![0];
 
       // Register group id
