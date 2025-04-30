@@ -168,17 +168,16 @@ export type ClaimRewardResponse = {
   txHash: Hash;
   claimedReward?: GroupingModuleClaimedRewardEvent[];
 };
+export type GetClaimableRewardRequest = {
+  groupIpId: Address;
+  currencyToken: Address;
+  memberIpIds: Address[];
+};
 
 export type RemoveIpsFromGroupRequest = {
   groupIpId: Address;
   ipIds: Address[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-};
-
-export type GetClaimableRewardRequest = {
-  groupIpId: Address;
-  currencyToken: Address;
-  memberIpIds: Address[];
 };
 
 export type CollectRoyaltiesRequest = {
