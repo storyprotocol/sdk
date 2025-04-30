@@ -179,3 +179,15 @@ export type RemoveIpsFromGroupRequest = {
   ipIds: Address[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
+
+export type CollectRoyaltiesRequest = {
+  groupIpId: Address;
+  currencyToken: Address;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type CollectRoyaltiesResponse = {
+  txHash: Hash;
+  /** The amount of royalties collected. */
+  collectedRoyalties?: bigint;
+};
