@@ -1,5 +1,5 @@
 import chai from "chai";
-import { StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
+import { DisputeTargetTag, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import { RaiseDisputeRequest } from "../../src/index";
 import {
   getStoryClient,
@@ -124,7 +124,7 @@ describe("Dispute Functions", () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
         cid: await generateCID(),
-        targetTag: "IMPROPER_REGISTRATION",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 2592000,
         bond: minimumBond,
         txOptions: {
@@ -164,7 +164,7 @@ describe("Dispute Functions", () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
         cid: await generateCID(),
-        targetTag: "IMPROPER_REGISTRATION",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: Number(minLiveness) - 1,
         bond: minimumBond,
         txOptions: { waitForTransaction: true },
@@ -179,7 +179,7 @@ describe("Dispute Functions", () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
         cid: await generateCID(),
-        targetTag: "IMPROPER_REGISTRATION",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 2592000,
         bond: parseEther("360"),
         txOptions: {
@@ -196,7 +196,7 @@ describe("Dispute Functions", () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
         cid: await generateCID(),
-        targetTag: "INVALID_TAG",
+        targetTag: "INVALID_TAG" as DisputeTargetTag,
         liveness: 2592000,
         bond: minimumBond,
         txOptions: { waitForTransaction: true },
@@ -212,7 +212,7 @@ describe("Dispute Functions", () => {
     const raiseResponse = await clientA.dispute.raiseDispute({
       targetIpId: ipIdB,
       cid: await generateCID(),
-      targetTag: "IMPROPER_REGISTRATION",
+      targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
       liveness: 2592000,
       bond: minimumBond,
       txOptions: { waitForTransaction: true },
@@ -332,7 +332,7 @@ describe("Dispute Functions", () => {
       const response = await clientA.dispute.raiseDispute({
         targetIpId: parentIpId,
         cid: await generateCID(),
-        targetTag: "IMPROPER_REGISTRATION",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 1,
         bond: minimumBond,
         txOptions: {
@@ -427,7 +427,7 @@ describe("Dispute Functions", () => {
       const disputeResponse = await clientA.dispute.raiseDispute({
         targetIpId: parentIpId,
         cid: await generateCID(),
-        targetTag: "IMPROPER_REGISTRATION",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 1,
         bond: minimumBond,
         txOptions: { waitForTransaction: true },

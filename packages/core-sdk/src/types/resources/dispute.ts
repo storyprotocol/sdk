@@ -14,10 +14,10 @@ export type RaiseDisputeRequest = WithTxOptions & {
   cid: string;
   /**
    * The target tag of the dispute.
-   * @see https://docs.story.foundation/docs/dispute-module#dispute-tags
-   * @example "IMPROPER_REGISTRATION"
+   * @see {@link https://docs.story.foundation/docs/dispute-module#dispute-tags | Dispute Tags}
+   * @example {@link DisputeTargetTag.IMPROPER_REGISTRATION}
    */
-  targetTag: string;
+  targetTag: DisputeTargetTag;
   /** The liveness is the time window (in seconds) in which a counter dispute can be presented (30days). */
   liveness: bigint | number | string;
   /**
@@ -114,3 +114,30 @@ export type DisputeAssertionRequest = {
    */
   wipOptions?: Omit<WipOptions, "useMulticallWhenPossible">;
 } & WithTxOptions;
+
+/**
+ * Tags refer to the “labels” that can be applied to IP Assets in the protocol when raising a dispute.
+ * Tags must be whitelisted by protocol governance to be used in a dispute.
+ * @see {@link https://docs.story.foundation/docs/dispute-module#dispute-tags | Dispute Tags}
+ */
+export enum DisputeTargetTag {
+  /**Refers to registration of IP that already exists. */
+  IMPROPER_REGISTRATION = "IMPROPER_REGISTRATION",
+  /**
+   * Refers to improper use of an IP Asset across multiple items (examples on the left).
+   * These items can be found in more detail in the {@link https://docs.story.foundation/concepts/programmable-ip-license/overview  | 💊 Programmable IP License (PIL) } legal document .
+   */
+  IMPROPER_USAGE = "IMPROPER_USAGE",
+  /**Refers to missing payments associated with an IP. */
+  IMPROPER_PAYMENT = "IMPROPER_PAYMENT",
+  /**
+   * Refers to “No-Hate”, “Suitable-for-All-Ages”, “No-Drugs-or-Weapons” and “No-Pornography”.
+   * These items can be found in more detail in the {@link https://docs.story.foundation/concepts/programmable-ip-license/overview  | 💊 Programmable IP License (PIL) } legal document.
+   */
+  CONTENT_STANDARDS_VIOLATION = "CONTENT_STANDARDS_VIOLATION",
+  /**
+   * Different from the other 4, this is a temporary tag that goes away
+   * at the end of a dispute and is replaced by “0x” in case of no infringement or is replaced by one of the other tags.
+   */
+  IN_DISPUTE = "IN_DISPUTE",
+}
