@@ -293,6 +293,43 @@ describe("Group Functions", () => {
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
+
+      it("should fail when trying to remove IPs from a non-existent group", async () => {
+        const registerResult = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract,
+          licenseTermsData,
+          txOptions: { waitForTransaction: true },
+        });
+        const testIpId = registerResult.ipId!;
+        
+        const nonExistentGroupId = zeroAddress;
+        
+        await expect(
+          client.groupClient.removeIpsFromGroup({
+            groupIpId: nonExistentGroupId, 
+            ipIds: [testIpId],
+            txOptions: { waitForTransaction: true },
+          })
+        ).to.be.rejectedWith("Failed to remove IPs from group");
+      });
+      
+      it("should fail when trying to remove non-existent IPs from a group", async () => {
+        const groupResult = await client.groupClient.registerGroup({
+          groupPool: groupPoolAddress,
+          txOptions: { waitForTransaction: true },
+        });
+        const testGroupId = groupResult.groupId!;
+        
+        const nonExistentIpId = zeroAddress;
+        
+        await expect(
+          client.groupClient.removeIpsFromGroup({
+            groupIpId: testGroupId,
+            ipIds: [nonExistentIpId],
+            txOptions: { waitForTransaction: true },
+          })
+        ).to.be.rejectedWith("Failed to remove IPs from group");
+      });
     });
   });
 
