@@ -7,6 +7,7 @@ import {
   GroupingModuleAddIpRequest,
   GroupingModuleClaimRewardRequest,
   GroupingModuleClient,
+  GroupingModuleCollectRoyaltiesRequest,
   GroupingModuleEventClient,
   GroupingModuleRegisterGroupRequest,
   GroupingModuleRemoveIpRequest,
@@ -50,6 +51,8 @@ import {
   ClaimRewardResponse,
   GetClaimableRewardRequest,
   RemoveIpsFromGroupRequest,
+  CollectRoyaltiesRequest,
+  CollectRoyaltiesResponse,
 } from "../types/resources/group";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -507,7 +510,6 @@ export class GroupClient {
       handleError(error, "Failed to add IP to group");
     }
   }
-
   /**
    * Returns the available reward for each IP in the group.
    */
@@ -553,6 +555,7 @@ export class GroupClient {
       handleError(error, "Failed to remove IPs from group");
     }
   }
+
   /**
    * Claims reward.
    *
@@ -561,7 +564,7 @@ export class GroupClient {
   public async claimReward({
     groupIpId,
     currencyToken,
-    memberIpIds,  
+    memberIpIds,
     txOptions,
   }: ClaimRewardRequest): Promise<ClaimRewardResponse> {
     try {
@@ -585,6 +588,39 @@ export class GroupClient {
       handleError(error, "Failed to claim reward");
     }
   }
+
+  /**
+   * Collects royalties into the pool, making them claimable by group member IPs.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L38 | `CollectedRoyaltiesToGroupPool`} event.
+   */
+  public async collectRoyalties({
+    groupIpId,
+    currencyToken,
+    txOptions,
+  }: CollectRoyaltiesRequest): Promise<CollectRoyaltiesResponse> {
+    try {
+      const collectRoyaltiesParam: GroupingModuleCollectRoyaltiesRequest = {
+        groupId: validateAddress(groupIpId),
+        token: validateAddress(currencyToken),
+      };
+      const txHash = await this.groupingModuleClient.collectRoyalties(collectRoyaltiesParam);
+      const { receipt } = await waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+      if (!receipt) {
+        return { txHash };
+      }
+      const collectedRoyalties =
+        this.groupingModuleEventClient.parseTxCollectedRoyaltiesToGroupPoolEvent(receipt)[0].amount;
+      return { txHash, collectedRoyalties };
+    } catch (error) {
+      handleError(error, "Failed to collect royalties");
+    }
+  }
+
   private getLicenseData(licenseData: LicenseDataInput[] | LicenseDataInput): LicenseData[] {
     const isArray = Array.isArray(licenseData);
     if ((isArray && licenseData.length === 0) || !licenseData) {
