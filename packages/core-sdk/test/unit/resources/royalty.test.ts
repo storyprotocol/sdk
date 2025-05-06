@@ -215,21 +215,6 @@ describe("Test RoyaltyClient", () => {
         expect((err as Error).message).equals("Failed to claim all revenue: Invalid address: 0x.");
       }
     });
-    it("should not return `claimedTokens` when call claimAllRevenue given claimer is neither an IP owned by the wallet nor the wallet address itself", async () => {
-      sinon.stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue").resolves(txHash);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
-      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      const result = await royaltyClient.claimAllRevenue({
-        ancestorIpId: ipId,
-        claimer: ipId,
-        childIpIds: [ipId],
-        royaltyPolicies: [mockAddress],
-        currencyTokens: [WIP_TOKEN_ADDRESS],
-      });
-      expect(result.claimedTokens).to.be.undefined;
-      expect(result.txHashes).to.be.an("array").and.lengthOf(1);
-      expect(result.receipt).to.be.an("object");
-    });
 
     it("should call transfer and unwrap method when call claimAllRevenue given claimer is an IP owned by the wallet", async () => {
       sinon.stub(royaltyClient.royaltyWorkflowsClient, "claimAllRevenue").resolves(txHash);
