@@ -118,7 +118,7 @@ export class PermissionClient {
             func,
           },
         ],
-        chainId: chain[this.chainId],
+        chainId: this.chainId,
         wallet: this.wallet as WalletClient,
       });
       const req = {
@@ -255,7 +255,7 @@ export class PermissionClient {
         deadline: calculatedDeadline,
         state,
         permissions,
-        chainId: chain[this.chainId],
+        chainId: this.chainId,
         wallet: this.wallet as WalletClient,
       });
       const req = {

@@ -29,7 +29,7 @@ import {
 import { AccessPermission } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
 import { getPermissionSignature, getDeadline } from "../utils/sign";
-import { chain, validateAddress, validateAddresses } from "../utils/utils";
+import { validateAddress, validateAddresses } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import {
   LicenseDataInput,
@@ -147,7 +147,7 @@ export class GroupClient {
         deadline: calculatedDeadline,
         state,
         wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
+        chainId: this.chainId,
         permissions: [
           {
             ipId: groupId,
@@ -208,7 +208,7 @@ export class GroupClient {
   ): Promise<RegisterIpAndAttachLicenseAndAddToGroupResponse> {
     try {
       const ipIdAddress = await this.ipAssetRegistryClient.ipId({
-        chainId: BigInt(chain[this.chainId]),
+        chainId: BigInt(this.chainId),
         tokenContract: validateAddress(request.nftContract),
         tokenId: BigInt(request.tokenId),
       });
@@ -228,7 +228,7 @@ export class GroupClient {
         deadline: calculatedDeadline,
         state,
         wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
+        chainId: this.chainId,
         permissions: [
           {
             ipId: request.groupId,
@@ -244,7 +244,7 @@ export class GroupClient {
         deadline: calculatedDeadline,
         state: toHex(0, { size: 32 }),
         wallet: this.wallet as WalletClient,
-        chainId: chain[this.chainId],
+        chainId: this.chainId,
         permissions: [
           {
             ipId: ipIdAddress,

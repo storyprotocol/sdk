@@ -50,4 +50,4 @@ export type StoryConfig = {
 
 export type ContractAddress = { [key in SupportedChainIds]: Record<string, string> };
 
-export type ChainIds = "1315" | "1514";
+export type ChainIds = 1315 | 1514;

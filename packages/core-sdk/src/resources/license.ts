@@ -173,7 +173,7 @@ export class LicenseClient {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
         royaltyPolicyAddress: validateAddress(
-          request.royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+          request.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         ),
       });
       const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
@@ -219,7 +219,7 @@ export class LicenseClient {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
         royaltyPolicyAddress: validateAddress(
-          request.royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+          request.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         ),
         commercialRevShare: request.commercialRevShare,
       });
@@ -387,7 +387,7 @@ export class LicenseClient {
       const wipSpenders: Erc20Spender[] = [];
       if (licenseMintingFee > 0n) {
         wipSpenders.push({
-          address: royaltyModuleAddress[chain[this.chainId]],
+          address: royaltyModuleAddress[this.chainId],
           amount: licenseMintingFee,
         });
       }

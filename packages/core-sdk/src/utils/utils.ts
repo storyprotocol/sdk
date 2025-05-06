@@ -90,11 +90,11 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   }
 }
 
-export const chain: { [key in SupportedChainIds]: "1315" | "1514" } = {
-  aeneid: "1315",
-  1315: "1315",
-  1514: "1514",
-  mainnet: "1514",
+export const chain: Record<SupportedChainIds, 1315 | 1514> = {
+  aeneid: 1315,
+  1315: 1315,
+  mainnet: 1514,
+  1514: 1514,
 };
 
 export function validateAddress(address: string): Address {
