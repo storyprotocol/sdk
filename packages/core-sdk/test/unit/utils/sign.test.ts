@@ -15,7 +15,7 @@ describe("Sign", () => {
           deadline: 1000n,
           permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
           wallet: {} as WalletClient,
-          chainId: BigInt(aeneid),
+          chainId: aeneid,
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -32,7 +32,7 @@ describe("Sign", () => {
           deadline: 1000n,
           permissions: [{ ipId: zeroAddress, signer: zeroAddress, to: zeroAddress, permission: 0 }],
           wallet: { signTypedData: () => Promise.resolve("") } as unknown as WalletClient,
-          chainId: BigInt(aeneid),
+          chainId: aeneid,
         });
       } catch (e) {
         expect((e as Error).message).to.equal(
@@ -61,7 +61,7 @@ describe("Sign", () => {
           },
         ],
         wallet: walletClient,
-        chainId: BigInt(aeneid),
+        chainId: aeneid,
       });
       expect(result.signature).is.a("string").and.not.empty;
       expect(result.nonce).is.a("string").and.not.empty;
@@ -88,7 +88,7 @@ describe("Sign", () => {
           },
         ],
         wallet: walletClient,
-        chainId: BigInt(aeneid),
+        chainId: aeneid,
       });
       expect(result.signature).is.a("string").and.not.empty;
       expect(result.nonce).is.a("string").and.not.empty;

@@ -155,7 +155,7 @@ describe("Test chainStringToViemChain", () => {
   });
 
   it("should return aeneid testnet if id is 1315", () => {
-    const chain = chainStringToViemChain("1315");
+    const chain = chainStringToViemChain(1315);
     expect(chain).to.equal(aeneid);
   });
   it("should return aeneid testnet if id is iliad", () => {
@@ -164,7 +164,7 @@ describe("Test chainStringToViemChain", () => {
   });
 
   it("should return mainnet if id is 1514", () => {
-    const chain = chainStringToViemChain("1514");
+    const chain = chainStringToViemChain(1514);
     expect(chain).to.equal(mainnet);
   });
 
