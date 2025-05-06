@@ -125,7 +125,7 @@ export enum DisputeTargetTag {
   IMPROPER_REGISTRATION = "IMPROPER_REGISTRATION",
   /**
    * Refers to improper use of an IP Asset across multiple items.
-   * For more details, see the {@link https://docs.story.foundation/concepts/programmable-ip-license/overview | Programmable IP License (PIL)} documentation.
+   * For more details, @see {@link https://docs.story.foundation/concepts/programmable-ip-license/overview | Programmable IP License (PIL)} documentation.
    */
   IMPROPER_USAGE = "IMPROPER_USAGE",
   /** Refers to missing payments associated with an IP. */
