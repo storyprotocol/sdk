@@ -45,7 +45,7 @@ import {
   getRevenueShare,
   validateLicenseTerms,
 } from "../utils/licenseTermsHelper";
-import { chain, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { calculateLicenseWipMintFee } from "../utils/calculateMintFee";

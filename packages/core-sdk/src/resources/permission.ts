@@ -17,7 +17,7 @@ import {
   IpAssetRegistryClient,
   SimpleWalletClient,
 } from "../abi/generated";
-import { chain, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { defaultFunctionSelector } from "../constants/common";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { ChainIds } from "../types/config";
