@@ -17,7 +17,7 @@ import {
   IpAssetRegistryClient,
   SimpleWalletClient,
 } from "../abi/generated";
-import { chain, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { defaultFunctionSelector } from "../constants/common";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { ChainIds } from "../types/config";
@@ -118,7 +118,7 @@ export class PermissionClient {
             func,
           },
         ],
-        chainId: chain[this.chainId],
+        chainId: this.chainId,
         wallet: this.wallet as WalletClient,
       });
       const req = {
@@ -255,7 +255,7 @@ export class PermissionClient {
         deadline: calculatedDeadline,
         state,
         permissions,
-        chainId: chain[this.chainId],
+        chainId: this.chainId,
         wallet: this.wallet as WalletClient,
       });
       const req = {

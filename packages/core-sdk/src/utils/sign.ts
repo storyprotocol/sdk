@@ -22,8 +22,7 @@ export const getPermissionSignature = async (
   param: PermissionSignatureRequest,
 ): Promise<SignatureResponse> => {
   const { ipId, deadline, state, wallet, chainId, permissions } = param;
-  const accessAddress =
-    accessControllerAddress[Number(chainId) as keyof typeof accessControllerAddress];
+  const accessAddress = accessControllerAddress[chainId];
   const isBatchPermissionFunction = permissions.length >= 2;
   const data = encodeFunctionData({
     abi: accessControllerAbi,
@@ -105,7 +104,7 @@ export const getSignature = async ({
     domain: {
       name: "Story Protocol IP Account",
       version: "1",
-      chainId: Number(chainId),
+      chainId,
       verifyingContract,
     },
     types: {

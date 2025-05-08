@@ -12,7 +12,7 @@ import {
   formatEther,
 } from "viem";
 
-import { SupportedChainIds } from "../types/config";
+import { ChainIds, SupportedChainIds } from "../types/config";
 import { aeneid, mainnet } from "./chain";
 
 export async function waitTxAndFilterLog<
@@ -78,23 +78,23 @@ export async function waitTx(
 }
 
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
-  switch (chainId.toString()) {
-    case "1315":
+  switch (chainId) {
+    case 1315:
     case "aeneid":
       return aeneid;
-    case "1514":
+    case 1514:
     case "mainnet":
       return mainnet;
     default:
-      throw new Error(`ChainId ${chainId as string} not supported`);
+      throw new Error(`ChainId ${String(chainId)} not supported`);
   }
 }
 
-export const chain: { [key in SupportedChainIds]: "1315" | "1514" } = {
-  aeneid: "1315",
-  1315: "1315",
-  1514: "1514",
-  mainnet: "1514",
+export const chain: Record<SupportedChainIds, ChainIds> = {
+  aeneid: 1315,
+  1315: 1315,
+  mainnet: 1514,
+  1514: 1514,
 };
 
 export function validateAddress(address: string): Address {

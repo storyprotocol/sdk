@@ -9,7 +9,7 @@ import {
   Hash,
 } from "viem";
 
-import { chain, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { handleError } from "../utils/errors";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -229,7 +229,7 @@ export class IPAssetClient {
             encodedTxData: this.ipAssetRegistryClient.registerEncode({
               tokenContract: object.nftContract,
               tokenId: object.tokenId,
-              chainid: BigInt(chain[this.chainId]),
+              chainid: BigInt(this.chainId),
             }),
           };
         }

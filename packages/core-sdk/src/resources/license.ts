@@ -46,7 +46,7 @@ import {
   getRevenueShare,
   validateLicenseTerms,
 } from "../utils/licenseTermsHelper";
-import { chain, validateAddress } from "../utils/utils";
+import { validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { calculateLicenseWipMintFee } from "../utils/calculateMintFee";
@@ -135,7 +135,7 @@ export class LicenseClient {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
         royaltyPolicyAddress: validateAddress(
-          request.royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+          request.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         ),
       });
       return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
@@ -158,7 +158,7 @@ export class LicenseClient {
         defaultMintingFee: request.defaultMintingFee,
         currency: request.currency,
         royaltyPolicyAddress: validateAddress(
-          request.royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+          request.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         ),
         commercialRevShare: request.commercialRevShare,
       });
@@ -326,7 +326,7 @@ export class LicenseClient {
       const wipSpenders: Erc20Spender[] = [];
       if (licenseMintingFee > 0n) {
         wipSpenders.push({
-          address: royaltyModuleAddress[chain[this.chainId]],
+          address: royaltyModuleAddress[this.chainId],
           amount: licenseMintingFee,
         });
       }
