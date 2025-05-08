@@ -14,6 +14,7 @@ import {
   erc20Address,
   LicenseRegistryReadOnlyClient,
   licensingModuleAddress,
+  royaltyPolicyLapAddress,
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 import { ERC20Client } from "../../src/utils/token";
@@ -81,6 +82,17 @@ describe("License Functions", () => {
         defaultMintingFee: "1",
         commercialRevShare: 100,
         currency: WIP_TOKEN_ADDRESS,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should register license with creative commons attribution PIL", async () => {
+      const result = await client.license.registerCreativeCommonsAttributionPIL({
+        currency: WIP_TOKEN_ADDRESS,
+        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
         txOptions: {
           waitForTransaction: true,
         },

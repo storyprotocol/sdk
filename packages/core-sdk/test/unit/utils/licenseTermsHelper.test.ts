@@ -10,6 +10,7 @@ import sinon from "sinon";
 import { createMock } from "../testUtils";
 import chaiAsPromised from "chai-as-promised";
 import { RoyaltyModuleReadOnlyClient } from "../../../src/abi/generated";
+import { mockAddress } from "../mockData";
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -208,6 +209,50 @@ describe("License Terms Helper", () => {
         });
         expect(result).to.contains({
           commercialRevShare: 10000000,
+        });
+      });
+    });
+
+    describe("Get Creative Commons Attribution License Terms", () => {
+      it("should throw error when call getLicenseTermByType given CREATIVE_COMMONS_ATTRIBUTION without currency", async () => {
+        expect(() =>
+          getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
+            royaltyPolicyAddress: mockAddress,
+          }),
+        ).to.throw(
+          "royaltyPolicyAddress and currency are required for creative commons attribution PIL.",
+        );
+      });
+
+      it("should throw error when call getLicenseTermByType without args", async () => {
+        expect(() => getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION)).to.throw(
+          "royaltyPolicyAddress and currency are required for creative commons attribution PIL.",
+        );
+      });
+
+      it("should return creative commons attribution license terms when given correct args", async () => {
+        const result = getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
+          royaltyPolicyAddress: mockAddress,
+          currency: mockAddress,
+        });
+        expect(result).to.deep.include({
+          transferable: true,
+          royaltyPolicy: mockAddress,
+          defaultMintingFee: 0n,
+          expiration: 0n,
+          commercialUse: true,
+          commercialAttribution: true,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 0,
+          commercialRevCeiling: 0n,
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: 0n,
+          currency: mockAddress,
+          uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
         });
       });
     });

@@ -116,6 +116,16 @@ export type RegisterCommercialRemixPILRequest = {
   txOptions?: TxOptions;
 };
 
+export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
+  /** The ERC20 or WIP token to be used to pay the minting fee. */
+  currency: Address;
+  /**
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
+};
+
 export type AttachLicenseTermsRequest = {
   /** The address of the IP ID to which the license terms are being attached. */
   ipId: Address;
@@ -167,6 +177,7 @@ export enum PIL_TYPE {
   NON_COMMERCIAL_REMIX,
   COMMERCIAL_USE,
   COMMERCIAL_REMIX,
+  CREATIVE_COMMONS_ATTRIBUTION,
 }
 
 export type LicenseTermsId = string | number | bigint;
