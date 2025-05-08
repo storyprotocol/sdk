@@ -179,6 +179,25 @@ describe("Dispute Functions", () => {
       }
     });
 
+    it("should reject a dispute with an invalid tag not defined in the enum", async () => {
+      const invalidTags = ["INVALID_TAG", "NOT_IN_ENUM", "RANDOM_STRING"];
+      
+      for (const invalidTag of invalidTags) {
+        const raiseDisputeRequest: RaiseDisputeRequest = {
+          targetIpId: ipIdB,
+          cid: await generateCID(),
+          targetTag: invalidTag as DisputeTargetTag,
+          liveness: 2592000,
+          bond: minimumBond,
+          txOptions: { waitForTransaction: true },
+        };
+  
+        await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+          `The target tag ${invalidTag} is not whitelisted`,
+        );
+      }
+    });
+    
     it("should be able to counter existing dispute once", async () => {
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
