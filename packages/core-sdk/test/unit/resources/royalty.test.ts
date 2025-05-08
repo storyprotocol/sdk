@@ -151,12 +151,12 @@ describe("Test RoyaltyClient", () => {
   });
 
   describe("Test royaltyClient.claimableRevenue", async () => {
-    it("should throw royaltyVaultIpId error when call claimableRevenue given royaltyVaultIpId is not registered", async () => {
+    it("should throw ipId error when call claimableRevenue given ipId is not registered", async () => {
       sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
         await royaltyClient.claimableRevenue({
-          royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          ipId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           claimer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         });
@@ -174,7 +174,7 @@ describe("Test RoyaltyClient", () => {
         .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       try {
         await royaltyClient.claimableRevenue({
-          royaltyVaultIpId: "0x",
+          ipId: "0x",
           claimer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
           token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         });
@@ -193,7 +193,7 @@ describe("Test RoyaltyClient", () => {
       sinon.stub(IpRoyaltyVaultImplReadOnlyClient.prototype, "claimableRevenue").resolves(1n);
 
       const result = await royaltyClient.claimableRevenue({
-        royaltyVaultIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+        ipId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         claimer: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       });

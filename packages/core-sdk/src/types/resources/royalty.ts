@@ -11,7 +11,7 @@ import { TokenAmountInput } from "../common";
 
 export type ClaimableRevenueRequest = {
   /** The IP ID of the royalty vault. */
-  royaltyVaultIpId: Address;
+  ipId: Address;
   /** The address of the royalty token holder. */
   claimer: Address;
   /** The revenue token to claim. */
