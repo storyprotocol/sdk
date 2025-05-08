@@ -285,4 +285,113 @@ describe("License Functions", () => {
       });
     });
   });
+
+  describe("Creative Commons Attribution License Tests", () => {
+    let client: StoryClient;
+    let ipId: Hex;
+    let ccLicenseTermsId: bigint;
+    let tokenId;
+
+    before(async () => {
+      client = getStoryClient();
+      tokenId = await getTokenId();
+      
+      // Register an IP asset
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      ipId = registerResult.ipId!;
+      
+      // Create a Creative Commons Attribution license
+      const ccLicenseResult = await client.license.registerCreativeCommonsAttributionPIL({
+        currency: WIP_TOKEN_ADDRESS,
+        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      ccLicenseTermsId = ccLicenseResult.licenseTermsId!;
+    });
+
+    it("should verify the license terms match Creative Commons Attribution specifications", async () => {
+      const licenseTerms = await client.license.getLicenseTerms(ccLicenseTermsId);
+      
+      expect(licenseTerms.terms.transferable).to.be.true;
+      expect(licenseTerms.terms.commercialUse).to.be.true;
+      expect(licenseTerms.terms.derivativesAllowed).to.be.true;
+      expect(licenseTerms.terms.derivativesAttribution).to.be.true;
+      expect(licenseTerms.terms.derivativesReciprocal).to.be.true;
+      expect(licenseTerms.terms.derivativesApproval).to.be.false;
+      expect(licenseTerms.terms.commercialAttribution).to.be.true;
+      expect(licenseTerms.terms.commercialRevShare).to.equal(0);
+      expect(licenseTerms.terms.defaultMintingFee).to.equal(0n);
+      
+      expect(licenseTerms.terms.royaltyPolicy).to.equal(royaltyPolicyLapAddress[aeneid]);
+      expect(licenseTerms.terms.expiration).to.equal(0n);
+    });
+
+    it("should attach Creative Commons Attribution license to an IP", async () => {
+      const attachResult = await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: ccLicenseTermsId,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      
+      expect(attachResult.txHash).to.be.a("string").and.not.empty;
+      expect(attachResult.success).to.be.true;
+      
+      const licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(publicClient);
+      const hasLicense = await licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+        ipId: ipId,
+        licenseTemplate:client.ipAsset.licenseTemplateClient.address,
+        licenseTermsId: ccLicenseTermsId,
+      });
+      expect(hasLicense).to.be.true;
+    });
+
+    it("should mint CC-BY license tokens with no minting fee", async () => {
+      // Get wallet balance before minting
+      const balanceBefore = await client.getWalletBalance();
+      
+      // Predict the minting fee (should be zero for CC-BY)
+      const feePredict = await client.license.predictMintingLicenseFee({
+        licenseTermsId: ccLicenseTermsId,
+        licensorIpId: ipId,
+        amount: 1,
+      });
+      
+      // CC-BY licenses should have zero minting fee
+      expect(feePredict.tokenAmount).to.equal(0n);
+      
+      const mintResult = await client.license.mintLicenseTokens({
+        licenseTermsId: ccLicenseTermsId,
+        licensorIpId: ipId,
+        maxMintingFee: 0n,
+        maxRevenueShare: 0,
+        txOptions: {
+          waitForTransaction: true,
+        },
+      });
+      
+      expect(mintResult.txHash).to.be.a("string").and.not.empty;
+      expect(mintResult.licenseTokenIds).to.be.a("array").and.not.empty;
+      
+      const balanceAfter = await client.getWalletBalance();
+      
+      // Verify no fee was charged just gas
+      // This checks that any difference is very small (just gas costs)
+      const balanceDiff = balanceBefore - balanceAfter;
+      
+      // This checks that the balance difference should only be for gas costs, 
+      // be for gas costs, because there are no license fees. 
+      // A token fee would be much larger than typical gas costs
+      expect(balanceDiff < 1000000000000000n).to.be.true; // Small amount for gas
+    });
+  });
 });
