@@ -4,7 +4,7 @@ import { ipId, mockAddress, txHash } from "../mockData";
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Account, PublicClient, WalletClient } from "viem";
-import { DisputeClient } from "../../../src";
+import { DisputeClient, DisputeTargetTag } from "../../../src";
 import { IpAccountImplClient, WrappedIpClient } from "../../../src/abi/generated";
 
 chai.use(chaiAsPromised);
@@ -47,7 +47,7 @@ describe("Test DisputeClient", () => {
         await disputeClient.raiseDispute({
           targetIpId: "0x",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-          targetTag: "tag",
+          targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
           bond: minimumBond + 1n,
           liveness: 2592000,
         });
@@ -63,7 +63,7 @@ describe("Test DisputeClient", () => {
         await disputeClient.raiseDispute({
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-          targetTag: "tag",
+          targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
           bond: 15,
           liveness: 1,
         });
@@ -82,7 +82,7 @@ describe("Test DisputeClient", () => {
       const result = disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: "tag",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         bond: maximumBond + 1n,
         liveness: 2592000,
       });
@@ -99,7 +99,7 @@ describe("Test DisputeClient", () => {
       const result = disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: "tag",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         bond: minimumBond - 1n,
         liveness: 2592000,
       });
@@ -119,7 +119,7 @@ describe("Test DisputeClient", () => {
         await disputeClient.raiseDispute({
           targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-          targetTag: "tag",
+          targetTag: "tag" as DisputeTargetTag,
           bond: minimumBond + 1n,
           liveness: 2592000,
         });
@@ -141,7 +141,7 @@ describe("Test DisputeClient", () => {
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: "tag",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         bond: minimumBond + 1n,
         liveness: 2592000,
       });
@@ -172,7 +172,7 @@ describe("Test DisputeClient", () => {
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: "tag",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         bond: minimumBond + 1n,
         liveness: 2592000,
         txOptions: { waitForTransaction: true },
@@ -192,7 +192,7 @@ describe("Test DisputeClient", () => {
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: "tag",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         bond: minimumBond + 1n,
         liveness: 2592000,
         txOptions: { encodedTxDataOnly: true },
@@ -225,7 +225,7 @@ describe("Test DisputeClient", () => {
       const result = await disputeClient.raiseDispute({
         targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: "tag",
+        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 2592000,
         txOptions: { waitForTransaction: true },
       });
