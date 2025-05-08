@@ -137,6 +137,32 @@ describe("Dispute Functions", () => {
       disputeId = response.disputeId;
     });
 
+    it("should raise disputes with different DisputeTargetTag enum values", async () => {
+      const allTags = Object.values(DisputeTargetTag);
+      
+      for (const tag of allTags) {
+        const raiseDisputeRequest: RaiseDisputeRequest = {
+          targetIpId: ipIdB,
+          cid: await generateCID(),
+          targetTag: tag,
+          liveness: 2592000,
+          bond: minimumBond,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        };
+        
+        if (tag === DisputeTargetTag.IN_DISPUTE) {
+          await expect(clientA.dispute.raiseDispute(raiseDisputeRequest))
+            .to.be.rejectedWith("The target tag IN_DISPUTE is not whitelisted");
+        } else {
+          const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
+          expect(response.txHash).to.be.a("string").and.not.empty;
+          expect(response.disputeId).to.be.a("bigint");
+        }
+      }
+    });
+
     it("should be able to counter existing dispute once", async () => {
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
