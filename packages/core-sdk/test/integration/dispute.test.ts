@@ -10,7 +10,7 @@ import {
 } from "./utils/util";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
-import { Address, zeroAddress, Hex, parseEther } from "viem";
+import { Address, zeroAddress, Hex, toHex, parseEther } from "viem";
 import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
@@ -135,6 +135,22 @@ describe("Dispute Functions", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
       expect(response.disputeId).to.be.a("bigint");
       disputeId = response.disputeId;
+    });
+
+    it("should validate all enum values defined in DisputeTargetTag", async () => {
+      const allTags = Object.values(DisputeTargetTag);
+      
+      for (const tag of allTags) {
+        const tagHex: Hex = toHex(tag, { size: 32 });
+        const { allowed } = await clientA.dispute.disputeModuleClient.isWhitelistedDisputeTag({
+          tag: tagHex,
+        });
+        if (tag === DisputeTargetTag.IN_DISPUTE) {
+          expect(allowed).to.be.false;
+        } else {
+          expect(allowed).to.be.true;
+        }
+      }
     });
 
     it("should raise disputes with different DisputeTargetTag enum values", async () => {
