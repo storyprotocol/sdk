@@ -99,14 +99,9 @@ export class RoyaltyClient {
 
       // determine if the claimer is an IP owned by the wallet
       const { ownsClaimer, isClaimerIp, ipAccount } = await this.getClaimerInfo(claimer);
-
-      // if wallet does not own the claimer then we cannot auto claim or unwrap
-      // If ownsClaimer is false, it means the claimer is neither an IP owned by the wallet nor the wallet address itself.
-      if (!ownsClaimer) {
-        return { receipt, txHashes };
-      }
       const claimedTokens =
         this.ipRoyaltyVaultImplEventClient.parseTxRevenueTokenClaimedEvent(receipt);
+
       const autoTransfer = req.claimOptions?.autoTransferAllClaimedTokensFromIp !== false;
       const autoUnwrapIp = req.claimOptions?.autoUnwrapIpTokens !== false;
 
@@ -118,7 +113,7 @@ export class RoyaltyClient {
         });
         txHashes.push(...hashes);
       }
-      if (autoUnwrapIp) {
+      if (autoUnwrapIp && ownsClaimer) {
         const hashes = await this.unwrapWipTokens(claimedTokens);
         if (hashes) {
           txHashes.push(hashes);
