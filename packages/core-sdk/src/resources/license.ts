@@ -168,6 +168,7 @@ export class LicenseClient {
     }
   }
   /**
+   * Test change
    * Convenient function to register a PIL creative commons attribution license to the registry.
    * Creates a Creative Commons Attribution (CC-BY) license terms flavor.
    *
