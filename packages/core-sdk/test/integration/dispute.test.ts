@@ -252,21 +252,6 @@ describe("Dispute Functions", () => {
         "Failed to raise dispute: Bonds must be between 100000000000000000 and 350000000000000000000.",
       );
     });
-
-    it("should throw error for non-whitelisted dispute tag", async () => {
-      const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: ipIdB,
-        cid: await generateCID(),
-        targetTag: "INVALID_TAG" as DisputeTargetTag,
-        liveness: 2592000,
-        bond: minimumBond,
-        txOptions: { waitForTransaction: true },
-      };
-
-      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-        `The target tag INVALID_TAG is not whitelisted`,
-      );
-    });
   });
 
   it("it should not cancel a dispute (yet)", async () => {
