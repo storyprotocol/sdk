@@ -387,11 +387,12 @@ describe("License Functions", () => {
       // Verify no fee was charged just gas
       // This checks that any difference is very small (just gas costs)
       const balanceDiff = balanceBefore - balanceAfter;
+      const gasUsed = mintResult.receipt!.gasUsed
+      const effectiveGasPrice = mintResult.receipt!.effectiveGasPrice
+      const totalGas = gasUsed * effectiveGasPrice
       
-      // This checks that the balance difference should only be for gas costs, 
-      // be for gas costs, because there are no license fees. 
-      // A token fee would be much larger than typical gas costs
-      expect(balanceDiff < 1000000000000000n).to.be.true; // Small amount for gas
+      // Confirms the balance diff only reflects gas cost, since license fee is zero.
+      expect(balanceDiff <= totalGas).to.be.true; // Small amount for gas
     });
   });
 });
