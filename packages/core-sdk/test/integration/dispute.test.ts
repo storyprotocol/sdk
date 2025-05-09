@@ -10,7 +10,7 @@ import {
 } from "./utils/util";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
-import { Address, zeroAddress, Hex, parseEther } from "viem";
+import { Address, zeroAddress, Hex, toHex, parseEther } from "viem";
 import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
@@ -137,6 +137,67 @@ describe("Dispute Functions", () => {
       disputeId = response.disputeId;
     });
 
+    it("should validate all enum values defined in DisputeTargetTag", async () => {
+      const allTags = Object.values(DisputeTargetTag);
+      
+      for (const tag of allTags) {
+        const tagHex: Hex = toHex(tag, { size: 32 });
+        const { allowed } = await clientA.dispute.disputeModuleClient.isWhitelistedDisputeTag({
+          tag: tagHex,
+        });
+        if (tag === DisputeTargetTag.IN_DISPUTE) {
+          expect(allowed).to.be.false;
+        } else {
+          expect(allowed).to.be.true;
+        }
+      }
+    });
+
+    it("should raise disputes with different DisputeTargetTag enum values", async () => {
+      const allTags = Object.values(DisputeTargetTag);
+      
+      for (const tag of allTags) {
+        const raiseDisputeRequest: RaiseDisputeRequest = {
+          targetIpId: ipIdB,
+          cid: await generateCID(),
+          targetTag: tag,
+          liveness: 2592000,
+          bond: minimumBond,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        };
+        
+        if (tag === DisputeTargetTag.IN_DISPUTE) {
+          await expect(clientA.dispute.raiseDispute(raiseDisputeRequest))
+            .to.be.rejectedWith("The target tag IN_DISPUTE is not whitelisted");
+        } else {
+          const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
+          expect(response.txHash).to.be.a("string").and.not.empty;
+          expect(response.disputeId).to.be.a("bigint");
+        }
+      }
+    });
+
+    it("should reject a dispute with an invalid tag not defined in the enum", async () => {
+      const invalidTags = ["INVALID_TAG", "NOT_IN_ENUM", "RANDOM_STRING"];
+      
+      for (const invalidTag of invalidTags) {
+        const raiseDisputeRequest: RaiseDisputeRequest = {
+          targetIpId: ipIdB,
+          cid: await generateCID(),
+          targetTag: invalidTag as DisputeTargetTag,
+          liveness: 2592000,
+          bond: minimumBond,
+          txOptions: { waitForTransaction: true },
+        };
+  
+        await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+          `The target tag ${invalidTag} is not whitelisted`,
+        );
+      }
+    });
+    
     it("should be able to counter existing dispute once", async () => {
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
@@ -189,21 +250,6 @@ describe("Dispute Functions", () => {
 
       await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
         "Failed to raise dispute: Bonds must be between 100000000000000000 and 350000000000000000000.",
-      );
-    });
-
-    it("should throw error for non-whitelisted dispute tag", async () => {
-      const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: ipIdB,
-        cid: await generateCID(),
-        targetTag: "INVALID_TAG" as DisputeTargetTag,
-        liveness: 2592000,
-        bond: minimumBond,
-        txOptions: { waitForTransaction: true },
-      };
-
-      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-        `The target tag INVALID_TAG is not whitelisted`,
       );
     });
   });
