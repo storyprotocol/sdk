@@ -185,7 +185,7 @@ export class LicenseClient {
         getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
           currency,
           royaltyPolicyAddress:
-            royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+            royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         }),
         txOptions,
       );
