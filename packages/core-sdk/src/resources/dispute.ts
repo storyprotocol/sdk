@@ -5,6 +5,8 @@ import {
   CancelDisputeRequest,
   CancelDisputeResponse,
   DisputeAssertionRequest,
+  GetDisputeRequest,
+  GetDisputeResponse,
   RaiseDisputeRequest,
   RaiseDisputeResponse,
   ResolveDisputeRequest,
@@ -25,7 +27,7 @@ import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { ChainIds } from "../types/config";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { TransactionResponse } from "../types/options";
-import { contractCallWithFees } from "../utils/feeUtils";
+import { contractCallWithFees, contractReadCall } from "../utils/feeUtils";
 import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
@@ -48,6 +50,34 @@ export class DisputeClient {
     this.wallet = wallet;
   }
 
+  /**
+   * Gets a dispute on a given disputeId.
+   *
+   */
+  public async getDispute(request: GetDisputeRequest): Promise<GetDisputeResponse> {
+    try {
+      const req = {
+        disputeId: request.disputeId,
+      };
+  
+      const result = await contractReadCall(() =>
+        this.disputeModuleClient.disputes(req)
+      );
+  
+      return {
+        targetIpId: result.targetIpId,
+        disputeInitiator: result.disputeInitiator,
+        disputeTimestamp: result.disputeTimestamp,
+        arbitrationPolicy: result.arbitrationPolicy,
+        disputeEvidenceHash: result.disputeEvidenceHash,
+        targetTag: result.targetTag,
+        currentTag: result.currentTag,
+        infringerDisputeId: result.infringerDisputeId,
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch dispute: ${(error as Error).message}`);
+    }
+  }
   /**
    * Raises a dispute on a given ipId.
    *

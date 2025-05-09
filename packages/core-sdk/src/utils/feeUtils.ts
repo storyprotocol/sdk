@@ -1,4 +1,4 @@
-import { Hash, maxUint256, PublicClient } from "viem";
+import { Hash, maxUint256, PublicClient} from "viem";
 
 import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
 import { getTokenAmountDisplay } from "./utils";
@@ -263,3 +263,13 @@ export const handleTransactionResponse = <T extends Hash | Hash[] = Hash>(
   }
   return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
 };
+
+export async function contractReadCall<T>(
+  contractCall: () => Promise<T>,
+): Promise<T> {
+  try {
+    return await contractCall();
+  } catch (error) {
+    throw new Error(`$Read contract call failed: ${(error as Error).message}`);
+  }
+}

@@ -3,6 +3,23 @@ import { Address, Hex } from "viem";
 import { TxOptions, WipOptions, WithTxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
 
+export type GetDisputeRequest = WithTxOptions & {
+  /** The Dispute ID. */
+  disputeId: bigint;
+};
+
+export type GetDisputeResponse = {
+  txHash?: string;
+  targetIpId?: string;
+  disputeInitiator?: string;
+  disputeTimestamp?: bigint;
+  arbitrationPolicy?: string;
+  disputeEvidenceHash?: string;
+  targetTag?: string;
+  currentTag?: string;
+  infringerDisputeId?: bigint;
+};
+
 export type RaiseDisputeRequest = WithTxOptions & {
   /** The IP ID that is the target of the dispute. */
   targetIpId: Address;

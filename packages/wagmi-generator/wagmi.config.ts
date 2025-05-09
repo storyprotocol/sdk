@@ -242,6 +242,7 @@ export default defineConfig(async () => {
             "resolveDispute",
             "isWhitelistedDisputeTag",
             "tagIfRelatedIpInfringed",
+            "disputes",
           ],
           IPAccountImpl: [
             "execute",

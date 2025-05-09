@@ -10,7 +10,7 @@ import {
 } from "./utils/util";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
-import { Address, zeroAddress, Hex, parseEther } from "viem";
+import { Address, zeroAddress, Hex, toHex, parseEther } from "viem";
 import {
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
@@ -591,4 +591,194 @@ describe("Dispute Functions", () => {
       ).to.be.rejectedWith("NotDisputeInitiator");
     });
   });
+
+  // NEW - BORIS
+    describe("Tag propagation to derivative works", () => {
+      let clientA: StoryClient;
+      let nftContract: Address;
+      let parentIpId: Address;
+      let licenseTermsId: bigint;
+      let childIpId1: Address;
+      let childIpId2: Address;
+      let disputeId: bigint;
+      let minimumBond: bigint;
+
+      before(async () => {
+        clientA = getStoryClient();
+        minimumBond = await getMinimumBond(
+          publicClient,
+          new ArbitrationPolicyUmaClient(publicClient, walletClient),
+          WIP_TOKEN_ADDRESS,
+        );
+
+        // Setup NFT collection
+        const txData = await clientA.nftClient.createNFTCollection({
+          name: "test-collection",
+          symbol: "TEST",
+          maxSupply: 100,
+          isPublicMinting: true,
+          mintOpen: true,
+          contractURI: "test-uri",
+          mintFeeRecipient: TEST_WALLET_ADDRESS,
+          txOptions: { waitForTransaction: true },
+        });
+        nftContract = txData.spgNftContract!;
+
+        // Get parent IP ID and license terms ID
+        const ipIdAndLicenseResponse = await clientA.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: nftContract,
+          allowDuplicates: false,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: evenSplitGroupPoolAddress[aeneid],
+              },
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        });
+        parentIpId = ipIdAndLicenseResponse.ipId!;
+        licenseTermsId = ipIdAndLicenseResponse.licenseTermsIds![0];
+
+        // Create two derivative IPs
+        const derivativeIpIdResponse1 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+          spgNftContract: nftContract,
+          derivData: {
+            parentIpIds: [parentIpId!],
+            licenseTermsIds: [licenseTermsId!],
+            maxMintingFee: 1n,
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: 100,
+          },
+          txOptions: { waitForTransaction: true },
+        });
+        childIpId1 = derivativeIpIdResponse1.ipId!;
+
+        const derivativeIpIdResponse2 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
+          spgNftContract: nftContract,
+          derivData: {
+            parentIpIds: [parentIpId!],
+            licenseTermsIds: [licenseTermsId!],
+            maxMintingFee: 1n,
+            maxRts: 5 * 10 ** 6,
+            maxRevenueShare: 100,
+          },
+          txOptions: { waitForTransaction: true },
+        });
+        childIpId2 = derivativeIpIdResponse2.ipId!;
+      });
+
+      it.only("should propagate IMPROPER_USAGE tag to derivative IPs", async () => {
+        // Raise a dispute with IMPROPER_USAGE tag on the parent IP
+        const response = await clientA.dispute.raiseDispute({
+          targetIpId: parentIpId,
+          cid: await generateCID(),
+          targetTag: DisputeTargetTag.IMPROPER_USAGE,
+          liveness: 1,
+          bond: minimumBond,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        });
+        disputeId = response.disputeId!;
+
+        // Wait for liveness period to pass
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // Settle the assertion (simulate UMA arbitration)
+        await settleAssertion(clientA, disputeId);
+
+        // Verify the dispute state changed correctly
+        const parentDisputeState = await publicClient.readContract({
+          address: disputeModuleAddress[aeneid],
+          abi: disputeModuleAbi,
+          functionName: "disputes",
+          args: [disputeId],
+        });
+        expect(parentDisputeState[6]).to.equal(parentDisputeState[5]); // currentTag should equal targetTag
+
+        // Propagate the tag to both derivative IPs
+        const results = await clientA.dispute.tagIfRelatedIpInfringed({
+          infringementTags: [
+            {
+              ipId: childIpId1,
+              disputeId: disputeId,
+            },
+            {
+              ipId: childIpId2,
+              disputeId: disputeId,
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        });
+
+        //console.log(results[0].receipt?.logs)
+        const logData = results[0].receipt?.logs[0].data;
+        const firstWord = logData!.slice(0, 66); // 0x + 64 hex chars = 32 bytes
+
+        const childDisputeId = BigInt(firstWord); // or Number(...) if you're sure it's small
+
+        // Verify successful tagging
+        expect(results[0].txHash).to.be.a("string").and.not.empty;
+
+        const childDisputeState = await publicClient.readContract({
+          address: disputeModuleAddress[aeneid],
+          abi: disputeModuleAbi,
+          functionName: "disputes",
+          args: [childDisputeId],
+        });
+
+        // Verify that both derivative IPs now have the same tag
+        // We need to check the dispute tags for each IP to verify propagation
+        // This requires fetching the dispute tag information from the chain
+
+        // const parentDispute = await clientA.dispute.getDispute({disputeId: disputeId});
+        // const childDispute = await clientA.dispute.getDispute({disputeId: childDisputeId});
+
+        // console.log(parentDispute.currentTag)
+        // console.log(childDispute.currentTag)
+
+        console.log(parentDisputeState[5])
+        console.log(childDisputeState[5])
+        // console.log(childDispute.currentTag)
+        
+
+        // // Convert the IMPROPER_USAGE tag to hex for comparison
+        const improperUsageTagHex = toHex(DisputeTargetTag.IMPROPER_USAGE, { size: 32 });
+        
+        // Check if both child IPs have the IMPROPER_USAGE tag
+        expect(parentDisputeState[5] === improperUsageTagHex).to.be.true;
+        expect(childDisputeState[5] === improperUsageTagHex).to.be.true;
+      });
+    });
+    // END - BORIS
 });
+
+
+

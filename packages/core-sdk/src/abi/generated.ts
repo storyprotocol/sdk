@@ -16604,6 +16604,38 @@ export type DisputeModuleDisputeResolvedEvent = {
 }
 
 /**
+ * DisputeModuleDisputesRequest
+ *
+ * @param disputeId uint256
+ */
+export type DisputeModuleDisputesRequest = {
+  disputeId: bigint
+}
+
+/**
+ * DisputeModuleDisputesResponse
+ *
+ * @param targetIpId address
+ * @param disputeInitiator address
+ * @param disputeTimestamp uint256
+ * @param arbitrationPolicy address
+ * @param disputeEvidenceHash bytes32
+ * @param targetTag bytes32
+ * @param currentTag bytes32
+ * @param infringerDisputeId uint256
+ */
+export type DisputeModuleDisputesResponse = {
+  targetIpId: Address
+  disputeInitiator: Address
+  disputeTimestamp: bigint
+  arbitrationPolicy: Address
+  disputeEvidenceHash: Hex
+  targetTag: Hex
+  currentTag: Hex
+  infringerDisputeId: bigint
+}
+
+/**
  * DisputeModuleIsWhitelistedDisputeTagRequest
  *
  * @param tag bytes32
@@ -16818,6 +16850,33 @@ export class DisputeModuleEventClient {
 export class DisputeModuleReadOnlyClient extends DisputeModuleEventClient {
   constructor(rpcClient: PublicClient, address?: Address) {
     super(rpcClient, address)
+  }
+
+  /**
+   * method disputes for contract DisputeModule
+   *
+   * @param request DisputeModuleDisputesRequest
+   * @return Promise<DisputeModuleDisputesResponse>
+   */
+  public async disputes(
+    request: DisputeModuleDisputesRequest,
+  ): Promise<DisputeModuleDisputesResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: disputeModuleAbi,
+      address: this.address,
+      functionName: 'disputes',
+      args: [request.disputeId],
+    })
+    return {
+      targetIpId: result[0],
+      disputeInitiator: result[1],
+      disputeTimestamp: result[2],
+      arbitrationPolicy: result[3],
+      disputeEvidenceHash: result[4],
+      targetTag: result[5],
+      currentTag: result[6],
+      infringerDisputeId: result[7],
+    }
   }
 
   /**
