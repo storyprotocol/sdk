@@ -116,19 +116,6 @@ importers:
         version: 8.32.0(eslint@9.26.0(jiti@1.21.0))(typescript@5.4.5)
 
   packages/eslint-config-story:
-    dependencies:
-      eslint-config-prettier:
-        specifier: ^8.10.0
-        version: 8.10.0(eslint@9.26.0(jiti@1.21.0))
-      eslint-config-turbo:
-        specifier: ^1.13.4
-        version: 1.13.4(eslint@9.26.0(jiti@1.21.0))
-      eslint-plugin-import:
-        specifier: ^2.31.0
-        version: 2.31.0(eslint-import-resolver-typescript@4.3.4)(eslint@9.26.0(jiti@1.21.0))
-      eslint-plugin-tsdoc:
-        specifier: ^0.4.0
-        version: 0.4.0
     devDependencies:
       '@eslint/js':
         specifier: ^9.26.0
@@ -139,9 +126,21 @@ importers:
       eslint:
         specifier: ^9.26.0
         version: 9.26.0(jiti@1.21.0)
+      eslint-config-prettier:
+        specifier: ^8.10.0
+        version: 8.10.0(eslint@9.26.0(jiti@1.21.0))
+      eslint-config-turbo:
+        specifier: ^1.13.4
+        version: 1.13.4(eslint@9.26.0(jiti@1.21.0))
       eslint-import-resolver-typescript:
         specifier: ^4.3.4
         version: 4.3.4(eslint-plugin-import@2.31.0)(eslint@9.26.0(jiti@1.21.0))
+      eslint-plugin-import:
+        specifier: ^2.31.0
+        version: 2.31.0(eslint-import-resolver-typescript@4.3.4)(eslint@9.26.0(jiti@1.21.0))
+      eslint-plugin-tsdoc:
+        specifier: ^0.4.0
+        version: 0.4.0
       globals:
         specifier: ^16.1.0
         version: 16.1.0
@@ -8072,7 +8071,7 @@ snapshots:
       hermes-profile-transformer: 0.0.6
       node-stream-zip: 1.15.0
       ora: 5.4.1
-      semver: 7.6.0
+      semver: 7.7.1
       strip-ansi: 5.2.0
       wcwidth: 1.0.1
       yaml: 2.4.1
@@ -8138,7 +8137,7 @@ snapshots:
       node-fetch: 2.7.0
       open: 6.4.0
       ora: 5.4.1
-      semver: 7.6.0
+      semver: 7.7.1
       shell-quote: 1.8.1
       sudo-prompt: 9.2.1
     transitivePeerDependencies:
@@ -8167,7 +8166,7 @@ snapshots:
       fs-extra: 8.1.0
       graceful-fs: 4.2.11
       prompts: 2.4.2
-      semver: 7.6.0
+      semver: 7.7.1
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -9756,7 +9755,7 @@ snapshots:
 
   compressible@2.0.18:
     dependencies:
-      mime-db: 1.52.0
+      mime-db: 1.54.0
 
   compression@1.7.4:
     dependencies:
@@ -10410,7 +10409,7 @@ snapshots:
 
   execa@5.1.1:
     dependencies:
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       get-stream: 6.0.1
       human-signals: 2.1.0
       is-stream: 2.0.1
