@@ -26,11 +26,6 @@ export * from "./types/resources/nftClient";
 export * from "./types/resources/group";
 export * from "./types/resources/wip";
 
-export { PIL_TYPE } from "./types/resources/license";
-
-export { AccessPermission } from "./types/resources/permission";
-
-export { DisputeTargetTag } from "./types/resources/dispute";
 export type {
   PiLicenseTemplateGetLicenseTermsResponse,
   IpAccountImplStateResponse,
