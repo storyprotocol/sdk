@@ -49,11 +49,10 @@ import {
 import { validateAddress } from "../utils/utils";
 import { ChainIds } from "../types/config";
 import { contractCallWithFees } from "../utils/feeUtils";
-import { calculateLicenseWipMintFee } from "../utils/calculateMintFee";
+import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { Erc20Spender } from "../types/utils/wip";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { LicensingConfig, RevShareType } from "../types/common";
-import { predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { TxOptions } from "../types/options";
 
@@ -184,8 +183,7 @@ export class LicenseClient {
       return await this.registerPILTermsHelper(
         getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
           currency,
-          royaltyPolicyAddress:
-            royaltyPolicyAddress || royaltyPolicyLapAddress[chain[this.chainId]],
+          royaltyPolicyAddress: royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         }),
         txOptions,
       );

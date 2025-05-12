@@ -107,13 +107,11 @@ import {
   getCalculatedDeadline,
   getIpIdAddress,
   getPublicMinting,
-} from "../utils/registrationUtils/registerValidation";
-import {
   getRoyaltyShares,
   validateMaxRts,
   validateDerivativeData,
+  validateLicenseTermsData,
 } from "../utils/registrationUtils/registerValidation";
-import { validateLicenseTermsData } from "../utils/registrationUtils/registerValidation";
 import {
   prepareRoyaltyTokensDistributionRequests,
   transferDistributeRoyaltyTokensRequest,
