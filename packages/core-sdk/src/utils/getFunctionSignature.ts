@@ -8,7 +8,11 @@ import { Abi, AbiFunction, AbiParameter } from "viem";
  * @returns The function signature in standard format (e.g. "methodName(uint256,address)")
  * @throws Error if method not found or if overloadIndex is required but not provided
  */
-export function getFunctionSignature(abi: Abi, methodName: string, overloadIndex?: number): string {
+export const getFunctionSignature = (
+  abi: Abi,
+  methodName: string,
+  overloadIndex?: number,
+): string => {
   const functions = abi.filter(
     (x): x is AbiFunction => x.type === "function" && x.name === methodName,
   );
@@ -45,4 +49,4 @@ export function getFunctionSignature(abi: Abi, methodName: string, overloadIndex
     .map((input) => getTypeString(input as AbiParameter & { components?: readonly AbiParameter[] }))
     .join(",");
   return `${methodName}(${inputs})`;
-}
+};

@@ -4,11 +4,11 @@ import {
   WaitForTransactionReceiptsRequest,
 } from "../types/options";
 
-export async function waitForTxReceipt({
+export const waitForTxReceipt = async ({
   txOptions,
   rpcClient,
   txHash,
-}: WaitForTransactionReceiptRequest): Promise<TransactionResponse> {
+}: WaitForTransactionReceiptRequest): Promise<TransactionResponse> => {
   if (!txOptions || !txOptions.waitForTransaction) {
     return { txHash };
   }
@@ -17,13 +17,13 @@ export async function waitForTxReceipt({
     hash: txHash,
   });
   return { txHash, receipt };
-}
+};
 
-export async function waitForTxReceipts({
+export const waitForTxReceipts = async ({
   txOptions,
   rpcClient,
   txHashes,
-}: WaitForTransactionReceiptsRequest): Promise<TransactionResponse[]> {
+}: WaitForTransactionReceiptsRequest): Promise<TransactionResponse[]> => {
   if (!txOptions || !txOptions.waitForTransaction) {
     return txHashes.map((hash) => ({ txHash: hash }));
   }
@@ -31,4 +31,4 @@ export async function waitForTxReceipts({
     txHashes.map((hash) => rpcClient.waitForTransactionReceipt({ ...txOptions, hash })),
   );
   return receipts.map((receipt) => ({ txHash: receipt.transactionHash, receipt }));
-}
+};
