@@ -1,39 +1,64 @@
-module.exports = {
-    parser: "@typescript-eslint/parser",
-    extends: [
-      "eslint:recommended",
-      "turbo",
-      "prettier",
-      "plugin:import/typescript",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    ],
-    plugins: ["@typescript-eslint", "eslint-plugin-tsdoc", "import"],
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import turbo from "eslint-plugin-turbo";
+import tsdocPlugin from "eslint-plugin-tsdoc";
+import eslintConfigPrettier from "eslint-config-prettier";
+import tsParser from "@typescript-eslint/parser";
+import importPlugin from "eslint-plugin-import";
+
+export default [
+  js.configs.recommended,
+  eslintConfigPrettier,
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  importPlugin.flatConfigs.recommended,
+  importPlugin.flatConfigs.typescript,
+  {
+    plugins: {
+      turbo,
+      tsdocPlugin,
+    },
+    settings: {
+      "import/resolver": {
+        // You will also need to install and configure the TypeScript resolver
+        // See also https://github.com/import-js/eslint-import-resolver-typescript#configuration
+        typescript: true,
+        node: true,
+      },
+    },
     rules: {
-        // eslint
-        "curly": "error",
-        "eqeqeq": "error",
-        "no-implicit-coercion": ["error", { boolean: false }],
-        "no-unused-expressions": "error",
-        "no-useless-computed-key": "error",
-        "no-console": "error",
+      // eslint
+      curly: "error",
+      eqeqeq: "error",
+      "no-implicit-coercion": ["error", { boolean: false }],
+      "no-unused-expressions": "error",
+      "no-useless-computed-key": "error",
+      "no-console": "error",
 
-        // Typescript 
-        "no-shadow": "off",
-        "@typescript-eslint/no-shadow": "error",
-        "@typescript-eslint/no-unused-vars": "error",
-        '@typescript-eslint/no-unsafe-argument': 'off', // causing a lot of IDE false positives.
+      // Typescript
+      "no-shadow": "off",
+      "@typescript-eslint/no-shadow": "error",
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-unsafe-argument": "off", // causing a lot of IDE false positives.
 
-        // import rules
-        "import/newline-after-import": "error",
-        "import/no-cycle": "error",
-        "import/no-useless-path-segments": "error",
-        "import/order": [
-          "error",
-          {
-            "groups": ["builtin", "external", "internal"],
-            "newlines-between": "always"
-          }
-        ]
-    }
-}
+      // import rules
+      "import/newline-after-import": "error",
+      "import/no-cycle": "error",
+      "import/no-useless-path-segments": "error",
+      "import/order": [
+        "error",
+        {
+          groups: ["builtin", "external", "internal"],
+          "newlines-between": "always",
+        },
+      ],
+    },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+    },
+  },
+];
