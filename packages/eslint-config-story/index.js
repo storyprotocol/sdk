@@ -54,10 +54,9 @@ export default [
       ],
     },
     languageOptions: {
-      parser: tsParser,
       parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
