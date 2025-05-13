@@ -137,6 +137,67 @@ describe("Dispute Functions", () => {
       disputeId = response.disputeId;
     });
 
+    it("should validate all enum values defined in DisputeTargetTag", async () => {
+      const allTags = Object.values(DisputeTargetTag);
+      
+      for (const tag of allTags) {
+        const tagHex: Hex = toHex(tag, { size: 32 });
+        const { allowed } = await clientA.dispute.disputeModuleClient.isWhitelistedDisputeTag({
+          tag: tagHex,
+        });
+        if (tag === DisputeTargetTag.IN_DISPUTE) {
+          expect(allowed).to.be.false;
+        } else {
+          expect(allowed).to.be.true;
+        }
+      }
+    });
+
+    it("should raise disputes with different DisputeTargetTag enum values", async () => {
+      const allTags = Object.values(DisputeTargetTag);
+      
+      for (const tag of allTags) {
+        const raiseDisputeRequest: RaiseDisputeRequest = {
+          targetIpId: ipIdB,
+          cid: await generateCID(),
+          targetTag: tag,
+          liveness: 2592000,
+          bond: minimumBond,
+          txOptions: {
+            waitForTransaction: true,
+          },
+        };
+        
+        if (tag === DisputeTargetTag.IN_DISPUTE) {
+          await expect(clientA.dispute.raiseDispute(raiseDisputeRequest))
+            .to.be.rejectedWith("The target tag IN_DISPUTE is not whitelisted");
+        } else {
+          const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
+          expect(response.txHash).to.be.a("string").and.not.empty;
+          expect(response.disputeId).to.be.a("bigint");
+        }
+      }
+    });
+
+    it("should reject a dispute with an invalid tag not defined in the enum", async () => {
+      const invalidTags = ["INVALID_TAG", "NOT_IN_ENUM", "RANDOM_STRING"];
+      
+      for (const invalidTag of invalidTags) {
+        const raiseDisputeRequest: RaiseDisputeRequest = {
+          targetIpId: ipIdB,
+          cid: await generateCID(),
+          targetTag: invalidTag as DisputeTargetTag,
+          liveness: 2592000,
+          bond: minimumBond,
+          txOptions: { waitForTransaction: true },
+        };
+  
+        await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+          `The target tag ${invalidTag} is not whitelisted`,
+        );
+      }
+    });
+    
     it("should be able to counter existing dispute once", async () => {
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
@@ -189,21 +250,6 @@ describe("Dispute Functions", () => {
 
       await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
         "Failed to raise dispute: Bonds must be between 100000000000000000 and 350000000000000000000.",
-      );
-    });
-
-    it("should throw error for non-whitelisted dispute tag", async () => {
-      const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: ipIdB,
-        cid: await generateCID(),
-        targetTag: "INVALID_TAG" as DisputeTargetTag,
-        liveness: 2592000,
-        bond: minimumBond,
-        txOptions: { waitForTransaction: true },
-      };
-
-      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-        `The target tag INVALID_TAG is not whitelisted`,
       );
     });
   });
@@ -589,6 +635,56 @@ describe("Dispute Functions", () => {
           },
         }),
       ).to.be.rejectedWith("NotDisputeInitiator");
+    });
+
+    it("should propagate IMPROPER_REGISTRATION tag to derivative IPs", async () => {
+      await settleAssertion(clientA, disputeId);
+
+      // Verify the dispute state changed correctly
+      const parentDisputeState = await publicClient.readContract({
+        address: disputeModuleAddress[aeneid],
+        abi: disputeModuleAbi,
+        functionName: "disputes",
+        args: [disputeId],
+      });
+      expect(parentDisputeState[6]).to.equal(parentDisputeState[5]); // currentTag should equal targetTag
+
+      // Propagate the tag to both derivative IPs
+      const results = await clientA.dispute.tagIfRelatedIpInfringed({
+        infringementTags: [
+          {
+            ipId: childIpId,
+            disputeId: disputeId,
+          },
+          {
+            ipId: childIpId2,
+            disputeId: disputeId,
+          },
+        ],
+        txOptions: { waitForTransaction: true },
+      });
+
+      const logData = results[0].receipt?.logs[0].data;
+      const firstWord = logData!.slice(0, 66);
+      const childDisputeId = BigInt(firstWord);
+
+      // Verify successful tagging
+      expect(results[0].txHash).to.be.a("string").and.not.empty;
+
+      const childDisputeState = await publicClient.readContract({
+        address: disputeModuleAddress[aeneid],
+        abi: disputeModuleAbi,
+        functionName: "disputes",
+        args: [childDisputeId],
+      });
+    
+      // Convert the IMPROPER_USAGE tag to hex for comparison
+      const improperUsageTagHex = toHex(DisputeTargetTag.IMPROPER_REGISTRATION, { size: 32 });
+      
+      // Verify both child IPs have the IMPROPER_USAGE tag by 
+      // fetching and comparing their dispute tags
+      expect(parentDisputeState[5] === improperUsageTagHex).to.be.true;
+      expect(childDisputeState[5] === improperUsageTagHex).to.be.true;
     });
   });
 
