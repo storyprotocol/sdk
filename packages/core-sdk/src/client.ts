@@ -5,6 +5,7 @@ import { ChainIds, StoryConfig, UseAccountStoryConfig, UseWalletStoryConfig } fr
 import { IPAssetClient } from "./resources/ipAsset";
 import { PermissionClient } from "./resources/permission";
 import { LicenseClient } from "./resources/license";
+import { PILFlavor } from "./resources/license";
 import { DisputeClient } from "./resources/dispute";
 import { IPAccountClient } from "./resources/ipAccount";
 import { chain, chainStringToViemChain, validateAddress } from "./utils/utils";
@@ -33,6 +34,7 @@ export class StoryClient {
   private _nftClient: NftClient | null = null;
   private _group: GroupClient | null = null;
   private _wip: WipClient | null = null;
+  private _pilFlavor: PILFlavor | null = null;
 
   private constructor(config: StoryConfig) {
     this.config = {
@@ -132,6 +134,14 @@ export class StoryClient {
     }
 
     return this._license;
+  }
+
+  /**
+   * Getter for the PILFlavor. Created when
+   * this method is called.
+   */
+  public get pilFlavor(): typeof PILFlavor {
+    return PILFlavor;
   }
 
   /**

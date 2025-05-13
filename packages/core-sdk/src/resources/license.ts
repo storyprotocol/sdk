@@ -57,6 +57,143 @@ import { predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { TxOptions } from "../types/options";
 
+export class PILFlavor {
+  constructor(private chainId: 1315 | 1514) {}
+  
+  commercialUse(overrides: Partial<RegisterPILTermsRequest> & { 
+    currency: Address;
+    royaltyPolicyAddress?: Address; // Make it optional
+  }): RegisterPILTermsRequest {
+    const validRoyaltyPolicyAddress = validateAddress(
+      overrides.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId]
+    );
+    
+    const baseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
+      currency: overrides.currency,
+      royaltyPolicyAddress: validRoyaltyPolicyAddress,
+      defaultMintingFee: overrides.defaultMintingFee || 0n
+    });
+    
+    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    
+    return { 
+      ...baseTerms, 
+      ...restOverrides,
+      commercialUse: true,
+      txOptions: overrides.txOptions || { waitForTransaction: true }
+    } as RegisterPILTermsRequest;
+  }
+  
+  nonCommercialUse(overrides: Partial<RegisterPILTermsRequest> & { 
+    currency: Address;
+    royaltyPolicyAddress?: Address;
+  }): RegisterPILTermsRequest {
+    const validRoyaltyPolicyAddress = validateAddress(
+      overrides.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId]
+    );
+    
+    const baseTerms: LicenseTerms = {
+      transferable: true,
+      royaltyPolicy: validRoyaltyPolicyAddress,
+      defaultMintingFee: 0n,
+      expiration: 0n,
+      commercialUse: false,
+      commercialAttribution: false,
+      commercializerChecker: zeroAddress,
+      commercializerCheckerData: "0x",
+      commercialRevShare: 0,
+      commercialRevCeiling: 0n,
+      derivativesAllowed: false,
+      derivativesAttribution: false,
+      derivativesApproval: false,
+      derivativesReciprocal: false,
+      derivativeRevCeiling: 0n,
+      currency: overrides.currency,
+      uri: "https://github.com/piplabs/pil-document/blob/main/off-chain-terms/NonCommercialUse.json"
+    };
+    
+    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    
+    return { 
+      ...baseTerms, 
+      ...restOverrides,
+      commercialUse: false, // Ensure this is always false
+      txOptions: overrides.txOptions || { waitForTransaction: true }
+    } as RegisterPILTermsRequest;
+  }
+  
+  nonCommercialRemix(overrides: Partial<RegisterPILTermsRequest> & { 
+    currency: Address;
+    royaltyPolicyAddress?: Address;
+  }): RegisterPILTermsRequest {
+    const validRoyaltyPolicyAddress = validateAddress(
+      overrides.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId]
+    );
+    
+    const baseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX, {
+      currency: overrides.currency,
+      royaltyPolicyAddress: validRoyaltyPolicyAddress
+    });
+    
+    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    
+    return { 
+      ...baseTerms, 
+      ...restOverrides,
+      commercialUse: false,
+      txOptions: overrides.txOptions || { waitForTransaction: true }
+    } as RegisterPILTermsRequest;
+  }
+  
+  creativeCommonsAttribution(overrides: Partial<RegisterPILTermsRequest> & { 
+    currency: Address;
+    royaltyPolicyAddress?: Address;
+  }): RegisterPILTermsRequest {
+    const validRoyaltyPolicyAddress = validateAddress(
+      overrides.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId]
+    );
+    
+    const baseTerms = getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
+      currency: overrides.currency,
+      royaltyPolicyAddress: validRoyaltyPolicyAddress
+    });
+    
+    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    
+    return { 
+      ...baseTerms, 
+      ...restOverrides,
+      txOptions: overrides.txOptions || { waitForTransaction: true }
+    } as RegisterPILTermsRequest;
+  }
+  
+  commercialRemix(overrides: Partial<RegisterPILTermsRequest> & { 
+    currency: Address;
+    royaltyPolicyAddress?: Address;
+    commercialRevShare: number;
+    defaultMintingFee?: string | number | bigint;
+  }): RegisterPILTermsRequest {
+    const validRoyaltyPolicyAddress = validateAddress(
+      overrides.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId]
+    );
+    
+    const baseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
+      currency: overrides.currency,
+      royaltyPolicyAddress: validRoyaltyPolicyAddress,
+      commercialRevShare: overrides.commercialRevShare,
+      defaultMintingFee: overrides.defaultMintingFee || 0n
+    });
+    
+    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    
+    return { 
+      ...baseTerms, 
+      ...restOverrides,
+      txOptions: overrides.txOptions || { waitForTransaction: true }
+    } as RegisterPILTermsRequest;
+  }
+}
+
 export class LicenseClient {
   public licensingModuleClient: LicensingModuleClient;
   public ipAssetRegistryClient: IpAssetRegistryClient;
@@ -70,6 +207,7 @@ export class LicenseClient {
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: ChainIds;
   private readonly walletAddress: Address;
+  private _pilFlavor: PILFlavor | null = null;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
@@ -85,6 +223,14 @@ export class LicenseClient {
     this.chainId = chainId;
     this.walletAddress = wallet.account!.address;
   }
+
+  public get pilFlavor(): PILFlavor {
+    if (this._pilFlavor === null) {
+      this._pilFlavor = new PILFlavor(this.chainId);
+    }
+    return this._pilFlavor;
+  }
+
   /**
    * Registers new license terms and return the ID of the newly registered license terms.
    *

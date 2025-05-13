@@ -33,70 +33,64 @@ describe("License Functions", () => {
     clientB = derivedClient.clientB;
   });
   describe("register license with different types", async () => {
-    it("should register license ", async () => {
-      const result = await client.license.registerPILTerms({
-        defaultMintingFee: 0,
-        currency: WIP_TOKEN_ADDRESS,
-        transferable: false,
-        royaltyPolicy: zeroAddress,
-        commercialUse: false,
-        commercialAttribution: false,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: "0x",
-        commercialRevShare: 0,
-        derivativesAllowed: false,
-        derivativesAttribution: false,
-        derivativesApproval: false,
-        derivativesReciprocal: false,
-        uri: "",
-        expiration: "",
-        commercialRevCeiling: "",
-        derivativeRevCeiling: "",
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
+    it("should register license using PILFlavor", async () => {
+      const result = await client.license.registerPILTerms(
+        client.license.pilFlavor.nonCommercialUse({
+          currency: WIP_TOKEN_ADDRESS,
+          royaltyPolicyAddress: zeroAddress,
+          transferable: false
+        })
+      );
       expect(result.licenseTermsId).to.be.a("bigint");
     });
+
     it("should register license with non commercial social remixing PIL", async () => {
-      const result = await client.license.registerNonComSocialRemixingPIL({
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
+      const result = await client.license.registerPILTerms(
+        client.license.pilFlavor.nonCommercialRemix({
+          currency: WIP_TOKEN_ADDRESS,
+          royaltyPolicyAddress: zeroAddress
+        })
+      );
       expect(result.licenseTermsId).to.be.a("bigint");
     });
+
     it("should register license with commercial use", async () => {
-      const result = await client.license.registerCommercialUsePIL({
-        defaultMintingFee: "1",
-        currency: WIP_TOKEN_ADDRESS,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
+      const result = await client.license.registerPILTerms(
+        client.license.pilFlavor.commercialUse({
+          currency: WIP_TOKEN_ADDRESS,
+          defaultMintingFee: "1",
+          txOptions: {
+            waitForTransaction: true,
+          }
+        })
+      );
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
     it("should register license with commercial Remix use", async () => {
-      const result = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
-        commercialRevShare: 100,
-        currency: WIP_TOKEN_ADDRESS,
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
+      const result = await client.license.registerPILTerms(
+        client.license.pilFlavor.commercialRemix({
+          currency: WIP_TOKEN_ADDRESS,
+          defaultMintingFee: "1",
+          commercialRevShare: 100,
+          txOptions: {
+            waitForTransaction: true,
+          }
+        })
+      );
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
-    it("should register license with creative commons attribution PIL", async () => {
-      const result = await client.license.registerCreativeCommonsAttributionPIL({
-        currency: WIP_TOKEN_ADDRESS,
-        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
+    it("should register license with creative commons attribution PILr", async () => {
+      const result = await client.license.registerPILTerms(
+        client.license.pilFlavor.creativeCommonsAttribution({
+          currency: WIP_TOKEN_ADDRESS,
+          royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
+          txOptions: {
+            waitForTransaction: true,
+          }
+        })
+      );
       expect(result.licenseTermsId).to.be.a("bigint");
     });
   });
