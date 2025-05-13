@@ -392,7 +392,7 @@ describe("License Functions", () => {
       const totalGas = gasUsed * effectiveGasPrice
       
       // Confirms the balance diff only reflects gas cost, since license fee is zero.
-      expect(balanceDiff <= totalGas).to.be.true; // Small amount for gas
+      expect(balanceDiff == totalGas).to.be.true; // Small amount for gas
     });
   });
 });
