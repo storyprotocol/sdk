@@ -74,7 +74,7 @@ export class PILFlavor {
       defaultMintingFee: overrides.defaultMintingFee || 0n
     });
     
-    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    const restOverrides = { ...overrides };
     
     return { 
       ...baseTerms, 
@@ -112,7 +112,7 @@ export class PILFlavor {
       uri: "https://github.com/piplabs/pil-document/blob/main/off-chain-terms/NonCommercialUse.json"
     };
     
-    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    const restOverrides = { ...overrides };
     
     return { 
       ...baseTerms, 
@@ -135,7 +135,7 @@ export class PILFlavor {
       royaltyPolicyAddress: validRoyaltyPolicyAddress
     });
     
-    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    const restOverrides = { ...overrides };
     
     return { 
       ...baseTerms, 
@@ -158,7 +158,7 @@ export class PILFlavor {
       royaltyPolicyAddress: validRoyaltyPolicyAddress
     });
     
-    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    const restOverrides = { ...overrides };
     
     return { 
       ...baseTerms, 
@@ -184,7 +184,7 @@ export class PILFlavor {
       defaultMintingFee: overrides.defaultMintingFee || 0n
     });
     
-    const { royaltyPolicyAddress: _, ...restOverrides } = overrides;
+    const restOverrides = { ...overrides };
     
     return { 
       ...baseTerms, 
