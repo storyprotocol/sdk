@@ -37,13 +37,16 @@ import {
 } from "../../types/utils/registerHelper";
 import { getIpMetadataForWorkflow } from "../getIpMetadataForWorkflow";
 import { validateAddress } from "../utils";
-import { calculateSPGWipMintFee } from "../calculateMintFee";
-import { getIpIdAddress, getCalculatedDeadline } from "./registerValidation";
-import { validateDerivativeData, getRoyaltyShares } from "./registerValidation";
-import { validateLicenseTermsData } from "./registerValidation";
-import { getPublicMinting } from "./registerValidation";
+import { calculateSPGWipMintFee, calculateDerivativeMintingFee } from "../calculateMintFee";
+import {
+  getIpIdAddress,
+  getCalculatedDeadline,
+  validateDerivativeData,
+  getRoyaltyShares,
+  validateLicenseTermsData,
+  getPublicMinting,
+} from "./registerValidation";
 import { generateOperationSignature } from "../generateOperationSignature";
-import { calculateDerivativeMintingFee } from "../calculateMintFee";
 /**
  * Transforms the registration request to the appropriate format based on workflow type.
  *

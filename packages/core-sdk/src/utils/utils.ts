@@ -1,5 +1,3 @@
-import { Hash } from "viem/types/misc";
-import { DecodeEventLogReturnType } from "viem/_types/utils/abi/decodeEventLog";
 import {
   Abi,
   decodeEventLog,
@@ -10,6 +8,8 @@ import {
   isAddress,
   Address,
   formatEther,
+  DecodeEventLogReturnType,
+  Hash,
 } from "viem";
 
 import { ChainIds, SupportedChainIds } from "../types/config";
@@ -52,7 +52,7 @@ export async function waitTxAndFilterLog<
         topics: log.topics as [signature: Hex, ...args: TTopics],
       });
       targetLogs.push(currentLog);
-    } catch (e) {
+    } catch {
       continue;
     }
   }
