@@ -173,7 +173,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   encodedTxs,
   rpcClient,
   token,
-}: ContractCallWithFees<T>): ContractCallWithFeesResponse<T> => {
+}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
   const wipTokenClient = new WipTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
   const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;
@@ -246,11 +246,9 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     wallet,
     calls,
   });
-  return (await handleTransactionResponse(
-    txHash,
-    rpcClient,
-    txOptions,
-  )) as unknown as ContractCallWithFeesResponse<T>;
+  return handleTransactionResponse(txHash, rpcClient, txOptions) as unknown as Promise<
+    ContractCallWithFeesResponse<T>
+  >;
 };
 
 export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
@@ -259,16 +257,16 @@ export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
   txOptions?: TxOptions,
 ): Promise<ContractCallWithFeesResponse<T>> => {
   if (Array.isArray(txHash)) {
-    return (await waitForTxReceipts({
+    return waitForTxReceipts({
       rpcClient,
       txOptions,
       txHashes: txHash,
-    })) as unknown as ContractCallWithFeesResponse<T>;
+    }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
   }
 
-  return (await waitForTxReceipt({
+  return waitForTxReceipt({
     rpcClient,
     txOptions,
     txHash,
-  })) as unknown as ContractCallWithFeesResponse<T>;
+  }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
 };
