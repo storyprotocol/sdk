@@ -195,8 +195,12 @@ describe("nftClient Functions", () => {
       const txHash = await erc20Client.approve(spgNftContract, maxUint256);
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
-      const tokenURIs = ["ipfs://QmTest/1", "iipfs://QmTest/2", "ipfs://QmTest/3"];
-
+      const tokenURIs = [
+        "ipfs://QmTest/1",
+        "iipfs://QmTest/2",
+        "ipfs://QmTest/3"
+      ];
+  
       for (let i = 0; i < tokenURIs.length; i++) {
         const tokenId = await mintBySpg(spgNftContract, tokenURIs[i]);
         expect(tokenId).to.not.be.undefined;
@@ -227,10 +231,10 @@ describe("nftClient Functions", () => {
       const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
       const txHash = await erc20Client.approve(spgNftContract, maxUint256);
       await publicClient.waitForTransactionReceipt({ hash: txHash });
-
+  
       const invalidTokenId = 999999999999999n;
       const updatedMetadata = "ipfs://QmUpdated/metadata.json";
-
+  
       await expect(
         client.nftClient.setTokenURI({
           tokenId: invalidTokenId!,
@@ -239,8 +243,8 @@ describe("nftClient Functions", () => {
           txOptions: {
             waitForTransaction: true,
           },
-        }),
-      ).to.be.rejectedWith("Failed to set token URI");
+        })
+      ).to.be.rejectedWith("Failed to set token URI"); 
     });
-  });
+  })
 });
