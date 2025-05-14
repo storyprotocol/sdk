@@ -115,7 +115,7 @@ export type ClaimAllRevenueResponse = {
    * Events are aggregated by unique combinations of claimer and token addresses,
    * summing up the amounts for the same claimer-token pairs.
    */
-  claimedTokens?: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
+  claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
 };
 
 export type TransferClaimedTokensFromIpToWalletParams = {
