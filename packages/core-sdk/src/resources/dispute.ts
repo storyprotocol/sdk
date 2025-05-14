@@ -132,7 +132,7 @@ export class DisputeClient {
         };
       }
     } catch (error) {
-      handleError(error, "Failed to raise dispute");
+      return handleError(error, "Failed to raise dispute");
     }
   }
 
@@ -162,7 +162,7 @@ export class DisputeClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to cancel dispute");
+      return handleError(error, "Failed to cancel dispute");
     }
   }
 
@@ -192,7 +192,7 @@ export class DisputeClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to resolve dispute");
+      return handleError(error, "Failed to resolve dispute");
     }
   }
   /**
@@ -239,7 +239,7 @@ export class DisputeClient {
         ),
       );
     } catch (error) {
-      handleError(error, "Failed to tag related ip infringed");
+      return handleError(error, "Failed to tag related ip infringed");
     }
   }
 
@@ -356,7 +356,7 @@ export class DisputeClient {
         receipt,
       };
     } catch (e) {
-      handleError(e, "Failed to dispute assertion");
+      return handleError(e, "Failed to dispute assertion");
     }
   }
 

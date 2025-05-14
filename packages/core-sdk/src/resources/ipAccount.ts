@@ -70,7 +70,7 @@ export class IPAccountClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to execute the IP Account transaction");
+      return handleError(error, "Failed to execute the IP Account transaction");
     }
   }
 
@@ -109,7 +109,7 @@ export class IPAccountClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to execute with signature for the IP Account transaction");
+      return handleError(error, "Failed to execute with signature for the IP Account transaction");
     }
   }
 
@@ -122,7 +122,7 @@ export class IPAccountClient {
       const { result: state } = await ipAccount.state();
       return state;
     } catch (error) {
-      handleError(error, "Failed to get the IP Account nonce");
+      return handleError(error, "Failed to get the IP Account nonce");
     }
   }
 
@@ -139,7 +139,7 @@ export class IPAccountClient {
         tokenId,
       };
     } catch (error) {
-      handleError(error, "Failed to get the token");
+      return handleError(error, "Failed to get the token");
     }
   }
   /**
@@ -169,7 +169,7 @@ export class IPAccountClient {
       });
       return txHash!;
     } catch (error) {
-      handleError(error, "Failed to set the IP metadata");
+      return handleError(error, "Failed to set the IP metadata");
     }
   }
 
@@ -209,7 +209,7 @@ export class IPAccountClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to transfer Erc20");
+      return handleError(error, "Failed to transfer Erc20");
     }
   }
 }

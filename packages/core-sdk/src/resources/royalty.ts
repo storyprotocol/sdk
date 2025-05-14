@@ -121,7 +121,7 @@ export class RoyaltyClient {
       }
       return { receipt, claimedTokens, txHashes };
     } catch (error) {
-      handleError(error, "Failed to claim all revenue");
+      return handleError(error, "Failed to claim all revenue");
     }
   }
 
@@ -247,7 +247,7 @@ export class RoyaltyClient {
         txHashes,
       };
     } catch (error) {
-      handleError(
+      return handleError(
         new Error((error as Error).message.replace("Failed to claim all revenue: ", "").trim()),
         "Failed to batch claim all revenue",
       );
@@ -316,7 +316,7 @@ export class RoyaltyClient {
         encodedTxs: [encodedTxData],
       });
     } catch (error) {
-      handleError(error, "Failed to pay royalty on behalf");
+      return handleError(error, "Failed to pay royalty on behalf");
     }
   }
 
@@ -335,7 +335,7 @@ export class RoyaltyClient {
         token: validateAddress(request.token),
       });
     } catch (error) {
-      handleError(error, "Failed to calculate claimable revenue");
+      return handleError(error, "Failed to calculate claimable revenue");
     }
   }
 

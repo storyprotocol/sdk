@@ -86,7 +86,7 @@ export class NftClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to create an SPG NFT collection");
+      return handleError(error, "Failed to create an SPG NFT collection");
     }
   }
   /**
@@ -123,14 +123,22 @@ export class NftClient {
     txOptions,
   }: SetTokenURIRequest): Promise<TransactionResponse> {
     try {
-      const spgNftClient = new SpgnftImplClient(this.rpcClient, this.wallet, spgNftContract);
+      const spgNftClient = new SpgnftImplClient(
+        this.rpcClient,
+        this.wallet,
+        validateAddress(spgNftContract),
+      );
       const txHash = await spgNftClient.setTokenUri({
         tokenId: BigInt(tokenId),
         tokenUri: tokenURI,
       });
-      return waitForTxReceipt({ txHash, txOptions, rpcClient: this.rpcClient });
+      return waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
     } catch (error) {
-      handleError(error, "Failed to set token URI");
+      return handleError(error, "Failed to set token URI");
     }
   }
 

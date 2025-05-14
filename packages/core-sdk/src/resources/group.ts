@@ -120,7 +120,7 @@ export class GroupClient {
         return { txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register group");
+      return handleError(error, "Failed to register group");
     }
   }
   /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
@@ -195,7 +195,10 @@ export class GroupClient {
         return { txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to mint and register IP and attach license and add to group");
+      return handleError(
+        error,
+        "Failed to mint and register IP and attach license and add to group",
+      );
     }
   }
 
@@ -308,7 +311,7 @@ export class GroupClient {
       }
       return { txHash };
     } catch (error) {
-      handleError(error, "Failed to register IP and attach license and add to group");
+      return handleError(error, "Failed to register IP and attach license and add to group");
     }
   }
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
@@ -340,7 +343,7 @@ export class GroupClient {
       }
       return { txHash };
     } catch (error) {
-      handleError(error, "Failed to register group and attach license");
+      return handleError(error, "Failed to register group and attach license");
     }
   }
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
@@ -399,7 +402,7 @@ export class GroupClient {
       }
       return { txHash };
     } catch (error) {
-      handleError(error, "Failed to register group and attach license and add ips");
+      return handleError(error, "Failed to register group and attach license and add ips");
     }
   }
   /**
@@ -475,7 +478,7 @@ export class GroupClient {
         }));
       return { txHash, collectedRoyalties, royaltiesDistributed };
     } catch (error) {
-      handleError(error, "Failed to collect and distribute group royalties");
+      return handleError(error, "Failed to collect and distribute group royalties");
     }
   }
 
@@ -507,7 +510,7 @@ export class GroupClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to add IP to group");
+      return handleError(error, "Failed to add IP to group");
     }
   }
   /**
@@ -527,7 +530,7 @@ export class GroupClient {
       // The result is cast as bigint[] because the `claimableReward` array is of type `readonly bigint[]`.
       return claimableReward as bigint[];
     } catch (error) {
-      handleError(error, "Failed to get claimable reward");
+      return handleError(error, "Failed to get claimable reward");
     }
   }
 
@@ -552,7 +555,7 @@ export class GroupClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to remove IPs from group");
+      return handleError(error, "Failed to remove IPs from group");
     }
   }
 
@@ -585,7 +588,7 @@ export class GroupClient {
       const claimedReward = this.groupingModuleEventClient.parseTxClaimedRewardEvent(receipt);
       return { txHash, claimedReward };
     } catch (error) {
-      handleError(error, "Failed to claim reward");
+      return handleError(error, "Failed to claim reward");
     }
   }
 
@@ -617,7 +620,7 @@ export class GroupClient {
         this.groupingModuleEventClient.parseTxCollectedRoyaltiesToGroupPoolEvent(receipt)[0].amount;
       return { txHash, collectedRoyalties };
     } catch (error) {
-      handleError(error, "Failed to collect royalties");
+      return handleError(error, "Failed to collect royalties");
     }
   }
 

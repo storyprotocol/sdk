@@ -12,6 +12,7 @@ import {
   WithdrawRequest,
 } from "../types/resources/wip";
 import { waitForTxReceipt } from "../utils/txOptions";
+import { TransactionResponse } from "../types/options";
 
 export class WipClient {
   public wrappedIpClient: WrappedIpClient;
@@ -28,7 +29,7 @@ export class WipClient {
    * Wraps the selected amount of IP to WIP.
    * The WIP will be deposited to the wallet that transferred the IP.
    */
-  public async deposit({ amount, txOptions }: DepositRequest) {
+  public async deposit({ amount, txOptions }: DepositRequest): Promise<TransactionResponse> {
     try {
       if (amount <= 0) {
         throw new Error("WIP deposit amount must be greater than 0.");
@@ -47,14 +48,14 @@ export class WipClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to deposit IP for WIP");
+      return handleError(error, "Failed to deposit IP for WIP");
     }
   }
 
   /**
    * Unwraps the selected amount of WIP to IP.
    */
-  public async withdraw({ amount, txOptions }: WithdrawRequest) {
+  public async withdraw({ amount, txOptions }: WithdrawRequest): Promise<TransactionResponse> {
     try {
       const targetAmt = BigInt(amount);
       if (targetAmt <= 0) {
@@ -67,14 +68,14 @@ export class WipClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to withdraw WIP");
+      return handleError(error, "Failed to withdraw WIP");
     }
   }
 
   /**
    * Approve a spender to use the wallet's WIP balance.
    */
-  public async approve(req: ApproveRequest) {
+  public async approve(req: ApproveRequest): Promise<TransactionResponse> {
     try {
       const amount = BigInt(req.amount);
       if (amount <= 0) {
@@ -91,7 +92,7 @@ export class WipClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to approve WIP");
+      return handleError(error, "Failed to approve WIP");
     }
   }
 
@@ -107,7 +108,7 @@ export class WipClient {
   /**
    * Transfers `amount` of WIP to a recipient `to`.
    */
-  public async transfer(request: TransferRequest) {
+  public async transfer(request: TransferRequest): Promise<TransactionResponse> {
     try {
       const amount = BigInt(request.amount);
       if (amount <= 0) {
@@ -123,14 +124,14 @@ export class WipClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to transfer WIP");
+      return handleError(error, "Failed to transfer WIP");
     }
   }
 
   /**
    * Transfers `amount` of WIP from `from` to a recipient `to`.
    */
-  public async transferFrom(request: TransferFromRequest) {
+  public async transferFrom(request: TransferFromRequest): Promise<TransactionResponse> {
     try {
       const amount = BigInt(request.amount);
       if (amount <= 0) {
@@ -147,7 +148,7 @@ export class WipClient {
         rpcClient: this.rpcClient,
       });
     } catch (error) {
-      handleError(error, "Failed to transfer WIP");
+      return handleError(error, "Failed to transfer WIP");
     }
   }
 }
