@@ -303,7 +303,7 @@ export class IPAssetClient {
         const processTransaction = async (
           hash: Hex,
           contractType: "spgNftContract" | "nftContract",
-        ) => {
+        ): Promise<void> => {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
             hash,
@@ -358,7 +358,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        const contractCall = () => {
+        const contractCall = (): Promise<Hash> => {
           return this.licensingModuleClient.registerDerivative(object);
         };
         return this.handleRegistrationWithFees({
@@ -538,7 +538,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
           transformRequest,
         );
@@ -716,7 +716,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
@@ -759,7 +759,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
@@ -834,7 +834,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.registrationWorkflowsClient.mintAndRegisterIp(object);
       };
       return this.handleRegistrationWithFees({
@@ -945,7 +945,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = async () => {
+      const contractCall = async (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
           object,
         );
@@ -1152,7 +1152,7 @@ export class IPAssetClient {
         this.royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVaultEncode(
           transformRequest,
         );
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
           transformRequest,
         );
@@ -1231,7 +1231,7 @@ export class IPAssetClient {
         this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensEncode(
           transformRequest,
         );
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
           transformRequest,
         );
@@ -1288,7 +1288,7 @@ export class IPAssetClient {
         this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensEncode(
           transformRequest,
         );
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
           transformRequest,
         );

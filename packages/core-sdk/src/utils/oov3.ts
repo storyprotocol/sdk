@@ -12,7 +12,7 @@ export const getAssertionDetails = async (
   rpcClient: PublicClient,
   arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient,
   assertionId: Hex,
-) => {
+): Promise<bigint> => {
   const oov3Contract = await getOov3Contract(arbitrationPolicyUmaClient);
   const { bond } = await rpcClient.readContract({
     address: oov3Contract,
@@ -28,7 +28,7 @@ export const getMinimumBond = async (
   rpcClient: PublicClient,
   arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient,
   currency: Address,
-) => {
+): Promise<bigint> => {
   const oov3Contract = await getOov3Contract(arbitrationPolicyUmaClient);
   return await rpcClient.readContract({
     address: oov3Contract,

@@ -55,7 +55,9 @@ export const validateLicenseTermsData = async (
   }
   return { licenseTerms, licenseTermsData: processedLicenseTermsData };
 };
-export const getRoyaltyShares = (royaltyShares: RoyaltyShare[]) => {
+export const getRoyaltyShares = (
+  royaltyShares: RoyaltyShare[],
+): { royaltyShares: RoyaltyShare[]; totalAmount: number } => {
   let actualTotal = 0;
   let sum = 0;
   const shares = royaltyShares.map((share) => {
@@ -73,7 +75,7 @@ export const getRoyaltyShares = (royaltyShares: RoyaltyShare[]) => {
     actualTotal += value;
     return { ...share, percentage: value };
   });
-  return { royaltyShares: shares, totalAmount: actualTotal } as const;
+  return { royaltyShares: shares, totalAmount: actualTotal };
 };
 
 export const validateDerivativeData = async ({
@@ -142,7 +144,7 @@ export const validateDerivativeData = async ({
   return derivativeData;
 };
 
-export const validateMaxRts = (maxRts: number) => {
+export const validateMaxRts = (maxRts: number): void => {
   if (isNaN(maxRts)) {
     throw new Error(`The maxRts must be a number.`);
   }

@@ -2,6 +2,7 @@ import {
   Address,
   encodeFunctionData,
   erc20Abi,
+  Hash,
   Hex,
   PublicClient,
   TransactionReceipt,
@@ -20,6 +21,7 @@ import {
   PayRoyaltyOnBehalfResponse,
   TransferClaimedTokensFromIpToWalletParams,
   TransferToVaultRequest,
+  ClaimerInfo,
 } from "../types/resources/royalty";
 import {
   IpAccountImplClient,
@@ -293,7 +295,7 @@ export class RoyaltyClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.royaltyModuleClient.payRoyaltyOnBehalf(req);
       };
       const tokenSpenders: Erc20Spender[] = [
@@ -386,7 +388,7 @@ export class RoyaltyClient {
   private async transferClaimedTokensFromIpToWallet({
     ipAccount,
     claimedTokens,
-  }: TransferClaimedTokensFromIpToWalletParams) {
+  }: TransferClaimedTokensFromIpToWalletParams): Promise<Hash[]> {
     const txHashes: Hex[] = [];
     const calls = [];
     for (const { token, amount } of claimedTokens) {
@@ -406,7 +408,7 @@ export class RoyaltyClient {
     return txHashes;
   }
 
-  private async getClaimerInfo(claimer: Address) {
+  private async getClaimerInfo(claimer: Address): Promise<ClaimerInfo> {
     const isClaimerIp = await this.ipAssetRegistryClient.isRegistered({
       id: claimer,
     });
@@ -422,7 +424,9 @@ export class RoyaltyClient {
    * Unwraps WIP tokens back to their underlying IP tokens. Only accepts a single WIP token entry
    * in the claimed tokens array. Throws an error if multiple WIP tokens are found.
    */
-  private async unwrapWipTokens(claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[]) {
+  private async unwrapWipTokens(
+    claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[],
+  ): Promise<Hex | undefined> {
     const wipTokens = claimedTokens.filter((token) => token.token === WIP_TOKEN_ADDRESS);
     if (wipTokens.length > 1) {
       throw new Error("Multiple WIP tokens found in the claimed tokens.");

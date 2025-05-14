@@ -1,4 +1,4 @@
-import { Hex, PublicClient, encodeAbiParameters, maxUint256, stringToHex } from "viem";
+import { Hex, PublicClient, encodeAbiParameters, maxUint256, stringToHex, Hash } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -98,7 +98,7 @@ export class DisputeClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        const contractCall = () => this.disputeModuleClient.raiseDispute(req);
+        const contractCall = (): Promise<Hash> => this.disputeModuleClient.raiseDispute(req);
         const { txHash, receipt } = await contractCallWithFees({
           totalFees: bonds,
           options: {
@@ -289,7 +289,7 @@ export class DisputeClient {
           hash: txHash,
         });
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         const calls = [];
         if (bond > 0) {
           calls.push({
