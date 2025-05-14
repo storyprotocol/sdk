@@ -183,7 +183,8 @@ export class LicenseClient {
       return await this.registerPILTermsHelper(
         getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
           currency,
-          royaltyPolicyAddress: royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
+          royaltyPolicyAddress:
+            royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         }),
         txOptions,
       );
