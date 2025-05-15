@@ -1194,7 +1194,7 @@ describe("IP Asset Functions", () => {
           },
           txOptions: { waitForTransaction: true },
         });
-        await expect(rsp).to.be.rejectedWith(/^Wallet does not have enough WIP to pay for fees./);
+        await expect(rsp).to.be.rejectedWith(/Wallet does not have enough WIP to pay for fees/);
       });
 
       it("should spend existing wip when register derivative and distribute loyalty tokens", async () => {
