@@ -15,7 +15,7 @@ import {
 import { ChainIds, SupportedChainIds } from "../types/config";
 import { aeneid, mainnet } from "./chain";
 
-export async function waitTxAndFilterLog<
+export const waitTxAndFilterLog = async <
   const TAbi extends Abi | readonly unknown[],
   TEventName extends ContractEventName<TAbi> | undefined = ContractEventName<TAbi>,
   TTopics extends Hex[] = Hex[],
@@ -32,7 +32,7 @@ export async function waitTxAndFilterLog<
     pollingInterval?: number;
     timeout?: number;
   },
-): Promise<DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[]> {
+): Promise<DecodeEventLogReturnType<TAbi, TEventName, TTopics, TData, TStrict>[]> => {
   const txReceipt = await client.waitForTransactionReceipt({
     hash: txHash,
     confirmations: params.confirmations,
@@ -60,9 +60,9 @@ export async function waitTxAndFilterLog<
     throw new Error(`Not found event ${params.eventName} in target transaction`);
   }
   return targetLogs;
-}
+};
 
-export async function waitTx(
+export const waitTx = async function (
   client: PublicClient,
   txHash: Hash,
   params?: {
@@ -75,9 +75,9 @@ export async function waitTx(
     hash: txHash,
     ...params,
   });
-}
+};
 
-export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
+export const chainStringToViemChain = function (chainId: SupportedChainIds): Chain {
   switch (chainId) {
     case 1315:
     case "aeneid":
@@ -88,7 +88,7 @@ export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
     default:
       throw new Error(`ChainId ${String(chainId)} not supported`);
   }
-}
+};
 
 export const chain: Record<SupportedChainIds, ChainIds> = {
   aeneid: 1315,
@@ -97,17 +97,17 @@ export const chain: Record<SupportedChainIds, ChainIds> = {
   1514: 1514,
 };
 
-export function validateAddress(address: string): Address {
+export const validateAddress = function (address: string): Address {
   if (!isAddress(address, { strict: false })) {
     throw Error(`Invalid address: ${address}.`);
   }
   return address;
-}
+};
 
-export function validateAddresses(addresses: string[]): Address[] {
+export const validateAddresses = function (addresses: string[]): Address[] {
   return addresses.map((address) => validateAddress(address));
-}
+};
 
-export function getTokenAmountDisplay(amount: bigint, unit = "IP"): string {
+export const getTokenAmountDisplay = function (amount: bigint, unit = "IP"): string {
   return `${formatEther(amount)}${unit}`;
-}
+};
