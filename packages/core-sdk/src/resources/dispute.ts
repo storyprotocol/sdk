@@ -1,4 +1,4 @@
-import { Hex, PublicClient, encodeAbiParameters, maxUint256, stringToHex } from "viem";
+import { Hex, PublicClient, encodeAbiParameters, maxUint256, stringToHex, Hash } from "viem";
 
 import { handleError } from "../utils/errors";
 import {
@@ -98,7 +98,7 @@ export class DisputeClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        const contractCall = () => this.disputeModuleClient.raiseDispute(req);
+        const contractCall = (): Promise<Hash> => this.disputeModuleClient.raiseDispute(req);
         const { txHash, receipt } = await contractCallWithFees({
           totalFees: bonds,
           options: {
@@ -132,7 +132,7 @@ export class DisputeClient {
         };
       }
     } catch (error) {
-      handleError(error, "Failed to raise dispute");
+      return handleError(error, "Failed to raise dispute");
     }
   }
 
@@ -162,7 +162,7 @@ export class DisputeClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to cancel dispute");
+      return handleError(error, "Failed to cancel dispute");
     }
   }
 
@@ -192,7 +192,7 @@ export class DisputeClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to resolve dispute");
+      return handleError(error, "Failed to resolve dispute");
     }
   }
   /**
@@ -239,7 +239,7 @@ export class DisputeClient {
         ),
       );
     } catch (error) {
-      handleError(error, "Failed to tag related ip infringed");
+      return handleError(error, "Failed to tag related ip infringed");
     }
   }
 
@@ -289,7 +289,7 @@ export class DisputeClient {
           hash: txHash,
         });
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         const calls = [];
         if (bond > 0) {
           calls.push({
@@ -356,7 +356,7 @@ export class DisputeClient {
         receipt,
       };
     } catch (e) {
-      handleError(e, "Failed to dispute assertion");
+      return handleError(e, "Failed to dispute assertion");
     }
   }
 

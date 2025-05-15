@@ -26,7 +26,7 @@ const approvalAllSpenders = async ({
   useMultiCall,
   rpcClient,
   multicallAddress,
-}: ApprovalCall) => {
+}: ApprovalCall): Promise<Multicall3ValueCall[]> => {
   const approvals = await Promise.all(
     spenders.map(async (spender) => {
       // make sure we never give approval to the multicall contract
@@ -82,7 +82,7 @@ const multiCallWrapIp = async ({
   wallet,
   contractCall,
   wipOptions,
-}: MulticallWithWrapIp) => {
+}: MulticallWithWrapIp): Promise<{ txHash: Hash | Hash[] }> => {
   if (ipAmountToWrap === 0n) {
     throw new Error("ipAmountToWrap should be greater than 0");
   }
@@ -173,7 +173,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   encodedTxs,
   rpcClient,
   token,
-}: ContractCallWithFees<T>): ContractCallWithFeesResponse<T> => {
+}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
   const wipTokenClient = new WipTokenClient(rpcClient, wallet);
   const isWip = token === wipTokenClient.address || token === undefined;
   const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;
@@ -246,20 +246,27 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     wallet,
     calls,
   });
-  return handleTransactionResponse(txHash, rpcClient, txOptions) as ContractCallWithFeesResponse<T>;
+  return handleTransactionResponse(txHash, rpcClient, txOptions) as unknown as Promise<
+    ContractCallWithFeesResponse<T>
+  >;
 };
 
-export const handleTransactionResponse = <T extends Hash | Hash[] = Hash>(
+export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
   txHash: T,
   rpcClient: PublicClient,
   txOptions?: TxOptions,
-) => {
+): Promise<ContractCallWithFeesResponse<T>> => {
   if (Array.isArray(txHash)) {
     return waitForTxReceipts({
       rpcClient,
       txOptions,
       txHashes: txHash,
-    }) as ContractCallWithFeesResponse<T>;
+    }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
   }
-  return waitForTxReceipt({ rpcClient, txOptions, txHash }) as ContractCallWithFeesResponse<T>;
+
+  return waitForTxReceipt({
+    rpcClient,
+    txOptions,
+    txHash,
+  }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
 };
