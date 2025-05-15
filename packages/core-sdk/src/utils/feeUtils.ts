@@ -1,18 +1,18 @@
 import { Hash, maxUint256, PublicClient } from "viem";
 
-import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
+import { simulateAndWriteContract } from "./contract";
+import { ERC20Client, WipTokenClient } from "./token";
+import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
 import { getTokenAmountDisplay } from "./utils";
+import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
+import { TxOptions } from "../types/options";
 import {
   ApprovalCall,
-  Multicall3ValueCall,
-  MulticallWithWrapIp,
   ContractCallWithFees,
   ContractCallWithFeesResponse,
+  Multicall3ValueCall,
+  MulticallWithWrapIp,
 } from "../types/utils/wip";
-import { simulateAndWriteContract } from "./contract";
-import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
-import { ERC20Client, WipTokenClient } from "./token";
-import { TxOptions } from "../types/options";
 
 /**
  * check the allowance of all spenders and call approval if any spender

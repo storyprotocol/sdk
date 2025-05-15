@@ -1,7 +1,7 @@
 import { Address } from "viem";
 
-import { TxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
+import { TxOptions } from "../options";
 
 export type CreateNFTCollectionRequest = {
   name: string;

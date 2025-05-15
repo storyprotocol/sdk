@@ -1,7 +1,5 @@
 import { Address, Hash, Hex, TransactionReceipt, WaitForTransactionReceiptParameters } from "viem";
 
-import { TxOptions, WithWipOptions } from "../options";
-import { LicenseTerms, LicenseTermsInput } from "./license";
 import {
   DerivativeWorkflowsClient,
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
@@ -19,6 +17,8 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
 } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
+import { TxOptions, WithWipOptions } from "../options";
+import { LicenseTerms, LicenseTermsInput } from "./license";
 import { Erc20Spender } from "../utils/wip";
 
 export type DerivativeDataInput = {

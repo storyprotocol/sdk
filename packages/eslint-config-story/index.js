@@ -52,6 +52,11 @@ export default [
         {
           groups: ["builtin", "external", "internal"],
           "newlines-between": "always",
+          named: true,
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
+          },
         },
       ],
     },

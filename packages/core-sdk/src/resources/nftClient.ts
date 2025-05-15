@@ -1,4 +1,4 @@
-import { Address, PublicClient, isAddress, maxUint32, zeroAddress } from "viem";
+import { Address, isAddress, maxUint32, PublicClient, zeroAddress } from "viem";
 
 import {
   RegistrationWorkflowsClient,
@@ -7,6 +7,7 @@ import {
   SpgnftImplClient,
   SpgnftImplReadOnlyClient,
 } from "../abi/generated";
+import { TransactionResponse } from "../types/options";
 import {
   CreateNFTCollectionRequest,
   CreateNFTCollectionResponse,
@@ -14,9 +15,8 @@ import {
   SetTokenURIRequest,
 } from "../types/resources/nftClient";
 import { handleError } from "../utils/errors";
-import { validateAddress } from "../utils/utils";
-import { TransactionResponse } from "../types/options";
 import { waitForTxReceipt } from "../utils/txOptions";
+import { validateAddress } from "../utils/utils";
 
 export class NftClient {
   public registrationWorkflowsClient: RegistrationWorkflowsClient;

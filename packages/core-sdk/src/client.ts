@@ -1,18 +1,18 @@
-import { createPublicClient, createWalletClient, PublicClient } from "viem";
 import * as dotenv from "dotenv";
+import { createPublicClient, createWalletClient, PublicClient } from "viem";
 
-import { ChainIds, StoryConfig, UseAccountStoryConfig, UseWalletStoryConfig } from "./types/config";
-import { IPAssetClient } from "./resources/ipAsset";
-import { PermissionClient } from "./resources/permission";
-import { LicenseClient } from "./resources/license";
-import { DisputeClient } from "./resources/dispute";
-import { IPAccountClient } from "./resources/ipAccount";
-import { chain, chainStringToViemChain, validateAddress } from "./utils/utils";
-import { RoyaltyClient } from "./resources/royalty";
-import { NftClient } from "./resources/nftClient";
-import { GroupClient } from "./resources/group";
 import { SimpleWalletClient } from "./abi/generated";
+import { DisputeClient } from "./resources/dispute";
+import { GroupClient } from "./resources/group";
+import { IPAccountClient } from "./resources/ipAccount";
+import { IPAssetClient } from "./resources/ipAsset";
+import { LicenseClient } from "./resources/license";
+import { NftClient } from "./resources/nftClient";
+import { PermissionClient } from "./resources/permission";
+import { RoyaltyClient } from "./resources/royalty";
 import { WipClient } from "./resources/wip";
+import { ChainIds, StoryConfig, UseAccountStoryConfig, UseWalletStoryConfig } from "./types/config";
+import { chain, chainStringToViemChain, validateAddress } from "./utils/utils";
 
 if (typeof process !== "undefined") {
   dotenv.config();

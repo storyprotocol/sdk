@@ -1,11 +1,12 @@
 import { Address, Hash, PublicClient } from "viem";
 
 import {
-  Multicall3Aggregate3Request,
   EncodedTxData,
-  SimpleWalletClient,
   Erc20Client,
+  Multicall3Aggregate3Request,
+  SimpleWalletClient,
 } from "../../abi/generated";
+import { TokenClient, WipTokenClient } from "../../utils/token";
 import {
   ERC20Options,
   TransactionResponse,
@@ -13,7 +14,6 @@ import {
   WipOptions,
   WithWipOptions,
 } from "../options";
-import { TokenClient, WipTokenClient } from "../../utils/token";
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 

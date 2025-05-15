@@ -1,13 +1,13 @@
 import {
-  WalletClient,
   encodeAbiParameters,
   encodeFunctionData,
   keccak256,
   toFunctionSelector,
+  WalletClient,
 } from "viem";
 
-import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
 import { validateAddress } from "./utils";
+import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
 import { defaultFunctionSelector } from "../constants/common";
 import {
   PermissionSignatureRequest,

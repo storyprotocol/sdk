@@ -1,62 +1,14 @@
 import {
+  Address,
+  encodeFunctionData,
+  Hash,
   Hex,
   PublicClient,
-  zeroAddress,
-  Address,
-  zeroHash,
-  encodeFunctionData,
   TransactionReceipt,
-  Hash,
+  zeroAddress,
+  zeroHash,
 } from "viem";
 
-import { validateAddress } from "../utils/utils";
-import { handleError } from "../utils/errors";
-import {
-  BatchMintAndRegisterIpAndMakeDerivativeRequest,
-  BatchMintAndRegisterIpAndMakeDerivativeResponse,
-  BatchMintAndRegisterIpAssetWithPilTermsRequest,
-  BatchMintAndRegisterIpAssetWithPilTermsResponse,
-  BatchRegisterDerivativeRequest,
-  BatchRegisterDerivativeResponse,
-  BatchRegisterRequest,
-  BatchRegisterResponse,
-  MintAndRegisterIpAssetWithPilTermsRequest,
-  MintAndRegisterIpAssetWithPilTermsResponse,
-  MintAndRegisterIpAndMakeDerivativeRequest,
-  MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  MintAndRegisterIpRequest,
-  RegisterDerivativeRequest,
-  RegisterDerivativeResponse,
-  RegisterDerivativeWithLicenseTokensRequest,
-  RegisterDerivativeWithLicenseTokensResponse,
-  RegisterIpAndAttachPilTermsRequest,
-  RegisterIpAndAttachPilTermsResponse,
-  RegisterIpAndMakeDerivativeRequest,
-  RegisterIpAndMakeDerivativeResponse,
-  RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  RegisterIpResponse,
-  RegisterPilTermsAndAttachRequest,
-  RegisterPilTermsAndAttachResponse,
-  RegisterRequest,
-  MintAndRegisterIpAndMakeDerivativeResponse,
-  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
-  DistributeRoyaltyTokens,
-  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
-  BatchMintAndRegisterIpAssetWithPilTermsResult,
-  IpIdAndTokenId,
-  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
-  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
-  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
-  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
-  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
-  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
-  CommonRegistrationTxResponse,
-  CommonRegistrationParams,
-  TransformIpRegistrationWorkflowResponse,
-  BatchRegistrationResult,
-  BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
-  BatchRegisterIpAssetsWithOptimizedWorkflowsResponse,
-} from "../types/resources/ipAsset";
 import {
   AccessControllerClient,
   CoreMetadataModuleClient,
@@ -65,6 +17,7 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  ipAccountImplAbi,
   IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
@@ -73,6 +26,7 @@ import {
   LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest,
   LicenseRegistryReadOnlyClient,
   LicenseTokenReadOnlyClient,
+  licensingModuleAbi,
   LicensingModuleClient,
   Multicall3Client,
   PiLicenseTemplateClient,
@@ -89,36 +43,82 @@ import {
   SimpleWalletClient,
   SpgnftImplReadOnlyClient,
   WrappedIpClient,
-  ipAccountImplAbi,
-  licensingModuleAbi,
 } from "../abi/generated";
-import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
-import { LicenseTerms } from "../types/resources/license";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
-import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { contractCallWithFees } from "../utils/feeUtils";
-import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
-import { Erc20Spender } from "../types/utils/wip";
 import { ChainIds } from "../types/config";
+import {
+  BatchMintAndRegisterIpAndMakeDerivativeRequest,
+  BatchMintAndRegisterIpAndMakeDerivativeResponse,
+  BatchMintAndRegisterIpAssetWithPilTermsRequest,
+  BatchMintAndRegisterIpAssetWithPilTermsResponse,
+  BatchMintAndRegisterIpAssetWithPilTermsResult,
+  BatchRegisterDerivativeRequest,
+  BatchRegisterDerivativeResponse,
+  BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
+  BatchRegisterIpAssetsWithOptimizedWorkflowsResponse,
+  BatchRegisterRequest,
+  BatchRegisterResponse,
+  BatchRegistrationResult,
+  CommonRegistrationParams,
+  CommonRegistrationTxResponse,
+  DistributeRoyaltyTokens,
+  IpIdAndTokenId,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
+  MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
+  MintAndRegisterIpAndMakeDerivativeRequest,
+  MintAndRegisterIpAndMakeDerivativeResponse,
+  MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  MintAndRegisterIpAssetWithPilTermsRequest,
+  MintAndRegisterIpAssetWithPilTermsResponse,
+  MintAndRegisterIpRequest,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  RegisterDerivativeRequest,
+  RegisterDerivativeResponse,
+  RegisterDerivativeWithLicenseTokensRequest,
+  RegisterDerivativeWithLicenseTokensResponse,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
+  RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  RegisterIpAndAttachPilTermsRequest,
+  RegisterIpAndAttachPilTermsResponse,
+  RegisterIpAndMakeDerivativeRequest,
+  RegisterIpAndMakeDerivativeResponse,
+  RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  RegisterIpResponse,
+  RegisterPilTermsAndAttachRequest,
+  RegisterPilTermsAndAttachResponse,
+  RegisterRequest,
+  TransformIpRegistrationWorkflowResponse,
+} from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
+import { LicenseTerms } from "../types/resources/license";
+import { SignatureMethodType } from "../types/utils/registerHelper";
+import { Erc20Spender } from "../types/utils/wip";
+import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
+import { handleError } from "../utils/errors";
+import { contractCallWithFees } from "../utils/feeUtils";
+import { generateOperationSignature } from "../utils/generateOperationSignature";
+import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
+import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
   getCalculatedDeadline,
   getIpIdAddress,
   getPublicMinting,
   getRoyaltyShares,
-  validateMaxRts,
   validateDerivativeData,
   validateLicenseTermsData,
+  validateMaxRts,
 } from "../utils/registrationUtils/registerValidation";
 import {
   prepareRoyaltyTokensDistributionRequests,
   transferDistributeRoyaltyTokensRequest,
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
-import { SignatureMethodType } from "../types/utils/registerHelper";
-import { generateOperationSignature } from "../utils/generateOperationSignature";
+import { validateAddress } from "../utils/utils";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;

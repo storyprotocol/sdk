@@ -1,7 +1,7 @@
 import { Address, Hex } from "viem";
 
-import { TxOptions, WipOptions, WithTxOptions } from "../options";
 import { EncodedTxData } from "../../abi/generated";
+import { TxOptions, WipOptions, WithTxOptions } from "../options";
 
 export type RaiseDisputeRequest = WithTxOptions & {
   /** The IP ID that is the target of the dispute. */

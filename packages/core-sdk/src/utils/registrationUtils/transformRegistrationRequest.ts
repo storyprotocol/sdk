@@ -1,18 +1,18 @@
 import { encodeFunctionData, Hash } from "viem";
 
 import {
-  RoyaltyTokenDistributionWorkflowsClient,
-  LicenseAttachmentWorkflowsClient,
-  DerivativeWorkflowsClient,
   derivativeWorkflowsAbi,
-  licenseAttachmentWorkflowsAbi,
-  royaltyTokenDistributionWorkflowsAbi,
-  SpgnftImplReadOnlyClient,
+  DerivativeWorkflowsClient,
   IpAccountImplClient,
   ipRoyaltyVaultImplAbi,
   IpRoyaltyVaultImplReadOnlyClient,
+  licenseAttachmentWorkflowsAbi,
+  LicenseAttachmentWorkflowsClient,
+  royaltyTokenDistributionWorkflowsAbi,
   royaltyTokenDistributionWorkflowsAddress,
+  RoyaltyTokenDistributionWorkflowsClient,
   RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
+  SpgnftImplReadOnlyClient,
 } from "../../abi/generated";
 import {
   LicenseTermsDataInput,
@@ -35,18 +35,18 @@ import {
   TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
   TransformRegistrationRequestConfig,
 } from "../../types/utils/registerHelper";
+import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../calculateMintFee";
+import { generateOperationSignature } from "../generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../getIpMetadataForWorkflow";
 import { validateAddress } from "../utils";
-import { calculateSPGWipMintFee, calculateDerivativeMintingFee } from "../calculateMintFee";
 import {
-  getIpIdAddress,
   getCalculatedDeadline,
-  validateDerivativeData,
-  getRoyaltyShares,
-  validateLicenseTermsData,
+  getIpIdAddress,
   getPublicMinting,
+  getRoyaltyShares,
+  validateDerivativeData,
+  validateLicenseTermsData,
 } from "./registerValidation";
-import { generateOperationSignature } from "../generateOperationSignature";
 /**
  * Transforms the registration request to the appropriate format based on workflow type.
  *

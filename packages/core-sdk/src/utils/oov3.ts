@@ -1,4 +1,4 @@
-import { Address, PublicClient, Hex } from "viem";
+import { Address, Hex, PublicClient } from "viem";
 
 import { ArbitrationPolicyUmaClient } from "../abi/generated";
 import { ASSERTION_ABI } from "../abi/oov3Abi";

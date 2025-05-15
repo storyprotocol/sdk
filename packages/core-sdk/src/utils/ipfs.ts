@@ -1,6 +1,6 @@
-import { CID } from "multiformats/cid";
 import bs58 from "bs58";
 import { base58btc } from "multiformats/bases/base58";
+import { CID } from "multiformats/cid";
 import { Hex } from "viem";
 
 const v0Prefix = "1220";

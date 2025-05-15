@@ -15,46 +15,46 @@ import {
   PiLicenseTemplateClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
-  SimpleWalletClient,
-  WrappedIpClient,
   royaltyModuleAddress,
   royaltyPolicyLapAddress,
+  SimpleWalletClient,
+  WrappedIpClient,
 } from "../abi/generated";
+import { LicensingConfig, RevShareType } from "../types/common";
+import { ChainIds } from "../types/config";
+import { TxOptions } from "../types/options";
 import {
-  LicenseTerms,
-  RegisterNonComSocialRemixingPILRequest,
-  RegisterPILResponse,
-  RegisterCommercialUsePILRequest,
-  RegisterCommercialRemixPILRequest,
   AttachLicenseTermsRequest,
+  AttachLicenseTermsResponse,
+  GetLicensingConfigRequest,
+  LicenseTerms,
+  LicenseTermsId,
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
   PIL_TYPE,
-  AttachLicenseTermsResponse,
-  LicenseTermsId,
-  RegisterPILTermsRequest,
   PredictMintingLicenseFeeRequest,
+  RegisterCommercialRemixPILRequest,
+  RegisterCommercialUsePILRequest,
+  RegisterCreativeCommonsAttributionPILRequest,
+  RegisterNonComSocialRemixingPILRequest,
+  RegisterPILResponse,
+  RegisterPILTermsRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
-  GetLicensingConfigRequest,
-  RegisterCreativeCommonsAttributionPILRequest,
 } from "../types/resources/license";
+import { Erc20Spender } from "../types/utils/wip";
+import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
+import { contractCallWithFees } from "../utils/feeUtils";
 import {
   getLicenseTermByType,
   getRevenueShare,
   validateLicenseTerms,
 } from "../utils/licenseTermsHelper";
-import { validateAddress } from "../utils/utils";
-import { ChainIds } from "../types/config";
-import { contractCallWithFees } from "../utils/feeUtils";
-import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
-import { Erc20Spender } from "../types/utils/wip";
-import { validateLicenseConfig } from "../utils/validateLicenseConfig";
-import { LicensingConfig, RevShareType } from "../types/common";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { TxOptions } from "../types/options";
+import { validateAddress } from "../utils/utils";
+import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 
 export class LicenseClient {
   public licensingModuleClient: LicensingModuleClient;

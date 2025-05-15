@@ -1,6 +1,6 @@
 import {
-  WaitForTransactionReceiptRequest,
   TransactionResponse,
+  WaitForTransactionReceiptRequest,
   WaitForTransactionReceiptsRequest,
 } from "../types/options";
 

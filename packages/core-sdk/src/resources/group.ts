@@ -1,4 +1,4 @@
-import { PublicClient, WalletClient, toHex, zeroAddress } from "viem";
+import { PublicClient, toHex, WalletClient, zeroAddress } from "viem";
 
 import {
   coreMetadataModuleAbi,
@@ -26,14 +26,20 @@ import {
   RoyaltyModuleEventClient,
   SimpleWalletClient,
 } from "../abi/generated";
-import { AccessPermission } from "../types/resources/permission";
-import { handleError } from "../utils/errors";
-import { getPermissionSignature, getDeadline } from "../utils/sign";
-import { validateAddress, validateAddresses } from "../utils/utils";
+import { RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
+import { TransactionResponse } from "../types/options";
 import {
-  LicenseDataInput,
+  AddIpRequest,
+  ClaimRewardRequest,
+  ClaimRewardResponse,
+  CollectAndDistributeGroupRoyaltiesRequest,
+  CollectAndDistributeGroupRoyaltiesResponse,
+  CollectRoyaltiesRequest,
+  CollectRoyaltiesResponse,
+  GetClaimableRewardRequest,
   LicenseData,
+  LicenseDataInput,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest,
   MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse,
   RegisterGroupAndAttachLicenseAndAddIpsRequest,
@@ -44,23 +50,17 @@ import {
   RegisterGroupResponse,
   RegisterIpAndAttachLicenseAndAddToGroupRequest,
   RegisterIpAndAttachLicenseAndAddToGroupResponse,
-  CollectAndDistributeGroupRoyaltiesRequest,
-  CollectAndDistributeGroupRoyaltiesResponse,
-  AddIpRequest,
-  ClaimRewardRequest,
-  ClaimRewardResponse,
-  GetClaimableRewardRequest,
   RemoveIpsFromGroupRequest,
-  CollectRoyaltiesRequest,
-  CollectRoyaltiesResponse,
 } from "../types/resources/group";
+import { AccessPermission } from "../types/resources/permission";
+import { handleError } from "../utils/errors";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
-import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/licenseTermsHelper";
-import { RevShareType } from "../types/common";
+import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { TransactionResponse } from "../types/options";
+import { validateAddress, validateAddresses } from "../utils/utils";
+import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 
 export class GroupClient {
   public groupingWorkflowsClient: GroupingWorkflowsClient;

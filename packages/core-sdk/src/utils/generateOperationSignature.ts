@@ -6,28 +6,28 @@
 
 import { Hex, toHex } from "viem";
 
+import { getFunctionSignature } from "./getFunctionSignature";
+import { getPermissionSignature, getSignature } from "./sign";
+import { chain } from "./utils";
 import {
-  royaltyTokenDistributionWorkflowsAddress,
+  coreMetadataModuleAbi,
   coreMetadataModuleAddress,
-  licensingModuleAddress,
   derivativeWorkflowsAddress,
   licenseAttachmentWorkflowsAddress,
-  registrationWorkflowsAddress,
-  coreMetadataModuleAbi,
   licensingModuleAbi,
+  licensingModuleAddress,
+  registrationWorkflowsAddress,
+  royaltyTokenDistributionWorkflowsAddress,
 } from "../abi/generated";
 import {
+  AccessPermission,
   PermissionSignatureRequest,
   SignatureRequest,
-  AccessPermission,
 } from "../types/resources/permission";
 import {
   GenerateOperationSignatureRequest,
   SignatureMethodType,
 } from "../types/utils/registerHelper";
-import { getSignature, getPermissionSignature } from "./sign";
-import { chain } from "./utils";
-import { getFunctionSignature } from "./getFunctionSignature";
 
 export const generateOperationSignature = async ({
   deadline,

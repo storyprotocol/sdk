@@ -1,5 +1,16 @@
-import { Address, Hex, encodeFunctionData, PublicClient } from "viem";
+import { Address, encodeFunctionData, Hex, PublicClient } from "viem";
 
+import {
+  coreMetadataModuleAbi,
+  coreMetadataModuleAddress,
+  Erc20Client,
+  IpAccountImplClient,
+  SimpleWalletClient,
+  WrappedIpClient,
+} from "../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { ChainIds } from "../types/config";
+import { TransactionResponse } from "../types/options";
 import {
   IPAccountExecuteRequest,
   IPAccountExecuteResponse,
@@ -11,19 +22,8 @@ import {
   TransferErc20Request,
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
-import {
-  coreMetadataModuleAbi,
-  coreMetadataModuleAddress,
-  Erc20Client,
-  IpAccountImplClient,
-  SimpleWalletClient,
-  WrappedIpClient,
-} from "../abi/generated";
-import { validateAddress } from "../utils/utils";
-import { ChainIds } from "../types/config";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { TransactionResponse } from "../types/options";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { validateAddress } from "../utils/utils";
 
 export class IPAccountClient {
   public wrappedIpClient: WrappedIpClient;

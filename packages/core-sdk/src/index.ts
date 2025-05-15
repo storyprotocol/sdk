@@ -27,10 +27,10 @@ export * from "./types/resources/group";
 export * from "./types/resources/wip";
 
 export type {
-  PiLicenseTemplateGetLicenseTermsResponse,
-  IpAccountImplStateResponse,
   EncodedTxData,
+  IpAccountImplStateResponse,
   LicensingModulePredictMintingLicenseFeeResponse,
+  PiLicenseTemplateGetLicenseTermsResponse,
 } from "./abi/generated";
 
 export { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "./abi/generated";
