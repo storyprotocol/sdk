@@ -35,7 +35,6 @@ export default [
       "no-useless-computed-key": "error",
       "no-console": "error",
       "func-style": ["error", "expression"],
-      camelcase: "error",
 
       // Typescript
       "no-shadow": "off",
