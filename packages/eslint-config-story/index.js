@@ -41,6 +41,7 @@ export default [
       "@typescript-eslint/no-shadow": "error",
       "@typescript-eslint/no-unused-vars": "error",
       "@typescript-eslint/no-unsafe-argument": "off", // causing a lot of IDE false positives.
+      "@typescript-eslint/explicit-function-return-type": "error",
 
       // import rules
       "import/newline-after-import": "error",

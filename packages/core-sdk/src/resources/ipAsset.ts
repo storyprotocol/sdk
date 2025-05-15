@@ -254,7 +254,7 @@ export class IPAssetClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to register IP");
+      return handleError(error, "Failed to register IP");
     }
   }
 
@@ -303,7 +303,7 @@ export class IPAssetClient {
         const processTransaction = async (
           hash: Hex,
           contractType: "spgNftContract" | "nftContract",
-        ) => {
+        ): Promise<void> => {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
             hash,
@@ -326,7 +326,7 @@ export class IPAssetClient {
         return { txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to batch register IP");
+      return handleError(error, "Failed to batch register IP");
     }
   }
   /**
@@ -358,7 +358,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        const contractCall = () => {
+        const contractCall = (): Promise<Hash> => {
           return this.licensingModuleClient.registerDerivative(object);
         };
         return this.handleRegistrationWithFees({
@@ -375,7 +375,7 @@ export class IPAssetClient {
         });
       }
     } catch (error) {
-      handleError(error, "Failed to register derivative");
+      return handleError(error, "Failed to register derivative");
     }
   }
 
@@ -460,7 +460,7 @@ export class IPAssetClient {
         return { txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to batch register derivative");
+      return handleError(error, "Failed to batch register derivative");
     }
   }
   /**
@@ -505,7 +505,7 @@ export class IPAssetClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to register derivative with license tokens");
+      return handleError(error, "Failed to register derivative with license tokens");
     }
   }
   /**
@@ -538,7 +538,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
           transformRequest,
         );
@@ -559,7 +559,7 @@ export class IPAssetClient {
         return rsp;
       }
     } catch (error) {
-      handleError(error, "Failed to mint and register IP and attach PIL terms");
+      return handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
   }
 
@@ -617,7 +617,7 @@ export class IPAssetClient {
       }
       return { txHash };
     } catch (error) {
-      handleError(error, "Failed to batch mint and register IP and attach PIL terms");
+      return handleError(error, "Failed to batch mint and register IP and attach PIL terms");
     }
   }
   /**
@@ -680,7 +680,7 @@ export class IPAssetClient {
         return { txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register IP and attach PIL terms");
+      return handleError(error, "Failed to register IP and attach PIL terms");
     }
   }
   /**
@@ -716,7 +716,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
@@ -732,7 +732,7 @@ export class IPAssetClient {
         txOptions: request.txOptions,
       });
     } catch (error) {
-      handleError(error, "Failed to register derivative IP");
+      return handleError(error, "Failed to register derivative IP");
     }
   }
   /**
@@ -759,7 +759,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
@@ -773,7 +773,7 @@ export class IPAssetClient {
         txOptions: request.txOptions,
       });
     } catch (error) {
-      handleError(error, "Failed to mint and register IP and make derivative");
+      return handleError(error, "Failed to mint and register IP and make derivative");
     }
   }
   /**
@@ -814,7 +814,7 @@ export class IPAssetClient {
       }
       return { txHash };
     } catch (error) {
-      handleError(error, "Failed to batch mint and register IP and make derivative");
+      return handleError(error, "Failed to batch mint and register IP and make derivative");
     }
   }
   /**
@@ -834,7 +834,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.registrationWorkflowsClient.mintAndRegisterIp(object);
       };
       return this.handleRegistrationWithFees({
@@ -850,7 +850,7 @@ export class IPAssetClient {
         },
       });
     } catch (error) {
-      handleError(error, "Failed to mint and register IP");
+      return handleError(error, "Failed to mint and register IP");
     }
   }
   /**
@@ -912,7 +912,7 @@ export class IPAssetClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to register PIL terms and attach");
+      return handleError(error, "Failed to register PIL terms and attach");
     }
   }
   /**
@@ -945,7 +945,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      const contractCall = async () => {
+      const contractCall = async (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
           object,
         );
@@ -965,7 +965,10 @@ export class IPAssetClient {
         txOptions: request.txOptions,
       });
     } catch (error) {
-      handleError(error, "Failed to mint and register IP and make derivative with license tokens");
+      return handleError(
+        error,
+        "Failed to mint and register IP and make derivative with license tokens",
+      );
     }
   }
   /**
@@ -1033,7 +1036,7 @@ export class IPAssetClient {
         return { txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to register IP and make derivative with license tokens");
+      return handleError(error, "Failed to register IP and make derivative with license tokens");
     }
   }
 
@@ -1108,7 +1111,7 @@ export class IPAssetClient {
         ipRoyaltyVault,
       };
     } catch (error) {
-      handleError(
+      return handleError(
         error,
         "Failed to register IP and attach license terms and distribute royalty tokens",
       );
@@ -1149,7 +1152,7 @@ export class IPAssetClient {
         this.royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVaultEncode(
           transformRequest,
         );
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
           transformRequest,
         );
@@ -1195,7 +1198,7 @@ export class IPAssetClient {
         ipRoyaltyVault,
       };
     } catch (error) {
-      handleError(
+      return handleError(
         error,
         "Failed to register derivative IP and attach license terms and distribute royalty tokens",
       );
@@ -1228,7 +1231,7 @@ export class IPAssetClient {
         this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensEncode(
           transformRequest,
         );
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
           transformRequest,
         );
@@ -1256,7 +1259,7 @@ export class IPAssetClient {
         tokenId,
       };
     } catch (error) {
-      handleError(
+      return handleError(
         error,
         "Failed to mint and register IP and attach PIL terms and distribute royalty tokens",
       );
@@ -1285,12 +1288,12 @@ export class IPAssetClient {
         this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensEncode(
           transformRequest,
         );
-      const contractCall = () => {
+      const contractCall = (): Promise<Hash> => {
         return this.royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
           transformRequest,
         );
       };
-      return this.handleRegistrationWithFees({
+      return await this.handleRegistrationWithFees({
         spgNftContract: transformRequest.spgNftContract,
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
@@ -1301,7 +1304,7 @@ export class IPAssetClient {
         txOptions: request.txOptions,
       });
     } catch (error) {
-      handleError(
+      return handleError(
         error,
         "Failed to mint and register IP and make derivative and distribute royalty tokens",
       );
@@ -1462,12 +1465,10 @@ export class IPAssetClient {
 
       return {
         registrationResults: responses,
-        ...(distributeRoyaltyTokensTxHashes && {
-          distributeRoyaltyTokensTxHashes,
-        }),
+        ...(distributeRoyaltyTokensTxHashes && { distributeRoyaltyTokensTxHashes }),
       };
     } catch (error) {
-      handleError(error, "Failed to batch register IP assets with optimized workflows");
+      return handleError(error, "Failed to batch register IP assets with optimized workflows");
     }
   }
 

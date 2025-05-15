@@ -75,7 +75,7 @@ export class PermissionClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to set permissions");
+      return handleError(error, "Failed to set permissions");
     }
   }
   /**
@@ -144,7 +144,7 @@ export class PermissionClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to create set permission signature");
+      return handleError(error, "Failed to create set permission signature");
     }
   }
   /**
@@ -177,7 +177,7 @@ export class PermissionClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to set all permissions");
+      return handleError(error, "Failed to set all permissions");
     }
   }
   /**
@@ -217,7 +217,7 @@ export class PermissionClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to set batch permissions");
+      return handleError(error, "Failed to set batch permissions");
     }
   }
   /**
@@ -281,7 +281,7 @@ export class PermissionClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to create batch permission signature");
+      return handleError(error, "Failed to create batch permission signature");
     }
   }
 

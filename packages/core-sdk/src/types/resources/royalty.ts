@@ -142,3 +142,9 @@ export type TransferToVaultRequest = WithTxOptions & {
   /** the token address to transfer */
   token: Address;
 };
+
+export type ClaimerInfo = {
+  ownsClaimer: boolean;
+  isClaimerIp: boolean;
+  ipAccount: IpAccountImplClient;
+};

@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address, Hash, Hex } from "viem";
 
 import {
   AggregateRegistrationRequest,
@@ -60,7 +60,7 @@ const aggregateTransformIpRegistrationWorkflow = (
       currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
     } else {
       currentRequest.contractCall = [
-        () => {
+        (): Promise<Hash> => {
           return workflowClient.multicall({
             data: currentRequest.encodedTxData.map((tx) => tx.data),
           });
@@ -88,7 +88,7 @@ export const handleMulticall = async ({
   const txResponses: TransactionResponse[] = [];
   for (const key in aggregateRegistrationRequest) {
     const { spenders, totalFees, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
-    const contractCalls = async () => {
+    const contractCalls = async (): Promise<Hash[]> => {
       const txHashes: Hex[] = [];
       for (const call of contractCall) {
         const txHash = await call();

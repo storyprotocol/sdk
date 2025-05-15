@@ -139,7 +139,7 @@ export const validateLicenseTerms = async (
   return object;
 };
 
-const verifyCommercialUse = (terms: LicenseTerms) => {
+const verifyCommercialUse = (terms: LicenseTerms): void => {
   if (!terms.commercialUse) {
     if (terms.commercialAttribution) {
       throw new Error("Cannot add commercial attribution when commercial use is disabled.");
@@ -168,7 +168,7 @@ const verifyCommercialUse = (terms: LicenseTerms) => {
   }
 };
 
-const verifyDerivatives = (terms: LicenseTerms) => {
+const verifyDerivatives = (terms: LicenseTerms): void => {
   if (!terms.derivativesAllowed) {
     if (terms.derivativesAttribution) {
       throw new Error("Cannot add derivative attribution when derivative use is disabled.");
@@ -188,7 +188,7 @@ const verifyDerivatives = (terms: LicenseTerms) => {
 export const getRevenueShare = (
   revShare: number | string,
   type: RevShareType = RevShareType.COMMERCIAL_REVENUE_SHARE,
-) => {
+): number => {
   const revShareNumber = Number(revShare);
   if (isNaN(revShareNumber)) {
     throw new Error(`${type} must be a valid number.`);

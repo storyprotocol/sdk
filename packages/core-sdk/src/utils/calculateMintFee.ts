@@ -83,7 +83,7 @@ export const calculateLicenseWipMintFee = async ({
   rpcClient,
   chainId,
   walletAddress,
-}: PredictMintingLicenseFeeParams) => {
+}: PredictMintingLicenseFeeParams): Promise<bigint> => {
   const fee = await predictMintingLicenseFee({
     predictMintingFeeRequest,
     rpcClient,
@@ -95,7 +95,9 @@ export const calculateLicenseWipMintFee = async ({
   }
   return fee.tokenAmount;
 };
-export const calculateSPGWipMintFee = async (spgNftClient: SpgnftImplReadOnlyClient) => {
+export const calculateSPGWipMintFee = async (
+  spgNftClient: SpgnftImplReadOnlyClient,
+): Promise<bigint> => {
   const token = await spgNftClient.mintFeeToken();
   if (token !== WIP_TOKEN_ADDRESS) {
     return 0n;

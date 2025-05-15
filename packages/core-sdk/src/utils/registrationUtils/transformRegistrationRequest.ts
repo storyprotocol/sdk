@@ -1,4 +1,4 @@
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, Hash } from "viem";
 
 import {
   RoyaltyTokenDistributionWorkflowsClient,
@@ -238,7 +238,7 @@ const transferRegisterDerivativeIpRequest = async <
     isUseMulticall3: false,
     spenders: [{ address: derivativeWorkflowsClient.address, amount: totalFees }],
     totalFees,
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
     },
     workflowClient: derivativeWorkflowsClient,
@@ -294,7 +294,7 @@ const transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest = async <
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return royaltyTokenDistributionWorkflowsClient.registerIpAndAttachPilTermsAndDeployRoyaltyVault(
         transformRequest,
       );
@@ -354,7 +354,7 @@ const transferRegisterIpAndAttachPilTermsRequest = async <
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return licenseAttachmentWorkflowsClient.registerIpAndAttachPilTerms(transformRequest);
     },
     workflowClient: licenseAttachmentWorkflowsClient,
@@ -413,7 +413,7 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
     isUseMulticall3: false,
     spenders: [{ address: royaltyTokenDistributionWorkflowsClient.address, amount: totalFees }],
     totalFees,
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
         transformRequest,
       );
@@ -567,7 +567,7 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
     transformRequest: transformRequest as T,
     // Because mint tokens is given `msg.sender` as the recipient, so we need to set `useMulticall3` to false.
     isUseMulticall3: false,
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
         transformRequest,
       );
@@ -623,7 +623,7 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
         ],
       }),
     },
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(request);
     },
     workflowClient: licenseAttachmentWorkflowsClient,
@@ -679,7 +679,7 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
       }),
     },
     workflowClient: royaltyTokenDistributionWorkflowsClient,
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return royaltyTokenDistributionWorkflowsClient.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
         transformRequest,
       );
@@ -725,7 +725,7 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
         ],
       }),
     },
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(request);
     },
     workflowClient: derivativeWorkflowsClient,
@@ -787,7 +787,7 @@ export const transferDistributeRoyaltyTokensRequest = async <
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    contractCall: () => {
+    contractCall: (): Promise<Hash> => {
       return royaltyTokenDistributionWorkflowsClient.distributeRoyaltyTokens(transformRequest);
     },
     workflowClient: royaltyTokenDistributionWorkflowsClient,

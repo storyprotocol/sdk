@@ -301,33 +301,33 @@ describe("Group Functions", () => {
           txOptions: { waitForTransaction: true },
         });
         const testIpId = registerResult.ipId!;
-        
+
         const nonExistentGroupId = zeroAddress;
-        
+
         await expect(
           client.groupClient.removeIpsFromGroup({
-            groupIpId: nonExistentGroupId, 
+            groupIpId: nonExistentGroupId,
             ipIds: [testIpId],
             txOptions: { waitForTransaction: true },
-          })
+          }),
         ).to.be.rejectedWith("Failed to remove IPs from group");
       });
-      
+
       it("should fail when trying to remove non-existent IPs from a group", async () => {
         const groupResult = await client.groupClient.registerGroup({
           groupPool: groupPoolAddress,
           txOptions: { waitForTransaction: true },
         });
         const testGroupId = groupResult.groupId!;
-        
+
         const nonExistentIpId = zeroAddress;
-        
+
         await expect(
           client.groupClient.removeIpsFromGroup({
             groupIpId: testGroupId,
             ipIds: [nonExistentIpId],
             txOptions: { waitForTransaction: true },
-          })
+          }),
         ).to.be.rejectedWith("Failed to remove IPs from group");
       });
     });
@@ -525,7 +525,7 @@ describe("Group Functions", () => {
           currencyToken: WIP_TOKEN_ADDRESS,
           memberIpIds: [ipId],
           txOptions: { waitForTransaction: true },
-        })
+        }),
       ).to.be.rejectedWith("Failed to claim reward");
     });
 
@@ -537,7 +537,7 @@ describe("Group Functions", () => {
           currencyToken: invalidTokenAddress,
           memberIpIds: [ipId],
           txOptions: { waitForTransaction: true },
-        })
+        }),
       ).to.be.rejectedWith("Failed to claim reward");
     });
 

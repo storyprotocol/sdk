@@ -98,7 +98,7 @@ export class LicenseClient {
       }
       return await this.registerPILTermsHelper(object, request.txOptions);
     } catch (error) {
-      handleError(error, "Failed to register license terms");
+      return handleError(error, "Failed to register license terms");
     }
   }
 
@@ -116,7 +116,7 @@ export class LicenseClient {
       const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
       return await this.registerPILTermsHelper(licenseTerms, request?.txOptions);
     } catch (error) {
-      handleError(error, "Failed to register non commercial social remixing PIL");
+      return handleError(error, "Failed to register non commercial social remixing PIL");
     }
   }
   /**
@@ -139,7 +139,7 @@ export class LicenseClient {
       });
       return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
-      handleError(error, "Failed to register commercial use PIL");
+      return handleError(error, "Failed to register commercial use PIL");
     }
   }
   /**
@@ -163,7 +163,7 @@ export class LicenseClient {
       });
       return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
-      handleError(error, "Failed to register commercial remix PIL");
+      return handleError(error, "Failed to register commercial remix PIL");
     }
   }
   /**
@@ -183,13 +183,12 @@ export class LicenseClient {
       return await this.registerPILTermsHelper(
         getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
           currency,
-          royaltyPolicyAddress:
-            royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
+          royaltyPolicyAddress: royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
         }),
         txOptions,
       );
     } catch (error) {
-      handleError(error, "Failed to register creative commons attribution PIL");
+      return handleError(error, "Failed to register creative commons attribution PIL");
     }
   }
   /**
@@ -243,7 +242,7 @@ export class LicenseClient {
         }
       }
     } catch (error) {
-      handleError(error, "Failed to attach license terms");
+      return handleError(error, "Failed to attach license terms");
     }
   }
 
@@ -354,7 +353,7 @@ export class LicenseClient {
       }
       return { txHash, licenseTokenIds: licenseTokenIds, receipt };
     } catch (error) {
-      handleError(error, "Failed to mint license tokens");
+      return handleError(error, "Failed to mint license tokens");
     }
   }
 
@@ -369,7 +368,7 @@ export class LicenseClient {
         selectedLicenseTermsId: BigInt(selectedLicenseTermsId),
       });
     } catch (error) {
-      handleError(error, "Failed to get license terms");
+      return handleError(error, "Failed to get license terms");
     }
   }
 
@@ -410,7 +409,7 @@ export class LicenseClient {
         walletAddress: this.walletAddress,
       });
     } catch (error) {
-      handleError(error, "Failed to predict minting license fee");
+      return handleError(error, "Failed to predict minting license fee");
     }
   }
 
@@ -472,7 +471,7 @@ export class LicenseClient {
         return { txHash: txHash };
       }
     } catch (error) {
-      handleError(error, "Failed to set licensing config");
+      return handleError(error, "Failed to set licensing config");
     }
   }
 
@@ -487,7 +486,7 @@ export class LicenseClient {
       };
       return await this.licenseRegistryReadOnlyClient.getLicensingConfig(licensingConfigParam);
     } catch (error) {
-      handleError(error, "Failed to get licensing config");
+      return handleError(error, "Failed to get licensing config");
     }
   }
 

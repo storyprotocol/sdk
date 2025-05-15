@@ -139,7 +139,7 @@ describe("Dispute Functions", () => {
 
     it("should validate all enum values defined in DisputeTargetTag", async () => {
       const allTags = Object.values(DisputeTargetTag);
-      
+
       for (const tag of allTags) {
         const tagHex: Hex = toHex(tag, { size: 32 });
         const { allowed } = await clientA.dispute.disputeModuleClient.isWhitelistedDisputeTag({
@@ -155,7 +155,7 @@ describe("Dispute Functions", () => {
 
     it("should raise disputes with different DisputeTargetTag enum values", async () => {
       const allTags = Object.values(DisputeTargetTag);
-      
+
       for (const tag of allTags) {
         const raiseDisputeRequest: RaiseDisputeRequest = {
           targetIpId: ipIdB,
@@ -167,10 +167,11 @@ describe("Dispute Functions", () => {
             waitForTransaction: true,
           },
         };
-        
+
         if (tag === DisputeTargetTag.IN_DISPUTE) {
-          await expect(clientA.dispute.raiseDispute(raiseDisputeRequest))
-            .to.be.rejectedWith("The target tag IN_DISPUTE is not whitelisted");
+          await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
+            "The target tag IN_DISPUTE is not whitelisted",
+          );
         } else {
           const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
           expect(response.txHash).to.be.a("string").and.not.empty;
@@ -181,7 +182,7 @@ describe("Dispute Functions", () => {
 
     it("should reject a dispute with an invalid tag not defined in the enum", async () => {
       const invalidTags = ["INVALID_TAG", "NOT_IN_ENUM", "RANDOM_STRING"];
-      
+
       for (const invalidTag of invalidTags) {
         const raiseDisputeRequest: RaiseDisputeRequest = {
           targetIpId: ipIdB,
@@ -191,13 +192,13 @@ describe("Dispute Functions", () => {
           bond: minimumBond,
           txOptions: { waitForTransaction: true },
         };
-  
+
         await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
           `The target tag ${invalidTag} is not whitelisted`,
         );
       }
     });
-    
+
     it("should be able to counter existing dispute once", async () => {
       const assertionId = await clientB.dispute.disputeIdToAssertionId(disputeId!);
       const counterEvidenceCID = await generateCID();
@@ -677,11 +678,11 @@ describe("Dispute Functions", () => {
         functionName: "disputes",
         args: [childDisputeId],
       });
-    
+
       // Convert the IMPROPER_USAGE tag to hex for comparison
       const improperUsageTagHex = toHex(DisputeTargetTag.IMPROPER_REGISTRATION, { size: 32 });
-      
-      // Verify both child IPs have the IMPROPER_USAGE tag by 
+
+      // Verify both child IPs have the IMPROPER_USAGE tag by
       // fetching and comparing their dispute tags
       expect(parentDisputeState[5] === improperUsageTagHex).to.be.true;
       expect(childDisputeState[5] === improperUsageTagHex).to.be.true;
