@@ -1505,8 +1505,8 @@ export class IPAssetClient {
     txReceipt: TransactionReceipt,
     key?: K,
   ): IpIdAndTokenId<K>[] {
-    const IPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
-    return IPRegisteredLog.map((log) => {
+    const ipRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(txReceipt);
+    return ipRegisteredLog.map((log) => {
       const baseResult = { ipId: log.ipId, tokenId: log.tokenId };
       if (key) {
         return {

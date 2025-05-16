@@ -42,7 +42,21 @@ export default [
       "@typescript-eslint/no-unused-vars": "error",
       "@typescript-eslint/no-unsafe-argument": "off", // causing a lot of IDE false positives.
       "@typescript-eslint/explicit-function-return-type": "error",
-
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: ["variable", "function", "parameter"],
+          format: ["camelCase", "UPPER_CASE"],
+        },
+        {
+          selector: ["enumMember", "enum"],
+          format: ["UPPER_CASE", "PascalCase"],
+        },
+        {
+          selector: ["typeLike"],
+          format: ["PascalCase"],
+        },
+      ],
       // import rules
       "import/newline-after-import": "error",
       "import/no-cycle": "error",
