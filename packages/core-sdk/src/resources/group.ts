@@ -93,6 +93,7 @@ export class GroupClient {
     this.licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(rpcClient);
     this.royaltyModuleEventClient = new RoyaltyModuleEventClient(rpcClient);
   }
+
   /** Registers a Group IPA.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
@@ -123,6 +124,7 @@ export class GroupClient {
       return handleError(error, "Failed to register group");
     }
   }
+
   /** Mint an NFT from a SPGNFT collection, register it with metadata as an IP, attach license terms to the registered IP, and add it to a group IP.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
@@ -314,6 +316,7 @@ export class GroupClient {
       return handleError(error, "Failed to register IP and attach license and add to group");
     }
   }
+
   /** Register a group IP with a group reward pool and attach license terms to the group IP.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
@@ -346,6 +349,7 @@ export class GroupClient {
       return handleError(error, "Failed to register group and attach license");
     }
   }
+
   /** Register a group IP with a group reward pool, attach license terms to the group IP, and add individual IPs to the group IP.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/grouping/IGroupingModule.sol#L14 | `IPGroupRegistered`} event.
@@ -405,6 +409,7 @@ export class GroupClient {
       return handleError(error, "Failed to register group and attach license and add ips");
     }
   }
+
   /**
    * Collect royalties for the entire group and distribute the rewards to each member IP's royalty vault.
    *
@@ -513,6 +518,7 @@ export class GroupClient {
       return handleError(error, "Failed to add IP to group");
     }
   }
+
   /**
    * Returns the available reward for each IP in the group.
    */

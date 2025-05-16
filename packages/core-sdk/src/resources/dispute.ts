@@ -195,6 +195,7 @@ export class DisputeClient {
       return handleError(error, "Failed to resolve dispute");
     }
   }
+
   /**
    * Tags a derivative if a parent has been tagged with an infringement tag
    * or a group ip if a group member has been tagged with an infringement tag.

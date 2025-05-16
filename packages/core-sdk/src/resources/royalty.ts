@@ -71,6 +71,7 @@ export class RoyaltyClient {
     this.chainId = chainId;
     this.walletAddress = wallet.account!.address;
   }
+
   /**
    * Claims all revenue from the child IPs of an ancestor IP, then transfer
    * all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
@@ -420,6 +421,7 @@ export class RoyaltyClient {
     }
     return { ownsClaimer, isClaimerIp, ipAccount };
   }
+
   /**
    * Unwraps WIP tokens back to their underlying IP tokens. Only accepts a single WIP token entry
    * in the claimed tokens array. Throws an error if multiple WIP tokens are found.

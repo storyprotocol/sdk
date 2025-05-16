@@ -329,6 +329,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to batch register IP");
     }
   }
+
   /**
    * Registers a derivative directly with parent IP's license terms, without needing license tokens,
    * and attaches the license terms of the parent IPs to the derivative IP.
@@ -463,6 +464,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to batch register derivative");
     }
   }
+
   /**
    * Registers a derivative with license tokens. The derivative IP is registered with license tokens minted from the parent IP's license terms.
    * The license terms of the parent IPs issued with license tokens are attached to the derivative IP.
@@ -508,6 +510,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to register derivative with license tokens");
     }
   }
+
   /**
    * Mint an NFT from a collection and register it as an IP.
    *
@@ -620,6 +623,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to batch mint and register IP and attach PIL terms");
     }
   }
+
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.
    *
@@ -683,6 +687,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to register IP and attach PIL terms");
     }
   }
+
   /**
    * Register the given NFT as a derivative IP with metadata without using license tokens.
    *
@@ -735,6 +740,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to register derivative IP");
     }
   }
+
   /**
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
    *
@@ -776,6 +782,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to mint and register IP and make derivative");
     }
   }
+
   /**
    * Batch mint an NFT from a collection and register it as a derivative IP without license tokens.
    *
@@ -817,6 +824,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to batch mint and register IP and make derivative");
     }
   }
+
   /**
    * Mint an NFT from a SPGNFT collection and register it with metadata as an IP.
    *
@@ -853,6 +861,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to mint and register IP");
     }
   }
+
   /**
    * Register Programmable IP License Terms (if unregistered) and attach it to IP.
    *
@@ -915,6 +924,7 @@ export class IPAssetClient {
       return handleError(error, "Failed to register PIL terms and attach");
     }
   }
+
   /**
    * Mint an NFT from a collection and register it as a derivative IP using license tokens.
    * Requires caller to have the minter role or the SPG NFT to allow public minting. Caller must own the license tokens and have approved DerivativeWorkflows to transfer them.
@@ -971,6 +981,7 @@ export class IPAssetClient {
       );
     }
   }
+
   /**
    * Register the given NFT as a derivative IP using license tokens.
    *
@@ -1117,6 +1128,7 @@ export class IPAssetClient {
       );
     }
   }
+
   /**
    * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.  In order to successfully distribute royalty tokens, the license terms attached to the IP must be
    * a commercial license.
@@ -1265,6 +1277,7 @@ export class IPAssetClient {
       );
     }
   }
+
   /**
    * Mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
    *
@@ -1337,6 +1350,7 @@ export class IPAssetClient {
   public async isRegistered(ipId: Hex): Promise<boolean> {
     return await this.ipAssetRegistryClient.isRegistered({ id: validateAddress(ipId) });
   }
+
   /**
    * Batch register multiple IP assets in optimized transactions, supporting various registration methods:
    * - {@link mintAndRegisterIpAndMakeDerivative}
