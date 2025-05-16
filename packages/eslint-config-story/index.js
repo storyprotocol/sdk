@@ -36,6 +36,9 @@ export default [
       "no-console": "error",
       "func-style": ["error", "expression"],
       "no-duplicate-imports": "error",
+      "default-case": "error",
+      eqeqeq: "error",
+      "prefer-const": "error",
 
       // Typescript
       "no-shadow": "off",
