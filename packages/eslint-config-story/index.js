@@ -5,6 +5,8 @@ import tsdocPlugin from "eslint-plugin-tsdoc";
 import eslintConfigPrettier from "eslint-config-prettier";
 import tsParser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
+import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
+import tsStylistic from "@stylistic/eslint-plugin-ts";
 
 export default [
   js.configs.recommended,
@@ -17,6 +19,8 @@ export default [
     plugins: {
       turbo,
       tsdocPlugin,
+      tsEslintPlugin,
+      "@stylistic/ts": tsStylistic,
     },
     settings: {
       "import/resolver": {
@@ -24,6 +28,13 @@ export default [
         // See also https://github.com/import-js/eslint-import-resolver-typescript#configuration
         typescript: true,
         node: true,
+      },
+    },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
@@ -77,12 +88,15 @@ export default [
           },
         },
       ],
-    },
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+
+      // stylistic
+      "@stylistic/ts/lines-between-class-members": [
+        "error",
+        "always",
+        {
+          exceptAfterSingleLine: true,
+        },
+      ],
     },
   },
 ];
