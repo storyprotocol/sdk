@@ -1,14 +1,5 @@
-import { PublicClient, encodeFunctionData, Address, toFunctionSelector, WalletClient } from "viem";
+import { Address, encodeFunctionData, PublicClient, toFunctionSelector, WalletClient } from "viem";
 
-import { handleError } from "../utils/errors";
-import {
-  CreateBatchPermissionSignatureRequest,
-  CreateSetPermissionSignatureRequest,
-  SetAllPermissionsRequest,
-  SetBatchPermissionsRequest,
-  SetPermissionsRequest,
-  SetPermissionsResponse,
-} from "../types/resources/permission";
 import {
   accessControllerAbi,
   AccessControllerClient,
@@ -17,10 +8,19 @@ import {
   IpAssetRegistryClient,
   SimpleWalletClient,
 } from "../abi/generated";
-import { validateAddress } from "../utils/utils";
 import { defaultFunctionSelector } from "../constants/common";
-import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { ChainIds } from "../types/config";
+import {
+  CreateBatchPermissionSignatureRequest,
+  CreateSetPermissionSignatureRequest,
+  SetAllPermissionsRequest,
+  SetBatchPermissionsRequest,
+  SetPermissionsRequest,
+  SetPermissionsResponse,
+} from "../types/resources/permission";
+import { handleError } from "../utils/errors";
+import { getDeadline, getPermissionSignature } from "../utils/sign";
+import { validateAddress } from "../utils/utils";
 
 export class PermissionClient {
   public accessControllerClient: AccessControllerClient;

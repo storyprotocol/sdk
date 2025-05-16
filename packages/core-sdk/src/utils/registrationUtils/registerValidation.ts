@@ -6,24 +6,24 @@ import {
   piLicenseTemplateAddress,
   SpgnftImplReadOnlyClient,
 } from "../../abi/generated";
+import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../constants/common";
+import { RevShareType } from "../../types/common";
 import {
-  LicenseTermsDataInput,
-  LicenseTermsData,
   DerivativeData,
+  LicenseTermsData,
+  LicenseTermsDataInput,
   RoyaltyShare,
 } from "../../types/resources/ipAsset";
 import { LicenseTerms } from "../../types/resources/license";
-import { getRevenueShare, validateLicenseTerms } from "../licenseTermsHelper";
-import { validateLicenseConfig } from "../validateLicenseConfig";
-import { royaltySharesTotalSupply, MAX_ROYALTY_TOKEN } from "../../constants/common";
-import { RevShareType } from "../../types/common";
 import {
   GetIpIdAddressConfig,
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
-import { chain, validateAddress } from "../utils";
 import { Erc20Spender } from "../../types/utils/wip";
+import { getRevenueShare, validateLicenseTerms } from "../licenseTermsHelper";
 import { getDeadline } from "../sign";
+import { chain, validateAddress } from "../utils";
+import { validateLicenseConfig } from "../validateLicenseConfig";
 
 export const getPublicMinting = async (
   spgNftContract: Address,

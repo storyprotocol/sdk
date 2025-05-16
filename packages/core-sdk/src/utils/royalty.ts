@@ -1,9 +1,9 @@
 import { Address } from "viem";
 
-import { NativeRoyaltyPolicy, RoyaltyPolicyInput } from "../types/resources/royalty";
 import { chain, validateAddress } from "./utils";
 import { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "../abi/generated";
 import { ChainIds } from "../types/config";
+import { NativeRoyaltyPolicy, RoyaltyPolicyInput } from "../types/resources/royalty";
 
 export const royaltyPolicyInputToAddress = (
   input: RoyaltyPolicyInput,

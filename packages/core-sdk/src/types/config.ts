@@ -1,4 +1,4 @@
-import { Account, Transport, Address } from "viem";
+import { Account, Address, Transport } from "viem";
 
 import { SimpleWalletClient } from "../abi/generated";
 

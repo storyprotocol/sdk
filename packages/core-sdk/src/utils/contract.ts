@@ -1,7 +1,7 @@
 import { WriteContractParameters } from "viem";
 
-import { SimulateAndWriteContractParams } from "../types/utils/contract";
 import { TransactionResponse } from "../types/options";
+import { SimulateAndWriteContractParams } from "../types/utils/contract";
 
 export const simulateAndWriteContract = async ({
   rpcClient,

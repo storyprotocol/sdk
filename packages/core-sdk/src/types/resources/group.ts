@@ -1,12 +1,12 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
-import { TxOptions } from "../options";
 import {
   EncodedTxData,
   GroupingModuleClaimedRewardEvent,
   GroupingModuleCollectedRoyaltiesToGroupPoolEvent,
 } from "../../abi/generated";
-import { IpMetadataAndTxOptions, LicensingConfigInput, LicensingConfig } from "../common";
+import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
+import { TxOptions } from "../options";
 
 export type LicenseDataInput = {
   licenseTermsId: string | bigint | number;

@@ -9,20 +9,6 @@ import {
   zeroAddress,
 } from "viem";
 
-import { handleError } from "../utils/errors";
-import {
-  BatchClaimAllRevenueRequest,
-  BatchClaimAllRevenueResponse,
-  ClaimableRevenueRequest,
-  ClaimableRevenueResponse,
-  ClaimAllRevenueRequest,
-  ClaimAllRevenueResponse,
-  PayRoyaltyOnBehalfRequest,
-  PayRoyaltyOnBehalfResponse,
-  TransferClaimedTokensFromIpToWalletParams,
-  TransferToVaultRequest,
-  ClaimerInfo,
-} from "../types/resources/royalty";
 import {
   IpAccountImplClient,
   IpAssetRegistryClient,
@@ -36,14 +22,28 @@ import {
   SimpleWalletClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { validateAddress, validateAddresses } from "../utils/utils";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
-import { contractCallWithFees } from "../utils/feeUtils";
-import { Erc20Spender } from "../types/utils/wip";
-import { TransactionResponse } from "../types/options";
 import { ChainIds } from "../types/config";
+import { TransactionResponse } from "../types/options";
+import {
+  BatchClaimAllRevenueRequest,
+  BatchClaimAllRevenueResponse,
+  ClaimableRevenueRequest,
+  ClaimableRevenueResponse,
+  ClaimAllRevenueRequest,
+  ClaimAllRevenueResponse,
+  ClaimerInfo,
+  PayRoyaltyOnBehalfRequest,
+  PayRoyaltyOnBehalfResponse,
+  TransferClaimedTokensFromIpToWalletParams,
+  TransferToVaultRequest,
+} from "../types/resources/royalty";
+import { Erc20Spender } from "../types/utils/wip";
+import { handleError } from "../utils/errors";
+import { contractCallWithFees } from "../utils/feeUtils";
 import { royaltyPolicyInputToAddress } from "../utils/royalty";
 import { waitForTxReceipt } from "../utils/txOptions";
+import { validateAddress, validateAddresses } from "../utils/utils";
 
 export class RoyaltyClient {
   public royaltyModuleClient: RoyaltyModuleClient;

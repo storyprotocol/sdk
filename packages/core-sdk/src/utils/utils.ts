@@ -1,19 +1,19 @@
 import {
   Abi,
-  decodeEventLog,
-  PublicClient,
+  Address,
   Chain,
   ContractEventName,
+  decodeEventLog,
+  DecodeEventLogReturnType,
+  formatEther,
+  Hash,
   Hex,
   isAddress,
-  Address,
-  formatEther,
-  DecodeEventLogReturnType,
-  Hash,
+  PublicClient,
 } from "viem";
 
-import { ChainIds, SupportedChainIds } from "../types/config";
 import { aeneid, mainnet } from "./chain";
+import { ChainIds, SupportedChainIds } from "../types/config";
 
 export const waitTxAndFilterLog = async <
   const TAbi extends Abi | readonly unknown[],

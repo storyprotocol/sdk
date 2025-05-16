@@ -1,8 +1,8 @@
 import { zeroAddress, zeroHash } from "viem";
 
-import { LicensingConfigInput, LicensingConfig } from "../types/common";
 import { getRevenueShare } from "./licenseTermsHelper";
 import { validateAddress } from "./utils";
+import { LicensingConfig, LicensingConfigInput } from "../types/common";
 
 export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): LicensingConfig => {
   if (!licensingConfig) {

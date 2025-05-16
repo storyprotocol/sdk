@@ -1,12 +1,12 @@
 import { Address, Hash, Hex } from "viem";
 
+import { TransactionResponse } from "../../types/options";
+import { TransformIpRegistrationWorkflowResponse } from "../../types/resources/ipAsset";
 import {
   AggregateRegistrationRequest,
   HandleMulticallConfig,
 } from "../../types/utils/registerHelper";
-import { TransformIpRegistrationWorkflowResponse } from "../../types/resources/ipAsset";
 import { contractCallWithFees } from "../feeUtils";
-import { TransactionResponse } from "../../types/options";
 import { mergeSpenders } from "./registerValidation";
 /**
  * Aggregates the registration requests for the given workflow responses.

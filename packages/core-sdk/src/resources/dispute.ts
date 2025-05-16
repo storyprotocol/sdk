@@ -1,6 +1,17 @@
-import { Hex, PublicClient, encodeAbiParameters, maxUint256, stringToHex, Hash } from "viem";
+import { encodeAbiParameters, Hash, Hex, maxUint256, PublicClient, stringToHex } from "viem";
 
-import { handleError } from "../utils/errors";
+import {
+  ArbitrationPolicyUmaClient,
+  DisputeModuleClient,
+  DisputeModuleTagIfRelatedIpInfringedRequest,
+  IpAccountImplClient,
+  Multicall3Client,
+  SimpleWalletClient,
+  WrappedIpClient,
+} from "../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { ChainIds } from "../types/config";
+import { TransactionResponse } from "../types/options";
 import {
   CancelDisputeRequest,
   CancelDisputeResponse,
@@ -11,23 +22,12 @@ import {
   ResolveDisputeResponse,
   TagIfRelatedIpInfringedRequest,
 } from "../types/resources/dispute";
-import {
-  ArbitrationPolicyUmaClient,
-  DisputeModuleClient,
-  DisputeModuleTagIfRelatedIpInfringedRequest,
-  IpAccountImplClient,
-  Multicall3Client,
-  SimpleWalletClient,
-  WrappedIpClient,
-} from "../abi/generated";
-import { validateAddress } from "../utils/utils";
-import { convertCIDtoHashIPFS } from "../utils/ipfs";
-import { ChainIds } from "../types/config";
-import { waitForTxReceipt } from "../utils/txOptions";
-import { TransactionResponse } from "../types/options";
+import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
+import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { waitForTxReceipt } from "../utils/txOptions";
+import { validateAddress } from "../utils/utils";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;

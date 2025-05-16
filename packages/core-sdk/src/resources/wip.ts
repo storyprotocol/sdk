@@ -1,9 +1,8 @@
 import { Address, PublicClient, WriteContractParameters } from "viem";
 
-import { handleError } from "../utils/errors";
-import { SimpleWalletClient, WrappedIpClient, wrappedIpAbi } from "../abi/generated";
-import { validateAddress } from "../utils/utils";
+import { SimpleWalletClient, wrappedIpAbi, WrappedIpClient } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { TransactionResponse } from "../types/options";
 import {
   ApproveRequest,
   DepositRequest,
@@ -11,8 +10,9 @@ import {
   TransferRequest,
   WithdrawRequest,
 } from "../types/resources/wip";
+import { handleError } from "../utils/errors";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { TransactionResponse } from "../types/options";
+import { validateAddress } from "../utils/utils";
 
 export class WipClient {
   public wrappedIpClient: WrappedIpClient;

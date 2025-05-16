@@ -1,8 +1,8 @@
 import { Address, Hex } from "viem";
 
+import { EncodedTxData, SimpleWalletClient } from "../../abi/generated";
 import { ChainIds } from "../config";
 import { TxOptions } from "../options";
-import { EncodedTxData, SimpleWalletClient } from "../../abi/generated";
 
 export type SetPermissionsRequest = {
   /** The IP ID that grants the permission for `signer`. */

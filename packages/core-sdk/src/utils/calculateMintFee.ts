@@ -7,9 +7,9 @@ import {
   LicensingModulePredictMintingLicenseFeeResponse,
   SpgnftImplReadOnlyClient,
 } from "../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { ChainIds } from "../types/config";
 import { CalculateDerivativeMintingFeeConfig } from "../types/utils/registerHelper";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
 
 export type PredictMintingLicenseFeeParams = {
   predictMintingFeeRequest: LicensingModulePredictMintingLicenseFeeRequest;

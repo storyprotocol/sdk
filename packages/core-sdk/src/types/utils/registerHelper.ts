@@ -1,6 +1,5 @@
-import { Hex, Address, PublicClient, Hash } from "viem";
+import { Address, Hash, Hex, PublicClient } from "viem";
 
-import { ChainIds } from "../config";
 import {
   DerivativeWorkflowsClient,
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest,
@@ -17,6 +16,9 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
 } from "../../abi/generated";
+import { ChainIds } from "../config";
+import { WipOptions } from "../options";
+import { Erc20Spender } from "./wip";
 import {
   DerivativeData,
   DerivativeDataInput,
@@ -27,8 +29,6 @@ import {
   RoyaltyShare,
   TransformIpRegistrationWorkflowResponse,
 } from "../resources/ipAsset";
-import { Erc20Spender } from "./wip";
-import { WipOptions } from "../options";
 
 export type GenerateOperationSignatureRequest = {
   deadline: bigint;

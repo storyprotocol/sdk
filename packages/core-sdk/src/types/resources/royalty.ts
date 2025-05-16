@@ -1,12 +1,12 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
-import { WithTxOptions, WithWipOptions, WithERC20Options } from "../options";
 import {
   EncodedTxData,
   IpAccountImplClient,
   IpRoyaltyVaultImplRevenueTokenClaimedEvent,
 } from "../../abi/generated";
 import { TokenAmountInput } from "../common";
+import { WithERC20Options, WithTxOptions, WithWipOptions } from "../options";
 
 export type ClaimableRevenueRequest = {
   /** The IP ID of the royalty vault. */
