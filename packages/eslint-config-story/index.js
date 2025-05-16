@@ -35,6 +35,7 @@ export default [
       "no-useless-computed-key": "error",
       "no-console": "error",
       "func-style": ["error", "expression"],
+      "no-duplicate-imports": "error",
 
       // Typescript
       "no-shadow": "off",
