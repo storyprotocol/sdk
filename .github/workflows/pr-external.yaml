@@ -22,7 +22,7 @@ jobs:
     needs: [authorize]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
     
-  pr_build_and_test:
+  unit_tests:
     needs: [authorize, Timestamp_PR_APPROVED]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
@@ -32,8 +32,8 @@ jobs:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
       
-  push_build_and_test:
-    needs: [pr_build_and_test]
+  integration_tests:
+    needs: [unit_tests]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
     with:
       sha: ${{ github.event.pull_request.head.sha }}

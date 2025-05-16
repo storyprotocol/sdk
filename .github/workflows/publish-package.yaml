@@ -119,7 +119,7 @@ jobs:
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
+  
   send_slack_notif-core-sdk:
     needs: [print_version_to_publish]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
