@@ -30,12 +30,14 @@ export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): L
   if (isNaN(licenseConfig.expectMinimumGroupRewardShare)) {
     throw new Error(`The expectMinimumGroupRewardShare must be a valid number.`);
   }
+
   if (
     licenseConfig.expectMinimumGroupRewardShare < 0 ||
     licenseConfig.expectMinimumGroupRewardShare > 100
   ) {
     throw new Error(`The expectMinimumGroupRewardShare must be greater than 0 and less than 100.`);
   }
+
   if (licenseConfig.mintingFee < 0) {
     throw new Error(`The mintingFee must be greater than 0.`);
   }

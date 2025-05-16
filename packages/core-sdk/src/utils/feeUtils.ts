@@ -221,6 +221,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
       )}, balance: ${getTokenAmountDisplay(startingBalance)}.`,
     );
   }
+
   // error if there's enough IP to cover fees and we cannot wrap IP to WIP
   if (!autoWrapIp) {
     throw new Error(

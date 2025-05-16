@@ -89,6 +89,7 @@ export class NftClient {
       return handleError(error, "Failed to create an SPG NFT collection");
     }
   }
+
   /**
    * Returns the current mint token of the collection.
    */
@@ -110,6 +111,7 @@ export class NftClient {
     );
     return spgNftClient.mintFee();
   }
+
   /**
    * Sets the token URI for a specific token id.
    *

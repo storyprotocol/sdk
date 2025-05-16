@@ -6,6 +6,9 @@
   "devDependencies": {
     "@eslint/js": "^9.26.0",
     "@story-protocol/prettier-config": "workspace:*",
+    "@stylistic/eslint-plugin-ts": "^4.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-config-turbo": "^1.13.4",

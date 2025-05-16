@@ -142,6 +142,7 @@ export class IPAccountClient {
       return handleError(error, "Failed to get the token");
     }
   }
+
   /**
    * Sets the metadataURI for an IP asset.
    */

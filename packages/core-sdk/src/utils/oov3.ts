@@ -8,6 +8,7 @@ export const getOov3Contract = async (
 ): Promise<Address> => {
   return await arbitrationPolicyUmaClient.oov3();
 };
+
 export const getAssertionDetails = async (
   rpcClient: PublicClient,
   arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient,

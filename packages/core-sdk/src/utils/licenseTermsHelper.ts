@@ -105,6 +105,7 @@ export const validateLicenseTerms = async (
       throw new Error("The royalty policy is not whitelisted.");
     }
   }
+
   if (validateAddress(currency) !== zeroAddress) {
     const isWhitelistedRoyaltyToken = await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken({
       token: currency,
@@ -113,6 +114,7 @@ export const validateLicenseTerms = async (
       throw new Error("The currency token is not whitelisted.");
     }
   }
+
   if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
     throw new Error("Royalty policy requires currency token.");
   }
@@ -126,6 +128,7 @@ export const validateLicenseTerms = async (
   if (object.defaultMintingFee < 0) {
     throw new Error("DefaultMintingFee should be greater than or equal to 0.");
   }
+
   if (object.defaultMintingFee > 0 && object.royaltyPolicy === zeroAddress) {
     throw new Error("Royalty policy is required when defaultMintingFee is greater than 0.");
   }
@@ -144,20 +147,25 @@ const verifyCommercialUse = (terms: LicenseTerms): void => {
     if (terms.commercialAttribution) {
       throw new Error("Cannot add commercial attribution when commercial use is disabled.");
     }
+
     if (terms.commercializerChecker !== zeroAddress) {
       throw new Error("Cannot add commercializerChecker when commercial use is disabled.");
     }
+
     if (terms.commercialRevShare > 0) {
       throw new Error("Cannot add commercial revenue share when commercial use is disabled.");
     }
+
     if (terms.commercialRevCeiling > 0) {
       throw new Error("Cannot add commercial revenue ceiling when commercial use is disabled.");
     }
+
     if (terms.derivativeRevCeiling > 0) {
       throw new Error(
         "Cannot add derivative revenue ceiling share when commercial use is disabled.",
       );
     }
+
     if (terms.royaltyPolicy !== zeroAddress) {
       throw new Error("Cannot add commercial royalty policy when commercial use is disabled.");
     }
@@ -173,12 +181,15 @@ const verifyDerivatives = (terms: LicenseTerms): void => {
     if (terms.derivativesAttribution) {
       throw new Error("Cannot add derivative attribution when derivative use is disabled.");
     }
+
     if (terms.derivativesApproval) {
       throw new Error("Cannot add derivative approval when derivative use is disabled.");
     }
+
     if (terms.derivativesReciprocal) {
       throw new Error("Cannot add derivative reciprocal when derivative use is disabled.");
     }
+
     if (terms.derivativeRevCeiling > 0) {
       throw new Error("Cannot add derivative revenue ceiling when derivative use is disabled.");
     }
@@ -193,6 +204,7 @@ export const getRevenueShare = (
   if (isNaN(revShareNumber)) {
     throw new Error(`${type} must be a valid number.`);
   }
+
   if (revShareNumber < 0 || revShareNumber > 100) {
     throw new Error(`${type} must be between 0 and 100.`);
   }

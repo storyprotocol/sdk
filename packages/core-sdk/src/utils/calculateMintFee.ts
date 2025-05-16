@@ -95,6 +95,7 @@ export const calculateLicenseWipMintFee = async ({
   }
   return fee.tokenAmount;
 };
+
 export const calculateSPGWipMintFee = async (
   spgNftClient: SpgnftImplReadOnlyClient,
 ): Promise<bigint> => {

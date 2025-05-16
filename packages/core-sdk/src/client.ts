@@ -65,9 +65,11 @@ export class StoryClient {
       throw new Error("must specify a wallet or account");
     }
   }
+
   private get chainId(): ChainIds {
     return this.config.chainId as ChainIds;
   }
+
   /**
    * Factory method for creating an SDK client with a signer.
    *

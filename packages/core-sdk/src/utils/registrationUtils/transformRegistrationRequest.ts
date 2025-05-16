@@ -201,6 +201,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
 
   throw new Error("Invalid register request type");
 };
+
 /**
  * Transforms a request for the `registerDerivativeIp` contract method.
  */
@@ -320,6 +321,7 @@ const transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest = async <
     },
   };
 };
+
 /**
  * Transforms a request for the `registerIpAndAttachPilTerms` contract method.
  */
@@ -439,6 +441,7 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
     },
   };
 };
+
 /**
  * Handles a request for the `mintAndRegister*` contract methods.
  *
@@ -507,6 +510,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
       isPublicMinting,
     });
   }
+
   if ("derivData" in request) {
     const derivData = await validateDerivativeData({
       derivativeDataInput: request.derivData,
@@ -547,6 +551,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
   }
   throw new Error("Invalid mint and register request type");
 };
+
 /**
  * Transforms a request for the `mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens` contract method.
  */
@@ -592,6 +597,7 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
     workflowClient: royaltyTokenDistributionWorkflowsClient,
   };
 };
+
 /**
  * Transforms a request for the `mintAndRegisterIpAssetWithPilTerms` contract method.
  */
@@ -629,6 +635,7 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
     workflowClient: licenseAttachmentWorkflowsClient,
   };
 };
+
 /**
  * Transforms a request for the `mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens` contract method.
  */
@@ -731,6 +738,7 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
     workflowClient: derivativeWorkflowsClient,
   };
 };
+
 /**
  * Transforms a request for the `distributeRoyaltyTokens` contract method.
  */
