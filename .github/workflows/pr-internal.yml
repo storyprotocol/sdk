@@ -13,22 +13,22 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
-  push_build_and_test:
-    if: github.event_name == 'pull_request'
+  unit_tests:
     needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
     with:
-      sha: ${{ github.event.pull_request.head.sha }}
+      sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       ENVIRONMENT: "odyssey"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
       TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
 
-  pr_build_and_test:
-    if: github.event_name == 'push'
+  integration_tests:
+    if: github.event_name == 'pull_request'
+    needs: [Timestamp]
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
     with:
-      sha: ${{ github.sha }}
+      sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "odyssey"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
