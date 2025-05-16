@@ -450,6 +450,7 @@ export class LicenseClient {
       if (!isExisted) {
         throw new Error(`License terms id ${req.licenseTermsId} do not exist.`);
       }
+
       if (req.licensingConfig.licensingHook !== zeroAddress) {
         const isRegistered = await this.moduleRegistryReadOnlyClient.isRegistered({
           moduleAddress: req.licensingConfig.licensingHook,
@@ -458,6 +459,7 @@ export class LicenseClient {
           throw new Error("The licensing hook is not registered.");
         }
       }
+
       if (req.licenseTemplate === zeroAddress && req.licenseTermsId !== 0n) {
         throw new Error("The license template is zero address but license terms id is not zero.");
       }

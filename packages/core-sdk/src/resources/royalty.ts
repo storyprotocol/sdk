@@ -116,6 +116,7 @@ export class RoyaltyClient {
         });
         txHashes.push(...hashes);
       }
+
       if (autoUnwrapIp && ownsClaimer) {
         const hashes = await this.unwrapWipTokens(claimedTokens);
         if (hashes) {
@@ -232,6 +233,7 @@ export class RoyaltyClient {
           return acc;
         }, 0n);
       }
+
       if (wipClaimableAmounts > 0n && autoUnwrapIp) {
         const hash = await this.unwrapWipTokens([
           {
@@ -277,6 +279,7 @@ export class RoyaltyClient {
       if (!isReceiverRegistered) {
         throw new Error(`The receiver IP with id ${receiverIpId} is not registered.`);
       }
+
       if (validateAddress(payerIpId) && payerIpId !== zeroAddress) {
         const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
           id: payerIpId,
@@ -296,6 +299,7 @@ export class RoyaltyClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = (): Promise<Hash> => {
         return this.royaltyModuleClient.payRoyaltyOnBehalf(req);
       };

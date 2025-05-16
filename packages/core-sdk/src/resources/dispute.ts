@@ -290,6 +290,7 @@ export class DisputeClient {
           hash: txHash,
         });
       }
+
       const contractCall = (): Promise<Hash> => {
         const calls = [];
         if (bond > 0) {

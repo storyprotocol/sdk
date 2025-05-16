@@ -90,12 +90,13 @@ export default [
       ],
 
       // stylistic
-      "@stylistic/ts/lines-between-class-members": [
+      "@stylistic/ts/padding-line-between-statements": [
         "error",
-        "always",
-        {
-          exceptAfterSingleLine: true,
-        },
+        { blankLine: "always", prev: "function", next: "function" },
+        { blankLine: "always", prev: "class", next: "class" },
+        { blankLine: "always", prev: "interface", next: "interface" },
+        { blankLine: "always", prev: "type", next: "type" },
+        { blankLine: "always", prev: "block-like", next: "block-like" },
       ],
     },
   },

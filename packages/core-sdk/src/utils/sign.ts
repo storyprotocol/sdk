@@ -80,6 +80,7 @@ export const getSignature = async ({
   if (!(wallet as WalletClient).signTypedData) {
     throw new Error("The wallet client does not support signTypedData, please try again.");
   }
+
   if (!wallet.account) {
     throw new Error("The wallet client does not have an account, please try again.");
   }

@@ -372,6 +372,7 @@ export class GroupClient {
           throw new Error(`IP ${request.ipIds[i]} is not registered.`);
         }
       }
+
       for (let i = 0; i < request.ipIds.length; i++) {
         const isAttachedLicenseTerms =
           await this.licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
@@ -425,9 +426,11 @@ export class GroupClient {
       if (!currencyTokens.length) {
         throw new Error("At least one currency token is required.");
       }
+
       if (!memberIpIds.length) {
         throw new Error("At least one member IP ID is required.");
       }
+
       if (currencyTokens.some((token) => token === zeroAddress)) {
         throw new Error("Currency token cannot be the zero address.");
       }

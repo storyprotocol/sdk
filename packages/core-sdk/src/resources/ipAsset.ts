@@ -219,6 +219,7 @@ export class IPAssetClient {
           signature,
         };
       }
+
       if (request.txOptions?.encodedTxDataOnly) {
         if (request.ipMetadata) {
           return { encodedTxData: this.registrationWorkflowsClient.registerIpEncode(object) };
@@ -242,6 +243,7 @@ export class IPAssetClient {
             chainid: BigInt(this.chainId),
           });
         }
+
         if (request.txOptions?.waitForTransaction) {
           const txReceipt = await this.rpcClient.waitForTransactionReceipt({
             ...request.txOptions,
@@ -280,6 +282,7 @@ export class IPAssetClient {
         } catch (error) {
           throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
         }
+
         if (arg.ipMetadata) {
           spgContracts.push(encodedTxData);
         } else {
@@ -295,6 +298,7 @@ export class IPAssetClient {
       if (spgContracts.length > 0) {
         spgTxHash = await this.registrationWorkflowsClient.multicall({ data: spgContracts });
       }
+
       if (contracts.length > 0) {
         txHash = await this.multicall3Client.aggregate3({ calls: contracts });
       }
@@ -311,9 +315,11 @@ export class IPAssetClient {
           const eventResults = this.getIpIdAndTokenIdsFromEvent(txReceipt, contractType);
           results.push(...eventResults);
         };
+
         if (txHash) {
           await processTransaction(txHash, "nftContract");
         }
+
         if (spgTxHash) {
           await processTransaction(spgTxHash, "spgNftContract");
         }
@@ -485,6 +491,7 @@ export class IPAssetClient {
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
       }
+
       if (request.licenseTokenIds.length === 0) {
         throw new Error("The licenseTokenIds must be provided.");
       }
@@ -541,6 +548,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = (): Promise<Hash> => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
           transformRequest,
@@ -721,6 +729,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
       };
@@ -765,6 +774,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
       };
@@ -842,6 +852,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = (): Promise<Hash> => {
         return this.registrationWorkflowsClient.mintAndRegisterIp(object);
       };
@@ -955,6 +966,7 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = async (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
           object,
@@ -1587,6 +1599,7 @@ export class IPAssetClient {
         });
       }
     }
+
     if (totalFees < 0) {
       throw new Error(
         `Total fees for registering derivative should never be negative: ${totalFees}`,
