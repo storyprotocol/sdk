@@ -71,6 +71,7 @@ export class RoyaltyClient {
     this.chainId = chainId;
     this.walletAddress = wallet.account!.address;
   }
+
   /**
    * Claims all revenue from the child IPs of an ancestor IP, then transfer
    * all claimed tokens to the wallet if the wallet owns the IP or is the claimer.
@@ -115,6 +116,7 @@ export class RoyaltyClient {
         });
         txHashes.push(...hashes);
       }
+
       if (autoUnwrapIp && ownsClaimer) {
         const hashes = await this.unwrapWipTokens(claimedTokens);
         if (hashes) {
@@ -231,6 +233,7 @@ export class RoyaltyClient {
           return acc;
         }, 0n);
       }
+
       if (wipClaimableAmounts > 0n && autoUnwrapIp) {
         const hash = await this.unwrapWipTokens([
           {
@@ -276,6 +279,7 @@ export class RoyaltyClient {
       if (!isReceiverRegistered) {
         throw new Error(`The receiver IP with id ${receiverIpId} is not registered.`);
       }
+
       if (validateAddress(payerIpId) && payerIpId !== zeroAddress) {
         const isPayerRegistered = await this.ipAssetRegistryClient.isRegistered({
           id: payerIpId,
@@ -295,6 +299,7 @@ export class RoyaltyClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = (): Promise<Hash> => {
         return this.royaltyModuleClient.payRoyaltyOnBehalf(req);
       };
@@ -420,6 +425,7 @@ export class RoyaltyClient {
     }
     return { ownsClaimer, isClaimerIp, ipAccount };
   }
+
   /**
    * Unwraps WIP tokens back to their underlying IP tokens. Only accepts a single WIP token entry
    * in the claimed tokens array. Throws an error if multiple WIP tokens are found.

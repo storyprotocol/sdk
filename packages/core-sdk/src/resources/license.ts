@@ -84,6 +84,7 @@ export class LicenseClient {
     this.chainId = chainId;
     this.walletAddress = wallet.account!.address;
   }
+
   /**
    * Registers new license terms and return the ID of the newly registered license terms.
    *
@@ -119,6 +120,7 @@ export class LicenseClient {
       return handleError(error, "Failed to register non commercial social remixing PIL");
     }
   }
+
   /**
    * Convenient function to register a PIL commercial use license to the registry.
    *
@@ -142,6 +144,7 @@ export class LicenseClient {
       return handleError(error, "Failed to register commercial use PIL");
     }
   }
+
   /**
    * Convenient function to register a PIL commercial Remix license to the registry.
    *
@@ -166,6 +169,7 @@ export class LicenseClient {
       return handleError(error, "Failed to register commercial remix PIL");
     }
   }
+
   /**
    * Convenient function to register a PIL creative commons attribution license to the registry.
    * Creates a Creative Commons Attribution (CC-BY) license terms flavor.
@@ -191,6 +195,7 @@ export class LicenseClient {
       return handleError(error, "Failed to register creative commons attribution PIL");
     }
   }
+
   /**
    * Attaches license terms to an IP.
    */
@@ -445,6 +450,7 @@ export class LicenseClient {
       if (!isExisted) {
         throw new Error(`License terms id ${req.licenseTermsId} do not exist.`);
       }
+
       if (req.licensingConfig.licensingHook !== zeroAddress) {
         const isRegistered = await this.moduleRegistryReadOnlyClient.isRegistered({
           moduleAddress: req.licensingConfig.licensingHook,
@@ -453,6 +459,7 @@ export class LicenseClient {
           throw new Error("The licensing hook is not registered.");
         }
       }
+
       if (req.licenseTemplate === zeroAddress && req.licenseTermsId !== 0n) {
         throw new Error("The license template is zero address but license terms id is not zero.");
       }

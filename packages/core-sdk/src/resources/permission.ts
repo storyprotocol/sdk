@@ -78,6 +78,7 @@ export class PermissionClient {
       return handleError(error, "Failed to set permissions");
     }
   }
+
   /**
    * Specific permission overrides wildcard permission with signature.
    *
@@ -147,6 +148,7 @@ export class PermissionClient {
       return handleError(error, "Failed to create set permission signature");
     }
   }
+
   /**
    * Sets permission to a signer for all functions across all modules.
    *
@@ -180,6 +182,7 @@ export class PermissionClient {
       return handleError(error, "Failed to set all permissions");
     }
   }
+
   /**
    * Sets a batch of permissions in a single transaction.
    *
@@ -220,6 +223,7 @@ export class PermissionClient {
       return handleError(error, "Failed to set batch permissions");
     }
   }
+
   /**
    * Sets a batch of permissions in a single transaction with signature.
    *

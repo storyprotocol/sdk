@@ -32,6 +32,7 @@ export const getPublicMinting = async (
   const spgNftContractImpl = new SpgnftImplReadOnlyClient(rpcClient, spgNftContract);
   return await spgNftContractImpl.publicMinting();
 };
+
 export const validateLicenseTermsData = async (
   licenseTermsData: LicenseTermsDataInput[],
   rpcClient: PublicClient,
@@ -55,6 +56,7 @@ export const validateLicenseTermsData = async (
   }
   return { licenseTerms, licenseTermsData: processedLicenseTermsData };
 };
+
 export const getRoyaltyShares = (
   royaltyShares: RoyaltyShare[],
 ): { royaltyShares: RoyaltyShare[]; totalAmount: number } => {
@@ -64,6 +66,7 @@ export const getRoyaltyShares = (
     if (share.percentage <= 0) {
       throw new Error("The percentage of the royalty shares must be greater than 0.");
     }
+
     if (share.percentage > 100) {
       throw new Error("The percentage of the royalty shares must be less than or equal to 100.");
     }
@@ -102,12 +105,15 @@ export const validateDerivativeData = async ({
   if (derivativeData.parentIpIds.length === 0) {
     throw new Error("The parent IP IDs must be provided.");
   }
+
   if (derivativeData.licenseTermsIds.length === 0) {
     throw new Error("The license terms IDs must be provided.");
   }
+
   if (derivativeData.parentIpIds.length !== derivativeData.licenseTermsIds.length) {
     throw new Error("The number of parent IP IDs must match the number of license terms IDs.");
   }
+
   if (derivativeData.maxMintingFee < 0) {
     throw new Error(`The maxMintingFee must be greater than 0.`);
   }
@@ -148,10 +154,12 @@ export const validateMaxRts = (maxRts: number): void => {
   if (isNaN(maxRts)) {
     throw new Error(`The maxRts must be a number.`);
   }
+
   if (maxRts < 0 || maxRts > MAX_ROYALTY_TOKEN) {
     throw new Error(`The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
   }
 };
+
 export const getIpIdAddress = async ({
   nftContract,
   tokenId,

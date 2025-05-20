@@ -56,6 +56,7 @@ export const waitTxAndFilterLog = async <
       continue;
     }
   }
+
   if (targetLogs.length === 0) {
     throw new Error(`Not found event ${params.eventName} in target transaction`);
   }
