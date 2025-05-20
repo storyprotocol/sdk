@@ -119,15 +119,17 @@ jobs:
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
+  
   send_slack_notif-core-sdk:
-    needs: [print_version_to_publish]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-slack-notifs.yml@main
-    with:
-      short-desc: "${{ github.repository }}: @story-protocol/core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED}}"
-      title: "Published to Registry"
-      img-url: "https://i.imgur.com/JHmKB0s.png"
-      img-alt-text: "Published to Registry"
-    secrets:
-      channel-name: ${{ secrets.SLACK_CHANNEL_ID_STORY_57BLOCKS }}
-      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+    runs-on: ubuntu-latest
+    environment: "odyssey"
+    steps:
+      - name: Send Slack Notification
+        run: |
+          curl -X POST \
+            -H 'Content-type: application/json' \
+            --data '{
+              "channel": "proj-sdk",
+              "text":"${{ github.repository }}: @story-protocol/core-sdk package has been published to NPM Registry, version: ${{ needs.print_version_to_publish.outputs.CORE_SDK_VERSION_TO_BE_PUBLISHED}}"
+            }' \
+            ${{ secrets.SLACK_SDK_MESSENGER_WEBHOOK_URL }}
