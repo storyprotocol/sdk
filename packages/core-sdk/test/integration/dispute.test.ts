@@ -7,6 +7,7 @@ import {
   aeneid,
   TEST_WALLET_ADDRESS,
   walletClient,
+  TEST_PRIVATE_KEY,
 } from "./utils/util";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import chaiAsPromised from "chai-as-promised";
@@ -19,9 +20,8 @@ import {
 import { disputeModuleAbi } from "../../src/abi/generated";
 import { CID } from "multiformats/cid";
 import * as sha256 from "multiformats/hashes/sha2";
-import { ASSERTION_ABI } from "../../src/abi/oov3Abi";
 import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
-import { getMinimumBond } from "../../src/utils/oov3";
+import { getMinimumBond, settleAssertion } from "../../src/utils/oov3";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -35,50 +35,6 @@ const generateCID = async () => {
   const cidv1 = CID.createV1(0x70, hash); // 0x70 = dag-pb codec
   // Convert CIDv1 to CIDv0 (Base58-encoded)
   return cidv1.toV0().toString();
-};
-
-/**
- * Settles an assertion associated with a dispute in the UMA arbitration protocol.
- *
- * This function takes a dispute ID, resolves it to an assertion ID, and then calls
- * the settleAssertion function on the Optimistic Oracle V3 contract to finalize
- * the arbitration outcome.
- *
- * @see https://docs.story.foundation/docs/uma-arbitration-policy#/
- *
- * @param client - The StoryClient instance used to interact with the Story Protocol
- * @param disputeId - The ID of the dispute to be settled
- * @returns A promise that resolves to the transaction hash of the settlement transaction
- */
-const settleAssertion = async (client: StoryClient, disputeId: bigint): Promise<Hex> => {
-  // Initialize the UMA arbitration policy client
-  const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(publicClient, walletClient);
-
-  // Get the address of the Optimistic Oracle V3 contract
-  const oov3Address = await arbitrationPolicyUmaClient.oov3();
-
-  // Convert the disputeId to the corresponding assertionId
-  const assertionId = await client.dispute.disputeIdToAssertionId(disputeId);
-
-  // Simulate the settleAssertion contract call to ensure it will succeed
-  const { request } = await publicClient.simulateContract({
-    address: oov3Address,
-    abi: ASSERTION_ABI,
-    functionName: "settleAssertion",
-    args: [assertionId],
-    account: walletClient.account,
-  });
-
-  // Execute the actual transaction to try to settle the assertion
-  const txHash = await walletClient.writeContract(request);
-  expect(txHash).to.be.a("string");
-
-  // Wait for the transaction to be mined and verify it was successful
-  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-  expect(receipt.status).to.equal("success");
-
-  // Return the transaction hash for reference or further processing
-  return txHash;
 };
 
 describe("Dispute Functions", () => {
@@ -395,7 +351,7 @@ describe("Dispute Functions", () => {
     });
 
     it("should tag infringing ip", async () => {
-      await settleAssertion(clientA, disputeId);
+      await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
       // Tag derivative IP as infringing
       const results = await clientA.dispute.tagIfRelatedIpInfringed({
@@ -423,7 +379,7 @@ describe("Dispute Functions", () => {
        */
 
       // Step 1: Set judgment on an existing dispute to mark it as valid
-      await settleAssertion(clientA, disputeId);
+      await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
       // Step 2: Verify dispute state
       // The disputes() function returns multiple values about the dispute:
@@ -495,7 +451,7 @@ describe("Dispute Functions", () => {
       });
       const childIpId2 = derivativeResponse2.ipId!;
 
-      await settleAssertion(clientA, testDisputeId);
+      await settleAssertion(TEST_PRIVATE_KEY, testDisputeId);
 
       // This timeout guarantees that the assertion is expired
       // its intended to be longer than the current blocktime
@@ -559,7 +515,7 @@ describe("Dispute Functions", () => {
         txOptions: { waitForTransaction: true },
       });
 
-      await settleAssertion(clientA, disputeId);
+      await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
@@ -606,7 +562,7 @@ describe("Dispute Functions", () => {
     });
 
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
-      await settleAssertion(clientA, disputeId);
+      await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
       const disputeState = await publicClient.readContract({
         address: disputeModuleAddress[aeneid],
@@ -639,7 +595,7 @@ describe("Dispute Functions", () => {
     });
 
     it("should propagate IMPROPER_REGISTRATION tag to derivative IPs", async () => {
-      await settleAssertion(clientA, disputeId);
+      await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
       // Verify the dispute state changed correctly
       const parentDisputeState = await publicClient.readContract({
