@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address, Hash, Hex } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
 import { TokenAmountInput } from "../common";
@@ -17,7 +17,7 @@ export type IPAccountExecuteRequest = {
 };
 
 export type IPAccountExecuteResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
 };
 
@@ -40,7 +40,7 @@ export type IPAccountExecuteWithSigRequest = {
 };
 
 export type IPAccountExecuteWithSigResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
 };
 

@@ -225,7 +225,7 @@ export class LicenseClient {
           licenseTermsId: request.licenseTermsId,
         });
       if (isAttachedLicenseTerms) {
-        return { txHash: "", success: false };
+        return { success: false };
       }
       const req = {
         ipId: request.ipId,

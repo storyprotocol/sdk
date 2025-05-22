@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hash } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
 import { TxOptions } from "../options";
@@ -27,7 +27,7 @@ export type CreateNFTCollectionRequest = {
 };
 
 export type CreateNFTCollectionResponse = {
-  txHash?: string;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   spgNftContract?: Address;
 };
