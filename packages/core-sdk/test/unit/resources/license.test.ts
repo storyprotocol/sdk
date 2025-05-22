@@ -503,7 +503,7 @@ describe("Test LicenseClient", () => {
       }
     });
 
-    it("should return txHash of empty and success of false when call attachLicenseTerms given licenseTermsId is already attached", async () => {
+    it("should success of false when call attachLicenseTerms given licenseTermsId is already attached", async () => {
       sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
       sinon
@@ -514,7 +514,6 @@ describe("Test LicenseClient", () => {
         licenseTermsId: "1",
       });
       expect(result).to.deep.equal({
-        txHash: "",
         success: false,
       });
     });
