@@ -14,6 +14,7 @@ export const mockERC721 = "0xa1119092ea911202E0a65B743a13AE28C5CF2f21";
 export const licenseToken = licenseTokenAddress[aeneid];
 export const spgNftBeacon = spgnftBeaconAddress[aeneid];
 export const TEST_WALLET_ADDRESS = process.env.TEST_WALLET_ADDRESS! as Address;
+export const TEST_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY! as Hex;
 
 const baseConfig = {
   chain: chainStringToViemChain("aeneid"),
@@ -22,7 +23,7 @@ const baseConfig = {
 export const publicClient = createPublicClient(baseConfig);
 export const walletClient = createWalletClient({
   ...baseConfig,
-  account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
+  account: privateKeyToAccount(TEST_PRIVATE_KEY),
 });
 
 export const getTokenId = async (): Promise<number | undefined> => {

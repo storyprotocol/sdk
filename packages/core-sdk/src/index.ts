@@ -38,3 +38,5 @@ export { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "./abi/generate
 export { getPermissionSignature, getSignature } from "./utils/sign";
 
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
+
+export { settleAssertion } from "./utils/oov3";
