@@ -46,7 +46,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
 } & IpMetadataAndTxOptions;
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
-  txHash?: string;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
@@ -58,7 +58,7 @@ export type RegisterGroupRequest = {
 };
 
 export type RegisterGroupResponse = {
-  txHash?: string;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   groupId?: Address;
 };
@@ -79,7 +79,7 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
 } & IpMetadataAndTxOptions;
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
-  txHash?: string;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
@@ -93,7 +93,7 @@ export type RegisterGroupAndAttachLicenseRequest = {
 };
 
 export type RegisterGroupAndAttachLicenseResponse = {
-  txHash?: string;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   groupId?: Address;
 };
@@ -110,7 +110,7 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
 };
 
 export type RegisterGroupAndAttachLicenseAndAddIpsResponse = {
-  txHash?: string;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   groupId?: Address;
 };
