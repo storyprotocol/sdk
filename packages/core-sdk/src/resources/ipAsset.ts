@@ -535,76 +535,56 @@ export class IPAssetClient {
 
       // Check if licenseTermsId is provided directly
       if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
-        // Use the provided licenseTermsId directly, skip validation
         licenseTermsIds = request.licenseTermsInfo.licenseTermsIds;
-        const licenseTermsData = this.licenseTemplateClient.getLicenseTerms({
+        const licenseTermsData = await this.licenseTemplateClient.getLicenseTerms({
           selectedLicenseTermsId: licenseTermsIds[0]
         });
-        licenseTerms = [ { terms: licenseTermsData, licensingConfig: licensingConfig } ]
         licensingConfig = await this.licenseRegistryReadOnlyClient.getLicensingConfig({
           ipId: request.licenseTermsInfo.ipId,
           licenseTemplate: this.licenseTemplateClient.address,
           licenseTermsId: licenseTermsIds[0]
         })
-        licenseTerms = [ { terms: licenseTerms[0], licensingConfig: licensingConfig } ]
-        console.log("loco x")
-        // We still need licenseTerms for the transform request, so we might need to fetch it
-        // or handle this case in the transform logic
+        licenseTerms = [ { terms: licenseTermsData.terms, licensingConfig: licensingConfig } ]
+        req = {
+          spgNftContract: request.spgNftContract,
+          allowDuplicates: request.allowDuplicates,
+          licenseTermsData: licenseTerms,
+          txOptions: request.txOptions
+        };
       } else {
-        // Validate that licenseTermsData is provided if licenseTermsId is not
-
         if (!request.licenseTermsData) {
           throw new Error("Either licenseTermsId or licenseTermsData must be provided");
         }
-        console.log("loco x.1")
         // Original validation flow
         const licenseTermsData = await validateLicenseTermsData(
           request.licenseTermsData,
           this.rpcClient,
         );
-        // licenseTerms = licenseTermsData.licenseTermsData;
-        licenseTerms = licenseTermsData;
-        console.log("loco x.2", licenseTerms)
-        console.log("loco x.3")
+        licenseTerms = licenseTermsData.licenseTerms;
+        req = request
       }
 
-      ///
-      req = {
-        spgNftContract: request.spgNftContract,
-        allowDuplicates: request.allowDuplicates,
-        licenseTermsData: licenseTerms,
-        txOptions: request.txOptions
-      };
-      ///
-      console.log("------")
-      console.log(req.licenseTermsData)
-      console.log(request.licenseTermsData)
-      // este es el call que esta fallando
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
           {
-            request,
+            request: req,
             rpcClient: this.rpcClient,
             wallet: this.wallet,
             chainId: this.chainId,
           },
         );
-      console.log("loco 1")
       const encodedTxData =
         this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTermsEncode(
           transformRequest,
         );
-      console.log("loco 2")
       if (req.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-      console.log("loco 3")
       const contractCall = (): Promise<Hash> => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
           transformRequest,
         );
       };
-      console.log("loco 4")
       const rsp = await this.handleRegistrationWithFees({
         wipOptions: request.wipOptions,
         sender: this.walletAddress,
@@ -614,25 +594,20 @@ export class IPAssetClient {
         contractCall,
         txOptions: request.txOptions,
       });
-      console.log("loco 5")
       if (rsp.receipt) {
         // Use the licenseTermsIds we determined earlier
         if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
           // We already have the ID
-          console.log("loco 6")
           return { ...rsp, licenseTermsIds: request.licenseTermsInfo?.licenseTermsIds };
         } else {
           // Get the ID from the validated license terms
-          console.log("loco 7")
           const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
           return { ...rsp, licenseTermsIds: computedLicenseTermsIds };
         }
       } else {
-        console.log("loco 8")
         return rsp;
       }
     } catch (error) {
-      console.log("loco 9")
       return handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
   }
