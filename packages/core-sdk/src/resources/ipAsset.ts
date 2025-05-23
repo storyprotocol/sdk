@@ -574,8 +574,8 @@ export class IPAssetClient {
       };
       ///
       console.log("------")
-      console.log(req.licenseTermsData)
-      console.log(request.licenseTermsData)
+      console.log(req)
+      console.log(request)
       // este es el call que esta fallando
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
