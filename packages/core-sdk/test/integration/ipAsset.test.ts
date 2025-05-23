@@ -1262,7 +1262,7 @@ describe("IP Asset Functions", () => {
       });
     });
 
-    describe.only("IP Asset Registration with Private Minting SPG NFT Contracts", () => {
+    describe("IP Asset Registration with Private Minting SPG NFT Contracts", () => {
       let spgNftContractWithPrivateMinting: Address;
       let licenseTermsId: bigint;
       let parentIpId: Address;
@@ -1381,11 +1381,21 @@ describe("IP Asset Functions", () => {
         expect(result.ipId).to.be.a("string").and.not.empty;
         expect(result.tokenId).to.be.a("bigint");
       });
-      /// POLLO
       it("should successfully when call mint and register ip asset with pil terms using existing licenseTermsIds", async () => {
-        ///
+        const baseCollection = await client.nftClient.createNFTCollection({
+          name: "Private Minting Collection",
+          symbol: "PMC",
+          isPublicMinting: false,
+          mintOpen: true,
+          mintFeeRecipient: walletAddress,
+          mintFee: 3n,
+          mintFeeToken: WIP_TOKEN_ADDRESS,
+          contractURI: "",
+          txOptions: { waitForTransaction: true },
+        });
+        const spgNftContractforBaseCollection = baseCollection.spgNftContract!;
         const rx = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractforBaseCollection,
           allowDuplicates: false,
           licenseTermsData: [
             {
@@ -1425,7 +1435,7 @@ describe("IP Asset Functions", () => {
         let licenseTermsIds = rx.licenseTermsIds!;
         let ipId = rx.ipId!;
 
-        const newPrivateMintingCollectionResult = await client.nftClient.createNFTCollection({
+        const newCollection = await client.nftClient.createNFTCollection({
           name: "Private Minting Collection",
           symbol: "PMC",
           isPublicMinting: false,
@@ -1436,10 +1446,10 @@ describe("IP Asset Functions", () => {
           contractURI: "",
           txOptions: { waitForTransaction: true },
         });
-        const newSpgNftContractWithPrivateMinting = newPrivateMintingCollectionResult.spgNftContract!;
+        const newSpgNftContractForNewCollection = newCollection.spgNftContract!;
         
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: newSpgNftContractWithPrivateMinting,
+          spgNftContract: newSpgNftContractForNewCollection,
           allowDuplicates: false,
           licenseTermsInfo: {licenseTermsIds, ipId},
           txOptions: { waitForTransaction: true },
@@ -1449,7 +1459,6 @@ describe("IP Asset Functions", () => {
         parentIpId = result.ipId!;
         licenseTermsId = result.licenseTermsIds![0];
       });
-      /// POLLO
       it("should successfully when call mint and register ip and attach pil terms and distribute royalty tokens", async () => {
         const result =
           await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
