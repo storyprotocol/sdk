@@ -562,7 +562,10 @@ export class IPAssetClient {
           request.licenseTermsData,
           this.rpcClient,
         );
-        licenseTerms = licenseTermsData.licenseTermsData;
+        // licenseTerms = licenseTermsData.licenseTermsData;
+        licenseTerms = licenseTermsData;
+        console.log("loco x.2", licenseTerms)
+        console.log("loco x.3")
       }
 
       ///
