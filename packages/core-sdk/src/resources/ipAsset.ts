@@ -518,7 +518,6 @@ export class IPAssetClient {
       return handleError(error, "Failed to register derivative with license tokens");
     }
   }
-  /// BORIS HERE
   /**
    * Mint an NFT from a collection and register it as an IP.
    *
