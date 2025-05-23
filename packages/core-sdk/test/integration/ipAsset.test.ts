@@ -337,8 +337,6 @@ describe("IP Asset Functions", () => {
       await mockERC20.mint(walletAddress, 100000n);
     });
 
-    
-
     it("should register IP Asset with metadata", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const response = await client.ipAsset.register({
@@ -1264,7 +1262,7 @@ describe("IP Asset Functions", () => {
       });
     });
 
-    describe("IP Asset Registration with Private Minting SPG NFT Contracts", () => {
+    describe.only("IP Asset Registration with Private Minting SPG NFT Contracts", () => {
       let spgNftContractWithPrivateMinting: Address;
       let licenseTermsId: bigint;
       let parentIpId: Address;
