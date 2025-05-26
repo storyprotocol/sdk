@@ -34,7 +34,7 @@ export type PayRoyaltyOnBehalfRequest = WithTxOptions &
   };
 
 export type PayRoyaltyOnBehalfResponse = {
-  txHash?: string;
+  txHash?: Hash;
   receipt?: TransactionReceipt;
   encodedTxData?: EncodedTxData;
 };

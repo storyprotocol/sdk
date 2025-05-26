@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address, Hash, Hex } from "viem";
 
 import { EncodedTxData, SimpleWalletClient } from "../../abi/generated";
 import { ChainIds } from "../config";
@@ -27,7 +27,7 @@ export type SetPermissionsRequest = {
 };
 
 export type SetPermissionsResponse = {
-  txHash?: string;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   success?: boolean;
 };
