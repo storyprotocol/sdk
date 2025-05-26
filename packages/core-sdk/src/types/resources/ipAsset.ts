@@ -426,7 +426,7 @@ export type CommonRegistrationParams = {
   derivData?: DerivativeData;
   sender: Address;
   txOptions?: TxOptions;
-  wipOptions?: WipOptions;  
+  wipOptions?: WipOptions;
 };
 
 export type RegistrationResponse = {

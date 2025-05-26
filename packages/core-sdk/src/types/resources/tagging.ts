@@ -27,4 +27,3 @@ export type RemoveTagRequest = {
 export type RemoveTagResponse = {
   txHash: Hash;
 };
-

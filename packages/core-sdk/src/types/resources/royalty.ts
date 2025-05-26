@@ -6,7 +6,7 @@ import {
   IpRoyaltyVaultImplRevenueTokenClaimedEvent,
 } from "../../abi/generated";
 import { TokenAmountInput } from "../common";
-import {  WithErc20AndWipOptions, WithTxOptions } from "../options";
+import { WithErc20AndWipOptions, WithTxOptions } from "../options";
 
 export type ClaimableRevenueRequest = {
   /** The IP ID of the royalty vault. */

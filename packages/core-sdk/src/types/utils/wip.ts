@@ -7,13 +7,7 @@ import {
   SimpleWalletClient,
 } from "../../abi/generated";
 import { TokenClient, WipTokenClient } from "../../utils/token";
-import {
-  ERC20Options,
-  TransactionResponse,
-  TxOptions,
-  WipOptions,
-  WithWipOptions,
-} from "../options";
+import { ERC20Options, TransactionResponse, TxOptions, WipOptions } from "../options";
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
