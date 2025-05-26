@@ -31,7 +31,9 @@ export type ERC20Options = {
  * Options to override the default behavior of the auto approve logic
  */
 export type WithERC20Options = {
-  erc20Options?: ERC20Options;
+  options?: {
+    erc20Options?: ERC20Options;
+  };
 };
 
 export type WipOptions = {
