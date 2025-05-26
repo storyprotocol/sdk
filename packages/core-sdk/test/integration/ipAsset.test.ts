@@ -1381,6 +1381,84 @@ describe("IP Asset Functions", () => {
         expect(result.ipId).to.be.a("string").and.not.empty;
         expect(result.tokenId).to.be.a("bigint");
       });
+      it("should successfully when call mint and register ip asset with pil terms using existing licenseTermsIds", async () => {
+        const baseCollection = await client.nftClient.createNFTCollection({
+          name: "Private Minting Collection",
+          symbol: "PMC",
+          isPublicMinting: false,
+          mintOpen: true,
+          mintFeeRecipient: walletAddress,
+          mintFee: 3n,
+          mintFeeToken: WIP_TOKEN_ADDRESS,
+          contractURI: "",
+          txOptions: { waitForTransaction: true },
+        });
+        const spgNftContractforBaseCollection = baseCollection.spgNftContract!;
+        const rx = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: spgNftContractforBaseCollection,
+          allowDuplicates: false,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: zeroAddress,
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: false,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
+            },
+          ],
+          txOptions: { waitForTransaction: true },
+        });
+        let licenseTermsIds = rx.licenseTermsIds!;
+        let ipId = rx.ipId!;
+
+        const newCollection = await client.nftClient.createNFTCollection({
+          name: "Private Minting Collection",
+          symbol: "PMC",
+          isPublicMinting: false,
+          mintOpen: true,
+          mintFeeRecipient: walletAddress,
+          mintFee: 3n,
+          mintFeeToken: WIP_TOKEN_ADDRESS,
+          contractURI: "",
+          txOptions: { waitForTransaction: true },
+        });
+        const newSpgNftContractForNewCollection = newCollection.spgNftContract!;
+        
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: newSpgNftContractForNewCollection,
+          allowDuplicates: false,
+          licenseTermsInfo: {licenseTermsIds, ipId},
+          txOptions: { waitForTransaction: true },
+        });
+        expect(result.tokenId).not.undefined;
+        expect(result.txHash).not.undefined;
+        parentIpId = result.ipId!;
+        licenseTermsId = result.licenseTermsIds![0];
+      });
       it("should successfully when call mint and register ip and attach pil terms and distribute royalty tokens", async () => {
         const result =
           await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({

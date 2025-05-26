@@ -116,9 +116,10 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
    */
   allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsDataInput[];
+  licenseTermsData?: LicenseTermsDataInput[];
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
+  licenseTermsInfo?: {licenseTermsIds: bigint[], ipId: Hex};
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 

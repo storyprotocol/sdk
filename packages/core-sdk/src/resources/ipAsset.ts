@@ -42,7 +42,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
   SpgnftImplReadOnlyClient,
-  WrappedIpClient,
+  WrappedIpClient
 } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
@@ -91,7 +91,7 @@ import {
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
-  TransformIpRegistrationWorkflowResponse,
+  TransformIpRegistrationWorkflowResponse
 } from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
 import { LicenseTerms } from "../types/resources/license";
@@ -119,6 +119,7 @@ import {
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { validateAddress } from "../utils/utils";
+import { LicenseClient } from "./license";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -517,7 +518,6 @@ export class IPAssetClient {
       return handleError(error, "Failed to register derivative with license tokens");
     }
   }
-
   /**
    * Mint an NFT from a collection and register it as an IP.
    *
@@ -527,28 +527,58 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      const { licenseTerms } = await validateLicenseTermsData(
-        request.licenseTermsData,
-        this.rpcClient,
-      );
+      let licenseTerms: any;
+      let licensingConfig: any;
+      let licenseTermsIds: bigint[];
+      let req: MintAndRegisterIpAssetWithPilTermsRequest;
+
+      // Check if licenseTermsId is provided directly
+      if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
+        licenseTermsIds = request.licenseTermsInfo.licenseTermsIds;
+        const licenseTermsData = await this.licenseTemplateClient.getLicenseTerms({
+          selectedLicenseTermsId: licenseTermsIds[0]
+        });
+        licensingConfig = await this.licenseRegistryReadOnlyClient.getLicensingConfig({
+          ipId: request.licenseTermsInfo.ipId,
+          licenseTemplate: this.licenseTemplateClient.address,
+          licenseTermsId: licenseTermsIds[0]
+        })
+        licenseTerms = [ { terms: licenseTermsData.terms, licensingConfig: licensingConfig } ]
+        req = {
+          spgNftContract: request.spgNftContract,
+          allowDuplicates: request.allowDuplicates,
+          licenseTermsData: licenseTerms,
+          txOptions: request.txOptions
+        };
+      } else {
+        if (!request.licenseTermsData) {
+          throw new Error("Either licenseTermsId or licenseTermsData must be provided");
+        }
+        // Original validation flow
+        const licenseTermsData = await validateLicenseTermsData(
+          request.licenseTermsData,
+          this.rpcClient,
+        );
+        licenseTerms = licenseTermsData.licenseTerms;
+        req = request
+      }
+
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
           {
-            request,
+            request: req,
             rpcClient: this.rpcClient,
             wallet: this.wallet,
             chainId: this.chainId,
           },
         );
-
       const encodedTxData =
         this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTermsEncode(
           transformRequest,
         );
-      if (request.txOptions?.encodedTxDataOnly) {
+      if (req.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
-
       const contractCall = (): Promise<Hash> => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
           transformRequest,
@@ -564,8 +594,15 @@ export class IPAssetClient {
         txOptions: request.txOptions,
       });
       if (rsp.receipt) {
-        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-        return { ...rsp, licenseTermsIds };
+        // Use the licenseTermsIds we determined earlier
+        if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
+          // We already have the ID
+          return { ...rsp, licenseTermsIds: request.licenseTermsInfo?.licenseTermsIds };
+        } else {
+          // Get the ID from the validated license terms
+          const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+          return { ...rsp, licenseTermsIds: computedLicenseTermsIds };
+        }
       } else {
         return rsp;
       }
@@ -575,62 +612,74 @@ export class IPAssetClient {
   }
 
   /**
-   * Batch mint an NFT from a collection and register it as an IP.
-   *
-   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
-   */
-  public async batchMintAndRegisterIpAssetWithPilTerms(
-    request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
-  ): Promise<BatchMintAndRegisterIpAssetWithPilTermsResponse> {
-    try {
-      const calldata: Hex[] = [];
-      for (const arg of request.args) {
-        const result = await this.mintAndRegisterIpAssetWithPilTerms({
-          ...arg,
-          txOptions: {
-            encodedTxDataOnly: true,
-          },
-        });
-        calldata.push(result.encodedTxData!.data);
-      }
-      const txHash = await this.licenseAttachmentWorkflowsClient.multicall({ data: calldata });
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const results: BatchMintAndRegisterIpAssetWithPilTermsResult[] = this.ipAssetRegistryClient
-          .parseTxIpRegisteredEvent(txReceipt)
-          .map((log) => ({
-            ipId: log.ipId,
-            tokenId: log.tokenId,
-            spgNftContract: log.tokenContract,
-            licenseTermsIds: [],
-          }));
-        // Due to emit event log by sequence, we need to get license terms id from request.args
-        for (let j = 0; j < request.args.length; j++) {
+ * Batch mint an NFT from a collection and register it as an IP.
+ *
+ * Emits on-chain IPRegistered and LicenseTermsAttached events.
+ */
+public async batchMintAndRegisterIpAssetWithPilTerms(
+  request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
+): Promise<BatchMintAndRegisterIpAssetWithPilTermsResponse> {
+  try {
+    const calldata: Hex[] = [];
+    for (const arg of request.args) {
+      const result = await this.mintAndRegisterIpAssetWithPilTerms({
+        ...arg,
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+      calldata.push(result.encodedTxData!.data);
+    }
+    const txHash = await this.licenseAttachmentWorkflowsClient.multicall({ data: calldata });
+    if (request.txOptions?.waitForTransaction) {
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const results: BatchMintAndRegisterIpAssetWithPilTermsResult[] = this.ipAssetRegistryClient
+        .parseTxIpRegisteredEvent(txReceipt)
+        .map((log) => ({
+          ipId: log.ipId,
+          tokenId: log.tokenId,
+          spgNftContract: log.tokenContract,
+          licenseTermsIds: [],
+        }));
+      
+      // Due to emit event log by sequence, we need to get license terms id from request.args
+      for (let j = 0; j < request.args.length; j++) {
+        const arg = request.args[j];
+        
+        // Check if licenseTermsIds are provided directly
+        if (arg.licenseTermsInfo?.licenseTermsIds && arg.licenseTermsInfo.licenseTermsIds.length > 0) {
+          // Use the provided licenseTermsIds directly
+          results[j].licenseTermsIds = arg.licenseTermsInfo.licenseTermsIds;
+        } else if (arg.licenseTermsData && arg.licenseTermsData.length > 0) {
+          // Original flow: validate and get IDs from licenseTermsData
           const licenseTerms: LicenseTerms[] = [];
-          const licenseTermsData = request.args[j].licenseTermsData;
-          for (let i = 0; i < licenseTermsData.length; i++) {
+          for (let i = 0; i < arg.licenseTermsData.length; i++) {
             const licenseTerm = await validateLicenseTerms(
-              licenseTermsData[i].terms,
+              arg.licenseTermsData[i].terms,
               this.rpcClient,
             );
             licenseTerms.push(licenseTerm);
           }
           const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
           results[j].licenseTermsIds = licenseTermsIds;
+        } else {
+          throw new Error(`Either licenseTermsIds or licenseTermsData must be provided for argument at index ${j}`);
         }
-        return {
-          txHash: txHash,
-          results,
-        };
       }
-      return { txHash };
-    } catch (error) {
-      return handleError(error, "Failed to batch mint and register IP and attach PIL terms");
+      
+      return {
+        txHash: txHash,
+        results,
+      };
     }
+    return { txHash };
+  } catch (error) {
+    return handleError(error, "Failed to batch mint and register IP and attach PIL terms");
   }
+}
 
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.
