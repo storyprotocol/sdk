@@ -4627,8 +4627,10 @@ describe("Test IpAssetClient", () => {
             },
           },
         ],
-        wipOptions: {
-          useMulticallWhenPossible: false,
+        options: {
+          wipOptions: {
+            useMulticallWhenPossible: false,
+          },
         },
       });
       expect(mintAndRegisterIpAndMakeDerivativeStub.callCount).to.equal(1);

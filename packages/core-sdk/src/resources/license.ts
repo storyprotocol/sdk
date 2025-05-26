@@ -335,7 +335,7 @@ export class LicenseClient {
       }
       const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
-        options: { wipOptions: request.wipOptions },
+        options: { wipOptions: request.options?.wipOptions },
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: wipSpenders,

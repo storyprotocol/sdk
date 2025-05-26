@@ -65,8 +65,19 @@ export type WipOptions = {
  * and auto approve logic.
  */
 export type WithWipOptions = {
-  /** options to configure WIP behavior */
-  wipOptions?: WipOptions;
+  options?: {
+    /** options to configure WIP behavior */
+    wipOptions?: WipOptions;
+  };
+};
+
+export type WithErc20AndWipOptions = {
+  options?: {
+    /** options to configure ERC20 behavior */
+    erc20Options?: ERC20Options;
+    /** options to configure WIP behavior */
+    wipOptions?: WipOptions;
+  };
 };
 
 export type WaitForTransactionReceiptRequest = {

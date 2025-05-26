@@ -266,8 +266,14 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
-      const { receiverIpId, payerIpId, token, amount, erc20Options, wipOptions, txOptions } =
-        request;
+      const {
+        receiverIpId,
+        payerIpId,
+        token,
+        amount,
+        options: { erc20Options, wipOptions } = {},
+        txOptions,
+      } = request;
       const sender = this.wallet.account!.address;
       const payAmount = BigInt(amount);
       if (payAmount <= 0n) {

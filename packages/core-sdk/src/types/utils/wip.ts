@@ -66,7 +66,7 @@ export type ContractCallWithFees<T extends Hash | Hash[] = Hash> = {
   txOptions?: TxOptions;
 };
 
-export type MulticallWithWrapIp = WithWipOptions & {
+export type MulticallWithWrapIp = {
   calls: Multicall3ValueCall[];
   ipAmountToWrap: bigint;
   contractCall: () => Promise<Hash | Hash[]>;
@@ -75,6 +75,7 @@ export type MulticallWithWrapIp = WithWipOptions & {
   wipClient: WipTokenClient;
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
+  wipOptions?: WipOptions;
 };
 
 export type ContractCallWithFeesResponse<T extends Hash | Hash[]> = Promise<
