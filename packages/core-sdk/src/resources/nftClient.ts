@@ -71,19 +71,16 @@ export class NftClient {
         };
       } else {
         const txHash = await this.registrationWorkflowsClient.createCollection(object);
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const targetLogs =
-            this.registrationWorkflowsClient.parseTxCollectionCreatedEvent(txReceipt);
-          return {
-            txHash: txHash,
-            spgNftContract: targetLogs[0].spgNftContract,
-          };
-        }
-        return { txHash: txHash };
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const targetLogs =
+          this.registrationWorkflowsClient.parseTxCollectionCreatedEvent(txReceipt);
+        return {
+          txHash: txHash,
+          spgNftContract: targetLogs[0].spgNftContract,
+        };
       }
     } catch (error) {
       return handleError(error, "Failed to create an SPG NFT collection");

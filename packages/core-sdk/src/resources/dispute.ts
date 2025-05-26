@@ -151,14 +151,10 @@ export class DisputeClient {
         return { encodedTxData: this.disputeModuleClient.cancelDisputeEncode(req) };
       } else {
         const txHash = await this.disputeModuleClient.cancelDispute(req);
-
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-        }
-
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
         return { txHash: txHash };
       }
     } catch (error) {
@@ -182,13 +178,10 @@ export class DisputeClient {
         return { encodedTxData: this.disputeModuleClient.resolveDisputeEncode(req) };
       } else {
         const txHash = await this.disputeModuleClient.resolveDispute(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-        }
-
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
         return { txHash: txHash };
       }
     } catch (error) {
