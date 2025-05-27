@@ -129,25 +129,6 @@ describe("Test DisputeClient", () => {
         );
       }
     });
-    it("should return txHash when call raiseDispute successfully", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
-      sinon
-        .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
-        .resolves({ allowed: true });
-
-      sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
-      const result = await disputeClient.raiseDispute({
-        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
-        bond: minimumBond + 1n,
-        liveness: 2592000,
-      });
-
-      expect(result.txHash).equal(txHash);
-    });
 
     it("should return txHash and disputeId when call raiseDispute successfully", async () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);

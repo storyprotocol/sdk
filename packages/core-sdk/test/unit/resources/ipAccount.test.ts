@@ -243,17 +243,6 @@ describe("Test IPAccountClient", () => {
         tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
       });
       expect(result.txHash).to.equal(txHash);
-      expect(result.receipt).to.be.undefined;
-    });
-
-    it("should return txHash when call transferErc20 successfully", async () => {
-      sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
-      const result = await ipAccountClient.transferErc20({
-        ipId: ipId,
-        tokens: [{ address: WIP_TOKEN_ADDRESS, target: zeroAddress, amount: 1n }],
-      });
-      expect(result.txHash).to.equal(txHash);
-      expect(result.receipt).to.not.be.undefined;
     });
   });
 });

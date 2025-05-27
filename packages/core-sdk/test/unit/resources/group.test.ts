@@ -66,14 +66,6 @@ describe("Test IpAssetClient", () => {
       }
     });
 
-    it("should return txHash when call registerGroup successfully", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "registerGroup").resolves(txHash);
-      const result = await groupClient.registerGroup({
-        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
-      expect(result.txHash).equal(txHash);
-    });
-
     it("should return txHash when call registerGroup successfully ", async () => {
       sinon.stub(groupClient.groupingModuleClient, "registerGroup").resolves(txHash);
       sinon.stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
@@ -114,17 +106,6 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-    it("should return txHash when call registerGroupAndAttachLicense successfully", async () => {
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicense")
-        .resolves(txHash);
-      const result = await groupClient.registerGroupAndAttachLicense({
-        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseData: mockLicenseData,
-      });
-      expect(result.txHash).equal(txHash);
-    });
-
     it("should return txHash when call registerGroupAndAttachLicense successfully ", async () => {
       sinon
         .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicense")
@@ -224,22 +205,6 @@ describe("Test IpAssetClient", () => {
       });
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
-    it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args", async () => {
-      sinon
-        .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
-        .resolves(txHash);
-      const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
-        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
-        ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        licenseData: mockLicenseData,
-      });
-      expect(result.txHash).equal(txHash);
-    });
 
     it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args ", async () => {
       sinon
@@ -282,22 +247,6 @@ describe("Test IpAssetClient", () => {
           "Failed to mint and register IP and attach license and add to group: Group IP 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not registered.",
         );
       }
-    });
-
-    it("should return txHash when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given correct args", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
-        .resolves(txHash);
-
-      const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
-        groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
-        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseData: [mockLicenseData],
-        allowDuplicates: true,
-      });
-      expect(result.txHash).equal(txHash);
     });
 
     it("should return txHash when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given correct args ", async () => {
@@ -370,6 +319,17 @@ describe("Test IpAssetClient", () => {
       const mintAndRegisterIpAndAttachLicenseAndAddToGroupStub = sinon
         .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
         .resolves(txHash);
+      sinon.stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
       await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         maxAllowedRewardShare: 5,
@@ -452,24 +412,6 @@ describe("Test IpAssetClient", () => {
           "Failed to register IP and attach license and add to group: Invalid address: 0x.",
         );
       }
-    });
-
-    it("should return txHash when call registerIpAndAttachLicenseAndAddToGroup given correct args", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup")
-        .resolves(txHash);
-      const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
-        groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        tokenId: "100",
-        licenseData: [mockLicenseData],
-        maxAllowedRewardShare: 5,
-      });
-      expect(result.txHash).equal(txHash);
     });
 
     it("should return txHash when call registerIpAndAttachLicenseAndAddToGroup given correct args ", async () => {
@@ -610,6 +552,27 @@ describe("Test IpAssetClient", () => {
       sinon
         .stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward")
         .resolves(txHash);
+      sinon
+        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
+        .returns([
+          {
+            groupId: mockAddress,
+            amount: 100n,
+            token: mockAddress,
+            pool: mockAddress,
+          },
+        ]);
+      sinon.stub(groupClient.royaltyModuleEventClient, "parseTxRoyaltyPaidEvent").returns([
+        {
+          receiverIpId: mockAddress,
+          amount: 100n,
+          token: mockAddress,
+          amountAfterFee: 100n,
+          payerIpId: mockAddress,
+          sender: mockAddress,
+        },
+      ]);
+
       const result = await groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
         currencyTokens: [mockAddress],
@@ -745,6 +708,14 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when call successfully", async () => {
       sinon.stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      sinon.stub(groupClient.groupingModuleEventClient, "parseTxClaimedRewardEvent").returns([
+        {
+          ipId: [mockAddress],
+          amount: [100n],
+          token: mockAddress,
+          groupId: mockAddress,
+        },
+      ]);
       const result = await groupClient.claimReward({
         groupIpId: mockAddress,
         currencyToken: mockAddress,
@@ -795,13 +766,22 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when call successfully", async () => {
       sinon.stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
-
+      sinon
+        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
+        .returns([
+          {
+            groupId: mockAddress,
+            amount: 100n,
+            token: mockAddress,
+            pool: mockAddress,
+          },
+        ]);
       const result = await groupClient.collectRoyalties({
         groupIpId: mockAddress,
         currencyToken: mockAddress,
       });
       expect(result.txHash).equal(txHash);
-      expect(result.collectedRoyalties).to.undefined;
+      expect(result.collectedRoyalties).to.equal(100n);
     });
 
     it("should return additional details", async () => {

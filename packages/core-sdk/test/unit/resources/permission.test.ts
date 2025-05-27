@@ -233,20 +233,6 @@ describe("Test Permission", () => {
       }
     });
 
-    it("should return hash when call createSetPermissionSignature given correct args", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-
-      const res = await permissionClient.createSetPermissionSignature({
-        ipId: zeroAddress,
-        signer: zeroAddress,
-        to: zeroAddress,
-        func: "function setAll(address,string,bytes32,bytes32)",
-        permission: AccessPermission.ALLOW,
-      });
-      expect(res.txHash).to.equal(txHash);
-      expect(res.success).to.equal(undefined);
-    });
-
     it("should return txHash and success when call createSetPermissionSignature given correct args ", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
@@ -378,24 +364,6 @@ describe("Test Permission", () => {
           "Failed to create batch permission signature: IP id with 0x0000000000000000000000000000000000000000 is not registered.",
         );
       }
-    });
-
-    it("should return hash when call createSetBatchPermissionsSignature given correct args", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-
-      const res = await permissionClient.createBatchPermissionSignature({
-        ipId: zeroAddress,
-        permissions: [
-          {
-            ipId: zeroAddress,
-            signer: zeroAddress,
-            to: zeroAddress,
-            permission: AccessPermission.ALLOW,
-          },
-        ],
-      });
-      expect(res.txHash).to.equal(txHash);
-      expect(res.success).to.equal(undefined);
     });
 
     it("should return txHash and success when call createSetBatchPermissionsSignature given correct args ", async () => {

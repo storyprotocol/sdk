@@ -6,7 +6,6 @@ import { SimulateAndWriteContractParams } from "../types/utils/contract";
 export const simulateAndWriteContract = async ({
   rpcClient,
   wallet,
-  waitForTransaction,
   data,
 }: SimulateAndWriteContractParams): Promise<TransactionResponse> => {
   const { request } = await rpcClient.simulateContract({
@@ -14,9 +13,6 @@ export const simulateAndWriteContract = async ({
     account: wallet.account,
   });
   const txHash = await wallet.writeContract(request as WriteContractParameters);
-  if (waitForTransaction !== false) {
-    const receipt = await rpcClient.waitForTransactionReceipt({ hash: txHash });
-    return { txHash, receipt };
-  }
-  return { txHash };
+  const receipt = await rpcClient.waitForTransactionReceipt({ hash: txHash });
+  return { txHash, receipt };
 };
