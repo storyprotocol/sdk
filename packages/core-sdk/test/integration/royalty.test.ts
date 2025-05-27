@@ -46,7 +46,6 @@ describe("Royalty Functions", () => {
     const response = await client.ipAsset.register({
       nftContract: mockERC721,
       tokenId: tokenId!,
-      txOptions: { waitForTransaction: true },
     });
     if (!response.ipId) {
       throw new Error("Failed to register IP");
@@ -59,7 +58,6 @@ describe("Royalty Functions", () => {
       defaultMintingFee: "100000",
       currency: erc20Address[aeneid],
       commercialRevShare: 10,
-      txOptions: { waitForTransaction: true },
     });
     return response.licenseTermsId!;
   };
@@ -68,7 +66,6 @@ describe("Royalty Functions", () => {
     await client.license.attachLicenseTerms({
       ipId,
       licenseTermsId: licenseTermsId,
-      txOptions: { waitForTransaction: true },
     });
   };
 
@@ -94,7 +91,6 @@ describe("Royalty Functions", () => {
       maxMintingFee: "0",
       maxRts: "0",
       maxRevenueShare: "0",
-      txOptions: { waitForTransaction: true },
     });
   });
 
@@ -105,7 +101,6 @@ describe("Royalty Functions", () => {
         payerIpId: childIpId,
         token: erc20Address[aeneid],
         amount: 1,
-        txOptions: { waitForTransaction: true },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
@@ -117,7 +112,6 @@ describe("Royalty Functions", () => {
         payerIpId: childIpId,
         token: WIP_TOKEN_ADDRESS,
         amount: 100n,
-        txOptions: { waitForTransaction: true },
       });
       expect(response.txHash).to.be.a("string");
       const balanceAfter = await client.getWalletBalance();
@@ -145,7 +139,6 @@ describe("Royalty Functions", () => {
           payerIpId: childIpId,
           token: erc20Address[aeneid],
           amount: 10 * 10 ** 2,
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith(`The receiver IP with id ${unregisteredIpId} is not registered.`);
     });
@@ -168,7 +161,6 @@ describe("Royalty Functions", () => {
         to: royaltyVaultAddress,
         value: 0,
         ipId: parentIpId,
-        txOptions: { waitForTransaction: true },
         data: encodeFunctionData({
           abi: erc20Abi,
           functionName: "transfer",
@@ -221,7 +213,6 @@ describe("Royalty Functions", () => {
           payerIpId: childIpId,
           token: erc20Address[aeneid],
           amount: -1,
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejected;
     });
@@ -257,7 +248,6 @@ describe("Royalty Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         mintFeeRecipient: zeroAddress,
-        txOptions: { waitForTransaction: true },
       });
       spgNftContract = txData.spgNftContract!;
 
@@ -296,7 +286,6 @@ describe("Royalty Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       ipA = retA.ipId!;
       licenseTermsId = retA.licenseTermsIds![0];
@@ -310,7 +299,6 @@ describe("Royalty Functions", () => {
           maxRts: MAX_ROYALTY_TOKEN,
           maxRevenueShare: 100,
         },
-        txOptions: { waitForTransaction: true },
       });
       ipB = retB.ipId!;
 
@@ -323,7 +311,6 @@ describe("Royalty Functions", () => {
           maxRts: MAX_ROYALTY_TOKEN,
           maxRevenueShare: 100,
         },
-        txOptions: { waitForTransaction: true },
       });
       ipC = retC.ipId!;
 
@@ -336,7 +323,6 @@ describe("Royalty Functions", () => {
           maxRts: MAX_ROYALTY_TOKEN,
           maxRevenueShare: 100,
         },
-        txOptions: { waitForTransaction: true },
       });
       ipD = retD.ipId!;
     });
@@ -372,7 +358,6 @@ describe("Royalty Functions", () => {
       anotherAddress = derivedClient.address;
       await client.wipClient.deposit({
         amount: parseEther("5"),
-        txOptions: { waitForTransaction: true },
       });
       /**
        * Asset Hierarchy Setup for Revenue Collection Tests
@@ -412,7 +397,6 @@ describe("Royalty Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         mintFeeRecipient: zeroAddress,
-        txOptions: { waitForTransaction: true },
       });
       spgNftContract = txData.spgNftContract!;
       // 1. Register ipA
@@ -462,7 +446,6 @@ describe("Royalty Functions", () => {
               percentage: 50,
             },
           ],
-          txOptions: { waitForTransaction: true },
         });
       ipA = ret1A.ipId!;
       licenseTermsId = ret1A.licenseTermsIds![0]!;
@@ -502,7 +485,6 @@ describe("Royalty Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       ipB = ret1B.ipId!;
       licenseTermsId1 = ret1B.licenseTermsIds![0]!;
@@ -524,7 +506,6 @@ describe("Royalty Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       ipA1 = ret2?.[0].ipId!;
       ipB1 = ret2?.[1].ipId!;
@@ -546,7 +527,6 @@ describe("Royalty Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       ipA2 = ret3?.[0].ipId!;
       ipB2 = ret3?.[1].ipId!;
@@ -568,7 +548,6 @@ describe("Royalty Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       ipA3 = ret4?.[0].ipId!;
       ipB3 = ret4?.[1].ipId!;
@@ -578,12 +557,10 @@ describe("Royalty Functions", () => {
         payerIpId: ipA3,
         token: WIP_TOKEN_ADDRESS,
         amount: 100n,
-        txOptions: { waitForTransaction: true },
       });
       const balance = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       await client.wipClient.withdraw({
         amount: balance,
-        txOptions: { waitForTransaction: true },
       });
     });
 
