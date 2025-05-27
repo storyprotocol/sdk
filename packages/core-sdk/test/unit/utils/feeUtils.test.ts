@@ -78,7 +78,6 @@ describe("Erc20 Token Fee Utilities", () => {
     it("should support wait for tx", async () => {
       const params = getDefaultParams({
         totalFees: 0n,
-        txOptions: { waitForTransaction: true },
       });
       const txResponse = await contractCallWithFees(params);
       const { txHash } = txResponse as TransactionResponse;
@@ -126,7 +125,6 @@ describe("Erc20 Token Fee Utilities", () => {
               amount: 50n,
             },
           ],
-          txOptions: { waitForTransaction: false },
         });
         const allowanceMock = sinon.stub(WipTokenClient.prototype, "allowance").resolves(50n);
 
@@ -160,7 +158,6 @@ describe("Erc20 Token Fee Utilities", () => {
               amount: 90n,
             },
           ],
-          txOptions: { waitForTransaction: true },
         });
         sinon.stub(WipTokenClient.prototype, "allowance").resolves(15n);
         const txResponse = await contractCallWithFees(params);
@@ -242,7 +239,6 @@ describe("Erc20 Token Fee Utilities", () => {
             options: {
               wipOptions: { useMulticallWhenPossible: false },
             },
-            txOptions: { waitForTransaction: true },
           });
           const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).not.to.be.undefined;
@@ -336,7 +332,6 @@ describe("Erc20 Token Fee Utilities", () => {
         it("should support wait for tx", async () => {
           const txResponse = await contractCallWithFees({
             ...params,
-            txOptions: { waitForTransaction: true },
           });
           const { txHash, receipt } = txResponse as TransactionResponse;
           expect(receipt).not.to.be.undefined;
@@ -448,7 +443,6 @@ describe("Erc20 Token Fee Utilities", () => {
             amount: 50n,
           },
         ],
-        txOptions: { waitForTransaction: false },
       });
       allowanceMock.resolves(1001n);
 
@@ -487,7 +481,6 @@ describe("Erc20 Token Fee Utilities", () => {
             amount: 22n,
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       allowanceMock.resolves(15n);
       const txResponse = await contractCallWithFees(params);

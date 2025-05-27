@@ -46,9 +46,6 @@ describe("Test Permission", () => {
           signer: zeroAddress,
           to: zeroAddress,
           permission: AccessPermission.ALLOW,
-          txOptions: {
-            waitForTransaction: false,
-          },
         });
       } catch (error) {
         expect((error as Error).message).to.equal(
@@ -72,7 +69,7 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
     });
 
-    it("should return txHash and success when call setPermission given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and success when call setPermission given correct args ", async () => {
       const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
@@ -82,9 +79,6 @@ describe("Test Permission", () => {
         signer: zeroAddress,
         to: zeroAddress,
         permission: AccessPermission.ALLOW,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
@@ -115,9 +109,6 @@ describe("Test Permission", () => {
           ipId: zeroAddress,
           signer: zeroAddress,
           permission: AccessPermission.ALLOW,
-          txOptions: {
-            waitForTransaction: false,
-          },
         });
       } catch (error) {
         expect((error as Error).message).to.equal(
@@ -139,7 +130,7 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
     });
 
-    it("should return txHash and success when call setAllPermissions given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and success when call setAllPermissions given correct args ", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
@@ -147,9 +138,6 @@ describe("Test Permission", () => {
         ipId: zeroAddress,
         signer: zeroAddress,
         permission: AccessPermission.ALLOW,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
@@ -259,7 +247,7 @@ describe("Test Permission", () => {
       expect(res.success).to.equal(undefined);
     });
 
-    it("should return txHash and success when call createSetPermissionSignature given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and success when call createSetPermissionSignature given correct args ", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await permissionClient.createSetPermissionSignature({
@@ -269,9 +257,6 @@ describe("Test Permission", () => {
         func: "function setAll(address,string,bytes32,bytes32)",
         deadline: 2000,
         permission: AccessPermission.ALLOW,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
@@ -332,7 +317,7 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
     });
 
-    it("should return txHash and success when call setBatchPermissions given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and success when call setBatchPermissions given correct args ", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon.stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
 
@@ -346,9 +331,6 @@ describe("Test Permission", () => {
             func: "function setAll(address,string,bytes32,bytes32)",
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
@@ -416,7 +398,7 @@ describe("Test Permission", () => {
       expect(res.success).to.equal(undefined);
     });
 
-    it("should return txHash and success when call createSetBatchPermissionsSignature given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and success when call createSetBatchPermissionsSignature given correct args ", async () => {
       sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const res = await permissionClient.createBatchPermissionSignature({
         ipId: zeroAddress,
@@ -430,9 +412,6 @@ describe("Test Permission", () => {
             func: "function setAll(address,string,bytes32,bytes32)",
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);

@@ -464,8 +464,8 @@ export class LicenseClient {
         return { encodedTxData: this.licensingModuleClient.setLicensingConfigEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.setLicensingConfig(req);
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
           hash: txHash,
         });
         return { txHash: txHash, success: true };

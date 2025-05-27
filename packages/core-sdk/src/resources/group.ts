@@ -109,8 +109,8 @@ export class GroupClient {
         };
       } else {
         const txHash = await this.groupingModuleClient.registerGroup(object);
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
           hash: txHash,
         });
         const { groupId } =
@@ -183,12 +183,12 @@ export class GroupClient {
       } else {
         const txHash =
           await this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup(object);
-          const receipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
-          return { txHash, ipId: log.ipId, tokenId: log.tokenId };
+        const receipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+        return { txHash, ipId: log.ipId, tokenId: log.tokenId };
       }
     } catch (error) {
       return handleError(
@@ -297,12 +297,12 @@ export class GroupClient {
       const txHash = await this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup(
         object,
       );
-        const receipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
-        return { txHash, ipId: log.ipId, tokenId: log.tokenId };
+      const receipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+      return { txHash, ipId: log.ipId, tokenId: log.tokenId };
     } catch (error) {
       return handleError(error, "Failed to register IP and attach license and add to group");
     }
@@ -326,13 +326,13 @@ export class GroupClient {
         };
       }
       const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicense(object);
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const { groupId } =
-          this.groupingModuleEventClient.parseTxIpGroupRegisteredEvent(txReceipt)[0];
-        return { txHash, groupId: groupId };
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const { groupId } =
+        this.groupingModuleEventClient.parseTxIpGroupRegisteredEvent(txReceipt)[0];
+      return { txHash, groupId: groupId };
     } catch (error) {
       return handleError(error, "Failed to register group and attach license");
     }
@@ -384,11 +384,11 @@ export class GroupClient {
       const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps(
         object,
       );
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const { groupId } =
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const { groupId } =
         this.groupingModuleEventClient.parseTxIpGroupRegisteredEvent(txReceipt)[0];
       return { txHash, groupId: groupId };
     } catch (error) {

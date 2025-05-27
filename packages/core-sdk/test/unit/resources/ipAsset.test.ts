@@ -286,7 +286,6 @@ describe("Test IpAssetClient", () => {
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-      const waitForTransaction: boolean = true;
       try {
         await ipAssetClient.register({
           nftContract: spgNftContract,
@@ -294,9 +293,6 @@ describe("Test IpAssetClient", () => {
           deadline: "12321",
           ipMetadata: {
             ipMetadataURI: "",
-          },
-          txOptions: {
-            waitForTransaction: waitForTransaction,
           },
         });
       } catch (err) {
@@ -321,7 +317,7 @@ describe("Test IpAssetClient", () => {
       expect(res.txHash).equal(txHash);
     });
 
-    it("should return ipId and txHash when register a IP and given waitForTransaction of true and tokenId is not registered ", async () => {
+    it("should return ipId and txHash when register a IP and tokenId is not registered ", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -342,16 +338,13 @@ describe("Test IpAssetClient", () => {
       const response = await ipAssetClient.register({
         nftContract: spgNftContract,
         tokenId: "3",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(response.txHash).equal(txHash);
       expect(response.ipId).equals("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
     });
 
-    it("should return ipId and txHash when register a IP given correct args, waitForTransaction is true and metadata", async () => {
+    it("should return ipId and txHash when register a IP given correct args and metadata", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
@@ -375,9 +368,6 @@ describe("Test IpAssetClient", () => {
           ipMetadataURI: "",
           ipMetadataHash: zeroHash,
           nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        },
-        txOptions: {
-          waitForTransaction: true,
         },
       });
 
@@ -430,9 +420,6 @@ describe("Test IpAssetClient", () => {
         await ipAssetClient.register({
           nftContract: spgNftContract,
           tokenId: "3",
-          txOptions: {
-            waitForTransaction: true,
-          },
         });
       } catch (err) {
         expect((err as Error).message).equal("Failed to register IP: revert error");
@@ -659,7 +646,7 @@ describe("Test IpAssetClient", () => {
       expect(res.txHash).equal(txHash);
     });
 
-    it("should return txHash when registerDerivative given correct childIpId, parentIpId, licenseTermsIds and waitForTransaction of true", async () => {
+    it("should return txHash when registerDerivative given correct childIpId, parentIpId, licenseTermsIds", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
         .onCall(0)
@@ -685,9 +672,6 @@ describe("Test IpAssetClient", () => {
         maxMintingFee: 0n,
         maxRts: 0,
         maxRevenueShare: 0,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(res.txHash).equal(txHash);
@@ -875,7 +859,7 @@ describe("Test IpAssetClient", () => {
       expect(res.txHash).equal(txHash);
     });
 
-    it("should return txHash when registerDerivativeWithLicenseTokens given correct args and waitForTransaction of true", async () => {
+    it("should return txHash when registerDerivativeWithLicenseTokens given correct args", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
         .onCall(0)
@@ -893,9 +877,6 @@ describe("Test IpAssetClient", () => {
         childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
         licenseTokenIds: ["1"],
         maxRts: 0,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(res.txHash).equal(txHash);
@@ -976,7 +957,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return ipId, tokenId, licenseTermsId,txHash when createIpAssetWithPilTerms given correct args and waitForTransaction of true", async () => {
+    it("should return ipId, tokenId, licenseTermsId,txHash when createIpAssetWithPilTerms given correct args", async () => {
       sinon
         .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "mintAndRegisterIpAndAttachPilTerms")
         .resolves(txHash);
@@ -1005,9 +986,6 @@ describe("Test IpAssetClient", () => {
         allowDuplicates: false,
         ipMetadata: {
           nftMetadataHash: toHex(0, { size: 32 }),
-        },
-        txOptions: {
-          waitForTransaction: true,
         },
       });
 
@@ -1017,7 +995,7 @@ describe("Test IpAssetClient", () => {
       expect(result.tokenId).to.equal(1n);
     });
 
-    it("should return ipId, tokenId, licenseTermsId,txHash when createIpAssetWithPilTerms given correct args and waitForTransaction of true with default license terms id", async () => {
+    it("should return ipId, tokenId, licenseTermsId,txHash when createIpAssetWithPilTerms given correct args with default license terms id", async () => {
       sinon
         .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "mintAndRegisterIpAndAttachPilTerms")
         .resolves(txHash);
@@ -1046,9 +1024,6 @@ describe("Test IpAssetClient", () => {
         allowDuplicates: false,
         ipMetadata: {
           nftMetadataHash: toHex(0, { size: 32 }),
-        },
-        txOptions: {
-          waitForTransaction: true,
         },
       });
 
@@ -1183,7 +1158,7 @@ describe("Test IpAssetClient", () => {
       expect(res.txHash).equal(txHash);
     });
 
-    it("should return txHash and ipId when registerDerivativeIp given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and ipId when registerDerivativeIp given correct args ", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -1221,9 +1196,6 @@ describe("Test IpAssetClient", () => {
         ipMetadata: {
           ipMetadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-        },
-        txOptions: {
-          waitForTransaction: true,
         },
       });
 
@@ -1335,7 +1307,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash and ipId when registerIpAndAttachPilTerms given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and ipId when registerIpAndAttachPilTerms given correct args ", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -1370,9 +1342,6 @@ describe("Test IpAssetClient", () => {
             licensingConfig,
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -1472,7 +1441,7 @@ describe("Test IpAssetClient", () => {
 
       expect(res.txHash).equal(txHash);
     });
-    it("should return txHash and ipId when call mintAndRegisterIpAndMakeDerivative given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and ipId when call mintAndRegisterIpAndMakeDerivative given correct args ", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -1511,9 +1480,6 @@ describe("Test IpAssetClient", () => {
         ipMetadata: {
           ipMetadataURI: "https://",
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-        },
-        txOptions: {
-          waitForTransaction: true,
         },
       });
 
@@ -1665,7 +1631,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return ipId,txHash when mintAndRegisterIp given correct args and waitForTransaction of true", async () => {
+    it("should return ipId,txHash when mintAndRegisterIp given correct args ", async () => {
       sinon.stub(ipAssetClient.registrationWorkflowsClient, "mintAndRegisterIp").resolves(txHash);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
@@ -1685,9 +1651,6 @@ describe("Test IpAssetClient", () => {
         ipMetadata: {
           ipMetadataURI: "",
           ipMetadataHash: toHex(0, { size: 32 }),
-        },
-        txOptions: {
-          waitForTransaction: true,
         },
       });
 
@@ -1794,7 +1757,7 @@ describe("Test IpAssetClient", () => {
       expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
 
-    it("should return txHash when registerPilTermsAndAttach given correct args and waitForTransaction of true", async () => {
+    it("should return txHash when registerPilTermsAndAttach given correct args ", async () => {
       sinon
         .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerPilTermsAndAttach")
         .resolves(txHash);
@@ -1814,9 +1777,6 @@ describe("Test IpAssetClient", () => {
             licensingConfig,
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -1931,7 +1891,7 @@ describe("Test IpAssetClient", () => {
       );
     });
 
-    it("should return txHash and ipId when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and ipId when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given correct args ", async () => {
       sinon
         .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
         .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
@@ -1958,9 +1918,6 @@ describe("Test IpAssetClient", () => {
         licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
         maxRts: 0,
         allowDuplicates: false,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -2099,7 +2056,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash and ipId when registerIpAndMakeDerivativeWithLicenseTokens given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and ipId when registerIpAndMakeDerivativeWithLicenseTokens given correct args ", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
         .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
@@ -2126,9 +2083,6 @@ describe("Test IpAssetClient", () => {
         maxRts: 0,
         tokenId: "3",
         licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.txHash).to.equal(txHash);
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -2233,7 +2187,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash and ipId when batchMintAndRegisterIpAssetWithPilTerms given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and ipId when batchMintAndRegisterIpAssetWithPilTerms given correct args ", async () => {
       sinon.stub(ipAssetClient.licenseAttachmentWorkflowsClient, "multicall").resolves(txHash);
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
@@ -2291,9 +2245,6 @@ describe("Test IpAssetClient", () => {
             allowDuplicates: false,
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -2376,7 +2327,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash and ipId when batchMintAndRegisterIpAndMakeDerivative given correct args and waitForTransaction of true", async () => {
+    it("should return txHash and ipId when batchMintAndRegisterIpAndMakeDerivative given correct args ", async () => {
       sinon
         .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
         .resolves(true);
@@ -2432,9 +2383,6 @@ describe("Test IpAssetClient", () => {
             },
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -2491,7 +2439,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txhash and ipId when call batchRegister given correct args and waitForTransaction of true", async () => {
+    it("should return txhash and ipId when call batchRegister given correct args ", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
@@ -2539,9 +2487,6 @@ describe("Test IpAssetClient", () => {
             },
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -2600,7 +2545,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return results when call batchRegisterDerivative given correct args and waitForTransaction of true", async () => {
+    it("should return results when call batchRegisterDerivative given correct args ", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       sinon
         .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
@@ -2624,9 +2569,6 @@ describe("Test IpAssetClient", () => {
             maxRevenueShare: 0,
           },
         ],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -2898,7 +2840,7 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-    it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args  and waitForTransaction of true", async () => {
+    it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args  ", async () => {
       sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
@@ -2956,9 +2898,6 @@ describe("Test IpAssetClient", () => {
           ipMetadataHash: toHex(0, { size: 32 }),
           nftMetadataHash: toHex("nftMetadata", { size: 32 }),
           nftMetadataURI: "",
-        },
-        txOptions: {
-          waitForTransaction: true,
         },
       });
       expect(result).to.deep.equal({
@@ -3327,9 +3266,6 @@ describe("Test IpAssetClient", () => {
           },
           nftContract: spgNftContract,
           tokenId: "1",
-          txOptions: {
-            waitForTransaction: true,
-          },
         });
       expect(result).to.deep.equal({
         registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
@@ -3418,7 +3354,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args and waitForTransaction of true", async () => {
+    it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args ", async () => {
       sinon
         .stub(
           ipAssetClient.royaltyTokenDistributionWorkflowsClient,
@@ -3463,9 +3399,6 @@ describe("Test IpAssetClient", () => {
               percentage: 100,
             },
           ],
-          txOptions: {
-            waitForTransaction: true,
-          },
         });
       expect(result).to.deep.equal({
         txHash: txHash,
@@ -3667,7 +3600,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given correct args and waitForTransaction of true", async () => {
+    it("should return txHash when mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens given correct args ", async () => {
       sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
@@ -3725,9 +3658,6 @@ describe("Test IpAssetClient", () => {
             nftMetadataURI: "",
           },
           allowDuplicates: false,
-          txOptions: {
-            waitForTransaction: true,
-          },
         });
       expect(result).to.deep.equal({
         txHash: txHash,

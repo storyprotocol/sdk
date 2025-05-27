@@ -45,9 +45,6 @@ describe("Test IPAccountClient", () => {
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
-        txOptions: {
-          waitForTransaction: true,
-        },
       };
       try {
         await ipAccountClient.execute(request);
@@ -69,16 +66,13 @@ describe("Test IPAccountClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash when call execute successfully with waitForTransaction", async () => {
+    it("should return txHash when call execute successfully", async () => {
       sinon.stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.execute({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
         value: 2,
         data: "0x11111111111111111111111111111",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -132,7 +126,7 @@ describe("Test IPAccountClient", () => {
       expect(result.txHash).to.equal(txHash);
     });
 
-    it("should return txHash when call executeWithSig successfully with waitForTransaction", async () => {
+    it("should return txHash when call executeWithSig successfully", async () => {
       sinon.stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -142,9 +136,6 @@ describe("Test IPAccountClient", () => {
         signer: zeroAddress,
         deadline: 20,
         signature: zeroAddress,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -255,14 +246,11 @@ describe("Test IPAccountClient", () => {
       expect(result.receipt).to.be.undefined;
     });
 
-    it("should return txHash when call transferErc20 successfully with waitForTransaction", async () => {
+    it("should return txHash when call transferErc20 successfully", async () => {
       sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
       const result = await ipAccountClient.transferErc20({
         ipId: ipId,
         tokens: [{ address: WIP_TOKEN_ADDRESS, target: zeroAddress, amount: 1n }],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.txHash).to.equal(txHash);
       expect(result.receipt).to.not.be.undefined;

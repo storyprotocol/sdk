@@ -37,7 +37,6 @@ describe("WIP Functions", () => {
       try {
         await wipClient.deposit({
           amount: 0,
-          txOptions: { waitForTransaction: true },
         });
       } catch (error) {
         expect((error as Error).message).equals(
@@ -48,15 +47,13 @@ describe("WIP Functions", () => {
     it("should deposit successfully when call deposit given amount is 1 ", async () => {
       const rsp = await wipClient.deposit({
         amount: 1,
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
 
-    it("should deposit successfully when call deposit given amount is 1 and waitForTransaction is true", async () => {
+    it("should deposit successfully when call deposit given amount is 1", async () => {
       const rsp = await wipClient.deposit({
         amount: 1,
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
@@ -67,7 +64,6 @@ describe("WIP Functions", () => {
       try {
         await wipClient.withdraw({
           amount: 0,
-          txOptions: { waitForTransaction: true },
         });
       } catch (error) {
         expect((error as Error).message).equals(
@@ -80,16 +76,14 @@ describe("WIP Functions", () => {
       sinon.stub(wipClient.wrappedIpClient, "withdraw").resolves(txHash);
       const rsp = await wipClient.withdraw({
         amount: 1,
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
 
-    it("should withdraw successfully when call withdraw given amount is 1 and waitForTransaction is true", async () => {
+    it("should withdraw successfully when call withdraw given amount is 1", async () => {
       sinon.stub(wipClient.wrappedIpClient, "withdraw").resolves(txHash);
       const rsp = await wipClient.withdraw({
         amount: 1,
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
@@ -101,7 +95,6 @@ describe("WIP Functions", () => {
         await wipClient.approve({
           amount: 0,
           spender: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-          txOptions: { waitForTransaction: true },
         });
       } catch (error) {
         expect((error as Error).message).equals(
@@ -115,17 +108,15 @@ describe("WIP Functions", () => {
       const rsp = await wipClient.approve({
         amount: 1,
         spender: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
 
-    it("should approve successfully when call approve given amount is 1 and waitForTransaction is true", async () => {
+    it("should approve successfully when call approve given amount is 1", async () => {
       sinon.stub(wipClient.wrappedIpClient, "approve").resolves(txHash);
       const rsp = await wipClient.approve({
         amount: 1,
         spender: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
@@ -153,7 +144,6 @@ describe("WIP Functions", () => {
         await wipClient.transfer({
           amount: 0,
           to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-          txOptions: { waitForTransaction: true },
         });
       } catch (error) {
         expect((error as Error).message).equals(
@@ -167,18 +157,16 @@ describe("WIP Functions", () => {
       const rsp = await wipClient.transfer({
         amount: 1,
         to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-        txOptions: { waitForTransaction: true },
       });
 
       expect(rsp.txHash).to.be.a("string");
     });
 
-    it("should transfer successfully when call transfer given amount is 1 and waitForTransaction is true", async () => {
+    it("should transfer successfully when call transfer given amount is 1", async () => {
       sinon.stub(wipClient.wrappedIpClient, "transfer").resolves(txHash);
       const rsp = await wipClient.transfer({
         amount: 1,
         to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
@@ -191,7 +179,6 @@ describe("WIP Functions", () => {
           amount: 0,
           from: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
           to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-          txOptions: { waitForTransaction: true },
         });
       } catch (error) {
         expect((error as Error).message).equals(
@@ -206,18 +193,16 @@ describe("WIP Functions", () => {
         amount: 1,
         from: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
         to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });
 
-    it("should transfer successfully when call transferFrom given amount is 1 and waitForTransaction is true", async () => {
+    it("should transfer successfully when call transferFrom given amount is 1", async () => {
       sinon.stub(wipClient.wrappedIpClient, "transferFrom").resolves(txHash);
       const rsp = await wipClient.transferFrom({
         amount: 1,
         from: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
         to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
     });

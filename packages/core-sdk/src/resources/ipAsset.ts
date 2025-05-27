@@ -1310,10 +1310,10 @@ export class IPAssetClient {
     const txHash = await this.royaltyTokenDistributionWorkflowsClient.distributeRoyaltyTokens(
       transformRequest,
     );
-      await this.rpcClient.waitForTransactionReceipt({
-        ...request.txOptions,
-        hash: txHash,
-      });
+    await this.rpcClient.waitForTransactionReceipt({
+      ...request.txOptions,
+      hash: txHash,
+    });
     return txHash;
   }
 
