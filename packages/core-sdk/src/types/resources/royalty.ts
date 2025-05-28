@@ -100,6 +100,7 @@ export type BatchClaimAllRevenueRequest = WithClaimOptions & {
 export type BatchClaimAllRevenueResponse = {
   txHashes: Hash[];
   receipts: TransactionReceipt[];
+  claimedTokens: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
 };
 
 export type ClaimAllRevenueResponse = {
