@@ -56,17 +56,13 @@ export class IPAccountClient {
         data: request.data,
       };
 
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: ipAccountClient.executeEncode({ ...req, operation: 0 }) };
-      } else {
-        const txHash = await ipAccountClient.execute({ ...req, operation: 0 });
+      const txHash = await ipAccountClient.execute({ ...req, operation: 0 });
 
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash };
-      }
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash };
     } catch (error) {
       return handleError(error, "Failed to execute the IP Account transaction");
     }
@@ -93,16 +89,12 @@ export class IPAccountClient {
         deadline: BigInt(request.deadline),
         signature: request.signature,
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
-      } else {
-        const txHash = await ipAccountClient.executeWithSig(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash };
-      }
+      const txHash = await ipAccountClient.executeWithSig(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash };
     } catch (error) {
       return handleError(error, "Failed to execute with signature for the IP Account transaction");
     }
@@ -160,7 +152,6 @@ export class IPAccountClient {
         value: 0,
         txOptions: {
           ...txOptions,
-          encodedTxDataOnly: false,
         },
       });
       return txHash!;

@@ -1,7 +1,6 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
 import {
-  EncodedTxData,
   GroupingModuleClaimedRewardEvent,
   GroupingModuleCollectedRoyaltiesToGroupPoolEvent,
 } from "../../abi/generated";
@@ -47,7 +46,6 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
 };
@@ -59,7 +57,6 @@ export type RegisterGroupRequest = {
 
 export type RegisterGroupResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   groupId?: Address;
 };
 export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
@@ -80,7 +77,6 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
 };
@@ -94,7 +90,6 @@ export type RegisterGroupAndAttachLicenseRequest = {
 
 export type RegisterGroupAndAttachLicenseResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   groupId?: Address;
 };
 export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
@@ -111,7 +106,6 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
 
 export type RegisterGroupAndAttachLicenseAndAddIpsResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   groupId?: Address;
 };
 
@@ -121,7 +115,7 @@ export type CollectAndDistributeGroupRoyaltiesRequest = {
   currencyTokens: Address[];
   /** The IDs of the member IPs to distribute the rewards to. */
   memberIpIds: Address[];
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 
 export type CollectAndDistributeGroupRoyaltiesResponse = {
@@ -152,7 +146,7 @@ export type AddIpRequest = {
    * @default 100
    */
   maxAllowedRewardSharePercentage?: number;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 
 export type ClaimRewardRequest = {
@@ -161,7 +155,7 @@ export type ClaimRewardRequest = {
   currencyToken: Address;
   /** The IDs of the member IPs to distribute the rewards to. */
   memberIpIds: Address[];
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 
 export type ClaimRewardResponse = {
@@ -177,13 +171,13 @@ export type GetClaimableRewardRequest = {
 export type RemoveIpsFromGroupRequest = {
   groupIpId: Address;
   ipIds: Address[];
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 
 export type CollectRoyaltiesRequest = {
   groupIpId: Address;
   currencyToken: Address;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 
 export type CollectRoyaltiesResponse = {

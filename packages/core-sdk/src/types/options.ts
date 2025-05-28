@@ -1,12 +1,6 @@
 import { Hash, PublicClient, TransactionReceipt, WaitForTransactionReceiptParameters } from "viem";
 
-export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash"> & {
-  /**
-   * When this option is set, the transaction will not submit and execute.
-   * It will only encode the ABI and function data and return.
-   */
-  encodedTxDataOnly?: boolean;
-};
+export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash">;
 
 export type WithTxOptions = {
   txOptions?: TxOptions;

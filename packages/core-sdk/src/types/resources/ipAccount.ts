@@ -1,6 +1,5 @@
 import { Address, Hash, Hex } from "viem";
 
-import { EncodedTxData } from "../../abi/generated";
 import { TokenAmountInput } from "../common";
 import { TxOptions } from "../options";
 
@@ -18,7 +17,6 @@ export type IPAccountExecuteRequest = {
 
 export type IPAccountExecuteResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
 };
 
 export type IPAccountExecuteWithSigRequest = {
@@ -41,7 +39,6 @@ export type IPAccountExecuteWithSigRequest = {
 
 export type IPAccountExecuteWithSigResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
 };
 
 export type IpAccountStateResponse = Hex;
@@ -58,7 +55,7 @@ export type SetIpMetadataRequest = {
   metadataURI: string;
   /** The hash of metadata at metadataURI. */
   metadataHash: Hex;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 
 export type TransferErc20Request = {
@@ -70,5 +67,5 @@ export type TransferErc20Request = {
     /** The address of the recipient. */
     target: Address;
   }[];
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };

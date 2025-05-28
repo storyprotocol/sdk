@@ -1,6 +1,5 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
-import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfigInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 
@@ -82,7 +81,6 @@ export type LicenseTermsIdResponse = bigint;
 export type RegisterPILResponse = {
   licenseTermsId?: bigint;
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
 };
 
 export type RegisterCommercialUsePILRequest = {
@@ -140,7 +138,6 @@ export type AttachLicenseTermsRequest = {
 
 export type AttachLicenseTermsResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   success?: boolean;
 };
 
@@ -170,7 +167,6 @@ export type MintLicenseTokensResponse = {
   licenseTokenIds?: bigint[];
   receipt?: TransactionReceipt;
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
 };
 
 export enum PIL_TYPE {
@@ -204,7 +200,6 @@ export type SetLicensingConfigRequest = GetLicensingConfigRequest & {
 
 export type SetLicensingConfigResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   success?: boolean;
 };
 

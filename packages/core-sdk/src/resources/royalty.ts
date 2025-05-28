@@ -301,11 +301,6 @@ export class RoyaltyClient {
         amount: BigInt(amount),
       };
 
-      const encodedTxData = this.royaltyModuleClient.payRoyaltyOnBehalfEncode(req);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      }
-
       const contractCall = (): Promise<Hash> => {
         return this.royaltyModuleClient.payRoyaltyOnBehalf(req);
       };
@@ -326,7 +321,7 @@ export class RoyaltyClient {
         token,
         wallet: this.wallet,
         txOptions,
-        encodedTxs: [encodedTxData],
+        encodedTxs: [this.royaltyModuleClient.payRoyaltyOnBehalfEncode(req)],
       });
     } catch (error) {
       return handleError(error, "Failed to pay royalty on behalf");

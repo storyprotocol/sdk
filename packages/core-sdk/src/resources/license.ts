@@ -232,16 +232,12 @@ export class LicenseClient {
         licenseTemplate: request.licenseTemplate || this.licenseTemplateClient.address,
         licenseTermsId: request.licenseTermsId,
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.licensingModuleClient.attachLicenseTermsEncode(req) };
-      } else {
-        const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash, success: true };
-      }
+      const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash, success: true };
     } catch (error) {
       return handleError(error, "Failed to attach license terms");
     }
@@ -309,10 +305,6 @@ export class LicenseClient {
           );
         }
       }
-      const encodedTxData = this.licensingModuleClient.mintLicenseTokensEncode(req);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      }
 
       // get license token minting fee
       const licenseMintingFee = await calculateLicenseWipMintFee({
@@ -341,7 +333,7 @@ export class LicenseClient {
         wallet: this.wallet,
         sender: this.walletAddress,
         txOptions: request.txOptions,
-        encodedTxs: [encodedTxData],
+        encodedTxs: [this.licensingModuleClient.mintLicenseTokensEncode(req)],
       });
       if (!receipt) {
         return { txHash };
@@ -460,16 +452,12 @@ export class LicenseClient {
         throw new Error("The license template is zero address but license terms id is not zero.");
       }
 
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.licensingModuleClient.setLicensingConfigEncode(req) };
-      } else {
-        const txHash = await this.licensingModuleClient.setLicensingConfig(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash, success: true };
-      }
+      const txHash = await this.licensingModuleClient.setLicensingConfig(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash, success: true };
     } catch (error) {
       return handleError(error, "Failed to set licensing config");
     }
@@ -499,31 +487,23 @@ export class LicenseClient {
     licenseTerms: LicenseTerms,
     txOptions?: TxOptions,
   ): Promise<RegisterPILResponse> {
-    if (txOptions?.encodedTxDataOnly) {
-      return {
-        encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
-          terms: licenseTerms,
-        }),
-      };
-    } else {
-      const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
-      const txHash = await this.licenseTemplateClient.registerLicenseTerms({
-        terms: licenseTerms,
-      });
-
-      const { receipt } = await waitForTxReceipt({
-        txOptions,
-        rpcClient: this.rpcClient,
-        txHash,
-      });
-      if (!receipt) {
-        return { txHash };
-      }
-      const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(receipt);
-      return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
+    const licenseTermsId = await this.getLicenseTermsId(licenseTerms);
+    if (licenseTermsId !== 0n) {
+      return { licenseTermsId: licenseTermsId };
     }
+    const txHash = await this.licenseTemplateClient.registerLicenseTerms({
+      terms: licenseTerms,
+    });
+
+    const { receipt } = await waitForTxReceipt({
+      txOptions,
+      rpcClient: this.rpcClient,
+      txHash,
+    });
+    if (!receipt) {
+      return { txHash };
+    }
+    const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(receipt);
+    return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
   }
 }

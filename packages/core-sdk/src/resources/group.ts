@@ -103,20 +103,14 @@ export class GroupClient {
       const object: GroupingModuleRegisterGroupRequest = {
         groupPool: validateAddress(request.groupPool),
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.groupingModuleClient.registerGroupEncode(object),
-        };
-      } else {
-        const txHash = await this.groupingModuleClient.registerGroup(object);
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const { groupId } =
-          this.groupingModuleEventClient.parseTxIpGroupRegisteredEvent(txReceipt)[0];
-        return { txHash, groupId: groupId };
-      }
+      const txHash = await this.groupingModuleClient.registerGroup(object);
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const { groupId } =
+        this.groupingModuleEventClient.parseTxIpGroupRegisteredEvent(txReceipt)[0];
+      return { txHash, groupId: groupId };
     } catch (error) {
       return handleError(error, "Failed to register group");
     }
@@ -173,23 +167,14 @@ export class GroupClient {
           signature: sigAddToGroupSignature,
         },
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData:
-            this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode(
-              object,
-            ),
-        };
-      } else {
-        const txHash =
-          await this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup(object);
-        const receipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
-        return { txHash, ipId: log.ipId, tokenId: log.tokenId };
-      }
+      const txHash =
+        await this.groupingWorkflowsClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup(object);
+      const receipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const log = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt)[0];
+      return { txHash, ipId: log.ipId, tokenId: log.tokenId };
     } catch (error) {
       return handleError(
         error,
@@ -288,12 +273,6 @@ export class GroupClient {
           signature: sigMetadataAndAttachSignature,
         },
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData:
-            this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroupEncode(object),
-        };
-      }
       const txHash = await this.groupingWorkflowsClient.registerIpAndAttachLicenseAndAddToGroup(
         object,
       );
@@ -320,11 +299,6 @@ export class GroupClient {
         groupPool: validateAddress(request.groupPool),
         licenseData: this.getLicenseData(request.licenseData)[0],
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.groupingWorkflowsClient.registerGroupAndAttachLicenseEncode(object),
-        };
-      }
       const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicense(object);
       const txReceipt = await this.rpcClient.waitForTransactionReceipt({
         ...request.txOptions,
@@ -375,12 +349,6 @@ export class GroupClient {
         }
       }
 
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData:
-            this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIpsEncode(object),
-        };
-      }
       const txHash = await this.groupingWorkflowsClient.registerGroupAndAttachLicenseAndAddIps(
         object,
       );

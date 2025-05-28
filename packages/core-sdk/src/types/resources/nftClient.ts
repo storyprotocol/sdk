@@ -1,6 +1,5 @@
 import { Address, Hash } from "viem";
 
-import { EncodedTxData } from "../../abi/generated";
 import { TxOptions } from "../options";
 
 export type CreateNFTCollectionRequest = {
@@ -28,7 +27,6 @@ export type CreateNFTCollectionRequest = {
 
 export type CreateNFTCollectionResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   spgNftContract?: Address;
 };
 
@@ -37,7 +35,7 @@ export type SetTokenURIRequest = {
   /** The new metadata URI to associate with the token. */
   tokenURI: string;
   spgNftContract: Address;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 
 export type GetTokenURIRequest = {

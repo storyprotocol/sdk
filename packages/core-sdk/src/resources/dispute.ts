@@ -94,43 +94,38 @@ export class DisputeClient {
         disputeEvidenceHash: convertCIDtoHashIPFS(request.cid),
         data,
       };
-      const encodedTxData = this.disputeModuleClient.raiseDisputeEncode(req);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      } else {
-        const contractCall = (): Promise<Hash> => this.disputeModuleClient.raiseDispute(req);
-        const { txHash, receipt } = await contractCallWithFees({
-          totalFees: bonds,
-          options: {
-            wipOptions: {
-              ...request.wipOptions,
-              // Disable multicall because multicall makes more complex due to disputeInitiator in this version.
-              useMulticallWhenPossible: false,
-            },
+      const contractCall = (): Promise<Hash> => this.disputeModuleClient.raiseDispute(req);
+      const { txHash, receipt } = await contractCallWithFees({
+        totalFees: bonds,
+        options: {
+          wipOptions: {
+            ...request.wipOptions,
+            // Disable multicall because multicall makes more complex due to disputeInitiator in this version.
+            useMulticallWhenPossible: false,
           },
-          multicall3Address: this.multicall3Client.address,
-          rpcClient: this.rpcClient,
-          tokenSpenders: [
-            {
-              address: this.arbitrationPolicyUmaClient.address,
-              amount: bonds,
-            },
-          ],
-          contractCall,
-          encodedTxs: [encodedTxData],
-          wallet: this.wallet,
-          txOptions: request.txOptions,
-          sender: this.wallet.account!.address,
-        });
-        if (!receipt) {
-          return { txHash };
-        }
-        const targetLogs = this.disputeModuleClient.parseTxDisputeRaisedEvent(receipt);
-        return {
-          txHash,
-          disputeId: targetLogs[0].disputeId,
-        };
+        },
+        multicall3Address: this.multicall3Client.address,
+        rpcClient: this.rpcClient,
+        tokenSpenders: [
+          {
+            address: this.arbitrationPolicyUmaClient.address,
+            amount: bonds,
+          },
+        ],
+        contractCall,
+        encodedTxs: [(this.disputeModuleClient.raiseDisputeEncode(req))],
+        wallet: this.wallet,
+        txOptions: request.txOptions,
+        sender: this.wallet.account!.address,
+      });
+      if (!receipt) {
+        return { txHash };
       }
+      const targetLogs = this.disputeModuleClient.parseTxDisputeRaisedEvent(receipt);
+      return {
+        txHash,
+        disputeId: targetLogs[0].disputeId,
+      };
     } catch (error) {
       return handleError(error, "Failed to raise dispute");
     }
@@ -147,16 +142,12 @@ export class DisputeClient {
         disputeId: BigInt(request.disputeId),
         data: request.data ? request.data : "0x",
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.disputeModuleClient.cancelDisputeEncode(req) };
-      } else {
-        const txHash = await this.disputeModuleClient.cancelDispute(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash };
-      }
+      const txHash = await this.disputeModuleClient.cancelDispute(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash };
     } catch (error) {
       return handleError(error, "Failed to cancel dispute");
     }
@@ -173,17 +164,12 @@ export class DisputeClient {
         disputeId: BigInt(request.disputeId),
         data: request.data ?? "0x",
       };
-
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.disputeModuleClient.resolveDisputeEncode(req) };
-      } else {
-        const txHash = await this.disputeModuleClient.resolveDispute(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash };
-      }
+      const txHash = await this.disputeModuleClient.resolveDispute(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash };
     } catch (error) {
       return handleError(error, "Failed to resolve dispute");
     }

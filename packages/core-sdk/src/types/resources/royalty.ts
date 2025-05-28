@@ -1,7 +1,6 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
 import {
-  EncodedTxData,
   IpAccountImplClient,
   IpRoyaltyVaultImplRevenueTokenClaimedEvent,
 } from "../../abi/generated";
@@ -35,7 +34,6 @@ export type PayRoyaltyOnBehalfRequest = WithTxOptions &
 export type PayRoyaltyOnBehalfResponse = {
   txHash?: Hash;
   receipt?: TransactionReceipt;
-  encodedTxData?: EncodedTxData;
 };
 
 export type ClaimAllRevenueRequest = WithClaimOptions & {
@@ -102,7 +100,6 @@ export type BatchClaimAllRevenueRequest = WithClaimOptions & {
 export type BatchClaimAllRevenueResponse = {
   txHashes: Hash[];
   receipts: TransactionReceipt[];
-  claimedTokens?: IpRoyaltyVaultImplRevenueTokenClaimedEvent[];
 };
 
 export type ClaimAllRevenueResponse = {

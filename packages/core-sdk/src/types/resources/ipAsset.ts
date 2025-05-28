@@ -315,7 +315,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   deadline?: string | number | bigint;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 } & WithIpMetadata;
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
   registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hash;
@@ -330,7 +330,7 @@ export type DistributeRoyaltyTokens = {
   ipRoyaltyVault: Address;
   royaltyShares: RoyaltyShare[];
   totalAmount: number;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 };
 export type RoyaltyShare = {
   /** The address of the recipient. */
@@ -357,7 +357,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   derivData: DerivativeDataInput;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 } & WithWipOptions &
   WithIpMetadata;
 
@@ -382,7 +382,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   royaltyShares: RoyaltyShare[];
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 } & WithIpMetadata &
   WithWipOptions;
 
@@ -407,7 +407,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   allowDuplicates?: boolean;
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
-  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  txOptions?: TxOptions;
 } & WithIpMetadata &
   WithWipOptions;
 

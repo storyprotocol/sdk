@@ -60,16 +60,12 @@ export class PermissionClient {
         permission: request.permission,
       };
 
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.accessControllerClient.setPermissionEncode(req) };
-      } else {
-        const txHash = await this.accessControllerClient.setPermission(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash, success: true };
-      }
+      const txHash = await this.accessControllerClient.setPermission(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash, success: true };
     } catch (error) {
       return handleError(error, "Failed to set permissions");
     }
@@ -126,16 +122,12 @@ export class PermissionClient {
         deadline: calculatedDeadline,
         signature,
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
-      } else {
-        const txHash = await ipAccountClient.executeWithSig(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash, success: true };
-      }
+      const txHash = await ipAccountClient.executeWithSig(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash, success: true };
     } catch (error) {
       return handleError(error, "Failed to create set permission signature");
     }
@@ -156,16 +148,12 @@ export class PermissionClient {
         signer: request.signer,
         permission: request.permission,
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.accessControllerClient.setAllPermissionsEncode(req) };
-      } else {
-        const txHash = await this.accessControllerClient.setAllPermissions(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash, success: true };
-      }
+      const txHash = await this.accessControllerClient.setAllPermissions(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash, success: true };
     } catch (error) {
       return handleError(error, "Failed to set all permissions");
     }
@@ -193,16 +181,12 @@ export class PermissionClient {
           permission: permission.permission,
         })),
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: this.accessControllerClient.setBatchPermissionsEncode(req) };
-      } else {
-        const txHash = await this.accessControllerClient.setBatchPermissions(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash, success: true };
-      }
+      const txHash = await this.accessControllerClient.setBatchPermissions(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash, success: true };
     } catch (error) {
       return handleError(error, "Failed to set batch permissions");
     }
@@ -254,16 +238,12 @@ export class PermissionClient {
         deadline: calculatedDeadline,
         signature,
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
-      } else {
-        const txHash = await ipAccountClient.executeWithSig(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash, success: true };
-      }
+      const txHash = await ipAccountClient.executeWithSig(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash, success: true };
     } catch (error) {
       return handleError(error, "Failed to create batch permission signature");
     }
