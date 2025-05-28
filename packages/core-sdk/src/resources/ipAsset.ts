@@ -20,6 +20,7 @@ import {
   ipAccountImplAbi,
   IpAccountImplClient,
   IpAssetRegistryClient,
+  IpAssetRegistryRegisterRequest,
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
@@ -28,6 +29,7 @@ import {
   LicenseTokenReadOnlyClient,
   licensingModuleAbi,
   LicensingModuleClient,
+  LicensingModuleRegisterDerivativeRequest,
   Multicall3Client,
   PiLicenseTemplateClient,
   RegistrationWorkflowsClient,
@@ -69,7 +71,6 @@ import {
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeRequest,
-  MintAndRegisterIpAndMakeDerivativeResponse,
   MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   MintAndRegisterIpAssetWithPilTermsRequest,
   MintAndRegisterIpAssetWithPilTermsResponse,
@@ -87,10 +88,10 @@ import {
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  RegisterIpResponse,
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
+  RegistrationResponse,
   TransformIpRegistrationWorkflowResponse,
 } from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
@@ -180,12 +181,11 @@ export class IPAssetClient {
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
-  public async register(request: RegisterRequest): Promise<RegisterIpResponse> {
+  public async register(request: RegisterRequest): Promise<RegistrationResponse> {
     try {
-      const tokenId = BigInt(request.tokenId);
       const ipIdAddress = await getIpIdAddress({
         nftContract: request.nftContract,
-        tokenId,
+        tokenId: BigInt(request.tokenId),
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         chainId: this.chainId,
@@ -194,63 +194,25 @@ export class IPAssetClient {
       if (isRegistered) {
         return { ipId: ipIdAddress };
       }
-      const object: RegistrationWorkflowsRegisterIpRequest = {
-        tokenId,
-        nftContract: validateAddress(request.nftContract),
-        ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
-        sigMetadata: {
-          signer: zeroAddress,
-          deadline: BigInt(0),
-          signature: zeroHash,
-        },
-      };
+      const object = await this.buildRegisterRequestObject(request);
+
+      let txHash: Hex;
       if (request.ipMetadata) {
-        const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
-        const signature = await generateOperationSignature({
-          ipIdAddress,
-          methodType: SignatureMethodType.REGISTER,
-          deadline: calculatedDeadline,
-          wallet: this.wallet,
-          chainId: this.chainId,
-        });
-        object.sigMetadata = {
-          signer: validateAddress(this.walletAddress),
-          deadline: calculatedDeadline,
-          signature,
-        };
-      }
-
-      if (request.txOptions?.encodedTxDataOnly) {
-        if (request.ipMetadata) {
-          return { encodedTxData: this.registrationWorkflowsClient.registerIpEncode(object) };
-        } else {
-          return {
-            encodedTxData: this.ipAssetRegistryClient.registerEncode({
-              tokenContract: object.nftContract,
-              tokenId: object.tokenId,
-              chainid: BigInt(this.chainId),
-            }),
-          };
-        }
+        txHash = await this.registrationWorkflowsClient.registerIp(
+          object as RegistrationWorkflowsRegisterIpRequest,
+        );
       } else {
-        let txHash: Hex;
-        if (request.ipMetadata) {
-          txHash = await this.registrationWorkflowsClient.registerIp(object);
-        } else {
-          txHash = await this.ipAssetRegistryClient.register({
-            tokenContract: object.nftContract,
-            tokenId: object.tokenId,
-            chainid: BigInt(this.chainId),
-          });
-        }
-
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-        return { txHash, ...log };
+        txHash = await this.ipAssetRegistryClient.register(
+          object as IpAssetRegistryRegisterRequest,
+        );
       }
+
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+      return { txHash, ...log };
     } catch (error) {
       return handleError(error, "Failed to register IP");
     }
@@ -265,23 +227,19 @@ export class IPAssetClient {
     try {
       const contracts = [];
       const spgContracts: Hex[] = [];
-      let encodedTxData: Hex;
       for (const arg of request.args) {
-        try {
-          const result = await this.register({
-            ...arg,
-            txOptions: {
-              encodedTxDataOnly: true,
-            },
-          });
-          encodedTxData = result.encodedTxData!.data;
-        } catch (error) {
-          throw new Error((error as Error).message.replace("Failed to register IP:", "").trim());
-        }
-
+        let encodedTxData: Hex;
+        //TODO: need to consider the ip registered case
+        const object = await this.buildRegisterRequestObject(arg);
         if (arg.ipMetadata) {
+          encodedTxData = this.registrationWorkflowsClient.registerIpEncode(
+            object as RegistrationWorkflowsRegisterIpRequest,
+          ).data;
           spgContracts.push(encodedTxData);
         } else {
+          encodedTxData = this.ipAssetRegistryClient.registerEncode(
+            object as IpAssetRegistryRegisterRequest,
+          ).data;
           contracts.push({
             target: this.ipAssetRegistryClient.address,
             allowFailure: false,
@@ -339,40 +297,22 @@ export class IPAssetClient {
     request: RegisterDerivativeRequest,
   ): Promise<RegisterDerivativeResponse> {
     try {
-      const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
-      if (!isChildIpIdRegistered) {
-        throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
-      }
-      const derivativeData = await validateDerivativeData({
-        derivativeDataInput: request,
-        rpcClient: this.rpcClient,
-        wallet: this.wallet,
-        chainId: this.chainId,
-      });
-      const object = {
-        childIpId: request.childIpId,
-        ...derivativeData,
+      const object = await this.buildRegisterDerivativeRequestObject(request);
+      const contractCall = (): Promise<Hash> => {
+        return this.licensingModuleClient.registerDerivative(object);
       };
-      const encodedTxData = this.licensingModuleClient.registerDerivativeEncode(object);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      } else {
-        const contractCall = (): Promise<Hash> => {
-          return this.licensingModuleClient.registerDerivative(object);
-        };
-        return this.handleRegistrationWithFees({
-          sender: this.walletAddress,
-          derivData: object,
-          contractCall,
-          txOptions: request.txOptions,
-          encodedTxs: [encodedTxData],
-          spgSpenderAddress: this.royaltyModuleEventClient.address,
-          wipOptions: {
-            ...request.options?.wipOptions,
-            useMulticallWhenPossible: false,
-          },
-        });
-      }
+      return this.handleRegistrationWithFees({
+        sender: this.walletAddress,
+        derivData: object,
+        contractCall,
+        txOptions: request.txOptions,
+        encodedTxs: [this.licensingModuleClient.registerDerivativeEncode(object)],
+        spgSpenderAddress: this.royaltyModuleEventClient.address,
+        wipOptions: {
+          ...request.options?.wipOptions,
+          useMulticallWhenPossible: false,
+        },
+      });
     } catch (error) {
       return handleError(error, "Failed to register derivative");
     }
@@ -388,18 +328,7 @@ export class IPAssetClient {
       const contracts = [];
       const licenseModuleAddress = validateAddress(this.licensingModuleClient.address);
       for (const arg of request.args) {
-        try {
-          await this.registerDerivative({
-            ...arg,
-            txOptions: {
-              encodedTxDataOnly: true,
-            },
-          });
-        } catch (error) {
-          throw new Error(
-            (error as Error).message.replace("Failed to register derivative:", "").trim(),
-          );
-        }
+        await this.buildRegisterDerivativeRequestObject(arg);
         const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
 
         const ipAccount = new IpAccountImplClient(
@@ -485,18 +414,12 @@ export class IPAssetClient {
       }
       request.licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
 
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData: this.licensingModuleClient.registerDerivativeWithLicenseTokensEncode(req),
-        };
-      } else {
-        const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens(req);
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash: txHash };
-      }
+      const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens(req);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash: txHash };
     } catch (error) {
       return handleError(error, "Failed to register derivative with license tokens");
     }
@@ -515,7 +438,7 @@ export class IPAssetClient {
         request.licenseTermsData,
         this.rpcClient,
       );
-      const { transformRequest } =
+        const { transformRequest, encodedTxData } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
           {
             request,
@@ -524,14 +447,6 @@ export class IPAssetClient {
             chainId: this.chainId,
           },
         );
-
-      const encodedTxData =
-        this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTermsEncode(
-          transformRequest,
-        );
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      }
 
       const contractCall = (): Promise<Hash> => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
@@ -569,13 +484,16 @@ export class IPAssetClient {
     try {
       const calldata: Hex[] = [];
       for (const arg of request.args) {
-        const result = await this.mintAndRegisterIpAssetWithPilTerms({
-          ...arg,
-          txOptions: {
-            encodedTxDataOnly: true,
-          },
-        });
-        calldata.push(result.encodedTxData!.data);
+        const { encodedTxData } =
+          await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
+            {
+              request: arg,
+              rpcClient: this.rpcClient,
+              wallet: this.wallet,
+              chainId: this.chainId,
+            },
+          );
+        calldata.push(encodedTxData.data);
       }
       const txHash = await this.licenseAttachmentWorkflowsClient.multicall({ data: calldata });
       const txReceipt = await this.rpcClient.waitForTransactionReceipt({
@@ -644,28 +562,20 @@ export class IPAssetClient {
             chainId: this.chainId,
           },
         );
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData:
-            this.licenseAttachmentWorkflowsClient.registerIpAndAttachPilTermsEncode(
-              transformRequest,
-            ),
-        };
-      } else {
-        const txHash = await this.licenseAttachmentWorkflowsClient.registerIpAndAttachPilTerms(
-          transformRequest,
-        );
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-        return {
-          txHash,
-          licenseTermsIds: await this.getLicenseTermsId(licenseTerms),
-          ...log,
-        };
-      }
+      const txHash = await this.licenseAttachmentWorkflowsClient.registerIpAndAttachPilTerms(
+        transformRequest,
+      );
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+      const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+      return {
+        txHash,
+        licenseTermsIds,
+        ...log,
+      };
     } catch (error) {
       return handleError(error, "Failed to register IP and attach PIL terms");
     }
@@ -699,12 +609,6 @@ export class IPAssetClient {
           wallet: this.wallet,
           chainId: this.chainId,
         });
-      const encodedTxData =
-        this.derivativeWorkflowsClient.registerIpAndMakeDerivativeEncode(transformRequest);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      }
-
       const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
       };
@@ -716,7 +620,9 @@ export class IPAssetClient {
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         derivData: transformRequest.derivData,
-        encodedTxs: [encodedTxData],
+        encodedTxs: [
+          this.derivativeWorkflowsClient.registerIpAndMakeDerivativeEncode(transformRequest),
+        ],
         contractCall,
         txOptions: request.txOptions,
       });
@@ -732,7 +638,7 @@ export class IPAssetClient {
    */
   public async mintAndRegisterIpAndMakeDerivative(
     request: MintAndRegisterIpAndMakeDerivativeRequest,
-  ): Promise<MintAndRegisterIpAndMakeDerivativeResponse> {
+  ): Promise<RegistrationResponse> {
     try {
       const spgNftContract = validateAddress(request.spgNftContract);
       const { transformRequest } =
@@ -744,12 +650,6 @@ export class IPAssetClient {
             chainId: this.chainId,
           },
         );
-      const encodedTxData =
-        this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeEncode(transformRequest);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      }
-
       const contractCall = (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
       };
@@ -759,7 +659,9 @@ export class IPAssetClient {
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         spgNftContract,
         derivData: transformRequest.derivData,
-        encodedTxs: [encodedTxData],
+        encodedTxs: [
+          this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeEncode(transformRequest),
+        ],
         contractCall,
         txOptions: request.txOptions,
       });
@@ -780,11 +682,16 @@ export class IPAssetClient {
       const calldata: Hex[] = [];
       for (const arg of request.args) {
         try {
-          const result = await this.mintAndRegisterIpAndMakeDerivative({
-            ...arg,
-            txOptions: { encodedTxDataOnly: true },
-          });
-          calldata.push(result.encodedTxData!.data);
+          const { encodedTxData } =
+            await transformRegistrationRequest<DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest>(
+              {
+                request: arg,
+                rpcClient: this.rpcClient,
+                wallet: this.wallet,
+                chainId: this.chainId,
+              },
+            );
+          calldata.push(encodedTxData.data);
         } catch (error) {
           throw new Error(
             (error as Error).message
@@ -812,7 +719,7 @@ export class IPAssetClient {
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
-  public async mintAndRegisterIp(request: MintAndRegisterIpRequest): Promise<RegisterIpResponse> {
+  public async mintAndRegisterIp(request: MintAndRegisterIpRequest): Promise<RegistrationResponse> {
     try {
       const object: RegistrationWorkflowsMintAndRegisterIpRequest = {
         spgNftContract: validateAddress(request.spgNftContract),
@@ -821,10 +728,6 @@ export class IPAssetClient {
         allowDuplicates: request.allowDuplicates || true,
       };
       const encodedTxData = this.registrationWorkflowsClient.mintAndRegisterIpEncode(object);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      }
-
       const contractCall = (): Promise<Hash> => {
         return this.registrationWorkflowsClient.mintAndRegisterIp(object);
       };
@@ -883,22 +786,13 @@ export class IPAssetClient {
           signature,
         },
       };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData:
-            this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttachEncode(object),
-        };
-      } else {
-        const txHash = await this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttach(
-          object,
-        );
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-        return { txHash, licenseTermsIds };
-      }
+      const txHash = await this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttach(object);
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+      return { txHash, licenseTermsIds };
     } catch (error) {
       return handleError(error, "Failed to register PIL terms and attach");
     }
@@ -912,7 +806,7 @@ export class IPAssetClient {
    */
   public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
     request: MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): Promise<RegisterIpResponse> {
+  ): Promise<RegistrationResponse> {
     try {
       const licenseTokenIds = await this.validateLicenseTokenIds(request.licenseTokenIds);
       const object: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest =
@@ -926,14 +820,6 @@ export class IPAssetClient {
           allowDuplicates: request.allowDuplicates || true,
         };
       validateMaxRts(object.maxRts);
-
-      const encodedTxData =
-        this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
-          object,
-        );
-      if (request.txOptions?.encodedTxDataOnly) {
-        return { encodedTxData };
-      }
 
       const contractCall = async (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
@@ -950,7 +836,11 @@ export class IPAssetClient {
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
-        encodedTxs: [encodedTxData],
+        encodedTxs: [
+          this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
+            object,
+          ),
+        ],
         contractCall,
         txOptions: request.txOptions,
       });
@@ -969,7 +859,7 @@ export class IPAssetClient {
    */
   public async registerIpAndMakeDerivativeWithLicenseTokens(
     request: RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
-  ): Promise<RegisterIpResponse> {
+  ): Promise<RegistrationResponse> {
     try {
       const tokenId = BigInt(request.tokenId);
       const ipIdAddress = await getIpIdAddress({
@@ -1006,23 +896,14 @@ export class IPAssetClient {
         maxRts: Number(request.maxRts),
       };
       validateMaxRts(object.maxRts);
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData:
-            this.derivativeWorkflowsClient.registerIpAndMakeDerivativeWithLicenseTokensEncode(
-              object,
-            ),
-        };
-      } else {
-        const txHash =
-          await this.derivativeWorkflowsClient.registerIpAndMakeDerivativeWithLicenseTokens(object);
-        const receipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
-        return { txHash, ...log };
-      }
+      const txHash =
+        await this.derivativeWorkflowsClient.registerIpAndMakeDerivativeWithLicenseTokens(object);
+      const receipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
+      return { txHash, ...log };
     } catch (error) {
       return handleError(error, "Failed to register IP and make derivative with license tokens");
     }
@@ -1588,5 +1469,64 @@ export class IPAssetClient {
       };
     }
     return { txHash };
+  }
+
+  private async buildRegisterRequestObject(
+    arg: RegisterRequest,
+  ): Promise<RegistrationWorkflowsRegisterIpRequest | IpAssetRegistryRegisterRequest> {
+    const tokenId = BigInt(arg.tokenId);
+    const nftContract = validateAddress(arg.nftContract);
+    const ipMetadata = getIpMetadataForWorkflow(arg.ipMetadata);
+    const object: RegistrationWorkflowsRegisterIpRequest = {
+      tokenId,
+      nftContract,
+      ipMetadata,
+      sigMetadata: {
+        signer: zeroAddress,
+        deadline: BigInt(0),
+        signature: zeroHash,
+      },
+    };
+    if (arg.ipMetadata) {
+      const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, arg.deadline);
+      const signature = await generateOperationSignature({
+        ipIdAddress: await getIpIdAddress({
+          nftContract,
+          tokenId,
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          chainId: this.chainId,
+        }),
+        methodType: SignatureMethodType.REGISTER,
+        deadline: calculatedDeadline,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
+      object.sigMetadata = {
+        signer: validateAddress(this.walletAddress),
+        deadline: calculatedDeadline,
+        signature,
+      };
+    }
+    return object;
+  }
+
+  private async buildRegisterDerivativeRequestObject(
+    request: RegisterDerivativeRequest,
+  ): Promise<LicensingModuleRegisterDerivativeRequest> {
+    const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
+    if (!isChildIpIdRegistered) {
+      throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
+    }
+    const derivativeData = await validateDerivativeData({
+      derivativeDataInput: request,
+      rpcClient: this.rpcClient,
+      wallet: this.wallet,
+      chainId: this.chainId,
+    });
+    return {
+      childIpId: request.childIpId,
+      ...derivativeData,
+    };
   }
 }

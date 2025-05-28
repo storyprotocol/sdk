@@ -55,9 +55,6 @@ export type DerivativeData = {
   maxRevenueShare: number;
   licenseTemplate: Address;
 };
-export type RegisterIpResponse = RegistrationResponse & {
-  encodedTxData?: EncodedTxData;
-};
 
 export type RegisterRequest = {
   /** The address of the NFT. */
@@ -83,7 +80,6 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
 
 export type RegisterDerivativeWithLicenseTokensResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
 };
 
 export type RegisterDerivativeRequest = WithWipOptions &
@@ -94,7 +90,6 @@ export type RegisterDerivativeRequest = WithWipOptions &
 
 export type RegisterDerivativeResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
 };
 export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
   terms: T;
@@ -124,7 +119,6 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
 
 export type MintAndRegisterIpAssetWithPilTermsResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
   receipt?: TransactionReceipt;
@@ -146,7 +140,6 @@ export type RegisterIpAndMakeDerivativeRequest = {
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
   receipt?: TransactionReceipt;
@@ -166,7 +159,6 @@ export type RegisterIpAndAttachPilTermsRequest = {
 
 export type RegisterIpAndAttachPilTermsResponse = {
   txHash?: Hash;
-  encodedTxData?: EncodedTxData;
   ipId?: Address;
   licenseTermsIds?: bigint[];
   tokenId?: bigint;
@@ -184,10 +176,6 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
   allowDuplicates?: boolean;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
-
-export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & {
-  encodedTxData?: EncodedTxData;
-};
 
 type WithIpMetadata = {
   ipMetadata?: {
