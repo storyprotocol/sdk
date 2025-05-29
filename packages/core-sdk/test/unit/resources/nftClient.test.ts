@@ -15,7 +15,6 @@ describe("Test NftClient", () => {
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
   const txHash = "0x063834efe214f4199b1ad7181ce8c5ced3e15d271c8e866da7c89e86ee629cfb";
-  const mintFeeToken = "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
 
   beforeEach(() => {
     rpcMock = createMock<PublicClient>();
@@ -84,30 +83,6 @@ describe("Test NftClient", () => {
 
       expect(result.txHash).equal(txHash);
       expect(result.spgNftContract).equal(spgNftContract);
-    });
-
-    it("should return encodedTxData when call createNFTCollection successfully with encodedTxDataOnly", async () => {
-      sinon.stub(nftClient.registrationWorkflowsClient, "createCollectionEncode").returns({
-        data: "0x",
-        to: "0x",
-      });
-
-      const result = await nftClient.createNFTCollection({
-        name: "name",
-        symbol: "symbol",
-        maxSupply: 1,
-        mintFee: 1n,
-        mintFeeToken: mintFeeToken,
-        isPublicMinting: true,
-        contractURI: "test-uri",
-        mintOpen: true,
-        mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 

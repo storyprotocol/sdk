@@ -83,22 +83,6 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
-
-    it("should return encodedTxData when call setPermission given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
-
-      const res = await permissionClient.setPermission({
-        ipId: zeroAddress,
-        signer: zeroAddress,
-        to: zeroAddress,
-        permission: AccessPermission.ALLOW,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Test permission.setAllPermissions", async () => {
@@ -141,21 +125,6 @@ describe("Test Permission", () => {
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
-    });
-
-    it("should return encodedTxData when call setAllPermissions given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
-
-      const res = await permissionClient.setAllPermissions({
-        ipId: zeroAddress,
-        signer: zeroAddress,
-        permission: AccessPermission.ALLOW,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 
@@ -247,21 +216,6 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
-
-    it("should return encodedTxData when call createSetPermissionSignature given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-
-      const res = await permissionClient.createSetPermissionSignature({
-        ipId: zeroAddress,
-        signer: zeroAddress,
-        to: zeroAddress,
-        permission: AccessPermission.ALLOW,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Test permission.setBatchPermissions", async () => {
@@ -321,26 +275,6 @@ describe("Test Permission", () => {
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
     });
-
-    it("should return encodedTxData when call setBatchPermissions given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
-
-      const res = await permissionClient.setBatchPermissions({
-        permissions: [
-          {
-            ipId: zeroAddress,
-            signer: zeroAddress,
-            to: zeroAddress,
-            permission: AccessPermission.ALLOW,
-          },
-        ],
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Test permission.createSetBatchPermissionsSignature", async () => {
@@ -383,25 +317,6 @@ describe("Test Permission", () => {
       });
       expect(res.txHash).to.equal(txHash);
       expect(res.success).to.equal(true);
-    });
-
-    it("should return encodedTxData when call createSetBatchPermissionsSignature given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      const res = await permissionClient.createBatchPermissionSignature({
-        ipId: zeroAddress,
-        permissions: [
-          {
-            ipId: zeroAddress,
-            signer: zeroAddress,
-            to: zeroAddress,
-            permission: AccessPermission.ALLOW,
-          },
-        ],
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 });

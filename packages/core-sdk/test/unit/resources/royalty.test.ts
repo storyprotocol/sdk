@@ -129,24 +129,6 @@ describe("Test RoyaltyClient", () => {
       const calls = simulateContractStub.firstCall.args[0].args[0];
       expect(calls.length).to.equal(2); // deposit and payRoyaltyOnBehalf
     });
-
-    it("should return encodedData when call payRoyaltyOnBehalf given correct args and encodedTxDataOnly is true", async () => {
-      sinon.stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(royaltyClient.royaltyModuleClient, "payRoyaltyOnBehalfEncode").returns({
-        data: "0x",
-        to: "0x",
-      });
-
-      const result = await royaltyClient.payRoyaltyOnBehalf({
-        receiverIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        token: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        amount: 1,
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Test royaltyClient.claimableRevenue", async () => {

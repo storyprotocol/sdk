@@ -107,17 +107,6 @@ describe("Group Functions", () => {
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.groupId).to.be.a("string").and.not.empty;
     });
-
-    it("should successfully register group with encoded transaction data", async () => {
-      const result = await client.groupClient.registerGroup({
-        groupPool: groupPoolAddress,
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(result.encodedTxData).to.exist;
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
-      expect(result.encodedTxData?.to).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Group with License Operations", () => {

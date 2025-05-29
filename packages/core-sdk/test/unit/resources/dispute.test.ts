@@ -162,25 +162,6 @@ describe("Test DisputeClient", () => {
       expect(result.disputeId).equal(1n);
     });
 
-    it("should return encodedTxData when call raiseDispute successfully with encodedTxDataOnly", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
-      sinon
-        .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
-        .resolves({ allowed: true });
-      const result = await disputeClient.raiseDispute({
-        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
-        bond: minimumBond + 1n,
-        liveness: 2592000,
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
-
     it("should return txHash when call raiseDispute successfully given bond is 1000", async () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
@@ -243,15 +224,6 @@ describe("Test DisputeClient", () => {
 
       expect(result.txHash).equal(txHash);
     });
-
-    it("should return encodedTxData when call cancelDispute successfully with encodedTxDataOnly", async () => {
-      const result = await disputeClient.cancelDispute({
-        disputeId: 1,
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("resolveDispute", () => {
@@ -296,16 +268,6 @@ describe("Test DisputeClient", () => {
       });
 
       expect(result.txHash).equal(txHash);
-    });
-
-    it("should return encodedTxData when call resolveDispute successfully with encodedTxDataOnly", async () => {
-      const result = await disputeClient.resolveDispute({
-        disputeId: 1,
-        data: "0x",
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 

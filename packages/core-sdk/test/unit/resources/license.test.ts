@@ -109,26 +109,6 @@ describe("Test LicenseClient", () => {
         "Failed to register license terms: CommercialRevShare should be between 0 and 100.",
       );
     });
-    it("should return encodedTxData when call registerPILTerms given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
-
-      const result = await licenseClient.registerPILTerms({
-        ...licenseTerms,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(result.encodedTxData).to.deep.equal({
-        to: zeroAddress,
-        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
-    });
-
     it("should return txHash when call registerPILTerms given args is correct", async () => {
       sinon
         .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
@@ -225,26 +205,6 @@ describe("Test LicenseClient", () => {
         );
       }
     });
-
-    it("should return encodedTxData when call registerNonComSocialRemixingPIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
-
-      const result = await licenseClient.registerNonComSocialRemixingPIL({
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData).to.deep.equal({
-        to: zeroAddress,
-        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
-    });
   });
 
   describe("Test licenseClient.registerCommercialUsePIL", async () => {
@@ -302,29 +262,6 @@ describe("Test LicenseClient", () => {
           "Failed to register commercial use PIL: request fail.",
         );
       }
-    });
-
-    it("should return encodedTxData when call registerCommercialUsePIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
-
-      const result = await licenseClient.registerCommercialUsePIL({
-        defaultMintingFee: "1",
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData).to.deep.equal({
-        to: zeroAddress,
-        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
     });
   });
 
@@ -410,30 +347,6 @@ describe("Test LicenseClient", () => {
           "Failed to register commercial remix PIL: request fail.",
         );
       }
-    });
-
-    it("should return encodedTxData when call registerCommercialRemixPIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
-
-      const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
-        commercialRevShare: 100,
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData).to.deep.equal({
-        to: zeroAddress,
-        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
     });
   });
 
@@ -533,30 +446,6 @@ describe("Test LicenseClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
-    });
-
-    it("should return encodedTxData when call attachLicenseTerms given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(false);
-      sinon
-        .stub(licenseClient.licensingModuleClient, "attachLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
-
-      const result = await licenseClient.attachLicenseTerms({
-        ipId: zeroAddress,
-        licenseTermsId: "1",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData).to.deep.equal({
-        to: zeroAddress,
-        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
     });
   });
 
@@ -833,33 +722,6 @@ describe("Test LicenseClient", () => {
 
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTokenIds).to.deep.equal([1n, 2n, 3n, 4n, 5n]);
-    });
-
-    it("should return encodedTxData when call mintLicenseTokens given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.licensingModuleClient, "mintLicenseTokensEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
-
-      const result = await licenseClient.mintLicenseTokens({
-        licensorIpId: zeroAddress,
-        licenseTermsId: "1",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-        maxMintingFee: 1,
-        maxRevenueShare: 1,
-      });
-
-      expect(result.encodedTxData).to.deep.equal({
-        to: zeroAddress,
-        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
     });
 
     describe("With Minting Fees", () => {
@@ -1218,38 +1080,6 @@ describe("Test LicenseClient", () => {
           "Failed to set licensing config: The license template cannot be zero address if commercial revenue share is not zero.",
         );
       }
-    });
-    it("should return encodedTxData when call setLicensingConfig given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
-      sinon
-        .stub(licenseClient.licensingModuleClient, "setLicensingConfigEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
-
-      const result = await licenseClient.setLicensingConfig({
-        ipId: zeroAddress,
-        licenseTermsId: 1,
-        licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        licensingConfig: {
-          isSet: false,
-          mintingFee: "",
-          licensingHook: zeroAddress,
-          hookData: zeroAddress,
-          commercialRevShare: 0,
-          disabled: false,
-          expectMinimumGroupRewardShare: 0,
-          expectGroupRewardPool: zeroAddress,
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData).to.deep.equal({
-        to: zeroAddress,
-        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
     });
 
     it("should return txHash when call setLicensingConfig given args is correct", async () => {

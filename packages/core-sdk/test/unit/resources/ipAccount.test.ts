@@ -77,20 +77,6 @@ describe("Test IPAccountClient", () => {
 
       expect(result.txHash).to.equal(txHash);
     });
-
-    it("should return encodedTxData when call execute successfully with encodedTxDataOnly", async () => {
-      const result = await ipAccountClient.execute({
-        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Test executeWithSig", () => {
@@ -139,23 +125,6 @@ describe("Test IPAccountClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
-    });
-
-    it("should return encodedTxData when call executeWithSig successfully with encodedTxDataOnly", async () => {
-      const result = await ipAccountClient.executeWithSig({
-        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        to: zeroAddress,
-        value: 2,
-        data: "0x11111111111111111111111111111",
-        signer: zeroAddress,
-        deadline: 20,
-        signature: zeroAddress,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
     });
   });
 

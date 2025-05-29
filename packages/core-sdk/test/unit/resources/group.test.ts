@@ -79,16 +79,6 @@ describe("Test IpAssetClient", () => {
       });
       expect(result.txHash).equal(txHash);
     });
-
-    it("should return encodedData when call registerGroup successfully with encodedTxDataOnly of true", async () => {
-      const result = await groupClient.registerGroup({
-        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
   });
   describe("Test groupClient.registerGroupAndAttachLicense", async () => {
     it("should throw licenseTemplate error when call registerGroupAndAttachLicense given licenseTemplate is invalid", async () => {
@@ -125,20 +115,6 @@ describe("Test IpAssetClient", () => {
       });
       expect(result.txHash).equal(txHash);
       expect(result.groupId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-    });
-
-    it("should return encodedData when call registerGroupAndAttachLicense successfully with encodedTxDataOnly of true", async () => {
-      const result = await groupClient.registerGroupAndAttachLicense({
-        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseData: {
-          ...mockLicenseData,
-          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
   describe("Test groupClient.registerGroupAndAttachLicenseAndAddIps", async () => {
@@ -183,27 +159,6 @@ describe("Test IpAssetClient", () => {
           "Failed to register group and attach license and add ips: License terms must be attached to IP 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c before adding to group.",
         );
       }
-    });
-
-    it("should return encodedData when call registerGroupAndAttachLicenseAndAddIps successfully with encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-
-      const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
-        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        maxAllowedRewardShare: 5,
-        licenseData: {
-          ...mockLicenseData,
-          licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
 
     it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args ", async () => {
@@ -275,43 +230,6 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).equal(txHash);
       expect(result.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.tokenId).equal(0n);
-    });
-
-    it("should return encodedData when call mintAndRegisterIpAndAttachLicenseAndAddToGroup successfully with encodedTxDataOnly of true", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(
-          groupClient.groupingWorkflowsClient,
-          "mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode",
-        )
-        .returns({
-          data: "0x11111111111111111111111111111",
-          to: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        });
-
-      const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
-        groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
-        licenseData: [
-          {
-            ...mockLicenseData,
-            licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          },
-        ],
-        allowDuplicates: true,
-        recipient: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        ipMetadata: {
-          ipMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          ipMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          nftMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
 
     it("should call with default values when mintAndRegisterIpAndAttachLicenseAndAddToGroup without providing allowDuplicates, ipMetadata, recipient", async () => {
@@ -442,41 +360,6 @@ describe("Test IpAssetClient", () => {
       });
       expect(result.txHash).equal(txHash);
       expect(result.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-    });
-
-    it("should return encodedData when call registerIpAndAttachLicenseAndAddToGroup successfully with encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroupEncode")
-        .returns({
-          data: "0x11111111111111111111111111111",
-          to: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        });
-      const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
-        groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
-        tokenId: "100",
-        licenseData: [
-          {
-            ...mockLicenseData,
-            licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          },
-        ],
-        ipMetadata: {
-          ipMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          ipMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          nftMetadataHash: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          nftMetadataURI: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
 

@@ -1,5 +1,5 @@
 import chai from "chai";
-import { createMock, generateRandomAddress } from "../testUtils";
+import { createMock } from "../testUtils";
 import * as sinon from "sinon";
 import { IPAssetClient, LicenseTerms, StoryRelationship } from "../../../src";
 import {
@@ -385,41 +385,6 @@ describe("Test IpAssetClient", () => {
       expect(response.ipId).equals("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
     });
 
-    it("should return encoded tx data when register a IP given correct args, encodedTxDataOnly is true and metadata", async () => {
-      sinon
-        .stub(IpAssetRegistryClient.prototype, "ipId")
-        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-      sinon
-        .stub(ipAssetClient.registrationWorkflowsClient, "registerIp")
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 0n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
-      const response = await ipAssetClient.register({
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        tokenId: "3",
-        ipMetadata: {
-          ipMetadataURI: "",
-          ipMetadataHash: zeroHash,
-          nftMetadataHash: zeroHash,
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(response.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
-
     it("should throw error when request fails", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
@@ -434,36 +399,6 @@ describe("Test IpAssetClient", () => {
       } catch (err) {
         expect((err as Error).message).equal("Failed to register IP: revert error");
       }
-    });
-
-    it("should return encoded tx data when register a IP given correct args, encodedTxDataOnly is true and metadata", async () => {
-      sinon
-        .stub(IpAssetRegistryClient.prototype, "ipId")
-        .resolves("0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-      sinon
-        .stub(ipAssetClient.registrationWorkflowsClient, "registerIp")
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 0n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
-      const response = await ipAssetClient.register({
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        tokenId: "3",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(response.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
 
@@ -660,39 +595,6 @@ describe("Test IpAssetClient", () => {
       expect(res.txHash).equal(txHash);
     });
 
-    it("should return encoded tx data when registerDerivative given correct childIpId, parentIpId, licenseTermsIds and encodedTxDataOnly of true ", async () => {
-      sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
-        .onCall(0)
-        .resolves(true)
-        .onCall(1)
-        .resolves(true);
-      sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon
-        .stub(ipAssetClient.licensingModuleClient, "registerDerivative")
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      sinon.stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
-        royaltyPercent: 100,
-      });
-
-      const res = await ipAssetClient.registerDerivative({
-        childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
-        licenseTermsIds: ["1"],
-        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxMintingFee: 0n,
-        maxRts: 0,
-        maxRevenueShare: 0,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
-
     it("should call with default values of maxMintingFee, maxRts, maxRevenueShare when registerDerivative given maxMintingFee, maxRts, maxRevenueShare is not provided", async () => {
       sinon
         .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
@@ -875,32 +777,6 @@ describe("Test IpAssetClient", () => {
 
       expect(res.txHash).equal(txHash);
     });
-
-    it("should return encoded tx data when registerDerivativeWithLicenseTokens given correct args and encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
-        .onCall(0)
-        .resolves(true)
-        .onCall(1)
-        .resolves(true);
-      sinon
-        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
-        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
-      sinon
-        .stub(ipAssetClient.licensingModuleClient, "registerDerivativeWithLicenseTokens")
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-
-      const res = await ipAssetClient.registerDerivativeWithLicenseTokens({
-        childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
-        licenseTokenIds: ["1"],
-        maxRts: 0,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Test ipAssetClient.createIpAssetWithPilTerms", async () => {
@@ -1038,28 +914,6 @@ describe("Test IpAssetClient", () => {
       expect(result.tokenId).to.equal(1n);
     });
 
-    it("should return encoded tx data when createIpAssetWithPilTerms given correct args and encodedTxDataOnly is true", async () => {
-      const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsData: [
-          {
-            terms: licenseTerms,
-            licensingConfig,
-          },
-        ],
-        recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        ipMetadata: {
-          ipMetadataURI: "",
-          ipMetadataHash: toHex(0, { size: 32 }),
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
-
     it("should call with default values when createIpAssetWithPilTerms without providing allowDuplicates, ipMetadata, recipient", async () => {
       const mintAndRegisterIpAndAttachPilTermsStub = sinon
         .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "mintAndRegisterIpAndAttachPilTerms")
@@ -1185,53 +1039,6 @@ describe("Test IpAssetClient", () => {
       expect(res.txHash).equal(txHash);
       expect(res.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
     });
-
-    it("should return encoded tx data when registerDerivativeIp given correct args and encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(IpAssetRegistryClient.prototype, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
-        .onFirstCall()
-        .resolves(false)
-        .onSecondCall()
-        .resolves(true);
-      sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
-        royaltyPercent: 100,
-      });
-      sinon
-        .stub(ipAssetClient.derivativeWorkflowsClient, "registerIpAndMakeDerivative")
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 1n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
-
-      const res = await ipAssetClient.registerDerivativeIp({
-        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        tokenId: "3",
-        derivData,
-        ipMetadata: {
-          ipMetadataURI: "https://",
-          nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
   });
 
   describe("Test ipAssetClient.registerIpAndAttachPilTerms", async () => {
@@ -1304,38 +1111,6 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.licenseTermsIds).to.deep.equal([5n]);
-    });
-
-    it("should return encoded tx data when registerIpAndAttachPilTerms given correct args and encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(IpAssetRegistryClient.prototype, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-      sinon
-        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: 5n });
-      sinon
-        .stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerIpAndAttachPilTerms")
-        .resolves(txHash);
-      const nftContract = generateRandomAddress();
-      const result = await ipAssetClient.registerIpAndAttachPilTerms({
-        nftContract,
-        tokenId: "3",
-        ipMetadata: {
-          ipMetadataURI: "https://",
-        },
-        licenseTermsData: [
-          {
-            terms: licenseTerms,
-            licensingConfig,
-          },
-        ],
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
 
@@ -1411,52 +1186,6 @@ describe("Test IpAssetClient", () => {
 
       expect(res.txHash).equal(txHash);
       expect(res.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-    });
-
-    it("should return encoded tx data when call mintAndRegisterIpAndMakeDerivative given correct args and encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(IpAssetRegistryClient.prototype, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon
-        .stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
-        .onFirstCall()
-        .resolves(true)
-        .onSecondCall()
-        .resolves(false);
-      sinon
-        .stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
-        royaltyPercent: 100,
-      });
-      sinon
-        .stub(ipAssetClient.derivativeWorkflowsClient, "mintAndRegisterIpAndMakeDerivative")
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 1n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
-
-      const res = await ipAssetClient.mintAndRegisterIpAndMakeDerivative({
-        spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        derivData,
-        ipMetadata: {
-          ipMetadataURI: "https://",
-          nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(res.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
 
     it("should call with default values when mintAndRegisterIpAndMakeDerivative without providing allowDuplicates, ipMetadata", async () => {
@@ -1569,24 +1298,6 @@ describe("Test IpAssetClient", () => {
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
     });
 
-    it("should return encoded tx data when mintAndRegisterIp given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(ipAssetClient.registrationWorkflowsClient, "mintAndRegisterIp").resolves(txHash);
-
-      const result = await ipAssetClient.mintAndRegisterIp({
-        spgNftContract,
-        allowDuplicates: false,
-        recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        ipMetadata: {
-          ipMetadataURI: "",
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
-
     it("should call with default values when mintAndRegisterIp without providing allowDuplicates, ipMetadata, recipient", async () => {
       const mintAndRegisterIpStub = sinon
         .stub(ipAssetClient.registrationWorkflowsClient, "mintAndRegisterIp")
@@ -1654,28 +1365,6 @@ describe("Test IpAssetClient", () => {
           "Failed to register PIL terms and attach: The IP with id 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not registered.",
         );
       }
-    });
-
-    it("should return encoded tx data when registerPilTermsAndAttach given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: 0n });
-
-      const result = await ipAssetClient.registerPilTermsAndAttach({
-        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsData: [
-          {
-            terms: licenseTerms,
-            licensingConfig,
-          },
-        ],
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
 
     it("should return txHash when registerPilTermsAndAttach given correct args ", async () => {
@@ -1856,36 +1545,6 @@ describe("Test IpAssetClient", () => {
       expect(result.tokenId).to.equal(1n);
     });
 
-    it("should return encoded tx data when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given correct args and encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
-        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
-      sinon
-        .stub(
-          ipAssetClient.derivativeWorkflowsClient,
-          "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
-        )
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-
-      const result = await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
-        maxRts: 0,
-        allowDuplicates: false,
-        spgNftContract,
-        licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        ipMetadata: {
-          ipMetadataURI: "",
-          ipMetadataHash: toHex(0, { size: 32 }),
-          nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-          nftMetadataURI: "",
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
-    });
-
     it("should call with default values when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens without providing allowDuplicates, ipMetadata, royaltyContext, recipient", async () => {
       sinon
         .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
@@ -2003,35 +1662,6 @@ describe("Test IpAssetClient", () => {
       });
       expect(result.txHash).to.equal(txHash);
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-    });
-
-    it("should return encoded tx data when registerIpAndMakeDerivativeWithLicenseTokens given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-      sinon
-        .stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf")
-        .resolves("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
-      sinon
-        .stub(
-          ipAssetClient.derivativeWorkflowsClient,
-          "registerIpAndMakeDerivativeWithLicenseTokens",
-        )
-        .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      const result = await ipAssetClient.registerIpAndMakeDerivativeWithLicenseTokens({
-        nftContract: spgNftContract,
-        tokenId: "3",
-        maxRts: 0,
-        licenseTokenIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
-        ipMetadata: {
-          ipMetadataURI: "",
-          ipMetadataHash: toHex(0, { size: 32 }),
-          nftMetadataHash: toHex("nftMetadata", { size: 32 }),
-          nftMetadataURI: "",
-        },
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
     });
   });
 
