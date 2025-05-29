@@ -67,23 +67,6 @@ describe("Test NftClient", () => {
     });
 
     it("should return txHash when call createNFTCollection successfully", async () => {
-      sinon.stub(nftClient.registrationWorkflowsClient, "createCollection").resolves(txHash);
-      const result = await nftClient.createNFTCollection({
-        name: "name",
-        symbol: "symbol",
-        maxSupply: 1,
-        mintFee: 1n,
-        mintFeeToken: mintFeeToken,
-        isPublicMinting: true,
-        contractURI: "test-uri",
-        mintOpen: true,
-        mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-      });
-
-      expect(result.txHash).equal(txHash);
-    });
-
-    it("should return txHash when call createNFTCollection successfully with waitForTransaction", async () => {
       const spgNftContract = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
       sinon.stub(nftClient.registrationWorkflowsClient, "createCollection").resolves(txHash);
       sinon
@@ -97,9 +80,6 @@ describe("Test NftClient", () => {
         mintOpen: true,
         contractURI: "test-uri",
         mintFeeRecipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(result.txHash).equal(txHash);
@@ -155,9 +135,6 @@ describe("Test NftClient", () => {
           tokenId: 1n,
           tokenURI: "test-uri",
           spgNftContract: mockERC20,
-          txOptions: {
-            waitForTransaction: true,
-          },
         }),
       ).to.be.rejectedWith("Failed to set token URI: rpc error");
     });
@@ -167,9 +144,6 @@ describe("Test NftClient", () => {
         tokenId: 1n,
         tokenURI: "test-uri",
         spgNftContract: mockERC20,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.txHash).equal(txHash);
     });

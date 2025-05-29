@@ -61,12 +61,10 @@ export class IPAccountClient {
       } else {
         const txHash = await ipAccountClient.execute({ ...req, operation: 0 });
 
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
         return { txHash: txHash };
       }
     } catch (error) {
@@ -99,13 +97,10 @@ export class IPAccountClient {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
-
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
         return { txHash: txHash };
       }
     } catch (error) {

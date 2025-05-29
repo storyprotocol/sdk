@@ -20,7 +20,6 @@ describe("Permission Functions", () => {
     const response = await client.ipAsset.register({
       nftContract: mockERC721,
       tokenId: tokenId!,
-      txOptions: { waitForTransaction: true },
     });
 
     if (!response.ipId) {
@@ -37,7 +36,6 @@ describe("Permission Functions", () => {
         to: coreMetadataModule,
         permission: AccessPermission.ALLOW,
         func: "function setAll(address,string,bytes32,bytes32)",
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -63,7 +61,6 @@ describe("Permission Functions", () => {
         ipId: ipId,
         signer: process.env.TEST_WALLET_ADDRESS as Address,
         permission: AccessPermission.ALLOW,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -92,7 +89,6 @@ describe("Permission Functions", () => {
         func: "function setAll(address,string,bytes32,bytes32)",
         permission: AccessPermission.ALLOW,
         deadline: 60000n,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -134,7 +130,6 @@ describe("Permission Functions", () => {
             func: "function freezeMetadata(address)",
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -179,7 +174,6 @@ describe("Permission Functions", () => {
           },
         ],
         deadline: 60000n,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -196,7 +190,6 @@ describe("Permission Functions", () => {
           signer: process.env.TEST_WALLET_ADDRESS as Address,
           to: coreMetadataModule,
           permission: AccessPermission.ALLOW,
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith(`IP id with ${unregisteredIpId} is not registered.`);
     });
@@ -209,7 +202,6 @@ describe("Permission Functions", () => {
           to: coreMetadataModule,
           permission: AccessPermission.ALLOW,
           func: "invalid_function_signature",
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejected;
     });

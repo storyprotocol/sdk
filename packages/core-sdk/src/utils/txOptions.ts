@@ -9,9 +9,6 @@ export const waitForTxReceipt = async ({
   rpcClient,
   txHash,
 }: WaitForTransactionReceiptRequest): Promise<TransactionResponse> => {
-  if (!txOptions || !txOptions.waitForTransaction) {
-    return { txHash };
-  }
   const receipt = await rpcClient.waitForTransactionReceipt({
     ...txOptions,
     hash: txHash,
@@ -24,9 +21,6 @@ export const waitForTxReceipts = async ({
   rpcClient,
   txHashes,
 }: WaitForTransactionReceiptsRequest): Promise<TransactionResponse[]> => {
-  if (!txOptions || !txOptions.waitForTransaction) {
-    return txHashes.map((hash) => ({ txHash: hash }));
-  }
   const receipts = await Promise.all(
     txHashes.map((hash) => rpcClient.waitForTransactionReceipt({ ...txOptions, hash })),
   );

@@ -61,15 +61,11 @@ describe("Dispute Functions", () => {
       mintOpen: true,
       contractURI: "test-uri",
       mintFeeRecipient: TEST_WALLET_ADDRESS,
-      txOptions: { waitForTransaction: true },
     });
     const nftContract = txData.spgNftContract!;
     ipIdB = (
       await clientB.ipAsset.mintAndRegisterIp({
         spgNftContract: nftContract,
-        txOptions: {
-          waitForTransaction: true,
-        },
       })
     ).ipId!;
   });
@@ -83,9 +79,6 @@ describe("Dispute Functions", () => {
         targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 2592000,
         bond: minimumBond,
-        txOptions: {
-          waitForTransaction: true,
-        },
       };
       const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -119,9 +112,6 @@ describe("Dispute Functions", () => {
           targetTag: tag,
           liveness: 2592000,
           bond: minimumBond,
-          txOptions: {
-            waitForTransaction: true,
-          },
         };
 
         if (tag === DisputeTargetTag.IN_DISPUTE) {
@@ -146,7 +136,6 @@ describe("Dispute Functions", () => {
           targetTag: invalidTag as DisputeTargetTag,
           liveness: 2592000,
           bond: minimumBond,
-          txOptions: { waitForTransaction: true },
         };
 
         await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
@@ -170,9 +159,6 @@ describe("Dispute Functions", () => {
         ipId: ipIdB,
         assertionId,
         counterEvidenceCID,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(secondDispute.receipt?.status).to.equal("reverted");
     });
@@ -185,7 +171,6 @@ describe("Dispute Functions", () => {
         targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: Number(minLiveness) - 1,
         bond: minimumBond,
-        txOptions: { waitForTransaction: true },
       };
 
       await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
@@ -200,9 +185,6 @@ describe("Dispute Functions", () => {
         targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 2592000,
         bond: parseEther("360"),
-        txOptions: {
-          waitForTransaction: true,
-        },
       };
 
       await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
@@ -218,13 +200,11 @@ describe("Dispute Functions", () => {
       targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
       liveness: 2592000,
       bond: minimumBond,
-      txOptions: { waitForTransaction: true },
     });
 
     expect(
       clientA.dispute.cancelDispute({
         disputeId: raiseResponse.disputeId!,
-        txOptions: { waitForTransaction: true },
       }),
     ).to.be.rejected;
   });
@@ -257,7 +237,6 @@ describe("Dispute Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         mintFeeRecipient: TEST_WALLET_ADDRESS,
-        txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
 
@@ -298,7 +277,6 @@ describe("Dispute Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       parentIpId = ipIdAndLicenseResponse.ipId!;
       licenseTermsId = ipIdAndLicenseResponse.licenseTermsIds![0];
@@ -313,7 +291,6 @@ describe("Dispute Functions", () => {
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: 100,
         },
-        txOptions: { waitForTransaction: true },
       });
       childIpId = derivativeIpIdResponse1.ipId!;
 
@@ -327,7 +304,6 @@ describe("Dispute Functions", () => {
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: 100,
         },
-        txOptions: { waitForTransaction: true },
       });
       childIpId2 = derivativeIpIdResponse2.ipId!;
 
@@ -338,9 +314,6 @@ describe("Dispute Functions", () => {
         targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 1,
         bond: minimumBond,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       disputeId = response.disputeId!;
 
@@ -365,7 +338,6 @@ describe("Dispute Functions", () => {
             disputeId: disputeId,
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       expect(results[0].txHash).to.be.a("string").and.not.empty;
     });
@@ -418,7 +390,6 @@ describe("Dispute Functions", () => {
         options: {
           useMulticallWhenPossible: false, // Force single transaction instead of batch
         },
-        txOptions: { waitForTransaction: true },
       });
 
       // Verify we got the expected response
@@ -433,7 +404,6 @@ describe("Dispute Functions", () => {
         targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 1,
         bond: minimumBond,
-        txOptions: { waitForTransaction: true },
       });
       const testDisputeId = disputeResponse.disputeId!;
 
@@ -447,7 +417,6 @@ describe("Dispute Functions", () => {
           maxRevenueShare: 100,
         },
         allowDuplicates: true,
-        txOptions: { waitForTransaction: true },
       });
       const childIpId2 = derivativeResponse2.ipId!;
 
@@ -480,7 +449,6 @@ describe("Dispute Functions", () => {
         options: {
           useMulticallWhenPossible: true,
         },
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response).to.have.lengthOf(1);
@@ -499,7 +467,6 @@ describe("Dispute Functions", () => {
           maxRevenueShare: 100,
         },
         allowDuplicates: true,
-        txOptions: { waitForTransaction: true },
       });
 
       const derivativeResponse4 = await clientA.ipAsset.mintAndRegisterIpAndMakeDerivative({
@@ -512,7 +479,6 @@ describe("Dispute Functions", () => {
           maxRevenueShare: 100,
         },
         allowDuplicates: true,
-        txOptions: { waitForTransaction: true },
       });
 
       await settleAssertion(TEST_PRIVATE_KEY, disputeId);
@@ -539,7 +505,6 @@ describe("Dispute Functions", () => {
         options: {
           useMulticallWhenPossible: false,
         },
-        txOptions: { waitForTransaction: true },
       });
 
       expect(responses).to.have.lengthOf(2);
@@ -556,7 +521,6 @@ describe("Dispute Functions", () => {
               disputeId: 999999n,
             },
           ],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejected;
     });
@@ -575,9 +539,6 @@ describe("Dispute Functions", () => {
       const response = await clientA.dispute.resolveDispute({
         disputeId: disputeId,
         data: "0x",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
@@ -587,9 +548,6 @@ describe("Dispute Functions", () => {
         clientB.dispute.resolveDispute({
           disputeId: disputeId,
           data: "0x",
-          txOptions: {
-            waitForTransaction: true,
-          },
         }),
       ).to.be.rejectedWith("NotDisputeInitiator");
     });
@@ -618,7 +576,6 @@ describe("Dispute Functions", () => {
             disputeId: disputeId,
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
 
       const logData = results[0].receipt?.logs[0].data;

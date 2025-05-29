@@ -67,7 +67,6 @@ describe("Group Functions", () => {
         mintOpen: true,
         mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
         contractURI: "test-uri",
-        txOptions: { waitForTransaction: true },
       })
     ).spgNftContract!;
 
@@ -76,7 +75,6 @@ describe("Group Functions", () => {
       spgNftContract,
       allowDuplicates: false,
       licenseTermsData,
-      txOptions: { waitForTransaction: true },
     });
 
     licenseTermsId = result.licenseTermsIds![0];
@@ -104,7 +102,6 @@ describe("Group Functions", () => {
     it("should successfully register a basic group", async () => {
       const result = await client.groupClient.registerGroup({
         groupPool: groupPoolAddress,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -140,7 +137,6 @@ describe("Group Functions", () => {
             expectGroupRewardPool: zeroAddress,
           },
         },
-        txOptions: { waitForTransaction: true },
       });
 
       groupId = result.groupId!;
@@ -168,7 +164,6 @@ describe("Group Functions", () => {
           },
         ],
         maxAllowedRewardShare: 5,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -199,7 +194,6 @@ describe("Group Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -224,7 +218,6 @@ describe("Group Functions", () => {
             expectGroupRewardPool: zeroAddress,
           },
         },
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -250,7 +243,6 @@ describe("Group Functions", () => {
               expectGroupRewardPool: zeroAddress,
             },
           },
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("Failed to register group and attach license and add ips");
     });
@@ -272,7 +264,6 @@ describe("Group Functions", () => {
               licenseTermsData,
             },
           ],
-          txOptions: { waitForTransaction: true },
         });
         ipIds = registerResult.results?.map((result) => result.ipId) ?? [];
 
@@ -280,7 +271,6 @@ describe("Group Functions", () => {
           groupIpId: groupId,
           ipIds: ipIds,
           maxAllowedRewardSharePercentage: 5,
-          txOptions: { waitForTransaction: true },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
@@ -289,7 +279,6 @@ describe("Group Functions", () => {
         const result = await client.groupClient.removeIpsFromGroup({
           groupIpId: groupId,
           ipIds: ipIds,
-          txOptions: { waitForTransaction: true },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
       });
@@ -298,7 +287,6 @@ describe("Group Functions", () => {
         const registerResult = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract,
           licenseTermsData,
-          txOptions: { waitForTransaction: true },
         });
         const testIpId = registerResult.ipId!;
 
@@ -308,7 +296,6 @@ describe("Group Functions", () => {
           client.groupClient.removeIpsFromGroup({
             groupIpId: nonExistentGroupId,
             ipIds: [testIpId],
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejectedWith("Failed to remove IPs from group");
       });
@@ -316,7 +303,6 @@ describe("Group Functions", () => {
       it("should fail when trying to remove non-existent IPs from a group", async () => {
         const groupResult = await client.groupClient.registerGroup({
           groupPool: groupPoolAddress,
-          txOptions: { waitForTransaction: true },
         });
         const testGroupId = groupResult.groupId!;
 
@@ -326,7 +312,6 @@ describe("Group Functions", () => {
           client.groupClient.removeIpsFromGroup({
             groupIpId: testGroupId,
             ipIds: [nonExistentIpId],
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejectedWith("Failed to remove IPs from group");
       });
@@ -380,7 +365,6 @@ describe("Group Functions", () => {
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract,
         licenseTermsData,
-        txOptions: { waitForTransaction: true },
       });
       return result;
     };
@@ -402,7 +386,6 @@ describe("Group Functions", () => {
           maxRts: 10,
           maxRevenueShare: 0,
         },
-        txOptions: { waitForTransaction: true },
       });
       return result.ipId!;
     };
@@ -421,14 +404,12 @@ describe("Group Functions", () => {
         payerIpId: groupIpId,
         token,
         amount,
-        txOptions: { waitForTransaction: true },
       });
       await client.royalty.transferToVault({
         royaltyPolicy: NativeRoyaltyPolicy.LRP,
         ipId: childIpId,
         ancestorIpId: groupIpId,
         token,
-        txOptions: { waitForTransaction: true },
       });
     };
 
@@ -451,7 +432,6 @@ describe("Group Functions", () => {
             expectGroupRewardPool: zeroAddress,
           },
         },
-        txOptions: { waitForTransaction: true },
       });
       return result.groupId!;
     };
@@ -477,7 +457,6 @@ describe("Group Functions", () => {
       const result = await client.groupClient.collectRoyalties({
         groupIpId,
         currencyToken: WIP_TOKEN_ADDRESS,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -502,7 +481,6 @@ describe("Group Functions", () => {
         amount: 100,
         maxMintingFee: 1,
         maxRevenueShare: 100,
-        txOptions: { waitForTransaction: true },
       });
 
       // Claim reward
@@ -510,7 +488,6 @@ describe("Group Functions", () => {
         groupIpId: groupIpId,
         currencyToken: WIP_TOKEN_ADDRESS,
         memberIpIds: [ipId],
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -524,7 +501,6 @@ describe("Group Functions", () => {
           groupIpId: nonExistentGroupId,
           currencyToken: WIP_TOKEN_ADDRESS,
           memberIpIds: [ipId],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("Failed to claim reward");
     });
@@ -536,7 +512,6 @@ describe("Group Functions", () => {
           groupIpId: groupIpId,
           currencyToken: invalidTokenAddress,
           memberIpIds: [ipId],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("Failed to claim reward");
     });
@@ -561,7 +536,6 @@ describe("Group Functions", () => {
         groupIpId: groupIpId,
         currencyTokens: [WIP_TOKEN_ADDRESS],
         memberIpIds: ipIds,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;

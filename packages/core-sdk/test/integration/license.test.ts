@@ -52,27 +52,17 @@ describe("License Functions", () => {
         expiration: "",
         commercialRevCeiling: "",
         derivativeRevCeiling: "",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
     it("should register license with non commercial social remixing PIL", async () => {
-      const result = await client.license.registerNonComSocialRemixingPIL({
-        txOptions: {
-          waitForTransaction: true,
-        },
-      });
+      const result = await client.license.registerNonComSocialRemixingPIL();
       expect(result.licenseTermsId).to.be.a("bigint");
     });
     it("should register license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "1",
         currency: WIP_TOKEN_ADDRESS,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
@@ -82,9 +72,6 @@ describe("License Functions", () => {
         defaultMintingFee: "1",
         commercialRevShare: 100,
         currency: WIP_TOKEN_ADDRESS,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
@@ -93,9 +80,6 @@ describe("License Functions", () => {
       const result = await client.license.registerCreativeCommonsAttributionPIL({
         currency: WIP_TOKEN_ADDRESS,
         royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
@@ -111,9 +95,6 @@ describe("License Functions", () => {
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       const mockERC20 = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
       await mockERC20.approve(licensingModuleAddress[aeneid], maxUint256);
@@ -122,9 +103,6 @@ describe("License Functions", () => {
         defaultMintingFee: 0,
         commercialRevShare: 100,
         currency: WIP_TOKEN_ADDRESS,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       licenseId = registerLicenseResult.licenseTermsId!;
 
@@ -132,7 +110,6 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         commercialRevShare: 10,
         currency: WIP_TOKEN_ADDRESS,
-        txOptions: { waitForTransaction: true },
       });
       paidLicenseId = paidLicenseResult.licenseTermsId!;
     });
@@ -141,9 +118,6 @@ describe("License Functions", () => {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseId,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
@@ -152,9 +126,6 @@ describe("License Functions", () => {
       const result = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: paidLicenseId,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
@@ -166,9 +137,6 @@ describe("License Functions", () => {
         licensorIpId: ipId,
         maxMintingFee: "1",
         maxRevenueShare: "100",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
@@ -180,9 +148,6 @@ describe("License Functions", () => {
       const registerResult = await clientB.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenIdB!,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       const ipIdB = registerResult.ipId!;
 
@@ -190,7 +155,6 @@ describe("License Functions", () => {
       await client.license.attachLicenseTerms({
         ipId: ipIdB,
         licenseTermsId: licenseId,
-        txOptions: { waitForTransaction: true },
       });
 
       const result = await client.license.mintLicenseTokens({
@@ -198,7 +162,6 @@ describe("License Functions", () => {
         licensorIpId: ipIdB,
         maxMintingFee: "1",
         maxRevenueShare: "100",
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
@@ -215,7 +178,6 @@ describe("License Functions", () => {
         licensorIpId: ipId,
         maxMintingFee: 0n,
         maxRevenueShare: 1,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -229,7 +191,6 @@ describe("License Functions", () => {
         licensorIpId: ipId,
         maxMintingFee: 0n,
         maxRevenueShare: 50,
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       const balanceAfter = await client.getWalletBalance();
@@ -268,9 +229,6 @@ describe("License Functions", () => {
           ipId: ipId,
           licenseTermsId: licenseId,
           licensingConfig,
-          txOptions: {
-            waitForTransaction: true,
-          },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
         expect(result.success).to.be.true;
@@ -300,9 +258,6 @@ describe("License Functions", () => {
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       ipId = registerResult.ipId!;
 
@@ -310,9 +265,6 @@ describe("License Functions", () => {
       const ccLicenseResult = await client.license.registerCreativeCommonsAttributionPIL({
         currency: WIP_TOKEN_ADDRESS,
         royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       ccLicenseTermsId = ccLicenseResult.licenseTermsId!;
     });
@@ -338,9 +290,6 @@ describe("License Functions", () => {
       const attachResult = await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: ccLicenseTermsId,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(attachResult.txHash).to.be.a("string").and.not.empty;
@@ -374,9 +323,6 @@ describe("License Functions", () => {
         licensorIpId: ipId,
         maxMintingFee: 0n,
         maxRevenueShare: 0,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       expect(mintResult.txHash).to.be.a("string").and.not.empty;

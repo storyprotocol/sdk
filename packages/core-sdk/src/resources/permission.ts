@@ -64,15 +64,11 @@ export class PermissionClient {
         return { encodedTxData: this.accessControllerClient.setPermissionEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setPermission(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to set permissions");
@@ -134,15 +130,11 @@ export class PermissionClient {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to create set permission signature");
@@ -168,15 +160,11 @@ export class PermissionClient {
         return { encodedTxData: this.accessControllerClient.setAllPermissionsEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setAllPermissions(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to set all permissions");
@@ -209,15 +197,11 @@ export class PermissionClient {
         return { encodedTxData: this.accessControllerClient.setBatchPermissionsEncode(req) };
       } else {
         const txHash = await this.accessControllerClient.setBatchPermissions(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to set batch permissions");
@@ -274,15 +258,11 @@ export class PermissionClient {
         return { encodedTxData: ipAccountClient.executeWithSigEncode(req) };
       } else {
         const txHash = await ipAccountClient.executeWithSig(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to create batch permission signature");
