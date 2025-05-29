@@ -35,9 +35,7 @@ describe("IP Asset Functions", () => {
 
   before(async () => {
     client = getStoryClient();
-    const res = await client.license.registerNonComSocialRemixingPIL({
-      txOptions: { waitForTransaction: true },
-    });
+    const res = await client.license.registerNonComSocialRemixingPIL();
     noCommercialLicenseTermsId = res.licenseTermsId!;
   });
 
@@ -50,7 +48,6 @@ describe("IP Asset Functions", () => {
       const response = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response.ipId).to.be.a("string").and.not.empty;
@@ -71,7 +68,6 @@ describe("IP Asset Functions", () => {
           nftMetadataURI: "ipfs://test-nft-uri",
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
-        txOptions: { waitForTransaction: true },
       });
       childIpId2 = response.ipId!;
 
@@ -89,7 +85,6 @@ describe("IP Asset Functions", () => {
             ipMetadataHash: "0x123", // Invalid length hash
             nftMetadataHash: toHex("valid-hash", { size: 32 }),
           },
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejected;
     });
@@ -99,7 +94,6 @@ describe("IP Asset Functions", () => {
         client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: BigInt(Number.MAX_SAFE_INTEGER),
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejected;
     });
@@ -110,14 +104,12 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
       await client.license.attachLicenseTerms({
         ipId: parentIpId,
         licenseTermsId: noCommercialLicenseTermsId,
-        txOptions: { waitForTransaction: true },
       });
 
       const response = await client.ipAsset.registerDerivative({
@@ -127,7 +119,6 @@ describe("IP Asset Functions", () => {
         maxMintingFee: "0",
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "0",
-        txOptions: { waitForTransaction: true },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
@@ -138,7 +129,6 @@ describe("IP Asset Functions", () => {
         defaultMintingFee: 10n,
         commercialRevShare: 10,
         currency: WIP_TOKEN_ADDRESS,
-        txOptions: { waitForTransaction: true },
       });
 
       // Register parent IP
@@ -147,7 +137,6 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
@@ -155,7 +144,6 @@ describe("IP Asset Functions", () => {
       await client.license.attachLicenseTerms({
         ipId: commercialParentIpId,
         licenseTermsId: licenseResponse.licenseTermsId!,
-        txOptions: { waitForTransaction: true },
       });
 
       const response = await client.ipAsset.registerDerivative({
@@ -165,7 +153,6 @@ describe("IP Asset Functions", () => {
         maxMintingFee: "100",
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "100",
-        txOptions: { waitForTransaction: true },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
@@ -177,7 +164,6 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId1!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
@@ -187,7 +173,6 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId2!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
@@ -195,13 +180,11 @@ describe("IP Asset Functions", () => {
       await client.license.attachLicenseTerms({
         ipId: parentIpId1,
         licenseTermsId: noCommercialLicenseTermsId,
-        txOptions: { waitForTransaction: true },
       });
 
       await client.license.attachLicenseTerms({
         ipId: parentIpId2,
         licenseTermsId: noCommercialLicenseTermsId,
-        txOptions: { waitForTransaction: true },
       });
 
       // Create child IP
@@ -210,7 +193,6 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: childTokenId!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
@@ -222,7 +204,6 @@ describe("IP Asset Functions", () => {
         maxMintingFee: "0",
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "0",
-        txOptions: { waitForTransaction: true },
       });
 
       expect(response.txHash).to.be.a("string").and.not.empty;
@@ -234,7 +215,6 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
@@ -243,14 +223,12 @@ describe("IP Asset Functions", () => {
         licensorIpId: parentIpId,
         maxMintingFee: "0",
         maxRevenueShare: 1,
-        txOptions: { waitForTransaction: true },
       });
 
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens({
         childIpId: ipId,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
-        txOptions: { waitForTransaction: true },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
@@ -283,7 +261,6 @@ describe("IP Asset Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         mintFeeRecipient: walletAddress,
-        txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
 
@@ -324,7 +301,6 @@ describe("IP Asset Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
 
       parentIpId = result.ipId!;
@@ -348,7 +324,6 @@ describe("IP Asset Functions", () => {
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
         deadline: 1000n,
-        txOptions: { waitForTransaction: true },
       });
       expect(response.ipId).to.be.a("string").and.not.empty;
     });
@@ -366,7 +341,6 @@ describe("IP Asset Functions", () => {
           maxRevenueShare: "0",
         },
         deadline: 1000n,
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
@@ -441,7 +415,6 @@ describe("IP Asset Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
@@ -458,7 +431,6 @@ describe("IP Asset Functions", () => {
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: 100,
         },
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
@@ -474,7 +446,6 @@ describe("IP Asset Functions", () => {
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
         allowDuplicates: false,
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.ipId).to.be.a("string").and.not.empty;
@@ -517,7 +488,6 @@ describe("IP Asset Functions", () => {
           },
         ],
         deadline: 1000n,
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
@@ -529,7 +499,6 @@ describe("IP Asset Functions", () => {
         licensorIpId: parentIpId,
         maxMintingFee: "0",
         maxRevenueShare: 100,
-        txOptions: { waitForTransaction: true },
       });
 
       await approveForLicenseToken(
@@ -546,7 +515,6 @@ describe("IP Asset Functions", () => {
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -561,7 +529,6 @@ describe("IP Asset Functions", () => {
         licensorIpId: parentIpId,
         maxMintingFee: "0",
         maxRevenueShare: 100,
-        txOptions: { waitForTransaction: true },
       });
 
       await approveForLicenseToken(
@@ -580,7 +547,6 @@ describe("IP Asset Functions", () => {
           nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
         },
         deadline: 1000n,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -637,7 +603,6 @@ describe("IP Asset Functions", () => {
               percentage: 1,
             },
           ],
-          txOptions: { waitForTransaction: true },
         },
       );
 
@@ -710,7 +675,6 @@ describe("IP Asset Functions", () => {
               percentage: 38,
             },
           ],
-          txOptions: { waitForTransaction: true },
         },
       );
 
@@ -774,7 +738,6 @@ describe("IP Asset Functions", () => {
               percentage: 99, // Test maximum valid percentage that sums to 100
             },
           ],
-          txOptions: { waitForTransaction: true },
         },
       );
 
@@ -833,7 +796,6 @@ describe("IP Asset Functions", () => {
               percentage: 45, // Total will be 105%
             },
           ],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("The sum of the royalty shares cannot exceeds 100");
     });
@@ -887,7 +849,6 @@ describe("IP Asset Functions", () => {
               percentage: 45, // Total will be 105%
             },
           ],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("The sum of the royalty shares cannot exceeds 100");
     });
@@ -937,7 +898,6 @@ describe("IP Asset Functions", () => {
               percentage: 0,
             },
           ],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("The percentage of the royalty shares must be greater than 0");
     });
@@ -1004,7 +964,6 @@ describe("IP Asset Functions", () => {
               percentage: 10,
             },
           ],
-          txOptions: { waitForTransaction: true },
         });
 
       expect(result.txHash).to.be.a("string");
@@ -1024,7 +983,6 @@ describe("IP Asset Functions", () => {
         if (wipBalance > 0n) {
           await client.wipClient.withdraw({
             amount: wipBalance,
-            txOptions: { waitForTransaction: true },
           });
         }
 
@@ -1038,7 +996,6 @@ describe("IP Asset Functions", () => {
           contractURI: "test-uri",
           mintFee: 100n,
           mintFeeToken: WIP_TOKEN_ADDRESS,
-          txOptions: { waitForTransaction: true },
         });
         nftContractWithMintingFee = rsp.spgNftContract!;
 
@@ -1078,7 +1035,6 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          txOptions: { waitForTransaction: true },
         });
         parentIpId = result.ipId!;
         licenseTermsId = result.licenseTermsIds![0];
@@ -1101,7 +1057,6 @@ describe("IP Asset Functions", () => {
             nftMetadataURI: "test",
             nftMetadataHash: zeroHash,
           },
-          txOptions: { waitForTransaction: true },
         });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
         expect(rsp.ipId).to.be.a("string").and.not.empty;
@@ -1123,7 +1078,6 @@ describe("IP Asset Functions", () => {
           licensorIpId: parentIpId,
           maxMintingFee: 0n,
           maxRevenueShare: 100,
-          txOptions: { waitForTransaction: true },
         });
         await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
         expect(licenseTokenIds).to.be.an("array").and.not.empty;
@@ -1138,7 +1092,6 @@ describe("IP Asset Functions", () => {
               nftMetadataURI: "test",
               nftMetadataHash: zeroHash,
             },
-            txOptions: { waitForTransaction: true },
           });
         expect(txHash).to.be.a("string").and.not.empty;
         expect(ipId).to.be.a("string").and.not.empty;
@@ -1159,7 +1112,6 @@ describe("IP Asset Functions", () => {
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
-          txOptions: { waitForTransaction: true },
         });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
         expect(rsp.ipId).to.be.a("string").and.not.empty;
@@ -1194,7 +1146,6 @@ describe("IP Asset Functions", () => {
               enableAutoWrapIp: false,
             },
           },
-          txOptions: { waitForTransaction: true },
         });
         await expect(rsp).to.be.rejectedWith(/Wallet does not have enough WIP to pay for fees/);
       });
@@ -1203,7 +1154,6 @@ describe("IP Asset Functions", () => {
         const tokenId = await getTokenId();
         await client.wipClient.deposit({
           amount: 150n,
-          txOptions: { waitForTransaction: true },
         });
         const rsp =
           await client.ipAsset.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
@@ -1222,7 +1172,6 @@ describe("IP Asset Functions", () => {
                 percentage: 100,
               },
             ],
-            txOptions: { waitForTransaction: true },
           });
         expect(
           rsp.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash,
@@ -1257,7 +1206,6 @@ describe("IP Asset Functions", () => {
                 percentage: 100,
               },
             ],
-            txOptions: { waitForTransaction: true },
           });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
         expect(rsp.ipId).to.be.a("string").and.not.empty;
@@ -1278,7 +1226,6 @@ describe("IP Asset Functions", () => {
           mintFee: 3n,
           mintFeeToken: WIP_TOKEN_ADDRESS,
           contractURI: "",
-          txOptions: { waitForTransaction: true },
         });
         spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
       });
@@ -1319,7 +1266,6 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          txOptions: { waitForTransaction: true },
         });
         expect(result.ipId).not.undefined;
         expect(result.tokenId).not.undefined;
@@ -1338,7 +1284,6 @@ describe("IP Asset Functions", () => {
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: 100,
           },
-          txOptions: { waitForTransaction: true },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
         expect(result.ipId).to.be.a("string").and.not.empty;
@@ -1353,7 +1298,6 @@ describe("IP Asset Functions", () => {
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
           allowDuplicates: false,
-          txOptions: { waitForTransaction: true },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
         expect(result.ipId).to.be.a("string").and.not.empty;
@@ -1364,7 +1308,6 @@ describe("IP Asset Functions", () => {
           licensorIpId: parentIpId,
           maxMintingFee: "0",
           maxRevenueShare: 100,
-          txOptions: { waitForTransaction: true },
         });
         const licenseTokenId = mintLicenseTokensResult.licenseTokenIds![0];
         await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenId);
@@ -1377,7 +1320,6 @@ describe("IP Asset Functions", () => {
             ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
             nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
           },
-          txOptions: { waitForTransaction: true },
         });
         expect(result.txHash).to.be.a("string").and.not.empty;
         expect(result.ipId).to.be.a("string").and.not.empty;
@@ -1416,7 +1358,6 @@ describe("IP Asset Functions", () => {
                 percentage: 10,
               },
             ],
-            txOptions: { waitForTransaction: true },
           });
 
         expect(result.txHash).to.be.a("string");
@@ -1441,7 +1382,6 @@ describe("IP Asset Functions", () => {
                 percentage: 100,
               },
             ],
-            txOptions: { waitForTransaction: true },
           });
         expect(rsp.txHash).to.be.a("string").and.not.empty;
         expect(rsp.ipId).to.be.a("string").and.not.empty;
@@ -1461,7 +1401,6 @@ describe("IP Asset Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         mintFeeRecipient: walletAddress,
-        txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
     });
@@ -1472,7 +1411,6 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: childTokenId!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
@@ -1481,14 +1419,12 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: childTokenId2!,
-          txOptions: { waitForTransaction: true },
         })
       ).ipId!;
 
       await client.license.attachLicenseTerms({
         ipId: parentIpId,
         licenseTermsId: noCommercialLicenseTermsId,
-        txOptions: { waitForTransaction: true },
       });
 
       const result = await client.ipAsset.batchRegisterDerivative({
@@ -1510,7 +1446,6 @@ describe("IP Asset Functions", () => {
             maxRevenueShare: "0",
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
     });
@@ -1591,7 +1526,6 @@ describe("IP Asset Functions", () => {
             ],
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -1624,7 +1558,6 @@ describe("IP Asset Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -1666,7 +1599,6 @@ describe("IP Asset Functions", () => {
             },
           },
         ],
-        txOptions: { waitForTransaction: true },
       });
       expect(result.results).to.be.an("array").and.not.empty;
       expect(result.txHash).to.be.a("string").and.not.empty;
@@ -1685,7 +1617,6 @@ describe("IP Asset Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         mintFeeRecipient: walletAddress,
-        txOptions: { waitForTransaction: true },
       });
       nftContract = txData.spgNftContract!;
     });
@@ -1730,7 +1661,6 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejected;
     });
@@ -1780,7 +1710,6 @@ describe("IP Asset Functions", () => {
               percentage: 101, // Invalid percentage > 100
             },
           ],
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith(
         "The percentage of the royalty shares must be less than or equal to 100",
@@ -1793,7 +1722,6 @@ describe("IP Asset Functions", () => {
         client.ipAsset.register({
           nftContract: nftContract,
           tokenId: 999999n, // Non-existent token
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejected;
     });
@@ -1811,7 +1739,6 @@ describe("IP Asset Functions", () => {
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: "0",
           },
-          txOptions: { waitForTransaction: true },
         }),
       ).to.be.rejectedWith("The parent IP IDs must be provided");
     });
@@ -1824,23 +1751,19 @@ describe("IP Asset Functions", () => {
 
     before(async () => {
       client = getStoryClient();
-      const res = await client.license.registerNonComSocialRemixingPIL({
-        txOptions: { waitForTransaction: true },
-      });
+      const res = await client.license.registerNonComSocialRemixingPIL();
       noCommercialLicenseTermsId = res.licenseTermsId!;
 
       const tokenId = await getTokenId();
       const parentIpResponse = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
-        txOptions: { waitForTransaction: true },
       });
       parentIpId = parentIpResponse.ipId!;
 
       await client.license.attachLicenseTerms({
         ipId: parentIpId,
         licenseTermsId: noCommercialLicenseTermsId,
-        txOptions: { waitForTransaction: true },
       });
     });
 
@@ -1852,7 +1775,6 @@ describe("IP Asset Functions", () => {
         const response = await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId!,
-          txOptions: { waitForTransaction: true },
         });
         childIpId = response.ipId!;
       });
@@ -1866,7 +1788,6 @@ describe("IP Asset Functions", () => {
             maxMintingFee: "0",
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: "0",
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejectedWith(/not registered/);
       });
@@ -1880,7 +1801,6 @@ describe("IP Asset Functions", () => {
             maxMintingFee: "0",
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: "0",
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejectedWith(/must match/);
       });
@@ -1894,7 +1814,6 @@ describe("IP Asset Functions", () => {
             maxMintingFee: "-1",
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: "0",
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejectedWith(/must be greater than 0/);
       });
@@ -1908,7 +1827,6 @@ describe("IP Asset Functions", () => {
             maxMintingFee: "0",
             maxRts: 100_000_001, // Exceeds maximum
             maxRevenueShare: "0",
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejectedWith(/must be.*less than/);
       });
@@ -1923,12 +1841,10 @@ describe("IP Asset Functions", () => {
               await client.ipAsset.register({
                 nftContract: mockERC721,
                 tokenId: tokenId!,
-                txOptions: { waitForTransaction: true },
               })
             ).ipId!,
             licenseTokenIds: [BigInt(999999)], // Non-existent token
             maxRts: 5 * 10 ** 6,
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejected;
       });
@@ -1939,7 +1855,6 @@ describe("IP Asset Functions", () => {
           licensorIpId: parentIpId,
           maxMintingFee: "0",
           maxRevenueShare: 1,
-          txOptions: { waitForTransaction: true },
         });
 
         const tokenId1 = await getTokenId();
@@ -1948,12 +1863,10 @@ describe("IP Asset Functions", () => {
             await client.ipAsset.register({
               nftContract: mockERC721,
               tokenId: tokenId1!,
-              txOptions: { waitForTransaction: true },
             })
           ).ipId!,
           licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
           maxRts: 5 * 10 ** 6,
-          txOptions: { waitForTransaction: true },
         });
 
         const tokenId2 = await getTokenId();
@@ -1963,12 +1876,10 @@ describe("IP Asset Functions", () => {
               await client.ipAsset.register({
                 nftContract: mockERC721,
                 tokenId: tokenId2!,
-                txOptions: { waitForTransaction: true },
               })
             ).ipId!,
             licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
             maxRts: 5 * 10 ** 6,
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejected; // Should fail as token already used
       });
@@ -1982,7 +1893,6 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: tokenId1!,
-          txOptions: { waitForTransaction: true },
         });
 
         await expect(
@@ -1997,7 +1907,6 @@ describe("IP Asset Functions", () => {
                 tokenId: tokenId2!, // New registration
               },
             ],
-            txOptions: { waitForTransaction: true },
           }),
         ).to.be.rejected;
       });
@@ -2022,7 +1931,6 @@ describe("IP Asset Functions", () => {
         mintFee: 10n,
         mintFeeToken: WIP_TOKEN_ADDRESS,
         contractURI: "",
-        txOptions: { waitForTransaction: true },
       });
       spgNftContractWithPublicMinting = publicMintingCollectionResult.spgNftContract!;
 
@@ -2034,7 +1942,6 @@ describe("IP Asset Functions", () => {
         mintOpen: true,
         mintFeeRecipient: walletAddress,
         contractURI: "",
-        txOptions: { waitForTransaction: true },
       });
       spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
 
@@ -2043,7 +1950,6 @@ describe("IP Asset Functions", () => {
         defaultMintingFee: 10n,
         commercialRevShare: 10,
         currency: WIP_TOKEN_ADDRESS,
-        txOptions: { waitForTransaction: true },
       });
       licenseTermsId1 = commercialRemixPILResult.licenseTermsId!;
 
@@ -2066,14 +1972,12 @@ describe("IP Asset Functions", () => {
         derivativeRevCeiling: 0n,
         currency: WIP_TOKEN_ADDRESS,
         uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
-        txOptions: { waitForTransaction: true },
       });
       licenseTermsId2 = commercialUsePILResult.licenseTermsId!;
 
       // Mint and register IP with public minting contract
       const publicMintingIpResult = await client.ipAsset.mintAndRegisterIp({
         spgNftContract: spgNftContractWithPublicMinting,
-        txOptions: { waitForTransaction: true },
       });
       parentIpId1 = publicMintingIpResult.ipId!;
 
@@ -2081,13 +1985,11 @@ describe("IP Asset Functions", () => {
       await client.license.attachLicenseTerms({
         ipId: parentIpId1,
         licenseTermsId: licenseTermsId1,
-        txOptions: { waitForTransaction: true },
       });
 
       // Mint and register IP with private minting contract
       const privateMintingIpResult = await client.ipAsset.mintAndRegisterIp({
         spgNftContract: spgNftContractWithPrivateMinting,
-        txOptions: { waitForTransaction: true },
       });
       parentIpId2 = privateMintingIpResult.ipId!;
 
@@ -2095,7 +1997,6 @@ describe("IP Asset Functions", () => {
       await client.license.attachLicenseTerms({
         ipId: parentIpId2,
         licenseTermsId: licenseTermsId2,
-        txOptions: { waitForTransaction: true },
       });
     });
 

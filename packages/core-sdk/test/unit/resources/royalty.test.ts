@@ -123,7 +123,6 @@ describe("Test RoyaltyClient", () => {
         payerIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         token: WIP_TOKEN_ADDRESS,
         amount: 100n,
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.be.a("string").and.not.empty;
       expect(simulateContractStub.calledOnce).to.be.true;
@@ -660,7 +659,6 @@ describe("Test RoyaltyClient", () => {
         ancestorIpId: generateRandomAddress(),
         token: WIP_TOKEN_ADDRESS,
         royaltyPolicy: NativeRoyaltyPolicy.LAP,
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).to.equal(txHash);
     });

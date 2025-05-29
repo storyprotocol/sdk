@@ -30,9 +30,6 @@ describe("nftClient Functions", () => {
         mintFeeRecipient: testWalletAddress,
         mintOpen: true,
         contractURI: "test-uri",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
       expect(txData.txHash).to.be.a("string").and.not.empty;
@@ -49,9 +46,6 @@ describe("nftClient Functions", () => {
         contractURI: "test-uri",
         mintFee: 10000000n,
         mintFeeToken: erc20Address[aeneid],
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
       spgNftContract = txData.spgNftContract!;
@@ -66,9 +60,6 @@ describe("nftClient Functions", () => {
         mintFeeRecipient: testWalletAddress,
         mintOpen: false, // starts closed
         contractURI: "test-uri",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
     });
@@ -83,9 +74,6 @@ describe("nftClient Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         baseURI: "ipfs://QmTest/",
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
     });
@@ -100,9 +88,6 @@ describe("nftClient Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
         owner: testWalletAddress,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
     });
@@ -137,9 +122,6 @@ describe("nftClient Functions", () => {
           contractURI: "test-uri",
           mintFee: 1000000000000000000n,
           mintFeeToken: "0x0000000000000000000000000000000000000000",
-          txOptions: {
-            waitForTransaction: true,
-          },
         }),
       ).to.be.rejectedWith("Invalid mint fee token address");
     });
@@ -174,9 +156,6 @@ describe("nftClient Functions", () => {
         tokenId: tokenId!,
         tokenURI: updatedMetadata,
         spgNftContract,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
 
       // Verify the transaction
@@ -206,9 +185,6 @@ describe("nftClient Functions", () => {
           tokenId: tokenId!,
           tokenURI: updatedMetadata,
           spgNftContract,
-          txOptions: {
-            waitForTransaction: true,
-          },
         });
 
         expect(result.txHash).to.be.a("string").and.not.empty;
@@ -236,9 +212,6 @@ describe("nftClient Functions", () => {
           tokenId: invalidTokenId!,
           tokenURI: updatedMetadata,
           spgNftContract,
-          txOptions: {
-            waitForTransaction: true,
-          },
         }),
       ).to.be.rejectedWith("Failed to set token URI");
     });

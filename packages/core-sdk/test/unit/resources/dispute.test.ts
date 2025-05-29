@@ -129,27 +129,8 @@ describe("Test DisputeClient", () => {
         );
       }
     });
-    it("should return txHash when call raiseDispute successfully", async () => {
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
-      sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
-      sinon
-        .stub(disputeClient.disputeModuleClient, "isWhitelistedDisputeTag")
-        .resolves({ allowed: true });
 
-      sinon.stub(disputeClient.disputeModuleClient, "raiseDispute").resolves(txHash);
-      const result = await disputeClient.raiseDispute({
-        targetIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
-        bond: minimumBond + 1n,
-        liveness: 2592000,
-      });
-
-      expect(result.txHash).equal(txHash);
-    });
-
-    it("should return txHash and disputeId when call raiseDispute successfully with waitForTransaction", async () => {
+    it("should return txHash and disputeId when call raiseDispute successfully", async () => {
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "minLiveness").resolves(0n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxLiveness").resolves(100000000000n);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "maxBonds").resolves(100000000000n);
@@ -175,7 +156,6 @@ describe("Test DisputeClient", () => {
         targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         bond: minimumBond + 1n,
         liveness: 2592000,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).equal(txHash);
@@ -227,7 +207,6 @@ describe("Test DisputeClient", () => {
         cid: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
         targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
         liveness: 2592000,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).equal(txHash);
@@ -256,11 +235,10 @@ describe("Test DisputeClient", () => {
       expect(result.txHash).equal(txHash);
     });
 
-    it("should return txHash when call cancelDispute successfully with waitForTransaction", async () => {
+    it("should return txHash when call cancelDispute successfully", async () => {
       sinon.stub(disputeClient.disputeModuleClient, "cancelDispute").resolves(txHash);
       const result = await disputeClient.cancelDispute({
         disputeId: 1,
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).equal(txHash);
@@ -310,12 +288,11 @@ describe("Test DisputeClient", () => {
       expect(result.txHash).equal(txHash);
     });
 
-    it("should return txHash when call resolveDispute successfully with waitForTransaction", async () => {
+    it("should return txHash when call resolveDispute successfully", async () => {
       sinon.stub(disputeClient.disputeModuleClient, "resolveDispute").resolves(txHash);
       const result = await disputeClient.resolveDispute({
         disputeId: 1,
         data: "0x",
-        txOptions: { waitForTransaction: true },
       });
 
       expect(result.txHash).equal(txHash);
@@ -433,14 +410,13 @@ describe("Test DisputeClient", () => {
       expect(result.txHash).equal(txHash);
       expect(accountExecuteMock.calledOnce).to.be.true;
     });
-    it("should return txHash,receipt and disputeId when call disputeAssertion successfully with waitForTransaction", async () => {
+    it("should return txHash,receipt and disputeId when call disputeAssertion successfully", async () => {
       sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
       sinon.stub(disputeClient.arbitrationPolicyUmaClient, "oov3").resolves(mockAddress);
       const result = await disputeClient.disputeAssertion({
         ipId,
         assertionId: generateRandomHash(),
         counterEvidenceCID: "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR",
-        txOptions: { waitForTransaction: true },
       });
       expect(result.txHash).equal(txHash);
       expect(result.receipt).not.undefined;
