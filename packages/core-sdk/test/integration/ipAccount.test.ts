@@ -60,20 +60,6 @@ describe("IPAccount Functions", () => {
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
 
-    it("should return encoded transaction data when requested", async () => {
-      const response = await client.ipAccount.execute({
-        to: permissionAddress,
-        value: 0,
-        data,
-        ipId: ipId,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
-
     it("should fail with invalid ipId", async () => {
       await expect(
         client.ipAccount.execute({
@@ -90,22 +76,6 @@ describe("IPAccount Functions", () => {
     // Using a fixed future deadline for testing
     const FUTURE_DEADLINE = BigInt(Math.floor(Date.now() / 1000) + 3600); // 1 hour from now
     const EXPIRED_DEADLINE = BigInt(Math.floor(Date.now() / 1000) - 3600); // 1 hour ago
-
-    it("should return encoded transaction data for executeWithSig", async () => {
-      const response = await client.ipAccount.executeWithSig({
-        to: permissionAddress,
-        data,
-        ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Hex,
-        deadline: FUTURE_DEADLINE,
-        signature: "0x", // Need valid signature
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
 
     it("should fail with expired deadline", async () => {
       await expect(

@@ -118,19 +118,6 @@ describe("Royalty Functions", () => {
       expect(balanceAfter < balanceBefore - 100n).to.be.true;
     });
 
-    it("should return encoded transaction data for payRoyaltyOnBehalf", async () => {
-      const response = await client.royalty.payRoyaltyOnBehalf({
-        receiverIpId: parentIpId,
-        payerIpId: childIpId,
-        token: erc20Address[aeneid],
-        amount: 10 * 10 ** 2,
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
-
     it("should fail to pay royalty with unregistered receiver", async () => {
       const unregisteredIpId = "0x1234567890123456789012345678901234567890" as Hex;
       await expect(

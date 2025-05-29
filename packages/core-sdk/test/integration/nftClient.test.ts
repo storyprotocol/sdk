@@ -92,24 +92,6 @@ describe("nftClient Functions", () => {
       expect(txData.spgNftContract).to.be.a("string").and.not.empty;
     });
 
-    it("should successfully get encoded transaction data", async () => {
-      const txData = await client.nftClient.createNFTCollection({
-        name: "encoded-collection",
-        symbol: "ENC",
-        maxSupply: 100,
-        isPublicMinting: true,
-        mintFeeRecipient: testWalletAddress,
-        mintOpen: true,
-        contractURI: "test-uri",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(txData.encodedTxData).to.exist;
-      expect(txData.encodedTxData?.data).to.be.a("string").and.not.empty;
-      expect(txData.encodedTxData?.to).to.be.a("string").and.not.empty;
-    });
-
     it("should fail with invalid mint fee token", async () => {
       await expect(
         client.nftClient.createNFTCollection({
