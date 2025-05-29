@@ -376,7 +376,7 @@ export class IPAssetClient {
           encodedTxs: [encodedTxData],
           spgSpenderAddress: this.royaltyModuleEventClient.address,
           wipOptions: {
-            ...request.wipOptions,
+            ...request.options?.wipOptions,
             useMulticallWhenPossible: false,
           },
         });
@@ -555,7 +555,7 @@ export class IPAssetClient {
         );
       };
       const rsp = await this.handleRegistrationWithFees({
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgNftContract: transformRequest.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -735,7 +735,7 @@ export class IPAssetClient {
       };
       return this.handleRegistrationWithFees({
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           useMulticallWhenPossible: false,
         },
         sender: this.walletAddress,
@@ -779,7 +779,7 @@ export class IPAssetClient {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         spgNftContract,
@@ -864,7 +864,7 @@ export class IPAssetClient {
         spgNftContract: object.spgNftContract,
         txOptions: request.txOptions,
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           useMulticallWhenPossible: false,
         },
       });
@@ -974,7 +974,7 @@ export class IPAssetClient {
       };
       return this.handleRegistrationWithFees({
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           // need to disable multicall to avoid needing to transfer the license
           // token to the multicall contract.
           useMulticallWhenPossible: false,
@@ -1183,7 +1183,7 @@ export class IPAssetClient {
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           useMulticallWhenPossible: false,
         },
         sender: this.walletAddress,
@@ -1261,7 +1261,7 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgNftContract: transformRequest.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -1320,7 +1320,7 @@ export class IPAssetClient {
       };
       return await this.handleRegistrationWithFees({
         spgNftContract: transformRequest.spgNftContract,
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
         derivData: transformRequest.derivData,
@@ -1439,7 +1439,7 @@ export class IPAssetClient {
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         walletAddress: this.walletAddress,
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         chainId: this.chainId,
       });
 
@@ -1483,7 +1483,7 @@ export class IPAssetClient {
           rpcClient: this.rpcClient,
           wallet: this.wallet,
           walletAddress: this.walletAddress,
-          wipOptions: request.wipOptions,
+          wipOptions: request.options?.wipOptions,
           chainId: this.chainId,
         });
         distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);

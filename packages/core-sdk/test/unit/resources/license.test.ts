@@ -929,7 +929,9 @@ describe("Test LicenseClient", () => {
           maxMintingFee: 1,
           maxRevenueShare: 1,
           txOptions: { waitForTransaction: false },
-          wipOptions: { useMulticallWhenPossible: false },
+          options: {
+            wipOptions: { useMulticallWhenPossible: false },
+          },
         });
         expect(result.txHash).to.equal(txHash);
         expect(result.receipt).to.be.undefined;

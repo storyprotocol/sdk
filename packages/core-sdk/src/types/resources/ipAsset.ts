@@ -17,7 +17,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
 } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
-import { TxOptions, WithWipOptions } from "../options";
+import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
 import { Erc20Spender } from "../utils/wip";
 
@@ -417,7 +417,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse
   tokenId?: bigint;
 };
 
-export type CommonRegistrationParams = WithWipOptions & {
+export type CommonRegistrationParams = {
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   spgNftContract?: Address;
@@ -426,6 +426,7 @@ export type CommonRegistrationParams = WithWipOptions & {
   derivData?: DerivativeData;
   sender: Address;
   txOptions?: TxOptions;
+  wipOptions?: WipOptions;
 };
 
 export type RegistrationResponse = {

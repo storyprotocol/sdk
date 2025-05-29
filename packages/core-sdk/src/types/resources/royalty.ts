@@ -6,7 +6,7 @@ import {
   IpRoyaltyVaultImplRevenueTokenClaimedEvent,
 } from "../../abi/generated";
 import { TokenAmountInput } from "../common";
-import { WithERC20Options, WithTxOptions, WithWipOptions } from "../options";
+import { WithErc20AndWipOptions, WithTxOptions } from "../options";
 
 export type ClaimableRevenueRequest = {
   /** The IP ID of the royalty vault. */
@@ -21,8 +21,7 @@ export type ClaimableRevenueRequest = {
 export type ClaimableRevenueResponse = bigint;
 
 export type PayRoyaltyOnBehalfRequest = WithTxOptions &
-  WithERC20Options &
-  WithWipOptions & {
+  WithErc20AndWipOptions & {
     /** The IP ID that receives the royalties. */
     receiverIpId: Address;
     /** The IP ID that pays the royalties. */

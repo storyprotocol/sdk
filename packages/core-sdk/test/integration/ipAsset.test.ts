@@ -1189,8 +1189,10 @@ describe("IP Asset Functions", () => {
               percentage: 100,
             },
           ],
-          wipOptions: {
-            enableAutoWrapIp: false,
+          options: {
+            wipOptions: {
+              enableAutoWrapIp: false,
+            },
           },
           txOptions: { waitForTransaction: true },
         });
@@ -3078,8 +3080,10 @@ describe("IP Asset Functions", () => {
       const totalFees = 15 + 0 + 10 + 5 + 5;
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
-        wipOptions: {
-          useMulticallWhenPossible: false,
+        options: {
+          wipOptions: {
+            useMulticallWhenPossible: false,
+          },
         },
       });
       const userBalanceAfter = await client.getBalance(walletAddress);
