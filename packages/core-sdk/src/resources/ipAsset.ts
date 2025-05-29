@@ -20,7 +20,6 @@ import {
   ipAccountImplAbi,
   IpAccountImplClient,
   IpAssetRegistryClient,
-  IpAssetRegistryRegisterRequest,
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
@@ -198,13 +197,13 @@ export class IPAssetClient {
 
       let txHash: Hex;
       if (request.ipMetadata) {
-        txHash = await this.registrationWorkflowsClient.registerIp(
-          object as RegistrationWorkflowsRegisterIpRequest,
-        );
+        txHash = await this.registrationWorkflowsClient.registerIp(object);
       } else {
-        txHash = await this.ipAssetRegistryClient.register(
-          object as IpAssetRegistryRegisterRequest,
-        );
+        txHash = await this.ipAssetRegistryClient.register({
+          tokenContract: object.nftContract,
+          tokenId: object.tokenId,
+          chainid: BigInt(this.chainId),
+        });
       }
 
       const txReceipt = await this.rpcClient.waitForTransactionReceipt({
@@ -232,14 +231,14 @@ export class IPAssetClient {
         //TODO: need to consider the ip registered case
         const object = await this.buildRegisterRequestObject(arg);
         if (arg.ipMetadata) {
-          encodedTxData = this.registrationWorkflowsClient.registerIpEncode(
-            object as RegistrationWorkflowsRegisterIpRequest,
-          ).data;
+          encodedTxData = this.registrationWorkflowsClient.registerIpEncode(object).data;
           spgContracts.push(encodedTxData);
         } else {
-          encodedTxData = this.ipAssetRegistryClient.registerEncode(
-            object as IpAssetRegistryRegisterRequest,
-          ).data;
+          encodedTxData = this.ipAssetRegistryClient.registerEncode({
+            tokenContract: object.nftContract,
+            tokenId: object.tokenId,
+            chainid: BigInt(this.chainId),
+          }).data;
           contracts.push({
             target: this.ipAssetRegistryClient.address,
             allowFailure: false,
@@ -438,7 +437,7 @@ export class IPAssetClient {
         request.licenseTermsData,
         this.rpcClient,
       );
-        const { transformRequest, encodedTxData } =
+      const { transformRequest, encodedTxData } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
           {
             request,
@@ -1473,7 +1472,7 @@ export class IPAssetClient {
 
   private async buildRegisterRequestObject(
     arg: RegisterRequest,
-  ): Promise<RegistrationWorkflowsRegisterIpRequest | IpAssetRegistryRegisterRequest> {
+  ): Promise<RegistrationWorkflowsRegisterIpRequest> {
     const tokenId = BigInt(arg.tokenId);
     const nftContract = validateAddress(arg.nftContract);
     const ipMetadata = getIpMetadataForWorkflow(arg.ipMetadata);
@@ -1508,6 +1507,7 @@ export class IPAssetClient {
         signature,
       };
     }
+
     return object;
   }
 

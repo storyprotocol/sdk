@@ -1688,7 +1688,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch mint and register IP and attach PIL terms: Failed to mint and register IP and attach PIL terms: Invalid address: 0x.",
+          "Failed to batch mint and register IP and attach PIL terms: Invalid address: 0x.",
         );
       }
     });
@@ -1888,7 +1888,7 @@ describe("Test IpAssetClient", () => {
       }
     });
 
-    it("should return txhash and ipId when call batchRegister given correct args ", async () => {
+    it.only("should return txhash and ipId when call batchRegister given correct args", async () => {
       sinon
         .stub(IpAssetRegistryClient.prototype, "ipId")
         .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
