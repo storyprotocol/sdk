@@ -155,12 +155,13 @@ describe("Dispute Functions", () => {
       expect(ret.txHash).to.be.a("string").and.not.empty;
 
       // should throw error if attempting to dispute assertion again
-      const secondDispute = await clientB.dispute.disputeAssertion({
-        ipId: ipIdB,
-        assertionId,
-        counterEvidenceCID,
-      });
-      expect(secondDispute.receipt?.status).to.equal("reverted");
+      await expect(
+        clientB.dispute.disputeAssertion({
+          ipId: ipIdB,
+          assertionId,
+          counterEvidenceCID,
+        })
+      ).to.be.rejected;
     });
 
     it("should throw error when liveness is out of bounds", async () => {
