@@ -23,7 +23,6 @@ describe("WIP Functions", () => {
       const wipBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const rsp = await client.wipClient.deposit({
         amount: ipAmt,
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
       const balanceAfter = await client.getWalletBalance();
@@ -38,7 +37,6 @@ describe("WIP Functions", () => {
       const rsp = await client.wipClient.transfer({
         to: TEST_WALLET_ADDRESS,
         amount: parseEther("0.01"),
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
       //Due to approve cannot approve msy.sender, so skip transferFrom test
@@ -51,7 +49,6 @@ describe("WIP Functions", () => {
       const wipBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const rsp = await client.wipClient.withdraw({
         amount: wipBefore,
-        txOptions: { waitForTransaction: true },
       });
       expect(rsp.txHash).to.be.a("string");
       const wipAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);

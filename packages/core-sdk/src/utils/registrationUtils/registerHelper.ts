@@ -112,7 +112,6 @@ export const handleMulticall = async ({
       sender: walletAddress,
       wallet,
       encodedTxs: encodedTxData,
-      txOptions: { waitForTransaction: true },
     });
     txResponses.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
   }

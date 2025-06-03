@@ -236,15 +236,11 @@ export class LicenseClient {
         return { encodedTxData: this.licensingModuleClient.attachLicenseTermsEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to attach license terms");
@@ -468,14 +464,11 @@ export class LicenseClient {
         return { encodedTxData: this.licensingModuleClient.setLicensingConfigEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.setLicensingConfig(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        }
-        return { txHash: txHash };
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to set licensing config");
