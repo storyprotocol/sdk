@@ -7,7 +7,11 @@ import tsParser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
 import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
 import tsStylistic from "@stylistic/eslint-plugin-ts";
-
+/**
+ * A shared ESLint configuration for the repository.
+ *
+ * @type {import("eslint").Linter.Config[]}
+ * */
 export default [
   js.configs.recommended,
   eslintConfigPrettier,

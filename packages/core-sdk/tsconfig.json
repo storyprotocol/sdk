@@ -5,7 +5,8 @@
     "module": "ESNext",
     "outDir": "dist",
     "types": ["mocha"],
-    "lib": ["dom", "es2015"]
+    "lib": ["dom", "es2015"],
+    "allowJs": true
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["eslint.config.mjs", "src/**/*", "test/**/*"]
 }
