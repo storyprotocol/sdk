@@ -24,7 +24,7 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint:fix": "pnpm run lint --fix",
-    "lint": "eslint ./src",
+    "lint": "eslint",
     "tsc": "tsc --noEmit"
   },
   "license": "MIT",
