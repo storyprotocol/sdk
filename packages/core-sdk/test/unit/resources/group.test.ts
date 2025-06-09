@@ -1,16 +1,15 @@
-import chai from "chai";
-import { createMock } from "../testUtils";
-import * as sinon from "sinon";
-import { PublicClient, WalletClient, Account, zeroAddress, zeroHash } from "viem";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { GroupClient } from "../../../src";
-import { mockAddress, walletAddress } from "../mockData";
-import { LicenseDataInput } from "../../../src/types/resources/group";
-const { IpAccountImplClient } = require("../../../src/abi/generated");
+import { stub } from "sinon";
+import { Address, PublicClient, WalletClient, zeroAddress, zeroHash } from "viem";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
-const txHash = "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e";
+import { GroupClient } from "../../../src";
+import { IpAccountImplClient } from "../../../src/abi/generated";
+import { LicenseDataInput } from "../../../src/types/resources/group";
+import { mockAddress, txHash, walletAddress } from "../mockData";
+import { createMockPublicClient, createMockWalletClient } from "../testUtils";
+
+use(chaiAsPromised);
 const mockLicenseData: LicenseDataInput = {
   licenseTermsId: "100",
   licensingConfig: {
@@ -30,32 +29,25 @@ describe("Test IpAssetClient", () => {
   let walletMock: WalletClient;
 
   beforeEach(() => {
-    rpcMock = createMock<PublicClient>();
-    walletMock = createMock<WalletClient>();
-    const accountMock = createMock<Account>();
-    walletMock.account = accountMock;
-    walletMock.signTypedData = sinon
-      .stub()
-      .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+    rpcMock = createMockPublicClient();
+    walletMock = createMockWalletClient();
     groupClient = new GroupClient(rpcMock, walletMock, 1315);
-    (groupClient.groupingWorkflowsClient as any).address =
+    (groupClient.groupingWorkflowsClient as { address: Address }).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
-    (groupClient.groupingModuleClient as any).address =
+    (groupClient.groupingModuleClient as { address: Address }).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
-    (groupClient.coreMetadataModuleClient as any).address =
+    (groupClient.coreMetadataModuleClient as { address: Address }).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
-    (groupClient.licensingModuleClient as any).address =
+    (groupClient.licensingModuleClient as { address: Address }).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
-    (groupClient.licenseTemplateClient as any).address = mockAddress;
-    sinon
-      .stub(IpAccountImplClient.prototype, "state")
-      .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e" });
+    (groupClient.licenseTemplateClient as { address: Address }).address = mockAddress;
+    stub(IpAccountImplClient.prototype, "state").resolves({
+      result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a56e",
+    });
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
-  describe("Test groupClient.registerGroup", async () => {
+ 
+  describe("Test groupClient.registerGroup", () => {
     it("should throw groupPool address is invalid error when groupPool is invalid", async () => {
       try {
         await groupClient.registerGroup({
@@ -67,8 +59,8 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call registerGroup successfully ", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "registerGroup").resolves(txHash);
-      sinon.stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
+      stub(groupClient.groupingModuleClient, "registerGroup").resolves(txHash);
+      stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
         {
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -87,10 +79,10 @@ describe("Test IpAssetClient", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+      expect(result.encodedTxData!.data).to.be.a("string");
     });
   });
-  describe("Test groupClient.registerGroupAndAttachLicense", async () => {
+  describe("Test groupClient.registerGroupAndAttachLicense", () => {
     it("should throw licenseTemplate error when call registerGroupAndAttachLicense given licenseTemplate is invalid", async () => {
       try {
         await groupClient.registerGroupAndAttachLicense({
@@ -107,10 +99,8 @@ describe("Test IpAssetClient", () => {
       }
     });
     it("should return txHash when call registerGroupAndAttachLicense successfully ", async () => {
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicense")
-        .resolves(txHash);
-      sinon.stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
+      stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicense").resolves(txHash);
+      stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
         {
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -138,16 +128,14 @@ describe("Test IpAssetClient", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+      expect(result.encodedTxData!.data).to.be.a("string");
     });
   });
-  describe("Test groupClient.registerGroupAndAttachLicenseAndAddIps", async () => {
+  describe("Test groupClient.registerGroupAndAttachLicenseAndAddIps", () => {
     it("should throw group id register error when call registerGroupAndAttachLicenseAndAddIps given ip id is not registered", async () => {
       try {
-        sinon
-          .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-          .resolves(true);
-        sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+        stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+        stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
         await groupClient.registerGroupAndAttachLicenseAndAddIps({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
@@ -165,10 +153,10 @@ describe("Test IpAssetClient", () => {
     });
     it("should throw not attach between license terms and ip id when call registerGroupAndAttachLicenseAndAddIps given ipIds is not attach license terms", async () => {
       try {
-        sinon
-          .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-          .resolves(false);
-        sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+        stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+          false,
+        );
+        stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
         await groupClient.registerGroupAndAttachLicenseAndAddIps({
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           maxAllowedRewardShare: 5,
@@ -186,10 +174,8 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return encodedData when call registerGroupAndAttachLicenseAndAddIps successfully with encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -203,18 +189,16 @@ describe("Test IpAssetClient", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+      expect(result.encodedTxData!.data).to.be.a("string");
     });
 
     it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args ", async () => {
-      sinon
-        .stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps")
-        .resolves(txHash);
-      sinon.stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
+      stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps").resolves(
+        txHash,
+      );
+      stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
         {
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -230,10 +214,10 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup", async () => {
+  describe("Test groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup", () => {
     beforeEach(() => {});
     it("should throw group id register error when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given group id is not registered", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -250,11 +234,12 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given correct args ", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
-        .resolves(txHash);
-      sinon.stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(
+        groupClient.groupingWorkflowsClient,
+        "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+      ).resolves(txHash);
+      stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           chainId: 0n,
@@ -278,16 +263,14 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return encodedData when call mintAndRegisterIpAndAttachLicenseAndAddToGroup successfully with encodedTxDataOnly of true", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(
-          groupClient.groupingWorkflowsClient,
-          "mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode",
-        )
-        .returns({
-          data: "0x11111111111111111111111111111",
-          to: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        });
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(
+        groupClient.groupingWorkflowsClient,
+        "mintAndRegisterIpAndAttachLicenseAndAddToGroupEncode",
+      ).returns({
+        data: "0x11111111111111111111111111111",
+        to: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -311,15 +294,16 @@ describe("Test IpAssetClient", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+      expect(result.encodedTxData!.data).to.be.a("string");
     });
 
     it("should call with default values when mintAndRegisterIpAndAttachLicenseAndAddToGroup without providing allowDuplicates, ipMetadata, recipient", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      const mintAndRegisterIpAndAttachLicenseAndAddToGroupStub = sinon
-        .stub(groupClient.groupingWorkflowsClient, "mintAndRegisterIpAndAttachLicenseAndAddToGroup")
-        .resolves(txHash);
-      sinon.stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const mintAndRegisterIpAndAttachLicenseAndAddToGroupStub = stub(
+        groupClient.groupingWorkflowsClient,
+        "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
+      ).resolves(txHash);
+      stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           chainId: 0n,
@@ -337,29 +321,24 @@ describe("Test IpAssetClient", () => {
         licenseData: [mockLicenseData],
       });
 
-      expect(
-        mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0].allowDuplicates,
-      ).to.equal(true);
-      expect(
-        mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0].ipMetadata,
-      ).to.deep.equal({
+      const args = mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0];
+      expect(args.allowDuplicates).to.equal(true);
+      expect(args.ipMetadata).to.deep.equal({
         ipMetadataURI: "",
         ipMetadataHash: zeroHash,
         nftMetadataURI: "",
         nftMetadataHash: zeroHash,
       });
-      expect(mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0].recipient).to.equal(
-        walletAddress,
-      );
+      expect(args.recipient).to.equal(walletAddress);
     });
   });
 
-  describe("Test groupClient.registerIpAndAttachLicenseAndAddToGroup", async () => {
+  describe("Test groupClient.registerIpAndAttachLicenseAndAddToGroup", () => {
     it("should throw group id register error when call registerIpAndAttachLicenseAndAddToGroup given ip id is not registered", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(groupClient.ipAssetRegistryClient, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await groupClient.registerIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -375,10 +354,10 @@ describe("Test IpAssetClient", () => {
       }
     });
     it("should throw licenseData error when call registerIpAndAttachLicenseAndAddToGroup given licenseData is empty", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await groupClient.registerIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -395,10 +374,10 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should throw nft contract error when call registerIpAndAttachLicenseAndAddToGroup given nft contract address is invalid", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await groupClient.registerIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -415,14 +394,14 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call registerIpAndAttachLicenseAndAddToGroup given correct args ", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup")
-        .resolves(txHash);
-      sinon.stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+      stub(groupClient.ipAssetRegistryClient, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup").resolves(
+        txHash,
+      );
+      stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           chainId: 0n,
@@ -445,16 +424,17 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return encodedData when call registerIpAndAttachLicenseAndAddToGroup successfully with encodedTxDataOnly of true", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "ipId")
-        .resolves("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroupEncode")
-        .returns({
-          data: "0x11111111111111111111111111111",
-          to: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        });
+      stub(groupClient.ipAssetRegistryClient, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(
+        groupClient.groupingWorkflowsClient,
+        "registerIpAndAttachLicenseAndAddToGroupEncode",
+      ).returns({
+        data: "0x11111111111111111111111111111",
+        to: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
       const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -476,13 +456,13 @@ describe("Test IpAssetClient", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(result.encodedTxData!.data).to.be.a("string").and.not.empty;
+      expect(result.encodedTxData!.data).to.be.a("string");
     });
   });
 
-  describe("Test groupClient.collectAndDistributeGroupRoyalties", async () => {
+  describe("Test groupClient.collectAndDistributeGroupRoyalties", () => {
     it("throws if group ipId is not registered", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
@@ -495,8 +475,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("throws if member ip ids is not registered", async () => {
-      sinon
-        .stub(groupClient.ipAssetRegistryClient, "isRegistered")
+      stub(groupClient.ipAssetRegistryClient, "isRegistered")
         .onFirstCall()
         .resolves(true)
         .onSecondCall()
@@ -512,7 +491,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("throws if empty member ip ids", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
         currencyTokens: [mockAddress],
@@ -524,7 +503,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("throws if currency token is zero address", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
         currencyTokens: [zeroAddress],
@@ -536,7 +515,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("throws if empty currency tokens", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
         currencyTokens: [],
@@ -548,21 +527,20 @@ describe("Test IpAssetClient", () => {
     });
 
     it("returns txHash given correct args", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward")
-        .resolves(txHash);
-      sinon
-        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
-        .returns([
-          {
-            groupId: mockAddress,
-            amount: 100n,
-            token: mockAddress,
-            pool: mockAddress,
-          },
-        ]);
-      sinon.stub(groupClient.royaltyModuleEventClient, "parseTxRoyaltyPaidEvent").returns([
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward").resolves(txHash);
+      stub(
+        groupClient.groupingModuleEventClient,
+        "parseTxCollectedRoyaltiesToGroupPoolEvent",
+      ).returns([
+        {
+          groupId: mockAddress,
+          amount: 100n,
+          token: mockAddress,
+          pool: mockAddress,
+        },
+      ]);
+      stub(groupClient.royaltyModuleEventClient, "parseTxRoyaltyPaidEvent").returns([
         {
           receiverIpId: mockAddress,
           amount: 100n,
@@ -582,18 +560,19 @@ describe("Test IpAssetClient", () => {
     });
 
     it("returns additional details", async () => {
-      sinon.stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon
-        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
-        .returns([
-          {
-            groupId: mockAddress,
-            amount: 100n,
-            token: mockAddress,
-            pool: mockAddress,
-          },
-        ]);
-      sinon.stub(groupClient.royaltyModuleEventClient, "parseTxRoyaltyPaidEvent").returns([
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(
+        groupClient.groupingModuleEventClient,
+        "parseTxCollectedRoyaltiesToGroupPoolEvent",
+      ).returns([
+        {
+          groupId: mockAddress,
+          amount: 100n,
+          token: mockAddress,
+          pool: mockAddress,
+        },
+      ]);
+      stub(groupClient.royaltyModuleEventClient, "parseTxRoyaltyPaidEvent").returns([
         {
           receiverIpId: mockAddress,
           amount: 100n,
@@ -603,9 +582,7 @@ describe("Test IpAssetClient", () => {
           sender: mockAddress,
         },
       ]);
-      sinon
-        .stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward")
-        .resolves(txHash);
+      stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward").resolves(txHash);
       const result = await groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
         currencyTokens: [mockAddress],
@@ -630,9 +607,9 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.addIpsToGroup", async () => {
+  describe("Test groupClient.addIpsToGroup", () => {
     it("should throw error when call fails", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "addIp").rejects(new Error("rpc error"));
+      stub(groupClient.groupingModuleClient, "addIp").rejects(new Error("rpc error"));
       const result = groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
@@ -641,7 +618,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call succeeds", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
+      stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
       const result = await groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
@@ -653,9 +630,7 @@ describe("Test IpAssetClient", () => {
 
   describe("Test groupClient.getClaimableReward", () => {
     it("should throw error when call fail", async () => {
-      sinon
-        .stub(groupClient.groupingModuleClient, "getClaimableReward")
-        .rejects(new Error("rpc error"));
+      stub(groupClient.groupingModuleClient, "getClaimableReward").rejects(new Error("rpc error"));
       const result = groupClient.getClaimableReward({
         groupIpId: mockAddress,
         currencyToken: mockAddress,
@@ -665,7 +640,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return claimable reward when call successfully", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
       const result = await groupClient.getClaimableReward({
         groupIpId: mockAddress,
         currencyToken: mockAddress,
@@ -677,7 +652,7 @@ describe("Test IpAssetClient", () => {
 
   describe("Test groupClient.removeIpsFromGroup", () => {
     it("should throw error when call fails", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "removeIp").rejects(new Error("rpc error"));
+      stub(groupClient.groupingModuleClient, "removeIp").rejects(new Error("rpc error"));
       const result = groupClient.removeIpsFromGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
@@ -686,7 +661,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call succeeds", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "removeIp").resolves(txHash);
+      stub(groupClient.groupingModuleClient, "removeIp").resolves(txHash);
       const result = await groupClient.removeIpsFromGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
@@ -697,7 +672,7 @@ describe("Test IpAssetClient", () => {
 
   describe("Test groupClient.claimReward", () => {
     it("should throw error when call fail", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "claimReward").rejects(new Error("rpc error"));
+      stub(groupClient.groupingModuleClient, "claimReward").rejects(new Error("rpc error"));
       const result = groupClient.claimReward({
         groupIpId: mockAddress,
         currencyToken: mockAddress,
@@ -707,8 +682,8 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call successfully", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
-      sinon.stub(groupClient.groupingModuleEventClient, "parseTxClaimedRewardEvent").returns([
+      stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      stub(groupClient.groupingModuleEventClient, "parseTxClaimedRewardEvent").returns([
         {
           ipId: [mockAddress],
           amount: [100n],
@@ -725,8 +700,8 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return additional details", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
-      sinon.stub(groupClient.groupingModuleEventClient, "parseTxClaimedRewardEvent").returns([
+      stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      stub(groupClient.groupingModuleEventClient, "parseTxClaimedRewardEvent").returns([
         {
           ipId: [mockAddress],
           amount: [100n],
@@ -753,9 +728,7 @@ describe("Test IpAssetClient", () => {
 
   describe("Test groupClient.collectRoyalties", () => {
     it("should throw error when call fails", async () => {
-      sinon
-        .stub(groupClient.groupingModuleClient, "collectRoyalties")
-        .rejects(new Error("rpc error"));
+      stub(groupClient.groupingModuleClient, "collectRoyalties").rejects(new Error("rpc error"));
 
       const result = groupClient.collectRoyalties({
         groupIpId: mockAddress,
@@ -765,17 +738,18 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call successfully", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
-      sinon
-        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
-        .returns([
-          {
-            groupId: mockAddress,
-            amount: 100n,
-            token: mockAddress,
-            pool: mockAddress,
-          },
-        ]);
+      stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
+      stub(
+        groupClient.groupingModuleEventClient,
+        "parseTxCollectedRoyaltiesToGroupPoolEvent",
+      ).returns([
+        {
+          groupId: mockAddress,
+          amount: 100n,
+          token: mockAddress,
+          pool: mockAddress,
+        },
+      ]);
       const result = await groupClient.collectRoyalties({
         groupIpId: mockAddress,
         currencyToken: mockAddress,
@@ -785,17 +759,18 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return additional details", async () => {
-      sinon.stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
-      sinon
-        .stub(groupClient.groupingModuleEventClient, "parseTxCollectedRoyaltiesToGroupPoolEvent")
-        .returns([
-          {
-            groupId: mockAddress,
-            amount: 100n,
-            token: mockAddress,
-            pool: mockAddress,
-          },
-        ]);
+      stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
+      stub(
+        groupClient.groupingModuleEventClient,
+        "parseTxCollectedRoyaltiesToGroupPoolEvent",
+      ).returns([
+        {
+          groupId: mockAddress,
+          amount: 100n,
+          token: mockAddress,
+          pool: mockAddress,
+        },
+      ]);
 
       const result = await groupClient.collectRoyalties({
         groupIpId: mockAddress,

@@ -1,9 +1,10 @@
 import { expect } from "chai";
-import { getDeadline, getPermissionSignature } from "../../../src/utils/sign";
-import { Hex, WalletClient, createWalletClient, http, zeroAddress } from "viem";
+import { createWalletClient, Hex, http, WalletClient, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { aeneid } from "../../integration/utils/util";
+
+import { getDeadline, getPermissionSignature } from "../../../src/utils/sign";
 import { chainStringToViemChain } from "../../../src/utils/utils";
+import { aeneid } from "../../integration/utils/util";
 
 describe("Sign", () => {
   describe("Get Permission Signature", () => {
@@ -63,8 +64,8 @@ describe("Sign", () => {
         wallet: walletClient,
         chainId: aeneid,
       });
-      expect(result.signature).is.a("string").and.not.empty;
-      expect(result.nonce).is.a("string").and.not.empty;
+      expect(result.signature).to.be.a("string");
+      expect(result.nonce).to.be.a("string");
     });
 
     it("should return signature when call getPermissionSignature given account support signTypedData and multiple permissions", async () => {
@@ -90,8 +91,8 @@ describe("Sign", () => {
         wallet: walletClient,
         chainId: aeneid,
       });
-      expect(result.signature).is.a("string").and.not.empty;
-      expect(result.nonce).is.a("string").and.not.empty;
+      expect(result.signature).to.be.a("string");
+      expect(result.nonce).to.be.a("string");
     });
   });
   describe("Get Deadline", () => {

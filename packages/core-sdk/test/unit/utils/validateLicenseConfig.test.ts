@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { zeroAddress, zeroHash } from "viem";
+
 import { validateLicenseConfig } from "../../../src/utils/validateLicenseConfig";
 
 describe("validateLicenseConfig", () => {

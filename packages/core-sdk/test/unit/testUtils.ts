@@ -45,9 +45,9 @@ export const createMockWalletClient = (): WalletClient => {
     account: privateKeyToAccount(privateKey),
   });
   walletClient.writeContract = stub().resolves(txHash);
-  walletClient.signTypedData = stub().resolves({
-    signature: "0x123",
-  });
+  walletClient.signTypedData = stub().resolves(
+    "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+  );
   return walletClient;
 };
 
