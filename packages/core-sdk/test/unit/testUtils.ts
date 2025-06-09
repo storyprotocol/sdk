@@ -1,25 +1,71 @@
 import { randomBytes } from "crypto";
-import sinon from "sinon";
-import { Address, Hex, keccak256 } from "viem";
+
+import { stub } from "sinon";
+import {
+  Address,
+  createPublicClient,
+  createWalletClient,
+  GetBlockReturnType,
+  Hex,
+  http,
+  keccak256,
+  PublicClient,
+  SimulateContractReturnType,
+  WaitForTransactionReceiptReturnType,
+  WalletClient,
+} from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { txHash, walletAddress } from "./mockData";
 
-export function createMock<T>(obj = {}): T {
-  const mockObj: any = obj;
-  mockObj.waitForTransactionReceipt = sinon.stub().resolves({ transactionHash: txHash });
-  mockObj.address = walletAddress;
-  mockObj.multicall = sinon.stub().returns([{ error: "", status: "success" }]);
-  mockObj.getBlock = sinon.stub().resolves({ timestamp: 1629820800n });
-  return mockObj;
-}
+import { mockAddress, privateKey, txHash } from "./mockData";
+import { aeneid } from "../../src";
 
-export function generateRandomHash(): Hex {
-  return keccak256(randomBytes(32));
-}
+export const createMockPublicClient = (): PublicClient => {
+  const publicClient = createPublicClient({
+    chain: aeneid,
+    transport: http(),
+  });
+  publicClient.waitForTransactionReceipt = stub().resolves({
+    transactionHash: txHash,
+  } as unknown as WaitForTransactionReceiptReturnType);
+  publicClient.getBlock = stub().resolves({
+    timestamp: 1629820800n,
+  } as unknown as GetBlockReturnType);
+  publicClient.readContract = stub().resolves(txHash);
+  publicClient.simulateContract = stub().resolves({
+    request: {},
+  } as unknown as SimulateContractReturnType);
+  publicClient.getBalance = stub().resolves(1000n);
+  return publicClient;
+};
 
-export function generateRandomAddress(): Address {
-  const privateKey = generatePrivateKey();
-  const account = privateKeyToAccount(privateKey);
+export const createMockWalletClient = (): WalletClient => {
+  const walletClient = createWalletClient({
+    chain: aeneid,
+    transport: http(),
+    account: privateKeyToAccount(privateKey),
+  });
+  walletClient.writeContract = stub().resolves(txHash);
+  walletClient.signTypedData = stub().resolves({
+    signature: "0x123",
+  });
+  return walletClient;
+};
+
+export const generateRandomHash = (): Hex => keccak256(randomBytes(32));
+
+export const generateRandomAddress = (): Address => {
+  const account = privateKeyToAccount(generatePrivateKey());
   const address = account.address;
   return address;
-}
+};
+
+/**
+ * Create a mock object with a fixed address
+ * @returns A mock object with the given address
+ */
+export const createMockWithAddress = <T extends { address: Address }>(): T => {
+  const mockObj = {
+    address: mockAddress,
+  } as unknown as T;
+  return mockObj;
+};
