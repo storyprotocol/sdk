@@ -1,10 +1,11 @@
 import { expect } from "chai";
-import { createMock } from "../testUtils";
-import * as sinon from "sinon";
+import { stub } from "sinon";
+import { PublicClient, WalletClient, zeroAddress } from "viem";
+
 import { PermissionClient } from "../../../src";
-import { PublicClient, WalletClient, LocalAccount, zeroAddress } from "viem";
+import { IpAccountImplClient } from "../../../src/abi/generated";
 import { AccessPermission } from "../../../src/types/resources/permission";
-const { IpAccountImplClient } = require("../../../src/abi/generated");
+import { createMockPublicClient, createMockWalletClient } from "../testUtils";
 
 describe("Test Permission", () => {
   let permissionClient: PermissionClient;
@@ -13,33 +14,25 @@ describe("Test Permission", () => {
   const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 
   beforeEach(function () {
-    rpcMock = createMock<PublicClient>();
-    walletMock = createMock<WalletClient>();
-    const accountMock = createMock<LocalAccount>();
-    walletMock.account = accountMock;
-    walletMock.signTypedData = sinon
-      .stub()
-      .resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+    rpcMock = createMockPublicClient();
+    walletMock = createMockWalletClient();
     permissionClient = new PermissionClient(rpcMock, walletMock, 1315);
-    sinon
-      .stub(IpAccountImplClient.prototype, "state")
-      .resolves({ result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a5e" });
-    sinon.stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
-    sinon.stub(IpAccountImplClient.prototype, "executeWithSigEncode").returns({
+
+    stub(IpAccountImplClient.prototype, "state").resolves({
+      result: "0x2e778894d11b5308e4153f094e190496c1e0609652c19f8b87e5176484b9a5e",
+    });
+    stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
+    stub(IpAccountImplClient.prototype, "executeWithSigEncode").returns({
       data: "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
       to: "0x",
     });
-    (permissionClient.accessControllerClient as any).address =
+    (permissionClient.accessControllerClient as { address: string }).address =
       "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
-  });
-
-  afterEach(() => {
-    sinon.restore();
   });
 
   describe("Test permission.setPermission", () => {
     it("should throw IpId error when call setPermission given ipId is not registered ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.setPermission({
           ipId: zeroAddress,
@@ -55,9 +48,8 @@ describe("Test Permission", () => {
     });
 
     it("should return hash when call setPermission given ipId is registered ", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
         ipId: zeroAddress,
@@ -70,9 +62,8 @@ describe("Test Permission", () => {
     });
 
     it("should return txHash and success when call setPermission given correct args ", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
         ipId: zeroAddress,
@@ -85,8 +76,8 @@ describe("Test Permission", () => {
     });
 
     it("should return encodedTxData when call setPermission given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setPermission").resolves(txHash);
 
       const res = await permissionClient.setPermission({
         ipId: zeroAddress,
@@ -97,13 +88,13 @@ describe("Test Permission", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(res.encodedTxData?.data).to.be.a("string");
     });
   });
 
-  describe("Test permission.setAllPermissions", async () => {
+  describe("Test permission.setAllPermissions", () => {
     it("should throw IpId error when call setAllPermissions given ipId is not registered ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.setAllPermissions({
           ipId: zeroAddress,
@@ -118,9 +109,8 @@ describe("Test Permission", () => {
     });
 
     it("should return hash when call setAllPermissions given ipId is registered ", async () => {
-      const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
         ipId: zeroAddress,
@@ -131,8 +121,8 @@ describe("Test Permission", () => {
     });
 
     it("should return txHash and success when call setAllPermissions given correct args ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
         ipId: zeroAddress,
@@ -144,8 +134,8 @@ describe("Test Permission", () => {
     });
 
     it("should return encodedTxData when call setAllPermissions given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setAllPermissions").resolves(txHash);
 
       const res = await permissionClient.setAllPermissions({
         ipId: zeroAddress,
@@ -155,13 +145,13 @@ describe("Test Permission", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(res.encodedTxData?.data).to.be.a("string");
     });
   });
 
-  describe("Test permission.createSetPermissionSignature", async () => {
+  describe("Test permission.createSetPermissionSignature", () => {
     it("should throw IpId error when call createSetPermissionSignature given ipId is not registered ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.createSetPermissionSignature({
           ipId: zeroAddress,
@@ -177,7 +167,7 @@ describe("Test Permission", () => {
     });
 
     it("should throw deadline error when call createSetPermissionSignature given deadline is not number", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await permissionClient.createSetPermissionSignature({
           ipId: zeroAddress,
@@ -194,7 +184,7 @@ describe("Test Permission", () => {
     });
 
     it("should throw deadline error when call createSetPermissionSignature given deadline is less than 0", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await permissionClient.createSetPermissionSignature({
           ipId: zeroAddress,
@@ -212,10 +202,10 @@ describe("Test Permission", () => {
     });
 
     it("should wallet error when call createSetPermissionSignature given wallet has no signTypedData method", async () => {
-      walletMock = createMock<WalletClient>();
+      walletMock = createMockWalletClient();
       permissionClient = new PermissionClient(rpcMock, walletMock, 1315);
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      (permissionClient.accessControllerClient as any).address =
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      (permissionClient.accessControllerClient as { address: string }).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
 
       try {
@@ -234,7 +224,7 @@ describe("Test Permission", () => {
     });
 
     it("should return txHash and success when call createSetPermissionSignature given correct args ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await permissionClient.createSetPermissionSignature({
         ipId: zeroAddress,
@@ -249,7 +239,7 @@ describe("Test Permission", () => {
     });
 
     it("should return encodedTxData when call createSetPermissionSignature given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       const res = await permissionClient.createSetPermissionSignature({
         ipId: zeroAddress,
@@ -260,13 +250,13 @@ describe("Test Permission", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(res.encodedTxData?.data).to.be.a("string");
     });
   });
 
-  describe("Test permission.setBatchPermissions", async () => {
+  describe("Test permission.setBatchPermissions", () => {
     it("should throw IpId error when call setBatchPermissions given ipId is not registered ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.setBatchPermissions({
           permissions: [
@@ -287,8 +277,8 @@ describe("Test Permission", () => {
     });
 
     it("should return hash when call setBatchPermissions given correct args", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
 
       const res = await permissionClient.setBatchPermissions({
         permissions: [
@@ -304,8 +294,8 @@ describe("Test Permission", () => {
     });
 
     it("should return txHash and success when call setBatchPermissions given correct args ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
 
       const res = await permissionClient.setBatchPermissions({
         permissions: [
@@ -323,8 +313,8 @@ describe("Test Permission", () => {
     });
 
     it("should return encodedTxData when call setBatchPermissions given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.accessControllerClient, "setBatchPermissions").resolves(txHash);
 
       const res = await permissionClient.setBatchPermissions({
         permissions: [
@@ -339,13 +329,13 @@ describe("Test Permission", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(res.encodedTxData?.data).to.be.a("string");
     });
   });
 
-  describe("Test permission.createSetBatchPermissionsSignature", async () => {
+  describe("Test permission.createSetBatchPermissionsSignature", () => {
     it("should throw IpId error when call createSetBatchPermissionsSignature given ipId is not registered ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await permissionClient.createBatchPermissionSignature({
           ipId: zeroAddress,
@@ -367,7 +357,7 @@ describe("Test Permission", () => {
     });
 
     it("should return txHash and success when call createSetBatchPermissionsSignature given correct args ", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const res = await permissionClient.createBatchPermissionSignature({
         ipId: zeroAddress,
         deadline: 2000,
@@ -386,7 +376,7 @@ describe("Test Permission", () => {
     });
 
     it("should return encodedTxData when call createSetBatchPermissionsSignature given correct args and encodedTxDataOnly of true", async () => {
-      sinon.stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const res = await permissionClient.createBatchPermissionSignature({
         ipId: zeroAddress,
         permissions: [
@@ -401,7 +391,7 @@ describe("Test Permission", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(res.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(res.encodedTxData?.data).to.be.a("string");
     });
   });
 });

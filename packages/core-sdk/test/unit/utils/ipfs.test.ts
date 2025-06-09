@@ -1,5 +1,7 @@
 import { expect } from "chai";
+
 import { convertCIDtoHashIPFS, convertHashIPFStoCID } from "../../../src/utils/ipfs";
+
 describe("IPFS", () => {
   it("should return hash when call convertCIDtoHashIPFS given CID with v0", async () => {
     const result = convertCIDtoHashIPFS("QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR");

@@ -1,24 +1,25 @@
 import { expect } from "chai";
-import { getAssertionDetails, getOov3Contract, settleAssertion } from "../../../src/utils/oov3";
-import { createMock } from "../testUtils";
-import { ArbitrationPolicyUmaClient } from "../../../src/abi/generated";
-import { mockAddress, txHash } from "../mockData";
-import * as sinon from "sinon";
-import { generatePrivateKey } from "viem/accounts";
+import { stub } from "sinon";
 import * as viem from "viem";
+import { generatePrivateKey } from "viem/accounts";
+
+import { ArbitrationPolicyUmaClient } from "../../../src/abi/generated";
+import { getAssertionDetails, getOov3Contract, settleAssertion } from "../../../src/utils/oov3";
+import { mockAddress, txHash } from "../mockData";
+import { createMockPublicClient, createMockWithAddress } from "../testUtils";
 
 describe("oov3", () => {
   let rpcClient: viem.PublicClient;
   let arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient;
 
   beforeEach(() => {
-    rpcClient = createMock<viem.PublicClient>();
-    arbitrationPolicyUmaClient = createMock<ArbitrationPolicyUmaClient>();
-    arbitrationPolicyUmaClient.oov3 = sinon.stub().resolves(mockAddress);
+    rpcClient = createMockPublicClient();
+    arbitrationPolicyUmaClient = createMockWithAddress<ArbitrationPolicyUmaClient>();
+    arbitrationPolicyUmaClient.oov3 = stub().resolves(mockAddress);
   });
 
   it("should get assertion details", async () => {
-    rpcClient.readContract = sinon.stub().resolves({
+    rpcClient.readContract = stub().resolves({
       bond: 1n,
     });
     const assertionDetails = await getAssertionDetails(
@@ -44,6 +45,7 @@ describe("oov3", () => {
       if (originalWalletClient) {
         Object.defineProperty(viem, "createWalletClient", originalWalletClient);
       }
+
       if (originalPublicClient) {
         Object.defineProperty(viem, "createPublicClient", originalPublicClient);
       }
@@ -53,7 +55,7 @@ describe("oov3", () => {
       // It's not possible to stub viem functions, so we need to replace the original functions with stubs.
       Object.defineProperty(viem, "createWalletClient", {
         value: () => ({
-          writeContract: sinon.stub().rejects(new Error("rpc error")),
+          writeContract: stub().rejects(new Error("rpc error")),
         }),
       });
       await expect(settleAssertion(privateKey, 1n)).to.be.rejectedWith(
@@ -65,13 +67,13 @@ describe("oov3", () => {
       // It's not possible to stub viem functions, so we need to replace the original functions with stubs.
       Object.defineProperty(viem, "createWalletClient", {
         value: () => ({
-          writeContract: sinon.stub().resolves(txHash),
+          writeContract: stub().resolves(txHash),
         }),
       });
       Object.defineProperty(viem, "createPublicClient", {
         value: () => ({
-          waitForTransactionReceipt: sinon.stub().resolves(txHash),
-          readContract: sinon.stub().resolves(1n),
+          waitForTransactionReceipt: stub().resolves(txHash),
+          readContract: stub().resolves(1n),
         }),
       });
       const hash = await settleAssertion(privateKey, 1n);

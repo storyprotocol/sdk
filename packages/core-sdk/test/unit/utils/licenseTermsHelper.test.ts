@@ -1,38 +1,40 @@
+import { expect, use } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { restore, SinonStub, stub } from "sinon";
 import { Hex, PublicClient, zeroAddress } from "viem";
+
+import { RoyaltyModuleReadOnlyClient } from "../../../src/abi/generated";
 import { LicenseTerms, PIL_TYPE } from "../../../src/types/resources/license";
 import {
   getLicenseTermByType,
   getRevenueShare,
   validateLicenseTerms,
 } from "../../../src/utils/licenseTermsHelper";
-import chai from "chai";
-import sinon from "sinon";
-import { createMock } from "../testUtils";
-import chaiAsPromised from "chai-as-promised";
-import { RoyaltyModuleReadOnlyClient } from "../../../src/abi/generated";
 import { mockAddress } from "../mockData";
+import { createMockPublicClient } from "../testUtils";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+use(chaiAsPromised);
 
 describe("License Terms Helper", () => {
-  let isWhitelistedRoyaltyTokenStub: sinon.SinonStub;
-  let isWhitelistedRoyaltyPolicyStub: sinon.SinonStub;
+  let isWhitelistedRoyaltyTokenStub: SinonStub;
+  let isWhitelistedRoyaltyPolicyStub: SinonStub;
   beforeEach(() => {
-    isWhitelistedRoyaltyTokenStub = sinon
-      .stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyToken")
-      .resolves(true);
-    isWhitelistedRoyaltyPolicyStub = sinon
-      .stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyPolicy")
-      .resolves(true);
+    isWhitelistedRoyaltyTokenStub = stub(
+      RoyaltyModuleReadOnlyClient.prototype,
+      "isWhitelistedRoyaltyToken",
+    ).resolves(true);
+    isWhitelistedRoyaltyPolicyStub = stub(
+      RoyaltyModuleReadOnlyClient.prototype,
+      "isWhitelistedRoyaltyPolicy",
+    ).resolves(true);
   });
 
   afterEach(() => {
-    sinon.restore();
+    restore();
   });
 
   describe("getLicenseTermByType", () => {
-    it("it should return no commercial license terms when call getLicenseTermByType given NON_COMMERCIAL_REMIX", async () => {
+    it("it should return no commercial license terms when call getLicenseTermByType given NON_COMMERCIAL_REMIX", () => {
       const result = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
       expect(result).to.deep.include({
         transferable: true,
@@ -56,13 +58,13 @@ describe("License Terms Helper", () => {
     });
 
     describe("Get Commercial License Terms", () => {
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without terms", async () => {
+      it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without terms", () => {
         expect(() => getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE)).to.throw(
           "DefaultMintingFee, currency are required for commercial use PIL.",
         );
       });
 
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without mintFee", async () => {
+      it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without mintFee", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
             currency: zeroAddress,
@@ -71,7 +73,7 @@ describe("License Terms Helper", () => {
         ).to.throw("DefaultMintingFee, currency are required for commercial use PIL.");
       });
 
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without currency", async () => {
+      it("it should throw when call getLicenseTermByType given COMMERCIAL_USE without currency", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
             royaltyPolicyAddress: zeroAddress,
@@ -80,7 +82,7 @@ describe("License Terms Helper", () => {
         ).to.throw("DefaultMintingFee, currency are required for commercial use PIL.");
       });
 
-      it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_USE and correct args", async () => {
+      it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_USE and correct args", () => {
         const result = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
           royaltyPolicyAddress: zeroAddress,
           defaultMintingFee: "1",
@@ -109,13 +111,13 @@ describe("License Terms Helper", () => {
     });
 
     describe("Get Commercial remix License Terms", () => {
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without terms", async () => {
+      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without terms", () => {
         expect(() => getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX)).to.throw(
           "MintingFee, currency and commercialRevShare are required for commercial remix PIL.",
         );
       });
 
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without mintFee", async () => {
+      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without mintFee", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             currency: zeroAddress,
@@ -127,7 +129,7 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without currency", async () => {
+      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without currency", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: zeroAddress,
@@ -139,7 +141,7 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without commercialRevShare ", async () => {
+      it("it should throw when call getLicenseTermByType given COMMERCIAL_REMIX without commercialRevShare ", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: "wrong" as Hex,
@@ -151,7 +153,7 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_REMIX and correct args", async () => {
+      it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_REMIX and correct args", () => {
         const result = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
           royaltyPolicyAddress: zeroAddress,
           defaultMintingFee: "1",
@@ -178,7 +180,7 @@ describe("License Terms Helper", () => {
           uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
         });
       });
-      it("it throw commercialRevShare error when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is less than 0 ", async () => {
+      it("it throw commercialRevShare error when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is less than 0 ", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: zeroAddress,
@@ -189,7 +191,7 @@ describe("License Terms Helper", () => {
         ).to.throw(`CommercialRevShare must be between 0 and 100.`);
       });
 
-      it("it throw commercialRevShare error  when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is greater than 100", async () => {
+      it("it throw commercialRevShare error  when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is greater than 100", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: zeroAddress,
@@ -200,7 +202,7 @@ describe("License Terms Helper", () => {
         ).to.throw(`CommercialRevShare must be between 0 and 100.`);
       });
 
-      it("it get commercialRevShare correct value when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is 10", async () => {
+      it("it get commercialRevShare correct value when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is 10", () => {
         const result = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
           royaltyPolicyAddress: zeroAddress,
           defaultMintingFee: "1",
@@ -214,7 +216,7 @@ describe("License Terms Helper", () => {
     });
 
     describe("Get Creative Commons Attribution License Terms", () => {
-      it("should throw error when call getLicenseTermByType given CREATIVE_COMMONS_ATTRIBUTION without currency", async () => {
+      it("should throw error when call getLicenseTermByType given CREATIVE_COMMONS_ATTRIBUTION without currency", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
             royaltyPolicyAddress: mockAddress,
@@ -224,13 +226,13 @@ describe("License Terms Helper", () => {
         );
       });
 
-      it("should throw error when call getLicenseTermByType without args", async () => {
+      it("should throw error when call getLicenseTermByType without args", () => {
         expect(() => getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION)).to.throw(
           "royaltyPolicyAddress and currency are required for creative commons attribution PIL.",
         );
       });
 
-      it("should return creative commons attribution license terms when given correct args", async () => {
+      it("should return creative commons attribution license terms when given correct args", () => {
         const result = getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
           royaltyPolicyAddress: mockAddress,
           currency: mockAddress,
@@ -261,7 +263,7 @@ describe("License Terms Helper", () => {
   describe("validateLicenseTerms", () => {
     let rpcMock: PublicClient;
     beforeEach(() => {
-      rpcMock = createMock<PublicClient>();
+      rpcMock = createMockPublicClient();
     });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
@@ -540,21 +542,21 @@ describe("License Terms Helper", () => {
   });
 
   describe("getRevenueShare", () => {
-    it("should throw error when call getRevenueShare given revShare is not a number", async () => {
+    it("should throw error when call getRevenueShare given revShare is not a number", () => {
       expect(() => getRevenueShare("not a number")).to.throw(
         "CommercialRevShare must be a valid number.",
       );
     });
 
-    it("should throw error when call getRevenueShare given revShare is less than 0", async () => {
+    it("should throw error when call getRevenueShare given revShare is less than 0", () => {
       expect(() => getRevenueShare(-1)).to.throw("CommercialRevShare must be between 0 and 100.");
     });
 
-    it("should throw error when call getRevenueShare given revShare is greater than 100", async () => {
+    it("should throw error when call getRevenueShare given revShare is greater than 100", () => {
       expect(() => getRevenueShare(101)).to.throw("CommercialRevShare must be between 0 and 100.");
     });
 
-    it("should return correct value when call getRevenueShare given revShare is 10", async () => {
+    it("should return correct value when call getRevenueShare given revShare is 10", () => {
       expect(getRevenueShare(10)).to.equal(10000000);
     });
   });

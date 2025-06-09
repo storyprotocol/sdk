@@ -1,7 +1,9 @@
 import { expect } from "chai";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { createWalletClient, http, Transport } from "viem";
-import { StoryClient, StoryConfig, aeneid } from "../../src/index";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+
+import { aeneid, StoryClient, StoryConfig } from "../../src/index";
+
 const rpc = "http://127.0.0.1:8545";
 
 describe("Test StoryClient", () => {
@@ -17,7 +19,7 @@ describe("Test StoryClient", () => {
     it("should throw transport error when transport field is missing", () => {
       expect(() => {
         StoryClient.newClient({
-          transport: null as any as Transport,
+          transport: null as unknown as Transport,
           account: privateKeyToAccount(generatePrivateKey()),
         });
       }).to.throw("transport is null, please pass in a valid RPC Provider URL as the transport.");

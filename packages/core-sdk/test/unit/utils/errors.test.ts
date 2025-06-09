@@ -1,4 +1,5 @@
 import { expect } from "chai";
+
 import { handleError } from "../../../src/utils/errors";
 
 describe("Test handleError", () => {
