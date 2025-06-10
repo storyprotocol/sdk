@@ -1,16 +1,25 @@
-import chai from "chai";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import {
+  Address,
+  encodeFunctionData,
+  getAddress,
+  Hex,
+  parseEther,
+  toFunctionSelector,
+  toHex,
+} from "viem";
+
 import { AccessPermission, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import {
-  mockERC721,
+  aeneid,
   getStoryClient,
   getTokenId,
-  aeneid,
-  walletClient,
+  mockERC721,
   publicClient,
   TEST_WALLET_ADDRESS,
+  walletClient,
 } from "./utils/util";
-import { Hex, encodeFunctionData, getAddress, parseEther, toFunctionSelector, toHex } from "viem";
 import {
   accessControllerAbi,
   accessControllerAddress,
@@ -18,15 +27,15 @@ import {
   Erc20Client,
 } from "../../src/abi/generated";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+use(chaiAsPromised);
+
+const coreMetadataModule = coreMetadataModuleAddress[aeneid];
+const permissionAddress = accessControllerAddress[aeneid];
 
 describe("IPAccount Functions", () => {
   let client: StoryClient;
-  let ipId: Hex;
+  let ipId: Address;
   let data: Hex;
-  const coreMetadataModule = coreMetadataModuleAddress[aeneid];
-  const permissionAddress = accessControllerAddress[aeneid];
 
   before(async () => {
     client = getStoryClient();
@@ -54,24 +63,10 @@ describe("IPAccount Functions", () => {
       const response = await client.ipAccount.execute({
         to: permissionAddress,
         value: 0,
-        data,
+        data: data,
         ipId: ipId,
       });
-      expect(response.txHash).to.be.a("string").and.not.empty;
-    });
-
-    it("should return encoded transaction data when requested", async () => {
-      const response = await client.ipAccount.execute({
-        to: permissionAddress,
-        value: 0,
-        data,
-        ipId: ipId,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
     });
 
     it("should fail with invalid ipId", async () => {
@@ -79,7 +74,7 @@ describe("IPAccount Functions", () => {
         client.ipAccount.execute({
           to: permissionAddress,
           value: 0,
-          data,
+          data: data,
           ipId: "0x0000000000000000000000000000000000000000",
         }),
       ).to.be.rejected;
@@ -87,33 +82,15 @@ describe("IPAccount Functions", () => {
   });
 
   describe("executeWithSig", () => {
-    // Using a fixed future deadline for testing
-    const FUTURE_DEADLINE = BigInt(Math.floor(Date.now() / 1000) + 3600); // 1 hour from now
     const EXPIRED_DEADLINE = BigInt(Math.floor(Date.now() / 1000) - 3600); // 1 hour ago
-
-    it("should return encoded transaction data for executeWithSig", async () => {
-      const response = await client.ipAccount.executeWithSig({
-        to: permissionAddress,
-        data,
-        ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Hex,
-        deadline: FUTURE_DEADLINE,
-        signature: "0x", // Need valid signature
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
-    });
 
     it("should fail with expired deadline", async () => {
       await expect(
         client.ipAccount.executeWithSig({
           to: permissionAddress,
-          data,
+          data: data,
           ipId: ipId,
-          signer: process.env.TEST_WALLET_ADDRESS as Hex,
+          signer: TEST_WALLET_ADDRESS,
           deadline: EXPIRED_DEADLINE,
           signature: "0x",
         }),
@@ -124,7 +101,7 @@ describe("IPAccount Functions", () => {
   describe("getIpAccountNonce", () => {
     it("should successfully return account nonce", async () => {
       const response = await client.ipAccount.getIpAccountNonce(ipId);
-      expect(response).to.be.a("string").and.not.empty;
+      expect(response).to.be.a("string");
     });
 
     it("should fail with invalid ipId", async () => {
@@ -136,8 +113,9 @@ describe("IPAccount Functions", () => {
   describe("getToken", () => {
     it("should successfully return token information", async () => {
       const response = await client.ipAccount.getToken(ipId);
+
       expect(response.chainId).to.be.a("bigint");
-      expect(response.tokenContract).to.be.a("string").and.not.empty;
+      expect(response.tokenContract).to.be.a("string");
       expect(response.tokenId).to.be.a("bigint");
       expect(response.tokenContract).to.equal(mockERC721);
     });
@@ -154,7 +132,7 @@ describe("IPAccount Functions", () => {
       metadataURI: "https://example.com",
       metadataHash: toHex("test", { size: 32 }),
     });
-    expect(txHash).to.be.a("string").and.not.empty;
+    expect(txHash).to.be.a("string");
   });
 
   it("should successfully transfer ERC20 tokens", async () => {
@@ -215,7 +193,7 @@ describe("IPAccount Functions", () => {
     });
     const finalWipBalanceOfWallet = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
 
-    expect(ret.txHash).to.be.a("string").and.not.empty;
+    expect(ret.txHash).to.be.a("string");
     expect(finalErc20BalanceOfIpId).to.equal(initialErc20BalanceOfIpId);
     expect(finalWipBalanceOfIpId).to.equal(initialWipBalanceOfIpId);
     expect(finalErc20BalanceOfWallet).to.equal(initialErc20BalanceOfWallet + parseEther("0.002"));

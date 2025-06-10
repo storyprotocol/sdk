@@ -1,24 +1,22 @@
-import chai from "chai";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { parseEther } from "viem";
+
 import { StoryClient } from "../../src";
 import { getStoryClient, TEST_WALLET_ADDRESS } from "./utils/util";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+use(chaiAsPromised);
 
 describe("WIP Functions", () => {
   let client: StoryClient;
 
-  before(async () => {
+  before(() => {
     client = getStoryClient();
   });
 
   describe("deposit", () => {
-    const ipAmtStr = "0.01";
-    const ipAmt = parseEther(ipAmtStr);
-
-    it(`should deposit ${ipAmtStr} WIP`, async () => {
+    it(`should deposit 0.01 WIP`, async () => {
+      const ipAmt = parseEther("0.01");
       const balanceBefore = await client.getWalletBalance();
       const wipBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const rsp = await client.wipClient.deposit({

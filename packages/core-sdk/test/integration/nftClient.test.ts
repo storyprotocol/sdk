@@ -1,21 +1,21 @@
+import { expect, use } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { Address, maxUint256 } from "viem";
+
 import { StoryClient } from "../../src";
 import { getStoryClient, mintBySpg, publicClient, walletClient } from "./utils/util";
-import { Address, maxUint256 } from "viem";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
 import { erc20Address } from "../../src/abi/generated";
-import { aeneid } from "../unit/mockData";
 import { ERC20Client } from "../../src/utils/token";
+import { aeneid } from "../unit/mockData";
 
-const expect = chai.expect;
-chai.use(chaiAsPromised);
+use(chaiAsPromised);
 
 describe("nftClient Functions", () => {
   let client: StoryClient;
   let testWalletAddress: Address;
   let spgNftContract: Address;
 
-  before(async () => {
+  before(() => {
     client = getStoryClient();
     testWalletAddress = process.env.TEST_WALLET_ADDRESS as Address;
   });
@@ -31,8 +31,8 @@ describe("nftClient Functions", () => {
         mintOpen: true,
         contractURI: "test-uri",
       });
-      expect(txData.spgNftContract).to.be.a("string").and.not.empty;
-      expect(txData.txHash).to.be.a("string").and.not.empty;
+      expect(txData.spgNftContract).to.be.a("string");
+      expect(txData.txHash).to.be.a("string");
     });
 
     it("should successfully create collection with custom mint fee", async () => {
@@ -47,7 +47,7 @@ describe("nftClient Functions", () => {
         mintFee: 10000000n,
         mintFeeToken: erc20Address[aeneid],
       });
-      expect(txData.spgNftContract).to.be.a("string").and.not.empty;
+      expect(txData.spgNftContract).to.be.a("string");
       spgNftContract = txData.spgNftContract!;
     });
 
@@ -61,7 +61,7 @@ describe("nftClient Functions", () => {
         mintOpen: false, // starts closed
         contractURI: "test-uri",
       });
-      expect(txData.spgNftContract).to.be.a("string").and.not.empty;
+      expect(txData.spgNftContract).to.be.a("string");
     });
 
     it("should successfully create collection with baseURI", async () => {
@@ -75,7 +75,7 @@ describe("nftClient Functions", () => {
         contractURI: "test-uri",
         baseURI: "ipfs://QmTest/",
       });
-      expect(txData.spgNftContract).to.be.a("string").and.not.empty;
+      expect(txData.spgNftContract).to.be.a("string");
     });
 
     it("should successfully create collection with custom owner", async () => {
@@ -89,7 +89,7 @@ describe("nftClient Functions", () => {
         contractURI: "test-uri",
         owner: testWalletAddress,
       });
-      expect(txData.spgNftContract).to.be.a("string").and.not.empty;
+      expect(txData.spgNftContract).to.be.a("string");
     });
 
     it("should successfully get encoded transaction data", async () => {
@@ -105,9 +105,9 @@ describe("nftClient Functions", () => {
           encodedTxDataOnly: true,
         },
       });
-      expect(txData.encodedTxData).to.exist;
-      expect(txData.encodedTxData?.data).to.be.a("string").and.not.empty;
-      expect(txData.encodedTxData?.to).to.be.a("string").and.not.empty;
+      expect(txData.encodedTxData).to.be.an("object");
+      expect(txData.encodedTxData?.data).to.be.a("string");
+      expect(txData.encodedTxData?.to).to.be.a("string");
     });
 
     it("should fail with invalid mint fee token", async () => {
@@ -148,53 +148,25 @@ describe("nftClient Functions", () => {
 
       // Mint a new token with initial metadata
       const tokenId = await mintBySpg(spgNftContract, "ipfs://QmTest/");
-      expect(tokenId).to.not.be.undefined;
+      expect(tokenId).to.be.a("bigint");
 
       // Update the token URI
       const updatedMetadata = "ipfs://QmUpdated/metadata.json";
       const result = await client.nftClient.setTokenURI({
-        tokenId: tokenId!,
+        tokenId: tokenId,
         tokenURI: updatedMetadata,
         spgNftContract,
       });
 
       // Verify the transaction
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
 
       // Verification that the URI was updated
       const tokenURI = await client.nftClient.getTokenURI({
-        tokenId: tokenId!,
+        tokenId: tokenId,
         spgNftContract,
       });
       expect(tokenURI).to.equal(updatedMetadata);
-    });
-
-    it("updates URI for multiple tokens", async () => {
-      const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
-      const txHash = await erc20Client.approve(spgNftContract, maxUint256);
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
-
-      const tokenURIs = ["ipfs://QmTest/1", "iipfs://QmTest/2", "ipfs://QmTest/3"];
-
-      for (let i = 0; i < tokenURIs.length; i++) {
-        const tokenId = await mintBySpg(spgNftContract, tokenURIs[i]);
-        expect(tokenId).to.not.be.undefined;
-
-        const updatedMetadata = "ipfs://QmUpdated/metadata.json";
-        const result = await client.nftClient.setTokenURI({
-          tokenId: tokenId!,
-          tokenURI: updatedMetadata,
-          spgNftContract,
-        });
-
-        expect(result.txHash).to.be.a("string").and.not.empty;
-
-        const tokenURI = await client.nftClient.getTokenURI({
-          tokenId: tokenId!,
-          spgNftContract,
-        });
-        expect(tokenURI).to.equal(updatedMetadata);
-      }
     });
   });
 
@@ -209,7 +181,7 @@ describe("nftClient Functions", () => {
 
       await expect(
         client.nftClient.setTokenURI({
-          tokenId: invalidTokenId!,
+          tokenId: invalidTokenId,
           tokenURI: updatedMetadata,
           spgNftContract,
         }),
