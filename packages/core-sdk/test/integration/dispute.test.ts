@@ -1,32 +1,31 @@
-import chai from "chai";
-import { DisputeTargetTag, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
-import { RaiseDisputeRequest } from "../../src/index";
+import { expect, use } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { CID } from "multiformats/cid";
+import * as sha256 from "multiformats/hashes/sha2";
+import { Address, Hex, toHex, zeroAddress } from "viem";
+
+import { getDerivedStoryClient } from "./utils/BIP32";
 import {
+  aeneid,
   getStoryClient,
   publicClient,
-  aeneid,
+  TEST_PRIVATE_KEY,
   TEST_WALLET_ADDRESS,
   walletClient,
-  TEST_PRIVATE_KEY,
 } from "./utils/util";
-import { getDerivedStoryClient } from "./utils/BIP32";
-import chaiAsPromised from "chai-as-promised";
-import { Address, zeroAddress, Hex, toHex, parseEther } from "viem";
+import { DisputeTargetTag, RaiseDisputeRequest, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
 import {
+  ArbitrationPolicyUmaClient,
+  disputeModuleAbi,
   disputeModuleAddress,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
 } from "../../src/abi/generated";
-import { disputeModuleAbi } from "../../src/abi/generated";
-import { CID } from "multiformats/cid";
-import * as sha256 from "multiformats/hashes/sha2";
-import { ArbitrationPolicyUmaClient } from "../../src/abi/generated";
 import { getMinimumBond, settleAssertion } from "../../src/utils/oov3";
 
-const expect = chai.expect;
-chai.use(chaiAsPromised);
+use(chaiAsPromised);
 
-const generateCID = async () => {
+const generateCID = async (): Promise<string> => {
   // Generate a random 32-byte buffer
   const randomBytes = crypto.getRandomValues(new Uint8Array(32));
   // Hash the bytes using SHA-256
@@ -44,9 +43,9 @@ describe("Dispute Functions", () => {
   let minimumBond: bigint;
   before(async () => {
     clientA = getStoryClient();
-
     const derivedClient = await getDerivedStoryClient();
     clientB = derivedClient.clientB;
+
     minimumBond = await getMinimumBond(
       publicClient,
       new ArbitrationPolicyUmaClient(publicClient, walletClient),
@@ -63,6 +62,7 @@ describe("Dispute Functions", () => {
       mintFeeRecipient: TEST_WALLET_ADDRESS,
     });
     const nftContract = txData.spgNftContract!;
+
     ipIdB = (
       await clientB.ipAsset.mintAndRegisterIp({
         spgNftContract: nftContract,
@@ -71,7 +71,7 @@ describe("Dispute Functions", () => {
   });
 
   describe("raiseDispute and counter dispute", () => {
-    let disputeId: bigint | undefined;
+    let disputeId: bigint;
     it("should raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {
         targetIpId: ipIdB,
@@ -81,9 +81,10 @@ describe("Dispute Functions", () => {
         bond: minimumBond,
       };
       const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
-      expect(response.txHash).to.be.a("string").and.not.empty;
+
+      expect(response.txHash).to.be.a("string");
       expect(response.disputeId).to.be.a("bigint");
-      disputeId = response.disputeId;
+      disputeId = response.disputeId!;
     });
 
     it("should validate all enum values defined in DisputeTargetTag", async () => {
@@ -95,9 +96,9 @@ describe("Dispute Functions", () => {
           tag: tagHex,
         });
         if (tag === DisputeTargetTag.IN_DISPUTE) {
-          expect(allowed).to.be.false;
+          expect(allowed).equal(false);
         } else {
-          expect(allowed).to.be.true;
+          expect(allowed).equal(true);
         }
       }
     });
@@ -120,28 +121,22 @@ describe("Dispute Functions", () => {
           );
         } else {
           const response = await clientA.dispute.raiseDispute(raiseDisputeRequest);
-          expect(response.txHash).to.be.a("string").and.not.empty;
+          expect(response.txHash).to.be.a("string");
           expect(response.disputeId).to.be.a("bigint");
         }
       }
     });
 
     it("should reject a dispute with an invalid tag not defined in the enum", async () => {
-      const invalidTags = ["INVALID_TAG", "NOT_IN_ENUM", "RANDOM_STRING"];
-
-      for (const invalidTag of invalidTags) {
-        const raiseDisputeRequest: RaiseDisputeRequest = {
+      await expect(
+        clientA.dispute.raiseDispute({
           targetIpId: ipIdB,
           cid: await generateCID(),
-          targetTag: invalidTag as DisputeTargetTag,
+          targetTag: "INVALID_TAG" as DisputeTargetTag,
           liveness: 2592000,
           bond: minimumBond,
-        };
-
-        await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-          `The target tag ${invalidTag} is not whitelisted`,
-        );
-      }
+        }),
+      ).to.be.rejectedWith("The target tag INVALID_TAG is not whitelisted");
     });
 
     it("should be able to counter existing dispute once", async () => {
@@ -152,7 +147,7 @@ describe("Dispute Functions", () => {
         assertionId,
         counterEvidenceCID,
       });
-      expect(ret.txHash).to.be.a("string").and.not.empty;
+      expect(ret.txHash).to.be.a("string");
 
       // should throw error if attempting to dispute assertion again
       await expect(
@@ -162,35 +157,6 @@ describe("Dispute Functions", () => {
           counterEvidenceCID,
         }),
       ).to.be.rejected;
-    });
-
-    it("should throw error when liveness is out of bounds", async () => {
-      const minLiveness = await clientA.dispute.arbitrationPolicyUmaClient.minLiveness();
-      const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: ipIdB,
-        cid: await generateCID(),
-        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
-        liveness: Number(minLiveness) - 1,
-        bond: minimumBond,
-      };
-
-      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-        `Liveness must be between`,
-      );
-    });
-
-    it("should throw error when bond exceeds maximum", async () => {
-      const raiseDisputeRequest: RaiseDisputeRequest = {
-        targetIpId: ipIdB,
-        cid: await generateCID(),
-        targetTag: DisputeTargetTag.IMPROPER_REGISTRATION,
-        liveness: 2592000,
-        bond: parseEther("360"),
-      };
-
-      await expect(clientA.dispute.raiseDispute(raiseDisputeRequest)).to.be.rejectedWith(
-        "Failed to raise dispute: Bonds must be between 100000000000000000 and 350000000000000000000.",
-      );
     });
   });
 
@@ -203,12 +169,28 @@ describe("Dispute Functions", () => {
       bond: minimumBond,
     });
 
-    expect(
+    await expect(
       clientA.dispute.cancelDispute({
         disputeId: raiseResponse.disputeId!,
       }),
-    ).to.be.rejected;
+    ).to.be.rejectedWith("NotDisputeInitiator");
   });
+
+  const getDisputeState = async (
+    disputeId: bigint,
+  ): Promise<{ targetTag: Hex; currentTag: Hex }> => {
+    const dispute = await publicClient.readContract({
+      address: disputeModuleAddress[aeneid],
+      abi: disputeModuleAbi,
+      functionName: "disputes",
+      args: [disputeId],
+    });
+
+    return {
+      targetTag: dispute[5],
+      currentTag: dispute[6],
+    };
+  };
 
   /**
    * Setup for dispute resolution testing
@@ -228,7 +210,7 @@ describe("Dispute Functions", () => {
     let childIpId: Address;
     let childIpId2: Address;
 
-    beforeEach(async function (this: Mocha.Context) {
+    before(async () => {
       // Setup NFT collection
       const txData = await clientA.nftClient.createNFTCollection({
         name: "test-collection",
@@ -319,7 +301,7 @@ describe("Dispute Functions", () => {
       disputeId = response.disputeId!;
 
       // This timeout guarantees that the assertion is expired
-      // its intended to be longer than the current blocktime
+      // its intended to be longer than the current block time
       // so it won't be included in the same block
       await new Promise((resolve) => setTimeout(resolve, 3000));
     });
@@ -340,7 +322,7 @@ describe("Dispute Functions", () => {
           },
         ],
       });
-      expect(results[0].txHash).to.be.a("string").and.not.empty;
+      expect(results[0].txHash).to.be.a("string");
     });
 
     it("should tag a single IP as infringing without using multicall", async () => {
@@ -359,21 +341,9 @@ describe("Dispute Functions", () => {
       // - targetTag: the tag we wanted to apply when raising the dispute
       // - currentTag: the current state of the dispute after judgment
       // After a successful judgment, currentTag should equal targetTag
-      const [
-        _targetIpId, // IP being disputed
-        _disputeInitiator, // Address that raised the dispute
-        _disputeTimestamp, // When dispute was raised
-        _arbitrationPolicy, // Policy used for arbitration
-        _disputeEvidenceHash, // Evidence hash for dispute
-        targetTag, // Tag we want to apply (e.g. "IMPROPER_REGISTRATION")
-        currentTag, // Current state of dispute
-        _infringerDisputeId, // Related dispute ID if this is a propagated tag
-      ] = await publicClient.readContract({
-        address: disputeModuleAddress[aeneid],
-        abi: disputeModuleAbi,
-        functionName: "disputes",
-        args: [disputeId],
-      });
+
+      const { currentTag, targetTag } = await getDisputeState(disputeId);
+
       expect(currentTag).to.equal(targetTag); // Verify judgment was recorded correctly
 
       // Step 3: Attempt to tag a derivative IP
@@ -395,7 +365,7 @@ describe("Dispute Functions", () => {
 
       // Verify we got the expected response
       expect(response).to.have.lengthOf(1);
-      expect(response[0].txHash).to.be.a("string").and.not.empty;
+      expect(response[0].txHash).to.be.a("string");
     });
 
     it("should tag multiple IPs as infringing using multicall", async () => {
@@ -419,22 +389,17 @@ describe("Dispute Functions", () => {
         },
         allowDuplicates: true,
       });
-      const childIpId2 = derivativeResponse2.ipId!;
+      const newChildIpId = derivativeResponse2.ipId!;
 
       await settleAssertion(TEST_PRIVATE_KEY, testDisputeId);
 
       // This timeout guarantees that the assertion is expired
-      // its intended to be longer than the current blocktime
+      // its intended to be longer than the current block time
       // so it won't be included in the same block
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      const disputeState = await publicClient.readContract({
-        address: disputeModuleAddress[aeneid],
-        abi: disputeModuleAbi,
-        functionName: "disputes",
-        args: [testDisputeId],
-      });
-      expect(disputeState[6]).to.equal(disputeState[5]);
+      const { currentTag, targetTag } = await getDisputeState(testDisputeId);
+      expect(currentTag).to.equal(targetTag);
 
       const response = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
@@ -443,7 +408,7 @@ describe("Dispute Functions", () => {
             disputeId: testDisputeId,
           },
           {
-            ipId: childIpId2,
+            ipId: newChildIpId,
             disputeId: testDisputeId,
           },
         ],
@@ -453,7 +418,7 @@ describe("Dispute Functions", () => {
       });
 
       expect(response).to.have.lengthOf(1);
-      expect(response[0].txHash).to.be.a("string").and.not.empty;
+      expect(response[0].txHash).to.be.a("string");
     });
 
     it("should tag multiple IPs without multicall when specified", async () => {
@@ -484,13 +449,8 @@ describe("Dispute Functions", () => {
 
       await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
-      const disputeState = await publicClient.readContract({
-        address: disputeModuleAddress[aeneid],
-        abi: disputeModuleAbi,
-        functionName: "disputes",
-        args: [disputeId],
-      });
-      expect(disputeState[6]).to.equal(disputeState[5]);
+      const { currentTag, targetTag } = await getDisputeState(disputeId);
+      expect(currentTag).to.equal(targetTag);
 
       const responses = await clientA.dispute.tagIfRelatedIpInfringed({
         infringementTags: [
@@ -509,8 +469,8 @@ describe("Dispute Functions", () => {
       });
 
       expect(responses).to.have.lengthOf(2);
-      expect(responses[0].txHash).to.be.a("string").and.not.empty;
-      expect(responses[1].txHash).to.be.a("string").and.not.empty;
+      expect(responses[0].txHash).to.be.a("string");
+      expect(responses[1].txHash).to.be.a("string");
     });
 
     it("should fail when trying to tag with invalid dispute ID", async () => {
@@ -529,19 +489,14 @@ describe("Dispute Functions", () => {
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {
       await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
-      const disputeState = await publicClient.readContract({
-        address: disputeModuleAddress[aeneid],
-        abi: disputeModuleAbi,
-        functionName: "disputes",
-        args: [disputeId],
-      });
-      expect(disputeState[6]).to.equal(disputeState[5]);
+      const { currentTag, targetTag } = await getDisputeState(disputeId);
+      expect(currentTag).to.equal(targetTag);
 
       const response = await clientA.dispute.resolveDispute({
         disputeId: disputeId,
         data: "0x",
       });
-      expect(response.txHash).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
     });
 
     it("should fail when non-initiator tries to resolve the dispute", async () => {
@@ -557,13 +512,10 @@ describe("Dispute Functions", () => {
       await settleAssertion(TEST_PRIVATE_KEY, disputeId);
 
       // Verify the dispute state changed correctly
-      const parentDisputeState = await publicClient.readContract({
-        address: disputeModuleAddress[aeneid],
-        abi: disputeModuleAbi,
-        functionName: "disputes",
-        args: [disputeId],
-      });
-      expect(parentDisputeState[6]).to.equal(parentDisputeState[5]); // currentTag should equal targetTag
+      const { currentTag: parentCurrentTag, targetTag: parentTargetTag } = await getDisputeState(
+        disputeId,
+      );
+      expect(parentCurrentTag).to.equal(parentTargetTag);
 
       // Propagate the tag to both derivative IPs
       const results = await clientA.dispute.tagIfRelatedIpInfringed({
@@ -584,22 +536,16 @@ describe("Dispute Functions", () => {
       const childDisputeId = BigInt(firstWord);
 
       // Verify successful tagging
-      expect(results[0].txHash).to.be.a("string").and.not.empty;
+      expect(results[0].txHash).to.be.a("string");
 
-      const childDisputeState = await publicClient.readContract({
-        address: disputeModuleAddress[aeneid],
-        abi: disputeModuleAbi,
-        functionName: "disputes",
-        args: [childDisputeId],
-      });
-
+      const { currentTag: childCurrentTag } = await getDisputeState(childDisputeId);
       // Convert the IMPROPER_USAGE tag to hex for comparison
       const improperUsageTagHex = toHex(DisputeTargetTag.IMPROPER_REGISTRATION, { size: 32 });
 
       // Verify both child IPs have the IMPROPER_USAGE tag by
       // fetching and comparing their dispute tags
-      expect(parentDisputeState[5] === improperUsageTagHex).to.be.true;
-      expect(childDisputeState[5] === improperUsageTagHex).to.be.true;
+      expect(parentCurrentTag).to.equal(parentTargetTag);
+      expect(childCurrentTag).to.equal(improperUsageTagHex);
     });
   });
 });

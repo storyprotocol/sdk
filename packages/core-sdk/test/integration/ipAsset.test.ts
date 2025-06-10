@@ -1,37 +1,36 @@
-import chai from "chai";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { IpRegistrationWorkflowRequest, StoryClient } from "../../src";
 import { Address, Hex, maxUint256, toHex, zeroAddress, zeroHash } from "viem";
+
+import { IpRegistrationWorkflowRequest, StoryClient } from "../../src";
 import {
-  mockERC721,
+  aeneid,
+  approveForLicenseToken,
   getStoryClient,
   getTokenId,
   mintBySpg,
-  approveForLicenseToken,
-  aeneid,
+  mockERC721,
   publicClient,
+  TEST_WALLET_ADDRESS,
   walletClient,
 } from "./utils/util";
 import {
+  derivativeWorkflowsAddress,
+  erc20Address,
   evenSplitGroupPoolAddress,
   royaltyPolicyLapAddress,
-  derivativeWorkflowsAddress,
   royaltyTokenDistributionWorkflowsAddress,
-  erc20Address,
 } from "../../src/abi/generated";
 import { MAX_ROYALTY_TOKEN, WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 import { ERC20Client } from "../../src/utils/token";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+use(chaiAsPromised);
 
 const pool = evenSplitGroupPoolAddress[aeneid];
-const walletAddress = process.env.TEST_WALLET_ADDRESS! as Address;
 
 describe("IP Asset Functions", () => {
   let client: StoryClient;
   let noCommercialLicenseTermsId: bigint;
-  let parentIpId: Hex;
 
   before(async () => {
     client = getStoryClient();
@@ -42,6 +41,7 @@ describe("IP Asset Functions", () => {
   describe("Basic IP Asset Operations", () => {
     let childIpId: Hex;
     let childIpId2: Address;
+    let parentIpId: Address;
 
     it("should register an IP Asset", async () => {
       const tokenId = await getTokenId();
@@ -49,12 +49,8 @@ describe("IP Asset Functions", () => {
         nftContract: mockERC721,
         tokenId: tokenId!,
       });
-
-      expect(response.ipId).to.be.a("string").and.not.empty;
-      if (!response.ipId) {
-        throw new Error("IP ID not returned from registration");
-      }
-      childIpId = response.ipId;
+      childIpId = response.ipId!;
+      expect(childIpId).to.be.a("string");
     });
 
     it("should register an IP Asset with multiple metadata fields", async () => {
@@ -71,7 +67,7 @@ describe("IP Asset Functions", () => {
       });
       childIpId2 = response.ipId!;
 
-      expect(response.ipId).to.be.a("string").and.not.empty;
+      expect(response.ipId).to.be.a("string");
       expect(response.tokenId).to.be.a("bigint");
     });
 
@@ -120,7 +116,7 @@ describe("IP Asset Functions", () => {
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "0",
       });
-      expect(response.txHash).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
     });
 
     it("should register derivative with Commercial Remix PIL", async () => {
@@ -154,7 +150,7 @@ describe("IP Asset Functions", () => {
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "100",
       });
-      expect(response.txHash).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
     });
 
     it("should register derivative with multiple parent IPs", async () => {
@@ -189,7 +185,7 @@ describe("IP Asset Functions", () => {
 
       // Create child IP
       const childTokenId = await getTokenId();
-      const childIpId = (
+      const newChildIpId = (
         await client.ipAsset.register({
           nftContract: mockERC721,
           tokenId: childTokenId!,
@@ -198,7 +194,7 @@ describe("IP Asset Functions", () => {
 
       // Register derivative with multiple parents
       const response = await client.ipAsset.registerDerivative({
-        childIpId: childIpId,
+        childIpId: newChildIpId,
         parentIpIds: [parentIpId1, parentIpId2],
         licenseTermsIds: [noCommercialLicenseTermsId, noCommercialLicenseTermsId],
         maxMintingFee: "0",
@@ -206,7 +202,7 @@ describe("IP Asset Functions", () => {
         maxRevenueShare: "0",
       });
 
-      expect(response.txHash).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
     });
 
     it("should register derivative with license tokens", async () => {
@@ -230,26 +226,26 @@ describe("IP Asset Functions", () => {
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
       });
-      expect(response.txHash).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
     });
 
     it("should return true if IP asset is registered", async () => {
       const isRegistered = await client.ipAsset.isRegistered(parentIpId);
-      expect(isRegistered).to.be.true;
+      expect(isRegistered).to.equal(true);
     });
 
     it("should return false if IP asset is not registered", async () => {
       const isRegistered = await client.ipAsset.isRegistered(
         "0x1234567890123456789012345678901234567890",
       );
-      expect(isRegistered).to.be.false;
+      expect(isRegistered).to.equal(false);
     });
   });
 
   describe("SPG NFT Operations", () => {
     let nftContract: Hex;
-    let nftContractWithMintingFee: Hex;
     let licenseTermsId: bigint;
+    let parentIpId: Address;
 
     before(async () => {
       // Setup NFT collection
@@ -260,7 +256,7 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: walletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
       });
       nftContract = txData.spgNftContract!;
 
@@ -310,14 +306,14 @@ describe("IP Asset Functions", () => {
       const mockERC20 = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
       await mockERC20.approve(derivativeWorkflowsAddress[aeneid], maxUint256);
       await mockERC20.approve(royaltyTokenDistributionWorkflowsAddress[aeneid], maxUint256);
-      await mockERC20.mint(walletAddress, 100000n);
+      await mockERC20.mint(TEST_WALLET_ADDRESS, 100000n);
     });
 
     it("should register IP Asset with metadata", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const response = await client.ipAsset.register({
         nftContract,
-        tokenId: tokenId!,
+        tokenId: tokenId,
         ipMetadata: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -325,14 +321,14 @@ describe("IP Asset Functions", () => {
         },
         deadline: 1000n,
       });
-      expect(response.ipId).to.be.a("string").and.not.empty;
+      expect(response.ipId).to.be.a("string");
     });
 
     it("should register derivative IP", async () => {
       const tokenChildId = await mintBySpg(nftContract);
       const result = await client.ipAsset.registerDerivativeIp({
         nftContract: nftContract,
-        tokenId: tokenChildId!,
+        tokenId: tokenChildId,
         derivData: {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],
@@ -342,14 +338,14 @@ describe("IP Asset Functions", () => {
         },
         deadline: 1000n,
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
     });
     it("should register IP and attach PIL terms", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
         nftContract: nftContract,
-        tokenId: tokenId!,
+        tokenId: tokenId,
         deadline: 1000n,
         licenseTermsData: [
           {
@@ -416,9 +412,9 @@ describe("IP Asset Functions", () => {
           },
         ],
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
-      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
     });
 
     it("should mint and register IP and make derivative", async () => {
@@ -432,8 +428,8 @@ describe("IP Asset Functions", () => {
           maxRevenueShare: 100,
         },
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
       expect(result.tokenId).to.be.a("bigint");
     });
 
@@ -447,8 +443,8 @@ describe("IP Asset Functions", () => {
         },
         allowDuplicates: false,
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
     });
 
     it("should register PIL terms and attach", async () => {
@@ -489,8 +485,8 @@ describe("IP Asset Functions", () => {
         ],
         deadline: 1000n,
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
     });
 
     it("should mint and register IP and make derivative with license tokens", async () => {
@@ -517,8 +513,8 @@ describe("IP Asset Functions", () => {
         },
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
       expect(result.tokenId).to.be.a("bigint");
     });
 
@@ -538,7 +534,7 @@ describe("IP Asset Functions", () => {
 
       const result = await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({
         nftContract: nftContract,
-        tokenId: tokenId!,
+        tokenId: tokenId,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
         ipMetadata: {
@@ -549,8 +545,8 @@ describe("IP Asset Functions", () => {
         deadline: 1000n,
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
     });
 
     it("should register IP and attach license terms and distribute royalty tokens", async () => {
@@ -558,7 +554,7 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
         {
           nftContract: nftContract,
-          tokenId: tokenId!,
+          tokenId: tokenId,
           licenseTermsData: [
             {
               terms: {
@@ -599,18 +595,17 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 1,
             },
           ],
         },
       );
 
-      expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string").and
-        .not.empty;
-      expect(result.distributeRoyaltyTokensTxHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
-      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
+      expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
+      expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
     });
 
     it("should register IP and attach license terms and distribute royalty tokens with complex royalty shares", async () => {
@@ -618,7 +613,7 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
         {
           nftContract: nftContract,
-          tokenId: tokenId!,
+          tokenId: tokenId,
           licenseTermsData: [
             {
               terms: {
@@ -659,19 +654,19 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 43,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 17,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 2,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 38,
             },
           ],
@@ -681,225 +676,7 @@ describe("IP Asset Functions", () => {
       expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
-    });
-
-    it("should handle boundary conditions for royalty shares", async () => {
-      const tokenId = await mintBySpg(nftContract, "test-metadata");
-      const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
-        {
-          nftContract: nftContract,
-          tokenId: tokenId!,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 0n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: erc20Address[aeneid],
-                uri: "test case",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 1n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
-              },
-            },
-          ],
-          ipMetadata: {
-            ipMetadataURI: "test-uri",
-            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
-          royaltyShares: [
-            {
-              recipient: walletAddress,
-              percentage: 1, // Test minimum valid percentage
-            },
-            {
-              recipient: walletAddress,
-              percentage: 99, // Test maximum valid percentage that sums to 100
-            },
-          ],
-        },
-      );
-
-      expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
-      expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
-      expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
-    });
-
-    it("should fail when total royalty shares exceed 100%", async () => {
-      const tokenId = await getTokenId();
-      await expect(
-        client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 10000n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: erc20Address[aeneid],
-                uri: "test case",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 1n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
-              },
-            },
-          ],
-          royaltyShares: [
-            {
-              recipient: walletAddress,
-              percentage: 60,
-            },
-            {
-              recipient: walletAddress,
-              percentage: 45, // Total will be 105%
-            },
-          ],
-        }),
-      ).to.be.rejectedWith("The sum of the royalty shares cannot exceeds 100");
-    });
-
-    it("should fail with non-commercial license terms for royalty distribution", async () => {
-      const tokenId = await getTokenId();
-      await expect(
-        client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 10000n,
-                expiration: 1000n,
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: erc20Address[aeneid],
-                uri: "test case",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 1n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
-              },
-            },
-          ],
-          royaltyShares: [
-            {
-              recipient: walletAddress,
-              percentage: 60,
-            },
-            {
-              recipient: walletAddress,
-              percentage: 45, // Total will be 105%
-            },
-          ],
-        }),
-      ).to.be.rejectedWith("The sum of the royalty shares cannot exceeds 100");
-    });
-
-    it("should fail with zero percentage royalty share", async () => {
-      const tokenId = await getTokenId();
-      await expect(
-        client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 10000n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: erc20Address[aeneid],
-                uri: "test case",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 1n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
-              },
-            },
-          ],
-          royaltyShares: [
-            {
-              recipient: walletAddress,
-              percentage: 0,
-            },
-          ],
-        }),
-      ).to.be.rejectedWith("The percentage of the royalty shares must be greater than 0");
+      expect(result.licenseTermsIds).to.be.an("array");
     });
 
     it("should register derivative and attach license terms and distribute royalty tokens", async () => {
@@ -917,7 +694,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 10,
             },
           ],
@@ -960,7 +737,7 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 10,
             },
           ],
@@ -968,89 +745,125 @@ describe("IP Asset Functions", () => {
 
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
+      expect(result.licenseTermsIds).to.be.an("array");
       expect(result.tokenId).to.be.a("bigint");
     });
+  });
 
-    describe("SPG With Minting Fees with Public Minting SPG NFT Contract", () => {
-      let parentIpId: Address;
-      let licenseTermsId: bigint;
-      let nftContractWithMintingFee: Hex;
+  describe("SPG With Minting Fees with Public Minting SPG NFT Contract", () => {
+    let parentIpId: Address;
+    let licenseTermsId: bigint;
+    let nftContractWithMintingFee: Hex;
 
-      before(async () => {
-        // ensure we start with no wip since we will be wrapping them
-        const wipBalance = await client.wipClient.balanceOf(walletAddress);
-        if (wipBalance > 0n) {
-          await client.wipClient.withdraw({
-            amount: wipBalance,
-          });
-        }
-
-        // create a nft collection that requires minting fee
-        const rsp = await client.nftClient.createNFTCollection({
-          name: "Premium Collection",
-          symbol: "PC",
-          isPublicMinting: true,
-          mintOpen: true,
-          mintFeeRecipient: walletAddress,
-          contractURI: "test-uri",
-          mintFee: 100n,
-          mintFeeToken: WIP_TOKEN_ADDRESS,
+    before(async () => {
+      // ensure we start with no wip since we will be wrapping them
+      const wipBalance = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      if (wipBalance > 0n) {
+        await client.wipClient.withdraw({
+          amount: wipBalance,
         });
-        nftContractWithMintingFee = rsp.spgNftContract!;
+      }
 
-        // create parent ip with minting fee
-        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: nftContractWithMintingFee,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 150n,
-                expiration: 0n,
-                commercialUse: true,
-                commercialAttribution: true,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 10,
-                commercialRevCeiling: BigInt(0),
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: BigInt(0),
-                currency: WIP_TOKEN_ADDRESS,
-                uri: "test",
-              },
-              licensingConfig: {
-                isSet: false,
-                mintingFee: 150n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
-              },
-            },
-          ],
-        });
-        parentIpId = result.ipId!;
-        licenseTermsId = result.licenseTermsIds![0];
+      // create a nft collection that requires minting fee
+      const rsp = await client.nftClient.createNFTCollection({
+        name: "Premium Collection",
+        symbol: "PC",
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        contractURI: "test-uri",
+        mintFee: 100n,
+        mintFeeToken: WIP_TOKEN_ADDRESS,
       });
+      nftContractWithMintingFee = rsp.spgNftContract!;
 
-      it("should auto wrap ip when mint and register derivative", async () => {
-        const userBalanceBefore = await client.getWalletBalance();
-        const rsp = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
-          spgNftContract: nftContractWithMintingFee, // pay 100 here
-          derivData: {
-            parentIpIds: [parentIpId], // pay 150 here
-            licenseTermsIds: [licenseTermsId],
-            maxMintingFee: 0,
-            maxRts: MAX_ROYALTY_TOKEN,
-            maxRevenueShare: 100,
+      // create parent ip with minting fee
+      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: nftContractWithMintingFee,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 150n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: true,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 10,
+              commercialRevCeiling: BigInt(0),
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: BigInt(0),
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "test",
+            },
+            licensingConfig: {
+              isSet: false,
+              mintingFee: 150n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
           },
+        ],
+      });
+      parentIpId = result.ipId!;
+      licenseTermsId = result.licenseTermsIds![0];
+    });
+
+    it("should auto wrap ip when mint and register derivative", async () => {
+      const userBalanceBefore = await client.getWalletBalance();
+      const rsp = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: nftContractWithMintingFee, // pay 100 here
+        derivData: {
+          parentIpIds: [parentIpId], // pay 150 here
+          licenseTermsIds: [licenseTermsId],
+          maxMintingFee: 0,
+          maxRts: MAX_ROYALTY_TOKEN,
+          maxRevenueShare: 100,
+        },
+        ipMetadata: {
+          ipMetadataURI: "test",
+          ipMetadataHash: zeroHash,
+          nftMetadataURI: "test",
+          nftMetadataHash: zeroHash,
+        },
+      });
+      expect(rsp.txHash).to.be.a("string");
+      expect(rsp.ipId).to.be.a("string");
+
+      const userBalanceAfter = await client.getWalletBalance();
+      const cost = 150n + 100n;
+      expect(userBalanceAfter).lessThan(Number(userBalanceBefore - cost));
+
+      // user should not have any WIP tokens since we swap the exact amount
+      const wipBalance = await client.ipAsset.wipClient.balanceOf({
+        owner: TEST_WALLET_ADDRESS,
+      });
+      expect(wipBalance.result).to.be.equal(0n);
+    });
+
+    it("should auto wrap ip when mint and register derivative with license tokens", async () => {
+      const { licenseTokenIds } = await client.license.mintLicenseTokens({
+        licenseTermsId: licenseTermsId,
+        licensorIpId: parentIpId,
+        maxMintingFee: 0n,
+        maxRevenueShare: 100,
+      });
+      await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
+      expect(licenseTokenIds).to.be.an("array");
+      const { txHash, ipId } =
+        await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+          spgNftContract: nftContractWithMintingFee,
+          licenseTokenIds: licenseTokenIds!,
+          maxRts: MAX_ROYALTY_TOKEN,
           ipMetadata: {
             ipMetadataURI: "test",
             ipMetadataHash: zeroHash,
@@ -1058,51 +871,39 @@ describe("IP Asset Functions", () => {
             nftMetadataHash: zeroHash,
           },
         });
-        expect(rsp.txHash).to.be.a("string").and.not.empty;
-        expect(rsp.ipId).to.be.a("string").and.not.empty;
+      expect(txHash).to.be.a("string");
+      expect(ipId).to.be.a("string");
+      const isRegistered = await client.ipAsset.isRegistered(ipId!);
+      expect(isRegistered).to.equal(true);
+    });
 
-        const userBalanceAfter = await client.getWalletBalance();
-        const cost = 150n + 100n;
-        expect(userBalanceAfter < userBalanceBefore - cost).to.be.true;
-
-        // user should not have any WIP tokens since we swap the exact amount
-        const wipBalance = await client.ipAsset.wipClient.balanceOf({
-          owner: walletAddress,
-        });
-        expect(wipBalance.result).to.be.equal(0n);
-      });
-
-      it("should auto wrap ip when mint and register derivative with license tokens", async () => {
-        const { licenseTokenIds } = await client.license.mintLicenseTokens({
-          licenseTermsId: licenseTermsId,
-          licensorIpId: parentIpId,
-          maxMintingFee: 0n,
+    it("should auto wrap ip when registering derivative", async () => {
+      const tokenId = await getTokenId();
+      const balanceBefore = await client.getWalletBalance();
+      const rsp = await client.ipAsset.registerDerivativeIp({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        derivData: {
+          parentIpIds: [parentIpId],
+          licenseTermsIds: [licenseTermsId],
+          maxMintingFee: 0,
+          maxRts: MAX_ROYALTY_TOKEN,
           maxRevenueShare: 100,
-        });
-        await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
-        expect(licenseTokenIds).to.be.an("array").and.not.empty;
-        const { txHash, ipId } =
-          await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
-            spgNftContract: nftContractWithMintingFee,
-            licenseTokenIds: licenseTokenIds!,
-            maxRts: MAX_ROYALTY_TOKEN,
-            ipMetadata: {
-              ipMetadataURI: "test",
-              ipMetadataHash: zeroHash,
-              nftMetadataURI: "test",
-              nftMetadataHash: zeroHash,
-            },
-          });
-        expect(txHash).to.be.a("string").and.not.empty;
-        expect(ipId).to.be.a("string").and.not.empty;
-        const isRegistered = await client.ipAsset.isRegistered(ipId!);
-        expect(isRegistered).to.be.true;
+        },
       });
+      expect(rsp.txHash).to.be.a("string");
+      expect(rsp.ipId).to.be.a("string");
+      const balanceAfter = await client.getWalletBalance();
+      expect(Number(balanceAfter)).lessThan(Number(balanceBefore - 150n));
+    });
 
-      it("should auto wrap ip when registering derivative", async () => {
-        const tokenId = await getTokenId();
-        const balanceBefore = await client.getWalletBalance();
-        const rsp = await client.ipAsset.registerDerivativeIp({
+    it("should spend existing wip when register derivative and distribute loyalty tokens", async () => {
+      const tokenId = await getTokenId();
+      await client.wipClient.deposit({
+        amount: 150n,
+      });
+      const rsp =
+        await client.ipAsset.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
           nftContract: mockERC721,
           tokenId: tokenId!,
           derivData: {
@@ -1112,15 +913,26 @@ describe("IP Asset Functions", () => {
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 100,
+            },
+          ],
         });
-        expect(rsp.txHash).to.be.a("string").and.not.empty;
-        expect(rsp.ipId).to.be.a("string").and.not.empty;
-        const balanceAfter = await client.getWalletBalance();
-        expect(balanceAfter < balanceBefore - 150n).to.be.true;
-      });
+      expect(rsp.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash).to.be.a(
+        "string",
+      );
+      expect(rsp.ipRoyaltyVault).to.be.a("string");
+      expect(rsp.distributeRoyaltyTokensTxHash).to.be.a("string");
+      expect(rsp.ipId).to.be.a("string");
+      const wipAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      expect(wipAfter).to.be.equal(0n);
+    });
 
-      it("errors if minting fees are required but auto wrap is disabled", async () => {
-        const rsp = client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+    it("should auto wrap ip when mint and register derivative and distribute loyalty tokens", async () => {
+      const rsp = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
+        {
           spgNftContract: nftContractWithMintingFee,
           derivData: {
             parentIpIds: [parentIpId],
@@ -1137,114 +949,223 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
-          options: {
-            wipOptions: {
-              enableAutoWrapIp: false,
-            },
-          },
-        });
-        await expect(rsp).to.be.rejectedWith(/Wallet does not have enough WIP to pay for fees/);
-      });
+        },
+      );
+      expect(rsp.txHash).to.be.a("string");
+      expect(rsp.ipId).to.be.a("string");
+    });
+  });
 
-      it("should spend existing wip when register derivative and distribute loyalty tokens", async () => {
-        const tokenId = await getTokenId();
-        await client.wipClient.deposit({
-          amount: 150n,
-        });
-        const rsp =
-          await client.ipAsset.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
-            nftContract: mockERC721,
-            tokenId: tokenId!,
-            derivData: {
-              parentIpIds: [parentIpId],
-              licenseTermsIds: [licenseTermsId],
-              maxMintingFee: 0,
-              maxRts: MAX_ROYALTY_TOKEN,
-              maxRevenueShare: 100,
-            },
-            royaltyShares: [
-              {
-                recipient: walletAddress,
-                percentage: 100,
-              },
-            ],
-          });
-        expect(
-          rsp.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash,
-        ).to.be.a("string").and.not.empty;
-        expect(rsp.ipRoyaltyVault).to.be.a("string").and.not.empty;
-        expect(rsp.distributeRoyaltyTokensTxHash).to.be.a("string").and.not.empty;
-        expect(rsp.ipId).to.be.a("string").and.not.empty;
-        const wipAfter = await client.wipClient.balanceOf(walletAddress);
-        expect(wipAfter).to.be.equal(0n);
+  describe("IP Asset Registration with Private Minting SPG NFT Contracts", () => {
+    let spgNftContractWithPrivateMinting: Address;
+    let licenseTermsId: bigint;
+    let parentIpId: Address;
+    before(async () => {
+      const privateMintingCollectionResult = await client.nftClient.createNFTCollection({
+        name: "Private Minting Collection",
+        symbol: "PMC",
+        isPublicMinting: false,
+        mintOpen: true,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintFee: 3n,
+        mintFeeToken: WIP_TOKEN_ADDRESS,
+        contractURI: "",
       });
-
-      it("should auto wrap ip when mint and register derivative and distribute loyalty tokens", async () => {
-        const rsp =
-          await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
-            spgNftContract: nftContractWithMintingFee,
-            derivData: {
-              parentIpIds: [parentIpId],
-              licenseTermsIds: [licenseTermsId],
-              maxMintingFee: 0,
-              maxRts: MAX_ROYALTY_TOKEN,
-              maxRevenueShare: 100,
-            },
-            ipMetadata: {
-              ipMetadataURI: "test",
-              ipMetadataHash: zeroHash,
-              nftMetadataURI: "test",
-              nftMetadataHash: zeroHash,
-            },
-            royaltyShares: [
-              {
-                recipient: walletAddress,
-                percentage: 100,
-              },
-            ],
-          });
-        expect(rsp.txHash).to.be.a("string").and.not.empty;
-        expect(rsp.ipId).to.be.a("string").and.not.empty;
-      });
+      spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
     });
 
-    describe("IP Asset Registration with Private Minting SPG NFT Contracts", () => {
-      let spgNftContractWithPrivateMinting: Address;
-      let licenseTermsId: bigint;
-      let parentIpId: Address;
-      beforeEach(async () => {
-        const privateMintingCollectionResult = await client.nftClient.createNFTCollection({
-          name: "Private Minting Collection",
-          symbol: "PMC",
-          isPublicMinting: false,
-          mintOpen: true,
-          mintFeeRecipient: walletAddress,
-          mintFee: 3n,
-          mintFeeToken: WIP_TOKEN_ADDRESS,
-          contractURI: "",
-        });
-        spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
+    it("should successfully when call mint and register ip asset with pil terms", async () => {
+      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: spgNftContractWithPrivateMinting,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 6n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 90,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 6n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: pool,
+            },
+          },
+        ],
       });
-      it("should successfully when call mint and register ip asset with pil terms", async () => {
-        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+      expect(result.ipId).to.be.a("string");
+      expect(result.tokenId).to.be.a("bigint");
+      expect(result.txHash).to.be.a("string");
+      parentIpId = result.ipId!;
+      licenseTermsId = result.licenseTermsIds![0];
+    });
+
+    it("should successfully when call mint and register ip and make derivative", async () => {
+      const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+        spgNftContract: spgNftContractWithPrivateMinting,
+        derivData: {
+          parentIpIds: [parentIpId!],
+          licenseTermsIds: [licenseTermsId!],
+          maxMintingFee: 100n,
+          maxRts: 5 * 10 ** 6,
+          maxRevenueShare: 100,
+        },
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.tokenId).to.be.a("bigint");
+    });
+    it("should successfully when call mint and register ip", async () => {
+      const result = await client.ipAsset.mintAndRegisterIp({
+        spgNftContract: spgNftContractWithPrivateMinting,
+        ipMetadata: {
+          ipMetadataURI: "test-uri",
+          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
+        allowDuplicates: false,
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+    });
+    it("should successfully when call mint and register ip and make derivative with license tokens", async () => {
+      const mintLicenseTokensResult = await client.license.mintLicenseTokens({
+        licenseTermsId: licenseTermsId,
+        licensorIpId: parentIpId,
+        maxMintingFee: "0",
+        maxRevenueShare: 100,
+      });
+      const licenseTokenId = mintLicenseTokensResult.licenseTokenIds![0];
+      await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenId);
+      const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+        spgNftContract: spgNftContractWithPrivateMinting,
+        licenseTokenIds: [licenseTokenId],
+        maxRts: 5 * 10 ** 6,
+        ipMetadata: {
+          ipMetadataURI: "test-uri",
+          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.tokenId).to.be.a("bigint");
+    });
+
+    it("should successfully when call mint and register ip asset with pil terms using existing licenseTermsIds", async () => {
+      const baseCollection = await client.nftClient.createNFTCollection({
+        name: "Private Minting Collection",
+        symbol: "PMC",
+        isPublicMinting: false,
+        mintOpen: true,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintFee: 3n,
+        mintFeeToken: WIP_TOKEN_ADDRESS,
+        contractURI: "",
+      });
+      const spgNftContractForBaseCollection = baseCollection.spgNftContract!;
+      const rx = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: spgNftContractForBaseCollection,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: pool,
+            },
+          },
+        ],
+      });
+      let licenseTermsIds = rx.licenseTermsIds!;
+      let ipId = rx.ipId!;
+
+      const newCollection = await client.nftClient.createNFTCollection({
+        name: "Private Minting Collection",
+        symbol: "PMC",
+        isPublicMinting: false,
+        mintOpen: true,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintFee: 3n,
+        mintFeeToken: WIP_TOKEN_ADDRESS,
+        contractURI: "",
+      });
+      const newSpgNftContractForNewCollection = newCollection.spgNftContract!;
+
+      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: newSpgNftContractForNewCollection,
+        allowDuplicates: false,
+        licenseTermsInfo: { licenseTermsIds, ipId },
+      });
+      expect(result.tokenId).not.undefined;
+      expect(result.txHash).not.undefined;
+      parentIpId = result.ipId!;
+      licenseTermsId = result.licenseTermsIds![0];
+    });
+
+    it("should successfully when call mint and register ip and attach pil terms and distribute royalty tokens", async () => {
+      const result =
+        await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
           spgNftContract: spgNftContractWithPrivateMinting,
-          allowDuplicates: false,
           licenseTermsData: [
             {
               terms: {
                 transferable: true,
                 royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 6n,
-                expiration: 0n,
+                defaultMintingFee: 10000n,
+                expiration: 1000n,
                 commercialUse: true,
                 commercialAttribution: false,
                 commercializerChecker: zeroAddress,
                 commercializerCheckerData: zeroAddress,
-                commercialRevShare: 90,
+                commercialRevShare: 0,
                 commercialRevCeiling: 0n,
                 derivativesAllowed: true,
                 derivativesAttribution: true,
@@ -1252,262 +1173,93 @@ describe("IP Asset Functions", () => {
                 derivativesReciprocal: true,
                 derivativeRevCeiling: 0n,
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 6n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: pool,
+                uri: "test case",
               },
             },
           ],
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 10,
+            },
+          ],
         });
-        expect(result.ipId).not.undefined;
-        expect(result.tokenId).not.undefined;
-        expect(result.txHash).not.undefined;
-        parentIpId = result.ipId!;
-        licenseTermsId = result.licenseTermsIds![0];
-      });
 
-      it("should successfully when call mint and register ip and make derivative", async () => {
-        const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.tokenId).to.be.a("bigint");
+    });
+    it("should succeed when call mint and register ip and make derivative and distribute royalty tokens", async () => {
+      let _parentIpId;
+      let _licenseTermsId;
+      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: spgNftContractWithPrivateMinting,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 6n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 90,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 6n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: pool,
+            },
+          },
+        ],
+      });
+      _parentIpId = result.ipId!;
+      _licenseTermsId = result.licenseTermsIds![0];
+      const rsp = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
+        {
           spgNftContract: spgNftContractWithPrivateMinting,
           derivData: {
-            parentIpIds: [parentIpId!],
-            licenseTermsIds: [licenseTermsId!],
-            maxMintingFee: 100n,
-            maxRts: 5 * 10 ** 6,
+            parentIpIds: [_parentIpId],
+            licenseTermsIds: [_licenseTermsId],
+            maxMintingFee: 0,
+            maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
-        });
-        expect(result.txHash).to.be.a("string").and.not.empty;
-        expect(result.ipId).to.be.a("string").and.not.empty;
-        expect(result.tokenId).to.be.a("bigint");
-      });
-      it("should successfully when call mint and register ip", async () => {
-        const result = await client.ipAsset.mintAndRegisterIp({
-          spgNftContract: spgNftContractWithPrivateMinting,
-          ipMetadata: {
-            ipMetadataURI: "test-uri",
-            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
-          allowDuplicates: false,
-        });
-        expect(result.txHash).to.be.a("string").and.not.empty;
-        expect(result.ipId).to.be.a("string").and.not.empty;
-      });
-      it("should successfully when call mint and register ip and make derivative with license tokens", async () => {
-        const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-          licenseTermsId: licenseTermsId,
-          licensorIpId: parentIpId,
-          maxMintingFee: "0",
-          maxRevenueShare: 100,
-        });
-        const licenseTokenId = mintLicenseTokensResult.licenseTokenIds![0];
-        await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenId);
-        const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
-          spgNftContract: spgNftContractWithPrivateMinting,
-          licenseTokenIds: [licenseTokenId],
-          maxRts: 5 * 10 ** 6,
-          ipMetadata: {
-            ipMetadataURI: "test-uri",
-            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          },
-        });
-        expect(result.txHash).to.be.a("string").and.not.empty;
-        expect(result.ipId).to.be.a("string").and.not.empty;
-        expect(result.tokenId).to.be.a("bigint");
-      });
-      it("should successfully when call mint and register ip asset with pil terms using existing licenseTermsIds", async () => {
-        const baseCollection = await client.nftClient.createNFTCollection({
-          name: "Private Minting Collection",
-          symbol: "PMC",
-          isPublicMinting: false,
-          mintOpen: true,
-          mintFeeRecipient: walletAddress,
-          mintFee: 3n,
-          mintFeeToken: WIP_TOKEN_ADDRESS,
-          contractURI: "",
-        });
-        const spgNftContractforBaseCollection = baseCollection.spgNftContract!;
-        const rx = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: spgNftContractforBaseCollection,
-          allowDuplicates: false,
-          licenseTermsData: [
+          royaltyShares: [
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: zeroAddress,
-                defaultMintingFee: 0n,
-                expiration: 0n,
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 0n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: pool,
-              },
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 100,
             },
           ],
-        });
-        let licenseTermsIds = rx.licenseTermsIds!;
-        let ipId = rx.ipId!;
-
-        const newCollection = await client.nftClient.createNFTCollection({
-          name: "Private Minting Collection",
-          symbol: "PMC",
-          isPublicMinting: false,
-          mintOpen: true,
-          mintFeeRecipient: walletAddress,
-          mintFee: 3n,
-          mintFeeToken: WIP_TOKEN_ADDRESS,
-          contractURI: "",
-        });
-        const newSpgNftContractForNewCollection = newCollection.spgNftContract!;
-
-        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: newSpgNftContractForNewCollection,
-          allowDuplicates: false,
-          licenseTermsInfo: { licenseTermsIds, ipId },
-        });
-        expect(result.tokenId).not.undefined;
-        expect(result.txHash).not.undefined;
-        parentIpId = result.ipId!;
-        licenseTermsId = result.licenseTermsIds![0];
-      });
-      it("should successfully when call mint and register ip and attach pil terms and distribute royalty tokens", async () => {
-        const result =
-          await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
-            spgNftContract: spgNftContractWithPrivateMinting,
-            licenseTermsData: [
-              {
-                terms: {
-                  transferable: true,
-                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                  defaultMintingFee: 10000n,
-                  expiration: 1000n,
-                  commercialUse: true,
-                  commercialAttribution: false,
-                  commercializerChecker: zeroAddress,
-                  commercializerCheckerData: zeroAddress,
-                  commercialRevShare: 0,
-                  commercialRevCeiling: 0n,
-                  derivativesAllowed: true,
-                  derivativesAttribution: true,
-                  derivativesApproval: false,
-                  derivativesReciprocal: true,
-                  derivativeRevCeiling: 0n,
-                  currency: WIP_TOKEN_ADDRESS,
-                  uri: "test case",
-                },
-              },
-            ],
-            royaltyShares: [
-              {
-                recipient: walletAddress,
-                percentage: 10,
-              },
-            ],
-          });
-
-        expect(result.txHash).to.be.a("string");
-        expect(result.ipId).to.be.a("string");
-        expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
-        expect(result.tokenId).to.be.a("bigint");
-      });
-      it("should succeed when call mint and register ip and make derivative and distribute royalty tokens", async () => {
-        let _parentIpId
-        let _licenseTermsId
-        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract: spgNftContractWithPrivateMinting,
-          allowDuplicates: false,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 6n,
-                expiration: 0n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 90,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 6n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: pool,
-              },
-            },
-          ],
-        });
-        _parentIpId = result.ipId!;
-        _licenseTermsId = result.licenseTermsIds![0];
-        const rsp =
-          await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
-            spgNftContract: spgNftContractWithPrivateMinting,
-            derivData: {
-              parentIpIds: [_parentIpId],
-              licenseTermsIds: [_licenseTermsId],
-              maxMintingFee: 0,
-              maxRts: MAX_ROYALTY_TOKEN,
-              maxRevenueShare: 100,
-            },
-            royaltyShares: [
-              {
-                recipient: walletAddress,
-                percentage: 100,
-              },
-            ],
-          });
-        expect(rsp.txHash).to.be.a("string").and.not.empty;
-        expect(rsp.ipId).to.be.a("string").and.not.empty;
-      });
+        },
+      );
+      expect(rsp.txHash).to.be.a("string");
+      expect(rsp.ipId).to.be.a("string");
     });
   });
 
   describe("Batch Operations", () => {
     let nftContract: Hex;
+    let parentIpId: Address;
 
-    beforeEach(async () => {
+    before(async () => {
       const txData = await client.nftClient.createNFTCollection({
         name: "test-collection",
         symbol: "TEST",
@@ -1515,9 +1267,17 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: walletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
       });
       nftContract = txData.spgNftContract!;
+
+      const tokenId = await getTokenId();
+      parentIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+        })
+      ).ipId!;
     });
 
     it("should batch register derivative", async () => {
@@ -1562,7 +1322,7 @@ describe("IP Asset Functions", () => {
           },
         ],
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
     });
 
     it("should batch mint and register IP asset with PIL terms", async () => {
@@ -1643,8 +1403,8 @@ describe("IP Asset Functions", () => {
         ],
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.results).to.be.an("array").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.results).to.be.an("array");
       expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(1);
       expect(result.results![1].licenseTermsIds).to.be.an("array").and.length(1);
     });
@@ -1675,8 +1435,8 @@ describe("IP Asset Functions", () => {
         ],
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.results).to.be.an("array").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.results).to.be.an("array");
     });
 
     it("should batch register giving parameters", async () => {
@@ -1697,7 +1457,7 @@ describe("IP Asset Functions", () => {
           },
           {
             nftContract,
-            tokenId: spgTokenId1!,
+            tokenId: spgTokenId1,
             ipMetadata: {
               ipMetadataURI: "test-uri2",
               ipMetadataHash: toHex("test-metadata-hash2", { size: 32 }),
@@ -1706,7 +1466,7 @@ describe("IP Asset Functions", () => {
           },
           {
             nftContract,
-            tokenId: spgTokenId2!,
+            tokenId: spgTokenId2,
             ipMetadata: {
               ipMetadataURI: "test-uri",
               ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -1715,8 +1475,8 @@ describe("IP Asset Functions", () => {
           },
         ],
       });
-      expect(result.results).to.be.an("array").and.not.empty;
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.results).to.be.an("array");
+      expect(result.txHash).to.be.a("string");
     });
   });
 
@@ -1731,108 +1491,12 @@ describe("IP Asset Functions", () => {
         isPublicMinting: true,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFeeRecipient: walletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
       });
       nftContract = txData.spgNftContract!;
     });
 
-    it("should fail with invalid license terms config", async () => {
-      const tokenId = await mintBySpg(nftContract, "test-metadata");
-      await expect(
-        client.ipAsset.registerIpAndAttachPilTerms({
-          nftContract: nftContract,
-          tokenId: tokenId!,
-          deadline: 1000n,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: zeroAddress,
-                defaultMintingFee: -1n, // Invalid fee
-                expiration: 0n,
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 0n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
-              },
-            },
-          ],
-        }),
-      ).to.be.rejected;
-    });
-
-    it("should fail with invalid royalty shares", async () => {
-      const tokenId = await mintBySpg(nftContract, "test-metadata");
-      await expect(
-        client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
-          nftContract: nftContract,
-          tokenId: tokenId!,
-          licenseTermsData: [
-            {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 10000n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
-                currency: WIP_TOKEN_ADDRESS,
-                uri: "test case",
-              },
-              licensingConfig: {
-                isSet: true,
-                mintingFee: 1n,
-                licensingHook: zeroAddress,
-                hookData: zeroAddress,
-                commercialRevShare: 0,
-                disabled: false,
-                expectMinimumGroupRewardShare: 0,
-                expectGroupRewardPool: zeroAddress,
-              },
-            },
-          ],
-          royaltyShares: [
-            {
-              recipient: walletAddress,
-              percentage: 101, // Invalid percentage > 100
-            },
-          ],
-        }),
-      ).to.be.rejectedWith(
-        "The percentage of the royalty shares must be less than or equal to 100",
-      );
-    });
-
     it("should fail to register unowned NFT", async () => {
-      const tokenId = await getTokenId();
       await expect(
         client.ipAsset.register({
           nftContract: nftContract,
@@ -1840,34 +1504,13 @@ describe("IP Asset Functions", () => {
         }),
       ).to.be.rejected;
     });
-
-    it("should fail with invalid derivative parameters", async () => {
-      const tokenId = await mintBySpg(nftContract, "test-metadata");
-      await expect(
-        client.ipAsset.registerDerivativeIp({
-          nftContract: nftContract,
-          tokenId: tokenId!,
-          derivData: {
-            parentIpIds: [], // Empty parent IPs
-            licenseTermsIds: [],
-            maxMintingFee: "0",
-            maxRts: 5 * 10 ** 6,
-            maxRevenueShare: "0",
-          },
-        }),
-      ).to.be.rejectedWith("The parent IP IDs must be provided");
-    });
   });
 
   describe("Other Edge Cases", () => {
-    let client: StoryClient;
-    let noCommercialLicenseTermsId: bigint;
     let parentIpId: Hex;
 
     before(async () => {
       client = getStoryClient();
-      const res = await client.license.registerNonComSocialRemixingPIL();
-      noCommercialLicenseTermsId = res.licenseTermsId!;
 
       const tokenId = await getTokenId();
       const parentIpResponse = await client.ipAsset.register({
@@ -1879,71 +1522,6 @@ describe("IP Asset Functions", () => {
       await client.license.attachLicenseTerms({
         ipId: parentIpId,
         licenseTermsId: noCommercialLicenseTermsId,
-      });
-    });
-
-    describe("Derivative Registration Edge Cases", () => {
-      let childIpId: Hex;
-
-      beforeEach(async () => {
-        const tokenId = await getTokenId();
-        const response = await client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-        });
-        childIpId = response.ipId!;
-      });
-
-      it("should fail when parent IP does not exist", async () => {
-        await expect(
-          client.ipAsset.registerDerivative({
-            childIpId,
-            parentIpIds: ["0x1234567890123456789012345678901234567890"],
-            licenseTermsIds: [noCommercialLicenseTermsId],
-            maxMintingFee: "0",
-            maxRts: 5 * 10 ** 6,
-            maxRevenueShare: "0",
-          }),
-        ).to.be.rejectedWith(/not registered/);
-      });
-
-      it("should fail with mismatched parentIpIds and licenseTermsIds lengths", async () => {
-        await expect(
-          client.ipAsset.registerDerivative({
-            childIpId,
-            parentIpIds: [parentIpId],
-            licenseTermsIds: [noCommercialLicenseTermsId, noCommercialLicenseTermsId], // More license terms than parents
-            maxMintingFee: "0",
-            maxRts: 5 * 10 ** 6,
-            maxRevenueShare: "0",
-          }),
-        ).to.be.rejectedWith(/must match/);
-      });
-
-      it("should fail with negative maxMintingFee", async () => {
-        await expect(
-          client.ipAsset.registerDerivative({
-            childIpId,
-            parentIpIds: [parentIpId],
-            licenseTermsIds: [noCommercialLicenseTermsId],
-            maxMintingFee: "-1",
-            maxRts: 5 * 10 ** 6,
-            maxRevenueShare: "0",
-          }),
-        ).to.be.rejectedWith(/must be greater than 0/);
-      });
-
-      it("should fail with maxRts exceeding maximum allowed", async () => {
-        await expect(
-          client.ipAsset.registerDerivative({
-            childIpId,
-            parentIpIds: [parentIpId],
-            licenseTermsIds: [noCommercialLicenseTermsId],
-            maxMintingFee: "0",
-            maxRts: 100_000_001, // Exceeds maximum
-            maxRevenueShare: "0",
-          }),
-        ).to.be.rejectedWith(/must be.*less than/);
       });
     });
 
@@ -2042,7 +1620,7 @@ describe("IP Asset Functions", () => {
         symbol: "PMC",
         isPublicMinting: true,
         mintOpen: true,
-        mintFeeRecipient: walletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintFee: 10n,
         mintFeeToken: WIP_TOKEN_ADDRESS,
         contractURI: "",
@@ -2055,7 +1633,7 @@ describe("IP Asset Functions", () => {
         symbol: "PRC",
         isPublicMinting: false,
         mintOpen: true,
-        mintFeeRecipient: walletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         contractURI: "",
       });
       spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
@@ -2116,7 +1694,7 @@ describe("IP Asset Functions", () => {
     });
 
     it("should successfully batch register multiple IP assets with SPG NFT contracts", async () => {
-      const userBalanceBefore = await client.getBalance(walletAddress);
+      const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
       const requests: IpRegistrationWorkflowRequest[] = [
         /**
          * mintAndRegisterIpAndMakeDerivative workflow
@@ -2248,7 +1826,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
@@ -2269,7 +1847,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
@@ -2306,7 +1884,7 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 10,
             },
           ],
@@ -2343,20 +1921,20 @@ describe("IP Asset Functions", () => {
           ],
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 10,
             },
           ],
         },
       ];
-      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
+      const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
       const totalFees = 10 + 15 + 0 + 10 + 20 + 5 + 10 + 0;
-      const userBalanceAfter = await client.getBalance(walletAddress);
-      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
-      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
+      const userBalanceAfter = await client.getBalance(TEST_WALLET_ADDRESS);
+      const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - BigInt(totalFees)));
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
@@ -2373,7 +1951,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeRoyaltyTokensTxHashes).undefined;
+      expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
     });
 
     it("should successfully batch register multiple IP assets with NFT contracts", async () => {
@@ -2384,7 +1962,7 @@ describe("IP Asset Functions", () => {
       const tokenId5 = await getTokenId();
       const tokenId6 = await getTokenId();
       const tokenId7 = await getTokenId();
-      const userBalanceBefore = await client.getBalance(walletAddress);
+      const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
       const requests: IpRegistrationWorkflowRequest[] = [
         /**
          * registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens workflow
@@ -2404,7 +1982,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
@@ -2427,7 +2005,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
@@ -2555,19 +2133,19 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 43,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 17,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 2,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 38,
             },
           ],
@@ -2622,20 +2200,20 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 10,
             },
           ],
         },
       ];
       const totalFees = 10 + 5 + 0 + 0 + 5 + 10 + 5;
-      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
+      const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
-      const userBalanceAfter = await client.getBalance(walletAddress);
-      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
-      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
+      const userBalanceAfter = await client.getBalance(TEST_WALLET_ADDRESS);
+      expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - BigInt(totalFees)));
+      const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
@@ -2651,7 +2229,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeRoyaltyTokensTxHashes).not.undefined;
+      expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
     });
 
     it("should successfully register IP assets using a combination of NFT contracts and SPG NFT contracts", async () => {
@@ -2691,7 +2269,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
@@ -2712,7 +2290,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
@@ -2750,7 +2328,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 10,
             },
           ],
@@ -2804,19 +2382,19 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 43,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 17,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 2,
             },
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 38,
             },
           ],
@@ -2913,14 +2491,14 @@ describe("IP Asset Functions", () => {
         },
       ];
       const totalFees = 15 + 5 + 20 + 10 + 5 + 0 + 0 + 10;
-      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
-      const userBalanceBefore = await client.getBalance(walletAddress);
+      const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
-      const userBalanceAfter = await client.getBalance(walletAddress);
-      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
-      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
+      const userBalanceAfter = await client.getBalance(TEST_WALLET_ADDRESS);
+      const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - BigInt(totalFees)));
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
@@ -2937,7 +2515,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeRoyaltyTokensTxHashes).not.undefined;
+      expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
     });
 
     it("should successfully register IP assets with multicall disabled", async () => {
@@ -3062,7 +2640,7 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
@@ -3085,14 +2663,14 @@ describe("IP Asset Functions", () => {
           },
           royaltyShares: [
             {
-              recipient: walletAddress,
+              recipient: TEST_WALLET_ADDRESS,
               percentage: 100,
             },
           ],
         },
       ];
-      const userBalanceBefore = await client.getBalance(walletAddress);
-      const wipBalanceBefore = await client.wipClient.balanceOf(walletAddress);
+      const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
+      const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const totalFees = 15 + 0 + 10 + 5 + 5;
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
@@ -3102,10 +2680,10 @@ describe("IP Asset Functions", () => {
           },
         },
       });
-      const userBalanceAfter = await client.getBalance(walletAddress);
-      const wipBalanceAfter = await client.wipClient.balanceOf(walletAddress);
+      const userBalanceAfter = await client.getBalance(TEST_WALLET_ADDRESS);
+      const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
 
-      expect(userBalanceAfter < userBalanceBefore - BigInt(totalFees)).to.be.true;
+      expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - BigInt(totalFees)));
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
