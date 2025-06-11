@@ -1,4 +1,5 @@
 import * as crypto from "crypto";
+
 import { Hex } from "viem";
 
 export const generateHex = (length: number = 32): Hex => {
