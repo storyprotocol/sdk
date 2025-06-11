@@ -3,7 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import { Address, maxUint256 } from "viem";
 
 import { StoryClient } from "../../src";
-import { getStoryClient, mintBySpg, publicClient, walletClient } from "./utils/util";
+import { getStoryClient, mintBySpg, publicClient, TEST_WALLET_ADDRESS, walletClient } from "./utils/util";
 import { erc20Address } from "../../src/abi/generated";
 import { ERC20Client } from "../../src/utils/token";
 import { aeneid } from "../unit/mockData";
@@ -12,12 +12,10 @@ use(chaiAsPromised);
 
 describe("nftClient Functions", () => {
   let client: StoryClient;
-  let testWalletAddress: Address;
   let spgNftContract: Address;
 
   before(() => {
     client = getStoryClient();
-    testWalletAddress = process.env.TEST_WALLET_ADDRESS as Address;
   });
 
   describe("createNFTCollection", () => {
@@ -27,7 +25,7 @@ describe("nftClient Functions", () => {
         symbol: "TEST",
         maxSupply: 100,
         isPublicMinting: true,
-        mintFeeRecipient: testWalletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintOpen: true,
         contractURI: "test-uri",
       });
@@ -41,7 +39,7 @@ describe("nftClient Functions", () => {
         symbol: "PAID",
         maxSupply: 100,
         isPublicMinting: true,
-        mintFeeRecipient: testWalletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintOpen: true,
         contractURI: "test-uri",
         mintFee: 10000000n,
@@ -57,7 +55,7 @@ describe("nftClient Functions", () => {
         symbol: "PRIV",
         maxSupply: 100,
         isPublicMinting: false, // private minting
-        mintFeeRecipient: testWalletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintOpen: false, // starts closed
         contractURI: "test-uri",
       });
@@ -70,7 +68,7 @@ describe("nftClient Functions", () => {
         symbol: "URI",
         maxSupply: 100,
         isPublicMinting: true,
-        mintFeeRecipient: testWalletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintOpen: true,
         contractURI: "test-uri",
         baseURI: "ipfs://QmTest/",
@@ -84,10 +82,10 @@ describe("nftClient Functions", () => {
         symbol: "OWN",
         maxSupply: 100,
         isPublicMinting: true,
-        mintFeeRecipient: testWalletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintOpen: true,
         contractURI: "test-uri",
-        owner: testWalletAddress,
+        owner: TEST_WALLET_ADDRESS,
       });
       expect(txData.spgNftContract).to.be.a("string");
     });
@@ -98,7 +96,7 @@ describe("nftClient Functions", () => {
         symbol: "ENC",
         maxSupply: 100,
         isPublicMinting: true,
-        mintFeeRecipient: testWalletAddress,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintOpen: true,
         contractURI: "test-uri",
         txOptions: {
@@ -117,7 +115,7 @@ describe("nftClient Functions", () => {
           symbol: "INV",
           maxSupply: 100,
           isPublicMinting: true,
-          mintFeeRecipient: testWalletAddress,
+          mintFeeRecipient: TEST_WALLET_ADDRESS,
           mintOpen: true,
           contractURI: "test-uri",
           mintFee: 1000000000000000000n,
@@ -163,7 +161,7 @@ describe("nftClient Functions", () => {
 
       // Verification that the URI was updated
       const tokenURI = await client.nftClient.getTokenURI({
-        tokenId: tokenId,
+        tokenId,
         spgNftContract,
       });
       expect(tokenURI).to.equal(updatedMetadata);

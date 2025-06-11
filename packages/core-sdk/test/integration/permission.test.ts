@@ -28,7 +28,7 @@ describe("Permission Functions", () => {
     it("should set permission successfully", async () => {
       const response = await client.permission.setPermission({
         ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
+        signer: TEST_WALLET_ADDRESS,
         to: coreMetadataModule,
         permission: AccessPermission.ALLOW,
         func: "function setAll(address,string,bytes32,bytes32)",
@@ -41,7 +41,7 @@ describe("Permission Functions", () => {
     it("should set all permissions successfully", async () => {
       const response = await client.permission.setAllPermissions({
         ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
+        signer: TEST_WALLET_ADDRESS,
         permission: AccessPermission.ALLOW,
       });
 
@@ -54,7 +54,7 @@ describe("Permission Functions", () => {
     it("should create set permission signature", async () => {
       const response = await client.permission.createSetPermissionSignature({
         ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
+        signer: TEST_WALLET_ADDRESS,
         to: coreMetadataModule,
         func: "function setAll(address,string,bytes32,bytes32)",
         permission: AccessPermission.ALLOW,
@@ -72,14 +72,14 @@ describe("Permission Functions", () => {
         permissions: [
           {
             ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
+            signer: TEST_WALLET_ADDRESS,
             to: coreMetadataModule,
             permission: AccessPermission.ALLOW,
             func: "function setAll(address,string,bytes32,bytes32)",
           },
           {
             ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
+            signer: TEST_WALLET_ADDRESS,
             to: coreMetadataModule,
             permission: AccessPermission.DENY,
             func: "function freezeMetadata(address)",
@@ -97,7 +97,7 @@ describe("Permission Functions", () => {
         permissions: [
           {
             ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
+            signer: TEST_WALLET_ADDRESS,
             to: coreMetadataModule,
             permission: AccessPermission.ALLOW,
             func: "function setAll(address,string,bytes32,bytes32)",
@@ -124,7 +124,7 @@ describe("Permission Functions", () => {
       await expect(
         client.permission.setPermission({
           ipId: unregisteredIpId as Address,
-          signer: process.env.TEST_WALLET_ADDRESS as Address,
+          signer: TEST_WALLET_ADDRESS,
           to: coreMetadataModule,
           permission: AccessPermission.ALLOW,
         }),
@@ -135,7 +135,7 @@ describe("Permission Functions", () => {
       await expect(
         client.permission.setPermission({
           ipId: ipId,
-          signer: process.env.TEST_WALLET_ADDRESS as Address,
+          signer: TEST_WALLET_ADDRESS,
           to: coreMetadataModule,
           permission: AccessPermission.ALLOW,
           func: "invalid_function_signature",

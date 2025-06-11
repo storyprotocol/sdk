@@ -534,7 +534,7 @@ describe("IP Asset Functions", () => {
 
       const result = await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({
         nftContract: nftContract,
-        tokenId: tokenId,
+        tokenId,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
         maxRts: 5 * 10 ** 6,
         ipMetadata: {
@@ -554,7 +554,7 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
         {
           nftContract: nftContract,
-          tokenId: tokenId,
+          tokenId,
           licenseTermsData: [
             {
               terms: {
@@ -613,7 +613,7 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
         {
           nftContract: nftContract,
-          tokenId: tokenId,
+          tokenId,
           licenseTermsData: [
             {
               terms: {

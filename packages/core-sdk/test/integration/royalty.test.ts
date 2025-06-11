@@ -258,13 +258,13 @@ describe("Royalty Functions", () => {
         ],
       });
       ipA = retA.ipId!;
-      licenseId = retA.licenseTermsIds![0];
+      licenseId = retA.licenseTermsIds![0]!;
 
       const retB = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract,
         derivData: {
           parentIpIds: [ipA!],
-          licenseTermsIds: [licenseId!],
+          licenseTermsIds: [licenseId],
           maxMintingFee: 0n,
           maxRts: MAX_ROYALTY_TOKEN,
           maxRevenueShare: 100,
@@ -276,7 +276,7 @@ describe("Royalty Functions", () => {
         spgNftContract,
         derivData: {
           parentIpIds: [ipB!],
-          licenseTermsIds: [licenseId!],
+          licenseTermsIds: [licenseId],
           maxMintingFee: 0n,
           maxRts: MAX_ROYALTY_TOKEN,
           maxRevenueShare: 100,
@@ -288,7 +288,7 @@ describe("Royalty Functions", () => {
         spgNftContract,
         derivData: {
           parentIpIds: [ipC!],
-          licenseTermsIds: [licenseId!],
+          licenseTermsIds: [licenseId],
           maxMintingFee: 0n,
           maxRts: MAX_ROYALTY_TOKEN,
           maxRevenueShare: 100,
