@@ -3,7 +3,6 @@ import { expect } from "chai";
 import { coreMetadataModuleAbi, groupingWorkflowsAbi } from "../../../src/abi/generated";
 import { getFunctionSignature } from "../../../src/utils/getFunctionSignature";
 
-
 describe("Test getFunctionSignature", () => {
   it("should return function signature", () => {
     const signature = getFunctionSignature(coreMetadataModuleAbi, "setAll");

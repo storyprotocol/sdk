@@ -46,7 +46,6 @@ describe("Test IpAssetClient", () => {
     });
   });
 
- 
   describe("Test groupClient.registerGroup", () => {
     it("should throw groupPool address is invalid error when groupPool is invalid", async () => {
       try {
