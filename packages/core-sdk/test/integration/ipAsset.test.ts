@@ -1439,7 +1439,7 @@ describe("IP Asset Functions", () => {
         expect(result.licenseTermsIds).to.be.an("array").and.not.empty;
         expect(result.tokenId).to.be.a("bigint");
       });
-      it("should successfully when call mint and register ip and make derivative and distribute royalty tokens", async () => {
+      it("should succeed when call mint and register ip and make derivative and distribute royalty tokens", async () => {
         const rsp =
           await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
             spgNftContract: spgNftContractWithPrivateMinting,
