@@ -1,36 +1,28 @@
-import { PublicClient, WalletClient } from "viem";
-import { WipClient } from "../../../src/resources/wip";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import chai from "chai";
-import * as sinon from "sinon";
-import { createMock } from "../testUtils";
-chai.use(chaiAsPromised);
-const expect = chai.expect;
-const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+import { stub } from "sinon";
+import { PublicClient, WalletClient } from "viem";
+
+import { WipClient } from "../../../src/resources/wip";
+import { txHash } from "../mockData";
+import { createMockPublicClient, createMockWalletClient } from "../testUtils";
+
+use(chaiAsPromised);
 
 describe("WIP Functions", () => {
   let wipClient: WipClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
 
-  before(async () => {
-    rpcMock = createMock<PublicClient>();
-    walletMock = createMock<WalletClient>();
+  before(() => {
+    rpcMock = createMockPublicClient();
+    walletMock = createMockWalletClient();
     wipClient = new WipClient(rpcMock, walletMock);
-  });
-
-  afterEach(() => {
-    sinon.restore();
   });
 
   describe("deposit", () => {
     before(() => {
-      rpcMock.simulateContract = sinon.stub().resolves({ request: {} });
-      walletMock.writeContract = sinon.stub().resolves(txHash);
       wipClient = new WipClient(rpcMock, walletMock);
-    });
-    after(() => {
-      sinon.restore();
     });
 
     it("should throw an error when call deposit give amount is less than 0", async () => {
@@ -45,13 +37,6 @@ describe("WIP Functions", () => {
       }
     });
     it("should deposit successfully when call deposit given amount is 1 ", async () => {
-      const rsp = await wipClient.deposit({
-        amount: 1,
-      });
-      expect(rsp.txHash).to.be.a("string");
-    });
-
-    it("should deposit successfully when call deposit given amount is 1", async () => {
       const rsp = await wipClient.deposit({
         amount: 1,
       });
@@ -73,15 +58,7 @@ describe("WIP Functions", () => {
     });
 
     it("should withdraw successfully when call withdraw given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "withdraw").resolves(txHash);
-      const rsp = await wipClient.withdraw({
-        amount: 1,
-      });
-      expect(rsp.txHash).to.be.a("string");
-    });
-
-    it("should withdraw successfully when call withdraw given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "withdraw").resolves(txHash);
+      stub(wipClient.wrappedIpClient, "withdraw").resolves(txHash);
       const rsp = await wipClient.withdraw({
         amount: 1,
       });
@@ -104,7 +81,7 @@ describe("WIP Functions", () => {
     });
 
     it("should approve successfully when call approve given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "approve").resolves(txHash);
+      stub(wipClient.wrappedIpClient, "approve").resolves(txHash);
       const rsp = await wipClient.approve({
         amount: 1,
         spender: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
@@ -113,7 +90,7 @@ describe("WIP Functions", () => {
     });
 
     it("should approve successfully when call approve given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "approve").resolves(txHash);
+      stub(wipClient.wrappedIpClient, "approve").resolves(txHash);
       const rsp = await wipClient.approve({
         amount: 1,
         spender: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
@@ -132,7 +109,7 @@ describe("WIP Functions", () => {
     });
 
     it("should get balance successfully when call getBalance given address is valid", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "balanceOf").resolves({ result: 0n });
+      stub(wipClient.wrappedIpClient, "balanceOf").resolves({ result: 0n });
       const rsp = await wipClient.balanceOf("0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91");
       expect(rsp).to.be.a("bigint");
     });
@@ -153,21 +130,12 @@ describe("WIP Functions", () => {
     });
 
     it("should transfer successfully when call transfer given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "transfer").resolves(txHash);
+      stub(wipClient.wrappedIpClient, "transfer").resolves(txHash);
       const rsp = await wipClient.transfer({
         amount: 1,
         to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
       });
 
-      expect(rsp.txHash).to.be.a("string");
-    });
-
-    it("should transfer successfully when call transfer given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "transfer").resolves(txHash);
-      const rsp = await wipClient.transfer({
-        amount: 1,
-        to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-      });
       expect(rsp.txHash).to.be.a("string");
     });
   });
@@ -188,17 +156,7 @@ describe("WIP Functions", () => {
     });
 
     it("should transfer successfully when call transferFrom given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "transferFrom").resolves(txHash);
-      const rsp = await wipClient.transferFrom({
-        amount: 1,
-        from: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-        to: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",
-      });
-      expect(rsp.txHash).to.be.a("string");
-    });
-
-    it("should transfer successfully when call transferFrom given amount is 1", async () => {
-      sinon.stub(wipClient.wrappedIpClient, "transferFrom").resolves(txHash);
+      stub(wipClient.wrappedIpClient, "transferFrom").resolves(txHash);
       const rsp = await wipClient.transferFrom({
         amount: 1,
         from: "0x12fcbf7d94388da4D4a38bEF15B19289a00e6c91",

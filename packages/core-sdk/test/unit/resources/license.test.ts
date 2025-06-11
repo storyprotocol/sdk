@@ -1,21 +1,27 @@
-import chai from "chai";
-import { createMock, generateRandomAddress, generateRandomHash } from "../testUtils";
-import * as sinon from "sinon";
-import { LicenseClient, LicensingConfig } from "../../../src";
-import { PublicClient, WalletClient, Account, zeroAddress, Hex } from "viem";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { SinonStub, stub } from "sinon";
+import { Address, Hex, PublicClient, WalletClient, zeroAddress } from "viem";
+
+import { LicenseClient, LicensingConfig } from "../../../src";
 import {
   IpAccountImplClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   RoyaltyModuleReadOnlyClient,
   WrappedIpClient,
 } from "../../../src/abi/generated";
-import { LicenseTerms } from "../../../src/types/resources/license";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
+import { LicenseTerms } from "../../../src/types/resources/license";
 import { ipId, mockAddress, walletAddress } from "../mockData";
+import {
+  createMockPublicClient,
+  createMockWalletClient,
+  generateRandomAddress,
+  generateRandomHash,
+} from "../testUtils";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+use(chaiAsPromised);
+
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 
 describe("Test LicenseClient", () => {
@@ -24,26 +30,18 @@ describe("Test LicenseClient", () => {
   let walletMock: WalletClient;
 
   beforeEach(() => {
-    rpcMock = createMock<PublicClient>();
-    walletMock = createMock<WalletClient>();
-    const accountMock = createMock<Account>();
-    accountMock.address = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
-    walletMock.account = accountMock;
+    rpcMock = createMockPublicClient();
+    walletMock = createMockWalletClient();
     licenseClient = new LicenseClient(rpcMock, walletMock, 1315);
-    (licenseClient.licenseTemplateClient as any).address = generateRandomAddress();
-    (licenseClient.licensingModuleClient as any).address = generateRandomAddress();
+    (licenseClient.licenseTemplateClient as { address: string }).address = generateRandomAddress();
+    (licenseClient.licensingModuleClient as { address: string }).address = generateRandomAddress();
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  describe("Test licenseClient.registerPILTerms", async () => {
+  describe("Test licenseClient.registerPILTerms", () => {
     beforeEach(() => {
-      sinon.stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyToken").resolves(true);
-      sinon
-        .stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyPolicy")
-        .resolves(true);
+      stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyToken").resolves(true);
+
+      stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyPolicy").resolves(true);
     });
     const licenseTerms: LicenseTerms = {
       defaultMintingFee: 1513n,
@@ -65,9 +63,9 @@ describe("Test LicenseClient", () => {
       uri: "",
     };
     it("should return directly licenseTermsId when call registerPILTerms given request have already registered", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(1) });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(1),
+      });
 
       const result = await licenseClient.registerPILTerms(licenseTerms);
 
@@ -76,9 +74,9 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is more than 100", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
       await expect(
         licenseClient.registerPILTerms({
           ...licenseTerms,
@@ -93,9 +91,9 @@ describe("Test LicenseClient", () => {
       );
     });
     it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is less than 0", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
       await expect(
         licenseClient.registerPILTerms({
           ...licenseTerms,
@@ -110,12 +108,14 @@ describe("Test LicenseClient", () => {
       );
     });
     it("should return encodedTxData when call registerPILTerms given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode").returns({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await licenseClient.registerPILTerms({
         ...licenseTerms,
@@ -130,19 +130,18 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call registerPILTerms given args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: BigInt(1),
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
 
       const result = await licenseClient.registerPILTerms({
         ...licenseTerms,
@@ -152,19 +151,18 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call registerPILTerms given args is correct ", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: BigInt(1),
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
 
       const result = await licenseClient.registerPILTerms({
         ...licenseTerms,
@@ -179,11 +177,11 @@ describe("Test LicenseClient", () => {
       expect(result.licenseTermsId).to.equal(1n);
     });
   });
-  describe("Test licenseClient.registerNonComSocialRemixingPIL", async () => {
+  describe("Test licenseClient.registerNonComSocialRemixingPIL", () => {
     it("should return licenseTermsId when call registerNonComSocialRemixingPIL given licenseTermsId is registered", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(1) });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(1),
+      });
 
       const result = await licenseClient.registerNonComSocialRemixingPIL();
 
@@ -191,19 +189,18 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txhash when call registerNonComSocialRemixingPIL given licenseTermsId is not registered ", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: BigInt(1),
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
 
       const result = await licenseClient.registerNonComSocialRemixingPIL();
 
@@ -211,12 +208,13 @@ describe("Test LicenseClient", () => {
       expect(result.licenseTermsId).to.equal(1n);
     });
     it("should return throw error when call registerNonComSocialRemixingPIL given request fail", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
-        .throws(new Error("request fail."));
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").throws(
+        new Error("request fail."),
+      );
       try {
         await licenseClient.registerNonComSocialRemixingPIL();
       } catch (error) {
@@ -227,12 +225,14 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return encodedTxData when call registerNonComSocialRemixingPIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode").returns({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await licenseClient.registerNonComSocialRemixingPIL({
         txOptions: {
@@ -247,11 +247,11 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  describe("Test licenseClient.registerCommercialUsePIL", async () => {
+  describe("Test licenseClient.registerCommercialUsePIL", () => {
     it("should return licenseTermsId when call registerCommercialUsePIL given licenseTermsId is registered", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(1) });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(1),
+      });
 
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: 1,
@@ -262,19 +262,18 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txhash when call registerCommercialUsePIL given licenseTermsId is not registered ", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: BigInt(1),
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
         currency: zeroAddress,
@@ -285,12 +284,13 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return throw error when call registerCommercialUsePIL given request fail", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
-        .throws(new Error("request fail."));
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").throws(
+        new Error("request fail."),
+      );
 
       try {
         await licenseClient.registerCommercialUsePIL({
@@ -305,12 +305,14 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return encodedTxData when call registerCommercialUsePIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode").returns({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
@@ -328,11 +330,11 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  describe("Test licenseClient.registerCommercialRemixPIL", async () => {
+  describe("Test licenseClient.registerCommercialRemixPIL", () => {
     it("should return licenseTermsId when call registerCommercialRemixPIL given licenseTermsId is registered", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(1) });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(1),
+      });
 
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
@@ -344,19 +346,18 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txhash when call registerCommercialRemixPIL given licenseTermsId is not registered", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: BigInt(1),
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
@@ -367,19 +368,18 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txhash when call registerCommercialRemixPIL given licenseTermsId is not registered ", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: BigInt(1),
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
 
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
@@ -392,12 +392,13 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return throw error when call registerCommercialRemixPIL given request fail", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
-        .throws(new Error("request fail."));
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").throws(
+        new Error("request fail."),
+      );
 
       try {
         await licenseClient.registerCommercialRemixPIL({
@@ -413,12 +414,14 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return encodedTxData when call registerCommercialRemixPIL given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "getLicenseTermsId")
-        .resolves({ selectedLicenseTermsId: BigInt(0) });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTermsEncode").returns({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
@@ -437,9 +440,9 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  describe("Test licenseClient.attachLicenseTerms", async () => {
+  describe("Test licenseClient.attachLicenseTerms", () => {
     it("should throw ipId is not registered when call attachLicenseTerms given ipId is not registered", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
         await licenseClient.attachLicenseTerms({
@@ -454,8 +457,8 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw licenseTermsId error when call attachLicenseTerms given licenseTermsId is not exist", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
 
       try {
         await licenseClient.attachLicenseTerms({
@@ -470,11 +473,10 @@ describe("Test LicenseClient", () => {
     });
 
     it("should success of false when call attachLicenseTerms given licenseTermsId is already attached", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
       const result = await licenseClient.attachLicenseTerms({
         ipId: zeroAddress,
         licenseTermsId: "1",
@@ -485,12 +487,13 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call attachLicenseTerms given args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(false);
-      sinon.stub(licenseClient.licensingModuleClient, "attachLicenseTerms").resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+        false,
+      );
+      stub(licenseClient.licensingModuleClient, "attachLicenseTerms").resolves(txHash);
 
       const result = await licenseClient.attachLicenseTerms({
         ipId: zeroAddress,
@@ -501,17 +504,16 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw invalid address when call when call attachLicenseTerms given a invalid licenseTemplate address", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
 
       try {
         await licenseClient.attachLicenseTerms({
           ipId: zeroAddress,
           licenseTermsId: "1",
-          licenseTemplate: "invalid address" as Hex,
+          licenseTemplate: "invalid address" as Address,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -520,12 +522,13 @@ describe("Test LicenseClient", () => {
       }
     });
     it("should return txHash when call attachLicenseTerms given args is correct ", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(false);
-      sinon.stub(licenseClient.licensingModuleClient, "attachLicenseTerms").resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+        false,
+      );
+      stub(licenseClient.licensingModuleClient, "attachLicenseTerms").resolves(txHash);
 
       const result = await licenseClient.attachLicenseTerms({
         ipId: zeroAddress,
@@ -536,14 +539,17 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return encodedTxData when call attachLicenseTerms given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(false);
-      sinon
-        .stub(licenseClient.licensingModuleClient, "attachLicenseTermsEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+        false,
+      );
+
+      stub(licenseClient.licensingModuleClient, "attachLicenseTermsEncode").returns({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await licenseClient.attachLicenseTerms({
         ipId: zeroAddress,
@@ -560,13 +566,13 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  describe("Test licenseClient.mintLicenseTokens", async () => {
+  describe("Test licenseClient.mintLicenseTokens", () => {
     beforeEach(() => {
       // Mock `predictMintingLicenseFee` method
-      rpcMock.readContract = sinon.stub().resolves([WIP_TOKEN_ADDRESS, 0n]);
+      rpcMock.readContract = stub().resolves([WIP_TOKEN_ADDRESS, 0n]);
     });
     it("should throw licensor ipId error when call mintLicenseTokens given licensorIpId is not registered", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
       try {
         await licenseClient.mintLicenseTokens({
@@ -583,9 +589,9 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw minting fee error when call mintLicenseTokens given minting fee is less than 0", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
 
       try {
         await licenseClient.mintLicenseTokens({
@@ -601,8 +607,8 @@ describe("Test LicenseClient", () => {
       }
     });
     it("should throw invalid address when call mintLicenseTokens given invalid licenseTemplate address", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
 
       try {
         await licenseClient.mintLicenseTokens({
@@ -620,11 +626,10 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw invalid address when call mintLicenseTokens given invalid receiver address", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
 
       try {
         await licenseClient.mintLicenseTokens({
@@ -642,8 +647,8 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw licenseTermsId error when call mintLicenseTokens given licenseTermsId is not exist", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
 
       try {
         await licenseClient.mintLicenseTokens({
@@ -659,14 +664,15 @@ describe("Test LicenseClient", () => {
       }
     });
     it("should not call attached license terms given licensorIpId is owned by the caller", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      const hasIpAttachedLicenseTermsStub = sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
-      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
-      sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      const hasIpAttachedLicenseTermsStub = stub(
+        licenseClient.licenseRegistryReadOnlyClient,
+        "hasIpAttachedLicenseTerms",
+      ).resolves(true);
+      stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
         {
           caller: zeroAddress,
           licensorIpId: zeroAddress,
@@ -684,18 +690,19 @@ describe("Test LicenseClient", () => {
         maxRevenueShare: 1,
       });
 
-      expect(hasIpAttachedLicenseTermsStub.notCalled).to.be.true;
+      expect(hasIpAttachedLicenseTermsStub.notCalled).to.equal(true);
     });
 
     it("should call attached license terms given licensorIpId is not owned by the caller", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      const hasIpAttachedLicenseTermsStub = sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
-      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
-      sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      const hasIpAttachedLicenseTermsStub = stub(
+        licenseClient.licenseRegistryReadOnlyClient,
+        "hasIpAttachedLicenseTerms",
+      ).resolves(true);
+      stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
+      stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
         {
           caller: zeroAddress,
           licensorIpId: zeroAddress,
@@ -713,22 +720,23 @@ describe("Test LicenseClient", () => {
         maxRevenueShare: 1,
       });
 
-      expect(hasIpAttachedLicenseTermsStub.calledOnce).to.be.true;
+      expect(hasIpAttachedLicenseTermsStub.calledOnce).to.equal(true);
     });
 
     it("should not call attached license terms given licensorIpId is owned by the caller and licenseTermsId is default", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.licenseRegistryReadOnlyClient, "getDefaultLicenseTerms").resolves({
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.licenseRegistryReadOnlyClient, "getDefaultLicenseTerms").resolves({
         licenseTemplate: zeroAddress,
         licenseTermsId: BigInt(1),
       });
-      const hasIpAttachedLicenseTermsStub = sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(false);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
-      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
-      sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
+      const hasIpAttachedLicenseTermsStub = stub(
+        licenseClient.licenseRegistryReadOnlyClient,
+        "hasIpAttachedLicenseTerms",
+      ).resolves(false);
+      stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+      stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
         {
           caller: zeroAddress,
           licensorIpId: zeroAddress,
@@ -746,16 +754,17 @@ describe("Test LicenseClient", () => {
         maxRevenueShare: 1,
       });
 
-      expect(hasIpAttachedLicenseTermsStub.notCalled).to.be.true;
+      expect(hasIpAttachedLicenseTermsStub.notCalled).to.equal(true);
     });
 
     it("should throw attached error when call mintLicenseTokens given licenseTermsId is not attached", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(IpAccountImplClient.prototype, "owner").resolves(mockAddress);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+        false,
+      );
 
       try {
         await licenseClient.mintLicenseTokens({
@@ -772,14 +781,13 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call mintLicenseTokens given args is correct ", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
-      sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
         {
           caller: zeroAddress,
           licensorIpId: zeroAddress,
@@ -804,14 +812,13 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call mintLicenseTokens given args is correct , amount of 5", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
-      sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(licenseClient.licensingModuleClient, "mintLicenseTokens").resolves(txHash);
+      stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
         {
           caller: zeroAddress,
           licensorIpId: zeroAddress,
@@ -836,15 +843,16 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return encodedTxData when call mintLicenseTokens given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-        .resolves(true);
-      sinon
-        .stub(licenseClient.licensingModuleClient, "mintLicenseTokensEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+
+      stub(licenseClient.licensingModuleClient, "mintLicenseTokensEncode").returns({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await licenseClient.mintLicenseTokens({
         licensorIpId: zeroAddress,
@@ -863,38 +871,40 @@ describe("Test LicenseClient", () => {
     });
 
     describe("With Minting Fees", () => {
-      let mintLicenseTokensStub: sinon.SinonStub;
-      let balanceStub: sinon.SinonStub;
-      let simulateContractStub: sinon.SinonStub;
+      let mintLicenseTokensStub: SinonStub;
+      let balanceStub: SinonStub;
+      let simulateContractStub: SinonStub;
 
       beforeEach(() => {
         // Mock predictMintingLicenseFee
-        rpcMock.readContract = sinon.stub().resolves([WIP_TOKEN_ADDRESS, 100n]);
-        sinon.stub(WrappedIpClient.prototype, "approve").resolves(txHash);
-        sinon.stub(WrappedIpClient.prototype, "allowance").resolves({
+        rpcMock.readContract = stub().resolves([WIP_TOKEN_ADDRESS, 100n]);
+        stub(WrappedIpClient.prototype, "approve").resolves(txHash);
+        stub(WrappedIpClient.prototype, "allowance").resolves({
           result: 50n,
         });
-        sinon.stub(WrappedIpClient.prototype, "balanceOf").resolves({
+        stub(WrappedIpClient.prototype, "balanceOf").resolves({
           result: 0n,
         });
-        balanceStub = sinon.stub().resolves(200n);
+        balanceStub = stub().resolves(200n);
         rpcMock.getBalance = balanceStub;
-        simulateContractStub = sinon.stub().resolves(generateRandomHash());
+        simulateContractStub = stub().resolves(generateRandomHash());
         rpcMock.simulateContract = simulateContractStub;
-        walletMock.writeContract = sinon.stub().resolves(generateRandomHash());
-        mintLicenseTokensStub = sinon
-          .stub(licenseClient.licensingModuleClient, "mintLicenseTokens")
-          .resolves(txHash);
-        sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-        sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-        sinon
-          .stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms")
-          .resolves(true);
-        sinon.stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
+        walletMock.writeContract = stub().resolves(generateRandomHash());
+        mintLicenseTokensStub = stub(
+          licenseClient.licensingModuleClient,
+          "mintLicenseTokens",
+        ).resolves(txHash);
+        stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+        stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+
+        stub(licenseClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+          true,
+        );
+        stub(IpAccountImplClient.prototype, "owner").resolves(walletAddress);
       });
 
       it("should auto convert IP to WIP", async () => {
-        sinon.stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
+        stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns([
           {
             caller: zeroAddress,
             licensorIpId: zeroAddress,
@@ -915,37 +925,53 @@ describe("Test LicenseClient", () => {
           },
         });
         expect(result.txHash).to.equal(txHash);
-        expect(mintLicenseTokensStub.calledOnce).to.be.true;
-        expect(mintLicenseTokensStub.firstCall.args[0].receiver).to.equal(
+        expect(mintLicenseTokensStub.calledOnce).equal(true);
+        expect((mintLicenseTokensStub.firstCall.args[0] as { receiver: string }).receiver).to.equal(
           walletMock.account!.address,
         );
         expect(simulateContractStub.callCount).to.equal(1);
-        expect(simulateContractStub.firstCall.args[0].functionName).to.equal("deposit");
+        expect(
+          (simulateContractStub.firstCall.args[0] as { functionName: string }).functionName,
+          "deposit",
+        );
       });
 
       it("should support multicall when converting IP to WIP", async () => {
-        const mockLicenseTokenIds = [{ startLicenseTokenId: 1n }];
-        sinon
-          .stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent")
-          .returns(mockLicenseTokenIds as any);
-        const { txHash, receipt, licenseTokenIds } = await licenseClient.mintLicenseTokens({
+        const mockLicenseTokenIds = [
+          {
+            caller: zeroAddress,
+            licensorIpId: zeroAddress,
+            licenseTemplate: zeroAddress,
+            licenseTermsId: 1n,
+            amount: 1n,
+            receiver: zeroAddress,
+            startLicenseTokenId: 1n,
+          },
+        ];
+
+        stub(licenseClient.licensingModuleClient, "parseTxLicenseTokensMintedEvent").returns(
+          mockLicenseTokenIds,
+        );
+        const {
+          txHash: mintTxHash,
+          receipt,
+          licenseTokenIds,
+        } = await licenseClient.mintLicenseTokens({
           licensorIpId: zeroAddress,
           licenseTermsId: "1",
           maxMintingFee: 1,
           maxRevenueShare: 1,
         });
         expect(licenseTokenIds![0]).to.equal(mockLicenseTokenIds[0].startLicenseTokenId);
-        expect(txHash).not.to.be.undefined;
-        expect(receipt).not.to.be.undefined;
-        expect(mintLicenseTokensStub.notCalled).to.be.true;
-        expect(simulateContractStub.calledOnce).to.be.true;
-        const calls = simulateContractStub.firstCall.args[0].args[0];
-        expect(calls.length).to.equal(3);
+        expect(mintTxHash).to.not.equal(undefined);
+        expect(receipt).to.not.equal(undefined);
+        expect(mintLicenseTokensStub.notCalled).to.equal(true);
+        expect(simulateContractStub.calledOnce).to.equal(true);
       });
     });
   });
 
-  describe("Test licenseClient.getLicenseTerms", async () => {
+  describe("Test licenseClient.getLicenseTerms", () => {
     it("should return license terms when call getLicenseTerms given licenseTermsId is exist", async () => {
       const mockLicenseTermsResponse: PiLicenseTemplateGetLicenseTermsResponse = {
         terms: {
@@ -968,9 +994,10 @@ describe("Test LicenseClient", () => {
           uri: "string",
         },
       };
-      sinon
-        .stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms")
-        .resolves(mockLicenseTermsResponse);
+
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms").resolves(
+        mockLicenseTermsResponse,
+      );
 
       const result = await licenseClient.getLicenseTerms("1");
 
@@ -978,9 +1005,9 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw error when call getLicenseTerms given licenseTermsId is not exist", async () => {
-      sinon
-        .stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms")
-        .throws(new Error("Given licenseTermsId is not exist."));
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "getLicenseTerms").throws(
+        new Error("Given licenseTermsId is not exist."),
+      );
 
       try {
         await licenseClient.getLicenseTerms("1");
@@ -992,9 +1019,9 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  describe("Test licenseClient.predictMintingLicenseFee", async () => {
+  describe("Test licenseClient.predictMintingLicenseFee", () => {
     it("should throw register error when call predictMintingLicenseFee given licenseTermsId is not registered", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await licenseClient.predictMintingLicenseFee({
           licenseTermsId: "1",
@@ -1009,8 +1036,8 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw licenseTermsId error when call predictMintingLicenseFee given licenseTermsId is not exist", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
       try {
         await licenseClient.predictMintingLicenseFee({
           licenseTermsId: "1",
@@ -1025,10 +1052,10 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return currency token and token amount when call predictMintingLicenseFee given licenseTemplate and receiver", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
       // Mock predictMintingLicenseFee
-      rpcMock.readContract = sinon.stub().resolves([zeroAddress, 1n]);
+      rpcMock.readContract = stub().resolves([zeroAddress, 1n]);
 
       const result = await licenseClient.predictMintingLicenseFee({
         licenseTermsId: "1",
@@ -1044,10 +1071,10 @@ describe("Test LicenseClient", () => {
       });
     });
     it("should return currency token and token amount when call predictMintingLicenseFee given correct args ", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
       // Mock predictMintingLicenseFee
-      rpcMock.readContract = sinon.stub().resolves([zeroAddress, 1n]);
+      rpcMock.readContract = stub().resolves([zeroAddress, 1n]);
 
       const result = await licenseClient.predictMintingLicenseFee({
         licenseTermsId: "1",
@@ -1062,9 +1089,9 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  describe("Test licenseClient.setLicensingConfig", async () => {
+  describe("Test licenseClient.setLicensingConfig", () => {
     it("should throw ip registry error when call setLicensingConfig given ip id is not registered", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
@@ -1089,8 +1116,8 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw licenseTermsId error when call setLicensingConfig given licenseTermsId is not exist", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(false);
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
@@ -1115,9 +1142,9 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw minting fee error when call setLicensingConfig given minting fee is less than 0", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
@@ -1141,9 +1168,9 @@ describe("Test LicenseClient", () => {
       }
     });
     it("should throw license hook error when call setLicensingConfig given license hook is not registered", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(false);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(false);
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
@@ -1168,9 +1195,9 @@ describe("Test LicenseClient", () => {
     });
 
     it("should throw license template and license terms mismatch error when call setLicensingConfig given license template is zero address and license terms id is not zero address", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
@@ -1194,9 +1221,9 @@ describe("Test LicenseClient", () => {
       }
     });
     it("should throw license template cannot be zero address error when call setLicensingConfig given license template is zero address and commercial revenue share is not zero", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
       try {
         await licenseClient.setLicensingConfig({
           ipId: zeroAddress,
@@ -1220,12 +1247,14 @@ describe("Test LicenseClient", () => {
       }
     });
     it("should return encodedTxData when call setLicensingConfig given txOptions.encodedTxDataOnly of true and args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
-      sinon
-        .stub(licenseClient.licensingModuleClient, "setLicensingConfigEncode")
-        .returns({ to: zeroAddress, data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c" });
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+
+      stub(licenseClient.licensingModuleClient, "setLicensingConfigEncode").returns({
+        to: zeroAddress,
+        data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
 
       const result = await licenseClient.setLicensingConfig({
         ipId: zeroAddress,
@@ -1253,10 +1282,10 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash when call setLicensingConfig given args is correct", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
 
       const result = await licenseClient.setLicensingConfig({
         ipId: zeroAddress,
@@ -1278,10 +1307,10 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash and success when call setLicensingConfig given args is correct ", async () => {
-      sinon.stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      sinon.stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
-      sinon.stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.moduleRegistryReadOnlyClient, "isRegistered").resolves(true);
+      stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
 
       const result = await licenseClient.setLicensingConfig({
         ipId: zeroAddress,
@@ -1303,11 +1332,11 @@ describe("Test LicenseClient", () => {
     });
   });
 
-  describe("Test licenseClient.getLicensingConfig", async () => {
+  describe("Test licenseClient.getLicensingConfig", () => {
     it("should throw error given rpc error", async () => {
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig")
-        .rejects(new Error("rpc error"));
+      stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig").rejects(
+        new Error("rpc error"),
+      );
       const result = licenseClient.getLicensingConfig({
         ipId: zeroAddress,
         licenseTermsId: 1,
@@ -1327,9 +1356,10 @@ describe("Test LicenseClient", () => {
         expectMinimumGroupRewardShare: 0,
         expectGroupRewardPool: zeroAddress,
       };
-      sinon
-        .stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig")
-        .resolves(mockLicensingConfig);
+
+      stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig").resolves(
+        mockLicensingConfig,
+      );
       const result = await licenseClient.getLicensingConfig({
         ipId: zeroAddress,
         licenseTermsId: 1,
@@ -1340,10 +1370,10 @@ describe("Test LicenseClient", () => {
 
   describe("Test licenseClient.registerCreativeCommonsAttributionPIL", () => {
     it("should throw error given rpc error", async () => {
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "registerLicenseTerms")
-        .rejects(new Error("rpc error"));
-      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").rejects(
+        new Error("rpc error"),
+      );
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
         selectedLicenseTermsId: 0n,
       });
       const result = licenseClient.registerCreativeCommonsAttributionPIL({
@@ -1355,7 +1385,7 @@ describe("Test LicenseClient", () => {
       );
     });
     it("should return licenseTermsId when call given args is registered", async () => {
-      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
         selectedLicenseTermsId: 1n,
       });
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
@@ -1363,23 +1393,22 @@ describe("Test LicenseClient", () => {
         royaltyPolicyAddress: zeroAddress,
       });
       expect(result.licenseTermsId).to.equal(1n);
-      expect(result.txHash).to.undefined;
+      expect(result.txHash).to.equal(undefined);
     });
 
     it("should return txHash when call given args is correct", async () => {
-      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
         selectedLicenseTermsId: 0n,
       });
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: 1n,
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: 1n,
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
         currency: zeroAddress,
         royaltyPolicyAddress: zeroAddress,
@@ -1389,19 +1418,18 @@ describe("Test LicenseClient", () => {
     });
 
     it("should return txHash and success when call given args is correct ", async () => {
-      sinon.stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-      sinon.stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
         selectedLicenseTermsId: 0n,
       });
-      sinon
-        .stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent")
-        .returns([
-          {
-            licenseTermsId: 1n,
-            licenseTemplate: zeroAddress,
-            licenseTerms: zeroAddress,
-          },
-        ]);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: 1n,
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
         currency: zeroAddress,
         royaltyPolicyAddress: zeroAddress,

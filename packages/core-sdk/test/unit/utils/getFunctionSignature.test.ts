@@ -1,7 +1,7 @@
+import { expect } from "chai";
+
 import { coreMetadataModuleAbi, groupingWorkflowsAbi } from "../../../src/abi/generated";
 import { getFunctionSignature } from "../../../src/utils/getFunctionSignature";
-
-import { expect } from "chai";
 
 describe("Test getFunctionSignature", () => {
   it("should return function signature", () => {

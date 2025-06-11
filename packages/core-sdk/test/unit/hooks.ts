@@ -1,7 +1,8 @@
 // Restores the default sandbox after every test
 import * as sinon from "sinon";
-exports.mochaHooks = {
-  afterEach() {
+
+export const mochaHooks = {
+  afterEach(): void {
     sinon.restore();
   },
 };
