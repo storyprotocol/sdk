@@ -1,10 +1,10 @@
 import * as crypto from "crypto";
 
 import { HDKey } from "@scure/bip32";
-import { createWalletClient, Hex, http, parseEther } from "viem";
+import { Address, createWalletClient, Hex, http, parseEther } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-import { getStoryClient, publicClient, RPC } from "./util";
+import { getStoryClient, publicClient, RPC, TEST_WALLET_ADDRESS } from "./util";
 import { StoryClient } from "../../../src";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 
@@ -65,9 +65,9 @@ export const getXprvFromPrivateKey = (privateKey: string): string => {
  */
 export const getDerivedStoryClient = async (): Promise<{
   clientB: StoryClient;
-  address: string;
+  address: Address;
 }> => {
-  const xprv = getXprvFromPrivateKey(process.env.WALLET_PRIVATE_KEY as string);
+  const xprv = getXprvFromPrivateKey(TEST_WALLET_ADDRESS);
   const privateKey = getPrivateKeyFromXprv(xprv);
   const clientB = getStoryClient(privateKey);
   const walletB = privateKeyToAccount(privateKey);
@@ -76,7 +76,7 @@ export const getDerivedStoryClient = async (): Promise<{
   const clientAWalletClient = createWalletClient({
     chain: chainStringToViemChain("aeneid"),
     transport: http(RPC),
-    account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
+    account: privateKeyToAccount(TEST_WALLET_ADDRESS),
   });
   const clientBBalance = await publicClient.getBalance({
     address: walletB.address,

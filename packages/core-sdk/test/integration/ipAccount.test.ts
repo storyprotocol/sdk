@@ -50,7 +50,7 @@ describe("IPAccount Functions", () => {
       functionName: "setTransientPermission",
       args: [
         getAddress(ipId),
-        getAddress(process.env.TEST_WALLET_ADDRESS as Hex),
+        getAddress(TEST_WALLET_ADDRESS),
         getAddress(coreMetadataModule),
         toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
         AccessPermission.ALLOW,

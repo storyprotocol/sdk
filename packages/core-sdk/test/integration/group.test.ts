@@ -2,7 +2,7 @@ import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
 
-import { aeneid, getStoryClient, mintBySpg } from "./utils/util";
+import { aeneid, getStoryClient, mintBySpg, TEST_WALLET_ADDRESS } from "./utils/util";
 import {
   LicenseTermsData,
   MintAndRegisterIpAssetWithPilTermsResponse,
@@ -36,7 +36,7 @@ describe("Group Functions", () => {
         maxSupply: 100,
         isPublicMinting: true,
         mintOpen: true,
-        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         contractURI: "test-uri",
       })
     ).spgNftContract!;
