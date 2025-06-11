@@ -21,7 +21,6 @@ describe("Test DisputeClient", () => {
     disputeClient = new DisputeClient(rpcMock, walletMock, 1315);
   });
 
-
   describe("raiseDispute", () => {
     const minimumBond: bigint = 10n;
     beforeEach(() => {
