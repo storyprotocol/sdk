@@ -323,7 +323,7 @@ describe("Royalty Functions", () => {
     let anotherAddress: Address;
     before(async () => {
       const derivedClient = await getDerivedStoryClient();
-      anotherAddress = derivedClient.address as Address;
+      anotherAddress = derivedClient.address;
       await client.wipClient.deposit({
         amount: parseEther("5"),
       });
