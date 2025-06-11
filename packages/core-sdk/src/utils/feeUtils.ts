@@ -108,7 +108,6 @@ const multiCallWrapIp = async ({
         functionName: "deposit",
         value: ipAmountToWrap,
       },
-      waitForTransaction: true,
     });
   }
 
@@ -143,8 +142,6 @@ const multiCallWrapIp = async ({
       args: [multiCalls],
       value: ipAmountToWrap,
     },
-    // caller should handle waiting for transaction if needed
-    waitForTransaction: false,
   });
 };
 

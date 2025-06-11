@@ -225,7 +225,7 @@ export class LicenseClient {
           licenseTermsId: request.licenseTermsId,
         });
       if (isAttachedLicenseTerms) {
-        return { txHash: "", success: false };
+        return { success: false };
       }
       const req = {
         ipId: request.ipId,
@@ -236,15 +236,11 @@ export class LicenseClient {
         return { encodedTxData: this.licensingModuleClient.attachLicenseTermsEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.attachLicenseTerms(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to attach license terms");
@@ -335,7 +331,7 @@ export class LicenseClient {
       }
       const { txHash, receipt } = await contractCallWithFees({
         totalFees: licenseMintingFee,
-        options: { wipOptions: request.wipOptions },
+        options: { wipOptions: request.options?.wipOptions },
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: wipSpenders,
@@ -468,14 +464,11 @@ export class LicenseClient {
         return { encodedTxData: this.licensingModuleClient.setLicensingConfigEncode(req) };
       } else {
         const txHash = await this.licensingModuleClient.setLicensingConfig(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash, success: true };
-        }
-        return { txHash: txHash };
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash, success: true };
       }
     } catch (error) {
       return handleError(error, "Failed to set licensing config");

@@ -245,16 +245,12 @@ export class IPAssetClient {
           });
         }
 
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-          return { txHash, ...log };
-        } else {
-          return { txHash };
-        }
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+        return { txHash, ...log };
       }
     } catch (error) {
       return handleError(error, "Failed to register IP");
@@ -304,34 +300,30 @@ export class IPAssetClient {
         txHash = await this.multicall3Client.aggregate3({ calls: contracts });
       }
       const results: IpIdAndTokenId<"spgNftContract" | "nftContract">[] = [];
-      if (request.txOptions?.waitForTransaction) {
-        const processTransaction = async (
-          hash: Hex,
-          contractType: "spgNftContract" | "nftContract",
-        ): Promise<void> => {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash,
-          });
-          const eventResults = this.getIpIdAndTokenIdsFromEvent(txReceipt, contractType);
-          results.push(...eventResults);
-        };
+      const processTransaction = async (
+        hash: Hex,
+        contractType: "spgNftContract" | "nftContract",
+      ): Promise<void> => {
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash,
+        });
+        const eventResults = this.getIpIdAndTokenIdsFromEvent(txReceipt, contractType);
+        results.push(...eventResults);
+      };
 
-        if (txHash) {
-          await processTransaction(txHash, "nftContract");
-        }
-
-        if (spgTxHash) {
-          await processTransaction(spgTxHash, "spgNftContract");
-        }
-        return {
-          txHash,
-          spgTxHash,
-          results,
-        };
-      } else {
-        return { txHash };
+      if (txHash) {
+        await processTransaction(txHash, "nftContract");
       }
+
+      if (spgTxHash) {
+        await processTransaction(spgTxHash, "spgNftContract");
+      }
+      return {
+        txHash,
+        spgTxHash,
+        results,
+      };
     } catch (error) {
       return handleError(error, "Failed to batch register IP");
     }
@@ -377,7 +369,7 @@ export class IPAssetClient {
           encodedTxs: [encodedTxData],
           spgSpenderAddress: this.royaltyModuleEventClient.address,
           wipOptions: {
-            ...request.wipOptions,
+            ...request.options?.wipOptions,
             useMulticallWhenPossible: false,
           },
         });
@@ -458,15 +450,11 @@ export class IPAssetClient {
         });
       }
       const txHash = await this.multicall3Client.aggregate3({ calls: contracts });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return { txHash };
-      } else {
-        return { txHash };
-      }
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return { txHash };
     } catch (error) {
       return handleError(error, "Failed to batch register derivative");
     }
@@ -504,15 +492,11 @@ export class IPAssetClient {
         };
       } else {
         const txHash = await this.licensingModuleClient.registerDerivativeWithLicenseTokens(req);
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          return { txHash: txHash };
-        } else {
-          return { txHash: txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        return { txHash: txHash };
       }
     } catch (error) {
       return handleError(error, "Failed to register derivative with license tokens");
@@ -585,7 +569,7 @@ export class IPAssetClient {
         );
       };
       const rsp = await this.handleRegistrationWithFees({
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgNftContract: transformRequest.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -612,26 +596,25 @@ export class IPAssetClient {
   }
 
   /**
- * Batch mint an NFT from a collection and register it as an IP.
- *
- * Emits on-chain IPRegistered and LicenseTermsAttached events.
- */
-public async batchMintAndRegisterIpAssetWithPilTerms(
-  request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
-): Promise<BatchMintAndRegisterIpAssetWithPilTermsResponse> {
-  try {
-    const calldata: Hex[] = [];
-    for (const arg of request.args) {
-      const result = await this.mintAndRegisterIpAssetWithPilTerms({
-        ...arg,
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      calldata.push(result.encodedTxData!.data);
-    }
-    const txHash = await this.licenseAttachmentWorkflowsClient.multicall({ data: calldata });
-    if (request.txOptions?.waitForTransaction) {
+   * Batch mint an NFT from a collection and register it as an IP.
+   *
+   * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
+   */
+  public async batchMintAndRegisterIpAssetWithPilTerms(
+    request: BatchMintAndRegisterIpAssetWithPilTermsRequest,
+  ): Promise<BatchMintAndRegisterIpAssetWithPilTermsResponse> {
+    try {
+      const calldata: Hex[] = [];
+      for (const arg of request.args) {
+        const result = await this.mintAndRegisterIpAssetWithPilTerms({
+          ...arg,
+          txOptions: {
+            encodedTxDataOnly: true,
+          },
+        });
+        calldata.push(result.encodedTxData!.data);
+      }
+      const txHash = await this.licenseAttachmentWorkflowsClient.multicall({ data: calldata });
       const txReceipt = await this.rpcClient.waitForTransactionReceipt({
         ...request.txOptions,
         hash: txHash,
@@ -644,42 +627,25 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
           spgNftContract: log.tokenContract,
           licenseTermsIds: [],
         }));
-      
       // Due to emit event log by sequence, we need to get license terms id from request.args
       for (let j = 0; j < request.args.length; j++) {
-        const arg = request.args[j];
-        
-        // Check if licenseTermsIds are provided directly
-        if (arg.licenseTermsInfo?.licenseTermsIds && arg.licenseTermsInfo.licenseTermsIds.length > 0) {
-          // Use the provided licenseTermsIds directly
-          results[j].licenseTermsIds = arg.licenseTermsInfo.licenseTermsIds;
-        } else if (arg.licenseTermsData && arg.licenseTermsData.length > 0) {
-          // Original flow: validate and get IDs from licenseTermsData
-          const licenseTerms: LicenseTerms[] = [];
-          for (let i = 0; i < arg.licenseTermsData.length; i++) {
-            const licenseTerm = await validateLicenseTerms(
-              arg.licenseTermsData[i].terms,
-              this.rpcClient,
-            );
-            licenseTerms.push(licenseTerm);
-          }
-          const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-          results[j].licenseTermsIds = licenseTermsIds;
-        } else {
-          throw new Error(`Either licenseTermsIds or licenseTermsData must be provided for argument at index ${j}`);
+        const licenseTerms: LicenseTerms[] = [];
+        const licenseTermsData = request.args[j].licenseTermsData;
+        for (let i = 0; i < licenseTermsData.length; i++) {
+          const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
+          licenseTerms.push(licenseTerm);
         }
+        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+        results[j].licenseTermsIds = licenseTermsIds;
       }
-      
       return {
         txHash: txHash,
         results,
       };
+    } catch (error) {
+      return handleError(error, "Failed to batch mint and register IP and attach PIL terms");
     }
-    return { txHash };
-  } catch (error) {
-    return handleError(error, "Failed to batch mint and register IP and attach PIL terms");
   }
-}
 
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.
@@ -726,19 +692,16 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         const txHash = await this.licenseAttachmentWorkflowsClient.registerIpAndAttachPilTerms(
           transformRequest,
         );
-        if (request.txOptions?.waitForTransaction) {
-          const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
-          return {
-            txHash,
-            licenseTermsIds: await this.getLicenseTermsId(licenseTerms),
-            ...log,
-          };
-        }
-        return { txHash };
+        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+        return {
+          txHash,
+          licenseTermsIds: await this.getLicenseTermsId(licenseTerms),
+          ...log,
+        };
       }
     } catch (error) {
       return handleError(error, "Failed to register IP and attach PIL terms");
@@ -784,7 +747,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
       };
       return this.handleRegistrationWithFees({
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           useMulticallWhenPossible: false,
         },
         sender: this.walletAddress,
@@ -828,7 +791,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         spgNftContract,
@@ -868,17 +831,14 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         }
       }
       const txHash = await this.derivativeWorkflowsClient.multicall({ data: calldata });
-      if (request.txOptions?.waitForTransaction) {
-        const txReceipt = await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        return {
-          txHash,
-          results: this.getIpIdAndTokenIdsFromEvent(txReceipt, "spgNftContract"),
-        };
-      }
-      return { txHash };
+      const txReceipt = await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
+      });
+      return {
+        txHash,
+        results: this.getIpIdAndTokenIdsFromEvent(txReceipt, "spgNftContract"),
+      };
     } catch (error) {
       return handleError(error, "Failed to batch mint and register IP and make derivative");
     }
@@ -913,7 +873,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         spgNftContract: object.spgNftContract,
         txOptions: request.txOptions,
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           useMulticallWhenPossible: false,
         },
       });
@@ -969,16 +929,12 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         const txHash = await this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttach(
           object,
         );
-        if (request.txOptions?.waitForTransaction) {
-          await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-          return { txHash, licenseTermsIds };
-        } else {
-          return { txHash };
-        }
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+        return { txHash, licenseTermsIds };
       }
     } catch (error) {
       return handleError(error, "Failed to register PIL terms and attach");
@@ -1023,7 +979,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
       };
       return this.handleRegistrationWithFees({
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           // need to disable multicall to avoid needing to transfer the license
           // token to the multicall contract.
           useMulticallWhenPossible: false,
@@ -1097,15 +1053,12 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
       } else {
         const txHash =
           await this.derivativeWorkflowsClient.registerIpAndMakeDerivativeWithLicenseTokens(object);
-        if (request.txOptions?.waitForTransaction) {
-          const receipt = await this.rpcClient.waitForTransactionReceipt({
-            ...request.txOptions,
-            hash: txHash,
-          });
-          const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
-          return { txHash, ...log };
-        }
-        return { txHash };
+        const receipt = await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const log = this.getIpIdAndTokenIdsFromEvent(receipt)[0];
+        return { txHash, ...log };
       }
     } catch (error) {
       return handleError(error, "Failed to register IP and make derivative with license tokens");
@@ -1169,12 +1122,10 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         totalAmount: totalAmount,
         txOptions: request.txOptions,
       });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: distributeRoyaltyTokensTxHash,
-        });
-      }
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: distributeRoyaltyTokensTxHash,
+      });
       return {
         registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
         distributeRoyaltyTokensTxHash,
@@ -1232,7 +1183,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
         wipOptions: {
-          ...request.wipOptions,
+          ...request.options?.wipOptions,
           useMulticallWhenPossible: false,
         },
         sender: this.walletAddress,
@@ -1240,7 +1191,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         derivData: transformRequest.derivData,
         encodedTxs: [encodedTxData],
         contractCall,
-        txOptions: { ...request.txOptions, waitForTransaction: true },
+        txOptions: { ...request.txOptions },
       });
       // Need to consider tokenId is 0n, so we can't check !tokenId.
       if (tokenId === undefined || !ipId || !receipt) {
@@ -1257,12 +1208,10 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         totalAmount: totalAmount,
         txOptions: request.txOptions,
       });
-      if (request.txOptions?.waitForTransaction) {
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: distributeRoyaltyTokensTxHash,
-        });
-      }
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: distributeRoyaltyTokensTxHash,
+      });
       return {
         registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
         distributeRoyaltyTokensTxHash,
@@ -1310,7 +1259,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgNftContract: transformRequest.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -1369,7 +1318,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
       };
       return await this.handleRegistrationWithFees({
         spgNftContract: transformRequest.spgNftContract,
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         sender: this.walletAddress,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
         derivData: transformRequest.derivData,
@@ -1398,13 +1347,10 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
     const txHash = await this.royaltyTokenDistributionWorkflowsClient.distributeRoyaltyTokens(
       transformRequest,
     );
-    if (request.txOptions?.waitForTransaction) {
-      await this.rpcClient.waitForTransactionReceipt({
-        ...request.txOptions,
-        hash: txHash,
-      });
-      return txHash;
-    }
+    await this.rpcClient.waitForTransactionReceipt({
+      ...request.txOptions,
+      hash: txHash,
+    });
     return txHash;
   }
 
@@ -1488,7 +1434,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         walletAddress: this.walletAddress,
-        wipOptions: request.wipOptions,
+        wipOptions: request.options?.wipOptions,
         chainId: this.chainId,
       });
 
@@ -1532,7 +1478,7 @@ public async batchMintAndRegisterIpAssetWithPilTerms(
           rpcClient: this.rpcClient,
           wallet: this.wallet,
           walletAddress: this.walletAddress,
-          wipOptions: request.wipOptions,
+          wipOptions: request.options?.wipOptions,
           chainId: this.chainId,
         });
         distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);

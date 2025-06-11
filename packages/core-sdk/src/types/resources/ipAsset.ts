@@ -17,7 +17,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
 } from "../../abi/generated";
 import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
-import { TxOptions, WithWipOptions } from "../options";
+import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
 import { Erc20Spender } from "../utils/wip";
 
@@ -82,7 +82,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
 };
 
 export type RegisterDerivativeWithLicenseTokensResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
 };
 
@@ -93,7 +93,7 @@ export type RegisterDerivativeRequest = WithWipOptions &
   };
 
 export type RegisterDerivativeResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
 };
 export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
@@ -124,7 +124,7 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
   WithWipOptions;
 
 export type MintAndRegisterIpAssetWithPilTermsResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
@@ -146,7 +146,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
   WithWipOptions;
 
 export type RegisterIpAndMakeDerivativeResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   tokenId?: bigint;
@@ -166,7 +166,7 @@ export type RegisterIpAndAttachPilTermsRequest = {
 } & IpMetadataAndTxOptions;
 
 export type RegisterIpAndAttachPilTermsResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   ipId?: Address;
   licenseTermsIds?: bigint[];
@@ -222,7 +222,7 @@ export type RegisterPilTermsAndAttachRequest = {
 };
 
 export type RegisterPilTermsAndAttachResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   encodedTxData?: EncodedTxData;
   licenseTermsIds?: bigint[];
 };
@@ -269,7 +269,7 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResult = {
   spgNftContract: Address;
 };
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
-  txHash: Hex;
+  txHash: Hash;
   results?: BatchMintAndRegisterIpAssetWithPilTermsResult[];
 };
 
@@ -283,14 +283,14 @@ export type BatchRegisterDerivativeRequest = {
 };
 
 export type BatchRegisterDerivativeResponse = {
-  txHash: Hex;
+  txHash: Hash;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeRequest = {
   args: Omit<MintAndRegisterIpAndMakeDerivativeRequest, "txOptions">[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
-  txHash: string;
+  txHash: Hash;
   results?: IpIdAndTokenId<"spgNftContract">[];
 };
 
@@ -300,8 +300,8 @@ export type BatchRegisterRequest = {
 };
 
 export type BatchRegisterResponse = {
-  txHash?: Hex;
-  spgTxHash?: Hex;
+  txHash?: Hash;
+  spgTxHash?: Hash;
   results?: IpIdAndTokenId<"nftContract">[];
 };
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
@@ -319,8 +319,8 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & WithIpMetadata;
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
-  registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hex;
-  distributeRoyaltyTokensTxHash: Hex;
+  registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: Hash;
+  distributeRoyaltyTokensTxHash: Hash;
   ipId: Address;
   licenseTermsIds: bigint[];
   ipRoyaltyVault: Address;
@@ -363,8 +363,8 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   WithIpMetadata;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
-  registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Address;
-  distributeRoyaltyTokensTxHash: Address;
+  registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: Hash;
+  distributeRoyaltyTokensTxHash: Hash;
   ipId: Address;
   tokenId: bigint;
   ipRoyaltyVault: Address;
@@ -388,7 +388,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   WithWipOptions;
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
-  txHash: Hex;
+  txHash: Hash;
   ipId?: Address;
   licenseTermsIds?: bigint[];
   ipRoyaltyVault?: Address;
@@ -413,12 +413,12 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   WithWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {
-  txHash: Hex;
+  txHash: Hash;
   ipId?: Address;
   tokenId?: bigint;
 };
 
-export type CommonRegistrationParams = WithWipOptions & {
+export type CommonRegistrationParams = {
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   spgNftContract?: Address;
@@ -427,17 +427,18 @@ export type CommonRegistrationParams = WithWipOptions & {
   derivData?: DerivativeData;
   sender: Address;
   txOptions?: TxOptions;
+  wipOptions?: WipOptions;
 };
 
 export type RegistrationResponse = {
-  txHash?: Hex;
+  txHash?: Hash;
   receipt?: TransactionReceipt;
   ipId?: Address;
   tokenId?: bigint;
 };
 
 export type CommonRegistrationTxResponse = RegistrationResponse & {
-  txHash: Hex;
+  txHash: Hash;
 };
 
 export type TransformIpRegistrationWorkflowRequest =

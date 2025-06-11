@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, Hash } from "viem";
 
 import { TxOptions } from "../options";
 
@@ -15,7 +15,7 @@ export type SetTagRequest = {
 };
 
 export type SetTagResponse = {
-  txHash: string;
+  txHash: Hash;
 };
 
 export type RemoveTagRequest = {
@@ -25,5 +25,5 @@ export type RemoveTagRequest = {
 };
 
 export type RemoveTagResponse = {
-  txHash: string;
+  txHash: Hash;
 };

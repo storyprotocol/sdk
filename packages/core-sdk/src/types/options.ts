@@ -2,11 +2,6 @@ import { Hash, PublicClient, TransactionReceipt, WaitForTransactionReceiptParame
 
 export type TxOptions = Omit<WaitForTransactionReceiptParameters, "hash"> & {
   /**
-   * Whether or not to wait for the transaction so you can receive a transaction receipt in return
-   * (which contains data about the transaction and return values).
-   */
-  waitForTransaction?: boolean;
-  /**
    * When this option is set, the transaction will not submit and execute.
    * It will only encode the ABI and function data and return.
    */
@@ -31,7 +26,9 @@ export type ERC20Options = {
  * Options to override the default behavior of the auto approve logic
  */
 export type WithERC20Options = {
-  erc20Options?: ERC20Options;
+  options?: {
+    erc20Options?: ERC20Options;
+  };
 };
 
 export type WipOptions = {
@@ -65,8 +62,19 @@ export type WipOptions = {
  * and auto approve logic.
  */
 export type WithWipOptions = {
-  /** options to configure WIP behavior */
-  wipOptions?: WipOptions;
+  options?: {
+    /** options to configure WIP behavior */
+    wipOptions?: WipOptions;
+  };
+};
+
+export type WithErc20AndWipOptions = {
+  options?: {
+    /** options to configure ERC20 behavior */
+    erc20Options?: ERC20Options;
+    /** options to configure WIP behavior */
+    wipOptions?: WipOptions;
+  };
 };
 
 export type WaitForTransactionReceiptRequest = {

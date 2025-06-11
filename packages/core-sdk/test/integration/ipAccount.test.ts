@@ -34,9 +34,6 @@ describe("IPAccount Functions", () => {
     const registerResult = await client.ipAsset.register({
       nftContract: mockERC721,
       tokenId: tokenId!,
-      txOptions: {
-        waitForTransaction: true,
-      },
     });
     ipId = registerResult.ipId!;
     data = encodeFunctionData({
@@ -59,9 +56,6 @@ describe("IPAccount Functions", () => {
         value: 0,
         data,
         ipId: ipId,
-        txOptions: {
-          waitForTransaction: true,
-        },
       });
       expect(response.txHash).to.be.a("string").and.not.empty;
     });
@@ -87,9 +81,6 @@ describe("IPAccount Functions", () => {
           value: 0,
           data,
           ipId: "0x0000000000000000000000000000000000000000",
-          txOptions: {
-            waitForTransaction: true,
-          },
         }),
       ).to.be.rejected;
     });
@@ -125,9 +116,6 @@ describe("IPAccount Functions", () => {
           signer: process.env.TEST_WALLET_ADDRESS as Hex,
           deadline: EXPIRED_DEADLINE,
           signature: "0x",
-          txOptions: {
-            waitForTransaction: true,
-          },
         }),
       ).to.be.rejected;
     });
@@ -191,16 +179,10 @@ describe("IPAccount Functions", () => {
     // 3. transfer wip to the ip account
     await client.wipClient.deposit({
       amount: 1n,
-      txOptions: {
-        waitForTransaction: true,
-      },
     });
     await client.wipClient.transfer({
       to: ipId,
       amount: 1n,
-      txOptions: {
-        waitForTransaction: true,
-      },
     });
     // 4. transfer token of ip account to wallet address
     const ret = await client.ipAccount.transferErc20({
@@ -222,9 +204,6 @@ describe("IPAccount Functions", () => {
           amount: parseEther("0.001"),
         },
       ],
-      txOptions: {
-        waitForTransaction: true,
-      },
     });
     // 5. query token balance of ipId and wallet address after
     const finalErc20BalanceOfIpId = await erc20.balanceOf({
