@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { stub } from "sinon";
-import { PublicClient, WalletClient, zeroAddress } from "viem";
+import { Address, PublicClient, WalletClient, zeroAddress } from "viem";
 
 import { PermissionClient } from "../../../src";
 import { IpAccountImplClient } from "../../../src/abi/generated";
@@ -205,7 +205,7 @@ describe("Test Permission", () => {
       walletMock = createMockWalletClient();
       permissionClient = new PermissionClient(rpcMock, walletMock, 1315);
       stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      (permissionClient.accessControllerClient as { address: string }).address =
+      (permissionClient.accessControllerClient as { address: Address }).address =
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c";
 
       try {
