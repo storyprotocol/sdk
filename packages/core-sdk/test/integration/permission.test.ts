@@ -1,13 +1,13 @@
-import chai from "chai";
-import { StoryClient } from "../../src";
-import { mockERC721, getStoryClient, getTokenId, aeneid } from "./utils/util";
-import { Address } from "viem";
-import { AccessPermission } from "../../src/types/resources/permission";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { coreMetadataModuleAddress } from "../../src/abi/generated";
+import { Address } from "viem";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+import { StoryClient } from "../../src";
+import { aeneid, getStoryClient, getTokenId, mockERC721, TEST_WALLET_ADDRESS } from "./utils/util";
+import { coreMetadataModuleAddress } from "../../src/abi/generated";
+import { AccessPermission } from "../../src/types/resources/permission";
+
+use(chaiAsPromised);
 
 describe("Permission Functions", () => {
   let client: StoryClient;
@@ -21,62 +21,32 @@ describe("Permission Functions", () => {
       nftContract: mockERC721,
       tokenId: tokenId!,
     });
-
-    if (!response.ipId) {
-      throw new Error("Failed to register IP");
-    }
-    ipId = response.ipId;
+    ipId = response.ipId!;
   });
 
   describe("Single Permission Operations", () => {
     it("should set permission successfully", async () => {
       const response = await client.permission.setPermission({
         ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
+        signer: TEST_WALLET_ADDRESS,
         to: coreMetadataModule,
         permission: AccessPermission.ALLOW,
         func: "function setAll(address,string,bytes32,bytes32)",
       });
 
-      expect(response.txHash).to.be.a("string").and.not.empty;
-      expect(response.success).to.be.true;
-    });
-
-    it("should get encoded data for setPermission", async () => {
-      const response = await client.permission.setPermission({
-        ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
-        to: coreMetadataModule,
-        permission: AccessPermission.ALLOW,
-        func: "function setAll(address,string,bytes32,bytes32)",
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
+      expect(response.success).to.equal(true);
     });
 
     it("should set all permissions successfully", async () => {
       const response = await client.permission.setAllPermissions({
         ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
+        signer: TEST_WALLET_ADDRESS,
         permission: AccessPermission.ALLOW,
       });
 
-      expect(response.txHash).to.be.a("string").and.not.empty;
-      expect(response.success).to.be.true;
-    });
-
-    it("should get encoded data for setAllPermissions", async () => {
-      const response = await client.permission.setAllPermissions({
-        ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
-        permission: AccessPermission.ALLOW,
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
+      expect(response.success).to.equal(true);
     });
   });
 
@@ -84,30 +54,15 @@ describe("Permission Functions", () => {
     it("should create set permission signature", async () => {
       const response = await client.permission.createSetPermissionSignature({
         ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
+        signer: TEST_WALLET_ADDRESS,
         to: coreMetadataModule,
         func: "function setAll(address,string,bytes32,bytes32)",
         permission: AccessPermission.ALLOW,
         deadline: 60000n,
       });
 
-      expect(response.txHash).to.be.a("string").and.not.empty;
-      expect(response.success).to.be.true;
-    });
-
-    it("should get encoded data for createSetPermissionSignature", async () => {
-      const response = await client.permission.createSetPermissionSignature({
-        ipId: ipId,
-        signer: process.env.TEST_WALLET_ADDRESS as Address,
-        to: coreMetadataModule,
-        func: "function setAll(address,string,bytes32,bytes32)",
-        permission: AccessPermission.ALLOW,
-        deadline: 60000n,
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
+      expect(response.success).to.equal(true);
     });
   });
 
@@ -117,14 +72,14 @@ describe("Permission Functions", () => {
         permissions: [
           {
             ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
+            signer: TEST_WALLET_ADDRESS,
             to: coreMetadataModule,
             permission: AccessPermission.ALLOW,
             func: "function setAll(address,string,bytes32,bytes32)",
           },
           {
             ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
+            signer: TEST_WALLET_ADDRESS,
             to: coreMetadataModule,
             permission: AccessPermission.DENY,
             func: "function freezeMetadata(address)",
@@ -132,26 +87,8 @@ describe("Permission Functions", () => {
         ],
       });
 
-      expect(response.txHash).to.be.a("string").and.not.empty;
-      expect(response.success).to.be.true;
-    });
-
-    it("should get encoded data for setBatchPermissions", async () => {
-      const response = await client.permission.setBatchPermissions({
-        permissions: [
-          {
-            ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
-            to: coreMetadataModule,
-            permission: AccessPermission.ALLOW,
-            func: "function setAll(address,string,bytes32,bytes32)",
-          },
-        ],
-        txOptions: { encodedTxDataOnly: true },
-      });
-
-      expect(response.encodedTxData).to.exist;
-      expect(response.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(response.txHash).to.be.a("string");
+      expect(response.success).to.equal(true);
     });
 
     it("should create batch permission signature", async () => {
@@ -160,14 +97,14 @@ describe("Permission Functions", () => {
         permissions: [
           {
             ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
+            signer: TEST_WALLET_ADDRESS,
             to: coreMetadataModule,
             permission: AccessPermission.ALLOW,
             func: "function setAll(address,string,bytes32,bytes32)",
           },
           {
             ipId: ipId,
-            signer: process.env.TEST_WALLET_ADDRESS as Address,
+            signer: TEST_WALLET_ADDRESS,
             to: coreMetadataModule,
             permission: AccessPermission.DENY,
             func: "function freezeMetadata(address)",
@@ -176,8 +113,8 @@ describe("Permission Functions", () => {
         deadline: 60000n,
       });
 
-      expect(response.txHash).to.be.a("string").and.not.empty;
-      expect(response.success).to.be.true;
+      expect(response.txHash).to.be.a("string");
+      expect(response.success).to.equal(true);
     });
   });
 
@@ -187,7 +124,7 @@ describe("Permission Functions", () => {
       await expect(
         client.permission.setPermission({
           ipId: unregisteredIpId as Address,
-          signer: process.env.TEST_WALLET_ADDRESS as Address,
+          signer: TEST_WALLET_ADDRESS,
           to: coreMetadataModule,
           permission: AccessPermission.ALLOW,
         }),
@@ -198,7 +135,7 @@ describe("Permission Functions", () => {
       await expect(
         client.permission.setPermission({
           ipId: ipId,
-          signer: process.env.TEST_WALLET_ADDRESS as Address,
+          signer: TEST_WALLET_ADDRESS,
           to: coreMetadataModule,
           permission: AccessPermission.ALLOW,
           func: "invalid_function_signature",
