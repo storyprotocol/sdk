@@ -841,7 +841,7 @@ describe("IP Asset Functions", () => {
 
       const userBalanceAfter = await client.getWalletBalance();
       const cost = 150n + 100n;
-      expect(userBalanceAfter).lessThan(Number(userBalanceBefore - cost));
+      expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - cost));
 
       // user should not have any WIP tokens since we swap the exact amount
       const wipBalance = await client.ipAsset.wipClient.balanceOf({
@@ -2229,7 +2229,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
+      expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
     });
 
     it("should successfully register IP assets using a combination of NFT contracts and SPG NFT contracts", async () => {
@@ -2515,7 +2515,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
         requests.length,
       );
-      expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
+      expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
     });
 
     it("should successfully register IP assets with multicall disabled", async () => {

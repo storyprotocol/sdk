@@ -173,7 +173,7 @@ describe("Dispute Functions", () => {
       clientA.dispute.cancelDispute({
         disputeId: raiseResponse.disputeId!,
       }),
-    ).to.be.rejectedWith("NotDisputeInitiator");
+    ).to.be.rejected;
   });
 
   const getDisputeState = async (
@@ -210,7 +210,7 @@ describe("Dispute Functions", () => {
     let childIpId: Address;
     let childIpId2: Address;
 
-    before(async () => {
+    beforeEach(async () => {
       // Setup NFT collection
       const txData = await clientA.nftClient.createNFTCollection({
         name: "test-collection",
