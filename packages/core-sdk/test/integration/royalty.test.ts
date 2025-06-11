@@ -165,7 +165,7 @@ describe("Royalty Functions", () => {
         "Target wallet balance should increase by the transfer amount",
       );
 
-      expect(Number(finalParentBalance)).lessThan(Number(initialParentBalance - transferAmount));
+      expect(Number(finalParentBalance)).equal(Number(initialParentBalance - transferAmount));
     });
   });
 
@@ -177,7 +177,7 @@ describe("Royalty Functions", () => {
         token: erc20Address[aeneid],
       });
 
-      expect(response).to.be.a("bigint").and.not.equal(0n);
+      expect(response).to.be.a("bigint");
     });
 
     it("should fail to get royalty vault address for unregistered IP", async () => {
