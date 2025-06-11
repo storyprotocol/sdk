@@ -171,7 +171,7 @@ describe("Group Functions", () => {
       const result = await client.groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId,
         nftContract: spgNftContract,
-        tokenId: tokenId,
+        tokenId,
         maxAllowedRewardShare: 5,
         licenseData: [
           {

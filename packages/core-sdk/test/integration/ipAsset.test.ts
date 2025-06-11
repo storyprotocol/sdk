@@ -313,7 +313,7 @@ describe("IP Asset Functions", () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const response = await client.ipAsset.register({
         nftContract,
-        tokenId: tokenId,
+        tokenId,
         ipMetadata: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -345,7 +345,7 @@ describe("IP Asset Functions", () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
         nftContract: nftContract,
-        tokenId: tokenId,
+        tokenId,
         deadline: 1000n,
         licenseTermsData: [
           {
