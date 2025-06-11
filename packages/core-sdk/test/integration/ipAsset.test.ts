@@ -1335,7 +1335,6 @@ describe("IP Asset Functions", () => {
           mintFee: 3n,
           mintFeeToken: WIP_TOKEN_ADDRESS,
           contractURI: "",
-          txOptions: { waitForTransaction: true },
         });
         const spgNftContractforBaseCollection = baseCollection.spgNftContract!;
         const rx = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
@@ -1374,7 +1373,6 @@ describe("IP Asset Functions", () => {
               },
             },
           ],
-          txOptions: { waitForTransaction: true },
         });
         let licenseTermsIds = rx.licenseTermsIds!;
         let ipId = rx.ipId!;
@@ -1388,7 +1386,6 @@ describe("IP Asset Functions", () => {
           mintFee: 3n,
           mintFeeToken: WIP_TOKEN_ADDRESS,
           contractURI: "",
-          txOptions: { waitForTransaction: true },
         });
         const newSpgNftContractForNewCollection = newCollection.spgNftContract!;
         
@@ -1396,7 +1393,6 @@ describe("IP Asset Functions", () => {
           spgNftContract: newSpgNftContractForNewCollection,
           allowDuplicates: false,
           licenseTermsInfo: {licenseTermsIds, ipId},
-          txOptions: { waitForTransaction: true },
         });
         expect(result.tokenId).not.undefined;
         expect(result.txHash).not.undefined;
