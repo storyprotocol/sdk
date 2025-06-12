@@ -1440,12 +1440,53 @@ describe("IP Asset Functions", () => {
         expect(result.tokenId).to.be.a("bigint");
       });
       it("should succeed when call mint and register ip and make derivative and distribute royalty tokens", async () => {
+        let _parentIpId
+        let _licenseTermsId
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract: spgNftContractWithPrivateMinting,
+          allowDuplicates: false,
+          licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 6n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 6n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
+            },
+          ],
+        });
+        _parentIpId = result.ipId!;
+        _licenseTermsId = result.licenseTermsIds![0];
         const rsp =
           await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
             spgNftContract: spgNftContractWithPrivateMinting,
             derivData: {
-              parentIpIds: [parentIpId],
-              licenseTermsIds: [licenseTermsId],
+              parentIpIds: [_parentIpId],
+              licenseTermsIds: [_licenseTermsId],
               maxMintingFee: 0,
               maxRts: MAX_ROYALTY_TOKEN,
               maxRevenueShare: 100,
