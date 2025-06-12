@@ -1388,11 +1388,11 @@ describe("IP Asset Functions", () => {
           contractURI: "",
         });
         const newSpgNftContractForNewCollection = newCollection.spgNftContract!;
-        
+
         const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
           spgNftContract: newSpgNftContractForNewCollection,
           allowDuplicates: false,
-          licenseTermsInfo: {licenseTermsIds, ipId},
+          licenseTermsInfo: { licenseTermsIds, ipId },
         });
         expect(result.tokenId).not.undefined;
         expect(result.txHash).not.undefined;

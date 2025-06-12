@@ -42,10 +42,10 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
   SpgnftImplReadOnlyClient,
-  WrappedIpClient
+  WrappedIpClient,
 } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
-import { RevShareType } from "../types/common";
+import { LicensingConfig, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -91,7 +91,7 @@ import {
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
-  TransformIpRegistrationWorkflowResponse
+  TransformIpRegistrationWorkflowResponse,
 } from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
 import { LicenseTerms } from "../types/resources/license";
@@ -119,7 +119,6 @@ import {
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { validateAddress } from "../utils/utils";
-import { LicenseClient } from "./license";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -511,8 +510,8 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      let licenseTerms: any;
-      let licensingConfig: any;
+      let licenseTerms: LicenseTerms[];
+      let licensingConfig: LicensingConfig;
       let licenseTermsIds: bigint[];
       let req: MintAndRegisterIpAssetWithPilTermsRequest;
 
@@ -520,20 +519,23 @@ export class IPAssetClient {
       if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
         licenseTermsIds = request.licenseTermsInfo.licenseTermsIds;
         const licenseTermsData = await this.licenseTemplateClient.getLicenseTerms({
-          selectedLicenseTermsId: licenseTermsIds[0]
+          selectedLicenseTermsId: licenseTermsIds[0],
         });
         licensingConfig = await this.licenseRegistryReadOnlyClient.getLicensingConfig({
           ipId: request.licenseTermsInfo.ipId,
           licenseTemplate: this.licenseTemplateClient.address,
-          licenseTermsId: licenseTermsIds[0]
-        })
-        licenseTerms = [ { terms: licenseTermsData.terms, licensingConfig: licensingConfig } ]
+          licenseTermsId: licenseTermsIds[0],
+        });
+        const licenseTermsDataInput = [
+          { terms: licenseTermsData.terms, licensingConfig: licensingConfig },
+        ];
         req = {
           spgNftContract: request.spgNftContract,
           allowDuplicates: request.allowDuplicates,
-          licenseTermsData: licenseTerms,
-          txOptions: request.txOptions
+          licenseTermsData: licenseTermsDataInput,
+          txOptions: request.txOptions,
         };
+        licenseTerms = [licenseTermsDataInput[0].terms];
       } else {
         if (!request.licenseTermsData) {
           throw new Error("Either licenseTermsId or licenseTermsData must be provided");
@@ -544,7 +546,7 @@ export class IPAssetClient {
           this.rpcClient,
         );
         licenseTerms = licenseTermsData.licenseTerms;
-        req = request
+        req = request;
       }
 
       const { transformRequest } =
@@ -563,6 +565,7 @@ export class IPAssetClient {
       if (req.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
+
       const contractCall = (): Promise<Hash> => {
         return this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(
           transformRequest,
@@ -632,7 +635,10 @@ export class IPAssetClient {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
         for (let i = 0; i < licenseTermsData!.length; i++) {
-          const licenseTerm = await validateLicenseTerms(licenseTermsData![i].terms, this.rpcClient);
+          const licenseTerm = await validateLicenseTerms(
+            licenseTermsData![i].terms,
+            this.rpcClient,
+          );
           licenseTerms.push(licenseTerm);
         }
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);

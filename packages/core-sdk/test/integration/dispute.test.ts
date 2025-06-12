@@ -160,7 +160,7 @@ describe("Dispute Functions", () => {
           ipId: ipIdB,
           assertionId,
           counterEvidenceCID,
-        })
+        }),
       ).to.be.rejected;
     });
 
