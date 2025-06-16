@@ -1193,7 +1193,7 @@ describe("IP Asset Functions", () => {
     it("should succeed when call mint and register ip and make derivative and distribute royalty tokens", async () => {
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: spgNftContractWithPrivateMinting,
-        allowDuplicates: false,
+        allowDuplicates: true,
         licenseTermsData: [
           {
             terms: {
