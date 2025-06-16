@@ -1124,8 +1124,8 @@ describe("IP Asset Functions", () => {
           },
         ],
       });
-      let licenseTermsIds = rx.licenseTermsIds!;
-      let ipId = rx.ipId!;
+      const licenseTermsIds = rx.licenseTermsIds!;
+      const ipId = rx.ipId!;
 
       const newCollection = await client.nftClient.createNFTCollection({
         name: "Private Minting Collection",
@@ -1144,8 +1144,8 @@ describe("IP Asset Functions", () => {
         allowDuplicates: false,
         licenseTermsInfo: { licenseTermsIds, ipId },
       });
-      expect(result.tokenId).not.undefined;
-      expect(result.txHash).not.undefined;
+      expect(result.tokenId).to.be.a("bigint");
+      expect(result.txHash).to.be.a("string");
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
     });
@@ -1191,8 +1191,6 @@ describe("IP Asset Functions", () => {
       expect(result.tokenId).to.be.a("bigint");
     });
     it("should succeed when call mint and register ip and make derivative and distribute royalty tokens", async () => {
-      let _parentIpId;
-      let _licenseTermsId;
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: spgNftContractWithPrivateMinting,
         allowDuplicates: false,
@@ -1230,14 +1228,14 @@ describe("IP Asset Functions", () => {
           },
         ],
       });
-      _parentIpId = result.ipId!;
-      _licenseTermsId = result.licenseTermsIds![0];
+      const newParentIpId = result.ipId!;
+      const licenseId = result.licenseTermsIds![0];
       const rsp = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens(
         {
           spgNftContract: spgNftContractWithPrivateMinting,
           derivData: {
-            parentIpIds: [_parentIpId],
-            licenseTermsIds: [_licenseTermsId],
+            parentIpIds: [newParentIpId],
+            licenseTermsIds: [licenseId],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
