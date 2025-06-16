@@ -3552,7 +3552,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
     });
-    
+
     it("should empty  given requests is empty", async () => {
       const result = await ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: [],

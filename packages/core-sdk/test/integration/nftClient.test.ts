@@ -3,7 +3,13 @@ import chaiAsPromised from "chai-as-promised";
 import { Address, maxUint256 } from "viem";
 
 import { StoryClient } from "../../src";
-import { getStoryClient, mintBySpg, publicClient, TEST_WALLET_ADDRESS, walletClient } from "./utils/util";
+import {
+  getStoryClient,
+  mintBySpg,
+  publicClient,
+  TEST_WALLET_ADDRESS,
+  walletClient,
+} from "./utils/util";
 import { erc20Address } from "../../src/abi/generated";
 import { ERC20Client } from "../../src/utils/token";
 import { aeneid } from "../unit/mockData";
