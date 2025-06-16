@@ -4,7 +4,7 @@ import { HDKey } from "@scure/bip32";
 import { Address, createWalletClient, Hex, http, parseEther } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-import { getStoryClient, publicClient, RPC, TEST_WALLET_ADDRESS } from "./util";
+import { getStoryClient, publicClient, RPC, TEST_PRIVATE_KEY } from "./util";
 import { StoryClient } from "../../../src";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 
@@ -67,7 +67,7 @@ export const getDerivedStoryClient = async (): Promise<{
   clientB: StoryClient;
   address: Address;
 }> => {
-  const xprv = getXprvFromPrivateKey(TEST_WALLET_ADDRESS);
+  const xprv = getXprvFromPrivateKey(TEST_PRIVATE_KEY);
   const privateKey = getPrivateKeyFromXprv(xprv);
   const clientB = getStoryClient(privateKey);
   const walletB = privateKeyToAccount(privateKey);
@@ -76,7 +76,7 @@ export const getDerivedStoryClient = async (): Promise<{
   const clientAWalletClient = createWalletClient({
     chain: chainStringToViemChain("aeneid"),
     transport: http(RPC),
-    account: privateKeyToAccount(TEST_WALLET_ADDRESS),
+    account: privateKeyToAccount(TEST_PRIVATE_KEY),
   });
   const clientBBalance = await publicClient.getBalance({
     address: walletB.address,
