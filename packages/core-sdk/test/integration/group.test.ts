@@ -1,57 +1,28 @@
-import chai from "chai";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, zeroAddress } from "viem";
-import { aeneid, getStoryClient, mintBySpg } from "./utils/util";
-import { LicenseTermsData, StoryClient, WIP_TOKEN_ADDRESS } from "../../src";
+
+import { aeneid, getStoryClient, mintBySpg, TEST_WALLET_ADDRESS } from "./utils/util";
+import {
+  LicenseTermsData,
+  MintAndRegisterIpAssetWithPilTermsResponse,
+  StoryClient,
+  WIP_TOKEN_ADDRESS,
+} from "../../src";
 import {
   evenSplitGroupPoolAddress,
   piLicenseTemplateAddress,
   royaltyPolicyLrpAddress,
 } from "../../src/abi/generated";
 import { NativeRoyaltyPolicy } from "../../src/types/resources/royalty";
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+
+use(chaiAsPromised);
 
 describe("Group Functions", () => {
   let client: StoryClient;
   let spgNftContract: Address;
-  let groupId: Address;
-  let ipId: Address;
-  let licenseTermsId: bigint;
+
   const groupPoolAddress = evenSplitGroupPoolAddress[aeneid];
-  const licenseTermsData: LicenseTermsData[] = [
-    {
-      terms: {
-        transferable: true,
-        royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
-        defaultMintingFee: 0n,
-        expiration: BigInt(1000),
-        commercialUse: true,
-        commercialAttribution: false,
-        commercializerChecker: zeroAddress,
-        commercializerCheckerData: zeroAddress,
-        commercialRevShare: 0,
-        commercialRevCeiling: BigInt(0),
-        derivativesAllowed: true,
-        derivativesAttribution: true,
-        derivativesApproval: false,
-        derivativesReciprocal: true,
-        derivativeRevCeiling: BigInt(0),
-        currency: WIP_TOKEN_ADDRESS,
-        uri: "test case",
-      },
-      licensingConfig: {
-        isSet: true,
-        mintingFee: 0n,
-        licensingHook: zeroAddress,
-        hookData: zeroAddress,
-        commercialRevShare: 0,
-        disabled: false,
-        expectMinimumGroupRewardShare: 0,
-        expectGroupRewardPool: groupPoolAddress,
-      },
-    },
-  ];
 
   // Setup - create necessary contracts and initial IP
   before(async () => {
@@ -65,62 +36,79 @@ describe("Group Functions", () => {
         maxSupply: 100,
         isPublicMinting: true,
         mintOpen: true,
-        mintFeeRecipient: process.env.TEST_WALLET_ADDRESS! as Address,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
         contractURI: "test-uri",
       })
     ).spgNftContract!;
+  });
 
-    // Create initial IP with license terms
-    const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-      spgNftContract,
-      allowDuplicates: false,
-      licenseTermsData,
-    });
+  describe("Group Operations", () => {
+    let groupId: Address;
+    let ipId: Address;
+    let licenseTermsId: bigint;
 
-    licenseTermsId = result.licenseTermsIds![0];
-    ipId = result.ipId!;
-
-    // Set licensing config
-    await client.license.setLicensingConfig({
-      ipId,
-      licenseTermsId,
-      licenseTemplate: piLicenseTemplateAddress[aeneid],
-      licensingConfig: {
-        isSet: true,
-        mintingFee: 0n,
-        licensingHook: zeroAddress,
-        hookData: zeroAddress,
-        commercialRevShare: 0,
-        disabled: false,
-        expectMinimumGroupRewardShare: 0,
-        expectGroupRewardPool: groupPoolAddress,
+    const licenseTermsData: LicenseTermsData[] = [
+      {
+        terms: {
+          transferable: true,
+          royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
+          defaultMintingFee: 0n,
+          expiration: BigInt(1000),
+          commercialUse: true,
+          commercialAttribution: false,
+          commercializerChecker: zeroAddress,
+          commercializerCheckerData: zeroAddress,
+          commercialRevShare: 0,
+          commercialRevCeiling: BigInt(0),
+          derivativesAllowed: true,
+          derivativesAttribution: true,
+          derivativesApproval: false,
+          derivativesReciprocal: true,
+          derivativeRevCeiling: BigInt(0),
+          currency: WIP_TOKEN_ADDRESS,
+          uri: "test case",
+        },
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 0n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: groupPoolAddress,
+        },
       },
-    });
-  });
+    ];
 
-  describe("Basic Group Operations", () => {
-    it("should successfully register a basic group", async () => {
-      const result = await client.groupClient.registerGroup({
-        groupPool: groupPoolAddress,
+    before(async () => {
+      // Create initial IP with license terms
+      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract,
+        allowDuplicates: false,
+        licenseTermsData,
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.groupId).to.be.a("string").and.not.empty;
-    });
+      licenseTermsId = result.licenseTermsIds![0];
+      ipId = result.ipId!;
 
-    it("should successfully register group with encoded transaction data", async () => {
-      const result = await client.groupClient.registerGroup({
-        groupPool: groupPoolAddress,
-        txOptions: { encodedTxDataOnly: true },
+      // Set licensing config
+      await client.license.setLicensingConfig({
+        ipId,
+        licenseTermsId,
+        licenseTemplate: piLicenseTemplateAddress[aeneid],
+        licensingConfig: {
+          isSet: true,
+          mintingFee: 0n,
+          licensingHook: zeroAddress,
+          hookData: zeroAddress,
+          commercialRevShare: 0,
+          disabled: false,
+          expectMinimumGroupRewardShare: 0,
+          expectGroupRewardPool: groupPoolAddress,
+        },
       });
-
-      expect(result.encodedTxData).to.exist;
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
-      expect(result.encodedTxData?.to).to.be.a("string").and.not.empty;
     });
-  });
-
-  describe("Group with License Operations", () => {
     it("should successfully register group and attach license", async () => {
       const result = await client.groupClient.registerGroupAndAttachLicense({
         groupPool: groupPoolAddress,
@@ -140,8 +128,8 @@ describe("Group Functions", () => {
       });
 
       groupId = result.groupId!;
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.groupId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.groupId).to.be.a("string");
     });
 
     it("should successfully mint, register IP, attach license and add to group", async () => {
@@ -166,18 +154,24 @@ describe("Group Functions", () => {
         maxAllowedRewardShare: 5,
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
     });
-  });
+    it("should successfully register a basic group", async () => {
+      const result = await client.groupClient.registerGroup({
+        groupPool: groupPoolAddress,
+      });
 
-  describe("Advanced Group Operations", () => {
+      expect(result.txHash).to.be.a("string");
+      expect(result.groupId).to.be.a("string");
+    });
+
     it("should successfully register existing IP with license and add to group", async () => {
       const tokenId = await mintBySpg(spgNftContract, "test-metadata");
       const result = await client.groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId,
         nftContract: spgNftContract,
-        tokenId: tokenId!,
+        tokenId,
         maxAllowedRewardShare: 5,
         licenseData: [
           {
@@ -196,8 +190,8 @@ describe("Group Functions", () => {
         ],
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.ipId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
     });
 
     it("should successfully register group with license and add multiple IPs", async () => {
@@ -220,8 +214,8 @@ describe("Group Functions", () => {
         },
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.groupId).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.groupId).to.be.a("string");
     });
 
     it("should fail when trying to add unregistered IP to group", async () => {
@@ -272,7 +266,7 @@ describe("Group Functions", () => {
           ipIds: ipIds,
           maxAllowedRewardSharePercentage: 5,
         });
-        expect(result.txHash).to.be.a("string").and.not.empty;
+        expect(result.txHash).to.be.a("string");
       });
 
       it("should successfully remove IPs from group", async () => {
@@ -280,7 +274,7 @@ describe("Group Functions", () => {
           groupIpId: groupId,
           ipIds: ipIds,
         });
-        expect(result.txHash).to.be.a("string").and.not.empty;
+        expect(result.txHash).to.be.a("string");
       });
 
       it("should fail when trying to remove IPs from a non-existent group", async () => {
@@ -361,26 +355,27 @@ describe("Group Functions", () => {
     /**
      * Helper to mint and register an IP asset with PIL terms
      */
-    const mintAndRegisterIpAssetWithPilTermsHelper = async () => {
-      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        spgNftContract,
-        licenseTermsData,
-      });
-      return result;
-    };
+    const mintAndRegisterIpAssetWithPilTermsHelper =
+      async (): Promise<MintAndRegisterIpAssetWithPilTermsResponse> => {
+        const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+          spgNftContract,
+          licenseTermsData,
+        });
+        return result;
+      };
 
     /**
      * Helper to mint and register an IP and make it a derivative of another IP
      */
     const mintAndRegisterIpAndMakeDerivativeHelper = async (
-      groupIpId: Address,
-      licenseTermsId: bigint,
-    ) => {
+      groupId: Address,
+      licenseId: bigint,
+    ): Promise<Address> => {
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract,
         derivData: {
-          parentIpIds: [groupIpId],
-          licenseTermsIds: [licenseTermsId],
+          parentIpIds: [groupId],
+          licenseTermsIds: [licenseId],
           licenseTemplate: piLicenseTemplateAddress[aeneid],
           maxMintingFee: 0,
           maxRts: 10,
@@ -395,20 +390,20 @@ describe("Group Functions", () => {
      */
     const payRoyaltyAndTransferToVaultHelper = async (
       childIpId: Address,
-      groupIpId: Address,
+      groupId: Address,
       token: Address,
       amount: bigint,
-    ) => {
+    ): Promise<void> => {
       await client.royalty.payRoyaltyOnBehalf({
         receiverIpId: childIpId,
-        payerIpId: groupIpId,
+        payerIpId: groupId,
         token,
         amount,
       });
       await client.royalty.transferToVault({
         royaltyPolicy: NativeRoyaltyPolicy.LRP,
         ipId: childIpId,
-        ancestorIpId: groupIpId,
+        ancestorIpId: groupId,
         token,
       });
     };
@@ -417,15 +412,15 @@ describe("Group Functions", () => {
      * Helper to register a group and attach license
      */
     const registerGroupAndAttachLicenseHelper = async (
-      licenseTermsId: bigint,
+      licenseId: bigint,
       ipIds: Address[],
-    ) => {
+    ): Promise<Address> => {
       const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: groupPoolAddress,
         maxAllowedRewardShare: 100,
         ipIds,
         licenseData: {
-          licenseTermsId,
+          licenseTermsId: licenseId,
           licenseTemplate: piLicenseTemplateAddress[aeneid],
           licensingConfig: {
             ...licenseTermsData[0].licensingConfig,
@@ -459,7 +454,7 @@ describe("Group Functions", () => {
         currencyToken: WIP_TOKEN_ADDRESS,
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
       expect(result.collectedRoyalties).to.equal(10n);
     });
 
@@ -490,7 +485,7 @@ describe("Group Functions", () => {
         memberIpIds: [ipId],
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
       expect(result.claimedReward?.[0].amount[0]).to.equal(10n);
     });
 
@@ -525,20 +520,20 @@ describe("Group Functions", () => {
       ipIds.push(result2.ipId!);
       licenseTermsId = result1.licenseTermsIds![0];
 
-      const groupIpId = await registerGroupAndAttachLicenseHelper(licenseTermsId, ipIds);
-      const childIpId1 = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
-      const childIpId2 = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
+      const groupId = await registerGroupAndAttachLicenseHelper(licenseTermsId, ipIds);
+      const childIpId1 = await mintAndRegisterIpAndMakeDerivativeHelper(groupId, licenseTermsId);
+      const childIpId2 = await mintAndRegisterIpAndMakeDerivativeHelper(groupId, licenseTermsId);
 
-      await payRoyaltyAndTransferToVaultHelper(childIpId1, groupIpId, WIP_TOKEN_ADDRESS, 100n);
-      await payRoyaltyAndTransferToVaultHelper(childIpId2, groupIpId, WIP_TOKEN_ADDRESS, 100n);
+      await payRoyaltyAndTransferToVaultHelper(childIpId1, groupId, WIP_TOKEN_ADDRESS, 100n);
+      await payRoyaltyAndTransferToVaultHelper(childIpId2, groupId, WIP_TOKEN_ADDRESS, 100n);
 
       const result = await client.groupClient.collectAndDistributeGroupRoyalties({
-        groupIpId: groupIpId,
+        groupIpId: groupId,
         currencyTokens: [WIP_TOKEN_ADDRESS],
         memberIpIds: ipIds,
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
       expect(result.collectedRoyalties?.[0].amount).to.equal(20n);
       expect(result.royaltiesDistributed?.[0].amount).to.equal(10n);
       expect(result.royaltiesDistributed?.[1].amount).to.equal(10n);

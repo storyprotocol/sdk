@@ -1,29 +1,26 @@
 import { expect } from "chai";
-import sinon from "sinon";
+import { stub } from "sinon";
 import * as viem from "viem";
+
+import { aeneid, mainnet } from "../../../src";
+import { licensingModuleAbi } from "../../../src/abi/generated";
 import { SupportedChainIds } from "../../../src/types/config";
 import {
-  waitTxAndFilterLog,
   chainStringToViemChain,
-  waitTx,
   validateAddress,
   validateAddresses,
+  waitTx,
+  waitTxAndFilterLog,
 } from "../../../src/utils/utils";
-import { createMock } from "../testUtils";
-import { licensingModuleAbi } from "../../../src/abi/generated";
-import { aeneid, mainnet } from "../../../src";
 import { mockAddress } from "../mockData";
+import { createMockPublicClient } from "../testUtils";
 
 describe("Test waitTxAndFilterLog", () => {
   const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-  let rpcMock: viem.PublicClient = createMock<viem.PublicClient>();
-  afterEach(() => {
-    sinon.restore();
-  });
+  const rpcMock = createMockPublicClient();
+
   it("should throw waitForTransactionReceipt if waitForTransactionReceipt throws an error", async () => {
-    rpcMock.waitForTransactionReceipt = sinon
-      .stub()
-      .throws(new Error("waitForTransactionReceipt error"));
+    rpcMock.waitForTransactionReceipt = stub().throws(new Error("waitForTransactionReceipt error"));
     const params = {
       abi: licensingModuleAbi as viem.Abi,
       eventName: "TransferSingle",
@@ -36,7 +33,7 @@ describe("Test waitTxAndFilterLog", () => {
   });
 
   it("should throw not found event error if decodeEventLog throws an error", async () => {
-    rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
+    rpcMock.waitForTransactionReceipt = stub().resolves({
       logs: [
         {
           type: "event",
@@ -52,7 +49,7 @@ describe("Test waitTxAndFilterLog", () => {
         },
       ],
     });
-    sinon.stub(viem, "decodeEventLog").throws(new Error("decodeEventLog error"));
+    stub(viem, "decodeEventLog").throws(new Error("decodeEventLog error"));
 
     const params = {
       from: "0x0000000000000000000000000000000000000001" as `0x${string}`,
@@ -69,7 +66,7 @@ describe("Test waitTxAndFilterLog", () => {
   });
 
   it("should not throw error if param.from exists and addresses in logs are same with params.address", async () => {
-    rpcMock.waitForTransactionReceipt = sinon.stub().resolves({
+    rpcMock.waitForTransactionReceipt = stub().resolves({
       logs: [
         {
           address: "0x176d33cc80ed3390256033bbf7fd651c9c5a364f",
@@ -177,8 +174,8 @@ describe("Test chainStringToViemChain", () => {
 describe("Test waitTx", () => {
   it("should return txHash when call waitTx", async () => {
     const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
-    let rpcMock: viem.PublicClient = createMock<viem.PublicClient>();
-    const spyWaitForTransactionReceipt = sinon.spy();
+    const rpcMock = createMockPublicClient();
+    const spyWaitForTransactionReceipt = stub();
     rpcMock.waitForTransactionReceipt = spyWaitForTransactionReceipt;
 
     await waitTx(rpcMock, txHash);

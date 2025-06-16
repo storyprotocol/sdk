@@ -1,44 +1,34 @@
-import { expect } from "chai";
-import { createMock } from "../testUtils";
-import * as sinon from "sinon";
-import { IPAccountClient } from "../../../src/resources/ipAccount";
-import {
-  IPAccountExecuteRequest,
-  IPAccountExecuteWithSigRequest,
-  WIP_TOKEN_ADDRESS,
-} from "../../../src";
-import * as utils from "../../../src/utils/utils";
-import { Account, PublicClient, toHex, WalletClient, zeroAddress } from "viem";
-import { aeneid, ipId, txHash } from "../mockData";
-import { IpAccountImplClient } from "../../../src/abi/generated";
-import chai from "chai";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { stub } from "sinon";
+import { PublicClient, toHex, WalletClient, zeroAddress } from "viem";
 
-chai.use(chaiAsPromised);
+import { IPAccountExecuteRequest, IPAccountExecuteWithSigRequest } from "../../../src";
+import { IpAccountImplClient } from "../../../src/abi/generated";
+import { IPAccountClient } from "../../../src/resources/ipAccount";
+import * as utils from "../../../src/utils/utils";
+import { aeneid, ipId, txHash } from "../mockData";
+import { createMockPublicClient, createMockWalletClient } from "../testUtils";
+
+use(chaiAsPromised);
 
 describe("Test IPAccountClient", () => {
   let ipAccountClient: IPAccountClient;
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
   beforeEach(() => {
-    rpcMock = createMock<PublicClient>();
-    walletMock = createMock<WalletClient>();
-    const accountMock = createMock<Account>();
-    walletMock.account = accountMock;
+    rpcMock = createMockPublicClient();
+    walletMock = createMockWalletClient();
     ipAccountClient = new IPAccountClient(rpcMock, walletMock, aeneid);
-    sinon.stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
-    sinon.stub(IpAccountImplClient.prototype, "executeEncode").returns({ data: "0x", to: "0x" });
-    sinon.stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
-    sinon
-      .stub(IpAccountImplClient.prototype, "state")
-      .resolves({ result: "0x73fcb515cee99e4991465ef586cfe2b072ebb512" });
+    stub(IpAccountImplClient.prototype, "execute").resolves(txHash);
+    stub(IpAccountImplClient.prototype, "executeEncode").returns({ data: "0x", to: "0x" });
+    stub(IpAccountImplClient.prototype, "executeWithSig").resolves(txHash);
+    stub(IpAccountImplClient.prototype, "state").resolves({
+      result: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+    });
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  describe("Test execute", async () => {
+  describe("Test execute", () => {
     it("should throw invalid address error when accountAddress is invalid", async () => {
       const request: IPAccountExecuteRequest = {
         ipId: "0x123", // invalid address
@@ -67,7 +57,7 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call execute successfully", async () => {
-      sinon.stub(utils, "waitTx").resolves();
+      stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.execute({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -89,7 +79,7 @@ describe("Test IPAccountClient", () => {
         },
       });
 
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(result.encodedTxData?.data).to.be.a("string");
     });
   });
 
@@ -127,7 +117,7 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return txHash when call executeWithSig successfully", async () => {
-      sinon.stub(utils, "waitTx").resolves();
+      stub(utils, "waitTx").resolves();
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,
@@ -155,7 +145,7 @@ describe("Test IPAccountClient", () => {
         },
       });
 
-      expect(result.encodedTxData?.data).to.be.a("string").and.not.empty;
+      expect(result.encodedTxData?.data).to.be.a("string");
     });
   });
 
@@ -187,7 +177,7 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should return the token information when call getToken with correct args", async () => {
-      sinon.stub(IpAccountImplClient.prototype, "token").resolves([1513n, zeroAddress, 1n]);
+      stub(IpAccountImplClient.prototype, "token").resolves([1513n, zeroAddress, 1n]);
       const token = await ipAccountClient.getToken("0x73fcb515cee99e4991465ef586cfe2b072ebb512");
       expect(token).to.deep.equal({ chainId: 1513n, tokenContract: zeroAddress, tokenId: 1n });
     });
@@ -217,9 +207,9 @@ describe("Test IPAccountClient", () => {
 
   describe("Test transferErc20", () => {
     it("should throw error when call transferErc20 failed", async () => {
-      sinon
-        .stub(IpAccountImplClient.prototype, "executeBatch")
-        .rejects(new Error("Failed to transfer ERC20 tokens"));
+      stub(IpAccountImplClient.prototype, "executeBatch").rejects(
+        new Error("Failed to transfer ERC20 tokens"),
+      );
       const result = ipAccountClient.transferErc20({
         ipId: ipId,
         tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],
@@ -237,7 +227,7 @@ describe("Test IPAccountClient", () => {
       await expect(result).to.be.rejectedWith("Failed to transfer Erc20: Invalid address: 0x123.");
     });
     it("should return txHash when call transferErc20 successfully", async () => {
-      sinon.stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
+      stub(IpAccountImplClient.prototype, "executeBatch").resolves(txHash);
       const result = await ipAccountClient.transferErc20({
         ipId: ipId,
         tokens: [{ address: zeroAddress, target: zeroAddress, amount: 1n }],

@@ -1,8 +1,11 @@
-import { HDKey } from "@scure/bip32";
-import { createWalletClient, Hex, http, parseEther } from "viem";
 import * as crypto from "crypto";
+
+import { HDKey } from "@scure/bip32";
+import { Address, createWalletClient, Hex, http, parseEther } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { getStoryClient, publicClient, RPC } from "./util";
+
+import { getStoryClient, publicClient, RPC, TEST_PRIVATE_KEY } from "./util";
+import { StoryClient } from "../../../src";
 import { chainStringToViemChain } from "../../../src/utils/utils";
 
 /**
@@ -11,7 +14,7 @@ import { chainStringToViemChain } from "../../../src/utils/utils";
  * @param xprv Extended private key
  * @returns Extracted standard private key as a hex string
  */
-function getPrivateKeyFromXprv(xprv: string): Hex {
+export const getPrivateKeyFromXprv = (xprv: string): Hex => {
   // Create HDKey instance from xprv
   const hdKey = HDKey.fromExtendedKey(xprv);
   // Extract the private key buffer
@@ -22,8 +25,8 @@ function getPrivateKeyFromXprv(xprv: string): Hex {
   }
 
   // Convert private key buffer to hex string (prefixed with 0x for compatibility with viem)
-  return `0x${Buffer.from(privateKeyBuffer).toString("hex")}` as Hex;
-}
+  return `0x${Buffer.from(privateKeyBuffer).toString("hex")}`;
+};
 
 /**
  * Create an extended private key (xprv) deterministically from a standard private key.
@@ -31,7 +34,7 @@ function getPrivateKeyFromXprv(xprv: string): Hex {
  * @param privateKey Ethereum private key (with or without 0x prefix)
  * @returns Deterministically derived extended private key (xprv)
  */
-function getXprvFromPrivateKey(privateKey: string | Hex): string {
+export const getXprvFromPrivateKey = (privateKey: string): string => {
   // Remove 0x prefix if present
   const pkHex = privateKey.toString().replace(/^0x/, "");
 
@@ -53,15 +56,18 @@ function getXprvFromPrivateKey(privateKey: string | Hex): string {
 
   // Return the extended private key (xprv)
   return hdKey.privateExtendedKey;
-}
+};
 
 /**
  * Get a StoryClient instance for a new wallet that is deterministically derived from an extended private key (xprv).
  * The wallet is ensured to have a minimum balance of 5 tokens before being returned.
  * @returns StoryClient instance for the new wallet
  */
-export const getDerivedStoryClient = async () => {
-  const xprv = getXprvFromPrivateKey(process.env.WALLET_PRIVATE_KEY as string);
+export const getDerivedStoryClient = async (): Promise<{
+  clientB: StoryClient;
+  address: Address;
+}> => {
+  const xprv = getXprvFromPrivateKey(TEST_PRIVATE_KEY);
   const privateKey = getPrivateKeyFromXprv(xprv);
   const clientB = getStoryClient(privateKey);
   const walletB = privateKeyToAccount(privateKey);
@@ -70,7 +76,7 @@ export const getDerivedStoryClient = async () => {
   const clientAWalletClient = createWalletClient({
     chain: chainStringToViemChain("aeneid"),
     transport: http(RPC),
-    account: privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as Hex),
+    account: privateKeyToAccount(TEST_PRIVATE_KEY),
   });
   const clientBBalance = await publicClient.getBalance({
     address: walletB.address,

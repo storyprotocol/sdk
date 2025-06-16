@@ -1,12 +1,15 @@
-import chai from "chai";
-import { LicensingConfig, StoryClient } from "../../src";
-import { Hex, maxUint256, zeroAddress } from "viem";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { Hex, maxUint256, zeroAddress } from "viem";
+
+import { LicensingConfig, StoryClient } from "../../src";
+import { getDerivedStoryClient } from "./utils/BIP32";
+import { generateHex } from "./utils/generateHex";
 import {
-  mockERC721,
+  aeneid,
   getStoryClient,
   getTokenId,
-  aeneid,
+  mockERC721,
   publicClient,
   walletClient,
 } from "./utils/util";
@@ -18,11 +21,8 @@ import {
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 import { ERC20Client } from "../../src/utils/token";
-import { getDerivedStoryClient } from "./utils/BIP32";
-import { generateHex } from "./utils/generateHex";
 
-chai.use(chaiAsPromised);
-const expect = chai.expect;
+use(chaiAsPromised);
 
 describe("License Functions", () => {
   let client: StoryClient;
@@ -32,7 +32,7 @@ describe("License Functions", () => {
     const derivedClient = await getDerivedStoryClient();
     clientB = derivedClient.clientB;
   });
-  describe("register license with different types", async () => {
+  describe("register license with different types", () => {
     it("should register license ", async () => {
       const result = await client.license.registerPILTerms({
         defaultMintingFee: 0,
@@ -85,11 +85,11 @@ describe("License Functions", () => {
     });
   });
 
-  describe("attach License Terms and mint license tokens", async () => {
+  describe("attach License Terms and mint license tokens", () => {
     let ipId: Hex;
     let licenseId: bigint;
     let paidLicenseId: bigint; // license with 0.01IP minting fee
-    let tokenId;
+    let tokenId: number | undefined;
     before(async () => {
       tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
@@ -119,7 +119,7 @@ describe("License Functions", () => {
         ipId: ipId,
         licenseTermsId: licenseId,
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
     });
 
     it("should be able to attach another license terms", async () => {
@@ -127,19 +127,18 @@ describe("License Functions", () => {
         ipId: ipId,
         licenseTermsId: paidLicenseId,
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
     });
 
     it("should mint license tokens with ip owner", async () => {
-      const balanceBefore = await client.getWalletBalance();
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
         maxMintingFee: "1",
         maxRevenueShare: "100",
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTokenIds).to.be.a("array");
     });
 
     it("should mint license tokens with non ip owner", async () => {
@@ -163,8 +162,8 @@ describe("License Functions", () => {
         maxMintingFee: "1",
         maxRevenueShare: "100",
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTokenIds).to.be.a("array");
     });
 
     it("should mint license token with default license terms", async () => {
@@ -180,8 +179,8 @@ describe("License Functions", () => {
         maxRevenueShare: 1,
       });
 
-      expect(result.txHash).to.be.a("string").and.not.empty;
-      expect(result.licenseTokenIds).to.be.a("array").and.not.empty;
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTokenIds).to.be.a("array");
     });
 
     it("should mint license tokens with fee and pay with IP", async () => {
@@ -192,14 +191,14 @@ describe("License Functions", () => {
         maxMintingFee: 0n,
         maxRevenueShare: 50,
       });
-      expect(result.txHash).to.be.a("string").and.not.empty;
+      expect(result.txHash).to.be.a("string");
       const balanceAfter = await client.getWalletBalance();
-      expect(balanceAfter < balanceBefore - 100n).to.be.true;
+      expect(Number(balanceAfter)).lessThan(Number(balanceBefore - 100n));
     });
 
     it("should get license terms", async () => {
       const result = await client.license.getLicenseTerms(licenseId);
-      expect(result).not.empty;
+      expect(result).to.be.an("object");
     });
 
     it("should predict minting license fee", async () => {
@@ -208,7 +207,7 @@ describe("License Functions", () => {
         licensorIpId: ipId,
         amount: 1,
       });
-      expect(result.currencyToken).to.be.a("string").and.not.empty;
+      expect(result.currencyToken).to.be.a("string");
       expect(result.tokenAmount).to.be.a("bigint");
     });
 
@@ -230,8 +229,8 @@ describe("License Functions", () => {
           licenseTermsId: licenseId,
           licensingConfig,
         });
-        expect(result.txHash).to.be.a("string").and.not.empty;
-        expect(result.success).to.be.true;
+        expect(result.txHash).to.be.a("string");
+        expect(result.success).to.equal(true);
       });
 
       it("should get licensing config", async () => {
@@ -245,13 +244,11 @@ describe("License Functions", () => {
   });
 
   describe("Creative Commons Attribution License Tests", () => {
-    let client: StoryClient;
     let ipId: Hex;
     let ccLicenseTermsId: bigint;
-    let tokenId;
+    let tokenId: number | undefined;
 
     before(async () => {
-      client = getStoryClient();
       tokenId = await getTokenId();
 
       // Register an IP asset
@@ -272,13 +269,13 @@ describe("License Functions", () => {
     it("should verify the license terms match Creative Commons Attribution specifications", async () => {
       const licenseTerms = await client.license.getLicenseTerms(ccLicenseTermsId);
 
-      expect(licenseTerms.terms.transferable).to.be.true;
-      expect(licenseTerms.terms.commercialUse).to.be.true;
-      expect(licenseTerms.terms.derivativesAllowed).to.be.true;
-      expect(licenseTerms.terms.derivativesAttribution).to.be.true;
-      expect(licenseTerms.terms.derivativesReciprocal).to.be.true;
-      expect(licenseTerms.terms.derivativesApproval).to.be.false;
-      expect(licenseTerms.terms.commercialAttribution).to.be.true;
+      expect(licenseTerms.terms.transferable).to.equal(true);
+      expect(licenseTerms.terms.commercialUse).to.equal(true);
+      expect(licenseTerms.terms.derivativesAllowed).to.equal(true);
+      expect(licenseTerms.terms.derivativesAttribution).to.equal(true);
+      expect(licenseTerms.terms.derivativesReciprocal).to.equal(true);
+      expect(licenseTerms.terms.derivativesApproval).to.equal(false);
+      expect(licenseTerms.terms.commercialAttribution).to.equal(true);
       expect(licenseTerms.terms.commercialRevShare).to.equal(0);
       expect(licenseTerms.terms.defaultMintingFee).to.equal(0n);
 
@@ -292,8 +289,8 @@ describe("License Functions", () => {
         licenseTermsId: ccLicenseTermsId,
       });
 
-      expect(attachResult.txHash).to.be.a("string").and.not.empty;
-      expect(attachResult.success).to.be.true;
+      expect(attachResult.txHash).to.be.a("string");
+      expect(attachResult.success).to.equal(true);
 
       const licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(publicClient);
       const hasLicense = await licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
@@ -301,7 +298,7 @@ describe("License Functions", () => {
         licenseTemplate: client.ipAsset.licenseTemplateClient.address,
         licenseTermsId: ccLicenseTermsId,
       });
-      expect(hasLicense).to.be.true;
+      expect(hasLicense).to.equal(true);
     });
 
     it("should mint CC-BY license tokens with no minting fee", async () => {
@@ -325,8 +322,8 @@ describe("License Functions", () => {
         maxRevenueShare: 0,
       });
 
-      expect(mintResult.txHash).to.be.a("string").and.not.empty;
-      expect(mintResult.licenseTokenIds).to.be.a("array").and.not.empty;
+      expect(mintResult.txHash).to.be.a("string");
+      expect(mintResult.licenseTokenIds).to.be.a("array");
 
       const balanceAfter = await client.getWalletBalance();
 
@@ -338,7 +335,7 @@ describe("License Functions", () => {
       const totalGas = gasUsed * effectiveGasPrice;
 
       // Confirms the balance diff only reflects gas cost, since license fee is zero.
-      expect(balanceDiff == totalGas).to.be.true; // Small amount for gas
+      expect(balanceDiff).to.equal(totalGas); // Small amount for gas
     });
   });
 });

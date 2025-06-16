@@ -1,6 +1,14 @@
+import {
+  Address,
+  createPublicClient,
+  createWalletClient,
+  Hex,
+  http,
+  WalletClient,
+  zeroHash,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
-import { http, createPublicClient, createWalletClient, Hex, Address, zeroHash } from "viem";
+
 import { ChainIds, StoryClient, StoryConfig } from "../../../src";
 import {
   licenseTokenAbi,
@@ -8,6 +16,8 @@ import {
   spgnftBeaconAddress,
   SpgnftImplEventClient,
 } from "../../../src/abi/generated";
+import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
+
 export const RPC = "https://aeneid.storyrpc.io";
 export const aeneid: ChainIds = 1315;
 export const mockERC721 = "0xa1119092ea911202E0a65B743a13AE28C5CF2f21";
@@ -21,7 +31,7 @@ const baseConfig = {
   transport: http(RPC),
 } as const;
 export const publicClient = createPublicClient(baseConfig);
-export const walletClient = createWalletClient({
+export const walletClient: WalletClient = createWalletClient({
   ...baseConfig,
   account: privateKeyToAccount(TEST_PRIVATE_KEY),
 });
@@ -108,7 +118,7 @@ export const mintBySpg = async (
   return events[0].tokenId;
 };
 
-export const approveForLicenseToken = async (address: Address, tokenId: bigint) => {
+export const approveForLicenseToken = async (address: Address, tokenId: bigint): Promise<void> => {
   const { request: call } = await publicClient.simulateContract({
     abi: licenseTokenAbi,
     address: licenseToken,
@@ -119,6 +129,7 @@ export const approveForLicenseToken = async (address: Address, tokenId: bigint) 
   const hash = await walletClient.writeContract(call);
   await waitTx(publicClient, hash);
 };
+
 export const getStoryClient = (privateKey?: Address): StoryClient => {
   const config: StoryConfig = {
     chainId: "aeneid",
