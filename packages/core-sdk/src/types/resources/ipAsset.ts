@@ -97,8 +97,16 @@ export type RegisterDerivativeResponse = {
   encodedTxData?: EncodedTxData;
 };
 export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
+  /** Programmable IP License */
   terms: T;
   licensingConfig?: C;
+  /**
+   * The maximum number of license tokens that can be minted from this license term.
+   * When undefined, there is no limit on license token minting.
+   * When specified, minting is capped at this value and the `TotalLicenseTokenLimitHook
+   * (0xba8E30d9EB784Badc2aF610F56d99d212BC2A90c)` is automatically set as the {@link LicensingConfigInput.licensingHook}.
+   */
+  maxLicenseTokens?: number;
 };
 
 export type LicenseTermsData = Omit<
