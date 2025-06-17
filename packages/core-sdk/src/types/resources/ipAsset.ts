@@ -280,6 +280,7 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResult = {
   tokenId: bigint;
   licenseTermsIds: bigint[];
   spgNftContract: Address;
+  licenseTermsMaxLimitTxHashes?: Hash[];
 };
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
   txHash: Hash;

@@ -2157,6 +2157,16 @@ describe("Test IpAssetClient", () => {
               {
                 terms: licenseTerms,
                 licensingConfig,
+                maxLicenseTokens: 100,
+              },
+              {
+                terms: licenseTerms,
+                licensingConfig,
+              },
+              {
+                terms: licenseTerms,
+                licensingConfig,
+                maxLicenseTokens: 100,
               },
             ],
             allowDuplicates: false,
@@ -2183,9 +2193,10 @@ describe("Test IpAssetClient", () => {
       expect(result.results).to.deep.equal([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          licenseTermsIds: [5n],
+          licenseTermsIds: [5n, 5n, 5n],
           tokenId: 1n,
           spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsMaxLimitTxHashes: [txHash, txHash],
         },
         {
           ipId: "0x1daAE3197Bc469Cb87B917aa460a12dD95c6627c",
@@ -3300,7 +3311,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
     });
-    
+
     it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args with license terms max limit", async () => {
       stub(
         ipAssetClient.royaltyTokenDistributionWorkflowsClient,

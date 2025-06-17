@@ -919,7 +919,7 @@ describe("IP Asset Functions", () => {
       expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
       expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
     });
-    
+
     it("should register IP and attach license terms and distribute royalty tokens with complex royalty shares", async () => {
       const tokenId = await mintBySpg(nftContract, "test-metadata");
       const result = await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens(
@@ -1061,7 +1061,7 @@ describe("IP Asset Functions", () => {
       expect(result.licenseTermsIds).to.be.an("array");
       expect(result.tokenId).to.be.a("bigint");
     });
-    
+
     it("should mint and register IP and attach PIL terms and distribute royalty tokens with license terms max limit", async () => {
       const result =
         await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
@@ -1884,6 +1884,38 @@ describe("IP Asset Functions", () => {
                   expectMinimumGroupRewardShare: 0,
                   expectGroupRewardPool: zeroAddress,
                 },
+                maxLicenseTokens: 100,
+              },
+              {
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                  defaultMintingFee: 80n,
+                  expiration: 0n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 0,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: WIP_TOKEN_ADDRESS,
+                  uri: "",
+                },
+                licensingConfig: {
+                  isSet: true,
+                  mintingFee: 100n,
+                  licensingHook: zeroAddress,
+                  hookData: zeroAddress,
+                  commercialRevShare: 0,
+                  disabled: false,
+                  expectMinimumGroupRewardShare: 0,
+                  expectGroupRewardPool: zeroAddress,
+                },
               },
             ],
           },
@@ -1920,6 +1952,7 @@ describe("IP Asset Functions", () => {
                   expectMinimumGroupRewardShare: 0,
                   expectGroupRewardPool: zeroAddress,
                 },
+                maxLicenseTokens: 100,
               },
             ],
           },
@@ -1928,8 +1961,10 @@ describe("IP Asset Functions", () => {
 
       expect(result.txHash).to.be.a("string");
       expect(result.results).to.be.an("array");
-      expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(1);
+      expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(2);
+      expect(result.results![0].licenseTermsMaxLimitTxHashes).to.be.an("array").and.length(1);
       expect(result.results![1].licenseTermsIds).to.be.an("array").and.length(1);
+      expect(result.results![1].licenseTermsMaxLimitTxHashes).to.be.an("array").and.length(2);
     });
 
     it("should batch mint and register IP asset and make derivative", async () => {

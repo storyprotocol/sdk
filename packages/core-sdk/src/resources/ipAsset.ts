@@ -646,6 +646,7 @@ export class IPAssetClient {
           spgNftContract: log.tokenContract,
           licenseTermsIds: [],
         }));
+
       // Due to emit event log by sequence, we need to get license terms id from request.args
       for (let j = 0; j < request.args.length; j++) {
         const licenseTerms: LicenseTerms[] = [];
@@ -659,6 +660,15 @@ export class IPAssetClient {
         }
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
         results[j].licenseTermsIds = licenseTermsIds;
+        const licenseTermsMaxLimitTxHashes = await this.setMaxLicenseTokens({
+          licenseTermsData: licenseTermsData!,
+          licensorIpId: results[j].ipId,
+          licenseTemplate: this.licenseTemplateClient.address,
+          licenseTermsId: licenseTermsIds,
+        });
+        if (licenseTermsMaxLimitTxHashes.length > 0) {
+          results[j].licenseTermsMaxLimitTxHashes = licenseTermsMaxLimitTxHashes;
+        }
       }
       return {
         txHash: txHash,
