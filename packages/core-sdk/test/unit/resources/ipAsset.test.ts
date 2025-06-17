@@ -3298,6 +3298,70 @@ describe("Test IpAssetClient", () => {
         });
 
       expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+    });
+    
+    it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args with license terms max limit", async () => {
+      stub(
+        ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+        "mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId,
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 5n,
+      });
+
+      stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+        {
+          ipId,
+          ipRoyaltyVault: zeroAddress,
+        },
+      ]);
+      const result =
+        await ipAssetClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
+          spgNftContract,
+          licenseTermsData: [
+            {
+              terms: licenseTerms,
+              licensingConfig,
+            },
+            {
+              terms: licenseTerms,
+              licensingConfig,
+            },
+            {
+              terms: licenseTerms,
+              licensingConfig,
+              maxLicenseTokens: 100,
+            },
+          ],
+          allowDuplicates: true,
+          royaltyShares: [
+            { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          ],
+          recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+        });
+
+      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(1);
     });
 
     it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args ", async () => {

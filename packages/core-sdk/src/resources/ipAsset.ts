@@ -1324,12 +1324,19 @@ export class IPAssetClient {
       const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
       const { ipRoyaltyVault } =
         this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt)[0];
+      const licenseTermsMaxLimitTxHashes = await this.setMaxLicenseTokens({
+        licenseTermsData: request.licenseTermsData,
+        licensorIpId: ipId!,
+        licenseTemplate: this.licenseTemplateClient.address,
+        licenseTermsId: licenseTermsIds,
+      });
       return {
         txHash,
         ipId,
         licenseTermsIds,
         ipRoyaltyVault,
         tokenId,
+        ...(licenseTermsMaxLimitTxHashes.length > 0 && { licenseTermsMaxLimitTxHashes }),
       };
     } catch (error) {
       return handleError(

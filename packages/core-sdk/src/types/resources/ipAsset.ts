@@ -407,6 +407,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
   licenseTermsIds?: bigint[];
   ipRoyaltyVault?: Address;
   tokenId?: bigint;
+  licenseTermsMaxLimitTxHashes?: Hash[];
 };
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
