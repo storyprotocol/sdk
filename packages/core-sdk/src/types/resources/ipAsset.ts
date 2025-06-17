@@ -237,6 +237,7 @@ export type RegisterPilTermsAndAttachResponse = {
   txHash?: Hash;
   encodedTxData?: EncodedTxData;
   licenseTermsIds?: bigint[];
+  licenseTermsMaxLimitTxHashes?: Hash[];
 };
 
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {

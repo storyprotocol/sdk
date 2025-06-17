@@ -966,7 +966,17 @@ export class IPAssetClient {
           hash: txHash,
         });
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-        return { txHash, licenseTermsIds };
+        const licenseTermsMaxLimitTxHashes = await this.setMaxLicenseTokens({
+          licenseTermsData: request.licenseTermsData,
+          licensorIpId: ipId,
+          licenseTemplate: this.licenseTemplateClient.address,
+          licenseTermsId: licenseTermsIds,
+        });
+        return {
+          txHash,
+          licenseTermsIds,
+          ...(licenseTermsMaxLimitTxHashes.length > 0 && { licenseTermsMaxLimitTxHashes }),
+        };
       }
     } catch (error) {
       return handleError(error, "Failed to register PIL terms and attach");

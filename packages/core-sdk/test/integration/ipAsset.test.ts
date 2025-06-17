@@ -566,6 +566,114 @@ describe("IP Asset Functions", () => {
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+    });
+    it("should register PIL terms and attach with license terms max limit", async () => {
+      const result = await client.ipAsset.registerPilTermsAndAttach({
+        ipId: parentIpId,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+          },
+        ],
+        deadline: 1000n,
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
     });
 
     it("should mint and register IP and make derivative with license tokens", async () => {

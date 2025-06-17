@@ -1743,23 +1743,38 @@ describe("Test IpAssetClient", () => {
 
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsIds).to.deep.equal([0n, 0n]);
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
     });
 
-    it("should return txHash when registerPilTermsAndAttach given correct args ", async () => {
+    it("should return licenseTermsMaxLimitTxHashes when registerPilTermsAndAttach given correct args with license terms max limit", async () => {
       stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerPilTermsAndAttach").resolves(
         txHash,
       );
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 1n,
+      });
       const result = await ipAssetClient.registerPilTermsAndAttach({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         licenseTermsData: [
           {
             terms: licenseTerms,
             licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
           },
         ],
       });
-      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
     });
 
     it("should call with default values of licensingConfig when registerPilTermsAndAttach given licensingConfig is not provided", async () => {
