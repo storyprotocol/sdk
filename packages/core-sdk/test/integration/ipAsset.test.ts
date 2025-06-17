@@ -1023,6 +1023,112 @@ describe("IP Asset Functions", () => {
       licenseTermsId = result.licenseTermsIds![0];
     });
 
+    it("should successfully when call mint and register ip asset with pil terms with license terms max limit", async () => {
+      const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: spgNftContractWithPrivateMinting,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 6n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 90,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 6n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: pool,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 5n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 90,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 6n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: pool,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 5n,
+              expiration: 0n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 90,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 6n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: pool,
+            },
+          },
+        ],
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes!.length).to.be.equal(2);
+    });
     it("should successfully when call mint and register ip and make derivative", async () => {
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
         spgNftContract: spgNftContractWithPrivateMinting,

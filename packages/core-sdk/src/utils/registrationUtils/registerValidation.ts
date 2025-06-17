@@ -5,9 +5,11 @@ import {
   LicenseRegistryReadOnlyClient,
   piLicenseTemplateAddress,
   SpgnftImplReadOnlyClient,
+  totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../constants/common";
 import { RevShareType } from "../../types/common";
+import { ChainIds } from "../../types/config";
 import {
   DerivativeData,
   LicenseTermsData,
@@ -36,6 +38,7 @@ export const getPublicMinting = async (
 export const validateLicenseTermsData = async (
   licenseTermsData: LicenseTermsDataInput[],
   rpcClient: PublicClient,
+  chainId: ChainIds,
 ): Promise<{
   licenseTerms: LicenseTerms[];
   licenseTermsData: LicenseTermsData[];
@@ -47,6 +50,14 @@ export const validateLicenseTermsData = async (
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
     if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
       throw new Error("A royalty policy must be provided when the minting fee is greater than 0.");
+    }
+
+    const maxLicenseTokens = licenseTermsData[i].maxLicenseTokens;
+    if (maxLicenseTokens !== undefined) {
+      if (maxLicenseTokens < 0) {
+        throw new Error("The max license tokens must be greater than or equal to 0.");
+      }
+      licensingConfig.licensingHook = totalLicenseTokenLimitHookAddress[chainId] as Address;
     }
     licenseTerms.push(licenseTerm);
     processedLicenseTermsData.push({

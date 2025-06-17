@@ -131,6 +131,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
     const { licenseTermsData } = await validateLicenseTermsData(
       request.licenseTermsData,
       rpcClient,
+      chainId,
     );
     const requestWithTerms = { ...baseRequest, licenseTermsData };
 
@@ -487,6 +488,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
     const { licenseTermsData } = await validateLicenseTermsData(
       request.licenseTermsData as LicenseTermsDataInput[],
       rpcClient,
+      chainId,
     );
     const requestWithTerms = { ...baseRequest, licenseTermsData };
 

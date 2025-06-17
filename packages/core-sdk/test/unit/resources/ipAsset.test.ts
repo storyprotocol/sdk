@@ -946,6 +946,7 @@ describe("Test IpAssetClient", () => {
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.licenseTermsIds![0]).to.equal(5n);
       expect(result.tokenId).to.equal(1n);
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
     });
 
     it("should return ipId, tokenId, licenseTermsId,txHash when createIpAssetWithPilTerms given correct args with default license terms id", async () => {
@@ -1043,6 +1044,45 @@ describe("Test IpAssetClient", () => {
         nftMetadataHash: zeroHash,
       });
       expect(mintAndRegisterIpAndAttachPilTermsStub.args[0][0].recipient).to.equal(walletAddress);
+    });
+    it("should successfully when call mint and register ip asset with pil terms with license terms max limit", async () => {
+      stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "mintAndRegisterIpAndAttachPilTerms",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const result = await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: mockAddress,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+            licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
+          },
+        ],
+      });
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
     });
   });
 

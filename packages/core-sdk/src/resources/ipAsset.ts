@@ -42,6 +42,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
   SpgnftImplReadOnlyClient,
+  TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
@@ -91,6 +92,7 @@ import {
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
+  SetMaxLicenseTokensRequest,
   TransformIpRegistrationWorkflowResponse,
 } from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
@@ -136,6 +138,7 @@ export class IPAssetClient {
   public royaltyModuleEventClient: RoyaltyModuleEventClient;
   public wipClient: WrappedIpClient;
   public spgNftClient: SpgnftImplReadOnlyClient;
+  public totalLicenseTokenLimitHookClient: TotalLicenseTokenLimitHookClient;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -161,6 +164,7 @@ export class IPAssetClient {
     this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.spgNftClient = new SpgnftImplReadOnlyClient(rpcClient);
+    this.totalLicenseTokenLimitHookClient = new TotalLicenseTokenLimitHookClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -544,6 +548,7 @@ export class IPAssetClient {
         const licenseTermsData = await validateLicenseTermsData(
           request.licenseTermsData,
           this.rpcClient,
+          this.chainId,
         );
         licenseTerms = licenseTermsData.licenseTerms;
         req = request;
@@ -588,7 +593,18 @@ export class IPAssetClient {
         } else {
           // Get the ID from the validated license terms
           const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-          return { ...rsp, licenseTermsIds: computedLicenseTermsIds };
+          const licenseTermsMaxLimitTxHashes = await this.setMaxLicenseTokens({
+            licenseTermsData: request.licenseTermsData!,
+            licensorIpId: rsp.ipId!,
+            licenseTemplate: this.licenseTemplateClient.address,
+            licenseTermsId: computedLicenseTermsIds,
+          });
+
+          return {
+            ...rsp,
+            licenseTermsIds: computedLicenseTermsIds,
+            ...(licenseTermsMaxLimitTxHashes.length > 0 && { licenseTermsMaxLimitTxHashes }),
+          };
         }
       } else {
         return rsp;
@@ -677,6 +693,7 @@ export class IPAssetClient {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest>(
@@ -905,6 +922,7 @@ export class IPAssetClient {
       const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
@@ -1086,6 +1104,7 @@ export class IPAssetClient {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipIdAddress = await getIpIdAddress({
@@ -1245,6 +1264,7 @@ export class IPAssetClient {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const { transformRequest } =
         await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest>(
@@ -1631,5 +1651,30 @@ export class IPAssetClient {
       };
     }
     return { txHash };
+  }
+
+  private async setMaxLicenseTokens({
+    licenseTermsData,
+    licensorIpId,
+    licenseTemplate,
+    licenseTermsId,
+  }: SetMaxLicenseTokensRequest): Promise<Hash[]> {
+    const licenseTermsMaxLimitTxHashes: Hash[] = [];
+    for (let i = 0; i < licenseTermsData.length; i++) {
+      const maxLicenseTokens = licenseTermsData[i].maxLicenseTokens;
+      if (maxLicenseTokens === undefined || maxLicenseTokens < 0) {
+        continue;
+      }
+      const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
+        licensorIpId,
+        licenseTemplate,
+        licenseTermsId: licenseTermsId[i],
+        limit: BigInt(maxLicenseTokens),
+      });
+      if (txHash) {
+        licenseTermsMaxLimitTxHashes.push(txHash);
+      }
+    }
+    return licenseTermsMaxLimitTxHashes;
   }
 }

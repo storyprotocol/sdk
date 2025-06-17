@@ -100,11 +100,13 @@ export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInpu
   /** Programmable IP License */
   terms: T;
   licensingConfig?: C;
+  //TODO: need to consider if support license terms id.
   /**
    * The maximum number of license tokens that can be minted from this license term.
-   * When undefined, there is no limit on license token minting.
-   * When specified, minting is capped at this value and the `TotalLicenseTokenLimitHook
-   * (0xba8E30d9EB784Badc2aF610F56d99d212BC2A90c)` is automatically set as the {@link LicensingConfigInput.licensingHook}.
+   *
+   * - When not specified, there is no limit on license token minting
+   * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
+   *   is automatically configured as the {@link LicensingConfigInput.licensingHook}
    */
   maxLicenseTokens?: number;
 };
@@ -138,6 +140,7 @@ export type MintAndRegisterIpAssetWithPilTermsResponse = {
   tokenId?: bigint;
   receipt?: TransactionReceipt;
   licenseTermsIds?: bigint[];
+  licenseTermsMaxLimitTxHashes?: Hash[];
 };
 
 export type RegisterIpAndMakeDerivativeRequest = {
@@ -523,4 +526,11 @@ export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions 
 export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
   distributeRoyaltyTokensTxHashes?: Hash[];
   registrationResults: BatchRegistrationResult[];
+};
+
+export type SetMaxLicenseTokensRequest = {
+  licenseTermsData: LicenseTermsDataInput[];
+  licensorIpId: Hex;
+  licenseTemplate: Hex;
+  licenseTermsId: bigint[];
 };
