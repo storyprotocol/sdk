@@ -121,6 +121,9 @@ describe("Test IpAssetClient", () => {
       currencyToken: zeroAddress,
       tokenAmount: 0n,
     });
+    stub(ipAssetClient.totalLicenseTokenLimitHookClient, "setTotalLicenseTokenLimit").resolves(
+      txHash,
+    );
   });
 
   describe("IP Metadata Functions", () => {
@@ -2649,6 +2652,77 @@ describe("Test IpAssetClient", () => {
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         licenseTermsIds: [8n],
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      });
+    });
+    it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args with license terms max limit", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      stub(IpAssetRegistryClient.prototype, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+
+      stub(
+        ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+        "registerIpAndAttachPilTermsAndDeployRoyaltyVault",
+      ).resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 8n,
+      });
+
+      stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+        {
+          ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
+      ]);
+
+      stub(
+        ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+        "distributeRoyaltyTokens",
+      ).resolves(txHash);
+
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const result = await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        nftContract: spgNftContract,
+        tokenId: "1",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+            licensingConfig,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
+          },
+        ],
+        royaltyShares: [
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+        ],
+      });
+      expect(result).to.deep.equal({
+        registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash:
+          "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997",
+        distributeRoyaltyTokensTxHash: txHash,
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsIds: [8n, 8n, 8n],
+        ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsMaxLimitTxHashes: [txHash],
       });
     });
 

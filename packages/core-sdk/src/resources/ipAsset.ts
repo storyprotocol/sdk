@@ -1169,12 +1169,19 @@ export class IPAssetClient {
         ...request.txOptions,
         hash: distributeRoyaltyTokensTxHash,
       });
+      const licenseTermsMaxLimitTxHashes = await this.setMaxLicenseTokens({
+        licenseTermsData: request.licenseTermsData,
+        licensorIpId: ipId,
+        licenseTemplate: this.licenseTemplateClient.address,
+        licenseTermsId: licenseTermsIds,
+      });
       return {
         registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
         distributeRoyaltyTokensTxHash,
         ipId,
         licenseTermsIds,
         ipRoyaltyVault,
+        ...(licenseTermsMaxLimitTxHashes.length > 0 && { licenseTermsMaxLimitTxHashes }),
       };
     } catch (error) {
       return handleError(

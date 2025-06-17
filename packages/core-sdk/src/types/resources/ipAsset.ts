@@ -337,6 +337,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
   ipId: Address;
   licenseTermsIds: bigint[];
   ipRoyaltyVault: Address;
+  licenseTermsMaxLimitTxHashes?: Hash[];
 };
 export type DistributeRoyaltyTokens = {
   ipId: Address;
