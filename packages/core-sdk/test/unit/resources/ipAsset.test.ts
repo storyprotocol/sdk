@@ -1293,8 +1293,56 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.licenseTermsIds).to.deep.equal([5n]);
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
     });
-
+    it("should return licenseTermsMaxLimitTxHashes when registerIpAndAttachPilTerms given correct args with license terms max limit", async () => {
+      stub(IpAssetRegistryClient.prototype, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 5n,
+      });
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      stub(ipAssetClient.licenseAttachmentWorkflowsClient, "registerIpAndAttachPilTerms").resolves(
+        txHash,
+      );
+      const result = await ipAssetClient.registerIpAndAttachPilTerms({
+        nftContract: spgNftContract,
+        tokenId: "3",
+        ipMetadata: {
+          ipMetadataURI: "https://",
+        },
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+            licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            licensingConfig,
+          },
+        ],
+      });
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
+    });
     it("should return encoded tx data when registerIpAndAttachPilTerms given correct args and encodedTxDataOnly of true", async () => {
       stub(IpAssetRegistryClient.prototype, "ipId").resolves(
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",

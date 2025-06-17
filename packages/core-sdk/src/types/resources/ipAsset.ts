@@ -182,6 +182,7 @@ export type RegisterIpAndAttachPilTermsResponse = {
   ipId?: Address;
   licenseTermsIds?: bigint[];
   tokenId?: bigint;
+  licenseTermsMaxLimitTxHashes?: Hash[];
 };
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;

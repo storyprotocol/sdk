@@ -415,6 +415,85 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+    });
+
+    it("should register IP and attach PIL terms with license terms max limit", async () => {
+      const tokenId = await mintBySpg(nftContract, "test-metadata");
+      const result = await client.ipAsset.registerIpAndAttachPilTerms({
+        nftContract: nftContract,
+        tokenId,
+        licenseTermsData: [
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: zeroAddress,
+              defaultMintingFee: 0n,
+              expiration: 0n,
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: {
+              transferable: true,
+              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              defaultMintingFee: 10000n,
+              expiration: 1000n,
+              commercialUse: true,
+              commercialAttribution: false,
+              commercializerChecker: zeroAddress,
+              commercializerCheckerData: zeroAddress,
+              commercialRevShare: 0,
+              commercialRevCeiling: 0n,
+              derivativesAllowed: true,
+              derivativesAttribution: true,
+              derivativesApproval: false,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 0n,
+              currency: WIP_TOKEN_ADDRESS,
+              uri: "test case",
+            },
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 10000n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+          },
+        ],
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.ipId).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
+      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(1);
     });
 
     it("should mint and register IP and make derivative", async () => {
@@ -1019,6 +1098,7 @@ describe("IP Asset Functions", () => {
       expect(result.ipId).to.be.a("string");
       expect(result.tokenId).to.be.a("bigint");
       expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
     });

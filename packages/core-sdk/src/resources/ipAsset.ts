@@ -720,9 +720,17 @@ export class IPAssetClient {
           hash: txHash,
         });
         const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+        const licenseTermsMaxLimitTxHashes = await this.setMaxLicenseTokens({
+          licenseTermsData: request.licenseTermsData,
+          licensorIpId: log.ipId,
+          licenseTemplate: this.licenseTemplateClient.address,
+          licenseTermsId: licenseTermsIds,
+        });
         return {
           txHash,
-          licenseTermsIds: await this.getLicenseTermsId(licenseTerms),
+          licenseTermsIds,
+          ...(licenseTermsMaxLimitTxHashes.length > 0 && { licenseTermsMaxLimitTxHashes }),
           ...log,
         };
       }
