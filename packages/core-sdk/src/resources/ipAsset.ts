@@ -1506,12 +1506,11 @@ export class IPAssetClient {
 
       // Process each transaction response
       for (const { txHash, receipt } of txResponses) {
-        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt!);
+        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt);
         const ipRoyaltyVaultEvent =
-          this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt!);
-        const licenseTermsIds = this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(
-          receipt!,
-        );
+          this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt);
+        const licenseTermsIds =
+          this.licensingModuleClient.parseTxLicenseTermsAttachedEvent(receipt);
         const ipAssetsWithLicenseTerms = iPRegisteredLog.map((log) => {
           const matchingLicenseTerms = licenseTermsIds.filter((item) => item.ipId === log.ipId);
           return {
@@ -1536,7 +1535,7 @@ export class IPAssetClient {
 
         responses.push({
           txHash,
-          receipt: receipt!,
+          receipt,
           ipAssetsWithLicenseTerms,
         });
       }

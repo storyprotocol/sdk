@@ -532,7 +532,7 @@ describe("Dispute Functions", () => {
       });
 
       const logData = results[0].receipt?.logs[0].data;
-      const firstWord = logData!.slice(0, 66);
+      const firstWord = logData.slice(0, 66);
       const childDisputeId = BigInt(firstWord);
 
       // Verify successful tagging

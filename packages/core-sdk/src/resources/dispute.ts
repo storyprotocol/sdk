@@ -343,9 +343,7 @@ export class DisputeClient {
         sender: this.wallet.account!.address,
         txOptions: request.txOptions,
       });
-      if (!receipt) {
-        return { txHash };
-      }
+
       return {
         txHash,
         receipt,
