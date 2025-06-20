@@ -17,7 +17,7 @@ import {
   SimpleWalletClient,
 } from "../../abi/generated";
 import { ChainIds } from "../config";
-import { WipOptions } from "../options";
+import { TransactionResponse, WipOptions } from "../options";
 import { Erc20Spender } from "./wip";
 import {
   DerivativeData,
@@ -27,7 +27,7 @@ import {
   MintSpgNftRegistrationRequest,
   RegisterRegistrationRequest,
   RoyaltyShare,
-  TransformIpRegistrationWorkflowResponse,
+  TransformedIpRegistrationWorkflowRequest,
 } from "../resources/ipAsset";
 
 export type GenerateOperationSignatureRequest = {
@@ -96,7 +96,7 @@ export type PrepareDistributeRoyaltyTokensRequestConfig = BasicConfig & {
 export type RoyaltyDistributionRequest = {
   nftContract: Address;
   tokenId: bigint;
-  royaltyShares: RoyaltyShare[];
+  royaltyShares?: RoyaltyShare[];
   deadline?: bigint;
 };
 
@@ -107,14 +107,26 @@ export type AggregateRegistrationRequest = Record<
     totalFees: bigint;
     encodedTxData: EncodedTxData[];
     contractCall: Array<() => Promise<Hash>>;
+    extraData: (ExtraData | undefined)[];
   }
 >;
 
-export type HandleMulticallConfig = BasicConfig & {
-  transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[];
+export type ExtraData = {
+  royaltyShares?: RoyaltyShare[];
+  deadline?: bigint;
+  maxLicenseTokens?: (bigint | undefined)[];
+};
+
+export type MulticallConfigRequest = BasicConfig & {
+  transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[];
   multicall3Address: Address;
-  wipOptions?: WipOptions;
   walletAddress: Address;
+  wipOptions?: WipOptions;
+};
+
+export type MulticallConfigResponse = {
+  response: TransactionResponse[];
+  aggregateRegistrationRequest: AggregateRegistrationRequest;
 };
 
 export type TransferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultConfig = {
@@ -128,6 +140,7 @@ export type TransferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultConfig = {
   calculatedDeadline: bigint;
   ipIdAddress: Hex;
   royaltyShares: RoyaltyShare[];
+  maxLicenseTokens: bigint[];
 };
 
 export type TransferRegisterIpAndAttachPilTermsConfig = {
@@ -140,6 +153,7 @@ export type TransferRegisterIpAndAttachPilTermsConfig = {
   ipIdAddress: Hex;
   wallet: SimpleWalletClient;
   chainId: ChainIds;
+  maxLicenseTokens: bigint[];
 };
 
 export type TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfig = {
@@ -174,6 +188,7 @@ export type TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyToken
   request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest;
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
   nftMintFee: bigint;
+  maxLicenseTokens: bigint[];
 };
 
 export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
@@ -181,6 +196,7 @@ export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
   licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
   nftMintFee: bigint;
   isPublicMinting: boolean;
+  maxLicenseTokens: bigint[];
 };
 
 export type TransferMintAndRegisterIpAndMakeDerivativeRequestConfig = {

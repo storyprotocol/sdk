@@ -19,6 +19,7 @@ import {
 import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
+import { ExtraData } from "../utils/registerHelper";
 import { Erc20Spender } from "../utils/wip";
 
 export type DerivativeDataInput = {
@@ -100,7 +101,6 @@ export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInpu
   /** Programmable IP License */
   terms: T;
   licensingConfig?: C;
-  //TODO: need to consider if support license terms id.
   /**
    * The maximum number of license tokens that can be minted from this license term.
    *
@@ -108,7 +108,7 @@ export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInpu
    * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
    *   is automatically configured as the {@link LicensingConfigInput.licensingHook}
    */
-  maxLicenseTokens?: number;
+  maxLicenseTokens?: number | bigint;
 };
 
 export type LicenseTermsData = Omit<
@@ -468,7 +468,7 @@ export type TransformIpRegistrationWorkflowRequest =
   | DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
   | RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest;
 
-export type TransformIpRegistrationWorkflowResponse<
+export type TransformedIpRegistrationWorkflowRequest<
   T extends TransformIpRegistrationWorkflowRequest = TransformIpRegistrationWorkflowRequest,
 > = {
   transformRequest: T;
@@ -481,10 +481,7 @@ export type TransformIpRegistrationWorkflowResponse<
     | RoyaltyTokenDistributionWorkflowsClient;
   spenders?: Erc20Spender[];
   totalFees?: bigint;
-  extraData?: {
-    royaltyShares: RoyaltyShare[];
-    deadline?: bigint;
-  };
+  extraData?: ExtraData;
 };
 
 /**
@@ -516,10 +513,29 @@ export type RegisterRegistrationRequest = RemoveOptionsFields<
 export type BatchRegistrationResult = {
   txHash: Hash;
   receipt: TransactionReceipt;
+  /**
+   * The IP royalty vault addresses.
+   * Only available for requests that include royalty token distribution, such as:
+   * - {@link RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest}
+   * - {@link RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest}
+   */
   ipRoyaltyVault?: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
-  ipIdAndTokenId: {
+  /**
+   * The IP assets with license terms.
+   */
+  ipAssetsWithLicenseTerms: {
     ipId: Address;
     tokenId: bigint;
+    /**
+     * The IDs of the license terms that the IP supports.
+     * Only available if the IP has license terms attached.
+     */
+    licenseTermsIds?: bigint[];
+    /**
+     * The transaction hashes for setting maximum license token limits.
+     * Only available when {@link LicenseTermsDataInput.maxLicenseTokens} is configured.
+     */
+    licenseTermsMaxLimitTxHashes?: Hash[];
   }[];
 };
 
@@ -534,8 +550,7 @@ export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
 };
 
 export type SetMaxLicenseTokensRequest = {
-  licenseTermsData: LicenseTermsDataInput[];
-  licensorIpId: Hex;
-  licenseTemplate: Hex;
-  licenseTermsId: bigint[];
+  maxLicenseTokensData: (LicenseTermsDataInput | { maxLicenseTokens: bigint })[];
+  licensorIpId: Address;
+  licenseTermsIds: bigint[];
 };

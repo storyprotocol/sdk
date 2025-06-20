@@ -42,9 +42,11 @@ export const validateLicenseTermsData = async (
 ): Promise<{
   licenseTerms: LicenseTerms[];
   licenseTermsData: LicenseTermsData[];
+  maxLicenseTokens: bigint[];
 }> => {
   const licenseTerms: LicenseTerms[] = [];
   const processedLicenseTermsData: LicenseTermsData[] = [];
+  const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
     const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, rpcClient);
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
@@ -52,12 +54,13 @@ export const validateLicenseTermsData = async (
       throw new Error("A royalty policy must be provided when the minting fee is greater than 0.");
     }
 
-    const maxLicenseTokens = licenseTermsData[i].maxLicenseTokens;
-    if (maxLicenseTokens !== undefined) {
-      if (maxLicenseTokens < 0) {
+    const maxLicenseTokensValue = licenseTermsData[i].maxLicenseTokens;
+    if (maxLicenseTokensValue !== undefined) {
+      if (maxLicenseTokensValue < 0) {
         throw new Error("The max license tokens must be greater than or equal to 0.");
       }
       licensingConfig.licensingHook = totalLicenseTokenLimitHookAddress[chainId] as Address;
+      maxLicenseTokens[i] = BigInt(maxLicenseTokensValue);
     }
     licenseTerms.push(licenseTerm);
     processedLicenseTermsData.push({
@@ -65,7 +68,7 @@ export const validateLicenseTermsData = async (
       licensingConfig: licensingConfig,
     });
   }
-  return { licenseTerms, licenseTermsData: processedLicenseTermsData };
+  return { licenseTerms, licenseTermsData: processedLicenseTermsData, maxLicenseTokens };
 };
 
 export const getRoyaltyShares = (

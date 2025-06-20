@@ -91,7 +91,7 @@ export type WaitForTransactionReceiptsRequest = {
 
 export type TransactionResponse = {
   txHash: Hash;
-
+  //TODO: need to remove option in next commit
   /** Transaction receipt, only available if waitForTransaction is set to true */
   receipt?: TransactionReceipt;
 };
