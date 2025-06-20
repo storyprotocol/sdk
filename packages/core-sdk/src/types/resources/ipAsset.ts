@@ -19,7 +19,6 @@ import {
 import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
-import { ExtraData } from "../utils/registerHelper";
 import { Erc20Spender } from "../utils/wip";
 
 export type DerivativeDataInput = {
@@ -553,4 +552,10 @@ export type SetMaxLicenseTokensRequest = {
   maxLicenseTokensData: (LicenseTermsDataInput | { maxLicenseTokens: bigint })[];
   licensorIpId: Address;
   licenseTermsIds: bigint[];
+};
+
+export type ExtraData = {
+  royaltyShares?: RoyaltyShare[];
+  deadline?: bigint;
+  maxLicenseTokens?: (bigint | undefined)[];
 };

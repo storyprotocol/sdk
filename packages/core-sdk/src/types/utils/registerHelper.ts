@@ -23,6 +23,7 @@ import {
   DerivativeData,
   DerivativeDataInput,
   DistributeRoyaltyTokens,
+  ExtraData,
   IpRegistrationWorkflowRequest,
   MintSpgNftRegistrationRequest,
   RegisterRegistrationRequest,
@@ -110,12 +111,6 @@ export type AggregateRegistrationRequest = Record<
     extraData: (ExtraData | undefined)[];
   }
 >;
-
-export type ExtraData = {
-  royaltyShares?: RoyaltyShare[];
-  deadline?: bigint;
-  maxLicenseTokens?: (bigint | undefined)[];
-};
 
 export type MulticallConfigRequest = BasicConfig & {
   transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[];

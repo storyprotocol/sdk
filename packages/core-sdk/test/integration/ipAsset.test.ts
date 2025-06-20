@@ -2506,9 +2506,9 @@ describe("IP Asset Functions", () => {
        * - Total IP assets registered: 8
        */
       expect(result.registrationResults.length).equal(4);
-      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
-        requests.length,
-      );
+      expect(
+        result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
+      ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
     });
 
@@ -2784,9 +2784,9 @@ describe("IP Asset Functions", () => {
        * - Total IP assets registered: 7
        */
       expect(result.registrationResults.length).equal(3);
-      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
-        requests.length,
-      );
+      expect(
+        result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
+      ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
     });
 
@@ -3070,9 +3070,9 @@ describe("IP Asset Functions", () => {
        * - Total IP assets registered: 8
        */
       expect(result.registrationResults.length).equal(4);
-      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
-        requests.length,
-      );
+      expect(
+        result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
+      ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
     });
 
@@ -3255,9 +3255,9 @@ describe("IP Asset Functions", () => {
        * - Total IP assets registered: 4
        */
       expect(result.registrationResults.length).equal(requests.length);
-      expect(result.registrationResults.reduce((a, b) => a + b.ipIdAndTokenId.length, 0)).equal(
-        requests.length,
-      );
+      expect(
+        result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
+      ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).equal(2);
     });
   });
