@@ -13,6 +13,7 @@ import {
   LicenseAttachmentWorkflowsClient,
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
+  PiLicenseTemplateClient,
   RoyaltyModuleEventClient,
   RoyaltyModuleReadOnlyClient,
   royaltyPolicyLapAddress,
@@ -3726,7 +3727,8 @@ describe("Test IpAssetClient", () => {
      * which is impossible to mock individually. This approach ensures all
      * required properties and methods are properly mocked for testing.
      */
-    //Need to mock the entire module instead of individual methods
+
+    // Need to mock the entire module instead of individual methods
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
     const contractModules = require("../../../src/abi/generated");
     let royaltyTokenDistributionWorkflowsMulticallStub: SinonStub;
@@ -3737,6 +3739,7 @@ describe("Test IpAssetClient", () => {
     let registerIpAndMakeDerivativeStub: SinonStub;
     let registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub: SinonStub;
     let distributeRoyaltyTokensStub: SinonStub;
+    let getLicenseTermsIdStub: SinonStub;
 
     beforeEach(() => {
       rpcMock.getBalance = stub().resolves(10n);
@@ -3770,7 +3773,6 @@ describe("Test IpAssetClient", () => {
           registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.resolves(txHash),
         distributeRoyaltyTokens: distributeRoyaltyTokensStub.resolves(txHash),
       });
-      // DerivativeWorkflowsClient
       registerIpAndMakeDerivativeStub = stub(
         DerivativeWorkflowsClient.prototype,
         "registerIpAndMakeDerivative",
@@ -3786,7 +3788,6 @@ describe("Test IpAssetClient", () => {
         mintAndRegisterIpAndMakeDerivative: mintAndRegisterIpAndMakeDerivativeStub.resolves(txHash),
         registerIpAndMakeDerivative: registerIpAndMakeDerivativeStub.resolves(txHash),
       });
-      // LicenseAttachmentWorkflowsClient
       licenseAttachmentWorkflowsMulticallStub = stub(
         LicenseAttachmentWorkflowsClient.prototype,
         "multicall",
@@ -3795,14 +3796,17 @@ describe("Test IpAssetClient", () => {
         multicall: licenseAttachmentWorkflowsMulticallStub.resolves(txHash),
         address: mockAddress + 3,
       });
-
-      //RoyaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent
       stub(RoyaltyModuleEventClient.prototype, "parseTxIpRoyaltyVaultDeployedEvent").returns([
         {
           ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           ipId: ipId,
         },
       ]);
+      getLicenseTermsIdStub = stub(PiLicenseTemplateClient.prototype, "getLicenseTermsId").resolves(
+        {
+          selectedLicenseTermsId: 1n,
+        },
+      );
     });
 
     it("should empty  given requests is empty", async () => {
@@ -3947,7 +3951,7 @@ describe("Test IpAssetClient", () => {
             },
           ],
         },
-        // licenseAttachmentWorkflowsClient  workflow
+        // licenseAttachmentWorkflowsClient  workflow + 1 license terms + maxLicenseTokensTxHashes
         {
           nftContract: mockERC721,
           tokenId: 3,
@@ -3983,10 +3987,11 @@ describe("Test IpAssetClient", () => {
                 expectMinimumGroupRewardShare: 0,
                 expectGroupRewardPool: zeroAddress,
               },
+              maxLicenseTokens: 100,
             },
           ],
         },
-        // royaltyTokenDistributionWorkflowsClient workflow + royaltyTokenDistributionWorkflowsClient(distributeRoyaltyTokens)
+        // royaltyTokenDistributionWorkflowsClient workflow + royaltyTokenDistributionWorkflowsClient(distributeRoyaltyTokens)+ 2 license terms + 1 maxLicenseTokensTxHashes
         {
           nftContract: mockERC721,
           tokenId: 4,
@@ -4021,6 +4026,38 @@ describe("Test IpAssetClient", () => {
                 expectMinimumGroupRewardShare: 0,
                 expectGroupRewardPool: zeroAddress,
               },
+            },
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: erc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+              maxLicenseTokens: 100,
             },
           ],
           royaltyShares: [
@@ -4085,6 +4122,7 @@ describe("Test IpAssetClient", () => {
           ],
         },
       ];
+
       const result = await ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests,
       });
@@ -4102,10 +4140,11 @@ describe("Test IpAssetClient", () => {
       expect(
         (licenseAttachmentWorkflowsMulticallStub.args[0][0] as { data: [] }).data.length,
       ).to.equal(1);
+      expect(getLicenseTermsIdStub.callCount).to.equal(3);
       expect(result.distributeRoyaltyTokensTxHashes).to.deep.equal([txHash]);
       expect(result.registrationResults).to.deep.equal([
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 1n,
@@ -4117,6 +4156,8 @@ describe("Test IpAssetClient", () => {
             {
               ipId: ipId,
               tokenId: 3n,
+              licenseTermsIds: [1n, 1n],
+              maxLicenseTokensTxHashes: [txHash],
             },
             {
               ipId: ipId,
@@ -4129,10 +4170,12 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 5n,
+              licenseTermsIds: [1n],
+              maxLicenseTokensTxHashes: [txHash],
             },
           ],
           receipt: {
@@ -4141,7 +4184,7 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 6n,
@@ -4245,6 +4288,7 @@ describe("Test IpAssetClient", () => {
            * mintAndRegisterIpAssetWithPilTerms workflow
            * - Total fees: 0 WIP tokens
            * - Uses `licenseAttachmentWorkflowsClient` multicall due to the private minting
+           * - 1 license terms + 1 maxLicenseTokensTxHashes
            */
           {
             spgNftContract: mockERC721,
@@ -4280,11 +4324,12 @@ describe("Test IpAssetClient", () => {
                   expectMinimumGroupRewardShare: 0,
                   expectGroupRewardPool: mockAddress,
                 },
+                maxLicenseTokens: 100,
               },
             ],
           },
           /**
-           * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+           * royaltyTokenDistributionWorkflowsClient workflow
            * - Total fees: 0 WIP tokens
            * - Uses `mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens`to call due to 0 fee
            */
@@ -4305,7 +4350,7 @@ describe("Test IpAssetClient", () => {
             ],
           },
           /**
-           * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
+           * royaltyTokenDistributionWorkflowsClient workflow
            * - Total fees: 0 WIP tokens
            * - Uses `mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens`to call due to 0 fee
            */
@@ -4326,13 +4371,36 @@ describe("Test IpAssetClient", () => {
             ],
           },
           /**
-           * mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens workflow
+           * royaltyTokenDistributionWorkflowsClient workflow
            * - Total fees: 0 WIP tokens
            * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the mint tokens is given `msg.sender` as the recipient
+           * - 2 license terms + 1 maxLicenseTokensTxHashes
            */
           {
             spgNftContract: mockERC721,
             licenseTermsData: [
+              {
+                terms: {
+                  transferable: true,
+                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                  defaultMintingFee: 10000n,
+                  expiration: 1000n,
+                  commercialUse: true,
+                  commercialAttribution: false,
+                  commercializerChecker: zeroAddress,
+                  commercializerCheckerData: zeroAddress,
+                  commercialRevShare: 0,
+                  commercialRevCeiling: 0n,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesApproval: false,
+                  derivativesReciprocal: true,
+                  derivativeRevCeiling: 0n,
+                  currency: WIP_TOKEN_ADDRESS,
+                  uri: "test case",
+                },
+                maxLicenseTokens: 100,
+              },
               {
                 terms: {
                   transferable: true,
@@ -4377,9 +4445,10 @@ describe("Test IpAssetClient", () => {
       expect(royaltyTokenDistributionWorkflowsMulticallStub.callCount).to.equal(1);
       expect(royaltyTokenDistributionWorkflowsMulticallStub.args.length).to.equal(1);
       expect(result.distributeRoyaltyTokensTxHashes).to.equal(undefined);
+      expect(getLicenseTermsIdStub.callCount).to.equal(3);
       expect(result.registrationResults).to.deep.equal([
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 1n,
@@ -4391,10 +4460,12 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 2n,
+              licenseTermsIds: [1n],
+              maxLicenseTokensTxHashes: [txHash],
             },
           ],
           receipt: {
@@ -4403,7 +4474,7 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 3n,
@@ -4419,10 +4490,12 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 5n,
+              licenseTermsIds: [1n, 1n],
+              maxLicenseTokensTxHashes: [txHash],
             },
           ],
           receipt: {
@@ -4431,7 +4504,7 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 5n,
@@ -4574,7 +4647,7 @@ describe("Test IpAssetClient", () => {
       expect(result.distributeRoyaltyTokensTxHashes).to.deep.equal([txHash]);
       expect(result.registrationResults).to.deep.equal([
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 1n,
@@ -4586,7 +4659,7 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 2n,
@@ -4598,7 +4671,7 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 3n,
@@ -4610,7 +4683,7 @@ describe("Test IpAssetClient", () => {
           txHash: txHash,
         },
         {
-          ipIdAndTokenId: [
+          ipAssetsWithLicenseTerms: [
             {
               ipId: ipId,
               tokenId: 4n,
