@@ -3509,21 +3509,14 @@ describe("IP Asset Functions", () => {
       /**
        * Transaction breakdown:
        * 1. None license terms and no `maxLicenseTokens` set
-       *
-       * 2. The first request have one license terms and no `maxLicenseTokens` set
-       * 3. The second request have two license terms, first one has `maxLicenseTokens` set to 10n
-       *
+       * 2. The request have one license terms and no `maxLicenseTokens` set
+       * 3. The request have two license terms, first one has `maxLicenseTokens` set to 10n
        * 4. The requests have no license terms and no `maxLicenseTokens` set
        * 5. The requests have no license terms and no `maxLicenseTokens` set
-       *
        * Summary:
        * - Total transactions: 5 (5 unique transaction hashes)
        * - Total IP assets registered: 5
        */
-      console.log(result.registrationResults);
-      result.registrationResults.forEach((item) => {
-        console.log(item.ipAssetsWithLicenseTerms);
-      });
       expect(result.registrationResults.length).equal(requests.length);
       expect(
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
@@ -3551,7 +3544,7 @@ describe("IP Asset Functions", () => {
       ).equal(2);
       expect(
         result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
-      ).equal(1);
+      ).equal([1]);
 
       expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(1);
       expect(result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
