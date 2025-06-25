@@ -534,7 +534,7 @@ export type BatchRegistrationResult = {
      * The transaction hashes for setting maximum license token limits.
      * Only available when {@link LicenseTermsDataInput.maxLicenseTokens} is configured.
      */
-    licenseTermsMaxLimitTxHashes?: Hash[];
+    maxLicenseTokensTxHashes?: Hash[];
   }[];
 };
 

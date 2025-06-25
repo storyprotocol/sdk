@@ -1739,7 +1739,7 @@ export class IPAssetClient {
           const result = await this.processIpAssetLicenseTerms(ipAsset.ipId, extraData);
           if (result) {
             ipAsset.licenseTermsIds = result.licenseTermsIds;
-            ipAsset.licenseTermsMaxLimitTxHashes = result.licenseTermsMaxLimitTxHashes;
+            ipAsset.maxLicenseTokensTxHashes = result.licenseTermsMaxLimitTxHashes;
           }
         }
       }
@@ -1756,7 +1756,7 @@ export class IPAssetClient {
         const result = await this.processIpAssetLicenseTerms(ipAsset.ipId, extraDataItem);
         if (result) {
           ipAsset.licenseTermsIds = result.licenseTermsIds;
-          ipAsset.licenseTermsMaxLimitTxHashes = result.licenseTermsMaxLimitTxHashes;
+          ipAsset.maxLicenseTokensTxHashes = result.licenseTermsMaxLimitTxHashes;
         }
       }
     }

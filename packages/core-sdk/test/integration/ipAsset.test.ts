@@ -2585,31 +2585,28 @@ describe("IP Asset Functions", () => {
         undefined,
       );
       expect(
-        result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[0].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
       expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(3);
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
       ).equal(1);
       expect(
-        result.registrationResults[1].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes
-          ?.length,
+        result.registrationResults[1].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes?.length,
       ).equal(1);
       expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(1);
       expect(
         result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(2);
       expect(
-        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes
-          ?.length,
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
       ).equal(1);
       expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(3);
       expect(
         result.registrationResults[3].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
       ).equal(2);
       expect(
-        result.registrationResults[3].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes
-          ?.length,
+        result.registrationResults[3].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes?.length,
       ).equal(2);
     });
 
@@ -2935,8 +2932,7 @@ describe("IP Asset Functions", () => {
         result.registrationResults[0].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
       ).equal(2);
       expect(
-        result.registrationResults[0].ipAssetsWithLicenseTerms[2].licenseTermsMaxLimitTxHashes
-          ?.length,
+        result.registrationResults[0].ipAssetsWithLicenseTerms[2].maxLicenseTokensTxHashes?.length,
       ).equal(1);
 
       expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(1);
@@ -2944,8 +2940,7 @@ describe("IP Asset Functions", () => {
         result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(2);
       expect(
-        result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes
-          ?.length,
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
       ).equal(1);
 
       expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(2);
@@ -2953,13 +2948,13 @@ describe("IP Asset Functions", () => {
         undefined,
       );
       expect(
-        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
       expect(
         result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
       ).equal(undefined);
       expect(
-        result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[2].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes,
       ).equal(undefined);
     });
 
@@ -3264,13 +3259,13 @@ describe("IP Asset Functions", () => {
         undefined,
       );
       expect(
-        result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[0].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms[1].licenseTermsIds).equal(
         undefined,
       );
       expect(
-        result.registrationResults[0].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[0].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes,
       ).equal(undefined);
 
       expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(3);
@@ -3278,8 +3273,7 @@ describe("IP Asset Functions", () => {
         result.registrationResults[1].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
       ).equal(1);
       expect(
-        result.registrationResults[1].ipAssetsWithLicenseTerms[2].licenseTermsMaxLimitTxHashes
-          ?.length,
+        result.registrationResults[1].ipAssetsWithLicenseTerms[2].maxLicenseTokensTxHashes?.length,
       ).equal(1);
 
       expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(2);
@@ -3287,13 +3281,13 @@ describe("IP Asset Functions", () => {
         undefined,
       );
       expect(
-        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
       expect(result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsIds).equal(
         undefined,
       );
       expect(
-        result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[2].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes,
       ).equal(undefined);
 
       expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(1);
@@ -3301,12 +3295,11 @@ describe("IP Asset Functions", () => {
         result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(2);
       expect(
-        result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes
-          ?.length,
+        result.registrationResults[3].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
       ).equal(1);
     });
 
-    it.only("should successfully register IP assets with multicall disabled", async () => {
+    it("should successfully register IP assets with multicall disabled", async () => {
       const tokenId1 = await getTokenId();
       const tokenId2 = await getTokenId();
 
@@ -3528,7 +3521,7 @@ describe("IP Asset Functions", () => {
         undefined,
       );
       expect(
-        result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[0].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
 
       expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(1);
@@ -3536,22 +3529,22 @@ describe("IP Asset Functions", () => {
         result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(1);
       expect(
-        result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
 
       expect(
         result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(2);
       expect(
-        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
-      ).equal([1]);
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
+      ).equal(1);
 
       expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(1);
       expect(result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
         undefined,
       );
       expect(
-        result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[3].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
 
       expect(result.registrationResults[4].ipAssetsWithLicenseTerms.length).equal(1);
@@ -3559,7 +3552,7 @@ describe("IP Asset Functions", () => {
         undefined,
       );
       expect(
-        result.registrationResults[4].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+        result.registrationResults[4].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
     });
   });
