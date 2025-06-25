@@ -323,6 +323,7 @@ const transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest = async <
       royaltyShares,
       deadline: calculatedDeadline,
       maxLicenseTokens,
+      licenseTermsData: request.licenseTermsData,
     },
   };
 };
@@ -382,6 +383,7 @@ const transferRegisterIpAndAttachPilTermsRequest = async <
     },
     extraData: {
       maxLicenseTokens,
+      licenseTermsData: request.licenseTermsData,
     },
   };
 };
@@ -610,6 +612,7 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
     workflowClient: royaltyTokenDistributionWorkflowsClient,
     extraData: {
       maxLicenseTokens,
+      licenseTermsData: transformRequest.licenseTermsData,
     },
   };
 };
@@ -652,6 +655,7 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
     workflowClient: licenseAttachmentWorkflowsClient,
     extraData: {
       maxLicenseTokens,
+      licenseTermsData: request.licenseTermsData,
     },
   };
 };

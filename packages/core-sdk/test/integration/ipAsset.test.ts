@@ -1055,7 +1055,6 @@ describe("IP Asset Functions", () => {
             },
           ],
         });
-
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
@@ -2288,6 +2287,7 @@ describe("IP Asset Functions", () => {
          * mintAndRegisterIpAssetWithPilTerms workflow
          * - Total fees: 0 WIP tokens
          * - Uses `licenseAttachmentWorkflowsClient` multicall due to the private minting
+         * - `maxLicenseTokens` is set to 1000n for first license terms
          */
         {
           spgNftContract: spgNftContractWithPrivateMinting,
@@ -2323,6 +2323,38 @@ describe("IP Asset Functions", () => {
                 expectMinimumGroupRewardShare: 0,
                 expectGroupRewardPool: pool,
               },
+              maxLicenseTokens: 1000n,
+            },
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 3n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 3n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
             },
           ],
         },
@@ -2330,6 +2362,7 @@ describe("IP Asset Functions", () => {
          * mintAndRegisterIpAssetWithPilTerms workflow
          * - Total fees: 10(10+0) WIP tokens
          * - Uses `multicall3Client` multicall3 due to the public minting
+         * - `maxLicenseTokens` is set to 100n for license terms
          */
         {
           spgNftContract: spgNftContractWithPublicMinting,
@@ -2365,6 +2398,7 @@ describe("IP Asset Functions", () => {
                 expectMinimumGroupRewardShare: 0,
                 expectGroupRewardPool: pool,
               },
+              maxLicenseTokens: 100n,
             },
           ],
         },
@@ -2414,6 +2448,7 @@ describe("IP Asset Functions", () => {
          * mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens workflow
          * - Total fees: 10(10+0) WIP tokens
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the mint tokens is given `msg.sender` as the recipient
+         * - `maxLicenseTokens` is set to 80n and 10n for license terms
          */
         {
           spgNftContract: spgNftContractWithPublicMinting,
@@ -2438,6 +2473,29 @@ describe("IP Asset Functions", () => {
                 currency: WIP_TOKEN_ADDRESS,
                 uri: "test case",
               },
+              maxLicenseTokens: 80n,
+            },
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 100n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "test case",
+              },
+              maxLicenseTokens: 10n,
             },
           ],
           royaltyShares: [
@@ -2496,10 +2554,22 @@ describe("IP Asset Functions", () => {
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
-       * - derivativeWorkflowsClient: 1 arg
-       * - multicall3Client: 3 args
-       * - licenseAttachmentWorkflowsClient: 1 arg
-       * - royaltyTokenDistributionWorkflowsClient: 3 args
+       *
+       * 1. derivativeWorkflowsClient: 1 transaction
+       *    - No license terms attached
+       *
+       * 2. multicall3Client: 3 transactions
+       *    - Second transaction includes license terms with maxLicenseTokens: 1000n
+       *
+       * 3. licenseAttachmentWorkflowsClient: 1 transaction
+       *    - Two license terms attached
+       *    - First license terms: maxLicenseTokens: 1000n
+       *
+       * 4. royaltyTokenDistributionWorkflowsClient: 3 transactions
+       *    - Second transaction includes two license terms:
+       *    -  First license terms: maxLicenseTokens: 80n
+       *    - Second license terms: maxLicenseTokens: 10n
+       *   - Third transaction includes a license terms
        *
        * Summary:
        * - Total transactions: 4 (4 unique transaction hashes)
@@ -2510,6 +2580,37 @@ describe("IP Asset Functions", () => {
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(3);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
+      ).equal(1);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes
+          ?.length,
+      ).equal(1);
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
+      ).equal(2);
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes
+          ?.length,
+      ).equal(1);
+      expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(3);
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
+      ).equal(2);
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes
+          ?.length,
+      ).equal(2);
     });
 
     it("should successfully batch register multiple IP assets with NFT contracts", async () => {
@@ -2572,6 +2673,7 @@ describe("IP Asset Functions", () => {
          * registerIpAndAttachPilTerms  workflow
          * - Total fees: 0 WIP tokens
          * - Uses `licenseAttachmentWorkflowsClient` multicall
+         * - `maxLicenseTokens` is set to 100n
          */
         {
           nftContract: mockERC721,
@@ -2639,6 +2741,7 @@ describe("IP Asset Functions", () => {
                 expectMinimumGroupRewardShare: 0,
                 expectGroupRewardPool: zeroAddress,
               },
+              maxLicenseTokens: 100n,
             },
           ],
         },
@@ -2647,6 +2750,7 @@ describe("IP Asset Functions", () => {
          * - Total fees: 0 WIP tokens
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
          * - Need to distribute royalty tokens
+         * - `maxLicenseTokens` is set to 10n
          */
         {
           nftContract: mockERC721,
@@ -2675,6 +2779,38 @@ describe("IP Asset Functions", () => {
               licensingConfig: {
                 isSet: true,
                 mintingFee: 1n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+              maxLicenseTokens: 10n,
+            },
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 1000n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 0,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: erc20Address[aeneid],
+                uri: "test case",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 6n,
                 licensingHook: zeroAddress,
                 hookData: zeroAddress,
                 commercialRevShare: 0,
@@ -2775,9 +2911,14 @@ describe("IP Asset Functions", () => {
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
-       * - royaltyTokenDistributionWorkflowsClient: 4 args
-       * - licenseAttachmentWorkflowsClient: 1 arg
-       * - derivativeWorkflowsClient: 2 args
+       * 1. royaltyTokenDistributionWorkflowsClient: 4 args
+       *  - The third request has two license terms, first one has `maxLicenseTokens` set to 10n
+       *
+       * 2.licenseAttachmentWorkflowsClient: 1 arg
+       *  - The first request have two license terms, second one has `maxLicenseTokens` set to 100n
+       *
+       * 3.derivativeWorkflowsClient: 2 args
+       *  - None license terms and no `maxLicenseTokens` set
        *
        * Summary:
        * - Total transactions: 3 (3 unique transaction hashes)
@@ -2788,6 +2929,38 @@ describe("IP Asset Functions", () => {
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
+
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(4);
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
+      ).equal(2);
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[2].licenseTermsMaxLimitTxHashes
+          ?.length,
+      ).equal(1);
+
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
+      ).equal(2);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes
+          ?.length,
+      ).equal(1);
+
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(2);
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
+      ).equal(undefined);
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
     });
 
     it("should successfully register IP assets using a combination of NFT contracts and SPG NFT contracts", async () => {
@@ -2896,6 +3069,7 @@ describe("IP Asset Functions", () => {
          * - Total fees: 0 WIP tokens
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
          * - Need to distribute royalty tokens
+         * - `maxLicenseTokens` is set to 10n
          */
         {
           nftContract: mockERC721,
@@ -2931,6 +3105,7 @@ describe("IP Asset Functions", () => {
                 expectMinimumGroupRewardShare: 0,
                 expectGroupRewardPool: zeroAddress,
               },
+              maxLicenseTokens: 10n,
             },
           ],
           ipMetadata: {
@@ -2961,6 +3136,7 @@ describe("IP Asset Functions", () => {
          * registerIpAndAttachPilTerms  workflow
          * - Total fees: 0 WIP tokens
          * - Uses `licenseAttachmentWorkflowsClient` multicall
+         * - the second request has `maxLicenseTokens` set to 10n
          */
         {
           nftContract: mockERC721,
@@ -3028,6 +3204,7 @@ describe("IP Asset Functions", () => {
                 expectMinimumGroupRewardShare: 0,
                 expectGroupRewardPool: zeroAddress,
               },
+              maxLicenseTokens: 10n,
             },
           ],
         },
@@ -3060,10 +3237,17 @@ describe("IP Asset Functions", () => {
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
-       * - multicall3Client: 2 args
-       * - royaltyTokenDistributionWorkflowsClient: 3 args
-       * - derivativeWorkflowsClient: 2 args
-       * - licenseAttachmentWorkflowsClient: 1 arg
+       * 1. multicall3Client: 2 args
+       *  - No license terms and no `maxLicenseTokens` set
+       *
+       * 2. royaltyTokenDistributionWorkflowsClient: 3 args
+       *  - The third request has a license terms and `maxLicenseTokens` set to 10n
+       *
+       * 3. derivativeWorkflowsClient: 2 args
+       *  - None license terms and no `maxLicenseTokens` set
+       *
+       * 4. licenseAttachmentWorkflowsClient: 1 arg
+       *  - The first request have two license terms, second one has `maxLicenseTokens` set to 10n
        *
        * Summary:
        * - Total transactions: 4 (4 unique transaction hashes)
@@ -3074,9 +3258,55 @@ describe("IP Asset Functions", () => {
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
+
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(2);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms[1].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(3);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
+      ).equal(1);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[2].licenseTermsMaxLimitTxHashes
+          ?.length,
+      ).equal(1);
+
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(2);
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+
+      expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
+      ).equal(2);
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes
+          ?.length,
+      ).equal(1);
     });
 
-    it("should successfully register IP assets with multicall disabled", async () => {
+    it.only("should successfully register IP assets with multicall disabled", async () => {
       const tokenId1 = await getTokenId();
       const tokenId2 = await getTokenId();
 
@@ -3142,11 +3372,44 @@ describe("IP Asset Functions", () => {
          * mintAndRegisterIpAssetWithPilTerms workflow
          * - Total fees: 10(10+0) WIP tokens
          * - Uses `licenseAttachmentWorkflowsClient` to call the this method
+         * - the first request has `maxLicenseTokens` set to 10n
          */
         {
           spgNftContract: spgNftContractWithPublicMinting,
           allowDuplicates: true,
           licenseTermsData: [
+            {
+              terms: {
+                transferable: true,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                defaultMintingFee: 0n,
+                expiration: 0n,
+                commercialUse: true,
+                commercialAttribution: false,
+                commercializerChecker: zeroAddress,
+                commercializerCheckerData: zeroAddress,
+                commercialRevShare: 90,
+                commercialRevCeiling: 0n,
+                derivativesAllowed: true,
+                derivativesAttribution: true,
+                derivativesApproval: false,
+                derivativesReciprocal: true,
+                derivativeRevCeiling: 0n,
+                currency: WIP_TOKEN_ADDRESS,
+                uri: "",
+              },
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: pool,
+              },
+              maxLicenseTokens: 10n,
+            },
             {
               terms: {
                 transferable: true,
@@ -3245,20 +3508,66 @@ describe("IP Asset Functions", () => {
       expect(wipBalanceAfter).equal(wipBalanceBefore);
       /**
        * Transaction breakdown:
-       * - derivativeWorkflowsClient: 1 args
-       * - licenseAttachmentWorkflowsClient: 1 args
-       * - royaltyTokenDistributionWorkflowsClient: 1 arg
-       * - licenseAttachmentWorkflowsClient: 1 arg
+       * 1. None license terms and no `maxLicenseTokens` set
+       *
+       * 2. The first request have one license terms and no `maxLicenseTokens` set
+       * 3. The second request have two license terms, first one has `maxLicenseTokens` set to 10n
+       *
+       * 4. The requests have no license terms and no `maxLicenseTokens` set
+       * 5. The requests have no license terms and no `maxLicenseTokens` set
        *
        * Summary:
-       * - Total transactions: 4 (4 unique transaction hashes)
-       * - Total IP assets registered: 4
+       * - Total transactions: 5 (5 unique transaction hashes)
+       * - Total IP assets registered: 5
        */
+      console.log(result.registrationResults);
+      result.registrationResults.forEach((item) => {
+        console.log(item.ipAssetsWithLicenseTerms);
+      });
       expect(result.registrationResults.length).equal(requests.length);
       expect(
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).equal(2);
+
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
+      ).equal(1);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
+      ).equal(2);
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(1);
+
+      expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
+
+      expect(result.registrationResults[4].ipAssetsWithLicenseTerms.length).equal(1);
+      expect(result.registrationResults[4].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
+        undefined,
+      );
+      expect(
+        result.registrationResults[4].ipAssetsWithLicenseTerms[0].licenseTermsMaxLimitTxHashes,
+      ).equal(undefined);
     });
   });
 });

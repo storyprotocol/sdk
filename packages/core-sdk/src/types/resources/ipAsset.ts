@@ -558,4 +558,5 @@ export type ExtraData = {
   royaltyShares?: RoyaltyShare[];
   deadline?: bigint;
   maxLicenseTokens?: (bigint | undefined)[];
+  licenseTermsData?: LicenseTermsData[];
 };
