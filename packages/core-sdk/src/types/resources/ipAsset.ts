@@ -101,7 +101,7 @@ export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInpu
   terms: T;
   licensingConfig?: C;
   /**
-   * The maximum number of license tokens that can be minted from this license term.
+   * The max number of license tokens that can be minted from this license term.
    *
    * - When not specified, there is no limit on license token minting
    * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
@@ -531,7 +531,7 @@ export type BatchRegistrationResult = {
      */
     licenseTermsIds?: bigint[];
     /**
-     * The transaction hashes for setting maximum license token limits.
+     * The transaction hashes for setting max license token limits.
      * Only available when {@link LicenseTermsDataInput.maxLicenseTokens} is configured.
      */
     maxLicenseTokensTxHashes?: Hash[];

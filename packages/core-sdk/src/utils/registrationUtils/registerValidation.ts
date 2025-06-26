@@ -59,7 +59,7 @@ export const validateLicenseTermsData = async (
       if (maxLicenseTokensValue < 0) {
         throw new Error("The max license tokens must be greater than or equal to 0.");
       }
-      licensingConfig.licensingHook = totalLicenseTokenLimitHookAddress[chainId] as Address;
+      licensingConfig.licensingHook = totalLicenseTokenLimitHookAddress[chainId];
       maxLicenseTokens[i] = BigInt(maxLicenseTokensValue);
     }
     licenseTerms.push(licenseTerm);

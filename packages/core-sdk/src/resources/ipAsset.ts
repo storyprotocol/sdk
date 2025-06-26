@@ -1512,12 +1512,6 @@ export class IPAssetClient {
         const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt);
         const ipRoyaltyVaultEvent =
           this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt);
-        const ipAssetsWithLicenseTerms = iPRegisteredLog.map((log) => {
-          return {
-            ipId: log.ipId,
-            tokenId: log.tokenId,
-          };
-        });
         // Prepare royalty distribution if needed
         const response = await prepareRoyaltyTokensDistributionRequests({
           royaltyDistributionRequests,
@@ -1533,7 +1527,12 @@ export class IPAssetClient {
         responses.push({
           txHash,
           receipt,
-          ipAssetsWithLicenseTerms,
+          ipAssetsWithLicenseTerms: iPRegisteredLog.map((log) => {
+            return {
+              ipId: log.ipId,
+              tokenId: log.tokenId,
+            };
+          }),
         });
       }
       let distributeRoyaltyTokensTxHashes: Hash[] | undefined;
@@ -1551,13 +1550,13 @@ export class IPAssetClient {
         distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);
       }
 
-      const processedResponses = await this.processResponses(
+      const registrationResults = await this.processResponses(
         responses,
         aggregateRegistrationRequest,
         request.options?.wipOptions?.useMulticallWhenPossible !== false,
       );
       return {
-        registrationResults: processedResponses,
+        registrationResults,
         ...(distributeRoyaltyTokensTxHashes && { distributeRoyaltyTokensTxHashes }),
       };
     } catch (error) {
@@ -1725,7 +1724,7 @@ export class IPAssetClient {
     return licenseTermsMaxLimitTxHashes;
   }
   /**
-   * Process the `LicenseTermsIds` and `LicenseTermsMaxLimitTxHashes` for each IP asset.
+   * Process the `LicenseTermsIds` and `maxLicenseTokensTxHashes` for each IP asset.
    */
   private async processResponses(
     responses: BatchRegistrationResult[],

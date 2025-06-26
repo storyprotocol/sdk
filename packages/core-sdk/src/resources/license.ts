@@ -480,11 +480,13 @@ export class LicenseClient {
   }
 
   /**
-   * Set the total license token limit for a specific license.
+   * Set the max license token limit for a specific license.
    *
    * @remarks
-   * The method will automatically configure the `licensingHook` to use the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook} contract.
-   * and set the `maxLicenseTokens` to the total license token limit.
+   * This method automatically configures the licensing hook to use the
+   * {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook} contract
+   * if the current licensing hook is not set to `TotalLicenseTokenLimitHook`, and sets the max license tokens
+   * to the specified limit.
    */
   public async setMaxLicenseTokens({
     ipId,
@@ -506,16 +508,17 @@ export class LicenseClient {
         licenseTermsId: newLicenseTermsId,
         licenseTemplate: newLicenseTemplate,
       });
-
-      await this.setLicensingConfig({
-        ipId,
-        licenseTermsId: newLicenseTermsId,
-        licenseTemplate: newLicenseTemplate,
-        licensingConfig: {
-          ...licensingConfig,
-          licensingHook: this.totalLicenseTokenLimitHookClient.address,
-        },
-      });
+      if (licensingConfig.licensingHook !== this.totalLicenseTokenLimitHookClient.address) {
+        await this.setLicensingConfig({
+          ipId,
+          licenseTermsId: newLicenseTermsId,
+          licenseTemplate: newLicenseTemplate,
+          licensingConfig: {
+            ...licensingConfig,
+            licensingHook: this.totalLicenseTokenLimitHookClient.address,
+          },
+        });
+      }
       const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
         licensorIpId: ipId,
         licenseTemplate: newLicenseTemplate,
