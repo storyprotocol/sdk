@@ -950,7 +950,7 @@ describe("Test IpAssetClient", () => {
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.licenseTermsIds![0]).to.equal(5n);
       expect(result.tokenId).to.equal(1n);
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
 
     it("should return ipId, tokenId, licenseTermsId,txHash when createIpAssetWithPilTerms given correct args with default license terms id", async () => {
@@ -1085,8 +1085,8 @@ describe("Test IpAssetClient", () => {
           },
         ],
       });
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
   });
 
@@ -1297,7 +1297,7 @@ describe("Test IpAssetClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.ipId).to.equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.licenseTermsIds).to.deep.equal([5n]);
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
     it("should return licenseTermsMaxLimitTxHashes when registerIpAndAttachPilTerms given correct args with license terms max limit", async () => {
       stub(IpAssetRegistryClient.prototype, "ipId").resolves(
@@ -1344,8 +1344,8 @@ describe("Test IpAssetClient", () => {
           },
         ],
       });
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
     it("should return encoded tx data when registerIpAndAttachPilTerms given correct args and encodedTxDataOnly of true", async () => {
       stub(IpAssetRegistryClient.prototype, "ipId").resolves(
@@ -1747,7 +1747,7 @@ describe("Test IpAssetClient", () => {
 
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsIds).to.deep.equal([0n, 0n]);
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
 
     it("should return licenseTermsMaxLimitTxHashes when registerPilTermsAndAttach given correct args with license terms max limit", async () => {
@@ -1777,8 +1777,8 @@ describe("Test IpAssetClient", () => {
           },
         ],
       });
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
 
     it("should call with default values of licensingConfig when registerPilTermsAndAttach given licensingConfig is not provided", async () => {
@@ -3310,7 +3310,7 @@ describe("Test IpAssetClient", () => {
         });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
 
     it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args with license terms max limit", async () => {
@@ -3372,8 +3372,8 @@ describe("Test IpAssetClient", () => {
         });
 
       expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(1);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
     });
 
     it("should return txHash when mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens given correct args ", async () => {

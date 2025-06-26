@@ -415,7 +415,7 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
 
     it("should register IP and attach PIL terms with license terms max limit", async () => {
@@ -492,8 +492,8 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(1);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
     });
 
     it("should mint and register IP and make derivative", async () => {
@@ -566,7 +566,7 @@ describe("IP Asset Functions", () => {
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
     it("should register PIL terms and attach with license terms max limit", async () => {
       const result = await client.ipAsset.registerPilTermsAndAttach({
@@ -672,8 +672,8 @@ describe("IP Asset Functions", () => {
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
 
     it("should mint and register IP and make derivative with license tokens", async () => {
@@ -793,7 +793,7 @@ describe("IP Asset Functions", () => {
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
 
     it("should register IP and attach license terms and distribute royalty tokens with license terms max limit", async () => {
@@ -916,8 +916,8 @@ describe("IP Asset Functions", () => {
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
 
     it("should register IP and attach license terms and distribute royalty tokens with complex royalty shares", async () => {
@@ -989,7 +989,7 @@ describe("IP Asset Functions", () => {
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
 
     it("should register derivative and attach license terms and distribute royalty tokens", async () => {
@@ -1162,8 +1162,8 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
       expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes?.length).to.be.equal(1);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
     });
   });
 
@@ -1436,7 +1436,7 @@ describe("IP Asset Functions", () => {
       expect(result.ipId).to.be.a("string");
       expect(result.tokenId).to.be.a("bigint");
       expect(result.txHash).to.be.a("string");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
     });
@@ -1544,8 +1544,8 @@ describe("IP Asset Functions", () => {
         ],
       });
       expect(result.txHash).to.be.a("string");
-      expect(result.licenseTermsMaxLimitTxHashes).to.be.an("array");
-      expect(result.licenseTermsMaxLimitTxHashes!.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
     it("should successfully when call mint and register ip and make derivative", async () => {
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
@@ -1961,9 +1961,9 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
       expect(result.results).to.be.an("array");
       expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(2);
-      expect(result.results![0].licenseTermsMaxLimitTxHashes).to.be.an("array").and.length(1);
+      expect(result.results![0].maxLicenseTokensTxHashes).to.be.an("array").and.length(1);
       expect(result.results![1].licenseTermsIds).to.be.an("array").and.length(1);
-      expect(result.results![1].licenseTermsMaxLimitTxHashes).to.be.an("array").and.length(2);
+      expect(result.results![1].maxLicenseTokensTxHashes).to.be.an("array").and.length(2);
     });
 
     it("should batch mint and register IP asset and make derivative", async () => {

@@ -139,7 +139,7 @@ export type MintAndRegisterIpAssetWithPilTermsResponse = {
   tokenId?: bigint;
   receipt?: TransactionReceipt;
   licenseTermsIds?: bigint[];
-  licenseTermsMaxLimitTxHashes?: Hash[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 
 export type RegisterIpAndMakeDerivativeRequest = {
@@ -181,7 +181,7 @@ export type RegisterIpAndAttachPilTermsResponse = {
   ipId?: Address;
   licenseTermsIds?: bigint[];
   tokenId?: bigint;
-  licenseTermsMaxLimitTxHashes?: Hash[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
@@ -236,7 +236,7 @@ export type RegisterPilTermsAndAttachResponse = {
   txHash?: Hash;
   encodedTxData?: EncodedTxData;
   licenseTermsIds?: bigint[];
-  licenseTermsMaxLimitTxHashes?: Hash[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
@@ -279,7 +279,7 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResult = {
   tokenId: bigint;
   licenseTermsIds: bigint[];
   spgNftContract: Address;
-  licenseTermsMaxLimitTxHashes?: Hash[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
   txHash: Hash;
@@ -337,7 +337,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
   ipId: Address;
   licenseTermsIds: bigint[];
   ipRoyaltyVault: Address;
-  licenseTermsMaxLimitTxHashes?: Hash[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 export type DistributeRoyaltyTokens = {
   ipId: Address;
@@ -407,7 +407,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
   licenseTermsIds?: bigint[];
   ipRoyaltyVault?: Address;
   tokenId?: bigint;
-  licenseTermsMaxLimitTxHashes?: Hash[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {

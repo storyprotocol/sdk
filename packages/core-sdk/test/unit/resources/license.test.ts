@@ -1470,7 +1470,7 @@ describe("Test LicenseClient", () => {
       stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
       stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
       stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig").resolves({
-        isSet: false, 
+        isSet: false,
         mintingFee: 0n,
         licensingHook: zeroAddress,
         hookData: zeroAddress,
