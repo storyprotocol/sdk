@@ -93,7 +93,7 @@ import {
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
-  SetMaxLicenseTokensRequest,
+  SetMaxLicenseTokens,
   TransformedIpRegistrationWorkflowRequest,
 } from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
@@ -1701,7 +1701,7 @@ export class IPAssetClient {
     maxLicenseTokensData,
     licensorIpId,
     licenseTermsIds,
-  }: SetMaxLicenseTokensRequest): Promise<Hash[]> {
+  }: SetMaxLicenseTokens): Promise<Hash[]> {
     const licenseTermsMaxLimitTxHashes: Hash[] = [];
     for (let i = 0; i < maxLicenseTokensData.length; i++) {
       const maxLicenseTokens = maxLicenseTokensData[i].maxLicenseTokens;
@@ -1783,7 +1783,7 @@ export class IPAssetClient {
       .filter((maxLicenseToken) => maxLicenseToken !== undefined)
       .map((maxLicenseToken) => ({
         maxLicenseTokens: maxLicenseToken,
-      })) as SetMaxLicenseTokensRequest["maxLicenseTokensData"];
+      })) as SetMaxLicenseTokens["maxLicenseTokensData"];
 
     const licenseTermsMaxLimitTxHashes = await this.setMaxLicenseTokens({
       maxLicenseTokensData,

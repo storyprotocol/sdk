@@ -548,7 +548,7 @@ export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
   registrationResults: BatchRegistrationResult[];
 };
 
-export type SetMaxLicenseTokensRequest = {
+export type SetMaxLicenseTokens = {
   maxLicenseTokensData: (LicenseTermsDataInput | { maxLicenseTokens: bigint })[];
   licensorIpId: Address;
   licenseTermsIds: bigint[];

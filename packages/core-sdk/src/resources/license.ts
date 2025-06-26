@@ -18,11 +18,12 @@ import {
   royaltyModuleAddress,
   royaltyPolicyLapAddress,
   SimpleWalletClient,
+  TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
 import { LicensingConfig, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
-import { TxOptions } from "../types/options";
+import { TransactionResponse, TxOptions } from "../types/options";
 import {
   AttachLicenseTermsRequest,
   AttachLicenseTermsResponse,
@@ -42,6 +43,7 @@ import {
   RegisterPILTermsRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
+  SetMaxLicenseTokensRequest,
 } from "../types/resources/license";
 import { Erc20Spender } from "../types/utils/wip";
 import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
@@ -64,6 +66,7 @@ export class LicenseClient {
   public licenseRegistryReadOnlyClient: LicenseRegistryReadOnlyClient;
   public moduleRegistryReadOnlyClient: ModuleRegistryReadOnlyClient;
   public multicall3Client: Multicall3Client;
+  public totalLicenseTokenLimitHookClient: TotalLicenseTokenLimitHookClient;
   public wipClient: WrappedIpClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -79,6 +82,7 @@ export class LicenseClient {
     this.moduleRegistryReadOnlyClient = new ModuleRegistryReadOnlyClient(rpcClient);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.wipClient = new WrappedIpClient(rpcClient, wallet);
+    this.totalLicenseTokenLimitHookClient = new TotalLicenseTokenLimitHookClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -472,6 +476,59 @@ export class LicenseClient {
       }
     } catch (error) {
       return handleError(error, "Failed to set licensing config");
+    }
+  }
+
+  /**
+   * Set the total license token limit for a specific license.
+   *
+   * @remarks
+   * The method will automatically configure the `licensingHook` to use the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook} contract.
+   * and set the `maxLicenseTokens` to the total license token limit.
+   */
+  public async setMaxLicenseTokens({
+    ipId,
+    licenseTermsId,
+    maxLicenseTokens,
+    licenseTemplate,
+    txOptions,
+  }: SetMaxLicenseTokensRequest): Promise<TransactionResponse> {
+    try {
+      if (maxLicenseTokens < 0) {
+        throw new Error("The max license tokens must be greater than 0.");
+      }
+      const newLicenseTermsId = BigInt(licenseTermsId);
+      const newLicenseTemplate = validateAddress(
+        licenseTemplate || this.licenseTemplateClient.address,
+      );
+      const licensingConfig = await this.getLicensingConfig({
+        ipId,
+        licenseTermsId: newLicenseTermsId,
+        licenseTemplate: newLicenseTemplate,
+      });
+
+      await this.setLicensingConfig({
+        ipId,
+        licenseTermsId: newLicenseTermsId,
+        licenseTemplate: newLicenseTemplate,
+        licensingConfig: {
+          ...licensingConfig,
+          licensingHook: this.totalLicenseTokenLimitHookClient.address,
+        },
+      });
+      const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
+        licensorIpId: ipId,
+        licenseTemplate: newLicenseTemplate,
+        licenseTermsId: newLicenseTermsId,
+        limit: BigInt(maxLicenseTokens),
+      });
+      return waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      return handleError(error, "Failed to set max license tokens");
     }
   }
 

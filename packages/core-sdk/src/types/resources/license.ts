@@ -221,3 +221,9 @@ export type GetLicensingConfigRequest = {
    */
   licenseTemplate?: Address;
 };
+
+export type SetMaxLicenseTokensRequest = GetLicensingConfigRequest &
+  WithTxOptions & {
+    /** The total license token limit, 0 means no limit */
+    maxLicenseTokens: bigint | number;
+  };
