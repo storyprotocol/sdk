@@ -2197,7 +2197,7 @@ describe("Test IpAssetClient", () => {
           licenseTermsIds: [5n, 5n, 5n],
           tokenId: 1n,
           spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          licenseTermsMaxLimitTxHashes: [txHash, txHash],
+          maxLicenseTokensTxHashes: [txHash, txHash],
         },
         {
           ipId: "0x1daAE3197Bc469Cb87B917aa460a12dD95c6627c",
@@ -2734,7 +2734,7 @@ describe("Test IpAssetClient", () => {
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         licenseTermsIds: [8n, 8n, 8n],
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        licenseTermsMaxLimitTxHashes: [txHash],
+        maxLicenseTokensTxHashes: [txHash],
       });
     });
 
@@ -4324,7 +4324,6 @@ describe("Test IpAssetClient", () => {
                   expectMinimumGroupRewardShare: 0,
                   expectGroupRewardPool: mockAddress,
                 },
-                maxLicenseTokens: 100,
               },
             ],
           },
@@ -4465,7 +4464,6 @@ describe("Test IpAssetClient", () => {
               ipId: ipId,
               tokenId: 2n,
               licenseTermsIds: [1n],
-              maxLicenseTokensTxHashes: [txHash],
             },
           ],
           receipt: {

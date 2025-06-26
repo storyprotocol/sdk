@@ -1684,18 +1684,15 @@ export class IPAssetClient {
       txOptions,
       encodedTxs,
     });
-    if (receipt) {
-      const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
-      return {
-        txHash,
-        receipt,
-        ...(event && {
-          ipId: event.ipId ?? undefined,
-          tokenId: event.tokenId ?? undefined,
-        }),
-      };
-    }
-    return { txHash };
+    const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
+    return {
+      txHash,
+      receipt,
+      ...(event && {
+        ipId: event.ipId ?? undefined,
+        tokenId: event.tokenId ?? undefined,
+      }),
+    };
   }
 
   private async setMaxLicenseTokens({
@@ -1737,11 +1734,8 @@ export class IPAssetClient {
           const extraData = Object.values(aggregateRegistrationRequest)[responseIndex]?.extraData?.[
             assetIndex
           ];
-          const result = await this.processIpAssetLicenseTerms(ipAsset.ipId, extraData);
-          if (result) {
-            ipAsset.licenseTermsIds = result.licenseTermsIds;
-            ipAsset.maxLicenseTokensTxHashes = result.maxLicenseTokensTxHashes;
-          }
+          const result = await this.processIpAssetLicenseTerms(ipAsset, extraData);
+          responses[responseIndex].ipAssetsWithLicenseTerms[assetIndex] = result;
         }
       }
     } else {
@@ -1751,48 +1745,45 @@ export class IPAssetClient {
       });
       for (let i = 0; i < responses.length; i++) {
         const response = responses[i];
-        const ipAsset = response.ipAssetsWithLicenseTerms[0];
         const extraDataItem = extraData[i];
-        const result = await this.processIpAssetLicenseTerms(ipAsset.ipId, extraDataItem);
-        if (result) {
-          ipAsset.licenseTermsIds = result.licenseTermsIds;
-          ipAsset.maxLicenseTokensTxHashes = result.maxLicenseTokensTxHashes;
-        }
+        const ipAsset = await this.processIpAssetLicenseTerms(
+          response.ipAssetsWithLicenseTerms[0],
+          extraDataItem,
+        );
+        responses[i].ipAssetsWithLicenseTerms[0] = ipAsset;
       }
     }
     return responses;
   }
 
   private async processIpAssetLicenseTerms(
-    ipId: Address,
+    ipAsset: BatchRegistrationResult["ipAssetsWithLicenseTerms"][number],
     extraData: ExtraData | undefined,
-  ): Promise<{ licenseTermsIds: bigint[]; maxLicenseTokensTxHashes?: Hash[] } | undefined> {
-    if (!extraData || !extraData.licenseTermsData?.length) {
-      return;
+  ): Promise<BatchRegistrationResult["ipAssetsWithLicenseTerms"][number]> {
+    if (!extraData?.licenseTermsData?.length) {
+      return ipAsset;
     }
     const licenseTermsIds = await this.getLicenseTermsId(
       extraData.licenseTermsData.map((item) => item.terms),
     );
-    const maxLicenseTokens = extraData?.maxLicenseTokens;
+    ipAsset.licenseTermsIds = licenseTermsIds;
+    const maxLicenseTokens = extraData.maxLicenseTokens;
     if (!maxLicenseTokens?.length) {
-      return {
-        licenseTermsIds,
-      };
+      return ipAsset;
     }
     const maxLicenseTokensData = maxLicenseTokens
-      .filter((maxLicenseToken) => maxLicenseToken !== undefined)
+      .filter((maxLicenseToken): maxLicenseToken is bigint => maxLicenseToken !== undefined)
       .map((maxLicenseToken) => ({
         maxLicenseTokens: maxLicenseToken,
-      })) as SetMaxLicenseTokens["maxLicenseTokensData"];
-
+      }));
     const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
       maxLicenseTokensData,
-      licensorIpId: ipId,
+      licensorIpId: ipAsset.ipId,
       licenseTermsIds,
     });
-    return {
-      licenseTermsIds,
-      maxLicenseTokensTxHashes,
-    };
+    if (maxLicenseTokensTxHashes?.length) {
+      ipAsset.maxLicenseTokensTxHashes = maxLicenseTokensTxHashes;
+    }
+    return ipAsset;
   }
 }

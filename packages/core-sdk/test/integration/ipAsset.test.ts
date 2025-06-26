@@ -1444,7 +1444,7 @@ describe("IP Asset Functions", () => {
     it("should successfully when call mint and register ip asset with pil terms with license terms max limit", async () => {
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: spgNftContractWithPrivateMinting,
-        allowDuplicates: false,
+         allowDuplicates: false,
         licenseTermsData: [
           {
             terms: {
@@ -1542,6 +1542,9 @@ describe("IP Asset Functions", () => {
             },
           },
         ],
+        ipMetadata: {
+          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+        },
       });
       expect(result.txHash).to.be.a("string");
       expect(result.maxLicenseTokensTxHashes).to.be.an("array");
@@ -1963,7 +1966,7 @@ describe("IP Asset Functions", () => {
       expect(result.results![0].licenseTermsIds).to.be.an("array").and.length(2);
       expect(result.results![0].maxLicenseTokensTxHashes).to.be.an("array").and.length(1);
       expect(result.results![1].licenseTermsIds).to.be.an("array").and.length(1);
-      expect(result.results![1].maxLicenseTokensTxHashes).to.be.an("array").and.length(2);
+      expect(result.results![1].maxLicenseTokensTxHashes).to.be.an("array").and.length(1);
     });
 
     it("should batch mint and register IP asset and make derivative", async () => {

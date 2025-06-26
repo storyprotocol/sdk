@@ -347,9 +347,6 @@ export class LicenseClient {
         txOptions: request.txOptions,
         encodedTxs: [encodedTxData],
       });
-      if (!receipt) {
-        return { txHash };
-      }
       const targetLogs = this.licensingModuleClient.parseTxLicenseTokensMintedEvent(receipt);
       const startLicenseTokenId = targetLogs[0].startLicenseTokenId;
       const licenseTokenIds = [];
@@ -579,9 +576,6 @@ export class LicenseClient {
         rpcClient: this.rpcClient,
         txHash,
       });
-      if (!receipt) {
-        return { txHash };
-      }
       const targetLogs = this.licenseTemplateClient.parseTxLicenseTermsRegisteredEvent(receipt);
       return { txHash: txHash, licenseTermsId: targetLogs[0].licenseTermsId };
     }
