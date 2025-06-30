@@ -46,7 +46,7 @@ import {
   WrappedIpClient,
 } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
-import { LicensingConfig, RevShareType } from "../types/common";
+import { RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -515,50 +515,16 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      let licenseTerms: LicenseTerms[];
-      let licensingConfig: LicensingConfig;
-      let licenseTermsIds: bigint[];
-      let req: MintAndRegisterIpAssetWithPilTermsRequest;
-
-      // Check if licenseTermsId is provided directly
-      if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
-        licenseTermsIds = request.licenseTermsInfo.licenseTermsIds;
-        const licenseTermsData = await this.licenseTemplateClient.getLicenseTerms({
-          selectedLicenseTermsId: licenseTermsIds[0],
-        });
-        licensingConfig = await this.licenseRegistryReadOnlyClient.getLicensingConfig({
-          ipId: request.licenseTermsInfo.ipId,
-          licenseTemplate: this.licenseTemplateClient.address,
-          licenseTermsId: licenseTermsIds[0],
-        });
-        const licenseTermsDataInput = [
-          { terms: licenseTermsData.terms, licensingConfig: licensingConfig },
-        ];
-        req = {
-          spgNftContract: request.spgNftContract,
-          allowDuplicates: request.allowDuplicates,
-          licenseTermsData: licenseTermsDataInput,
-          txOptions: request.txOptions,
-        };
-        licenseTerms = [licenseTermsDataInput[0].terms];
-      } else {
-        if (!request.licenseTermsData) {
-          throw new Error("Either licenseTermsId or licenseTermsData must be provided");
-        }
-        // Original validation flow
-        const licenseTermsData = await validateLicenseTermsData(
-          request.licenseTermsData,
-          this.rpcClient,
-          this.chainId,
-        );
-        licenseTerms = licenseTermsData.licenseTerms;
-        req = request;
-      }
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.rpcClient,
+        this.chainId,
+      );
 
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
           {
-            request: req,
+            request,
             rpcClient: this.rpcClient,
             wallet: this.wallet,
             chainId: this.chainId,
@@ -568,7 +534,7 @@ export class IPAssetClient {
         this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTermsEncode(
           transformRequest,
         );
-      if (req.txOptions?.encodedTxDataOnly) {
+      if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
 
@@ -586,31 +552,19 @@ export class IPAssetClient {
         contractCall,
         txOptions: request.txOptions,
       });
-      if (rsp.receipt) {
-        // Use the licenseTermsIds we determined earlier
-        if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
-          // We already have the ID
-          return { ...rsp, licenseTermsIds: request.licenseTermsInfo?.licenseTermsIds };
-        } else {
-          // Get the ID from the validated license terms
-          const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-          const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
-            // TODO: Consider removing assertion when handling license ID parameter to improve type safety
-            maxLicenseTokensData: request.licenseTermsData!,
-            licensorIpId: rsp.ipId!,
-            licenseTermsIds: computedLicenseTermsIds,
-          });
-          return {
-            ...rsp,
-            licenseTermsIds: computedLicenseTermsIds,
-            ...(maxLicenseTokensTxHashes.length > 0 && {
-              maxLicenseTokensTxHashes,
-            }),
-          };
-        }
-      } else {
-        return rsp;
-      }
+      const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+      const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+        maxLicenseTokensData: request.licenseTermsData,
+        licensorIpId: rsp.ipId!,
+        licenseTermsIds: computedLicenseTermsIds,
+      });
+      return {
+        ...rsp,
+        licenseTermsIds: computedLicenseTermsIds,
+        ...(maxLicenseTokensTxHashes.length > 0 && {
+          maxLicenseTokensTxHashes,
+        }),
+      };
     } catch (error) {
       return handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
@@ -653,9 +607,9 @@ export class IPAssetClient {
       for (let j = 0; j < request.args.length; j++) {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
-        for (let i = 0; i < licenseTermsData!.length; i++) {
+        for (let i = 0; i < licenseTermsData.length; i++) {
           const licenseTerm = await validateLicenseTerms(
-            licenseTermsData![i].terms,
+            licenseTermsData[i].terms,
             this.rpcClient,
           );
           licenseTerms.push(licenseTerm);
@@ -663,7 +617,7 @@ export class IPAssetClient {
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
         results[j].licenseTermsIds = licenseTermsIds;
         const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
-          maxLicenseTokensData: licenseTermsData!,
+          maxLicenseTokensData: licenseTermsData,
           licensorIpId: results[j].ipId,
           licenseTermsIds,
         });
