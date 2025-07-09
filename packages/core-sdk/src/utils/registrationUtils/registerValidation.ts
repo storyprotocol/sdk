@@ -5,9 +5,11 @@ import {
   LicenseRegistryReadOnlyClient,
   piLicenseTemplateAddress,
   SpgnftImplReadOnlyClient,
+  totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../constants/common";
 import { RevShareType } from "../../types/common";
+import { ChainIds } from "../../types/config";
 import {
   DerivativeData,
   LicenseTermsData,
@@ -36,17 +38,29 @@ export const getPublicMinting = async (
 export const validateLicenseTermsData = async (
   licenseTermsData: LicenseTermsDataInput[],
   rpcClient: PublicClient,
+  chainId: ChainIds,
 ): Promise<{
   licenseTerms: LicenseTerms[];
   licenseTermsData: LicenseTermsData[];
+  maxLicenseTokens: bigint[];
 }> => {
   const licenseTerms: LicenseTerms[] = [];
   const processedLicenseTermsData: LicenseTermsData[] = [];
+  const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
     const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, rpcClient);
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
     if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
       throw new Error("A royalty policy must be provided when the minting fee is greater than 0.");
+    }
+
+    const maxLicenseTokensValue = licenseTermsData[i].maxLicenseTokens;
+    if (maxLicenseTokensValue !== undefined) {
+      if (maxLicenseTokensValue < 0) {
+        throw new Error("The max license tokens must be greater than or equal to 0.");
+      }
+      licensingConfig.licensingHook = totalLicenseTokenLimitHookAddress[chainId];
+      maxLicenseTokens[i] = BigInt(maxLicenseTokensValue);
     }
     licenseTerms.push(licenseTerm);
     processedLicenseTermsData.push({
@@ -54,7 +68,7 @@ export const validateLicenseTermsData = async (
       licensingConfig: licensingConfig,
     });
   }
-  return { licenseTerms, licenseTermsData: processedLicenseTermsData };
+  return { licenseTerms, licenseTermsData: processedLicenseTermsData, maxLicenseTokens };
 };
 
 export const getRoyaltyShares = (

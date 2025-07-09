@@ -16,8 +16,8 @@ import {
 } from "../../abi/generated";
 import {
   LicenseTermsDataInput,
+  TransformedIpRegistrationWorkflowRequest,
   TransformIpRegistrationWorkflowRequest,
-  TransformIpRegistrationWorkflowResponse,
 } from "../../types/resources/ipAsset";
 import {
   HandleDistributeRoyaltyTokensRequestConfig,
@@ -71,7 +71,7 @@ export const transformRegistrationRequest = async <
   rpcClient,
   wallet,
   chainId,
-}: TransformRegistrationRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
+}: TransformRegistrationRequestConfig): Promise<TransformedIpRegistrationWorkflowRequest<T>> => {
   if ("spgNftContract" in request) {
     return handleMintAndRegisterRequest<T>({ request, rpcClient, wallet, chainId });
   } else if ("nftContract" in request && "tokenId" in request) {
@@ -105,7 +105,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
   rpcClient,
   wallet,
   chainId,
-}: HandleRegisterRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
+}: HandleRegisterRequestConfig): Promise<TransformedIpRegistrationWorkflowRequest<T>> => {
   const ipIdAddress = await getIpIdAddress({
     nftContract: validateAddress(request.nftContract),
     tokenId: BigInt(request.tokenId),
@@ -128,9 +128,10 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
   const derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
 
   if ("licenseTermsData" in request) {
-    const { licenseTermsData } = await validateLicenseTermsData(
+    const { licenseTermsData, maxLicenseTokens } = await validateLicenseTermsData(
       request.licenseTermsData,
       rpcClient,
+      chainId,
     );
     const requestWithTerms = { ...baseRequest, licenseTermsData };
 
@@ -143,6 +144,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
         calculatedDeadline,
         ipIdAddress,
         royaltyShares: request.royaltyShares,
+        maxLicenseTokens,
       });
     }
 
@@ -153,6 +155,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
       ipIdAddress,
       wallet,
       chainId,
+      maxLicenseTokens,
     });
   }
 
@@ -216,7 +219,7 @@ const transferRegisterDerivativeIpRequest = async <
   derivativeWorkflowsClient,
   totalFees,
 }: TransferRegisterDerivativeIpRequestConfig): Promise<
-  TransformIpRegistrationWorkflowResponse<T>
+  TransformedIpRegistrationWorkflowRequest<T>
 > => {
   const signature = await generateOperationSignature({
     ipIdAddress,
@@ -273,8 +276,9 @@ const transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest = async <
   calculatedDeadline,
   ipIdAddress,
   royaltyShares,
+  maxLicenseTokens,
 }: TransferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultConfig): Promise<
-  TransformIpRegistrationWorkflowResponse<T>
+  TransformedIpRegistrationWorkflowRequest<T>
 > => {
   const signature = await generateOperationSignature({
     ipIdAddress,
@@ -318,6 +322,8 @@ const transferRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest = async <
     extraData: {
       royaltyShares,
       deadline: calculatedDeadline,
+      maxLicenseTokens,
+      licenseTermsData: request.licenseTermsData,
     },
   };
 };
@@ -334,8 +340,9 @@ const transferRegisterIpAndAttachPilTermsRequest = async <
   ipIdAddress,
   wallet,
   chainId,
+  maxLicenseTokens,
 }: TransferRegisterIpAndAttachPilTermsConfig): Promise<
-  TransformIpRegistrationWorkflowResponse<T>
+  TransformedIpRegistrationWorkflowRequest<T>
 > => {
   const signature = await generateOperationSignature({
     ipIdAddress,
@@ -374,6 +381,10 @@ const transferRegisterIpAndAttachPilTermsRequest = async <
         ],
       }),
     },
+    extraData: {
+      maxLicenseTokens,
+      licenseTermsData: request.licenseTermsData,
+    },
   };
 };
 
@@ -392,7 +403,7 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
   totalFees,
   royaltyShares,
 }: TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfig): Promise<
-  TransformIpRegistrationWorkflowResponse<T>
+  TransformedIpRegistrationWorkflowRequest<T>
 > => {
   const signature = await generateOperationSignature({
     ipIdAddress,
@@ -466,7 +477,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
   rpcClient,
   wallet,
   chainId,
-}: HandleMintAndRegisterRequestConfig): Promise<TransformIpRegistrationWorkflowResponse<T>> => {
+}: HandleMintAndRegisterRequestConfig): Promise<TransformedIpRegistrationWorkflowRequest<T>> => {
   const royaltyTokenDistributionWorkflowsClient = new RoyaltyTokenDistributionWorkflowsClient(
     rpcClient,
     wallet,
@@ -484,9 +495,10 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
     allowDuplicates: request.allowDuplicates ?? true,
   };
   if ("licenseTermsData" in request) {
-    const { licenseTermsData } = await validateLicenseTermsData(
+    const { licenseTermsData, maxLicenseTokens } = await validateLicenseTermsData(
       request.licenseTermsData as LicenseTermsDataInput[],
       rpcClient,
+      chainId,
     );
     const requestWithTerms = { ...baseRequest, licenseTermsData };
 
@@ -498,6 +510,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
         },
         royaltyTokenDistributionWorkflowsClient,
         nftMintFee,
+        maxLicenseTokens,
       });
     }
     return transferMintAndRegisterIpAssetWithPilTermsRequest({
@@ -508,6 +521,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
       licenseAttachmentWorkflowsClient,
       nftMintFee,
       isPublicMinting,
+      maxLicenseTokens,
     });
   }
 
@@ -561,7 +575,8 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
   request,
   royaltyTokenDistributionWorkflowsClient,
   nftMintFee,
-}: TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest): TransformIpRegistrationWorkflowResponse<T> => {
+  maxLicenseTokens,
+}: TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest): TransformedIpRegistrationWorkflowRequest<T> => {
   const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
   const transformRequest = {
     ...request,
@@ -595,6 +610,10 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
       }),
     },
     workflowClient: royaltyTokenDistributionWorkflowsClient,
+    extraData: {
+      maxLicenseTokens,
+      licenseTermsData: transformRequest.licenseTermsData,
+    },
   };
 };
 
@@ -608,7 +627,8 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
   licenseAttachmentWorkflowsClient,
   nftMintFee,
   isPublicMinting,
-}: TransferMintAndRegisterIpAssetWithPilTermsConfig): TransformIpRegistrationWorkflowResponse<T> => {
+  maxLicenseTokens,
+}: TransferMintAndRegisterIpAssetWithPilTermsConfig): TransformedIpRegistrationWorkflowRequest<T> => {
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: request as T,
@@ -633,6 +653,10 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
       return licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTerms(request);
     },
     workflowClient: licenseAttachmentWorkflowsClient,
+    extraData: {
+      maxLicenseTokens,
+      licenseTermsData: request.licenseTermsData,
+    },
   };
 };
 
@@ -647,7 +671,7 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
   isPublicMinting,
   totalDerivativeMintingFee,
   royaltyTokenDistributionWorkflowsClient,
-}: TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig): TransformIpRegistrationWorkflowResponse<T> => {
+}: TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig): TransformedIpRegistrationWorkflowRequest<T> => {
   const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
   /**
    * TODO: Consider the scenario where the SPG token is WIP and the derivative token is ERC20.
@@ -705,7 +729,7 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
   nftMintFee,
   isPublicMinting,
   totalDerivativeMintingFee,
-}: TransferMintAndRegisterIpAndMakeDerivativeRequestConfig): TransformIpRegistrationWorkflowResponse<T> => {
+}: TransferMintAndRegisterIpAndMakeDerivativeRequestConfig): TransformedIpRegistrationWorkflowRequest<T> => {
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: request as T,
@@ -750,7 +774,7 @@ export const transferDistributeRoyaltyTokensRequest = async <
   wallet,
   chainId,
 }: HandleDistributeRoyaltyTokensRequestConfig): Promise<
-  TransformIpRegistrationWorkflowResponse<T>
+  TransformedIpRegistrationWorkflowRequest<T>
 > => {
   const { ipId, deadline, ipRoyaltyVault, totalAmount } = request;
   const calculatedDeadline = await getCalculatedDeadline(rpcClient, deadline);
@@ -822,13 +846,13 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
   wallet,
   chainId,
 }: PrepareDistributeRoyaltyTokensRequestConfig): Promise<
-  TransformIpRegistrationWorkflowResponse[]
+  TransformedIpRegistrationWorkflowRequest[]
 > => {
   if (royaltyDistributionRequests.length === 0) {
     return [];
   }
 
-  const results: TransformIpRegistrationWorkflowResponse[] = [];
+  const results: TransformedIpRegistrationWorkflowRequest[] = [];
 
   for (const req of royaltyDistributionRequests) {
     const filterIpIdAndTokenId = ipRegisteredLog.find(

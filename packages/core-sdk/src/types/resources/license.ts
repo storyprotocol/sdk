@@ -21,6 +21,8 @@ export type RegisterNonComSocialRemixingPILRequest = {
 /**
  * This structure defines the terms for a Programmable IP License (PIL).
  * These terms can be attached to IP Assets.
+ *
+ * For more information, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-terms | PIL}.
  **/
 export type LicenseTerms = {
   /** Indicates whether the license is transferable or not. */
@@ -219,3 +221,9 @@ export type GetLicensingConfigRequest = {
    */
   licenseTemplate?: Address;
 };
+
+export type SetMaxLicenseTokensRequest = GetLicensingConfigRequest &
+  WithTxOptions & {
+    /** The total license token limit, 0 means no limit */
+    maxLicenseTokens: bigint | number;
+  };

@@ -26,7 +26,7 @@ describe("WIP Functions", () => {
       const balanceAfter = await client.getWalletBalance();
       const wipAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(wipAfter).to.equal(wipBefore + ipAmt);
-      const gasCost = rsp.receipt!.gasUsed * rsp.receipt!.effectiveGasPrice;
+      const gasCost = rsp.receipt.gasUsed * rsp.receipt.effectiveGasPrice;
       expect(balanceAfter).to.equal(balanceBefore - ipAmt - gasCost);
     });
   });
@@ -52,7 +52,7 @@ describe("WIP Functions", () => {
       const wipAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(wipAfter).to.equal(0n);
       const balanceAfter = await client.getWalletBalance();
-      const gasCost = rsp.receipt!.gasUsed * rsp.receipt!.effectiveGasPrice;
+      const gasCost = rsp.receipt.gasUsed * rsp.receipt.effectiveGasPrice;
       expect(balanceAfter).to.equal(balanceBefore + wipBefore - gasCost);
     });
   });

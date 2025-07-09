@@ -211,7 +211,7 @@ describe("License Functions", () => {
       expect(result.tokenAmount).to.be.a("bigint");
     });
 
-    describe("set and get licensing config", () => {
+    describe("licensing config and max license tokens", () => {
       const randomHookData = generateHex();
       const licensingConfig: LicensingConfig = {
         mintingFee: 0n,
@@ -239,6 +239,15 @@ describe("License Functions", () => {
           licenseTermsId: licenseId,
         });
         expect(result).to.deep.equal(licensingConfig);
+      });
+
+      it("should set max license tokens", async () => {
+        const result = await client.license.setMaxLicenseTokens({
+          ipId: ipId,
+          licenseTermsId: licenseId,
+          maxLicenseTokens: 100,
+        });
+        expect(result.txHash).to.be.a("string");
       });
     });
   });

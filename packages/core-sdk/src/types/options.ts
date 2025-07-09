@@ -91,7 +91,5 @@ export type WaitForTransactionReceiptsRequest = {
 
 export type TransactionResponse = {
   txHash: Hash;
-
-  /** Transaction receipt, only available if waitForTransaction is set to true */
-  receipt?: TransactionReceipt;
+  receipt: TransactionReceipt;
 };

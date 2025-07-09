@@ -209,6 +209,13 @@ export default defineConfig(async () => {
         [mainnetChainId]: "0xca11bde05977b3631167028862be2a173976ca11",
       },
     },
+    {
+      name: "TotalLicenseTokenLimitHook",
+      address: {
+        [aeneidChainId]: "0xaBAD364Bfa41230272b08f171E0Ca939bD600478",
+        [mainnetChainId]: "0xB72C9812114a0Fc74D49e01385bd266A75960Cda",
+      },
+    },
   ];
   return {
     out: "../core-sdk/src/abi/generated.ts",
@@ -383,6 +390,7 @@ export default defineConfig(async () => {
             "tokenURI",
             "Transfer",
           ],
+          TotalLicenseTokenLimitHook: ["setTotalLicenseTokenLimit"],
         },
       }),
     ],

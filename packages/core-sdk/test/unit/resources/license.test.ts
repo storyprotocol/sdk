@@ -1438,4 +1438,57 @@ describe("Test LicenseClient", () => {
       expect(result.licenseTermsId).to.equal(1n);
     });
   });
+
+  describe("Test licenseClient.setMaxLicenseTokens", () => {
+    it("should throw error giving query licensing config failed", async () => {
+      stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig").rejects(
+        new Error("rpc error"),
+      );
+      const result = licenseClient.setMaxLicenseTokens({
+        ipId: zeroAddress,
+        licenseTermsId: 1,
+        maxLicenseTokens: 100,
+      });
+      await expect(result).to.rejectedWith(
+        "Failed to set max license tokens: Failed to get licensing config: rpc error",
+      );
+    });
+
+    it("should throw error given max license tokens is less than 0", async () => {
+      const result = licenseClient.setMaxLicenseTokens({
+        ipId: zeroAddress,
+        licenseTermsId: 1,
+        maxLicenseTokens: -1,
+      });
+      await expect(result).to.rejectedWith(
+        "Failed to set max license tokens: The max license tokens must be greater than 0.",
+      );
+    });
+
+    it("should return txHash when call given args is correct", async () => {
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
+      stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+      stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig").resolves({
+        isSet: false,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: zeroAddress,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: zeroAddress,
+      });
+
+      stub(licenseClient.totalLicenseTokenLimitHookClient, "setTotalLicenseTokenLimit").resolves(
+        txHash,
+      );
+      const result = await licenseClient.setMaxLicenseTokens({
+        ipId: zeroAddress,
+        licenseTermsId: 1,
+        maxLicenseTokens: 100,
+      });
+      expect(result.txHash).to.equal(txHash);
+    });
+  });
 });

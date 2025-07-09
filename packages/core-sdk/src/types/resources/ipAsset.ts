@@ -97,8 +97,17 @@ export type RegisterDerivativeResponse = {
   encodedTxData?: EncodedTxData;
 };
 export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
+  /** Programmable IP License */
   terms: T;
   licensingConfig?: C;
+  /**
+   * The max number of license tokens that can be minted from this license term.
+   *
+   * - When not specified, there is no limit on license token minting
+   * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
+   *   is automatically configured as the {@link LicensingConfigInput.licensingHook}
+   */
+  maxLicenseTokens?: number | bigint;
 };
 
 export type LicenseTermsData = Omit<
@@ -116,10 +125,9 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
    */
   allowDuplicates?: boolean;
   /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData?: LicenseTermsDataInput[];
+  licenseTermsData: LicenseTermsDataInput[];
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
-  licenseTermsInfo?: { licenseTermsIds: bigint[]; ipId: Hex };
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -130,6 +138,7 @@ export type MintAndRegisterIpAssetWithPilTermsResponse = {
   tokenId?: bigint;
   receipt?: TransactionReceipt;
   licenseTermsIds?: bigint[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 
 export type RegisterIpAndMakeDerivativeRequest = {
@@ -171,6 +180,7 @@ export type RegisterIpAndAttachPilTermsResponse = {
   ipId?: Address;
   licenseTermsIds?: bigint[];
   tokenId?: bigint;
+  maxLicenseTokensTxHashes?: Hash[];
 };
 export type MintAndRegisterIpAndMakeDerivativeRequest = {
   spgNftContract: Address;
@@ -225,6 +235,7 @@ export type RegisterPilTermsAndAttachResponse = {
   txHash?: Hash;
   encodedTxData?: EncodedTxData;
   licenseTermsIds?: bigint[];
+  maxLicenseTokensTxHashes?: Hash[];
 };
 
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
@@ -267,6 +278,7 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResult = {
   tokenId: bigint;
   licenseTermsIds: bigint[];
   spgNftContract: Address;
+  maxLicenseTokensTxHashes?: Hash[];
 };
 export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
   txHash: Hash;
@@ -324,6 +336,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
   ipId: Address;
   licenseTermsIds: bigint[];
   ipRoyaltyVault: Address;
+  maxLicenseTokensTxHashes?: Hash[];
 };
 export type DistributeRoyaltyTokens = {
   ipId: Address;
@@ -393,6 +406,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
   licenseTermsIds?: bigint[];
   ipRoyaltyVault?: Address;
   tokenId?: bigint;
+  maxLicenseTokensTxHashes?: Hash[];
 };
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest = {
@@ -452,7 +466,7 @@ export type TransformIpRegistrationWorkflowRequest =
   | DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest
   | RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest;
 
-export type TransformIpRegistrationWorkflowResponse<
+export type TransformedIpRegistrationWorkflowRequest<
   T extends TransformIpRegistrationWorkflowRequest = TransformIpRegistrationWorkflowRequest,
 > = {
   transformRequest: T;
@@ -465,10 +479,7 @@ export type TransformIpRegistrationWorkflowResponse<
     | RoyaltyTokenDistributionWorkflowsClient;
   spenders?: Erc20Spender[];
   totalFees?: bigint;
-  extraData?: {
-    royaltyShares: RoyaltyShare[];
-    deadline?: bigint;
-  };
+  extraData?: ExtraData;
 };
 
 /**
@@ -500,10 +511,29 @@ export type RegisterRegistrationRequest = RemoveOptionsFields<
 export type BatchRegistrationResult = {
   txHash: Hash;
   receipt: TransactionReceipt;
+  /**
+   * The IP royalty vault addresses.
+   * Only available for requests that include royalty token distribution, such as:
+   * - {@link RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest}
+   * - {@link RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest}
+   */
   ipRoyaltyVault?: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
-  ipIdAndTokenId: {
+  /**
+   * The IP assets with license terms.
+   */
+  ipAssetsWithLicenseTerms: {
     ipId: Address;
     tokenId: bigint;
+    /**
+     * The IDs of the license terms that the IP supports.
+     * Only available if the IP has license terms attached.
+     */
+    licenseTermsIds?: bigint[];
+    /**
+     * The transaction hashes for setting max license token limits.
+     * Only available when {@link LicenseTermsDataInput.maxLicenseTokens} is configured.
+     */
+    maxLicenseTokensTxHashes?: Hash[];
   }[];
 };
 
@@ -515,4 +545,17 @@ export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions 
 export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
   distributeRoyaltyTokensTxHashes?: Hash[];
   registrationResults: BatchRegistrationResult[];
+};
+
+export type SetMaxLicenseTokens = {
+  maxLicenseTokensData: (LicenseTermsDataInput | { maxLicenseTokens: bigint })[];
+  licensorIpId: Address;
+  licenseTermsIds: bigint[];
+};
+
+export type ExtraData = {
+  royaltyShares?: RoyaltyShare[];
+  deadline?: bigint;
+  maxLicenseTokens?: (bigint | undefined)[];
+  licenseTermsData?: LicenseTermsData[];
 };

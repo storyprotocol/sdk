@@ -42,10 +42,11 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
   SpgnftImplReadOnlyClient,
+  TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
-import { LicensingConfig, RevShareType } from "../types/common";
+import { RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
@@ -63,6 +64,7 @@ import {
   CommonRegistrationParams,
   CommonRegistrationTxResponse,
   DistributeRoyaltyTokens,
+  ExtraData,
   IpIdAndTokenId,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
@@ -91,11 +93,12 @@ import {
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
   RegisterRequest,
-  TransformIpRegistrationWorkflowResponse,
+  SetMaxLicenseTokens,
+  TransformedIpRegistrationWorkflowRequest,
 } from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
 import { LicenseTerms } from "../types/resources/license";
-import { SignatureMethodType } from "../types/utils/registerHelper";
+import { AggregateRegistrationRequest, SignatureMethodType } from "../types/utils/registerHelper";
 import { Erc20Spender } from "../types/utils/wip";
 import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
@@ -136,6 +139,7 @@ export class IPAssetClient {
   public royaltyModuleEventClient: RoyaltyModuleEventClient;
   public wipClient: WrappedIpClient;
   public spgNftClient: SpgnftImplReadOnlyClient;
+  public totalLicenseTokenLimitHookClient: TotalLicenseTokenLimitHookClient;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -161,6 +165,7 @@ export class IPAssetClient {
     this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.spgNftClient = new SpgnftImplReadOnlyClient(rpcClient);
+    this.totalLicenseTokenLimitHookClient = new TotalLicenseTokenLimitHookClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -510,49 +515,16 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      let licenseTerms: LicenseTerms[];
-      let licensingConfig: LicensingConfig;
-      let licenseTermsIds: bigint[];
-      let req: MintAndRegisterIpAssetWithPilTermsRequest;
-
-      // Check if licenseTermsId is provided directly
-      if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
-        licenseTermsIds = request.licenseTermsInfo.licenseTermsIds;
-        const licenseTermsData = await this.licenseTemplateClient.getLicenseTerms({
-          selectedLicenseTermsId: licenseTermsIds[0],
-        });
-        licensingConfig = await this.licenseRegistryReadOnlyClient.getLicensingConfig({
-          ipId: request.licenseTermsInfo.ipId,
-          licenseTemplate: this.licenseTemplateClient.address,
-          licenseTermsId: licenseTermsIds[0],
-        });
-        const licenseTermsDataInput = [
-          { terms: licenseTermsData.terms, licensingConfig: licensingConfig },
-        ];
-        req = {
-          spgNftContract: request.spgNftContract,
-          allowDuplicates: request.allowDuplicates,
-          licenseTermsData: licenseTermsDataInput,
-          txOptions: request.txOptions,
-        };
-        licenseTerms = [licenseTermsDataInput[0].terms];
-      } else {
-        if (!request.licenseTermsData) {
-          throw new Error("Either licenseTermsId or licenseTermsData must be provided");
-        }
-        // Original validation flow
-        const licenseTermsData = await validateLicenseTermsData(
-          request.licenseTermsData,
-          this.rpcClient,
-        );
-        licenseTerms = licenseTermsData.licenseTerms;
-        req = request;
-      }
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.rpcClient,
+        this.chainId,
+      );
 
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
           {
-            request: req,
+            request,
             rpcClient: this.rpcClient,
             wallet: this.wallet,
             chainId: this.chainId,
@@ -562,7 +534,7 @@ export class IPAssetClient {
         this.licenseAttachmentWorkflowsClient.mintAndRegisterIpAndAttachPilTermsEncode(
           transformRequest,
         );
-      if (req.txOptions?.encodedTxDataOnly) {
+      if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       }
 
@@ -580,19 +552,19 @@ export class IPAssetClient {
         contractCall,
         txOptions: request.txOptions,
       });
-      if (rsp.receipt) {
-        // Use the licenseTermsIds we determined earlier
-        if (request.licenseTermsInfo?.licenseTermsIds !== undefined) {
-          // We already have the ID
-          return { ...rsp, licenseTermsIds: request.licenseTermsInfo?.licenseTermsIds };
-        } else {
-          // Get the ID from the validated license terms
-          const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-          return { ...rsp, licenseTermsIds: computedLicenseTermsIds };
-        }
-      } else {
-        return rsp;
-      }
+      const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+      const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+        maxLicenseTokensData: request.licenseTermsData,
+        licensorIpId: rsp.ipId!,
+        licenseTermsIds: computedLicenseTermsIds,
+      });
+      return {
+        ...rsp,
+        licenseTermsIds: computedLicenseTermsIds,
+        ...(maxLicenseTokensTxHashes.length > 0 && {
+          maxLicenseTokensTxHashes,
+        }),
+      };
     } catch (error) {
       return handleError(error, "Failed to mint and register IP and attach PIL terms");
     }
@@ -630,19 +602,28 @@ export class IPAssetClient {
           spgNftContract: log.tokenContract,
           licenseTermsIds: [],
         }));
+
       // Due to emit event log by sequence, we need to get license terms id from request.args
       for (let j = 0; j < request.args.length; j++) {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
-        for (let i = 0; i < licenseTermsData!.length; i++) {
+        for (let i = 0; i < licenseTermsData.length; i++) {
           const licenseTerm = await validateLicenseTerms(
-            licenseTermsData![i].terms,
+            licenseTermsData[i].terms,
             this.rpcClient,
           );
           licenseTerms.push(licenseTerm);
         }
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
         results[j].licenseTermsIds = licenseTermsIds;
+        const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+          maxLicenseTokensData: licenseTermsData,
+          licensorIpId: results[j].ipId,
+          licenseTermsIds,
+        });
+        if (maxLicenseTokensTxHashes.length > 0) {
+          results[j].maxLicenseTokensTxHashes = maxLicenseTokensTxHashes;
+        }
       }
       return {
         txHash: txHash,
@@ -677,6 +658,7 @@ export class IPAssetClient {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest>(
@@ -703,9 +685,16 @@ export class IPAssetClient {
           hash: txHash,
         });
         const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
+        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+        const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+          maxLicenseTokensData: request.licenseTermsData,
+          licensorIpId: log.ipId,
+          licenseTermsIds,
+        });
         return {
           txHash,
-          licenseTermsIds: await this.getLicenseTermsId(licenseTerms),
+          licenseTermsIds,
+          ...(maxLicenseTokensTxHashes.length > 0 && { maxLicenseTokensTxHashes }),
           ...log,
         };
       }
@@ -905,6 +894,7 @@ export class IPAssetClient {
       const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
@@ -940,7 +930,16 @@ export class IPAssetClient {
           hash: txHash,
         });
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-        return { txHash, licenseTermsIds };
+        const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+          maxLicenseTokensData: request.licenseTermsData,
+          licensorIpId: ipId,
+          licenseTermsIds,
+        });
+        return {
+          txHash,
+          licenseTermsIds,
+          ...(maxLicenseTokensTxHashes.length > 0 && { maxLicenseTokensTxHashes }),
+        };
       }
     } catch (error) {
       return handleError(error, "Failed to register PIL terms and attach");
@@ -1086,6 +1085,7 @@ export class IPAssetClient {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipIdAddress = await getIpIdAddress({
@@ -1132,12 +1132,18 @@ export class IPAssetClient {
         ...request.txOptions,
         hash: distributeRoyaltyTokensTxHash,
       });
+      const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+        maxLicenseTokensData: request.licenseTermsData,
+        licensorIpId: ipId,
+        licenseTermsIds,
+      });
       return {
         registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
         distributeRoyaltyTokensTxHash,
         ipId,
         licenseTermsIds,
         ipRoyaltyVault,
+        ...(maxLicenseTokensTxHashes.length > 0 && { maxLicenseTokensTxHashes }),
       };
     } catch (error) {
       return handleError(
@@ -1245,6 +1251,7 @@ export class IPAssetClient {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.rpcClient,
+        this.chainId,
       );
       const { transformRequest } =
         await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest>(
@@ -1279,12 +1286,18 @@ export class IPAssetClient {
       const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
       const { ipRoyaltyVault } =
         this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt)[0];
+      const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+        maxLicenseTokensData: request.licenseTermsData,
+        licensorIpId: ipId!,
+        licenseTermsIds,
+      });
       return {
         txHash,
         ipId,
         licenseTermsIds,
         ipRoyaltyVault,
         tokenId,
+        ...(maxLicenseTokensTxHashes.length > 0 && { maxLicenseTokensTxHashes }),
       };
     } catch (error) {
       return handleError(
@@ -1405,7 +1418,7 @@ export class IPAssetClient {
   ): Promise<BatchRegisterIpAssetsWithOptimizedWorkflowsResponse> {
     try {
       // Transform requests into workflow format
-      const transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[] = [];
+      const transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[] = [];
       for (const req of request.requests) {
         const res = await transformRegistrationRequest({
           request: req,
@@ -1413,7 +1426,7 @@ export class IPAssetClient {
           wallet: this.wallet,
           chainId: this.chainId,
         });
-        transferWorkflowResponses.push(res);
+        transferWorkflowRequests.push(res);
       }
       /**
        * Extract royalty distribution requests from workflow responses that contain royalty shares
@@ -1421,9 +1434,9 @@ export class IPAssetClient {
        * a signature with the royalty vault address, which is only available after the initial registration
        */
       const royaltyDistributionRequests = (
-        transferWorkflowResponses.filter(
+        transferWorkflowRequests.filter(
           (res) => res.extraData?.royaltyShares,
-        ) as TransformIpRegistrationWorkflowResponse<
+        ) as TransformedIpRegistrationWorkflowRequest<
           | RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest
           | RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest
         >[]
@@ -1433,9 +1446,10 @@ export class IPAssetClient {
         royaltyShares: res.extraData!.royaltyShares,
         deadline: res.extraData!.deadline,
       }));
+
       // Process initial registration transactions
-      const txResponses = await handleMulticall({
-        transferWorkflowResponses,
+      const { response: txResponses, aggregateRegistrationRequest } = await handleMulticall({
+        transferWorkflowRequests,
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         wallet: this.wallet,
@@ -1445,15 +1459,13 @@ export class IPAssetClient {
       });
 
       const responses: BatchRegistrationResult[] = [];
-      const prepareRoyaltyTokensDistributionResponses: TransformIpRegistrationWorkflowResponse[] =
-        [];
+      const royaltyTokensDistributionRequests: TransformedIpRegistrationWorkflowRequest[] = [];
 
       // Process each transaction response
       for (const { txHash, receipt } of txResponses) {
-        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt!);
+        const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt);
         const ipRoyaltyVaultEvent =
-          this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt!);
-
+          this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt);
         // Prepare royalty distribution if needed
         const response = await prepareRoyaltyTokensDistributionRequests({
           royaltyDistributionRequests,
@@ -1464,22 +1476,24 @@ export class IPAssetClient {
           chainId: this.chainId,
         });
 
-        prepareRoyaltyTokensDistributionResponses.push(...response);
+        royaltyTokensDistributionRequests.push(...response);
 
         responses.push({
           txHash,
-          receipt: receipt!,
-          ipIdAndTokenId: iPRegisteredLog.map((log) => ({
-            ipId: log.ipId,
-            tokenId: log.tokenId,
-          })),
+          receipt,
+          ipAssetsWithLicenseTerms: iPRegisteredLog.map((log) => {
+            return {
+              ipId: log.ipId,
+              tokenId: log.tokenId,
+            };
+          }),
         });
       }
       let distributeRoyaltyTokensTxHashes: Hash[] | undefined;
       // Process royalty distribution transactions if any
-      if (prepareRoyaltyTokensDistributionResponses.length > 0) {
-        const txResponse = await handleMulticall({
-          transferWorkflowResponses: prepareRoyaltyTokensDistributionResponses,
+      if (royaltyTokensDistributionRequests.length > 0) {
+        const { response: txResponse } = await handleMulticall({
+          transferWorkflowRequests: royaltyTokensDistributionRequests,
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
           wallet: this.wallet,
@@ -1490,8 +1504,13 @@ export class IPAssetClient {
         distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);
       }
 
+      const registrationResults = await this.processResponses(
+        responses,
+        aggregateRegistrationRequest,
+        request.options?.wipOptions?.useMulticallWhenPossible !== false,
+      );
       return {
-        registrationResults: responses,
+        registrationResults,
         ...(distributeRoyaltyTokensTxHashes && { distributeRoyaltyTokensTxHashes }),
       };
     } catch (error) {
@@ -1619,17 +1638,106 @@ export class IPAssetClient {
       txOptions,
       encodedTxs,
     });
-    if (receipt) {
-      const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
-      return {
-        txHash,
-        receipt,
-        ...(event && {
-          ipId: event.ipId ?? undefined,
-          tokenId: event.tokenId ?? undefined,
-        }),
-      };
+    const event = this.getIpIdAndTokenIdsFromEvent(receipt)?.[0];
+    return {
+      txHash,
+      receipt,
+      ...(event && {
+        ipId: event.ipId ?? undefined,
+        tokenId: event.tokenId ?? undefined,
+      }),
+    };
+  }
+
+  private async setMaxLicenseTokens({
+    maxLicenseTokensData,
+    licensorIpId,
+    licenseTermsIds,
+  }: SetMaxLicenseTokens): Promise<Hash[]> {
+    const licenseTermsMaxLimitTxHashes: Hash[] = [];
+    for (let i = 0; i < maxLicenseTokensData.length; i++) {
+      const maxLicenseTokens = maxLicenseTokensData[i].maxLicenseTokens;
+      if (maxLicenseTokens === undefined || maxLicenseTokens < 0n) {
+        continue;
+      }
+      const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
+        licensorIpId,
+        // The contract now directly writes the `licenseTemplate` address internally,
+        // so we no longer need to pass it as a parameter
+        licenseTemplate: this.licenseTemplateClient.address,
+        licenseTermsId: licenseTermsIds[i],
+        limit: BigInt(maxLicenseTokens),
+      });
+      if (txHash) {
+        licenseTermsMaxLimitTxHashes.push(txHash);
+      }
     }
-    return { txHash };
+    return licenseTermsMaxLimitTxHashes;
+  }
+  /**
+   * Process the `LicenseTermsIds` and `maxLicenseTokensTxHashes` for each IP asset.
+   */
+  private async processResponses(
+    responses: BatchRegistrationResult[],
+    aggregateRegistrationRequest: AggregateRegistrationRequest,
+    useMulticall: boolean,
+  ): Promise<BatchRegistrationResult[]> {
+    if (useMulticall) {
+      for (const [responseIndex, response] of responses.entries()) {
+        for (const [assetIndex, ipAsset] of response.ipAssetsWithLicenseTerms.entries()) {
+          const extraData = Object.values(aggregateRegistrationRequest)[responseIndex]?.extraData?.[
+            assetIndex
+          ];
+          const result = await this.processIpAssetLicenseTerms(ipAsset, extraData);
+          responses[responseIndex].ipAssetsWithLicenseTerms[assetIndex] = result;
+        }
+      }
+    } else {
+      const extraData: (ExtraData | undefined)[] = [];
+      Object.values(aggregateRegistrationRequest).map((item) => {
+        extraData.push(...(item.extraData ?? undefined));
+      });
+      for (let i = 0; i < responses.length; i++) {
+        const response = responses[i];
+        const extraDataItem = extraData[i];
+        const ipAsset = await this.processIpAssetLicenseTerms(
+          response.ipAssetsWithLicenseTerms[0],
+          extraDataItem,
+        );
+        responses[i].ipAssetsWithLicenseTerms[0] = ipAsset;
+      }
+    }
+    return responses;
+  }
+
+  private async processIpAssetLicenseTerms(
+    ipAsset: BatchRegistrationResult["ipAssetsWithLicenseTerms"][number],
+    extraData: ExtraData | undefined,
+  ): Promise<BatchRegistrationResult["ipAssetsWithLicenseTerms"][number]> {
+    if (!extraData?.licenseTermsData?.length) {
+      return ipAsset;
+    }
+    const licenseTermsIds = await this.getLicenseTermsId(
+      extraData.licenseTermsData.map((item) => item.terms),
+    );
+    ipAsset.licenseTermsIds = licenseTermsIds;
+    const maxLicenseTokens = extraData.maxLicenseTokens;
+    if (!maxLicenseTokens?.length) {
+      return ipAsset;
+    }
+    const maxLicenseTokensData = maxLicenseTokens
+      .filter((maxLicenseToken): maxLicenseToken is bigint => maxLicenseToken !== undefined)
+      .map((maxLicenseToken) => ({
+        maxLicenseTokens: maxLicenseToken,
+      }));
+    const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+      maxLicenseTokensData,
+      licensorIpId: ipAsset.ipId,
+      licenseTermsIds,
+    });
+    if (maxLicenseTokensTxHashes?.length) {
+      ipAsset.maxLicenseTokensTxHashes = maxLicenseTokensTxHashes;
+    }
+    return ipAsset;
   }
 }

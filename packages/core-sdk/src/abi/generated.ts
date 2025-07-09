@@ -20,8 +20,9 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a)
+ */
 export const accessControllerAbi = [
   {
     type: "constructor",
@@ -490,16 +491,18 @@ export const accessControllerAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a)
+ */
 export const accessControllerAddress = {
   1315: "0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a",
   1514: "0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xcCF37d0a503Ee1D4C11208672e622ed3DFB2275a)
+ */
 export const accessControllerConfig = {
   address: accessControllerAddress,
   abi: accessControllerAbi,
@@ -510,8 +513,9 @@ export const accessControllerConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936)
+ */
 export const arbitrationPolicyUmaAbi = [
   {
     type: "constructor",
@@ -1081,16 +1085,18 @@ export const arbitrationPolicyUmaAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936)
+ */
 export const arbitrationPolicyUmaAddress = {
   1315: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936",
   1514: "0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xfFD98c3877B8789124f02C7E8239A4b0Ef11E936)
+ */
 export const arbitrationPolicyUmaConfig = {
   address: arbitrationPolicyUmaAddress,
   abi: arbitrationPolicyUmaAbi,
@@ -1101,8 +1107,9 @@ export const arbitrationPolicyUmaConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16)
+ */
 export const coreMetadataModuleAbi = [
   {
     type: "constructor",
@@ -1377,16 +1384,18 @@ export const coreMetadataModuleAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16)
+ */
 export const coreMetadataModuleAddress = {
   1315: "0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16",
   1514: "0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x6E81a25C99C6e8430aeC7353325EB138aFE5DC16)
+ */
 export const coreMetadataModuleConfig = {
   address: coreMetadataModuleAddress,
   abi: coreMetadataModuleAbi,
@@ -1397,8 +1406,9 @@ export const coreMetadataModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9e2d496f72C547C2C535B167e06ED8729B374a4f)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9e2d496f72C547C2C535B167e06ED8729B374a4f)
+ */
 export const derivativeWorkflowsAbi = [
   {
     type: "constructor",
@@ -1826,16 +1836,18 @@ export const derivativeWorkflowsAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9e2d496f72C547C2C535B167e06ED8729B374a4f)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9e2d496f72C547C2C535B167e06ED8729B374a4f)
+ */
 export const derivativeWorkflowsAddress = {
   1315: "0x9e2d496f72C547C2C535B167e06ED8729B374a4f",
   1514: "0x9e2d496f72C547C2C535B167e06ED8729B374a4f",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9e2d496f72C547C2C535B167e06ED8729B374a4f)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9e2d496f72C547C2C535B167e06ED8729B374a4f)
+ */
 export const derivativeWorkflowsConfig = {
   address: derivativeWorkflowsAddress,
   abi: derivativeWorkflowsAbi,
@@ -1846,8 +1858,9 @@ export const derivativeWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9b7A9c70AFF961C799110954fc06F3093aeb94C5)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9b7A9c70AFF961C799110954fc06F3093aeb94C5)
+ */
 export const disputeModuleAbi = [
   {
     type: "constructor",
@@ -2602,16 +2615,18 @@ export const disputeModuleAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9b7A9c70AFF961C799110954fc06F3093aeb94C5)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9b7A9c70AFF961C799110954fc06F3093aeb94C5)
+ */
 export const disputeModuleAddress = {
   1315: "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5",
   1514: "0x9b7A9c70AFF961C799110954fc06F3093aeb94C5",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9b7A9c70AFF961C799110954fc06F3093aeb94C5)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9b7A9c70AFF961C799110954fc06F3093aeb94C5)
+ */
 export const disputeModuleConfig = {
   address: disputeModuleAddress,
   abi: disputeModuleAbi,
@@ -2622,8 +2637,9 @@ export const disputeModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E)
+ */
 export const erc20Abi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
@@ -2803,16 +2819,18 @@ export const erc20Abi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E)
+ */
 export const erc20Address = {
   1315: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
   1514: "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E)
+ */
 export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2820,8 +2838,9 @@ export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89)
+ */
 export const evenSplitGroupPoolAbi = [
   {
     type: "constructor",
@@ -3222,16 +3241,18 @@ export const evenSplitGroupPoolAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89)
+ */
 export const evenSplitGroupPoolAddress = {
   1315: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
   1514: "0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xf96f2c30b41Cb6e0290de43C8528ae83d4f33F89)
+ */
 export const evenSplitGroupPoolConfig = {
   address: evenSplitGroupPoolAddress,
   abi: evenSplitGroupPoolAbi,
@@ -3242,8 +3263,9 @@ export const evenSplitGroupPoolConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac)
+ */
 export const groupingModuleAbi = [
   {
     type: "constructor",
@@ -3850,16 +3872,18 @@ export const groupingModuleAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac)
+ */
 export const groupingModuleAddress = {
   1315: "0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac",
   1514: "0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x69D3a7aa9edb72Bc226E745A7cCdd50D947b69Ac)
+ */
 export const groupingModuleConfig = {
   address: groupingModuleAddress,
   abi: groupingModuleAbi,
@@ -3870,8 +3894,9 @@ export const groupingModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd)
+ */
 export const groupingWorkflowsAbi = [
   {
     type: "constructor",
@@ -4419,16 +4444,18 @@ export const groupingWorkflowsAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd)
+ */
 export const groupingWorkflowsAddress = {
   1315: "0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd",
   1514: "0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD7c0beb3aa4DCD4723465f1ecAd045676c24CDCd)
+ */
 export const groupingWorkflowsConfig = {
   address: groupingWorkflowsAddress,
   abi: groupingWorkflowsAbi,
@@ -4439,8 +4466,9 @@ export const groupingWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x7343646585443F1c3F64E4F08b708788527e1C77)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x7343646585443F1c3F64E4F08b708788527e1C77)
+ */
 export const ipAccountImplAbi = [
   {
     type: "constructor",
@@ -4845,16 +4873,18 @@ export const ipAccountImplAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x7343646585443F1c3F64E4F08b708788527e1C77)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x7343646585443F1c3F64E4F08b708788527e1C77)
+ */
 export const ipAccountImplAddress = {
   1315: "0x7343646585443F1c3F64E4F08b708788527e1C77",
   1514: "0x7343646585443F1c3F64E4F08b708788527e1C77",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x7343646585443F1c3F64E4F08b708788527e1C77)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x7343646585443F1c3F64E4F08b708788527e1C77)
+ */
 export const ipAccountImplConfig = {
   address: ipAccountImplAddress,
   abi: ipAccountImplAbi,
@@ -4865,8 +4895,9 @@ export const ipAccountImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x77319B4031e6eF1250907aa00018B8B1c67a244b)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x77319B4031e6eF1250907aa00018B8B1c67a244b)
+ */
 export const ipAssetRegistryAbi = [
   {
     type: "constructor",
@@ -5509,16 +5540,18 @@ export const ipAssetRegistryAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x77319B4031e6eF1250907aa00018B8B1c67a244b)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x77319B4031e6eF1250907aa00018B8B1c67a244b)
+ */
 export const ipAssetRegistryAddress = {
   1315: "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
   1514: "0x77319B4031e6eF1250907aa00018B8B1c67a244b",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x77319B4031e6eF1250907aa00018B8B1c67a244b)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x77319B4031e6eF1250907aa00018B8B1c67a244b)
+ */
 export const ipAssetRegistryConfig = {
   address: ipAssetRegistryAddress,
   abi: ipAssetRegistryAbi,
@@ -5529,8 +5562,9 @@ export const ipAssetRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x73e2D097F71e5103824abB6562362106A8955AEc)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x63cC7611316880213f3A4Ba9bD72b0EaA2010298)
+ */
 export const ipRoyaltyVaultImplAbi = [
   {
     type: "constructor",
@@ -5976,16 +6010,18 @@ export const ipRoyaltyVaultImplAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x73e2D097F71e5103824abB6562362106A8955AEc)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x63cC7611316880213f3A4Ba9bD72b0EaA2010298)
+ */
 export const ipRoyaltyVaultImplAddress = {
   1315: "0x73e2D097F71e5103824abB6562362106A8955AEc",
   1514: "0x63cC7611316880213f3A4Ba9bD72b0EaA2010298",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x73e2D097F71e5103824abB6562362106A8955AEc)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x63cC7611316880213f3A4Ba9bD72b0EaA2010298)
+ */
 export const ipRoyaltyVaultImplConfig = {
   address: ipRoyaltyVaultImplAddress,
   abi: ipRoyaltyVaultImplAbi,
@@ -5996,8 +6032,9 @@ export const ipRoyaltyVaultImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8)
+ */
 export const licenseAttachmentWorkflowsAbi = [
   {
     type: "constructor",
@@ -6705,16 +6742,18 @@ export const licenseAttachmentWorkflowsAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8)
+ */
 export const licenseAttachmentWorkflowsAddress = {
   1315: "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
   1514: "0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xcC2E862bCee5B6036Db0de6E06Ae87e524a79fd8)
+ */
 export const licenseAttachmentWorkflowsConfig = {
   address: licenseAttachmentWorkflowsAddress,
   abi: licenseAttachmentWorkflowsAbi,
@@ -6725,8 +6764,9 @@ export const licenseAttachmentWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x529a750E02d8E2f15649c13D69a465286a780e24)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x529a750E02d8E2f15649c13D69a465286a780e24)
+ */
 export const licenseRegistryAbi = [
   {
     type: "constructor",
@@ -7702,16 +7742,18 @@ export const licenseRegistryAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x529a750E02d8E2f15649c13D69a465286a780e24)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x529a750E02d8E2f15649c13D69a465286a780e24)
+ */
 export const licenseRegistryAddress = {
   1315: "0x529a750E02d8E2f15649c13D69a465286a780e24",
   1514: "0x529a750E02d8E2f15649c13D69a465286a780e24",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x529a750E02d8E2f15649c13D69a465286a780e24)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x529a750E02d8E2f15649c13D69a465286a780e24)
+ */
 export const licenseRegistryConfig = {
   address: licenseRegistryAddress,
   abi: licenseRegistryAbi,
@@ -7722,8 +7764,9 @@ export const licenseRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC)
+ */
 export const licenseTokenAbi = [
   {
     type: "constructor",
@@ -8380,16 +8423,18 @@ export const licenseTokenAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC)
+ */
 export const licenseTokenAddress = {
   1315: "0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC",
   1514: "0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xFe3838BFb30B34170F00030B52eA4893d8aAC6bC)
+ */
 export const licenseTokenConfig = {
   address: licenseTokenAddress,
   abi: licenseTokenAbi,
@@ -8400,8 +8445,9 @@ export const licenseTokenConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f)
+ */
 export const licensingModuleAbi = [
   {
     type: "constructor",
@@ -9124,16 +9170,18 @@ export const licensingModuleAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f)
+ */
 export const licensingModuleAddress = {
   1315: "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
   1514: "0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x04fbd8a2e56dd85CFD5500A4A4DfA955B9f1dE6f)
+ */
 export const licensingModuleConfig = {
   address: licensingModuleAddress,
   abi: licensingModuleAbi,
@@ -9144,8 +9192,9 @@ export const licensingModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5)
+ */
 export const moduleRegistryAbi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
@@ -9430,16 +9479,18 @@ export const moduleRegistryAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5)
+ */
 export const moduleRegistryAddress = {
   1315: "0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5",
   1514: "0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x022DBAAeA5D8fB31a0Ad793335e39Ced5D631fa5)
+ */
 export const moduleRegistryConfig = {
   address: moduleRegistryAddress,
   abi: moduleRegistryAbi,
@@ -9450,8 +9501,9 @@ export const moduleRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xca11bde05977b3631167028862be2a173976ca11)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xca11bde05977b3631167028862be2a173976ca11)
+ */
 export const multicall3Abi = [
   {
     type: "function",
@@ -9690,16 +9742,18 @@ export const multicall3Abi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xca11bde05977b3631167028862be2a173976ca11)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xca11bde05977b3631167028862be2a173976ca11)
+ */
 export const multicall3Address = {
   1315: "0xcA11bde05977b3631167028862bE2a173976CA11",
   1514: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xca11bde05977b3631167028862be2a173976ca11)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xca11bde05977b3631167028862be2a173976ca11)
+ */
 export const multicall3Config = {
   address: multicall3Address,
   abi: multicall3Abi,
@@ -9710,8 +9764,9 @@ export const multicall3Config = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316)
+ */
 export const piLicenseTemplateAbi = [
   {
     type: "constructor",
@@ -10419,16 +10474,18 @@ export const piLicenseTemplateAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316)
+ */
 export const piLicenseTemplateAddress = {
   1315: "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
   1514: "0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x2E896b0b2Fdb7457499B56AAaA4AE55BCB4Cd316)
+ */
 export const piLicenseTemplateConfig = {
   address: piLicenseTemplateAddress,
   abi: piLicenseTemplateAbi,
@@ -10439,8 +10496,9 @@ export const piLicenseTemplateConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424)
+ */
 export const registrationWorkflowsAbi = [
   {
     type: "constructor",
@@ -10792,16 +10850,18 @@ export const registrationWorkflowsAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424)
+ */
 export const registrationWorkflowsAddress = {
   1315: "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
   1514: "0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xbe39E1C756e921BD25DF86e7AAa31106d1eb0424)
+ */
 export const registrationWorkflowsConfig = {
   address: registrationWorkflowsAddress,
   abi: registrationWorkflowsAbi,
@@ -10812,8 +10872,9 @@ export const registrationWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086)
+ */
 export const royaltyModuleAbi = [
   {
     type: "constructor",
@@ -11675,16 +11736,18 @@ export const royaltyModuleAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086)
+ */
 export const royaltyModuleAddress = {
   1315: "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
   1514: "0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD2f60c40fEbccf6311f8B47c4f2Ec6b040400086)
+ */
 export const royaltyModuleConfig = {
   address: royaltyModuleAddress,
   abi: royaltyModuleAbi,
@@ -11695,8 +11758,9 @@ export const royaltyModuleConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E)
+ */
 export const royaltyPolicyLapAbi = [
   {
     type: "constructor",
@@ -12044,16 +12108,18 @@ export const royaltyPolicyLapAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E)
+ */
 export const royaltyPolicyLapAddress = {
   1315: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
   1514: "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E)
+ */
 export const royaltyPolicyLapConfig = {
   address: royaltyPolicyLapAddress,
   abi: royaltyPolicyLapAbi,
@@ -12064,8 +12130,9 @@ export const royaltyPolicyLapConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9156e603C949481883B1d3355c6f1132D191fC41)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9156e603C949481883B1d3355c6f1132D191fC41)
+ */
 export const royaltyPolicyLrpAbi = [
   {
     type: "constructor",
@@ -12428,16 +12495,18 @@ export const royaltyPolicyLrpAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9156e603C949481883B1d3355c6f1132D191fC41)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9156e603C949481883B1d3355c6f1132D191fC41)
+ */
 export const royaltyPolicyLrpAddress = {
   1315: "0x9156e603C949481883B1d3355c6f1132D191fC41",
   1514: "0x9156e603C949481883B1d3355c6f1132D191fC41",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9156e603C949481883B1d3355c6f1132D191fC41)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9156e603C949481883B1d3355c6f1132D191fC41)
+ */
 export const royaltyPolicyLrpConfig = {
   address: royaltyPolicyLrpAddress,
   abi: royaltyPolicyLrpAbi,
@@ -12448,8 +12517,9 @@ export const royaltyPolicyLrpConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xa38f42B8d33809917f23997B8423054aAB97322C)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xa38f42B8d33809917f23997B8423054aAB97322C)
+ */
 export const royaltyTokenDistributionWorkflowsAbi = [
   {
     type: "constructor",
@@ -13161,16 +13231,18 @@ export const royaltyTokenDistributionWorkflowsAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xa38f42B8d33809917f23997B8423054aAB97322C)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xa38f42B8d33809917f23997B8423054aAB97322C)
+ */
 export const royaltyTokenDistributionWorkflowsAddress = {
   1315: "0xa38f42B8d33809917f23997B8423054aAB97322C",
   1514: "0xa38f42B8d33809917f23997B8423054aAB97322C",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xa38f42B8d33809917f23997B8423054aAB97322C)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xa38f42B8d33809917f23997B8423054aAB97322C)
+ */
 export const royaltyTokenDistributionWorkflowsConfig = {
   address: royaltyTokenDistributionWorkflowsAddress,
   abi: royaltyTokenDistributionWorkflowsAbi,
@@ -13181,8 +13253,9 @@ export const royaltyTokenDistributionWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890)
+ */
 export const royaltyWorkflowsAbi = [
   {
     type: "constructor",
@@ -13349,16 +13422,18 @@ export const royaltyWorkflowsAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890)
+ */
 export const royaltyWorkflowsAddress = {
   1315: "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
   1514: "0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x9515faE61E0c0447C6AC6dEe5628A2097aFE1890)
+ */
 export const royaltyWorkflowsConfig = {
   address: royaltyWorkflowsAddress,
   abi: royaltyWorkflowsAbi,
@@ -13369,8 +13444,9 @@ export const royaltyWorkflowsConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218)
+ */
 export const spgnftBeaconAbi = [
   {
     type: "constructor",
@@ -13465,16 +13541,18 @@ export const spgnftBeaconAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218)
+ */
 export const spgnftBeaconAddress = {
   1315: "0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218",
   1514: "0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xD2926B9ecaE85fF59B6FB0ff02f568a680c01218)
+ */
 export const spgnftBeaconConfig = {
   address: spgnftBeaconAddress,
   abi: spgnftBeaconAbi,
@@ -13485,8 +13563,9 @@ export const spgnftBeaconConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x5266215a00c31AaA2f2BB7b951Ea0028Ea8b4e37)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5)
+ */
 export const spgnftImplAbi = [
   {
     type: "constructor",
@@ -14154,19 +14233,240 @@ export const spgnftImplAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x5266215a00c31AaA2f2BB7b951Ea0028Ea8b4e37)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5)
+ */
 export const spgnftImplAddress = {
   1315: "0x5266215a00c31AaA2f2BB7b951Ea0028Ea8b4e37",
   1514: "0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x5266215a00c31AaA2f2BB7b951Ea0028Ea8b4e37)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x6Cfa03Bc64B1a76206d0Ea10baDed31D520449F5)
+ */
 export const spgnftImplConfig = {
   address: spgnftImplAddress,
   abi: spgnftImplAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TotalLicenseTokenLimitHook
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xaBAD364Bfa41230272b08f171E0Ca939bD600478)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xB72C9812114a0Fc74D49e01385bd266A75960Cda)
+ */
+export const totalLicenseTokenLimitHookAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "licenseRegistry", internalType: "address", type: "address" },
+      { name: "licenseToken", internalType: "address", type: "address" },
+      { name: "accessController", internalType: "address", type: "address" },
+      { name: "ipAssetRegistry", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "ipAccount", internalType: "address", type: "address" }],
+    name: "AccessControlled__NotIpAccount",
+  },
+  { type: "error", inputs: [], name: "AccessControlled__ZeroAddress" },
+  {
+    type: "error",
+    inputs: [
+      { name: "totalSupply", internalType: "uint256", type: "uint256" },
+      { name: "limit", internalType: "uint256", type: "uint256" },
+    ],
+    name: "TotalLicenseTokenLimitHook_LimitLowerThanTotalSupply",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "totalSupply", internalType: "uint256", type: "uint256" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "limit", internalType: "uint256", type: "uint256" },
+    ],
+    name: "TotalLicenseTokenLimitHook_TotalLicenseTokenLimitExceeded",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "TotalLicenseTokenLimitHook_ZeroLicenseRegistry",
+  },
+  {
+    type: "error",
+    inputs: [],
+    name: "TotalLicenseTokenLimitHook_ZeroLicenseToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "licensorIpId",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "licenseTemplate",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "licenseTermsId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+      {
+        name: "limit",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "SetTotalLicenseTokenLimit",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "ACCESS_CONTROLLER",
+    outputs: [{ name: "", internalType: "contract IAccessController", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "IP_ASSET_REGISTRY",
+    outputs: [{ name: "", internalType: "contract IIPAssetRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_REGISTRY",
+    outputs: [{ name: "", internalType: "contract ILicenseRegistry", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "LICENSE_TOKEN",
+    outputs: [{ name: "", internalType: "contract ILicenseToken", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "hookData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "beforeMintLicenseTokens",
+    outputs: [{ name: "totalMintingFee", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "childIpId", internalType: "address", type: "address" },
+      { name: "parentIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "hookData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "beforeRegisterDerivative",
+    outputs: [{ name: "mintingFee", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "caller", internalType: "address", type: "address" },
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "hookData", internalType: "bytes", type: "bytes" },
+    ],
+    name: "calculateMintingFee",
+    outputs: [{ name: "totalMintingFee", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "getTotalLicenseTokenLimit",
+    outputs: [{ name: "limit", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "licensorIpId", internalType: "address", type: "address" },
+      { name: "licenseTemplate", internalType: "address", type: "address" },
+      { name: "licenseTermsId", internalType: "uint256", type: "uint256" },
+      { name: "limit", internalType: "uint256", type: "uint256" },
+    ],
+    name: "setTotalLicenseTokenLimit",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    name: "totalLicenseTokenLimit",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+] as const;
+
+/**
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xaBAD364Bfa41230272b08f171E0Ca939bD600478)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xB72C9812114a0Fc74D49e01385bd266A75960Cda)
+ */
+export const totalLicenseTokenLimitHookAddress = {
+  1315: "0xaBAD364Bfa41230272b08f171E0Ca939bD600478",
+  1514: "0xB72C9812114a0Fc74D49e01385bd266A75960Cda",
+} as const;
+
+/**
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0xaBAD364Bfa41230272b08f171E0Ca939bD600478)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0xB72C9812114a0Fc74D49e01385bd266A75960Cda)
+ */
+export const totalLicenseTokenLimitHookConfig = {
+  address: totalLicenseTokenLimitHookAddress,
+  abi: totalLicenseTokenLimitHookAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14174,8 +14474,9 @@ export const spgnftImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x1514000000000000000000000000000000000000)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x1514000000000000000000000000000000000000)
+ */
 export const wrappedIpAbi = [
   { type: "error", inputs: [], name: "AllowanceOverflow" },
   { type: "error", inputs: [], name: "AllowanceUnderflow" },
@@ -14387,16 +14688,18 @@ export const wrappedIpAbi = [
 ] as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x1514000000000000000000000000000000000000)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x1514000000000000000000000000000000000000)
+ */
 export const wrappedIpAddress = {
   1315: "0x1514000000000000000000000000000000000000",
   1514: "0x1514000000000000000000000000000000000000",
 } as const;
 
 /**
-
-*/
+ * - [__View Contract on Story Aeneid Story Aeneid Explorer__](https://aeneid.storyscan.xyz/address/0x1514000000000000000000000000000000000000)
+ * - [__View Contract on Story Story Explorer__](https://storyscan.xyz/address/0x1514000000000000000000000000000000000000)
+ */
 export const wrappedIpConfig = {
   address: wrappedIpAddress,
   abi: wrappedIpAbi,
@@ -24839,6 +25142,133 @@ export class SpgnftImplClient extends SpgnftImplReadOnlyClient {
         abi: spgnftImplAbi,
         functionName: "setTokenURI",
         args: [request.tokenId, request.tokenUri],
+      }),
+    };
+  }
+}
+
+// Contract TotalLicenseTokenLimitHook =============================================================
+
+/**
+ * TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitRequest
+ *
+ * @param licensorIpId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ */
+export type TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitRequest = {
+  licensorIpId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+};
+
+/**
+ * TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitResponse
+ *
+ * @param limit uint256
+ */
+export type TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitResponse = {
+  limit: bigint;
+};
+
+/**
+ * TotalLicenseTokenLimitHookSetTotalLicenseTokenLimitRequest
+ *
+ * @param licensorIpId address
+ * @param licenseTemplate address
+ * @param licenseTermsId uint256
+ * @param limit uint256
+ */
+export type TotalLicenseTokenLimitHookSetTotalLicenseTokenLimitRequest = {
+  licensorIpId: Address;
+  licenseTemplate: Address;
+  licenseTermsId: bigint;
+  limit: bigint;
+};
+
+/**
+ * contract TotalLicenseTokenLimitHook readonly method
+ */
+export class TotalLicenseTokenLimitHookReadOnlyClient {
+  protected readonly rpcClient: PublicClient;
+  public readonly address: Address;
+
+  constructor(rpcClient: PublicClient, address?: Address) {
+    this.address = address || getAddress(totalLicenseTokenLimitHookAddress, rpcClient.chain?.id);
+    this.rpcClient = rpcClient;
+  }
+
+  /**
+   * method getTotalLicenseTokenLimit for contract TotalLicenseTokenLimitHook
+   *
+   * @param request TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitRequest
+   * @return Promise<TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitResponse>
+   */
+  public async getTotalLicenseTokenLimit(
+    request: TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitRequest,
+  ): Promise<TotalLicenseTokenLimitHookGetTotalLicenseTokenLimitResponse> {
+    const result = await this.rpcClient.readContract({
+      abi: totalLicenseTokenLimitHookAbi,
+      address: this.address,
+      functionName: "getTotalLicenseTokenLimit",
+      args: [request.licensorIpId, request.licenseTemplate, request.licenseTermsId],
+    });
+    return {
+      limit: result,
+    };
+  }
+}
+
+/**
+ * contract TotalLicenseTokenLimitHook write method
+ */
+export class TotalLicenseTokenLimitHookClient extends TotalLicenseTokenLimitHookReadOnlyClient {
+  protected readonly wallet: SimpleWalletClient;
+
+  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address?: Address) {
+    super(rpcClient, address);
+    this.wallet = wallet;
+  }
+
+  /**
+   * method setTotalLicenseTokenLimit for contract TotalLicenseTokenLimitHook
+   *
+   * @param request TotalLicenseTokenLimitHookSetTotalLicenseTokenLimitRequest
+   * @return Promise<WriteContractReturnType>
+   */
+  public async setTotalLicenseTokenLimit(
+    request: TotalLicenseTokenLimitHookSetTotalLicenseTokenLimitRequest,
+  ): Promise<WriteContractReturnType> {
+    const { request: call } = await this.rpcClient.simulateContract({
+      abi: totalLicenseTokenLimitHookAbi,
+      address: this.address,
+      functionName: "setTotalLicenseTokenLimit",
+      account: this.wallet.account,
+      args: [request.licensorIpId, request.licenseTemplate, request.licenseTermsId, request.limit],
+    });
+    return await this.wallet.writeContract(call as WriteContractParameters);
+  }
+
+  /**
+   * method setTotalLicenseTokenLimit for contract TotalLicenseTokenLimitHook with only encode
+   *
+   * @param request TotalLicenseTokenLimitHookSetTotalLicenseTokenLimitRequest
+   * @return EncodedTxData
+   */
+  public setTotalLicenseTokenLimitEncode(
+    request: TotalLicenseTokenLimitHookSetTotalLicenseTokenLimitRequest,
+  ): EncodedTxData {
+    return {
+      to: this.address,
+      data: encodeFunctionData({
+        abi: totalLicenseTokenLimitHookAbi,
+        functionName: "setTotalLicenseTokenLimit",
+        args: [
+          request.licensorIpId,
+          request.licenseTemplate,
+          request.licenseTermsId,
+          request.limit,
+        ],
       }),
     };
   }

@@ -1,10 +1,11 @@
 import { Address, Hash, Hex } from "viem";
 
 import { TransactionResponse } from "../../types/options";
-import { TransformIpRegistrationWorkflowResponse } from "../../types/resources/ipAsset";
+import { TransformedIpRegistrationWorkflowRequest } from "../../types/resources/ipAsset";
 import {
   AggregateRegistrationRequest,
-  HandleMulticallConfig,
+  MulticallConfigRequest,
+  MulticallConfigResponse,
 } from "../../types/utils/registerHelper";
 import { contractCallWithFees } from "../feeUtils";
 import { mergeSpenders } from "./registerValidation";
@@ -29,19 +30,18 @@ import { mergeSpenders } from "./registerValidation";
  * and user preferences.
  */
 const aggregateTransformIpRegistrationWorkflow = (
-  transferWorkflowResponses: TransformIpRegistrationWorkflowResponse[],
+  transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[],
   multicall3Address: Address,
   disableMulticallWhenPossible: boolean,
 ): AggregateRegistrationRequest => {
   const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
-  for (const res of transferWorkflowResponses) {
-    const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3 } = res;
+  for (const res of transferWorkflowRequests) {
+    const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3, extraData } = res;
     let shouldUseMulticall = isUseMulticall3;
     if (disableMulticallWhenPossible) {
       shouldUseMulticall = false;
     }
 
-    // const shouldUseMulticall = !disableMulticallWhenPossible && isUseMulticall3;
     const targetAddress = shouldUseMulticall ? multicall3Address : workflowClient.address;
     if (!aggregateRegistrationRequest[targetAddress]) {
       aggregateRegistrationRequest[targetAddress] = {
@@ -49,6 +49,7 @@ const aggregateTransformIpRegistrationWorkflow = (
         totalFees: 0n,
         encodedTxData: [],
         contractCall: [],
+        extraData: [],
       };
     }
 
@@ -56,6 +57,7 @@ const aggregateTransformIpRegistrationWorkflow = (
     currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
     currentRequest.totalFees += totalFees || 0n;
     currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
+    currentRequest.extraData = currentRequest.extraData?.concat(extraData || undefined);
     if (isUseMulticall3 || disableMulticallWhenPossible) {
       currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
     } else {
@@ -73,15 +75,15 @@ const aggregateTransformIpRegistrationWorkflow = (
 };
 
 export const handleMulticall = async ({
-  transferWorkflowResponses,
+  transferWorkflowRequests,
   multicall3Address,
   wipOptions,
   rpcClient,
   wallet,
   walletAddress,
-}: HandleMulticallConfig): Promise<TransactionResponse[]> => {
+}: MulticallConfigRequest): Promise<MulticallConfigResponse> => {
   const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
-    transferWorkflowResponses,
+    transferWorkflowRequests,
     multicall3Address,
     wipOptions?.useMulticallWhenPossible === false,
   );
@@ -115,5 +117,8 @@ export const handleMulticall = async ({
     });
     txResponses.push(...(Array.isArray(txResponse) ? txResponse : [txResponse]));
   }
-  return txResponses;
+  return {
+    response: txResponses,
+    aggregateRegistrationRequest,
+  };
 };
