@@ -1,4 +1,8 @@
-# Story Protocol SDK [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/storyprotocol/sdk/blob/main/LICENSE.md)[![npm version](https://img.shields.io/npm/v/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)[![npm downloads](https://img.shields.io/npm/dm/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
+# Story Protocol SDK 
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/storyprotocol/sdk/blob/main/LICENSE.md)
+[![npm version](https://img.shields.io/npm/v/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
+[![npm downloads](https://img.shields.io/npm/dm/@story-protocol/core-sdk)](https://www.npmjs.com/package/@story-protocol/core-sdk)
+[![CodeQL](https://github.com/storyprotocol/sdk/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/storyprotocol/sdk/actions/workflows/github-code-scanning/codeql)
 
 Welcome to the Story Protocol SDK - a comprehensive toolkit for building applications on Story Protocol. This SDK empowers developers to seamlessly interact with intellectual property (IP) assets on the blockchain through an intuitive API interface.
 
