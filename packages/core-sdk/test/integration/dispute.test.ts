@@ -70,7 +70,7 @@ describe("Dispute Functions", () => {
     ).ipId!;
   });
 
-  describe("raiseDispute and counter dispute", () => {
+  describe.only("raiseDispute and counter dispute", () => {
     let disputeId: bigint;
     it("should raise a dispute", async () => {
       const raiseDisputeRequest: RaiseDisputeRequest = {

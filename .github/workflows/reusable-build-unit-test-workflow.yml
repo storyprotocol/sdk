@@ -1,0 +1,59 @@
+name: Build and Test
+
+on:
+  workflow_call:
+    inputs:
+      sha:
+        required: true
+        type: string
+      ENVIRONMENT:
+        required: true
+        type: string
+    secrets:
+      WALLET_PRIVATE_KEY:
+        required: true
+      TEST_WALLET_ADDRESS:
+        required: true
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.0.0]
+    env:
+      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
+      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+        with:
+          version: 8
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Fix
+        run: pnpm fix
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
