@@ -15,7 +15,7 @@ jobs:
 
   unit_tests:
     needs: [Timestamp]
-    uses: ./reusable-build-unit-test-workflow.yml
+    uses: ./.github/workflows/reusable-build-unit-test-workflow.yml
     with:
       sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       ENVIRONMENT: "odyssey"
