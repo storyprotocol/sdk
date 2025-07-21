@@ -1,4 +1,4 @@
-name: Conditional Workflow for Internal PRs with Unit & Integration Tests
+name: Workflow for Internal PRs with Unit & Integration Tests
 
 on:
   pull_request:
