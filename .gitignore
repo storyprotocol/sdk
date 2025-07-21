@@ -41,3 +41,6 @@ yarn-error.log*
 
 # cursor
 .cursor
+
+# mocha test report
+/packages/core-sdk/mochawesome-report/

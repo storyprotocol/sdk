@@ -5,6 +5,6 @@ export default [
   ...config,
   //TODO: need to fix `e` which is not being used in generated files
   {
-    ignores: ["./src/abi/generated.ts"],
+    ignores: ["./src/abi/generated.ts", "./mochawesome-report", "./dist"],
   },
 ];
