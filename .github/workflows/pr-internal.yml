@@ -1,4 +1,4 @@
-name: Conditional Workflow for Internal PRs with Unit & Integration Tests
+name: Workflow for Internal PRs with Unit & Integration Tests
 
 on:
   pull_request:
@@ -13,22 +13,11 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     uses: storyprotocol/gha-workflows/.github/workflows/reusable-timestamp.yml@main
 
-  unit_tests:
+  tests:
     needs: [Timestamp]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-unit-test-workflow.yml@main
+    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-test-workflow.yml@main
     with:
       sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      ENVIRONMENT: "odyssey"
-    secrets:
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
-
-  integration_tests:
-    if: github.event_name == 'pull_request'
-    needs: [Timestamp]
-    uses: storyprotocol/gha-workflows/.github/workflows/reusable-build-integration-test-workflow.yml@main
-    with:
-      sha: ${{ github.event.pull_request.head.sha }}
       ENVIRONMENT: "odyssey"
     secrets:
       WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
