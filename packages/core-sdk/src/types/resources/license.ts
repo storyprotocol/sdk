@@ -4,6 +4,14 @@ import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfigInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 
+/**
+ * The type of royalty policy that can be used in a PIL license.
+ * - "LAP": {@link https://docs.story.foundation/concepts/royalty-module/liquid-absolute-percentage | Liquid Absolute Percentage}
+ * - "LRP": {@link https://docs.story.foundation/concepts/royalty-module/liquid-relative-percentage | Liquid Relative Percentage}
+ * - Address: {@link https://docs.story.foundation/concepts/royalty-module/external-royalty-policies | External Royalty Policies}
+ */
+export type RoyaltyPolicyType = "LAP" | "LRP" | Address;
+
 export type LicenseApiResponse = {
   data: License;
 };
@@ -73,6 +81,11 @@ export type LicenseTermsInput = Omit<
   commercialRevCeiling: bigint | string | number;
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
+  /**
+   * The address of the royalty policy contract.
+   * @default LAP
+   */
+  royaltyPolicyAddress?: RoyaltyPolicyType;
 };
 
 export type RegisterPILTermsRequest = LicenseTermsInput & {
