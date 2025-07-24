@@ -77,7 +77,7 @@ describe("License Terms Helper", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
             royaltyPolicyAddress: zeroAddress,
-            defaultMintingFee: "1",
+            defaultMintingFee: 1,
           }),
         ).to.throw("DefaultMintingFee, currency are required for commercial use PIL.");
       });
@@ -85,7 +85,7 @@ describe("License Terms Helper", () => {
       it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_USE and correct args", () => {
         const result = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
           royaltyPolicyAddress: zeroAddress,
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           currency: zeroAddress,
         });
         expect(result).to.deep.contain({
@@ -133,7 +133,7 @@ describe("License Terms Helper", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: zeroAddress,
-            defaultMintingFee: "1",
+            defaultMintingFee: 1,
             commercialRevShare: 100,
           }),
         ).to.throw(
@@ -145,7 +145,7 @@ describe("License Terms Helper", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: "wrong" as Hex,
-            defaultMintingFee: "1",
+            defaultMintingFee: 1,
             currency: zeroAddress,
           }),
         ).to.throw(
@@ -156,7 +156,7 @@ describe("License Terms Helper", () => {
       it("it should return commercial license terms when call getLicenseTermByType given COMMERCIAL_REMIX and correct args", () => {
         const result = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
           royaltyPolicyAddress: zeroAddress,
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           currency: zeroAddress,
           commercialRevShare: 100,
         });
@@ -184,7 +184,7 @@ describe("License Terms Helper", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: zeroAddress,
-            defaultMintingFee: "1",
+            defaultMintingFee: 1,
             currency: zeroAddress,
             commercialRevShare: -8,
           }),
@@ -195,7 +195,7 @@ describe("License Terms Helper", () => {
         expect(() =>
           getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
             royaltyPolicyAddress: zeroAddress,
-            defaultMintingFee: "1",
+            defaultMintingFee: 1,
             currency: zeroAddress,
             commercialRevShare: 105,
           }),
@@ -205,7 +205,7 @@ describe("License Terms Helper", () => {
       it("it get commercialRevShare correct value when call getLicenseTermByType given COMMERCIAL_REMIX and commercialRevShare is 10", () => {
         const result = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
           royaltyPolicyAddress: zeroAddress,
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           currency: zeroAddress,
           commercialRevShare: 10,
         });

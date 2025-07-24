@@ -275,7 +275,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCommercialUsePIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         currency: zeroAddress,
       });
 
@@ -294,7 +294,7 @@ describe("Test LicenseClient", () => {
 
       try {
         await licenseClient.registerCommercialUsePIL({
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           currency: zeroAddress,
         });
       } catch (error) {
@@ -315,7 +315,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialUsePIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         currency: zeroAddress,
         royaltyPolicyAddress: zeroAddress,
         txOptions: {
@@ -337,7 +337,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: zeroAddress,
       });
@@ -359,7 +359,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: zeroAddress,
       });
@@ -382,7 +382,7 @@ describe("Test LicenseClient", () => {
       ]);
 
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: zeroAddress,
       });
@@ -402,7 +402,7 @@ describe("Test LicenseClient", () => {
 
       try {
         await licenseClient.registerCommercialRemixPIL({
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           commercialRevShare: 100,
           currency: zeroAddress,
         });
@@ -424,7 +424,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: zeroAddress,
         royaltyPolicyAddress: zeroAddress,
