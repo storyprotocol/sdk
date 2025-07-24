@@ -40,3 +40,5 @@ export { getPermissionSignature, getSignature } from "./utils/sign";
 export { convertCIDtoHashIPFS, convertHashIPFStoCID } from "./utils/ipfs";
 
 export { settleAssertion } from "./utils/oov3";
+
+export { PILFlavor } from "./utils/pilFlavor";
