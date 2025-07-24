@@ -347,8 +347,8 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCommercialUsePIL({
-        defaultMintingFee: "1",
-        currency: mockAddress,
+        defaultMintingFee: 1,
+        currency: zeroAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -366,8 +366,8 @@ describe("Test LicenseClient", () => {
 
       try {
         await licenseClient.registerCommercialUsePIL({
-          defaultMintingFee: "1",
-          currency: mockAddress,
+          defaultMintingFee: 1,
+          currency: zeroAddress,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -387,8 +387,9 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialUsePIL({
-        defaultMintingFee: "1",
-        currency: mockAddress,
+        defaultMintingFee: 1,
+        currency: zeroAddress,
+        royaltyPolicyAddress: zeroAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -408,7 +409,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: mockAddress,
       });
@@ -430,12 +431,36 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: mockAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should return txhash when call registerCommercialRemixPIL given licenseTermsId is not registered ", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+
+      const result = await licenseClient.registerCommercialRemixPIL({
+        defaultMintingFee: 1,
+        commercialRevShare: 100,
+        currency: zeroAddress,
+      });
+
+      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return throw error when call registerCommercialRemixPIL given request fail", async () => {
@@ -449,7 +474,7 @@ describe("Test LicenseClient", () => {
 
       try {
         await licenseClient.registerCommercialRemixPIL({
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           commercialRevShare: 100,
           currency: mockAddress,
         });
@@ -471,7 +496,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: mockAddress,
         txOptions: {

@@ -29,7 +29,7 @@ export type DerivativeDataInput = {
    * The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
    * @default 0
    */
-  maxMintingFee?: bigint | string | number;
+  maxMintingFee?: TokenAmountInput;
   /**
    *  The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
    * @default 100_000_000
@@ -77,7 +77,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   /** The IDs of the license tokens. */
   licenseTokenIds: string[] | bigint[] | number[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: TokenAmountInput;
+  maxRts?: number | string;
   txOptions?: TxOptions;
 };
 
@@ -107,7 +107,7 @@ export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInpu
    * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
    *   is automatically configured as the {@link LicensingConfigInput.licensingHook}
    */
-  maxLicenseTokens?: number | bigint;
+  maxLicenseTokens?: TokenAmountInput;
 };
 
 export type LicenseTermsData = Omit<
@@ -245,7 +245,7 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: TokenAmountInput;
+  maxRts: number | string;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
    * @default true
@@ -260,7 +260,7 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: string[] | bigint[] | number[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: TokenAmountInput;
+  maxRts: number | string;
   /**
    * The deadline for the signature in seconds.
    * @default 1000

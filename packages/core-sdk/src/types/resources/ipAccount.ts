@@ -35,7 +35,7 @@ export type IPAccountExecuteWithSigRequest = {
   /** The signature of the transaction, EIP-712 encoded. The helper method `getPermissionSignature` supports generating the signature. */
   signature: Address;
   /** The amount of IP to send. */
-  value?: number | bigint | string;
+  value?: TokenAmountInput;
   txOptions?: TxOptions;
 };
 

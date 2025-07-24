@@ -71,14 +71,14 @@ export type LicenseTermsInput = Omit<
   | "royaltyPolicy"
 > & {
   /** The default minting fee to be paid when minting a license. */
-  defaultMintingFee: bigint | string | number;
+  defaultMintingFee: TokenAmountInput;
   /** The expiration period of the license. */
   expiration: bigint | string | number;
   /** The maximum revenue that can be generated from the commercial use of the work. */
-  commercialRevCeiling: bigint | string | number;
+  commercialRevCeiling: TokenAmountInput;
   /** The maximum revenue that can be generated from the derivative use of the work. */
-  derivativeRevCeiling: bigint | string | number;
-  /**
+  derivativeRevCeiling: TokenAmountInput;
+    /**
    * The address of the royalty policy contract.
    * @default LAP
    */
@@ -99,7 +99,7 @@ export type RegisterPILResponse = {
 
 export type RegisterCommercialUsePILRequest = {
   /** The fee to be paid when minting a license. */
-  defaultMintingFee: string | number | bigint;
+  defaultMintingFee: TokenAmountInput;
   /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
   /**
@@ -112,7 +112,7 @@ export type RegisterCommercialUsePILRequest = {
 
 export type RegisterCommercialRemixPILRequest = {
   /** The fee to be paid when minting a license. */
-  defaultMintingFee: string | number | bigint;
+  defaultMintingFee: TokenAmountInput;
   /**
    * Percentage of revenue that must be shared with the licensor.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
@@ -172,7 +172,7 @@ export type MintLicenseTokensRequest = {
    * The amount of license tokens to mint.
    * @default 1
    */
-  amount?: number | string | bigint;
+  amount?: TokenAmountInput;
   /** The address of the receiver. */
   receiver?: Address;
 } & WithTxOptions &
@@ -240,5 +240,5 @@ export type GetLicensingConfigRequest = {
 export type SetMaxLicenseTokensRequest = GetLicensingConfigRequest &
   WithTxOptions & {
     /** The total license token limit, 0 means no limit */
-    maxLicenseTokens: bigint | number;
+    maxLicenseTokens: TokenAmountInput;
   };
