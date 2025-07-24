@@ -1,7 +1,7 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
-import { LicensingConfigInput } from "../common";
+import { LicensingConfigInput, TokenAmountInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 import { RoyaltyPolicyInput } from "./royalty";
 
@@ -165,7 +165,7 @@ export type MintLicenseTokensRequest = {
    */
   licenseTemplate?: Address;
   /** The maximum minting fee that the caller is willing to pay. if set to 0 then no limit. */
-  maxMintingFee: bigint | string | number;
+  maxMintingFee: TokenAmountInput;
   /** The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%). */
   maxRevenueShare: number | string;
   /**
@@ -203,7 +203,7 @@ export type PredictMintingLicenseFeeRequest = {
   licensorIpId: Address;
   licenseTermsId: LicenseTermsId;
   /** The amount of license tokens to mint. */
-  amount: string | number | bigint;
+  amount: TokenAmountInput;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.

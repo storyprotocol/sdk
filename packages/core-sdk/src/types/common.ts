@@ -23,7 +23,7 @@ export type LicensingConfigInput = {
   /** Whether the licensing configuration is active. If false, the configuration is ignored. */
   isSet: boolean;
   /** The minting fee to be paid when minting license tokens. */
-  mintingFee: bigint | string | number;
+  mintingFee: TokenAmountInput;
   /**
    * The licensingHook is an address to a smart contract that implements the `ILicensingHook` interface.
    * This contract's `beforeMintLicenseTokens` function is executed before a user mints a License Token,

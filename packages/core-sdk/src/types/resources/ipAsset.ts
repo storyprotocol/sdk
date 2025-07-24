@@ -16,7 +16,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
 } from "../../abi/generated";
-import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
+import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput, TokenAmountInput } from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
 import { Erc20Spender } from "../utils/wip";
@@ -77,7 +77,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   /** The IDs of the license tokens. */
   licenseTokenIds: string[] | bigint[] | number[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number | string;
+  maxRts: TokenAmountInput;
   txOptions?: TxOptions;
 };
 
@@ -245,7 +245,7 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number | string;
+  maxRts: TokenAmountInput;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
    * @default true
@@ -260,7 +260,7 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: string[] | bigint[] | number[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number | string;
+  maxRts: TokenAmountInput;
   /**
    * The deadline for the signature in seconds.
    * @default 1000

@@ -44,3 +44,7 @@ yarn-error.log*
 
 # mocha test report
 /packages/core-sdk/mochawesome-report/
+
+# yalc
+/packages/core-sdk/yalc.lock
+/packages/core-sdk/.yalc
