@@ -105,7 +105,8 @@ import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
+import { getRevenueShare, getRoyaltyPolicyAddress } from "../utils/licenseTermsHelper";
+import { PILFlavor } from "../utils/pilFlavor";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
   getCalculatedDeadline,
@@ -515,11 +516,7 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      const { licenseTerms } = await validateLicenseTermsData(
-        request.licenseTermsData,
-        this.rpcClient,
-        this.chainId,
-      );
+      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
 
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
@@ -608,10 +605,13 @@ export class IPAssetClient {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
         for (let i = 0; i < licenseTermsData.length; i++) {
-          const licenseTerm = await validateLicenseTerms(
-            licenseTermsData[i].terms,
-            this.rpcClient,
-          );
+          const licenseTerm = PILFlavor.validateLicenseTerms({
+            ...licenseTermsData[i].terms,
+            royaltyPolicy: getRoyaltyPolicyAddress(
+              licenseTermsData[i].terms.royaltyPolicy,
+              this.chainId,
+            ),
+          });
           licenseTerms.push(licenseTerm);
         }
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
@@ -655,11 +655,7 @@ export class IPAssetClient {
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
-      const { licenseTerms } = await validateLicenseTermsData(
-        request.licenseTermsData,
-        this.rpcClient,
-        this.chainId,
-      );
+      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest>(
           {
@@ -891,9 +887,8 @@ export class IPAssetClient {
       if (!isRegistered) {
         throw new Error(`The IP with id ${ipId} is not registered.`);
       }
-      const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
+      const { licenseTerms, licenseTermsData } = validateLicenseTermsData(
         request.licenseTermsData,
-        this.rpcClient,
         this.chainId,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
@@ -1082,11 +1077,7 @@ export class IPAssetClient {
   ): Promise<RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
     try {
       const { royaltyShares, totalAmount } = getRoyaltyShares(request.royaltyShares);
-      const { licenseTerms } = await validateLicenseTermsData(
-        request.licenseTermsData,
-        this.rpcClient,
-        this.chainId,
-      );
+      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipIdAddress = await getIpIdAddress({
         nftContract: validateAddress(request.nftContract),
@@ -1248,11 +1239,7 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
     try {
-      const { licenseTerms } = await validateLicenseTermsData(
-        request.licenseTermsData,
-        this.rpcClient,
-        this.chainId,
-      );
+      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
       const { transformRequest } =
         await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest>(
           {

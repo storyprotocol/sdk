@@ -22,7 +22,8 @@ import {
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
 import { Erc20Spender } from "../../types/utils/wip";
-import { getRevenueShare, validateLicenseTerms } from "../licenseTermsHelper";
+import { getRevenueShare, getRoyaltyPolicyAddress } from "../licenseTermsHelper";
+import { PILFlavor } from "../pilFlavor";
 import { getDeadline } from "../sign";
 import { chain, validateAddress } from "../utils";
 import { validateLicenseConfig } from "../validateLicenseConfig";
@@ -35,20 +36,22 @@ export const getPublicMinting = async (
   return await spgNftContractImpl.publicMinting();
 };
 
-export const validateLicenseTermsData = async (
+export const validateLicenseTermsData = (
   licenseTermsData: LicenseTermsDataInput[],
-  rpcClient: PublicClient,
   chainId: ChainIds,
-): Promise<{
+): {
   licenseTerms: LicenseTerms[];
   licenseTermsData: LicenseTermsData[];
   maxLicenseTokens: bigint[];
-}> => {
+} => {
   const licenseTerms: LicenseTerms[] = [];
   const processedLicenseTermsData: LicenseTermsData[] = [];
   const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
-    const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, rpcClient);
+    const licenseTerm = PILFlavor.validateLicenseTerms({
+      ...licenseTermsData[i].terms,
+      royaltyPolicy: getRoyaltyPolicyAddress(licenseTermsData[i].terms.royaltyPolicy, chainId),
+    });
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
     if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
       throw new Error("A royalty policy must be provided when the minting fee is greater than 0.");

@@ -128,9 +128,8 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
   const derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
 
   if ("licenseTermsData" in request) {
-    const { licenseTermsData, maxLicenseTokens } = await validateLicenseTermsData(
+    const { licenseTermsData, maxLicenseTokens } = validateLicenseTermsData(
       request.licenseTermsData,
-      rpcClient,
       chainId,
     );
     const requestWithTerms = { ...baseRequest, licenseTermsData };
@@ -495,9 +494,8 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
     allowDuplicates: request.allowDuplicates ?? true,
   };
   if ("licenseTermsData" in request) {
-    const { licenseTermsData, maxLicenseTokens } = await validateLicenseTermsData(
+    const { licenseTermsData, maxLicenseTokens } = validateLicenseTermsData(
       request.licenseTermsData as LicenseTermsDataInput[],
-      rpcClient,
       chainId,
     );
     const requestWithTerms = { ...baseRequest, licenseTermsData };

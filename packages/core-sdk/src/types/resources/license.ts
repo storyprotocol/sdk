@@ -71,7 +71,11 @@ export type LicenseTerms = {
 
 export type LicenseTermsInput = Omit<
   LicenseTerms,
-  "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
+  | "defaultMintingFee"
+  | "expiration"
+  | "commercialRevCeiling"
+  | "derivativeRevCeiling"
+  | "royaltyPolicy"
 > & {
   /** The default minting fee to be paid when minting a license. */
   defaultMintingFee: bigint | string | number;
@@ -85,7 +89,7 @@ export type LicenseTermsInput = Omit<
    * The address of the royalty policy contract.
    * @default LAP
    */
-  royaltyPolicyAddress?: RoyaltyPolicyType;
+  royaltyPolicy?: RoyaltyPolicyType;
 };
 
 export type RegisterPILTermsRequest = LicenseTermsInput & {
@@ -107,9 +111,9 @@ export type RegisterCommercialUsePILRequest = {
   currency: Address;
   /**
    * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   * @default LAP
    */
-  royaltyPolicyAddress?: Address;
+  royaltyPolicy?: RoyaltyPolicyType;
   txOptions?: TxOptions;
 };
 
@@ -125,9 +129,9 @@ export type RegisterCommercialRemixPILRequest = {
   currency: Address;
   /**
    * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   * @default LAP
    */
-  royaltyPolicyAddress?: Address;
+  royaltyPolicy?: RoyaltyPolicyType;
   txOptions?: TxOptions;
 };
 
@@ -136,9 +140,9 @@ export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
   currency: Address;
   /**
    * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   * @default LAP
    */
-  royaltyPolicyAddress?: Address;
+  royaltyPolicy?: RoyaltyPolicyType;
 };
 
 export type AttachLicenseTermsRequest = {
