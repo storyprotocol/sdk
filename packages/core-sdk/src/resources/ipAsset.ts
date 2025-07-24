@@ -608,10 +608,7 @@ export class IPAssetClient {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
         for (let i = 0; i < licenseTermsData.length; i++) {
-          const licenseTerm = await validateLicenseTerms(
-            licenseTermsData[i].terms,
-            this.rpcClient,
-          );
+          const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, this.rpcClient);
           licenseTerms.push(licenseTerm);
         }
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
