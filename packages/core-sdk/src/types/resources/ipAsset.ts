@@ -16,7 +16,12 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
 } from "../../abi/generated";
-import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput, TokenAmountInput } from "../common";
+import {
+  IpMetadataAndTxOptions,
+  LicensingConfig,
+  LicensingConfigInput,
+  TokenAmountInput,
+} from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
 import { Erc20Spender } from "../utils/wip";

@@ -55,7 +55,7 @@ describe("Royalty Functions", () => {
 
   const getCommercialPolicyId = async (): Promise<bigint> => {
     const response = await client.license.registerCommercialRemixPIL({
-      defaultMintingFee: "100000",
+      defaultMintingFee: 100000n,
       currency: erc20Address[aeneid],
       commercialRevShare: 10,
     });
@@ -88,7 +88,7 @@ describe("Royalty Functions", () => {
       childIpId: childIpId,
       parentIpIds: [parentIpId],
       licenseTermsIds: [licenseTermsId],
-      maxMintingFee: "0",
+      maxMintingFee: 0n,
       maxRts: "0",
       maxRevenueShare: "0",
     });

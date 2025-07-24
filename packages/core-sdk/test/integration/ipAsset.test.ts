@@ -112,7 +112,7 @@ describe("IP Asset Functions", () => {
         childIpId: childIpId,
         parentIpIds: [parentIpId],
         licenseTermsIds: [noCommercialLicenseTermsId],
-        maxMintingFee: "0",
+        maxMintingFee: 0n,
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "0",
       });
@@ -146,7 +146,7 @@ describe("IP Asset Functions", () => {
         childIpId: childIpId2,
         parentIpIds: [commercialParentIpId],
         licenseTermsIds: [licenseResponse.licenseTermsId!],
-        maxMintingFee: "100",
+        maxMintingFee: 100n,
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "100",
       });
@@ -197,7 +197,7 @@ describe("IP Asset Functions", () => {
         childIpId: newChildIpId,
         parentIpIds: [parentIpId1, parentIpId2],
         licenseTermsIds: [noCommercialLicenseTermsId, noCommercialLicenseTermsId],
-        maxMintingFee: "0",
+        maxMintingFee: 0n,
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: "0",
       });
@@ -217,7 +217,7 @@ describe("IP Asset Functions", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: noCommercialLicenseTermsId,
         licensorIpId: parentIpId,
-        maxMintingFee: "0",
+        maxMintingFee: 0n,
         maxRevenueShare: 1,
       });
 
@@ -332,7 +332,7 @@ describe("IP Asset Functions", () => {
         derivData: {
           parentIpIds: [parentIpId!],
           licenseTermsIds: [licenseTermsId!],
-          maxMintingFee: "0",
+          maxMintingFee: 0n,
           maxRts: 5 * 10 ** 6,
           maxRevenueShare: "0",
         },
@@ -680,7 +680,7 @@ describe("IP Asset Functions", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: licenseTermsId,
         licensorIpId: parentIpId,
-        maxMintingFee: "0",
+        maxMintingFee: 0n,
         maxRevenueShare: 100,
       });
 
@@ -710,7 +710,7 @@ describe("IP Asset Functions", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: licenseTermsId,
         licensorIpId: parentIpId,
-        maxMintingFee: "0",
+        maxMintingFee: 0n,
         maxRevenueShare: 100,
       });
 
@@ -1001,7 +1001,7 @@ describe("IP Asset Functions", () => {
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [licenseTermsId],
-            maxMintingFee: "0",
+            maxMintingFee: 0n,
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: "0",
           },
@@ -1582,7 +1582,7 @@ describe("IP Asset Functions", () => {
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: licenseTermsId,
         licensorIpId: parentIpId,
-        maxMintingFee: "0",
+        maxMintingFee: 0n,
         maxRevenueShare: 100,
       });
       const licenseTokenId = mintLicenseTokensResult.licenseTokenIds![0];
@@ -1758,7 +1758,7 @@ describe("IP Asset Functions", () => {
             childIpId: childIpId,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
-            maxMintingFee: "0",
+            maxMintingFee: 0n,
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: "0",
           },
@@ -1766,7 +1766,7 @@ describe("IP Asset Functions", () => {
             childIpId: childIpId2,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
-            maxMintingFee: "0",
+            maxMintingFee: 0n,
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: "0",
           },
@@ -1902,7 +1902,7 @@ describe("IP Asset Functions", () => {
             derivData: {
               parentIpIds: [parentIpId!],
               licenseTermsIds: [noCommercialLicenseTermsId!],
-              maxMintingFee: "0",
+              maxMintingFee: 0n,
               maxRts: 5 * 10 ** 6,
               maxRevenueShare: "0",
             },
@@ -1912,7 +1912,7 @@ describe("IP Asset Functions", () => {
             derivData: {
               parentIpIds: [parentIpId!],
               licenseTermsIds: [noCommercialLicenseTermsId!],
-              maxMintingFee: "0",
+              maxMintingFee: 0n,
               maxRts: 5 * 10 ** 6,
               maxRevenueShare: "0",
             },
@@ -2031,7 +2031,7 @@ describe("IP Asset Functions", () => {
         const mintLicenseTokensResult = await client.license.mintLicenseTokens({
           licenseTermsId: noCommercialLicenseTermsId,
           licensorIpId: parentIpId,
-          maxMintingFee: "0",
+          maxMintingFee: 0n,
           maxRevenueShare: 1,
         });
 

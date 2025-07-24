@@ -50,8 +50,8 @@ describe("License Functions", () => {
         derivativesReciprocal: false,
         uri: "",
         expiration: "",
-        commercialRevCeiling: "",
-        derivativeRevCeiling: "",
+        commercialRevCeiling: 0n,
+        derivativeRevCeiling: 0n,
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
@@ -61,7 +61,7 @@ describe("License Functions", () => {
     });
     it("should register license with commercial use", async () => {
       const result = await client.license.registerCommercialUsePIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1n,
         currency: WIP_TOKEN_ADDRESS,
       });
       expect(result.licenseTermsId).to.be.a("bigint");
@@ -69,7 +69,7 @@ describe("License Functions", () => {
 
     it("should register license with commercial Remix use", async () => {
       const result = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1n,
         commercialRevShare: 100,
         currency: WIP_TOKEN_ADDRESS,
       });
@@ -134,7 +134,7 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
-        maxMintingFee: "1",
+        maxMintingFee: 1n,
         maxRevenueShare: "100",
       });
       expect(result.txHash).to.be.a("string");
@@ -159,7 +159,7 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipIdB,
-        maxMintingFee: "1",
+        maxMintingFee: 1n,
         maxRevenueShare: "100",
       });
       expect(result.txHash).to.be.a("string");
