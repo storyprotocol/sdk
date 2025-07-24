@@ -113,7 +113,10 @@ export class PILFlavor {
    * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#non-commercial-social-remixing | non commercial social remixing}
    */
   static nonCommercialSocialRemixing = (override?: Partial<LicenseTerms>): LicenseTerms => {
-    return { ...this._nonComSocialRemixingPIL, ...override };
+    return this.validateLicenseTerms({
+      ...this._nonComSocialRemixingPIL,
+      ...override,
+    });
   };
 
   /**
@@ -129,9 +132,9 @@ export class PILFlavor {
   }: CommercialUseRequest): LicenseTerms => {
     return this.validateLicenseTerms({
       ...this._commercialUse,
-      defaultMintingFee: BigInt(defaultMintingFee),
+      defaultMintingFee,
+      currency,
       ...override,
-      currency: override?.currency || currency,
       royaltyPolicy: this.getRoyaltyPolicyAddress(
         override?.royaltyPolicyAddress || royaltyPolicyAddress,
         chainId,
@@ -154,9 +157,9 @@ export class PILFlavor {
     return this.validateLicenseTerms({
       ...this._commercialRemix,
       commercialRevShare,
-      defaultMintingFee: BigInt(defaultMintingFee),
+      defaultMintingFee,
+      currency,
       ...override,
-      currency: override?.currency || currency,
       royaltyPolicy: this.getRoyaltyPolicyAddress(
         override?.royaltyPolicyAddress || royaltyPolicyAddress,
         chainId,
@@ -176,8 +179,8 @@ export class PILFlavor {
   }: CreativeCommonsAttributionRequest): LicenseTerms => {
     return this.validateLicenseTerms({
       ...this._creativeCommonsAttribution,
+      currency,
       ...override,
-      currency: override?.currency || currency,
       royaltyPolicy: this.getRoyaltyPolicyAddress(
         override?.royaltyPolicyAddress || royaltyPolicyAddress,
         chainId,
@@ -207,7 +210,6 @@ export class PILFlavor {
 
   private static validateLicenseTerms = (params: LicenseTermsInput): LicenseTerms => {
     const { royaltyPolicy, currency } = params;
-
     // Validate royalty policy and currency relationship
     if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
       throw new PILFlavorError("Royalty policy requires currency token.");
@@ -254,7 +256,6 @@ export class PILFlavor {
       throw new PILFlavorError(`CommercialRevShare should be between ${0} and ${100}.`);
     }
 
-    // Convert percentage to basis points (1% = 1,000,000)
     terms.commercialRevShare = Math.round((terms.commercialRevShare / 100) * 1000000);
   };
 

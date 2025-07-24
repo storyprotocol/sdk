@@ -1,9 +1,10 @@
 import { expect } from "chai";
+import { zeroAddress } from "viem";
 
 import { PILFlavor } from "../../../src/utils/pilFlavor";
 import { mockAddress } from "../mockData";
 
-describe.only("PILFlavor", () => {
+describe("PILFlavor", () => {
   describe("nonCommercialSocialRemixing", () => {
     it("should get non commercial social remixing PIL", () => {
       const pil = PILFlavor.nonCommercialSocialRemixing();
@@ -13,9 +14,9 @@ describe.only("PILFlavor", () => {
         commercialRevCeiling: 0n,
         commercialRevShare: 0,
         commercialUse: false,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
-        currency: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        currency: zeroAddress,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
         derivativesApproval: false,
@@ -23,35 +24,34 @@ describe.only("PILFlavor", () => {
         derivativesReciprocal: true,
         expiration: 0n,
         defaultMintingFee: 0n,
-        royaltyPolicy: "0x0000000000000000000000000000000000000000",
+        royaltyPolicy: zeroAddress,
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/NCSR.json",
       });
     });
 
     it("should be override by custom terms", () => {
       const pil = PILFlavor.nonCommercialSocialRemixing({
-        commercialAttribution: true,
-        commercialRevCeiling: 100n,
-        commercialRevShare: 10,
+        derivativesAttribution: false,
+        derivativesReciprocal: false,
       });
 
       expect(pil).deep.equal({
         transferable: true,
-        commercialAttribution: true,
-        commercialRevCeiling: 100n,
-        commercialRevShare: 10,
+        commercialAttribution: false,
+        commercialRevCeiling: 0n,
+        commercialRevShare: 0,
         commercialUse: false,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
-        currency: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        currency: zeroAddress,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
         derivativesApproval: false,
-        derivativesAttribution: true,
-        derivativesReciprocal: true,
+        derivativesAttribution: false,
+        derivativesReciprocal: false,
         expiration: 0n,
         defaultMintingFee: 0n,
-        royaltyPolicy: "0x0000000000000000000000000000000000000000",
+        royaltyPolicy: zeroAddress,
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/NCSR.json",
       });
     });
@@ -68,8 +68,8 @@ describe.only("PILFlavor", () => {
         commercialRevCeiling: 0n,
         commercialRevShare: 0,
         commercialUse: true,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
         currency: mockAddress,
         derivativeRevCeiling: 0n,
         derivativesAllowed: false,
@@ -86,7 +86,7 @@ describe.only("PILFlavor", () => {
     it("should override by custom terms", () => {
       const pil = PILFlavor.commercialUse({
         defaultMintingFee: 10n,
-        currency: "0x0000000000000000000000000000000000000000",
+        currency: zeroAddress,
         chainId: "mainnet",
         royaltyPolicyAddress: "LRP",
         override: {
@@ -101,8 +101,8 @@ describe.only("PILFlavor", () => {
         commercialRevCeiling: 0n,
         commercialRevShare: 100000,
         commercialUse: true,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
         currency: mockAddress,
         derivativeRevCeiling: 0n,
         derivativesAllowed: false,
@@ -117,6 +117,7 @@ describe.only("PILFlavor", () => {
       });
     });
   });
+
   describe("commercialRemix", () => {
     it("should get commercial remix PIL", () => {
       const pil = PILFlavor.commercialRemix({
@@ -129,8 +130,8 @@ describe.only("PILFlavor", () => {
         commercialRevCeiling: 0n,
         commercialRevShare: 100000,
         commercialUse: true,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
         currency: mockAddress,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
@@ -148,14 +149,14 @@ describe.only("PILFlavor", () => {
     it("should override by custom terms", () => {
       const pil = PILFlavor.commercialRemix({
         defaultMintingFee: 100n,
-        currency: "0x0000000000000000000000000000000000000000",
+        currency: zeroAddress,
         commercialRevShare: 10,
         chainId: "mainnet",
         royaltyPolicyAddress: "LRP",
         override: {
           commercialRevShare: 1,
           defaultMintingFee: 800,
-          royaltyPolicyAddress: mockAddress,
+          royaltyPolicyAddress: "LRP",
           currency: mockAddress,
         },
       });
@@ -164,8 +165,8 @@ describe.only("PILFlavor", () => {
         commercialRevCeiling: 0n,
         commercialRevShare: 10000,
         commercialUse: true,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
         currency: mockAddress,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
@@ -174,7 +175,7 @@ describe.only("PILFlavor", () => {
         derivativesReciprocal: true,
         expiration: 0n,
         defaultMintingFee: 800n,
-        royaltyPolicy: mockAddress,
+        royaltyPolicy: "0x9156e603C949481883B1d3355c6f1132D191fC41",
         transferable: true,
         uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
       });
@@ -194,8 +195,8 @@ describe.only("PILFlavor", () => {
         expiration: 0n,
         commercialUse: true,
         commercialAttribution: true,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
         commercialRevShare: 0,
         commercialRevCeiling: 0n,
         derivativesAllowed: true,
@@ -226,8 +227,8 @@ describe.only("PILFlavor", () => {
         expiration: 0n,
         commercialUse: true,
         commercialAttribution: true,
-        commercializerChecker: "0x0000000000000000000000000000000000000000",
-        commercializerCheckerData: "0x0000000000000000000000000000000000000000",
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
         commercialRevShare: 1000000,
         commercialRevCeiling: 0n,
         derivativesAllowed: true,
@@ -237,6 +238,344 @@ describe.only("PILFlavor", () => {
         derivativeRevCeiling: 0n,
         currency: mockAddress,
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
+      });
+    });
+  });
+
+  describe("validate license terms", () => {
+    describe("royalty policy and currency validation", () => {
+      it("should throw error when royaltyPolicy is not zeroAddress but currency is zeroAddress", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 100n,
+            currency: zeroAddress,
+            royaltyPolicyAddress: mockAddress,
+          });
+        }).to.throw("Royalty policy requires currency token.");
+      });
+
+      it("should not throw error when both royaltyPolicy and currency are valid", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 100n,
+            currency: mockAddress,
+            royaltyPolicyAddress: "LAP",
+          });
+        }).to.not.throw();
+      });
+
+      it("should not throw error when both royaltyPolicy and currency are zeroAddress", () => {
+        expect(() => {
+          PILFlavor.nonCommercialSocialRemixing({
+            royaltyPolicy: zeroAddress,
+            currency: zeroAddress,
+          });
+        }).to.not.throw();
+      });
+    });
+
+    describe("defaultMintingFee validation", () => {
+      it("should throw error when defaultMintingFee is negative", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: -100n,
+            currency: mockAddress,
+          });
+        }).to.throw("DefaultMintingFee should be greater than or equal to 0.");
+      });
+
+      it("should not throw error when defaultMintingFee is 0", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+          });
+        }).to.not.throw();
+      });
+
+      it("should not throw error when defaultMintingFee > 0 and royaltyPolicy is set to zeroAddress", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 100n,
+            currency: mockAddress,
+            royaltyPolicyAddress: zeroAddress,
+          });
+        }).to.throw("Royalty policy is required when defaultMintingFee is greater than 0.");
+      });
+    });
+
+    describe("commercial use validation", () => {
+      it("should throw error when commercialUse is false but commercialAttribution is true", () => {
+        expect(() => {
+          PILFlavor.commercialRemix({
+            commercialRevShare: 0,
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialUse: false,
+              commercialAttribution: true,
+            },
+          });
+        }).to.throw("Cannot add commercialAttribution when commercial use is disabled.");
+      });
+
+      it("should throw error when commercialUse is false but commercializerChecker is set", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialUse: false,
+              commercialAttribution: false,
+              commercializerChecker: mockAddress,
+            },
+          });
+        }).to.throw("Cannot add commercializerChecker when commercial use is disabled.");
+      });
+
+      it("should throw error when commercialUse is false but commercialRevShare > 0", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialUse: false,
+              commercialAttribution: false,
+              commercialRevShare: 10,
+            },
+          });
+        }).to.throw("Cannot add commercialRevShare when commercial use is disabled.");
+      });
+
+      it("should throw error when commercialUse is false but commercialRevCeiling > 0", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialUse: false,
+              commercialAttribution: false,
+              commercialRevCeiling: 100n,
+            },
+          });
+        }).to.throw("Cannot add commercialRevCeiling when commercial use is disabled.");
+      });
+
+      it("should throw error when commercialUse is false but derivativeRevCeiling > 0", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialUse: false,
+              commercialAttribution: false,
+              derivativeRevCeiling: 100n,
+            },
+          });
+        }).to.throw("Cannot add derivativeRevCeiling when commercial use is disabled.");
+      });
+
+      it("should throw error when commercialUse is false but royaltyPolicy is set", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialUse: false,
+              commercialAttribution: false,
+              royaltyPolicy: mockAddress,
+            },
+          });
+        }).to.throw("Cannot add royaltyPolicy when commercial use is disabled.");
+      });
+
+      it("should not throw error when commercialUse is true and royaltyPolicy is set to zeroAddress", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            royaltyPolicyAddress: zeroAddress,
+          });
+        }).to.throw("Royalty policy is required when commercial use is enabled.");
+      });
+    });
+
+    describe("derivatives validation", () => {
+      it("should throw error when derivativesAllowed is false but derivativesAttribution is true", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              derivativesAttribution: true,
+            },
+          });
+        }).to.throw("Cannot add derivativesAttribution when derivative use is disabled.");
+      });
+
+      it("should throw error when derivativesAllowed is false but derivativesApproval is true", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              derivativesApproval: true,
+            },
+          });
+        }).to.throw("Cannot add derivativesApproval when derivative use is disabled.");
+      });
+
+      it("should throw error when derivativesAllowed is false but derivativesReciprocal is true", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              derivativesReciprocal: true,
+            },
+          });
+        }).to.throw("Cannot add derivativesReciprocal when derivative use is disabled.");
+      });
+
+      it("should throw error when derivativesAllowed is false but derivativeRevCeiling > 0", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              derivativeRevCeiling: 100n,
+            },
+          });
+        }).to.throw("Cannot add derivativeRevCeiling when derivative use is disabled.");
+      });
+
+      it("should not throw error when derivativesAllowed is true and derivative fields are set", () => {
+        expect(() => {
+          PILFlavor.commercialRemix({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            commercialRevShare: 0,
+            override: {
+              derivativesAttribution: true,
+              derivativesReciprocal: true,
+              derivativeRevCeiling: 100n,
+              derivativesApproval: true,
+            },
+          });
+        }).to.not.throw();
+      });
+    });
+
+    describe("commercialRevShare validation", () => {
+      it("should throw error when commercialRevShare is negative", () => {
+        expect(() => {
+          PILFlavor.commercialRemix({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            commercialRevShare: -1,
+          });
+        }).to.throw("CommercialRevShare should be between 0 and 100.");
+      });
+
+      it("should throw error when commercialRevShare is greater than 100", () => {
+        expect(() => {
+          PILFlavor.commercialRemix({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            commercialRevShare: 101,
+          });
+        }).to.throw("CommercialRevShare should be between 0 and 100.");
+      });
+
+      it("should throw error when commercialRevShare is NaN", () => {
+        expect(() => {
+          PILFlavor.commercialRemix({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            commercialRevShare: NaN,
+          });
+        }).to.throw("CommercialRevShare must be a valid number.");
+      });
+
+      it("should convert 0% to 0 basis points", () => {
+        const pil = PILFlavor.commercialRemix({
+          defaultMintingFee: 0n,
+          currency: mockAddress,
+          commercialRevShare: 0,
+        });
+        expect(pil.commercialRevShare).to.equal(0);
+      });
+
+      it("should convert 1% to 10000 basis points", () => {
+        const pil = PILFlavor.commercialRemix({
+          defaultMintingFee: 0n,
+          currency: mockAddress,
+          commercialRevShare: 1,
+        });
+        expect(pil.commercialRevShare).to.equal(10000);
+      });
+
+      it("should convert 100% to 1000000 basis points", () => {
+        const pil = PILFlavor.commercialRemix({
+          defaultMintingFee: 0n,
+          currency: mockAddress,
+          commercialRevShare: 100,
+        });
+        expect(pil.commercialRevShare).to.equal(1000000);
+      });
+
+      it("should round fractional percentages correctly", () => {
+        const pil = PILFlavor.commercialRemix({
+          defaultMintingFee: 0n,
+          currency: mockAddress,
+          commercialRevShare: 33.33,
+        });
+        expect(pil.commercialRevShare).to.equal(333300);
+      });
+    });
+
+    describe("numeric field normalization", () => {
+      it("should normalize defaultMintingFee to BigInt", () => {
+        const pil = PILFlavor.commercialUse({
+          defaultMintingFee: 100,
+          currency: mockAddress,
+        });
+        expect(pil.defaultMintingFee).to.equal(100n);
+      });
+
+      it("should normalize expiration to BigInt", () => {
+        const pil = PILFlavor.commercialUse({
+          defaultMintingFee: 0n,
+          currency: mockAddress,
+          override: {
+            expiration: 1234567890,
+          },
+        });
+        expect(pil.expiration).to.equal(1234567890n);
+      });
+
+      it("should normalize commercialRevCeiling to BigInt", () => {
+        const pil = PILFlavor.commercialRemix({
+          defaultMintingFee: 0n,
+          currency: mockAddress,
+          commercialRevShare: 0,
+          override: {
+            commercialRevCeiling: 1000000,
+          },
+        });
+        expect(pil.commercialRevCeiling).to.equal(1000000n);
+      });
+
+      it("should normalize derivativeRevCeiling to BigInt", () => {
+        const pil = PILFlavor.commercialRemix({
+          defaultMintingFee: 0n,
+          currency: mockAddress,
+          commercialRevShare: 0,
+          override: {
+            derivativeRevCeiling: 500000,
+          },
+        });
+        expect(pil.derivativeRevCeiling).to.equal(500000n);
       });
     });
   });
