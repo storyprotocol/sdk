@@ -1,13 +1,12 @@
 import { Address, zeroAddress } from "viem";
 
-import { chain } from "./utils";
-import { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "../abi/generated";
-import { SupportedChainIds } from "../types/config";
-import { LicenseTerms, LicenseTermsInput, RoyaltyPolicyType } from "../types/resources/license";
+import { getRoyaltyPolicyAddress } from "./licenseTermsHelper";
+import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
   CommercialRemixRequest,
   CommercialUseRequest,
   CreativeCommonsAttributionRequest,
+  NonCommercialSocialRemixingRequest,
 } from "../types/utils/pilFlavor";
 
 // PIL Document URIs
@@ -112,10 +111,14 @@ export class PILFlavor {
    * Gets the values to create a Non-Commercial Social Remixing licenseTerms flavor.
    * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#non-commercial-social-remixing | non commercial social remixing}
    */
-  static nonCommercialSocialRemixing = (override?: Partial<LicenseTerms>): LicenseTerms => {
+  public static nonCommercialSocialRemixing = (
+    request?: NonCommercialSocialRemixingRequest,
+  ): LicenseTerms => {
+    const { override, chainId } = request || {};
     return this.validateLicenseTerms({
       ...this._nonComSocialRemixingPIL,
       ...override,
+      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || zeroAddress, chainId),
     });
   };
 
@@ -123,10 +126,10 @@ export class PILFlavor {
    * Gets the values to create a Commercial Use licenseTerms flavor.
    * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#commercial-use | commercial use}
    */
-  static commercialUse = ({
+  public static commercialUse = ({
     defaultMintingFee,
     currency,
-    royaltyPolicyAddress,
+    royaltyPolicy,
     chainId,
     override,
   }: CommercialUseRequest): LicenseTerms => {
@@ -135,10 +138,7 @@ export class PILFlavor {
       defaultMintingFee,
       currency,
       ...override,
-      royaltyPolicy: this.getRoyaltyPolicyAddress(
-        override?.royaltyPolicyAddress || royaltyPolicyAddress,
-        chainId,
-      ),
+      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
     });
   };
 
@@ -146,9 +146,9 @@ export class PILFlavor {
    * Gets the values to create a Commercial Remixing licenseTerms flavor.
    * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#commercial-remix | commercial remix}
    */
-  static commercialRemix = ({
+  public static commercialRemix = ({
     defaultMintingFee,
-    royaltyPolicyAddress,
+    royaltyPolicy,
     currency,
     commercialRevShare,
     chainId,
@@ -160,10 +160,7 @@ export class PILFlavor {
       defaultMintingFee,
       currency,
       ...override,
-      royaltyPolicy: this.getRoyaltyPolicyAddress(
-        override?.royaltyPolicyAddress || royaltyPolicyAddress,
-        chainId,
-      ),
+      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
     });
   };
 
@@ -171,8 +168,8 @@ export class PILFlavor {
    * Gets the values to create a Creative Commons Attribution (CC-BY) licenseTerms flavor.
    * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#creative-commons-attribution | creative commons attribution}
    */
-  static creativeCommonsAttribution = ({
-    royaltyPolicyAddress,
+  public static creativeCommonsAttribution = ({
+    royaltyPolicy,
     currency,
     chainId,
     override,
@@ -181,43 +178,18 @@ export class PILFlavor {
       ...this._creativeCommonsAttribution,
       currency,
       ...override,
-      royaltyPolicy: this.getRoyaltyPolicyAddress(
-        override?.royaltyPolicyAddress || royaltyPolicyAddress,
-        chainId,
-      ),
+      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
     });
   };
 
-  private static getRoyaltyPolicyAddress = (
-    royaltyPolicyAddress?: RoyaltyPolicyType,
-    chainId?: SupportedChainIds,
-  ): Address => {
-    const transferredChainId = chain[chainId || "aeneid"];
-    let address: Address;
-    switch (royaltyPolicyAddress) {
-      case undefined:
-      case "LAP":
-        address = royaltyPolicyLapAddress[transferredChainId];
-        break;
-      case "LRP":
-        address = royaltyPolicyLrpAddress[transferredChainId];
-        break;
-      default:
-        address = royaltyPolicyAddress;
-    }
-    return address;
-  };
-
-  private static validateLicenseTerms = (params: LicenseTermsInput): LicenseTerms => {
+  public static validateLicenseTerms = (
+    params: Omit<LicenseTermsInput, "royaltyPolicy"> & { royaltyPolicy: Address },
+  ): LicenseTerms => {
     const { royaltyPolicy, currency } = params;
     // Validate royalty policy and currency relationship
     if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
       throw new PILFlavorError("Royalty policy requires currency token.");
     }
-    //In order compatibility with the previous version, we need to keep royaltyPolicyAddress in the params
-    //but we don't want to use it in the normalized object
-    delete params.royaltyPolicyAddress;
-    // Normalize numeric fields to BigInt
     const normalized: LicenseTerms = {
       ...params,
       defaultMintingFee: BigInt(params.defaultMintingFee),

@@ -31,8 +31,10 @@ describe("PILFlavor", () => {
 
     it("should be override by custom terms", () => {
       const pil = PILFlavor.nonCommercialSocialRemixing({
-        derivativesAttribution: false,
-        derivativesReciprocal: false,
+        override: {
+          derivativesAttribution: false,
+          derivativesReciprocal: false,
+        },
       });
 
       expect(pil).deep.equal({
@@ -88,11 +90,11 @@ describe("PILFlavor", () => {
         defaultMintingFee: 10n,
         currency: zeroAddress,
         chainId: "mainnet",
-        royaltyPolicyAddress: "LRP",
+        royaltyPolicy: "LRP",
         override: {
           commercialRevShare: 10,
           defaultMintingFee: 100,
-          royaltyPolicyAddress: "LAP",
+          royaltyPolicy: "LAP",
           currency: mockAddress,
         },
       });
@@ -152,11 +154,11 @@ describe("PILFlavor", () => {
         currency: zeroAddress,
         commercialRevShare: 10,
         chainId: "mainnet",
-        royaltyPolicyAddress: "LRP",
+        royaltyPolicy: "LRP",
         override: {
           commercialRevShare: 1,
           defaultMintingFee: 800,
-          royaltyPolicyAddress: "LRP",
+          royaltyPolicy: "LRP",
           currency: mockAddress,
         },
       });
@@ -185,7 +187,7 @@ describe("PILFlavor", () => {
   describe("creativeCommonsAttribution", () => {
     it("should get creative commons attribution PIL", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
-        royaltyPolicyAddress: "LAP",
+        royaltyPolicy: "LAP",
         currency: mockAddress,
       });
       expect(pil).deep.equal({
@@ -211,11 +213,11 @@ describe("PILFlavor", () => {
 
     it("should override by custom terms", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
-        royaltyPolicyAddress: "LAP",
+        royaltyPolicy: "LAP",
         currency: mockAddress,
         chainId: "mainnet",
         override: {
-          royaltyPolicyAddress: mockAddress,
+          royaltyPolicy: mockAddress,
           commercialRevShare: 100,
           currency: mockAddress,
         },
@@ -249,7 +251,7 @@ describe("PILFlavor", () => {
           PILFlavor.commercialUse({
             defaultMintingFee: 100n,
             currency: zeroAddress,
-            royaltyPolicyAddress: mockAddress,
+            royaltyPolicy: mockAddress,
           });
         }).to.throw("Royalty policy requires currency token.");
       });
@@ -259,7 +261,7 @@ describe("PILFlavor", () => {
           PILFlavor.commercialUse({
             defaultMintingFee: 100n,
             currency: mockAddress,
-            royaltyPolicyAddress: "LAP",
+            royaltyPolicy: "LAP",
           });
         }).to.not.throw();
       });
@@ -267,8 +269,10 @@ describe("PILFlavor", () => {
       it("should not throw error when both royaltyPolicy and currency are zeroAddress", () => {
         expect(() => {
           PILFlavor.nonCommercialSocialRemixing({
-            royaltyPolicy: zeroAddress,
-            currency: zeroAddress,
+            override: {
+              royaltyPolicy: zeroAddress,
+              currency: zeroAddress,
+            },
           });
         }).to.not.throw();
       });
@@ -298,7 +302,7 @@ describe("PILFlavor", () => {
           PILFlavor.commercialUse({
             defaultMintingFee: 100n,
             currency: mockAddress,
-            royaltyPolicyAddress: zeroAddress,
+            royaltyPolicy: zeroAddress,
           });
         }).to.throw("Royalty policy is required when defaultMintingFee is greater than 0.");
       });
@@ -394,7 +398,7 @@ describe("PILFlavor", () => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
             currency: mockAddress,
-            royaltyPolicyAddress: zeroAddress,
+            royaltyPolicy: zeroAddress,
           });
         }).to.throw("Royalty policy is required when commercial use is enabled.");
       });
