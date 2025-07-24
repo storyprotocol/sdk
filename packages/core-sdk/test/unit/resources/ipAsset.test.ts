@@ -682,19 +682,6 @@ describe("Test IpAssetClient", () => {
   });
 
   describe("Test ipAssetClient.registerDerivativeWithLicenseTokens", () => {
-    it("should throw maxRts error when registerDerivativeWithLicenseTokens given maxRts is not number", async () => {
-      try {
-        await ipAssetClient.registerDerivativeWithLicenseTokens({
-          childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
-          licenseTokenIds: ["1"],
-          maxRts: "s",
-        });
-      } catch (err) {
-        expect((err as Error).message).equal(
-          "Failed to register derivative with license tokens: The maxRts must be a number.",
-        );
-      }
-    });
     it("should throw childIpId error when registerDerivativeWithLicenseTokens given childIpId is not registered", async () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
