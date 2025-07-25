@@ -695,6 +695,7 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
+
     it("should throw childIpId error when registerDerivativeWithLicenseTokens given childIpId is not registered", async () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 

@@ -3,13 +3,13 @@ import { Address, PublicClient, zeroAddress } from "viem";
 import { validateAddress } from "./utils";
 import { RoyaltyModuleReadOnlyClient } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
-import { RevShareType } from "../types/common";
+import { RevShareType, TokenAmountInput } from "../types/common";
 import { LicenseTerms, LicenseTermsInput, PIL_TYPE } from "../types/resources/license";
 
 export const getLicenseTermByType = (
   type: PIL_TYPE,
   term?: {
-    defaultMintingFee?: string | number | bigint;
+    defaultMintingFee?: TokenAmountInput;
     currency?: Address;
     royaltyPolicyAddress: Address;
     commercialRevShare?: number;

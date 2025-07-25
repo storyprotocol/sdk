@@ -1,7 +1,7 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
-import { LicensingConfigInput } from "../common";
+import { LicensingConfigInput, TokenAmountInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 
 export type LicenseApiResponse = {
@@ -66,13 +66,13 @@ export type LicenseTermsInput = Omit<
   "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
 > & {
   /** The default minting fee to be paid when minting a license. */
-  defaultMintingFee: bigint | string | number;
+  defaultMintingFee: TokenAmountInput;
   /** The expiration period of the license. */
   expiration: bigint | string | number;
   /** The maximum revenue that can be generated from the commercial use of the work. */
-  commercialRevCeiling: bigint | string | number;
+  commercialRevCeiling: TokenAmountInput;
   /** The maximum revenue that can be generated from the derivative use of the work. */
-  derivativeRevCeiling: bigint | string | number;
+  derivativeRevCeiling: TokenAmountInput;
 };
 
 export type RegisterPILTermsRequest = LicenseTermsInput & {
@@ -89,7 +89,7 @@ export type RegisterPILResponse = {
 
 export type RegisterCommercialUsePILRequest = {
   /** The fee to be paid when minting a license. */
-  defaultMintingFee: string | number | bigint;
+  defaultMintingFee: TokenAmountInput;
   /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
   /**
@@ -102,7 +102,7 @@ export type RegisterCommercialUsePILRequest = {
 
 export type RegisterCommercialRemixPILRequest = {
   /** The fee to be paid when minting a license. */
-  defaultMintingFee: string | number | bigint;
+  defaultMintingFee: TokenAmountInput;
   /**
    * Percentage of revenue that must be shared with the licensor.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
@@ -155,14 +155,14 @@ export type MintLicenseTokensRequest = {
    */
   licenseTemplate?: Address;
   /** The maximum minting fee that the caller is willing to pay. if set to 0 then no limit. */
-  maxMintingFee: bigint | string | number;
+  maxMintingFee: TokenAmountInput;
   /** The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%). */
   maxRevenueShare: number | string;
   /**
    * The amount of license tokens to mint.
    * @default 1
    */
-  amount?: number | string | bigint;
+  amount?: TokenAmountInput;
   /** The address of the receiver. */
   receiver?: Address;
 } & WithTxOptions &
@@ -188,7 +188,7 @@ export type PredictMintingLicenseFeeRequest = {
   licensorIpId: Address;
   licenseTermsId: LicenseTermsId;
   /** The amount of license tokens to mint. */
-  amount: string | number | bigint;
+  amount: TokenAmountInput;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -225,5 +225,5 @@ export type GetLicensingConfigRequest = {
 export type SetMaxLicenseTokensRequest = GetLicensingConfigRequest &
   WithTxOptions & {
     /** The total license token limit, 0 means no limit */
-    maxLicenseTokens: bigint | number;
+    maxLicenseTokens: TokenAmountInput;
   };
