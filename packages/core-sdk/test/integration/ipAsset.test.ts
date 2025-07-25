@@ -1444,7 +1444,7 @@ describe("IP Asset Functions", () => {
     it("should successfully when call mint and register ip asset with pil terms with license terms max limit", async () => {
       const result = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         spgNftContract: spgNftContractWithPrivateMinting,
-         allowDuplicates: false,
+        allowDuplicates: false,
         licenseTermsData: [
           {
             terms: {

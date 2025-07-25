@@ -22,9 +22,8 @@ import {
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
 import { Erc20Spender } from "../../types/utils/wip";
-import { getRevenueShare } from "../licenseTermsHelper";
 import { PILFlavor } from "../pilFlavor";
-import { royaltyPolicyInputToAddress } from "../royalty";
+import { getRevenueShare, royaltyPolicyInputToAddress } from "../royalty";
 import { getDeadline } from "../sign";
 import { chain, validateAddress } from "../utils";
 import { validateLicenseConfig } from "../validateLicenseConfig";

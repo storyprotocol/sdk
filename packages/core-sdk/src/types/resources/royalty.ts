@@ -127,8 +127,8 @@ export type TransferClaimedTokensFromIpToWalletParams = {
  * - LRP: {@link https://docs.story.foundation/concepts/royalty-module/liquid-relative-percentage | Liquid Relative Percentage}
  */
 export enum NativeRoyaltyPolicy {
-  LAP = 0,
-  LRP,
+  LAP = "LAP",
+  LRP = "LRP",
 }
 
 /**

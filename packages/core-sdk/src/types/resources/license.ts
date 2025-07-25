@@ -5,8 +5,6 @@ import { LicensingConfigInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 import { RoyaltyPolicyInput } from "./royalty";
 
-
-
 export type LicenseApiResponse = {
   data: License;
 };
