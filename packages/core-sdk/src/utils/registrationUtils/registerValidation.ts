@@ -39,8 +39,8 @@ export const getPublicMinting = async (
 
 export const validateLicenseTermsData = async (
   licenseTermsData: LicenseTermsDataInput[],
-  chainId: ChainIds,
   rpcClient: PublicClient,
+  chainId: ChainIds,
 ): Promise<{
   licenseTerms: LicenseTerms[];
   licenseTermsData: LicenseTermsData[];

@@ -518,8 +518,8 @@ export class IPAssetClient {
     try {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
-        this.chainId,
         this.rpcClient,
+        this.chainId,
       );
 
       const { transformRequest } =
@@ -661,8 +661,8 @@ export class IPAssetClient {
       }
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
-        this.chainId,
         this.rpcClient,
+        this.chainId,
       );
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest>(
@@ -897,8 +897,8 @@ export class IPAssetClient {
       }
       const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
         request.licenseTermsData,
-        this.chainId,
         this.rpcClient,
+        this.chainId,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
@@ -1088,8 +1088,8 @@ export class IPAssetClient {
       const { royaltyShares, totalAmount } = getRoyaltyShares(request.royaltyShares);
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
-        this.chainId,
         this.rpcClient,
+        this.chainId,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipIdAddress = await getIpIdAddress({
@@ -1254,8 +1254,8 @@ export class IPAssetClient {
     try {
       const { licenseTerms } = await validateLicenseTermsData(
         request.licenseTermsData,
-        this.chainId,
         this.rpcClient,
+        this.chainId,
       );
       const { transformRequest } =
         await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest>(
