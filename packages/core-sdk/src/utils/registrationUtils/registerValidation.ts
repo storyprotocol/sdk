@@ -4,6 +4,7 @@ import {
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
   piLicenseTemplateAddress,
+  RoyaltyModuleReadOnlyClient,
   SpgnftImplReadOnlyClient,
   totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
@@ -36,14 +37,15 @@ export const getPublicMinting = async (
   return await spgNftContractImpl.publicMinting();
 };
 
-export const validateLicenseTermsData = (
+export const validateLicenseTermsData = async (
   licenseTermsData: LicenseTermsDataInput[],
   chainId: ChainIds,
-): {
+  rpcClient: PublicClient,
+): Promise<{
   licenseTerms: LicenseTerms[];
   licenseTermsData: LicenseTermsData[];
   maxLicenseTokens: bigint[];
-} => {
+}> => {
   const licenseTerms: LicenseTerms[] = [];
   const processedLicenseTermsData: LicenseTermsData[] = [];
   const maxLicenseTokens: bigint[] = [];
@@ -52,6 +54,28 @@ export const validateLicenseTermsData = (
       ...licenseTermsData[i].terms,
       royaltyPolicy: royaltyPolicyInputToAddress(licenseTermsData[i].terms.royaltyPolicy, chainId),
     });
+    const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
+    if (validateAddress(licenseTerm.royaltyPolicy) !== zeroAddress) {
+      const isWhitelistedArbitrationPolicy =
+        await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({
+          royaltyPolicy: licenseTerm.royaltyPolicy,
+        });
+      if (!isWhitelistedArbitrationPolicy) {
+        throw new Error("The royalty policy is not whitelisted.");
+      }
+    }
+
+    if (validateAddress(licenseTerm.currency) !== zeroAddress) {
+      const isWhitelistedRoyaltyToken = await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken(
+        {
+          token: licenseTerm.currency,
+        },
+      );
+      if (!isWhitelistedRoyaltyToken) {
+        throw new Error("The currency token is not whitelisted.");
+      }
+    }
+
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
     if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
       throw new Error("A royalty policy must be provided when the minting fee is greater than 0.");

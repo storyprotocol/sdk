@@ -516,7 +516,11 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.chainId,
+        this.rpcClient,
+      );
 
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
@@ -655,7 +659,11 @@ export class IPAssetClient {
       if (isRegistered) {
         throw new Error(`The NFT with id ${request.tokenId} is already registered as IP.`);
       }
-      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.chainId,
+        this.rpcClient,
+      );
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest>(
           {
@@ -887,9 +895,10 @@ export class IPAssetClient {
       if (!isRegistered) {
         throw new Error(`The IP with id ${ipId} is not registered.`);
       }
-      const { licenseTerms, licenseTermsData } = validateLicenseTermsData(
+      const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
         request.licenseTermsData,
         this.chainId,
+        this.rpcClient,
       );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
@@ -1077,7 +1086,11 @@ export class IPAssetClient {
   ): Promise<RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse> {
     try {
       const { royaltyShares, totalAmount } = getRoyaltyShares(request.royaltyShares);
-      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.chainId,
+        this.rpcClient,
+      );
       const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
       const ipIdAddress = await getIpIdAddress({
         nftContract: validateAddress(request.nftContract),
@@ -1239,7 +1252,11 @@ export class IPAssetClient {
     request: MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   ): Promise<MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse> {
     try {
-      const { licenseTerms } = validateLicenseTermsData(request.licenseTermsData, this.chainId);
+      const { licenseTerms } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.chainId,
+        this.rpcClient,
+      );
       const { transformRequest } =
         await transformRegistrationRequest<RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest>(
           {
