@@ -1,6 +1,7 @@
 import { zeroAddress } from "viem";
 
 import { royaltyPolicyInputToAddress } from "./royalty";
+import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
@@ -242,7 +243,7 @@ export class PILFlavor {
       throw new PILFlavorError(`CommercialRevShare should be between 0 and 100.`);
     }
 
-    return Math.round((commercialRevShare / 100) * 1000000);
+    return Math.round((commercialRevShare / 100) * MAX_ROYALTY_TOKEN);
   };
 
   private static verifyCommercialUse = (terms: LicenseTerms): void => {

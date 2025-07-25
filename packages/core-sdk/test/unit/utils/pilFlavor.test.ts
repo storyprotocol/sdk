@@ -101,7 +101,7 @@ describe("PILFlavor", () => {
       expect(pil).deep.equal({
         commercialAttribution: true,
         commercialRevCeiling: 0n,
-        commercialRevShare: 100000,
+        commercialRevShare: 10000000,
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
@@ -130,7 +130,7 @@ describe("PILFlavor", () => {
       expect(pil).deep.equal({
         commercialAttribution: true,
         commercialRevCeiling: 0n,
-        commercialRevShare: 100000,
+        commercialRevShare: 10_000_000,
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
@@ -165,7 +165,7 @@ describe("PILFlavor", () => {
       expect(pil).deep.equal({
         commercialAttribution: true,
         commercialRevCeiling: 0n,
-        commercialRevShare: 10000,
+        commercialRevShare: 1_000_000,
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
@@ -231,7 +231,7 @@ describe("PILFlavor", () => {
         commercialAttribution: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        commercialRevShare: 1000000,
+        commercialRevShare: 100_000_000,
         commercialRevCeiling: 0n,
         derivativesAllowed: true,
         derivativesAttribution: true,
@@ -516,7 +516,7 @@ describe("PILFlavor", () => {
           currency: mockAddress,
           commercialRevShare: 1,
         });
-        expect(pil.commercialRevShare).to.equal(10000);
+        expect(pil.commercialRevShare).to.equal(1_000_000);
       });
 
       it("should convert 100% to 1000000 basis points", () => {
@@ -525,7 +525,7 @@ describe("PILFlavor", () => {
           currency: mockAddress,
           commercialRevShare: 100,
         });
-        expect(pil.commercialRevShare).to.equal(1000000);
+        expect(pil.commercialRevShare).to.equal(100_000_000);
       });
 
       it("should round fractional percentages correctly", () => {
@@ -534,7 +534,7 @@ describe("PILFlavor", () => {
           currency: mockAddress,
           commercialRevShare: 33.33,
         });
-        expect(pil.commercialRevShare).to.equal(333300);
+        expect(pil.commercialRevShare).to.equal(33_330_000);
       });
     });
 
