@@ -10,7 +10,6 @@ import {
   NonCommercialSocialRemixingRequest,
 } from "../types/utils/pilFlavor";
 
-// PIL Document URIs
 const PIL_URIS = {
   NCSR: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/NCSR.json",
   COMMERCIAL_USE:
@@ -21,8 +20,7 @@ const PIL_URIS = {
     "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
 } as const;
 
-// Common default values to reduce duplication
-const COMMON_DEFAULTS: Partial<LicenseTerms> = {
+const COMMON_DEFAULTS = {
   transferable: true,
   royaltyPolicy: zeroAddress,
   defaultMintingFee: 0n,
@@ -33,7 +31,7 @@ const COMMON_DEFAULTS: Partial<LicenseTerms> = {
   commercialRevCeiling: 0n,
   derivativeRevCeiling: 0n,
   currency: zeroAddress,
-};
+} as const;
 
 class PILFlavorError extends Error {
   constructor(message: string) {
@@ -73,7 +71,7 @@ export class PILFlavor {
     derivativesApproval: false,
     derivativesReciprocal: true,
     uri: PIL_URIS.NCSR,
-  } as LicenseTerms;
+  };
 
   private static readonly _commercialUse: LicenseTerms = {
     ...COMMON_DEFAULTS,
@@ -84,7 +82,7 @@ export class PILFlavor {
     derivativesApproval: false,
     derivativesReciprocal: false,
     uri: PIL_URIS.COMMERCIAL_USE,
-  } as LicenseTerms;
+  };
 
   private static readonly _commercialRemix: LicenseTerms = {
     ...COMMON_DEFAULTS,
@@ -95,7 +93,7 @@ export class PILFlavor {
     derivativesApproval: false,
     derivativesReciprocal: true,
     uri: PIL_URIS.COMMERCIAL_REMIX,
-  } as LicenseTerms;
+  };
 
   private static readonly _creativeCommonsAttribution: LicenseTerms = {
     ...COMMON_DEFAULTS,
@@ -106,11 +104,11 @@ export class PILFlavor {
     derivativesApproval: false,
     derivativesReciprocal: true,
     uri: PIL_URIS.CC_BY,
-  } as LicenseTerms;
+  };
 
   /**
-   * Gets the values to create a Non-Commercial Social Remixing licenseTerms flavor.
-   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#non-commercial-social-remixing | non commercial social remixing}
+   * Gets the values to create a Non-Commercial Social Remixing license terms flavor.
+   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#non-commercial-social-remixing | Non Commercial Social Remixing}
    */
   public static nonCommercialSocialRemixing = (
     request?: NonCommercialSocialRemixingRequest,
@@ -125,8 +123,8 @@ export class PILFlavor {
   };
 
   /**
-   * Gets the values to create a Commercial Use licenseTerms flavor.
-   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#commercial-use | commercial use}
+   * Gets the values to create a Commercial Use license terms flavor.
+   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#commercial-use | Commercial Use}
    */
   public static commercialUse = ({
     defaultMintingFee,
@@ -148,8 +146,8 @@ export class PILFlavor {
   };
 
   /**
-   * Gets the values to create a Commercial Remixing licenseTerms flavor.
-   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#commercial-remix | commercial remix}
+   * Gets the values to create a Commercial Remixing license terms flavor.
+   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#commercial-remix | Commercial Remix}
    */
   public static commercialRemix = ({
     defaultMintingFee,
@@ -173,8 +171,8 @@ export class PILFlavor {
   };
 
   /**
-   * Gets the values to create a Creative Commons Attribution (CC-BY) licenseTerms flavor.
-   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#creative-commons-attribution | creative commons attribution}
+   * Gets the values to create a Creative Commons Attribution (CC-BY) license terms flavor.
+   * @see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#creative-commons-attribution | Creative Commons Attribution}
    */
   public static creativeCommonsAttribution = ({
     royaltyPolicy,
@@ -228,21 +226,23 @@ export class PILFlavor {
     this.verifyDerivatives(normalized);
 
     // Validate and normalize commercialRevShare
-    this.validateAndNormalizeRevShare(normalized);
+    normalized.commercialRevShare = this.validateAndNormalizeRevShare(
+      normalized.commercialRevShare,
+    );
 
     return normalized;
   };
 
-  private static validateAndNormalizeRevShare = (terms: LicenseTerms): void => {
-    if (typeof terms.commercialRevShare !== "number" || isNaN(terms.commercialRevShare)) {
+  private static validateAndNormalizeRevShare = (commercialRevShare: number): number => {
+    if (typeof commercialRevShare !== "number" || isNaN(commercialRevShare)) {
       throw new PILFlavorError("CommercialRevShare must be a valid number.");
     }
 
-    if (terms.commercialRevShare < 0 || terms.commercialRevShare > 100) {
+    if (commercialRevShare < 0 || commercialRevShare > 100) {
       throw new PILFlavorError(`CommercialRevShare should be between ${0} and ${100}.`);
     }
 
-    terms.commercialRevShare = Math.round((terms.commercialRevShare / 100) * 1000000);
+    return Math.round((commercialRevShare / 100) * 1000000);
   };
 
   private static verifyCommercialUse = (terms: LicenseTerms): void => {

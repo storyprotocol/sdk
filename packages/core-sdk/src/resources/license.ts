@@ -111,8 +111,6 @@ export class LicenseClient {
    * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%231%3A-non-commercial-social-remixing | Non Commercial Social Remixing}.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
-   *
-   *
    */
   public async registerNonComSocialRemixingPIL(
     request?: RegisterNonComSocialRemixingPILRequest,

@@ -58,7 +58,7 @@ export const validateLicenseTermsData = async (
           royaltyPolicy: licenseTerm.royaltyPolicy,
         });
       if (!isWhitelistedArbitrationPolicy) {
-        throw new Error("The royalty policy is not whitelisted.");
+        throw new Error(`The royalty policy ${licenseTerm.royaltyPolicy} is not whitelisted.`);
       }
     }
 
@@ -69,7 +69,7 @@ export const validateLicenseTermsData = async (
         },
       );
       if (!isWhitelistedRoyaltyToken) {
-        throw new Error("The currency token is not whitelisted.");
+        throw new Error(`The currency token ${licenseTerm.currency} is not whitelisted.`);
       }
     }
 

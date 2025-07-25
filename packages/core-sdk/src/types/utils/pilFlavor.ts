@@ -8,7 +8,7 @@ export type NonCommercialSocialRemixingRequest = {
   /** Optional overrides for the default license terms. */
   override?: Partial<LicenseTermsInput>;
   /**
-   * The chain ID to use.
+   * The chain ID to use for this license flavor.
    *
    * @default aeneid
    */
@@ -30,7 +30,7 @@ export type CommercialRemixRequest = {
   royaltyPolicy?: RoyaltyPolicyInput;
 
   /**
-   * The chain ID to use, the default is `aeneid`.
+   * The chain ID to use for this license flavor.
    *
    * @default aeneid
    */
@@ -51,7 +51,7 @@ export type CommercialUseRequest = {
    */
   royaltyPolicy?: RoyaltyPolicyInput;
   /**
-   * The chain ID to use.
+   * The chain ID to use for this license flavor.
    *
    * @default aeneid
    */
@@ -70,7 +70,7 @@ export type CreativeCommonsAttributionRequest = {
    */
   royaltyPolicy?: RoyaltyPolicyInput;
   /**
-   * The chain ID to use.
+   * The chain ID to use for this license flavor.
    *
    * @default aeneid
    */
