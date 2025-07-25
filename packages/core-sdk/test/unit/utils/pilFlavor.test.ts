@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { zeroAddress } from "viem";
 
+import { NativeRoyaltyPolicy } from "../../../src";
 import { PILFlavor } from "../../../src/utils/pilFlavor";
 import { mockAddress } from "../mockData";
 
@@ -90,11 +91,11 @@ describe("PILFlavor", () => {
         defaultMintingFee: 10n,
         currency: zeroAddress,
         chainId: "mainnet",
-        royaltyPolicy: "LRP",
+        royaltyPolicy: NativeRoyaltyPolicy.LRP,
         override: {
           commercialRevShare: 10,
           defaultMintingFee: 100,
-          royaltyPolicy: "LAP",
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
           currency: mockAddress,
         },
       });
@@ -154,11 +155,11 @@ describe("PILFlavor", () => {
         currency: zeroAddress,
         commercialRevShare: 10,
         chainId: "mainnet",
-        royaltyPolicy: "LRP",
+        royaltyPolicy: NativeRoyaltyPolicy.LRP,
         override: {
           commercialRevShare: 1,
           defaultMintingFee: 800,
-          royaltyPolicy: "LRP",
+          royaltyPolicy: NativeRoyaltyPolicy.LRP,
           currency: mockAddress,
         },
       });
@@ -187,7 +188,7 @@ describe("PILFlavor", () => {
   describe("creativeCommonsAttribution", () => {
     it("should get creative commons attribution PIL", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
-        royaltyPolicy: "LAP",
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
         currency: mockAddress,
       });
       expect(pil).deep.equal({
@@ -213,7 +214,7 @@ describe("PILFlavor", () => {
 
     it("should override by custom terms", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
-        royaltyPolicy: "LAP",
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
         currency: mockAddress,
         chainId: "mainnet",
         override: {
@@ -261,7 +262,7 @@ describe("PILFlavor", () => {
           PILFlavor.commercialUse({
             defaultMintingFee: 100n,
             currency: mockAddress,
-            royaltyPolicy: "LAP",
+            royaltyPolicy: NativeRoyaltyPolicy.LAP,
           });
         }).to.not.throw();
       });

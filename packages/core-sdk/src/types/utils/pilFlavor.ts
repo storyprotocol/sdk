@@ -1,7 +1,8 @@
 import { Address } from "viem";
 
 import { SupportedChainIds } from "../config";
-import { LicenseTermsInput, RoyaltyPolicyType } from "../resources/license";
+import { LicenseTermsInput } from "../resources/license";
+import { RoyaltyPolicyInput } from "../resources/royalty";
 
 export type NonCommercialSocialRemixingRequest = {
   /** Optional overrides for the default license terms. */
@@ -26,7 +27,7 @@ export type CommercialRemixRequest = {
    *
    * @default LAP
    */
-  royaltyPolicy?: RoyaltyPolicyType;
+  royaltyPolicy?: RoyaltyPolicyInput;
 
   /**
    * The chain ID to use, the default is `aeneid`.
@@ -48,7 +49,7 @@ export type CommercialUseRequest = {
    *
    * @default LAP
    */
-  royaltyPolicy?: RoyaltyPolicyType;
+  royaltyPolicy?: RoyaltyPolicyInput;
   /**
    * The chain ID to use.
    *
@@ -67,7 +68,7 @@ export type CreativeCommonsAttributionRequest = {
    *
    * @default LAP
    */
-  royaltyPolicy?: RoyaltyPolicyType;
+  royaltyPolicy?: RoyaltyPolicyInput;
   /**
    * The chain ID to use.
    *

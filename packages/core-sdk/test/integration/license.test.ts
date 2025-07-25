@@ -20,7 +20,6 @@ import {
   royaltyPolicyLapAddress,
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
-import { PILFlavor } from "../../src/utils/pilFlavor";
 import { ERC20Client } from "../../src/utils/token";
 
 use(chaiAsPromised);
@@ -80,7 +79,7 @@ describe("License Functions", () => {
     it("should register license with creative commons attribution PIL", async () => {
       const result = await client.license.registerCreativeCommonsAttributionPIL({
         currency: WIP_TOKEN_ADDRESS,
-        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
+        royaltyPolicy: royaltyPolicyLapAddress[aeneid],
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });

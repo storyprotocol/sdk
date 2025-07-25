@@ -105,7 +105,7 @@ import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { getRevenueShare, getRoyaltyPolicyAddress } from "../utils/licenseTermsHelper";
+import { getRevenueShare } from "../utils/licenseTermsHelper";
 import { PILFlavor } from "../utils/pilFlavor";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
@@ -122,6 +122,7 @@ import {
   transferDistributeRoyaltyTokensRequest,
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
+import { royaltyPolicyInputToAddress } from "../utils/royalty";
 import { validateAddress } from "../utils/utils";
 
 export class IPAssetClient {
@@ -607,7 +608,7 @@ export class IPAssetClient {
         for (let i = 0; i < licenseTermsData.length; i++) {
           const licenseTerm = PILFlavor.validateLicenseTerms({
             ...licenseTermsData[i].terms,
-            royaltyPolicy: getRoyaltyPolicyAddress(
+            royaltyPolicy: royaltyPolicyInputToAddress(
               licenseTermsData[i].terms.royaltyPolicy,
               this.chainId,
             ),

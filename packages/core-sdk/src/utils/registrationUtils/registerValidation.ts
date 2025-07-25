@@ -22,8 +22,9 @@ import {
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
 import { Erc20Spender } from "../../types/utils/wip";
-import { getRevenueShare, getRoyaltyPolicyAddress } from "../licenseTermsHelper";
+import { getRevenueShare } from "../licenseTermsHelper";
 import { PILFlavor } from "../pilFlavor";
+import { royaltyPolicyInputToAddress } from "../royalty";
 import { getDeadline } from "../sign";
 import { chain, validateAddress } from "../utils";
 import { validateLicenseConfig } from "../validateLicenseConfig";
@@ -50,7 +51,7 @@ export const validateLicenseTermsData = (
   for (let i = 0; i < licenseTermsData.length; i++) {
     const licenseTerm = PILFlavor.validateLicenseTerms({
       ...licenseTermsData[i].terms,
-      royaltyPolicy: getRoyaltyPolicyAddress(licenseTermsData[i].terms.royaltyPolicy, chainId),
+      royaltyPolicy: royaltyPolicyInputToAddress(licenseTermsData[i].terms.royaltyPolicy, chainId),
     });
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
     if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {

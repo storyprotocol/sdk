@@ -1,6 +1,6 @@
 import { Address, zeroAddress } from "viem";
 
-import { getRoyaltyPolicyAddress } from "./licenseTermsHelper";
+import { royaltyPolicyInputToAddress } from "./royalty";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
   CommercialRemixRequest,
@@ -118,7 +118,7 @@ export class PILFlavor {
     return this.validateLicenseTerms({
       ...this._nonComSocialRemixingPIL,
       ...override,
-      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || zeroAddress, chainId),
+      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || zeroAddress, chainId),
     });
   };
 
@@ -138,7 +138,7 @@ export class PILFlavor {
       defaultMintingFee,
       currency,
       ...override,
-      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
+      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
     });
   };
 
@@ -160,7 +160,7 @@ export class PILFlavor {
       defaultMintingFee,
       currency,
       ...override,
-      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
+      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
     });
   };
 
@@ -178,7 +178,7 @@ export class PILFlavor {
       ...this._creativeCommonsAttribution,
       currency,
       ...override,
-      royaltyPolicy: getRoyaltyPolicyAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
+      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
     });
   };
 

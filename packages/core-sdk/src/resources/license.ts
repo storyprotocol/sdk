@@ -47,8 +47,9 @@ import { Erc20Spender } from "../types/utils/wip";
 import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
-import { getRevenueShare, getRoyaltyPolicyAddress } from "../utils/licenseTermsHelper";
+import { getRevenueShare } from "../utils/licenseTermsHelper";
 import { PILFlavor } from "../utils/pilFlavor";
+import { royaltyPolicyInputToAddress } from "../utils/royalty";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { validateAddress } from "../utils/utils";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -93,7 +94,7 @@ export class LicenseClient {
     try {
       const object = PILFlavor.validateLicenseTerms({
         ...request,
-        royaltyPolicy: getRoyaltyPolicyAddress(request.royaltyPolicy, this.chainId),
+        royaltyPolicy: royaltyPolicyInputToAddress(request.royaltyPolicy, this.chainId),
       });
       const licenseTermsId = await this.getLicenseTermsId(object);
       if (licenseTermsId !== 0n) {
