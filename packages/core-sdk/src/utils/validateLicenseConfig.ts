@@ -1,6 +1,6 @@
 import { zeroAddress, zeroHash } from "viem";
 
-import { getRevenueShare } from "./licenseTermsHelper";
+import { getRevenueShare } from "./royalty";
 import { validateAddress } from "./utils";
 import { LicensingConfig, LicensingConfigInput } from "../types/common";
 

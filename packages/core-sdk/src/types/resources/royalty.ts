@@ -123,14 +123,17 @@ export type TransferClaimedTokensFromIpToWalletParams = {
 
 /**
  * Native royalty policy created by the Story team
+ * - LAP: {@link https://docs.story.foundation/concepts/royalty-module/liquid-absolute-percentage | Liquid Absolute Percentage}
+ * - LRP: {@link https://docs.story.foundation/concepts/royalty-module/liquid-relative-percentage | Liquid Relative Percentage}
  */
 export enum NativeRoyaltyPolicy {
-  LAP = 0,
-  LRP,
+  LAP = "LAP",
+  LRP = "LRP",
 }
 
 /**
- * Allow custom royalty policy address or use a native royalty policy enum
+ * Allow custom royalty policy address or use a native royalty policy enum.
+ * For custom royalty policy, @see {@link https://docs.story.foundation/concepts/royalty-module/external-royalty-policies | External Royalty Policies}
  */
 export type RoyaltyPolicyInput = Address | NativeRoyaltyPolicy;
 

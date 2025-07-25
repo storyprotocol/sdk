@@ -3,6 +3,7 @@ import { Address, Hash, TransactionReceipt } from "viem";
 import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfigInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
+import { RoyaltyPolicyInput } from "./royalty";
 
 export type LicenseApiResponse = {
   data: License;
@@ -63,7 +64,11 @@ export type LicenseTerms = {
 
 export type LicenseTermsInput = Omit<
   LicenseTerms,
-  "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
+  | "defaultMintingFee"
+  | "expiration"
+  | "commercialRevCeiling"
+  | "derivativeRevCeiling"
+  | "royaltyPolicy"
 > & {
   /** The default minting fee to be paid when minting a license. */
   defaultMintingFee: bigint | string | number;
@@ -73,6 +78,11 @@ export type LicenseTermsInput = Omit<
   commercialRevCeiling: bigint | string | number;
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
+  /**
+   * The address of the royalty policy contract.
+   * @default LAP
+   */
+  royaltyPolicy?: RoyaltyPolicyInput;
 };
 
 export type RegisterPILTermsRequest = LicenseTermsInput & {
@@ -94,9 +104,9 @@ export type RegisterCommercialUsePILRequest = {
   currency: Address;
   /**
    * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   * @default LAP
    */
-  royaltyPolicyAddress?: Address;
+  royaltyPolicy?: RoyaltyPolicyInput;
   txOptions?: TxOptions;
 };
 
@@ -112,9 +122,9 @@ export type RegisterCommercialRemixPILRequest = {
   currency: Address;
   /**
    * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   * @default LAP
    */
-  royaltyPolicyAddress?: Address;
+  royaltyPolicy?: RoyaltyPolicyInput;
   txOptions?: TxOptions;
 };
 
@@ -123,9 +133,9 @@ export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
   currency: Address;
   /**
    * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   * @default LAP
    */
-  royaltyPolicyAddress?: Address;
+  royaltyPolicy?: RoyaltyPolicyInput;
 };
 
 export type AttachLicenseTermsRequest = {
@@ -174,13 +184,6 @@ export type MintLicenseTokensResponse = {
   txHash?: Hash;
   encodedTxData?: EncodedTxData;
 };
-
-export enum PIL_TYPE {
-  NON_COMMERCIAL_REMIX,
-  COMMERCIAL_USE,
-  COMMERCIAL_REMIX,
-  CREATIVE_COMMONS_ATTRIBUTION,
-}
 
 export type LicenseTermsId = string | number | bigint;
 
