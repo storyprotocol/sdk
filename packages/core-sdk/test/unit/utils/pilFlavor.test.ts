@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import { zeroAddress } from "viem";
 
-import { NativeRoyaltyPolicy } from "../../../src";
-import { PILFlavor } from "../../../src/utils/pilFlavor";
+import { NativeRoyaltyPolicy, PILFlavor } from "../../../src";
 import { mockAddress } from "../mockData";
 
 describe("PILFlavor", () => {

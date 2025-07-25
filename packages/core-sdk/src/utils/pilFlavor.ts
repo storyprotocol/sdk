@@ -239,7 +239,7 @@ export class PILFlavor {
     }
 
     if (commercialRevShare < 0 || commercialRevShare > 100) {
-      throw new PILFlavorError(`CommercialRevShare should be between ${0} and ${100}.`);
+      throw new PILFlavorError(`CommercialRevShare should be between 0 and 100.`);
     }
 
     return Math.round((commercialRevShare / 100) * 1000000);
