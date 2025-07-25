@@ -1,6 +1,7 @@
-import { Address, zeroAddress } from "viem";
+import { zeroAddress } from "viem";
 
 import { royaltyPolicyInputToAddress } from "./royalty";
+import { SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
   CommercialRemixRequest,
@@ -114,12 +115,13 @@ export class PILFlavor {
   public static nonCommercialSocialRemixing = (
     request?: NonCommercialSocialRemixingRequest,
   ): LicenseTerms => {
-    const { override, chainId } = request || {};
-    return this.validateLicenseTerms({
-      ...this._nonComSocialRemixingPIL,
-      ...override,
-      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || zeroAddress, chainId),
-    });
+    return this.validateLicenseTerms(
+      {
+        ...this._nonComSocialRemixingPIL,
+        ...request?.override,
+      },
+      request?.chainId,
+    );
   };
 
   /**
@@ -133,13 +135,16 @@ export class PILFlavor {
     chainId,
     override,
   }: CommercialUseRequest): LicenseTerms => {
-    return this.validateLicenseTerms({
-      ...this._commercialUse,
-      defaultMintingFee,
-      currency,
-      ...override,
-      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
-    });
+    return this.validateLicenseTerms(
+      {
+        ...this._commercialUse,
+        defaultMintingFee,
+        currency,
+        royaltyPolicy,
+        ...override,
+      },
+      chainId,
+    );
   };
 
   /**
@@ -154,14 +159,17 @@ export class PILFlavor {
     chainId,
     override,
   }: CommercialRemixRequest): LicenseTerms => {
-    return this.validateLicenseTerms({
-      ...this._commercialRemix,
-      commercialRevShare,
-      defaultMintingFee,
-      currency,
-      ...override,
-      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
-    });
+    return this.validateLicenseTerms(
+      {
+        ...this._commercialRemix,
+        commercialRevShare,
+        defaultMintingFee,
+        currency,
+        royaltyPolicy,
+        ...override,
+      },
+      chainId,
+    );
   };
 
   /**
@@ -174,29 +182,35 @@ export class PILFlavor {
     chainId,
     override,
   }: CreativeCommonsAttributionRequest): LicenseTerms => {
-    return this.validateLicenseTerms({
-      ...this._creativeCommonsAttribution,
-      currency,
-      ...override,
-      royaltyPolicy: royaltyPolicyInputToAddress(override?.royaltyPolicy || royaltyPolicy, chainId),
-    });
+    return this.validateLicenseTerms(
+      {
+        ...this._creativeCommonsAttribution,
+        currency,
+        royaltyPolicy,
+        ...override,
+      },
+      chainId,
+    );
   };
 
   public static validateLicenseTerms = (
-    params: Omit<LicenseTermsInput, "royaltyPolicy"> & { royaltyPolicy: Address },
+    params: LicenseTermsInput,
+    chainId?: SupportedChainIds,
   ): LicenseTerms => {
-    const { royaltyPolicy, currency } = params;
-    // Validate royalty policy and currency relationship
-    if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
-      throw new PILFlavorError("Royalty policy requires currency token.");
-    }
     const normalized: LicenseTerms = {
       ...params,
       defaultMintingFee: BigInt(params.defaultMintingFee),
       expiration: BigInt(params.expiration),
       commercialRevCeiling: BigInt(params.commercialRevCeiling),
       derivativeRevCeiling: BigInt(params.derivativeRevCeiling),
+      royaltyPolicy: royaltyPolicyInputToAddress(params.royaltyPolicy, chainId),
     };
+    const { royaltyPolicy, currency } = normalized;
+
+    // Validate royalty policy and currency relationship
+    if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
+      throw new PILFlavorError("Royalty policy requires currency token.");
+    }
 
     // Validate defaultMintingFee
     if (normalized.defaultMintingFee < 0n) {

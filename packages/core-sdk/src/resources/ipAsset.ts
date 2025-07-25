@@ -121,7 +121,7 @@ import {
   transferDistributeRoyaltyTokensRequest,
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
-import { getRevenueShare, royaltyPolicyInputToAddress } from "../utils/royalty";
+import { getRevenueShare } from "../utils/royalty";
 import { validateAddress } from "../utils/utils";
 
 export class IPAssetClient {
@@ -609,13 +609,10 @@ export class IPAssetClient {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
         for (let i = 0; i < licenseTermsData.length; i++) {
-          const licenseTerm = PILFlavor.validateLicenseTerms({
-            ...licenseTermsData[i].terms,
-            royaltyPolicy: royaltyPolicyInputToAddress(
-              licenseTermsData[i].terms.royaltyPolicy,
-              this.chainId,
-            ),
-          });
+          const licenseTerm = PILFlavor.validateLicenseTerms(
+            licenseTermsData[i].terms,
+            this.chainId,
+          );
           licenseTerms.push(licenseTerm);
         }
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);

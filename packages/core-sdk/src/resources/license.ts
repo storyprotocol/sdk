@@ -48,7 +48,7 @@ import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/c
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { PILFlavor } from "../utils/pilFlavor";
-import { getRevenueShare, royaltyPolicyInputToAddress } from "../utils/royalty";
+import { getRevenueShare } from "../utils/royalty";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { validateAddress } from "../utils/utils";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -91,10 +91,7 @@ export class LicenseClient {
    */
   public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
     try {
-      const object = PILFlavor.validateLicenseTerms({
-        ...request,
-        royaltyPolicy: royaltyPolicyInputToAddress(request.royaltyPolicy, this.chainId),
-      });
+      const object = PILFlavor.validateLicenseTerms(request, this.chainId);
       const licenseTermsId = await this.getLicenseTermsId(object);
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };

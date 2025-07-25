@@ -24,7 +24,7 @@ import {
 } from "../../types/utils/registerHelper";
 import { Erc20Spender } from "../../types/utils/wip";
 import { PILFlavor } from "../pilFlavor";
-import { getRevenueShare, royaltyPolicyInputToAddress } from "../royalty";
+import { getRevenueShare } from "../royalty";
 import { getDeadline } from "../sign";
 import { chain, validateAddress } from "../utils";
 import { validateLicenseConfig } from "../validateLicenseConfig";
@@ -50,10 +50,7 @@ export const validateLicenseTermsData = async (
   const processedLicenseTermsData: LicenseTermsData[] = [];
   const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
-    const licenseTerm = PILFlavor.validateLicenseTerms({
-      ...licenseTermsData[i].terms,
-      royaltyPolicy: royaltyPolicyInputToAddress(licenseTermsData[i].terms.royaltyPolicy, chainId),
-    });
+    const licenseTerm = PILFlavor.validateLicenseTerms(licenseTermsData[i].terms, chainId);
     const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
     if (validateAddress(licenseTerm.royaltyPolicy) !== zeroAddress) {
       const isWhitelistedArbitrationPolicy =
