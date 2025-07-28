@@ -6,7 +6,6 @@ import { Address, Hex, PublicClient, WalletClient, zeroAddress } from "viem";
 import { LicenseClient, LicensingConfig, NativeRoyaltyPolicy } from "../../../src";
 import {
   IpAccountImplClient,
-  PiLicenseTemplateClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   RoyaltyModuleReadOnlyClient,
   WrappedIpClient,
