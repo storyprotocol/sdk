@@ -91,13 +91,7 @@ export class LicenseClient {
    */
   public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
     try {
-      const object = PILFlavor.validateLicenseTerms(
-        {
-          ...request,
-          royaltyPolicy: request.royaltyPolicy,
-        },
-        this.chainId,
-      );
+      const object = PILFlavor.validateLicenseTerms(request, this.chainId);
       return await this.registerPILTermsHelper(object, request.txOptions);
     } catch (error) {
       return handleError(error, "Failed to register license terms");
