@@ -94,14 +94,10 @@ export class LicenseClient {
       const object = PILFlavor.validateLicenseTerms(
         {
           ...request,
-          royaltyPolicy: request.royaltyPolicy || request.royaltyPolicyAddress,
+          royaltyPolicy: request.royaltyPolicy ?? request.royaltyPolicyAddress,
         },
         this.chainId,
       );
-      const licenseTermsId = await this.getLicenseTermsId(object);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
       return await this.registerPILTermsHelper(object, request.txOptions);
     } catch (error) {
       return handleError(error, "Failed to register license terms");
@@ -146,7 +142,7 @@ export class LicenseClient {
       const licenseTerms = PILFlavor.commercialUse({
         defaultMintingFee: Number(request.defaultMintingFee),
         currency: request.currency,
-        royaltyPolicy: request.royaltyPolicy || request.royaltyPolicyAddress,
+        royaltyPolicy: request.royaltyPolicy ?? request.royaltyPolicyAddress,
       });
       return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
@@ -176,7 +172,7 @@ export class LicenseClient {
       const licenseTerms = PILFlavor.commercialRemix({
         defaultMintingFee: Number(defaultMintingFee),
         currency,
-        royaltyPolicy: royaltyPolicy || royaltyPolicyAddress,
+        royaltyPolicy: royaltyPolicy ?? royaltyPolicyAddress,
         commercialRevShare,
       });
       return await this.registerPILTermsHelper(licenseTerms, txOptions);
@@ -206,7 +202,7 @@ export class LicenseClient {
       return await this.registerPILTermsHelper(
         PILFlavor.creativeCommonsAttribution({
           currency,
-          royaltyPolicy: royaltyPolicy || royaltyPolicyAddress,
+          royaltyPolicy: royaltyPolicy ?? royaltyPolicyAddress,
         }),
         txOptions,
       );

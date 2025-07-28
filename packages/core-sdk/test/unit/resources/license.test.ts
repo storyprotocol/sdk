@@ -3,7 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import { SinonStub, stub } from "sinon";
 import { Address, Hex, PublicClient, WalletClient, zeroAddress } from "viem";
 
-import { LicenseClient, LicensingConfig } from "../../../src";
+import { LicenseClient, LicensingConfig, NativeRoyaltyPolicy } from "../../../src";
 import {
   IpAccountImplClient,
   PiLicenseTemplateClient,
@@ -1524,13 +1524,13 @@ describe("Test LicenseClient", () => {
         derivativesApproval: false,
         derivativesReciprocal: false,
         derivativeRevCeiling: 0n,
-        royaltyPolicy: mockAddress,
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
         uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
         royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
       });
       expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
         "royaltyPolicy",
-        mockAddress,
+        "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
       );
     });
 
@@ -1577,12 +1577,12 @@ describe("Test LicenseClient", () => {
         defaultMintingFee: 0,
         currency: mockAddress,
         commercialRevShare: 0,
-        royaltyPolicy: mockAddress,
+        royaltyPolicy: NativeRoyaltyPolicy.LRP,
         royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
       });
       expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
         "royaltyPolicy",
-        mockAddress,
+        "0x9156e603C949481883B1d3355c6f1132D191fC41",
       );
     });
 
@@ -1600,12 +1600,12 @@ describe("Test LicenseClient", () => {
     it("should call registerCreativeCommonsAttributionPIL with royaltyPolicy if royaltyPolicy and royaltyPolicyAddress are provided", async () => {
       await licenseClient.registerCreativeCommonsAttributionPIL({
         currency: mockAddress,
-        royaltyPolicy: mockAddress,
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
         royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
       });
       expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
         "royaltyPolicy",
-        mockAddress,
+        "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
       );
     });
   });
