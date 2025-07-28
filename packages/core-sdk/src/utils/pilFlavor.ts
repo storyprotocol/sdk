@@ -190,16 +190,13 @@ export class PILFlavor {
     params: LicenseTermsInput,
     chainId?: SupportedChainIds,
   ): LicenseTerms => {
-    const newRoyaltyPolicy = params.royaltyPolicy ?? params.royaltyPolicyAddress;
-    // Delete deprecated field
-    delete params.royaltyPolicyAddress;
     const normalized: LicenseTerms = {
       ...params,
       defaultMintingFee: BigInt(params.defaultMintingFee),
       expiration: BigInt(params.expiration),
       commercialRevCeiling: BigInt(params.commercialRevCeiling),
       derivativeRevCeiling: BigInt(params.derivativeRevCeiling),
-      royaltyPolicy: royaltyPolicyInputToAddress(newRoyaltyPolicy, chainId),
+      royaltyPolicy: royaltyPolicyInputToAddress(params.royaltyPolicy, chainId),
     };
     const { royaltyPolicy, currency } = normalized;
 

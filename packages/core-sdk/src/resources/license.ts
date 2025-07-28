@@ -94,7 +94,7 @@ export class LicenseClient {
       const object = PILFlavor.validateLicenseTerms(
         {
           ...request,
-          royaltyPolicy: request.royaltyPolicy ?? request.royaltyPolicyAddress,
+          royaltyPolicy: request.royaltyPolicy,
         },
         this.chainId,
       );

@@ -79,7 +79,7 @@ describe("License Functions", () => {
     it("should register license with creative commons attribution PIL", async () => {
       const result = await client.license.registerCreativeCommonsAttributionPIL({
         currency: WIP_TOKEN_ADDRESS,
-        royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
@@ -270,7 +270,7 @@ describe("License Functions", () => {
       // Create a Creative Commons Attribution license
       const ccLicenseResult = await client.license.registerCreativeCommonsAttributionPIL({
         currency: WIP_TOKEN_ADDRESS,
-        royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
       });
       ccLicenseTermsId = ccLicenseResult.licenseTermsId!;
     });
