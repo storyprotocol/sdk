@@ -142,7 +142,7 @@ export class LicenseClient {
       const licenseTerms = PILFlavor.commercialUse({
         defaultMintingFee: Number(request.defaultMintingFee),
         currency: request.currency,
-        royaltyPolicy: request.royaltyPolicy ?? request.royaltyPolicyAddress,
+        royaltyPolicy: request.royaltyPolicyAddress,
       });
       return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
@@ -163,7 +163,6 @@ export class LicenseClient {
   public async registerCommercialRemixPIL({
     defaultMintingFee,
     currency,
-    royaltyPolicy,
     royaltyPolicyAddress,
     commercialRevShare,
     txOptions,
@@ -172,7 +171,7 @@ export class LicenseClient {
       const licenseTerms = PILFlavor.commercialRemix({
         defaultMintingFee: Number(defaultMintingFee),
         currency,
-        royaltyPolicy: royaltyPolicy ?? royaltyPolicyAddress,
+        royaltyPolicy: royaltyPolicyAddress,
         commercialRevShare,
       });
       return await this.registerPILTermsHelper(licenseTerms, txOptions);
@@ -194,7 +193,6 @@ export class LicenseClient {
    */
   public async registerCreativeCommonsAttributionPIL({
     currency,
-    royaltyPolicy,
     royaltyPolicyAddress,
     txOptions,
   }: RegisterCreativeCommonsAttributionPILRequest): Promise<RegisterPILResponse> {
@@ -202,7 +200,7 @@ export class LicenseClient {
       return await this.registerPILTermsHelper(
         PILFlavor.creativeCommonsAttribution({
           currency,
-          royaltyPolicy: royaltyPolicy ?? royaltyPolicyAddress,
+          royaltyPolicy: royaltyPolicyAddress,
         }),
         txOptions,
       );

@@ -103,17 +103,10 @@ export type RegisterCommercialUsePILRequest = {
   /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
   /**
-   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
-   *
    * The address of the royalty policy contract.
    * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
    */
   royaltyPolicyAddress?: Address;
-  /**
-   * The address of the royalty policy contract.
-   * @default LAP
-   */
-  royaltyPolicy?: RoyaltyPolicyInput;
   txOptions?: TxOptions;
 };
 
@@ -128,17 +121,10 @@ export type RegisterCommercialRemixPILRequest = {
   /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
   /**
-   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
-   *
    * The address of the royalty policy contract.
    * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
    */
   royaltyPolicyAddress?: Address;
-  /**
-   * The address of the royalty policy contract.
-   * @default LAP
-   */
-  royaltyPolicy?: RoyaltyPolicyInput;
   txOptions?: TxOptions;
 };
 
@@ -146,17 +132,10 @@ export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
   /** The ERC20 or WIP token to be used to pay the minting fee. */
   currency: Address;
   /**
-   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
-   *
    * The address of the royalty policy contract.
    * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
    */
   royaltyPolicyAddress?: Address;
-  /**
-   * The address of the royalty policy contract.
-   * @default LAP
-   */
-  royaltyPolicy?: RoyaltyPolicyInput;
 };
 
 export type AttachLicenseTermsRequest = {
