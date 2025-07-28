@@ -79,6 +79,13 @@ export type LicenseTermsInput = Omit<
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
   /**
+   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
+   *
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
+  /**
    * The address of the royalty policy contract.
    * @default LAP
    */
@@ -86,6 +93,13 @@ export type LicenseTermsInput = Omit<
 };
 
 export type RegisterPILTermsRequest = LicenseTermsInput & {
+  /**
+   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
+   *
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
   txOptions?: TxOptions;
 };
 
@@ -102,6 +116,13 @@ export type RegisterCommercialUsePILRequest = {
   defaultMintingFee: string | number | bigint;
   /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
+  /**
+   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
+   *
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
   /**
    * The address of the royalty policy contract.
    * @default LAP
@@ -121,6 +142,13 @@ export type RegisterCommercialRemixPILRequest = {
   /** The ERC20 token to be used to pay the minting fee */
   currency: Address;
   /**
+   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
+   *
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
+  /**
    * The address of the royalty policy contract.
    * @default LAP
    */
@@ -131,6 +159,13 @@ export type RegisterCommercialRemixPILRequest = {
 export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
   /** The ERC20 or WIP token to be used to pay the minting fee. */
   currency: Address;
+  /**
+   * @deprecated Use `royaltyPolicy` instead. If both are provided, `royaltyPolicy` takes precedence. This field will be removed in the `v1.4.0`.
+   *
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
   /**
    * The address of the royalty policy contract.
    * @default LAP
@@ -155,6 +190,18 @@ export type AttachLicenseTermsResponse = {
   encodedTxData?: EncodedTxData;
   success?: boolean;
 };
+
+/**
+ * @deprecated Use `PILFlavor.nonCommercialSocialRemixing`, `PILFlavor.commercialUse`, `PILFlavor.commercialRemix`, or `PILFlavor.creativeCommonsAttribution` instead.
+ *
+ * The type of PIL.
+ */
+export enum PIL_TYPE {
+  NON_COMMERCIAL_REMIX,
+  COMMERCIAL_USE,
+  COMMERCIAL_REMIX,
+  CREATIVE_COMMONS_ATTRIBUTION,
+}
 
 export type MintLicenseTokensRequest = {
   licensorIpId: Address;

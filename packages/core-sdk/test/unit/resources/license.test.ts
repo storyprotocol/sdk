@@ -6,6 +6,7 @@ import { Address, Hex, PublicClient, WalletClient, zeroAddress } from "viem";
 import { LicenseClient, LicensingConfig } from "../../../src";
 import {
   IpAccountImplClient,
+  PiLicenseTemplateClient,
   PiLicenseTemplateGetLicenseTermsResponse,
   RoyaltyModuleReadOnlyClient,
   WrappedIpClient,
@@ -1459,6 +1460,153 @@ describe("Test LicenseClient", () => {
         maxLicenseTokens: 100,
       });
       expect(result.txHash).to.equal(txHash);
+    });
+  });
+
+  describe("Test deprecated fields of royaltyPolicyAddress", () => {
+    let registerStub: SinonStub;
+    beforeEach(() => {
+      registerStub = stub(PiLicenseTemplateClient.prototype, "registerLicenseTerms").resolves(
+        txHash,
+      );
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 0n,
+      });
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+    });
+
+    it("should call registerPILTerms with royaltyPolicyAddress if supported", async () => {
+      await licenseClient.registerPILTerms({
+        defaultMintingFee: 1513n,
+        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        transferable: false,
+        expiration: 0n,
+        commercialUse: true,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x",
+        commercialRevShare: 0,
+        commercialRevCeiling: 0n,
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        derivativeRevCeiling: 0n,
+        royaltyPolicyAddress: mockAddress,
+        uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
+    });
+
+    it("should call registerPILTerms with royaltyPolicy if royaltyPolicy and royaltyPolicyAddress are provided", async () => {
+      await licenseClient.registerPILTerms({
+        defaultMintingFee: 1513n,
+        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        transferable: false,
+        expiration: 0n,
+        commercialUse: true,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x",
+        commercialRevShare: 0,
+        commercialRevCeiling: 0n,
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        derivativeRevCeiling: 0n,
+        royaltyPolicy: mockAddress,
+        uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
+        royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
+    });
+
+    it("should call registerCommercialUsePIL with royaltyPolicyAddress if supported and royaltyPolicy is not provided", async () => {
+      await licenseClient.registerCommercialUsePIL({
+        defaultMintingFee: 0,
+        currency: mockAddress,
+        royaltyPolicyAddress: mockAddress,
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
+    });
+
+    it("should call registerCommercialUsePIL with royaltyPolicy if royaltyPolicy and royaltyPolicyAddress are provided and royaltyPolicyAddress is not provided", async () => {
+      await licenseClient.registerCommercialUsePIL({
+        defaultMintingFee: 0,
+        currency: mockAddress,
+        royaltyPolicy: mockAddress,
+        royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
+    });
+
+    it("should call registerCommercialRemixPIL with royaltyPolicyAddress if supported", async () => {
+      await licenseClient.registerCommercialRemixPIL({
+        defaultMintingFee: 0,
+        currency: mockAddress,
+        royaltyPolicyAddress: mockAddress,
+        commercialRevShare: 0,
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
+    });
+
+    it("should call registerCommercialRemixPIL with royaltyPolicy if royaltyPolicy and royaltyPolicyAddress are provided", async () => {
+      await licenseClient.registerCommercialRemixPIL({
+        defaultMintingFee: 0,
+        currency: mockAddress,
+        commercialRevShare: 0,
+        royaltyPolicy: mockAddress,
+        royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
+    });
+
+    it("should call registerCreativeCommonsAttributionPIL with royaltyPolicyAddress if supported", async () => {
+      await licenseClient.registerCreativeCommonsAttributionPIL({
+        currency: mockAddress,
+        royaltyPolicyAddress: mockAddress,
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
+    });
+
+    it("should call registerCreativeCommonsAttributionPIL with royaltyPolicy if royaltyPolicy and royaltyPolicyAddress are provided", async () => {
+      await licenseClient.registerCreativeCommonsAttributionPIL({
+        currency: mockAddress,
+        royaltyPolicy: mockAddress,
+        royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        mockAddress,
+      );
     });
   });
 });

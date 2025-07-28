@@ -91,7 +91,13 @@ export class LicenseClient {
    */
   public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
     try {
-      const object = PILFlavor.validateLicenseTerms(request, this.chainId);
+      const object = PILFlavor.validateLicenseTerms(
+        {
+          ...request,
+          royaltyPolicy: request.royaltyPolicy || request.royaltyPolicyAddress,
+        },
+        this.chainId,
+      );
       const licenseTermsId = await this.getLicenseTermsId(object);
       if (licenseTermsId !== 0n) {
         return { licenseTermsId: licenseTermsId };
@@ -140,7 +146,7 @@ export class LicenseClient {
       const licenseTerms = PILFlavor.commercialUse({
         defaultMintingFee: Number(request.defaultMintingFee),
         currency: request.currency,
-        royaltyPolicy: request.royaltyPolicy,
+        royaltyPolicy: request.royaltyPolicy || request.royaltyPolicyAddress,
       });
       return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
@@ -162,6 +168,7 @@ export class LicenseClient {
     defaultMintingFee,
     currency,
     royaltyPolicy,
+    royaltyPolicyAddress,
     commercialRevShare,
     txOptions,
   }: RegisterCommercialRemixPILRequest): Promise<RegisterPILResponse> {
@@ -169,7 +176,7 @@ export class LicenseClient {
       const licenseTerms = PILFlavor.commercialRemix({
         defaultMintingFee: Number(defaultMintingFee),
         currency,
-        royaltyPolicy,
+        royaltyPolicy: royaltyPolicy || royaltyPolicyAddress,
         commercialRevShare,
       });
       return await this.registerPILTermsHelper(licenseTerms, txOptions);
@@ -192,13 +199,14 @@ export class LicenseClient {
   public async registerCreativeCommonsAttributionPIL({
     currency,
     royaltyPolicy,
+    royaltyPolicyAddress,
     txOptions,
   }: RegisterCreativeCommonsAttributionPILRequest): Promise<RegisterPILResponse> {
     try {
       return await this.registerPILTermsHelper(
         PILFlavor.creativeCommonsAttribution({
           currency,
-          royaltyPolicy,
+          royaltyPolicy: royaltyPolicy || royaltyPolicyAddress,
         }),
         txOptions,
       );
