@@ -1,5 +1,6 @@
 import { zeroAddress } from "viem";
 
+import { PILFlavorError } from "./errors";
 import { royaltyPolicyInputToAddress } from "./royalty";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { SupportedChainIds } from "../types/config";
@@ -33,13 +34,6 @@ const COMMON_DEFAULTS = {
   derivativeRevCeiling: 0n,
   currency: zeroAddress,
 } as const;
-
-class PILFlavorError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "PILFlavorError";
-  }
-}
 
 /**
  * Pre-configured Programmable IP License (PIL) flavors for ease of use.
