@@ -191,18 +191,6 @@ export type AttachLicenseTermsResponse = {
   success?: boolean;
 };
 
-/**
- * @deprecated Use `PILFlavor.nonCommercialSocialRemixing`, `PILFlavor.commercialUse`, `PILFlavor.commercialRemix`, or `PILFlavor.creativeCommonsAttribution` instead.
- *
- * The type of PIL.
- */
-export enum PIL_TYPE {
-  NON_COMMERCIAL_REMIX,
-  COMMERCIAL_USE,
-  COMMERCIAL_REMIX,
-  CREATIVE_COMMONS_ATTRIBUTION,
-}
-
 export type MintLicenseTokensRequest = {
   licensorIpId: Address;
   licenseTermsId: string | number | bigint;
@@ -231,6 +219,18 @@ export type MintLicenseTokensResponse = {
   txHash?: Hash;
   encodedTxData?: EncodedTxData;
 };
+
+/**
+ * @deprecated Use `PILFlavor.nonCommercialSocialRemixing`, `PILFlavor.commercialUse`, `PILFlavor.commercialRemix`, or `PILFlavor.creativeCommonsAttribution` instead.
+ *
+ * The type of PIL.
+ */
+export enum PIL_TYPE {
+  NON_COMMERCIAL_REMIX,
+  COMMERCIAL_USE,
+  COMMERCIAL_REMIX,
+  CREATIVE_COMMONS_ATTRIBUTION,
+}
 
 export type LicenseTermsId = string | number | bigint;
 

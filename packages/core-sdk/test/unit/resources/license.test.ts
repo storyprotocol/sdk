@@ -1534,6 +1534,31 @@ describe("Test LicenseClient", () => {
       );
     });
 
+    it("should call registerPILTerms if royaltyPolicy and royaltyPolicyAddress are not provided", async () => {
+      await licenseClient.registerPILTerms({
+        defaultMintingFee: 1513n,
+        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        transferable: false,
+        expiration: 0n,
+        commercialUse: true,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x",
+        commercialRevShare: 0,
+        commercialRevCeiling: 0n,
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        derivativeRevCeiling: 0n,
+        uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+      );
+    });
+
     it("should call registerCommercialUsePIL with royaltyPolicyAddress if supported and royaltyPolicy is not provided", async () => {
       await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: 0,
@@ -1556,6 +1581,17 @@ describe("Test LicenseClient", () => {
       expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
         "royaltyPolicy",
         mockAddress,
+      );
+    });
+
+    it("should call registerCommercialUsePIL if royaltyPolicy and royaltyPolicyAddress are not provided and royaltyPolicyAddress is not provided", async () => {
+      await licenseClient.registerCommercialUsePIL({
+        defaultMintingFee: 0,
+        currency: mockAddress,
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
       );
     });
 
@@ -1586,6 +1622,18 @@ describe("Test LicenseClient", () => {
       );
     });
 
+    it("should call registerCommercialRemixPIL if royaltyPolicy and royaltyPolicyAddress are not provided", async () => {
+      await licenseClient.registerCommercialRemixPIL({
+        defaultMintingFee: 0,
+        currency: mockAddress,
+        commercialRevShare: 0,
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+      );
+    });
+
     it("should call registerCreativeCommonsAttributionPIL with royaltyPolicyAddress if supported", async () => {
       await licenseClient.registerCreativeCommonsAttributionPIL({
         currency: mockAddress,
@@ -1602,6 +1650,15 @@ describe("Test LicenseClient", () => {
         currency: mockAddress,
         royaltyPolicy: NativeRoyaltyPolicy.LAP,
         royaltyPolicyAddress: "0x0000000000000000000000000000000000000000",
+      });
+      expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
+        "royaltyPolicy",
+        "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E",
+      );
+    });
+    it("should call registerCreativeCommonsAttributionPIL if royaltyPolicy and royaltyPolicyAddress are not provided", async () => {
+      await licenseClient.registerCreativeCommonsAttributionPIL({
+        currency: mockAddress,
       });
       expect((registerStub.firstCall.args[0] as { terms: LicenseTerms }).terms).to.have.property(
         "royaltyPolicy",

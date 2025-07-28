@@ -60,7 +60,7 @@ describe("PILFlavor", () => {
   });
 
   describe("commercialUse", () => {
-    it("should get commercial use PIL", () => {
+    it("should get commercial use PIL when royaltyPolicy is not provided", () => {
       const pil = PILFlavor.commercialUse({
         defaultMintingFee: 100n,
         currency: mockAddress,
@@ -121,7 +121,7 @@ describe("PILFlavor", () => {
   });
 
   describe("commercialRemix", () => {
-    it("should get commercial remix PIL", () => {
+    it("should get commercial remix PIL when royaltyPolicy is not provided", () => {
       const pil = PILFlavor.commercialRemix({
         defaultMintingFee: 100n,
         currency: mockAddress,
@@ -185,7 +185,7 @@ describe("PILFlavor", () => {
   });
 
   describe("creativeCommonsAttribution", () => {
-    it("should get creative commons attribution PIL", () => {
+    it("should get creative commons attribution PIL ", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
         royaltyPolicy: NativeRoyaltyPolicy.LAP,
         currency: mockAddress,
