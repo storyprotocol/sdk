@@ -6,3 +6,10 @@ export const handleError = (error: unknown, msg: string): never => {
   }
   throw new Error(`${msg}: Unknown error type`);
 };
+
+export class PILFlavorError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PILFlavorError";
+  }
+}

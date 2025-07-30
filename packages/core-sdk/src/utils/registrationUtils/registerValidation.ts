@@ -4,6 +4,7 @@ import {
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
   piLicenseTemplateAddress,
+  RoyaltyModuleReadOnlyClient,
   SpgnftImplReadOnlyClient,
   totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
@@ -22,7 +23,8 @@ import {
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
 import { Erc20Spender } from "../../types/utils/wip";
-import { getRevenueShare, validateLicenseTerms } from "../licenseTermsHelper";
+import { PILFlavor } from "../pilFlavor";
+import { getRevenueShare } from "../royalty";
 import { getDeadline } from "../sign";
 import { chain, validateAddress } from "../utils";
 import { validateLicenseConfig } from "../validateLicenseConfig";
@@ -48,7 +50,29 @@ export const validateLicenseTermsData = async (
   const processedLicenseTermsData: LicenseTermsData[] = [];
   const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
-    const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, rpcClient);
+    const licenseTerm = PILFlavor.validateLicenseTerms(licenseTermsData[i].terms, chainId);
+    const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
+    if (validateAddress(licenseTerm.royaltyPolicy) !== zeroAddress) {
+      const isWhitelistedArbitrationPolicy =
+        await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({
+          royaltyPolicy: licenseTerm.royaltyPolicy,
+        });
+      if (!isWhitelistedArbitrationPolicy) {
+        throw new Error(`The royalty policy ${licenseTerm.royaltyPolicy} is not whitelisted.`);
+      }
+    }
+
+    if (validateAddress(licenseTerm.currency) !== zeroAddress) {
+      const isWhitelistedRoyaltyToken = await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken(
+        {
+          token: licenseTerm.currency,
+        },
+      );
+      if (!isWhitelistedRoyaltyToken) {
+        throw new Error(`The currency token ${licenseTerm.currency} is not whitelisted.`);
+      }
+    }
+
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
     if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
       throw new Error("A royalty policy must be provided when the minting fee is greater than 0.");

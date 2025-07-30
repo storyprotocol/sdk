@@ -2,19 +2,42 @@ import { Address } from "viem";
 
 import { chain, validateAddress } from "./utils";
 import { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "../abi/generated";
-import { ChainIds } from "../types/config";
+import { MAX_ROYALTY_TOKEN } from "../constants/common";
+import { RevShareType } from "../types/common";
+import { SupportedChainIds } from "../types/config";
 import { NativeRoyaltyPolicy, RoyaltyPolicyInput } from "../types/resources/royalty";
 
 export const royaltyPolicyInputToAddress = (
-  input: RoyaltyPolicyInput,
-  chainId: ChainIds,
+  input?: RoyaltyPolicyInput,
+  chainId?: SupportedChainIds,
 ): Address => {
+  const transferredChainId = chain[chainId || "aeneid"];
+  let address: Address;
   switch (input) {
+    case undefined:
     case NativeRoyaltyPolicy.LAP:
-      return royaltyPolicyLapAddress[chain[chainId]];
+      address = royaltyPolicyLapAddress[transferredChainId];
+      break;
     case NativeRoyaltyPolicy.LRP:
-      return royaltyPolicyLrpAddress[chain[chainId]];
+      address = royaltyPolicyLrpAddress[transferredChainId];
+      break;
     default:
-      return validateAddress(input);
+      address = validateAddress(input);
   }
+  return address;
+};
+
+export const getRevenueShare = (
+  revShare: number | string,
+  type: RevShareType = RevShareType.COMMERCIAL_REVENUE_SHARE,
+): number => {
+  const revShareNumber = Number(revShare);
+  if (isNaN(revShareNumber)) {
+    throw new Error(`${type} must be a valid number.`);
+  }
+
+  if (revShareNumber < 0 || revShareNumber > 100) {
+    throw new Error(`${type} must be between 0 and 100.`);
+  }
+  return (revShareNumber / 100) * MAX_ROYALTY_TOKEN;
 };

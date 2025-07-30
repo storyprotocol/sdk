@@ -105,7 +105,7 @@ import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
+import { PILFlavor } from "../utils/pilFlavor";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
   getCalculatedDeadline,
@@ -121,6 +121,7 @@ import {
   transferDistributeRoyaltyTokensRequest,
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
+import { getRevenueShare } from "../utils/royalty";
 import { validateAddress } from "../utils/utils";
 
 export class IPAssetClient {
@@ -608,9 +609,9 @@ export class IPAssetClient {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
         for (let i = 0; i < licenseTermsData.length; i++) {
-          const licenseTerm = await validateLicenseTerms(
+          const licenseTerm = PILFlavor.validateLicenseTerms(
             licenseTermsData[i].terms,
-            this.rpcClient,
+            this.chainId,
           );
           licenseTerms.push(licenseTerm);
         }

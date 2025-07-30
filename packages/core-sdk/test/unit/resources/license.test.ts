@@ -3,7 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import { SinonStub, stub } from "sinon";
 import { Address, Hex, PublicClient, WalletClient, zeroAddress } from "viem";
 
-import { LicenseClient, LicensingConfig } from "../../../src";
+import { LicenseClient, LicensingConfig, NativeRoyaltyPolicy } from "../../../src";
 import {
   IpAccountImplClient,
   PiLicenseTemplateGetLicenseTermsResponse,
@@ -176,6 +176,78 @@ describe("Test LicenseClient", () => {
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsId).to.equal(1n);
     });
+
+    it("should call with LAP royalty policy when royaltyPolicy is not provided", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      const registerLicenseTermsStub = stub(
+        licenseClient.licenseTemplateClient,
+        "registerLicenseTerms",
+      ).resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+
+      await licenseClient.registerPILTerms({
+        transferable: false,
+        expiration: 0n,
+        commercialAttribution: false,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: "0x",
+        commercialRevCeiling: 0n,
+        derivativesAllowed: false,
+        derivativesAttribution: false,
+        derivativesApproval: false,
+        derivativesReciprocal: false,
+        derivativeRevCeiling: 0n,
+        uri: "",
+        commercialUse: true,
+        defaultMintingFee: 1,
+        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        commercialRevShare: 90,
+      });
+
+      expect(
+        (registerLicenseTermsStub.firstCall.args[0] as { terms: LicenseTerms }).terms,
+      ).to.have.property("royaltyPolicy", "0xBe54FB168b3c982b7AaE60dB6CF75Bd8447b390E");
+    });
+
+    it("should call with LRP royalty policy when royaltyPolicy is LRP", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      const registerLicenseTermsStub = stub(
+        licenseClient.licenseTemplateClient,
+        "registerLicenseTerms",
+      ).resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+
+      await licenseClient.registerPILTerms({
+        ...licenseTerms,
+        commercialUse: true,
+        defaultMintingFee: 1,
+        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        commercialRevShare: 90,
+        royaltyPolicy: NativeRoyaltyPolicy.LRP,
+      });
+
+      expect(
+        (registerLicenseTermsStub.firstCall.args[0] as { terms: LicenseTerms }).terms,
+      ).to.have.property("royaltyPolicy", "0x9156e603C949481883B1d3355c6f1132D191fC41");
+    });
   });
   describe("Test licenseClient.registerNonComSocialRemixingPIL", () => {
     it("should return licenseTermsId when call registerNonComSocialRemixingPIL given licenseTermsId is registered", async () => {
@@ -255,7 +327,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: 1,
-        currency: zeroAddress,
+        currency: mockAddress,
       });
 
       expect(result.licenseTermsId).to.equal(1n);
@@ -276,7 +348,7 @@ describe("Test LicenseClient", () => {
       ]);
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: zeroAddress,
+        currency: mockAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -295,7 +367,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.registerCommercialUsePIL({
           defaultMintingFee: "1",
-          currency: zeroAddress,
+          currency: mockAddress,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -316,8 +388,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
+        currency: mockAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -339,7 +410,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: zeroAddress,
+        currency: mockAddress,
       });
 
       expect(result.licenseTermsId).to.equal(1n);
@@ -361,34 +432,10 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: zeroAddress,
+        currency: mockAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
-    });
-
-    it("should return txhash when call registerCommercialRemixPIL given licenseTermsId is not registered ", async () => {
-      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
-        selectedLicenseTermsId: BigInt(0),
-      });
-      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-
-      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
-        {
-          licenseTermsId: BigInt(1),
-          licenseTemplate: zeroAddress,
-          licenseTerms: zeroAddress,
-        },
-      ]);
-
-      const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
-        commercialRevShare: 100,
-        currency: zeroAddress,
-      });
-
-      expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return throw error when call registerCommercialRemixPIL given request fail", async () => {
@@ -404,7 +451,7 @@ describe("Test LicenseClient", () => {
         await licenseClient.registerCommercialRemixPIL({
           defaultMintingFee: "1",
           commercialRevShare: 100,
-          currency: zeroAddress,
+          currency: mockAddress,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -426,8 +473,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
+        currency: mockAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -1377,8 +1423,7 @@ describe("Test LicenseClient", () => {
         selectedLicenseTermsId: 0n,
       });
       const result = licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
+        currency: mockAddress,
       });
       await expect(result).to.rejectedWith(
         "Failed to register creative commons attribution PIL: rpc error",
@@ -1389,8 +1434,7 @@ describe("Test LicenseClient", () => {
         selectedLicenseTermsId: 1n,
       });
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
+        currency: mockAddress,
       });
       expect(result.licenseTermsId).to.equal(1n);
       expect(result.txHash).to.equal(undefined);
@@ -1410,8 +1454,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
+        currency: mockAddress,
       });
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsId).to.equal(1n);
@@ -1431,8 +1474,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
+        currency: mockAddress,
       });
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsId).to.equal(1n);
