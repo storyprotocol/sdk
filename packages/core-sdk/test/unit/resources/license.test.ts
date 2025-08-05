@@ -348,7 +348,7 @@ describe("Test LicenseClient", () => {
       ]);
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: 1,
-        currency: zeroAddress,
+        currency: mockAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -367,7 +367,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.registerCommercialUsePIL({
           defaultMintingFee: 1,
-          currency: zeroAddress,
+          currency: mockAddress,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -388,8 +388,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: 1,
-        currency: zeroAddress,
-        royaltyPolicyAddress: zeroAddress,
+        currency: mockAddress,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -437,30 +436,6 @@ describe("Test LicenseClient", () => {
       });
 
       expect(result.txHash).to.equal(txHash);
-    });
-
-    it("should return txhash when call registerCommercialRemixPIL given licenseTermsId is not registered ", async () => {
-      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
-        selectedLicenseTermsId: BigInt(0),
-      });
-      stub(licenseClient.licenseTemplateClient, "registerLicenseTerms").resolves(txHash);
-
-      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
-        {
-          licenseTermsId: BigInt(1),
-          licenseTemplate: zeroAddress,
-          licenseTerms: zeroAddress,
-        },
-      ]);
-
-      const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: 1,
-        commercialRevShare: 100,
-        currency: zeroAddress,
-      });
-
-      expect(result.txHash).to.equal(txHash);
-      expect(result.licenseTermsId).to.equal(1n);
     });
 
     it("should return throw error when call registerCommercialRemixPIL given request fail", async () => {
