@@ -82,7 +82,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   /** The IDs of the license tokens. */
   licenseTokenIds: string[] | bigint[] | number[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts?: number | string;
+  maxRts: number | string;
   txOptions?: TxOptions;
 };
 
