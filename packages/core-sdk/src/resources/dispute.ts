@@ -1,7 +1,5 @@
 import { encodeAbiParameters, Hash, Hex, maxUint256, PublicClient, stringToHex } from "viem";
 
-import { TokenAmountInput } from "../types/common";
-
 import {
   ArbitrationPolicyUmaClient,
   DisputeModuleClient,
@@ -12,6 +10,7 @@ import {
   WrappedIpClient,
 } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { TokenAmountInput } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
 import {
@@ -29,7 +28,7 @@ import { contractCallWithFees } from "../utils/feeUtils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { validateAddress, convertToBigInt } from "../utils/utils";
+import { convertToBigInt, validateAddress } from "../utils/utils";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
@@ -57,13 +56,13 @@ export class DisputeClient {
     request: RaiseDisputeRequest & { bond?: bigint | string | number },
   ): Promise<RaiseDisputeResponse> {
     // Show deprecation warning for string values
-    if (request.bond && typeof request.bond === 'string') {
+    if (request.bond && typeof request.bond === "string") {
       console.warn(
         "DEPRECATION WARNING: String values for bond are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
+          "Use bigint or number instead. String values will be removed in the next major version.",
       );
     }
-    
+
     return this.raiseDisputeV2({
       ...request,
       bond: request.bond ? convertToBigInt(request.bond) : undefined,

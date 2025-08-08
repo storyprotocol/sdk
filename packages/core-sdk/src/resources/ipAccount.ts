@@ -1,7 +1,5 @@
 import { Address, encodeFunctionData, Hex, PublicClient } from "viem";
 
-import { TokenAmountInput } from "../types/common";
-
 import {
   coreMetadataModuleAbi,
   coreMetadataModuleAddress,
@@ -11,6 +9,7 @@ import {
   WrappedIpClient,
 } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { TokenAmountInput } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
 import {
@@ -25,7 +24,7 @@ import {
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { validateAddress, convertToBigInt } from "../utils/utils";
+import { convertToBigInt, validateAddress } from "../utils/utils";
 
 export class IPAccountClient {
   public wrappedIpClient: WrappedIpClient;
@@ -81,13 +80,13 @@ export class IPAccountClient {
     request: IPAccountExecuteWithSigRequest & { value?: bigint | string | number },
   ): Promise<IPAccountExecuteWithSigResponse> {
     // Show deprecation warning for string values
-    if (request.value && typeof request.value === 'string') {
+    if (request.value && typeof request.value === "string") {
       console.warn(
         "DEPRECATION WARNING: String values for value are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
+          "Use bigint or number instead. String values will be removed in the next major version.",
       );
     }
-    
+
     return this.executeWithSigV2({
       ...request,
       value: request.value ? convertToBigInt(request.value) : undefined,

@@ -136,13 +136,13 @@ export class LicenseClient {
     request: RegisterCommercialUsePILRequest & { defaultMintingFee: bigint | string | number },
   ): Promise<RegisterPILResponse> {
     // Show deprecation warning for string values
-    if (typeof request.defaultMintingFee === 'string') {
+    if (typeof request.defaultMintingFee === "string") {
       console.warn(
         "DEPRECATION WARNING: String values for defaultMintingFee are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
+          "Use bigint or number instead. String values will be removed in the next major version.",
       );
     }
-    
+
     return this.registerCommercialUsePILV2({
       ...request,
       defaultMintingFee: convertToBigInt(request.defaultMintingFee),
@@ -186,15 +186,17 @@ export class LicenseClient {
     royaltyPolicyAddress,
     commercialRevShare,
     txOptions,
-  }: RegisterCommercialRemixPILRequest & { defaultMintingFee: bigint | string | number }): Promise<RegisterPILResponse> {
+  }: RegisterCommercialRemixPILRequest & {
+    defaultMintingFee: bigint | string | number;
+  }): Promise<RegisterPILResponse> {
     // Show deprecation warning for string values
-    if (typeof defaultMintingFee === 'string') {
+    if (typeof defaultMintingFee === "string") {
       console.warn(
         "DEPRECATION WARNING: String values for defaultMintingFee are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
+          "Use bigint or number instead. String values will be removed in the next major version.",
       );
     }
-    
+
     return this.registerCommercialRemixPILV2({
       defaultMintingFee: convertToBigInt(defaultMintingFee),
       currency,
@@ -213,7 +215,9 @@ export class LicenseClient {
     royaltyPolicyAddress,
     commercialRevShare,
     txOptions,
-  }: RegisterCommercialRemixPILRequest & { defaultMintingFee: TokenAmountInput }): Promise<RegisterPILResponse> {
+  }: RegisterCommercialRemixPILRequest & {
+    defaultMintingFee: TokenAmountInput;
+  }): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = PILFlavor.commercialRemix({
         defaultMintingFee: convertToBigInt(defaultMintingFee),
@@ -326,26 +330,26 @@ export class LicenseClient {
    * @deprecated Use mintLicenseTokensV2 instead. String values for maxMintingFee and amount are no longer supported.
    */
   public async mintLicenseTokens(
-    request: MintLicenseTokensRequest & { 
+    request: MintLicenseTokensRequest & {
       maxMintingFee: bigint | string | number;
       amount?: bigint | string | number;
     },
   ): Promise<MintLicenseTokensResponse> {
     // Show deprecation warning for string values
-    if (typeof request.maxMintingFee === 'string') {
+    if (typeof request.maxMintingFee === "string") {
       console.warn(
         "DEPRECATION WARNING: String values for maxMintingFee are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
+          "Use bigint or number instead. String values will be removed in the next major version.",
       );
     }
-    
-    if (request.amount && typeof request.amount === 'string') {
+
+    if (request.amount && typeof request.amount === "string") {
       console.warn(
         "DEPRECATION WARNING: String values for amount are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
+          "Use bigint or number instead. String values will be removed in the next major version.",
       );
     }
-    
+
     return this.mintLicenseTokensV2({
       ...request,
       maxMintingFee: convertToBigInt(request.maxMintingFee),
@@ -369,7 +373,7 @@ export class LicenseClient {
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L34 | `LicenseTokensMinted`} event.
    */
   public async mintLicenseTokensV2(
-    request: MintLicenseTokensRequest & { 
+    request: MintLicenseTokensRequest & {
       maxMintingFee: TokenAmountInput;
       amount?: TokenAmountInput;
     },
@@ -489,13 +493,13 @@ export class LicenseClient {
     request: PredictMintingLicenseFeeRequest & { amount: bigint | string | number },
   ): Promise<LicensingModulePredictMintingLicenseFeeResponse> {
     // Show deprecation warning for string values
-    if (typeof request.amount === 'string') {
+    if (typeof request.amount === "string") {
       console.warn(
         "DEPRECATION WARNING: String values for amount are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
+          "Use bigint or number instead. String values will be removed in the next major version.",
       );
     }
-    
+
     return this.predictMintingLicenseFeeV2({
       ...request,
       amount: convertToBigInt(request.amount),
@@ -604,7 +608,7 @@ export class LicenseClient {
     }
   }
 
-/**
+  /**
    * Set the max license token limit for a specific license.
    *
    * @remarks
@@ -613,52 +617,52 @@ export class LicenseClient {
    * if the current licensing hook is not set to `TotalLicenseTokenLimitHook`, and sets the max license tokens
    * to the specified limit.
    */
-public async setMaxLicenseTokens({
-  ipId,
-  licenseTermsId,
-  maxLicenseTokens,
-  licenseTemplate,
-  txOptions,
-}: SetMaxLicenseTokensRequest): Promise<TransactionResponse> {
-  try {
-    if (maxLicenseTokens < 0) {
-      throw new Error("The max license tokens must be greater than 0.");
-    }
-    const newLicenseTermsId = BigInt(licenseTermsId);
-    const newLicenseTemplate = validateAddress(
-      licenseTemplate || this.licenseTemplateClient.address,
-    );
-    const licensingConfig = await this.getLicensingConfig({
-      ipId,
-      licenseTermsId: newLicenseTermsId,
-      licenseTemplate: newLicenseTemplate,
-    });
-    if (licensingConfig.licensingHook !== this.totalLicenseTokenLimitHookClient.address) {
-      await this.setLicensingConfig({
+  public async setMaxLicenseTokens({
+    ipId,
+    licenseTermsId,
+    maxLicenseTokens,
+    licenseTemplate,
+    txOptions,
+  }: SetMaxLicenseTokensRequest): Promise<TransactionResponse> {
+    try {
+      if (maxLicenseTokens < 0) {
+        throw new Error("The max license tokens must be greater than 0.");
+      }
+      const newLicenseTermsId = BigInt(licenseTermsId);
+      const newLicenseTemplate = validateAddress(
+        licenseTemplate || this.licenseTemplateClient.address,
+      );
+      const licensingConfig = await this.getLicensingConfig({
         ipId,
         licenseTermsId: newLicenseTermsId,
         licenseTemplate: newLicenseTemplate,
-        licensingConfig: {
-          ...licensingConfig,
-          licensingHook: this.totalLicenseTokenLimitHookClient.address,
-        },
       });
+      if (licensingConfig.licensingHook !== this.totalLicenseTokenLimitHookClient.address) {
+        await this.setLicensingConfig({
+          ipId,
+          licenseTermsId: newLicenseTermsId,
+          licenseTemplate: newLicenseTemplate,
+          licensingConfig: {
+            ...licensingConfig,
+            licensingHook: this.totalLicenseTokenLimitHookClient.address,
+          },
+        });
+      }
+      const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
+        licensorIpId: ipId,
+        licenseTemplate: newLicenseTemplate,
+        licenseTermsId: newLicenseTermsId,
+        limit: BigInt(maxLicenseTokens),
+      });
+      return waitForTxReceipt({
+        txHash,
+        txOptions,
+        rpcClient: this.rpcClient,
+      });
+    } catch (error) {
+      return handleError(error, "Failed to set max license tokens");
     }
-    const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
-      licensorIpId: ipId,
-      licenseTemplate: newLicenseTemplate,
-      licenseTermsId: newLicenseTermsId,
-      limit: BigInt(maxLicenseTokens),
-    });
-    return waitForTxReceipt({
-      txHash,
-      txOptions,
-      rpcClient: this.rpcClient,
-    });
-  } catch (error) {
-    return handleError(error, "Failed to set max license tokens");
   }
-}
 
   public async getLicensingConfig(request: GetLicensingConfigRequest): Promise<LicensingConfig> {
     try {

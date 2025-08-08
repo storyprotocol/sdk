@@ -149,7 +149,6 @@ describe("Test IPAccountClient", () => {
     });
 
     it("should accept string values in executeWithSig v1", async () => {
-
       const result = await ipAccountClient.executeWithSig({
         ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         to: zeroAddress,

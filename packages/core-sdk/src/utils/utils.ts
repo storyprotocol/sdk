@@ -121,7 +121,7 @@ export const getTokenAmountDisplay = function (amount: bigint, unit = "IP"): str
  * @deprecated Use toBigInt instead for new code
  */
 export const convertToBigInt = function (amount: bigint | number | string): bigint {
-  if (typeof amount === 'string') {
+  if (typeof amount === "string") {
     return BigInt(amount);
   }
   return BigInt(amount);

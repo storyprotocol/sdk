@@ -91,12 +91,12 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const v2Result = await client.license.registerCommercialUsePILV2({
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       expect(v1Result.licenseTermsId).to.be.a("bigint");
       expect(v2Result.licenseTermsId).to.be.a("bigint");
       // Both should produce valid license terms IDs
@@ -110,13 +110,13 @@ describe("License Functions", () => {
         commercialRevShare: 25,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const v2Result = await client.license.registerCommercialRemixPILV2({
         defaultMintingFee: 50n,
         commercialRevShare: 25,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       expect(v1Result.licenseTermsId).to.be.a("bigint");
       expect(v2Result.licenseTermsId).to.be.a("bigint");
       // Both should produce valid license terms IDs
@@ -129,10 +129,10 @@ describe("License Functions", () => {
       /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "100" as any, // Type assertion to test backward compatibility
-        currency: WIP_TOKEN_ADDRESS,  
+        currency: WIP_TOKEN_ADDRESS,
       });
       /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
-      
+
       expect(result.licenseTermsId).to.be.a("bigint");
       expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
     });
@@ -143,7 +143,7 @@ describe("License Functions", () => {
         defaultMintingFee: 100, // Number value
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       expect(result.licenseTermsId).to.be.a("bigint");
       expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
     });
@@ -154,7 +154,7 @@ describe("License Functions", () => {
         defaultMintingFee: 100n, // BigInt value
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       expect(result.licenseTermsId).to.be.a("bigint");
       expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
     });
@@ -166,7 +166,7 @@ describe("License Functions", () => {
         defaultMintingFee: 100n, // Only bigint | number allowed
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       expect(result.licenseTermsId).to.be.a("bigint");
       expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
     });
@@ -200,14 +200,14 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
       });
       const ipId = registerResult.ipId!;
-      
+
       await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseResult.licenseTermsId!,
@@ -223,7 +223,7 @@ describe("License Functions", () => {
         amount: "1" as any,
       });
       /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
-      
+
       expect(result.txHash).to.be.a("string");
     });
 
@@ -233,7 +233,7 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
@@ -249,7 +249,7 @@ describe("License Functions", () => {
         amount: "2" as any,
       });
       /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
-      
+
       expect(result.currencyToken).to.be.a("string");
       expect(result.tokenAmount).to.be.a("bigint");
     });
@@ -296,14 +296,14 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
       });
       const ipId = registerResult.ipId!;
-      
+
       await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseResult.licenseTermsId!,
@@ -316,7 +316,7 @@ describe("License Functions", () => {
         maxRevenueShare: 50,
         amount: 1n,
       });
-      
+
       expect(result.txHash).to.be.a("string");
     });
 
@@ -326,14 +326,14 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
         tokenId: tokenId!,
       });
       const ipId = registerResult.ipId!;
-      
+
       await client.license.attachLicenseTerms({
         ipId: ipId,
         licenseTermsId: licenseResult.licenseTermsId!,
@@ -346,7 +346,7 @@ describe("License Functions", () => {
         maxRevenueShare: 50,
         amount: 1,
       });
-      
+
       expect(result.txHash).to.be.a("string");
     });
 
@@ -356,7 +356,7 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
@@ -369,7 +369,7 @@ describe("License Functions", () => {
         licensorIpId: ipId,
         amount: 2n,
       });
-      
+
       expect(result.currencyToken).to.be.a("string");
       expect(result.tokenAmount).to.be.a("bigint");
     });
@@ -380,7 +380,7 @@ describe("License Functions", () => {
         defaultMintingFee: 100n,
         currency: WIP_TOKEN_ADDRESS,
       });
-      
+
       const tokenId = await getTokenId();
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
@@ -393,7 +393,7 @@ describe("License Functions", () => {
         licensorIpId: ipId,
         amount: 2,
       });
-      
+
       expect(result.currencyToken).to.be.a("string");
       expect(result.tokenAmount).to.be.a("bigint");
     });

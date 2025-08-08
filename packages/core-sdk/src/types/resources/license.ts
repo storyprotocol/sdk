@@ -78,7 +78,7 @@ export type LicenseTermsInput = Omit<
   commercialRevCeiling: TokenAmountInput;
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: TokenAmountInput;
-    /**
+  /**
    * The address of the royalty policy contract.
    * @default LAP
    */
