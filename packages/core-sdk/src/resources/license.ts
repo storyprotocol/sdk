@@ -50,7 +50,7 @@ import { contractCallWithFees } from "../utils/feeUtils";
 import { PILFlavor } from "../utils/pilFlavor";
 import { getRevenueShare } from "../utils/royalty";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { validateAddress, convertToBigInt } from "../utils/utils";
+import { convertToBigInt, validateAddress } from "../utils/utils";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 
 export class LicenseClient {
@@ -604,7 +604,7 @@ export class LicenseClient {
     }
   }
 
-  /**
+/**
    * Set the max license token limit for a specific license.
    *
    * @remarks
@@ -613,82 +613,52 @@ export class LicenseClient {
    * if the current licensing hook is not set to `TotalLicenseTokenLimitHook`, and sets the max license tokens
    * to the specified limit.
    */
-  /**
-   * @deprecated Use setMaxLicenseTokensV2 instead. String values for maxLicenseTokens are no longer supported.
-   */
-  public async setMaxLicenseTokens({
-    ipId,
-    licenseTermsId,
-    maxLicenseTokens,
-    licenseTemplate,
-    txOptions,
-  }: SetMaxLicenseTokensRequest & { maxLicenseTokens: bigint | string | number }): Promise<TransactionResponse> {
-    // Show deprecation warning for string values
-    if (typeof maxLicenseTokens === 'string') {
-      console.warn(
-        "DEPRECATION WARNING: String values for maxLicenseTokens are deprecated. " +
-        "Use bigint or number instead. String values will be removed in the next major version."
-      );
+public async setMaxLicenseTokens({
+  ipId,
+  licenseTermsId,
+  maxLicenseTokens,
+  licenseTemplate,
+  txOptions,
+}: SetMaxLicenseTokensRequest): Promise<TransactionResponse> {
+  try {
+    if (maxLicenseTokens < 0) {
+      throw new Error("The max license tokens must be greater than 0.");
     }
-    
-    return this.setMaxLicenseTokensV2({
+    const newLicenseTermsId = BigInt(licenseTermsId);
+    const newLicenseTemplate = validateAddress(
+      licenseTemplate || this.licenseTemplateClient.address,
+    );
+    const licensingConfig = await this.getLicensingConfig({
       ipId,
-      licenseTermsId,
-      maxLicenseTokens: convertToBigInt(maxLicenseTokens),
-      licenseTemplate,
-      txOptions,
+      licenseTermsId: newLicenseTermsId,
+      licenseTemplate: newLicenseTemplate,
     });
-  }
-
-  /**
-   * Sets the maximum license tokens with proper type safety.
-   */
-  public async setMaxLicenseTokensV2({
-    ipId,
-    licenseTermsId,
-    maxLicenseTokens,
-    licenseTemplate,
-    txOptions,
-  }: SetMaxLicenseTokensRequest & { maxLicenseTokens: TokenAmountInput }): Promise<TransactionResponse> {
-    try {
-      if (maxLicenseTokens < 0) {
-        throw new Error("The max license tokens must be greater than 0.");
-      }
-      const newLicenseTermsId = BigInt(licenseTermsId);
-      const newLicenseTemplate = validateAddress(
-        licenseTemplate || this.licenseTemplateClient.address,
-      );
-      const licensingConfig = await this.getLicensingConfig({
+    if (licensingConfig.licensingHook !== this.totalLicenseTokenLimitHookClient.address) {
+      await this.setLicensingConfig({
         ipId,
         licenseTermsId: newLicenseTermsId,
         licenseTemplate: newLicenseTemplate,
+        licensingConfig: {
+          ...licensingConfig,
+          licensingHook: this.totalLicenseTokenLimitHookClient.address,
+        },
       });
-      if (licensingConfig.licensingHook !== this.totalLicenseTokenLimitHookClient.address) {
-        await this.setLicensingConfig({
-          ipId,
-          licenseTermsId: newLicenseTermsId,
-          licenseTemplate: newLicenseTemplate,
-          licensingConfig: {
-            ...licensingConfig,
-            licensingHook: this.totalLicenseTokenLimitHookClient.address,
-          },
-        });
-      }
-      const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
-        licensorIpId: ipId,
-        licenseTemplate: newLicenseTemplate,
-        licenseTermsId: newLicenseTermsId,
-        limit: BigInt(maxLicenseTokens),
-      });
-      return waitForTxReceipt({
-        txHash,
-        txOptions,
-        rpcClient: this.rpcClient,
-      });
-    } catch (error) {
-      return handleError(error, "Failed to set max license tokens");
     }
+    const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
+      licensorIpId: ipId,
+      licenseTemplate: newLicenseTemplate,
+      licenseTermsId: newLicenseTermsId,
+      limit: BigInt(maxLicenseTokens),
+    });
+    return waitForTxReceipt({
+      txHash,
+      txOptions,
+      rpcClient: this.rpcClient,
+    });
+  } catch (error) {
+    return handleError(error, "Failed to set max license tokens");
   }
+}
 
   public async getLicensingConfig(request: GetLicensingConfigRequest): Promise<LicensingConfig> {
     try {
