@@ -147,6 +147,22 @@ describe("Test IPAccountClient", () => {
 
       expect(result.encodedTxData?.data).to.be.a("string");
     });
+
+    it("should accept string values in executeWithSig v1", async () => {
+
+      const result = await ipAccountClient.executeWithSig({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        to: zeroAddress,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+        value: "3" as any,
+        data: "0x11111111111111111111111111111",
+        signer: zeroAddress,
+        deadline: 20,
+        signature: zeroAddress,
+      });
+
+      expect(result.txHash).to.be.a("string");
+    });
   });
 
   describe("Test getIpAccountNonce", () => {

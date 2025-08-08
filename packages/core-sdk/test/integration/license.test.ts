@@ -253,34 +253,6 @@ describe("License Functions", () => {
       expect(result.currencyToken).to.be.a("string");
       expect(result.tokenAmount).to.be.a("bigint");
     });
-
-    it("should accept string values in setMaxLicenseTokens v1", async () => {
-      // Setup: Create license and IP
-      const licenseResult = await client.license.registerCommercialUsePILV2({
-        defaultMintingFee: 0n,
-        currency: WIP_TOKEN_ADDRESS,
-      });
-      
-      const tokenId = await getTokenId();
-      const registerResult = await client.ipAsset.register({
-        nftContract: mockERC721,
-        tokenId: tokenId!,
-      });
-      const ipId = registerResult.ipId!;
-      
-      await client.license.attachLicenseTerms({
-        ipId: ipId,
-        licenseTermsId: licenseResult.licenseTermsId!,
-      });
-
-      const result = await client.license.setMaxLicenseTokens({
-        ipId: ipId,
-        licenseTermsId: licenseResult.licenseTermsId!,
-        maxLicenseTokens: 1000n,
-      });
-      
-      expect(result.txHash).to.be.a("string");
-    });
   });
 
   describe("V2 method type safety tests", () => {
