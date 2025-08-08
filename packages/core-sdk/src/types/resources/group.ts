@@ -9,7 +9,7 @@ import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from ".
 import { TxOptions } from "../options";
 
 export type LicenseDataInput = {
-  licenseTermsId: bigint | number;
+  licenseTermsId: bigint | number | string;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -64,7 +64,7 @@ export type RegisterGroupResponse = {
 };
 export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   nftContract: Address;
-  tokenId: bigint | number;
+  tokenId: bigint | number | string;
   /** The ID of the group IP to add the newly registered IP. */
   groupId: Address;
   /**

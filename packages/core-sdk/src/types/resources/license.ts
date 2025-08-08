@@ -141,7 +141,7 @@ export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
 export type AttachLicenseTermsRequest = {
   /** The address of the IP ID to which the license terms are being attached. */
   ipId: Address;
-  licenseTermsId: bigint | number;
+  licenseTermsId: bigint | number | string;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -158,7 +158,7 @@ export type AttachLicenseTermsResponse = {
 
 export type MintLicenseTokensRequest = {
   licensorIpId: Address;
-  licenseTermsId: bigint | number;
+  licenseTermsId: bigint | number | string;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -229,7 +229,7 @@ export type GetLicensingConfigRequest = {
   /** The address of the IP for which the configuration is being set. */
   ipId: Address;
   /** The ID of the license terms within the license template. */
-  licenseTermsId: number | bigint;
+  licenseTermsId: bigint | number | string;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.

@@ -2,11 +2,9 @@ import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {
   Address,
-  encodeAbiParameters,
   encodeFunctionData,
   getAddress,
   Hex,
-  keccak256,
   parseEther,
   toFunctionSelector,
   toHex,
@@ -27,8 +25,6 @@ import {
   accessControllerAddress,
   coreMetadataModuleAddress,
   Erc20Client,
-  ipAccountImplAbi,
-  IpAccountImplClient,
 } from "../../src/abi/generated";
 
 use(chaiAsPromised);
