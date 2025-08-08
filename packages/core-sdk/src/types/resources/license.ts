@@ -197,7 +197,7 @@ export enum PIL_TYPE {
   CREATIVE_COMMONS_ATTRIBUTION,
 }
 
-export type LicenseTermsId = bigint | number;
+export type LicenseTermsId = bigint | number | string;
 
 export type PredictMintingLicenseFeeRequest = {
   licensorIpId: Address;
